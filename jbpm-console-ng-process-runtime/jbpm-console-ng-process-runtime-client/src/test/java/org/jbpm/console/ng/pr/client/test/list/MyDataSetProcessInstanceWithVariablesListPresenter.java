@@ -93,7 +93,7 @@ public class MyDataSetProcessInstanceWithVariablesListPresenter extends DataSetP
             @Override
             public void callback(DataSet dataSet) {
                 verify(dataSetQueryHelperDomainSpecificMock, times(1)).setLastSortOrder(SortOrder.ASCENDING);
-                verify(dataSetQueryHelperDomainSpecificMock, times(1)).setLastOrderedColumn("pid");
+                verify(dataSetQueryHelperDomainSpecificMock, times(1)).setLastOrderedColumn(PROCESS_INSTANCE_ID);
                 verify(filterSettingsMock).setTablePageSize(-1);
             }
 

@@ -150,7 +150,7 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
     public void isFilteredByProcessIdTest() {
         final String processId = "testProc";
         final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_PROCESSID, processId));
+        filter.addFilterColumn(equalsTo(COLUMN_PROCESS_ID, processId));
 
         final String filterProcessId = presenter.isFilteredByProcessId(Collections.<DataSetOp>singletonList(filter));
         assertEquals(processId, filterProcessId);
@@ -160,7 +160,7 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
     public void isFilteredByProcessIdInvalidTest() {
         final String processId = "testProc";
         final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(likeTo(COLUMN_PROCESSID, processId));
+        filter.addFilterColumn(likeTo(COLUMN_PROCESS_ID, processId));
 
         final String filterProcessId = presenter.isFilteredByProcessId(Collections.<DataSetOp>singletonList(filter));
         assertNull(filterProcessId);
@@ -248,11 +248,11 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
     public void getDomainSpecifDataForProcessInstancesTest() {
         presenter.setAddingDefaultFilters(false);
         final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_PROCESSID, "testProc"));
+        filter.addFilterColumn(equalsTo(COLUMN_PROCESS_ID, "testProc"));
         filterSettings.getDataSetLookup().addOperation(filter);
 
         when(dataSet.getRowCount()).thenReturn(1);//1 process instance
-        when(dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESSINSTANCEID, 0)).thenReturn(Long.valueOf(1));
+        when(dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESS_INSTANCE_ID, 0)).thenReturn(Long.valueOf(1));
 
         when(dataSetProcessVar.getRowCount()).thenReturn(2); //two domain variables associated
         when(dataSetQueryHelperDomainSpecific.getColumnLongValue(dataSetProcessVar, PROCESS_INSTANCE_ID, 0)).thenReturn(Long.valueOf(1));

@@ -31,7 +31,6 @@ import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -78,9 +77,9 @@ import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
-import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.dashbuilder.dataset.sort.SortOrder.*;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
 public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMultiGridView<ProcessInstanceSummary, DataSetProcessInstanceWithVariablesListPresenter>
@@ -126,18 +125,18 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
     @Override
     public void init( final DataSetProcessInstanceWithVariablesListPresenter presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add( COL_ID_SELECT );
-        bannedColumns.add( COLUMN_PROCESSINSTANCEID );
-        bannedColumns.add( COLUMN_PROCESSNAME );
-        bannedColumns.add( COLUMN_PROCESSINSTANCEDESCRIPTION );
-        bannedColumns.add( COL_ID_ACTIONS );
+        bannedColumns.add(COL_ID_SELECT);
+        bannedColumns.add(COLUMN_PROCESS_INSTANCE_ID);
+        bannedColumns.add(COLUMN_PROCESS_NAME);
+        bannedColumns.add(COLUMN_PROCESS_INSTANCE_DESCRIPTION);
+        bannedColumns.add(COL_ID_ACTIONS);
         final List<String> initColumns = new ArrayList<String>();
-        initColumns.add( COL_ID_SELECT );
-        initColumns.add( COLUMN_PROCESSINSTANCEID );
-        initColumns.add( COLUMN_PROCESSNAME );
-        initColumns.add( COLUMN_PROCESSINSTANCEDESCRIPTION );
-        initColumns.add( COLUMN_PROCESSVERSION );
-        initColumns.add( COL_ID_ACTIONS );
+        initColumns.add(COL_ID_SELECT);
+        initColumns.add(COLUMN_PROCESS_INSTANCE_ID);
+        initColumns.add(COLUMN_PROCESS_NAME);
+        initColumns.add(COLUMN_PROCESS_INSTANCE_DESCRIPTION);
+        initColumns.add(COLUMN_PROCESS_VERSION);
+        initColumns.add(COL_ID_ACTIONS);
 
         final Button button = new Button();
         button.setIcon( IconType.PLUS );
@@ -430,7 +429,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
             }
         };
         processInstanceIdColumn.setSortable( true );
-        processInstanceIdColumn.setDataStoreName( COLUMN_PROCESSINSTANCEID );
+        processInstanceIdColumn.setDataStoreName(COLUMN_PROCESS_INSTANCE_ID);
 
         return processInstanceIdColumn;
     }
@@ -444,7 +443,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
             }
         };
         processNameColumn.setSortable( true );
-        processNameColumn.setDataStoreName( COLUMN_PROCESSNAME );
+        processNameColumn.setDataStoreName(COLUMN_PROCESS_NAME);
 
         return processNameColumn;
     }
@@ -472,7 +471,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
             }
         };
         processVersionColumn.setSortable( true );
-        processVersionColumn.setDataStoreName( COLUMN_PROCESSVERSION );
+        processVersionColumn.setDataStoreName(COLUMN_PROCESS_VERSION);
 
         return processVersionColumn;
     }
@@ -593,7 +592,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
             }
         };
         descriptionColumn.setSortable( true );
-        descriptionColumn.setDataStoreName( COLUMN_PROCESSINSTANCEDESCRIPTION );
+        descriptionColumn.setDataStoreName(COLUMN_PROCESS_INSTANCE_DESCRIPTION);
         return descriptionColumn;
     }
 
@@ -654,20 +653,20 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         }
         builder.filter( equalsTo( COLUMN_STATUS, names ) );
 
-        builder.setColumn( COLUMN_PROCESSINSTANCEID, constants.Process_Instance_ID() );
-        builder.setColumn( COLUMN_PROCESSID, constants.Process_Definition_Id() );
-        builder.setColumn( COLUMN_START, constants.Start(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_END, constants.End(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_STATUS, constants.Status() );
-        builder.setColumn( COLUMN_PARENTPROCESSINSTANCEID, constants.ParentProcessInstanceId() );
-        builder.setColumn( COLUMN_OUTCOME, constants.Outcome() );
-        builder.setColumn( COLUMN_DURATION, constants.Duration() );
-        builder.setColumn( COLUMN_IDENTITY, constants.Identity() );
-        builder.setColumn( COLUMN_PROCESSVERSION, constants.Version() );
-        builder.setColumn( COLUMN_PROCESSNAME, constants.Name() );
-        builder.setColumn( COLUMN_CORRELATIONKEY, constants.Correlation_Key() );
-        builder.setColumn( COLUMN_EXTERNALID, constants.ExternalId() );
-        builder.setColumn( COLUMN_PROCESSINSTANCEDESCRIPTION, constants.Process_Instance_Description() );
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_ID() );
+        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Definition_Id() );
+        builder.setColumn(COLUMN_START, constants.Start(), "MMM dd E, yyyy");
+        builder.setColumn(COLUMN_END, constants.End(), "MMM dd E, yyyy");
+        builder.setColumn(COLUMN_STATUS, constants.Status());
+        builder.setColumn(COLUMN_PARENT_PROCESS_INSTANCE_ID, constants.ParentProcessInstanceId() );
+        builder.setColumn(COLUMN_OUTCOME, constants.Outcome());
+        builder.setColumn(COLUMN_DURATION, constants.Duration());
+        builder.setColumn(COLUMN_IDENTITY, constants.Identity());
+        builder.setColumn(COLUMN_PROCESS_VERSION, constants.Version() );
+        builder.setColumn(COLUMN_PROCESS_NAME, constants.Name() );
+        builder.setColumn(COLUMN_CORRELATION_KEY, constants.Correlation_Key() );
+        builder.setColumn(COLUMN_EXTERNAL_ID, constants.ExternalId() );
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION, constants.Process_Instance_Description() );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
@@ -804,20 +803,20 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
 
         builder.dataset( PROCESS_INSTANCE_DATASET );
 
-        builder.setColumn( COLUMN_PROCESSINSTANCEID, constants.Process_Instance_ID() );
-        builder.setColumn( COLUMN_PROCESSID, constants.Process_Definition_Id() );
-        builder.setColumn( COLUMN_START, constants.Start(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_END, constants.End(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_STATUS, constants.Status() );
-        builder.setColumn( COLUMN_PARENTPROCESSINSTANCEID, constants.ParentProcessInstanceId() );
-        builder.setColumn( COLUMN_OUTCOME, constants.Outcome() );
-        builder.setColumn( COLUMN_DURATION, constants.Duration() );
-        builder.setColumn( COLUMN_IDENTITY, constants.Identity() );
-        builder.setColumn( COLUMN_PROCESSVERSION, constants.Version() );
-        builder.setColumn( COLUMN_PROCESSNAME, constants.Name() );
-        builder.setColumn( COLUMN_CORRELATIONKEY, constants.Correlation_Key() );
-        builder.setColumn( COLUMN_EXTERNALID, constants.ExternalId() );
-        builder.setColumn( COLUMN_PROCESSINSTANCEDESCRIPTION, constants.Process_Instance_Description() );
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_ID() );
+        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Definition_Id() );
+        builder.setColumn(COLUMN_START, constants.Start(), "MMM dd E, yyyy");
+        builder.setColumn(COLUMN_END, constants.End(), "MMM dd E, yyyy");
+        builder.setColumn(COLUMN_STATUS, constants.Status());
+        builder.setColumn(COLUMN_PARENT_PROCESS_INSTANCE_ID, constants.ParentProcessInstanceId() );
+        builder.setColumn(COLUMN_OUTCOME, constants.Outcome());
+        builder.setColumn(COLUMN_DURATION, constants.Duration());
+        builder.setColumn(COLUMN_IDENTITY, constants.Identity());
+        builder.setColumn(COLUMN_PROCESS_VERSION, constants.Version() );
+        builder.setColumn(COLUMN_PROCESS_NAME, constants.Name() );
+        builder.setColumn(COLUMN_CORRELATION_KEY, constants.Correlation_Key() );
+        builder.setColumn(COLUMN_EXTERNAL_ID, constants.ExternalId() );
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION, constants.Process_Instance_Description() );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );

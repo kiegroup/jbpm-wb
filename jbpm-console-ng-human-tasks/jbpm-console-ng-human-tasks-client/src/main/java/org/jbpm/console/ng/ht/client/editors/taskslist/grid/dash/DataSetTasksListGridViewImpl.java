@@ -74,8 +74,8 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.dashbuilder.dataset.sort.SortOrder.*;
-import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.*;
 import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
+import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.*;
 
 @Dependent
 public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, DataSetTasksListGridPresenter>
@@ -312,7 +312,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         };
         taskIdColumn.setSortable( true );
-        taskIdColumn.setDataStoreName( COLUMN_TASKID );
+        taskIdColumn.setDataStoreName(COLUMN_TASK_ID);
         return taskIdColumn;
     }
 
@@ -377,7 +377,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         };
         createdOnDateColumn.setSortable( true );
-        createdOnDateColumn.setDataStoreName( COLUMN_CREATEDON );
+        createdOnDateColumn.setDataStoreName(COLUMN_CREATED_ON);
         return createdOnDateColumn;
     }
 
@@ -394,7 +394,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         };
         dueDateColumn.setSortable( true );
-        dueDateColumn.setDataStoreName( COLUMN_DUEDATE );
+        dueDateColumn.setDataStoreName(COLUMN_DUE_DATE);
         return dueDateColumn;
     }
 
@@ -406,7 +406,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         };
         taskProcessIdColumn.setSortable( true );
-        taskProcessIdColumn.setDataStoreName( COLUMN_PROCESSID );
+        taskProcessIdColumn.setDataStoreName(COLUMN_PROCESS_ID);
         return taskProcessIdColumn;
     }
 
@@ -418,7 +418,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         };
         taskProcessInstanceIdColumn.setSortable( true );
-        taskProcessInstanceIdColumn.setDataStoreName( COLUMN_PROCESSINSTANCEID );
+        taskProcessInstanceIdColumn.setDataStoreName(COLUMN_PROCESS_INSTANCE_ID);
         return taskProcessInstanceIdColumn;
     }
 
@@ -595,7 +595,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         Set<Group> groups = identity.getGroups();
 
-        builder.filter( COLUMN_ACTUALOWNER, OR(equalsTo(""), isNull()) );
+        builder.filter(COLUMN_ACTUAL_OWNER, OR(equalsTo(""), isNull()) );
         List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
         for ( Group g : groups ) {
             condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, g.getName() ) );
@@ -605,28 +605,28 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier() ) );
 
         builder.filter( COLUMN_ORGANIZATIONAL_ENTITY, OR( condList ) );
-        builder.group( COLUMN_TASKID );
+        builder.group(COLUMN_TASK_ID);
 
-        builder.setColumn( COLUMN_ACTIVATIONTIME, constants.ActivationTime(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_ACTUALOWNER, constants.Actual_Owner() );
-        builder.setColumn( COLUMN_CREATEDBY, constants.CreatedBy() );
-        builder.setColumn( COLUMN_CREATEDON, constants.Created_On(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_DEPLOYMENTID, constants.DeploymentId() );
-        builder.setColumn( COLUMN_DESCRIPTION, constants.Description() );
-        builder.setColumn( COLUMN_DUEDATE, constants.DueDate(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_NAME, constants.Task() );
-        builder.setColumn( COLUMN_PARENTID, constants.ParentId() );
-        builder.setColumn( COLUMN_PRIORITY, constants.Priority() );
-        builder.setColumn( COLUMN_PROCESSID, constants.Process_Id() );
-        builder.setColumn( COLUMN_PROCESSINSTANCEID, constants.Process_Instance_Id() );
-        builder.setColumn( COLUMN_PROCESSSESSIONID, constants.ProcessSessionId() );
-        builder.setColumn( COLUMN_STATUS, constants.Status() );
-        builder.setColumn( COLUMN_TASKID, constants.Id() );
-        builder.setColumn( COLUMN_WORKITEMID, constants.WorkItemId() );
+        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner() );
+        builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy() );
+        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId() );
+        builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
+        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_NAME, constants.Task());
+        builder.setColumn(COLUMN_PARENT_ID, constants.ParentId() );
+        builder.setColumn(COLUMN_PRIORITY, constants.Priority());
+        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Id() );
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
+        builder.setColumn(COLUMN_PROCESS_SESSION_ID, constants.ProcessSessionId() );
+        builder.setColumn(COLUMN_STATUS, constants.Status());
+        builder.setColumn(COLUMN_TASK_ID, constants.Id() );
+        builder.setColumn(COLUMN_WORK_ITEM_ID, constants.WorkItemId() );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
-        builder.tableOrderDefault( COLUMN_CREATEDON, DESCENDING );
+        builder.tableOrderDefault(COLUMN_CREATED_ON, DESCENDING );
 
         FilterSettings tableSettings = builder.buildSettings();
         tableSettings.setKey( key );
@@ -683,28 +683,28 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         builder.filter( COLUMN_ORGANIZATIONAL_ENTITY, OR( condList ) );
 
-        builder.group( COLUMN_TASKID );
+        builder.group(COLUMN_TASK_ID);
 
-        builder.setColumn( COLUMN_ACTIVATIONTIME, constants.ActivationTime(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_ACTUALOWNER, constants.Actual_Owner() );
-        builder.setColumn( COLUMN_CREATEDBY, constants.CreatedBy() );
-        builder.setColumn( COLUMN_CREATEDON, constants.Created_On(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_DEPLOYMENTID, constants.DeploymentId() );
-        builder.setColumn( COLUMN_DESCRIPTION, constants.Description() );
-        builder.setColumn( COLUMN_DUEDATE, constants.DueDate(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_NAME, constants.Task() );
-        builder.setColumn( COLUMN_PARENTID, constants.ParentId() );
-        builder.setColumn( COLUMN_PRIORITY, constants.Priority() );
-        builder.setColumn( COLUMN_PROCESSID, constants.Process_Id() );
-        builder.setColumn( COLUMN_PROCESSINSTANCEID, constants.Process_Instance_Id() );
-        builder.setColumn( COLUMN_PROCESSSESSIONID, constants.ProcessSessionId() );
-        builder.setColumn( COLUMN_STATUS, constants.Status() );
-        builder.setColumn( COLUMN_TASKID, constants.Id() );
-        builder.setColumn( COLUMN_WORKITEMID, constants.WorkItemId() );
+        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner() );
+        builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy() );
+        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId() );
+        builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
+        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_NAME, constants.Task());
+        builder.setColumn(COLUMN_PARENT_ID, constants.ParentId() );
+        builder.setColumn(COLUMN_PRIORITY, constants.Priority());
+        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Id() );
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
+        builder.setColumn(COLUMN_PROCESS_SESSION_ID, constants.ProcessSessionId() );
+        builder.setColumn(COLUMN_STATUS, constants.Status());
+        builder.setColumn(COLUMN_TASK_ID, constants.Id() );
+        builder.setColumn(COLUMN_WORK_ITEM_ID, constants.WorkItemId() );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
-        builder.tableOrderDefault( COLUMN_CREATEDON, DESCENDING );
+        builder.tableOrderDefault(COLUMN_CREATED_ON, DESCENDING );
 
         FilterSettings tableSettings = builder.buildSettings();
         tableSettings.setKey( key );
@@ -749,28 +749,28 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             names.add( s );
         }
         builder.filter( equalsTo( COLUMN_STATUS, names ) );
-        builder.filter( equalsTo( COLUMN_ACTUALOWNER, identity.getIdentifier() ) );
+        builder.filter( equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier() ) );
 
-        builder.setColumn( COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_ACTUALOWNER, constants.Actual_Owner() );
-        builder.setColumn( COLUMN_CREATEDBY, constants.CreatedBy() );
-        builder.setColumn( COLUMN_CREATEDON, constants.Created_On(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_DEPLOYMENTID, constants.DeploymentId() );
-        builder.setColumn( COLUMN_DESCRIPTION, constants.Description() );
-        builder.setColumn( COLUMN_DUEDATE, constants.DueDate(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_NAME, constants.Task() );
-        builder.setColumn( COLUMN_PARENTID, constants.ParentId() );
-        builder.setColumn( COLUMN_PRIORITY, constants.Priority() );
-        builder.setColumn( COLUMN_PROCESSID, constants.Process_Id() );
-        builder.setColumn( COLUMN_PROCESSINSTANCEID, constants.Process_Instance_Id() );
-        builder.setColumn( COLUMN_PROCESSSESSIONID, constants.ProcessSessionId() );
-        builder.setColumn( COLUMN_STATUS, constants.Status() );
-        builder.setColumn( COLUMN_TASKID, constants.Id() );
-        builder.setColumn( COLUMN_WORKITEMID, constants.WorkItemId() );
+        builder.setColumn(COLUMN_ACTIVATION_TIME, "Activation Time", "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner() );
+        builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy() );
+        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId() );
+        builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
+        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_NAME, constants.Task());
+        builder.setColumn(COLUMN_PARENT_ID, constants.ParentId() );
+        builder.setColumn(COLUMN_PRIORITY, constants.Priority());
+        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Id() );
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
+        builder.setColumn(COLUMN_PROCESS_SESSION_ID, constants.ProcessSessionId() );
+        builder.setColumn(COLUMN_STATUS, constants.Status());
+        builder.setColumn(COLUMN_TASK_ID, constants.Id() );
+        builder.setColumn(COLUMN_WORK_ITEM_ID, constants.WorkItemId() );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
-        builder.tableOrderDefault( COLUMN_CREATEDON, DESCENDING );
+        builder.tableOrderDefault(COLUMN_CREATED_ON, DESCENDING );
 
         FilterSettings tableSettings = builder.buildSettings();
         tableSettings.setKey( key );
@@ -826,31 +826,31 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier() ) );
 
         ColumnFilter myGroupFilter = FilterFactory.AND(FilterFactory.OR(condList),
-                    FilterFactory.OR(FilterFactory.equalsTo(COLUMN_ACTUALOWNER, ""), FilterFactory.isNull(COLUMN_ACTUALOWNER)));
+                    FilterFactory.OR(FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, ""), FilterFactory.isNull(COLUMN_ACTUAL_OWNER)));
 
-        builder.filter( OR( myGroupFilter, FilterFactory.equalsTo( COLUMN_ACTUALOWNER, identity.getIdentifier() ) ) );
-        builder.group( COLUMN_TASKID );
+        builder.filter( OR( myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier() ) ) );
+        builder.group(COLUMN_TASK_ID);
 
-        builder.setColumn( COLUMN_ACTIVATIONTIME, constants.ActivationTime(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_ACTUALOWNER, constants.Actual_Owner() );
-        builder.setColumn( COLUMN_CREATEDBY, constants.CreatedBy() );
-        builder.setColumn( COLUMN_CREATEDON, constants.Created_On(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_DEPLOYMENTID, constants.DeploymentId() );
-        builder.setColumn( COLUMN_DESCRIPTION, constants.Description() );
-        builder.setColumn( COLUMN_DUEDATE, constants.DueDate(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_NAME, constants.Task() );
-        builder.setColumn( COLUMN_PARENTID, constants.ParentId() );
-        builder.setColumn( COLUMN_PRIORITY, constants.Priority() );
-        builder.setColumn( COLUMN_PROCESSID, constants.Process_Id() );
-        builder.setColumn( COLUMN_PROCESSINSTANCEID, constants.Process_Instance_Id() );
-        builder.setColumn( COLUMN_PROCESSSESSIONID, constants.ProcessSessionId() );
-        builder.setColumn( COLUMN_STATUS, constants.Status() );
-        builder.setColumn( COLUMN_TASKID, constants.Id() );
-        builder.setColumn( COLUMN_WORKITEMID, constants.WorkItemId() );
+        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner() );
+        builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy() );
+        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId() );
+        builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
+        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_NAME, constants.Task());
+        builder.setColumn(COLUMN_PARENT_ID, constants.ParentId() );
+        builder.setColumn(COLUMN_PRIORITY, constants.Priority());
+        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Id() );
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
+        builder.setColumn(COLUMN_PROCESS_SESSION_ID, constants.ProcessSessionId() );
+        builder.setColumn(COLUMN_STATUS, constants.Status());
+        builder.setColumn(COLUMN_TASK_ID, constants.Id() );
+        builder.setColumn(COLUMN_WORK_ITEM_ID, constants.WorkItemId() );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
-        builder.tableOrderDefault( COLUMN_CREATEDON, DESCENDING );
+        builder.tableOrderDefault(COLUMN_CREATED_ON, DESCENDING );
 
         FilterSettings tableSettings = builder.buildSettings();
         tableSettings.setKey( key );
@@ -911,31 +911,31 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier() ) );
 
         ColumnFilter myGroupFilter = FilterFactory.AND(FilterFactory.OR(condList),
-                FilterFactory.OR(FilterFactory.equalsTo(COLUMN_ACTUALOWNER, ""), FilterFactory.isNull(COLUMN_ACTUALOWNER)));
+                FilterFactory.OR(FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, ""), FilterFactory.isNull(COLUMN_ACTUAL_OWNER)));
 
-        builder.filter( OR( myGroupFilter, FilterFactory.equalsTo( COLUMN_ACTUALOWNER, identity.getIdentifier() ) ) );
-        builder.group( COLUMN_TASKID );
+        builder.filter( OR( myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier() ) ) );
+        builder.group(COLUMN_TASK_ID);
 
-        builder.setColumn( COLUMN_ACTIVATIONTIME, constants.ActivationTime(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_ACTUALOWNER, constants.Actual_Owner() );
-        builder.setColumn( COLUMN_CREATEDBY, constants.CreatedBy() );
-        builder.setColumn( COLUMN_CREATEDON, constants.Created_On(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_DEPLOYMENTID, constants.DeploymentId() );
-        builder.setColumn( COLUMN_DESCRIPTION, constants.Description() );
-        builder.setColumn( COLUMN_DUEDATE, constants.DueDate(), "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_NAME, constants.Task() );
-        builder.setColumn( COLUMN_PARENTID, constants.ParentId() );
-        builder.setColumn( COLUMN_PRIORITY, constants.Priority() );
-        builder.setColumn( COLUMN_PROCESSID, constants.Process_Id() );
-        builder.setColumn( COLUMN_PROCESSINSTANCEID, constants.Process_Instance_Id() );
-        builder.setColumn( COLUMN_PROCESSSESSIONID, constants.ProcessSessionId() );
-        builder.setColumn( COLUMN_STATUS, constants.Status() );
-        builder.setColumn( COLUMN_TASKID, constants.Id() );
-        builder.setColumn( COLUMN_WORKITEMID, constants.WorkItemId() );
+        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner() );
+        builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy() );
+        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId() );
+        builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
+        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_NAME, constants.Task());
+        builder.setColumn(COLUMN_PARENT_ID, constants.ParentId() );
+        builder.setColumn(COLUMN_PRIORITY, constants.Priority());
+        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Id() );
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
+        builder.setColumn(COLUMN_PROCESS_SESSION_ID, constants.ProcessSessionId() );
+        builder.setColumn(COLUMN_STATUS, constants.Status());
+        builder.setColumn(COLUMN_TASK_ID, constants.Id() );
+        builder.setColumn(COLUMN_WORK_ITEM_ID, constants.WorkItemId() );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
-        builder.tableOrderDefault( COLUMN_CREATEDON, DESCENDING );
+        builder.tableOrderDefault(COLUMN_CREATED_ON, DESCENDING );
 
         return builder.buildSettings();
 
@@ -1016,7 +1016,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         builder.filterOn(true, true, true);
         builder.tableOrderEnabled(true);
-        builder.tableOrderDefault(COLUMN_TASKID, ASCENDING);
+        builder.tableOrderDefault(COLUMN_TASK_ID, ASCENDING);
 
         FilterSettings varTableSettings =builder.buildSettings();
         varTableSettings.setTablePageSize(-1);
