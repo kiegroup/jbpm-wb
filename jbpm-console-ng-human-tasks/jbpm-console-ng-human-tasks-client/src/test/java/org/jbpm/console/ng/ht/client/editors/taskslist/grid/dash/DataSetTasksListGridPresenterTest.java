@@ -125,7 +125,7 @@ public class DataSetTasksListGridPresenterTest {
         presenter.getData(new Range(0, 5));
 
         verify(dataSetQueryHelperMock).setLastSortOrder(SortOrder.ASCENDING);
-        verify(dataSetQueryHelperMock).setLastOrderedColumn(COLUMN_CREATEDON);
+        verify(dataSetQueryHelperMock).setLastOrderedColumn(COLUMN_CREATED_ON);
         verify(dataSetQueryHelperMock).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
         verify(dataSetDomainDataQueryHelperMock, never()).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
     }
@@ -171,15 +171,15 @@ public class DataSetTasksListGridPresenterTest {
 
         when(dataSetMock.getRowCount()).thenReturn(1);//1 task
         //Task summary creation
-        when(dataSetQueryHelperMock.getColumnLongValue(dataSetMock, COLUMN_TASKID, 0)).thenReturn(Long.valueOf(1));
+        when(dataSetQueryHelperMock.getColumnLongValue(dataSetMock, COLUMN_TASK_ID, 0)).thenReturn(Long.valueOf(1));
 
         when(dataSetTaskVarMock.getRowCount()).thenReturn(2); //two domain variables associated
-        when(dataSetDomainDataQueryHelperMock.getColumnLongValue(dataSetTaskVarMock, COLUMN_TASKID, 0)).thenReturn(Long.valueOf(1));
+        when(dataSetDomainDataQueryHelperMock.getColumnLongValue(dataSetTaskVarMock, COLUMN_TASK_ID, 0)).thenReturn(Long.valueOf(1));
         String taskVariable1 = "var1";
         when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_NAME, 0)).thenReturn(taskVariable1);
         when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_VALUE, 0)).thenReturn("value1");
 
-        when(dataSetDomainDataQueryHelperMock.getColumnLongValue(dataSetTaskVarMock, COLUMN_TASKID, 1)).thenReturn(Long.valueOf(1));
+        when(dataSetDomainDataQueryHelperMock.getColumnLongValue(dataSetTaskVarMock, COLUMN_TASK_ID, 1)).thenReturn(Long.valueOf(1));
         String taskVariable2 = "var2";
         when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_NAME, 1)).thenReturn(taskVariable2);
         when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_VALUE, 1)).thenReturn("value2");
@@ -199,7 +199,7 @@ public class DataSetTasksListGridPresenterTest {
         verify(dataSetDomainDataQueryHelperMock).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
 
         when(dataSetTaskVarMock.getRowCount()).thenReturn(1); //one domain variables associated
-        when(dataSetDomainDataQueryHelperMock.getColumnLongValue(dataSetTaskVarMock, COLUMN_TASKID, 0)).thenReturn(Long.valueOf(1));
+        when(dataSetDomainDataQueryHelperMock.getColumnLongValue(dataSetTaskVarMock, COLUMN_TASK_ID, 0)).thenReturn(Long.valueOf(1));
         taskVariable1 = "varTest1";
         when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_NAME, 0)).thenReturn(taskVariable1);
         when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_VALUE, 0)).thenReturn("value1");

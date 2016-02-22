@@ -27,9 +27,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DataSetDefsBootstrapTest {
@@ -69,7 +69,7 @@ public class DataSetDefsBootstrapTest {
     }
 
     @Test
-    public void noColumnAliasPresentInHumanTaskWithUserDataset() {
+    public void columnAliasPresentInHumanTaskWithUserDataSet() {
         dataSetsBootstrap.registerDataSetDefinitions();
         ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
         verify(dataSetDefRegistryMock, times(4)).registerDataSetDef(argument.capture());
@@ -78,8 +78,12 @@ public class DataSetDefsBootstrapTest {
 
         String strSQL = ((SQLDataSetDef) dsList.get(1)).getDbSQL();
         String[] columnsStr = strSQL.substring(strSQL.indexOf("select") + 6, strSQL.indexOf("from")).split(",");
-        for(String columnStr: columnsStr){
-            assertTrue(columnStr.trim().split(" ").length == 1 );
+        for (String columnStr : columnsStr) {
+            final String[] split = columnStr.trim().split(" ");
+            assertEquals(3, split.length);
+            assertEquals("as", split[1]);
+            final String alias = split[0].substring(split[0].indexOf(".") + 1).toUpperCase();
+            assertEquals(split[2], "\"" + alias + "\"");
         }
 
     }

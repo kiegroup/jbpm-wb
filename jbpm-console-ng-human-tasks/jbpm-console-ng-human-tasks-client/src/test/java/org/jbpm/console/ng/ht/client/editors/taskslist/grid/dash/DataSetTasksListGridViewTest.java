@@ -54,6 +54,7 @@ import org.uberfire.mvp.Command;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class DataSetTasksListGridViewTest {
@@ -131,7 +132,7 @@ public class DataSetTasksListGridViewTest {
             if(op.getType().equals(DataSetOpType.FILTER)){
                 List<ColumnFilter> columnFilters = ((DataSetFilter)op).getColumnFilterList();
                 for(ColumnFilter columnFilter : columnFilters){
-                    assertTrue((columnFilter).toString().contains("actualOwner is_null"));
+                    assertTrue((columnFilter).toString().contains(COLUMN_ACTUAL_OWNER + " is_null"));
                 }
             }
         }
@@ -145,7 +146,7 @@ public class DataSetTasksListGridViewTest {
             if(op.getType().equals(DataSetOpType.FILTER)){
                 List<ColumnFilter> columnFilters = ((DataSetFilter)op).getColumnFilterList();
                 for(ColumnFilter columnFilter : columnFilters){
-                    assertTrue((columnFilter).toString().contains("name = Test"));
+                    assertTrue((columnFilter).toString().contains(COLUMN_NAME + " = Test"));
                 }
             }
         }
