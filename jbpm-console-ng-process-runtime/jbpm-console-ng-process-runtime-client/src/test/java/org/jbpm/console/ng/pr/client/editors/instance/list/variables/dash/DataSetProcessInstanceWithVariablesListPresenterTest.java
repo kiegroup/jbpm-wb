@@ -153,7 +153,7 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
     public void isFilteredByProcessIdTest() {
         final String processId = "testProc";
         final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_PROCESSID, processId));
+        filter.addFilterColumn(equalsTo(COLUMN_PROCESS_ID, processId));
 
         final String filterProcessId = presenter.isFilteredByProcessId(Collections.<DataSetOp>singletonList(filter));
         assertEquals(processId, filterProcessId);
@@ -163,7 +163,7 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
     public void isFilteredByProcessIdInvalidTest() {
         final String processId = "testProc";
         final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(likeTo(COLUMN_PROCESSID, processId));
+        filter.addFilterColumn(likeTo(COLUMN_PROCESS_ID, processId));
 
         final String filterProcessId = presenter.isFilteredByProcessId(Collections.<DataSetOp>singletonList(filter));
         assertNull(filterProcessId);
@@ -251,11 +251,11 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
     public void getDomainSpecifDataForProcessInstancesTest() {
         presenter.setAddingDefaultFilters(false);
         final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_PROCESSID, "testProc"));
+        filter.addFilterColumn(equalsTo(COLUMN_PROCESS_ID, "testProc"));
         filterSettings.getDataSetLookup().addOperation(filter);
 
         when(dataSet.getRowCount()).thenReturn(1);//1 process instance
-        when(dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESSINSTANCEID, 0)).thenReturn(Long.valueOf(1));
+        when(dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESS_INSTANCE_ID, 0)).thenReturn(Long.valueOf(1));
 
         when(dataSetProcessVar.getRowCount()).thenReturn(2); //two domain variables associated
         when(dataSetQueryHelperDomainSpecific.getColumnLongValue(dataSetProcessVar, PROCESS_INSTANCE_ID, 0)).thenReturn(Long.valueOf(1));
@@ -366,7 +366,7 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
         final List<ColumnFilter> filters = presenter.getColumnFilters("1");
 
         assertEquals(1, filters.size());
-        assertEquals(COLUMN_PROCESSINSTANCEID, filters.get(0).getColumnId());
+        assertEquals(COLUMN_PROCESS_INSTANCE_ID, filters.get(0).getColumnId());
     }
 
     @Test
@@ -374,7 +374,7 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
         final List<ColumnFilter> filters = presenter.getColumnFilters(" 1 ");
 
         assertEquals(1, filters.size());
-        assertEquals(COLUMN_PROCESSINSTANCEID, filters.get(0).getColumnId());
+        assertEquals(COLUMN_PROCESS_INSTANCE_ID, filters.get(0).getColumnId());
     }
 
     @Test
@@ -382,9 +382,9 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
         final List<ColumnFilter> filters = presenter.getColumnFilters("processName");
 
         assertEquals(4, filters.size());
-        assertEquals(COLUMN_PROCESSID, filters.get(0).getColumnId());
-        assertEquals(COLUMN_PROCESSNAME, filters.get(1).getColumnId());
-        assertEquals(COLUMN_PROCESSINSTANCEDESCRIPTION, filters.get(2).getColumnId());
+        assertEquals(COLUMN_PROCESS_ID, filters.get(0).getColumnId());
+        assertEquals(COLUMN_PROCESS_NAME, filters.get(1).getColumnId());
+        assertEquals(COLUMN_PROCESS_INSTANCE_DESCRIPTION, filters.get(2).getColumnId());
         assertEquals(COLUMN_IDENTITY, filters.get(3).getColumnId());
     }
 

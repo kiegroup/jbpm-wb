@@ -57,14 +57,10 @@ public class ProcessInstanceListPresenterTest {
     @Mock
     private DataSet dataSetMock;
     
-
-
     private MyDataSetProcessInstanceWithVariablesListPresenter presenter;
 
-    
     @Before
     public void setupMocks() {
-
         when(dataSetQueryHelperMock.getCurrentTableSettings()).thenReturn(filterSettingsMock);
         when(viewMock.getListGrid()).thenReturn(tableMock);
         when(tableMock.getPageSize()).thenReturn(10);
@@ -105,9 +101,5 @@ public class ProcessInstanceListPresenterTest {
         presenter.getData(range);
      
     }
-    
-   
-    
 
 }
-
