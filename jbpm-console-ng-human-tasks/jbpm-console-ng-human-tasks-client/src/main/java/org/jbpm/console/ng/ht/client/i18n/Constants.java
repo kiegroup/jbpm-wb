@@ -61,6 +61,8 @@ public interface Constants extends Messages {
 
     String Complete();
 
+    String Open();
+
     String Release();
 
     String Claim();

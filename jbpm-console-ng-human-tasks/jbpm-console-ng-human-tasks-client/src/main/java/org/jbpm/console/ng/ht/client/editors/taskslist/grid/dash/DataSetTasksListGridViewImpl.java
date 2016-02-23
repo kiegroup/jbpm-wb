@@ -478,7 +478,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         }));
 
-        cells.add(new CompleteActionHasCell(constants.Complete(), new ActionCell.Delegate<TaskSummary>() {
+        cells.add(new CompleteActionHasCell(constants.Open(), new ActionCell.Delegate<TaskSummary>() {
             @Override
             public void execute(TaskSummary task) {
                 placeManager.goTo("Task Details Multi");
@@ -486,6 +486,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                 if(task.getStatus().equals("Completed") && task.isLogOnly()){
                     logOnly = true;
                 }
+                selectedRow = -1;
                 taskSelected.fire(new TaskSelectionEvent(task.getTaskId(), task.getName(), task.isForAdmin(), logOnly));
             }
         }));
@@ -525,7 +526,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                 public void render(Context context, TaskSummary value, SafeHtmlBuilder sb) {
                     if (value.getActualOwner() != null && value.getStatus().equals("InProgress")) {
                         SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Complete()+"'>"+constants.Complete()+"</a>");
+                        mysb.appendHtmlConstant("<a href='javascript:;' class='btn btn-mini' style='margin-right:5px;' title='"+constants.Open()+"'>"+constants.Open()+"</a>");
                         sb.append(mysb.toSafeHtml());
                     }
                 }
