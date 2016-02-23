@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.event.Observes;
 
+import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.view.client.AsyncDataProvider;
@@ -148,22 +149,20 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
         }
     }
 
-    protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
+    protected void onSearchEvent(@Observes SearchEvent searchEvent) {
         String filterString = searchEvent.getFilter();
-        if(filterString!=null && filterString.trim().length()>0){
-            textSearchStr=filterString.toLowerCase();
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put( "textSearch", textSearchStr );
-            if ( currentFilter != null ) {
-                currentFilter.setParams( params );
-            }
+        textSearchStr = filterString == null ? "" : filterString.toLowerCase();
+        final Map<String, Object> params = new HashMap<String, Object>();
+        params.put("textSearch", textSearchStr);
+        if (currentFilter != null) {
+            currentFilter.setParams(params);
         }
 
-        HasData<T> next = dataProvider.getDataDisplays().iterator().next();
-        if ( filterString.equals( "" ) ) {
-            next.setVisibleRangeAndClearData( next.getVisibleRange(), true );
+        final HasData<T> next = dataProvider.getDataDisplays().iterator().next();
+        if (Strings.isNullOrEmpty(filterString)) {
+            next.setVisibleRangeAndClearData(next.getVisibleRange(), true);
         } else {
-            next.setVisibleRangeAndClearData( new Range( 0, next.getVisibleRange().getLength() ), true );
+            next.setVisibleRangeAndClearData(new Range(0, next.getVisibleRange().getLength()), true);
         }
 
     }
@@ -189,9 +188,14 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
     }
 
     @OnClose
-   public void onClose() {
-       if(refreshTimer!=null) {
-           refreshTimer.cancel();
-       }
-   }
+    public void onClose() {
+        if (refreshTimer != null) {
+            refreshTimer.cancel();
+        }
+    }
+
+    public String getTextSearchStr(){
+        return textSearchStr;
+    }
+
 }

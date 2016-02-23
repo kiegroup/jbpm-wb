@@ -17,17 +17,22 @@ package org.jbpm.console.ng.gc.client.list.base;
 
 
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 
-@RunWith( GwtMockitoTestRunner.class )
+@RunWith(GwtMockitoTestRunner.class)
 public class AbstractListPresenterTest {
 
     @Mock
@@ -36,40 +41,46 @@ public class AbstractListPresenterTest {
     @Mock
     private AbstractListView.ListView viewMock;
 
+    @Mock
+    HasData next;
+
     private AbstractListPresenter testListPresenter;
 
     @Before
     public void setupMocks() {
-        testListPresenter = spy( AbstractScreenListPresenter.class );
-        when( testListPresenter.getListView() ).thenReturn( viewMock );
+        testListPresenter = spy(AbstractScreenListPresenter.class);
+        when(testListPresenter.getListView()).thenReturn(viewMock);
+        when(next.getVisibleRange()).thenReturn(new Range(1, 1));
+        testListPresenter.initDataProvider();
+        testListPresenter.getDataProvider().addDataDisplay(next);
     }
 
     @Test
     public void autoRefreshDisabledByDefaultTest() {
-        testListPresenter.setRefreshTimer( null );
+        testListPresenter.setRefreshTimer(null);
         testListPresenter.updateRefreshTimer();
 
-        assertNotNull( testListPresenter.getRefreshTimer() );
-        assertFalse( testListPresenter.isAutoRefreshEnabled() );
+        assertNotNull(testListPresenter.getRefreshTimer());
+        assertFalse(testListPresenter.isAutoRefreshEnabled());
 
-        testListPresenter.setRefreshTimer( timer );
-        testListPresenter.setAutoRefreshSeconds( 60 );
+        testListPresenter.setRefreshTimer(timer);
+        testListPresenter.setAutoRefreshSeconds(60);
         testListPresenter.updateRefreshTimer();
 
-        assertFalse( testListPresenter.isAutoRefreshEnabled() );
-        verify( timer ).cancel();
+        assertFalse(testListPresenter.isAutoRefreshEnabled());
+        verify(timer).cancel();
     }
 
     @Test
     public void autoRefreshEnabledScheduleTimerTest() {
-        testListPresenter.setAutoRefreshEnabled( true );
-        testListPresenter.setAutoRefreshSeconds( 60 );
-        testListPresenter.setRefreshTimer( timer );
+        testListPresenter.setAutoRefreshEnabled(true);
+        testListPresenter.setAutoRefreshSeconds(60);
+        testListPresenter.setRefreshTimer(timer);
         testListPresenter.updateRefreshTimer();
 
-        assertNotNull( testListPresenter.getRefreshTimer() );
-        verify( timer ).cancel();
-        verify( timer ).schedule( 60000 );
+        assertNotNull(testListPresenter.getRefreshTimer());
+        verify(timer).cancel();
+        verify(timer).schedule(60000);
     }
 
 
@@ -77,7 +88,34 @@ public class AbstractListPresenterTest {
     public void restoreTabsTest() {
         testListPresenter.onRestoreDefaultFilters();
 
-        verify( viewMock ).showRestoreDefaultFilterConfirmationPopup();
+        verify(viewMock).showRestoreDefaultFilterConfirmationPopup();
     }
 
+    @Test
+    public void testEmptySearchString() {
+        final SearchEvent searchEvent = new SearchEvent("");
+
+        testListPresenter.onSearchEvent(searchEvent);
+
+        final ArgumentCaptor<Range> captor = ArgumentCaptor.forClass(Range.class);
+        verify(next).setVisibleRangeAndClearData(captor.capture(), eq(true));
+        final Range range = captor.getValue();
+        assertEquals(1, range.getStart());
+        assertEquals(1, range.getLength());
+        assertEquals(searchEvent.getFilter(), testListPresenter.getTextSearchStr());
+    }
+
+    @Test
+    public void testSearchString() {
+        final SearchEvent searchEvent = new SearchEvent(RandomStringUtils.random(10));
+
+        testListPresenter.onSearchEvent(searchEvent);
+
+        final ArgumentCaptor<Range> captor = ArgumentCaptor.forClass(Range.class);
+        verify(next).setVisibleRangeAndClearData(captor.capture(), eq(true));
+        final Range range = captor.getValue();
+        assertEquals(0, range.getStart());
+        assertEquals(1, range.getLength());
+        assertEquals(searchEvent.getFilter().toLowerCase(), testListPresenter.getTextSearchStr());
+    }
 }

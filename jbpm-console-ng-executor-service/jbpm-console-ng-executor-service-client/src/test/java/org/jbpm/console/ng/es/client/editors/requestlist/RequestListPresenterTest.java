@@ -17,6 +17,7 @@ package org.jbpm.console.ng.es.client.editors.requestlist;
 
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
@@ -25,6 +26,7 @@ import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +36,7 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 
 import static org.dashbuilder.dataset.sort.SortOrder.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.jbpm.console.ng.es.model.RequestDataSetConstants.*;
 
@@ -132,6 +135,26 @@ public class RequestListPresenterTest {
         builder.tableWidth(1000);
 
         return  builder.buildSettings();
+    }
+
+    @Test
+    public void testEmptySearchString() {
+        final SearchEvent searchEvent = new SearchEvent("");
+
+        presenter.onSearchEvent(searchEvent);
+
+        verify(viewMock).applyFilterOnPresenter(anyString());
+        assertEquals(searchEvent.getFilter(), presenter.getTextSearchStr());
+    }
+
+    @Test
+    public void testSearchString() {
+        final SearchEvent searchEvent = new SearchEvent(RandomStringUtils.random(10));
+
+        presenter.onSearchEvent(searchEvent);
+
+        verify(viewMock).applyFilterOnPresenter(anyString());
+        assertEquals(searchEvent.getFilter(), presenter.getTextSearchStr());
     }
 
 }
