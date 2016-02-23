@@ -25,6 +25,7 @@ import java.util.Set;
 import com.google.gwt.dev.util.collect.HashSet;
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
@@ -36,6 +37,7 @@ import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.jbpm.console.ng.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.service.ProcessInstanceService;
@@ -315,6 +317,26 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
     public static ProcessInstanceSummary createProcessInstanceSummary(int key, int status) {
         return new ProcessInstanceSummary(key, "procTest", "test.0.1", "Test Proc", "1.0",
                 status, new Date(), "intiatior", "procTestInstanceDesc", "cKey", Long.valueOf(0));
+    }
+
+    @Test
+    public void testEmptySearchString() {
+        final SearchEvent searchEvent = new SearchEvent("");
+
+        presenter.onSearchEvent(searchEvent);
+
+        verify(viewMock).applyFilterOnPresenter(anyString());
+        assertEquals(searchEvent.getFilter(), presenter.getTextSearchStr());
+    }
+
+    @Test
+    public void testSearchString() {
+        final SearchEvent searchEvent = new SearchEvent(RandomStringUtils.random(10));
+
+        presenter.onSearchEvent(searchEvent);
+
+        verify(viewMock).applyFilterOnPresenter(anyString());
+        assertEquals(searchEvent.getFilter(), presenter.getTextSearchStr());
     }
 
 }

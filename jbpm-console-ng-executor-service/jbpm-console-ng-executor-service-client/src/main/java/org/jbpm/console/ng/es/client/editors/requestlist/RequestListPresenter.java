@@ -309,13 +309,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     @Override
     protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
         textSearchStr = searchEvent.getFilter();
-        if ( textSearchStr != null && textSearchStr.trim().length() > 0 ) {
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put( "textSearch", textSearchStr );
-            dataSetQueryHelper.getCurrentTableSettings().getKey();
-
-            view.applyFilterOnPresenter( dataSetQueryHelper.getCurrentTableSettings().getKey() );
-        }
+        view.applyFilterOnPresenter( dataSetQueryHelper.getCurrentTableSettings().getKey() );
     }
 
     @Override
