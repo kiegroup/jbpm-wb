@@ -55,7 +55,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class DataSetTaskListGridViewTest {
+public class DataSetTasksListGridViewTest {
 
     private CallerMock<UserPreferencesService> callerMockUserPreferencesService;
 

@@ -23,6 +23,7 @@ import java.util.Set;
 
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetOp;
@@ -32,6 +33,7 @@ import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.junit.Before;
@@ -49,7 +51,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class DataSetTaskListGridPresenterTest {
+public class DataSetTasksListGridPresenterTest {
 
     private static final Long TASK_ID = 1L;
     private static final String USR_ID = "admin";
@@ -230,6 +232,26 @@ public class DataSetTaskListGridPresenterTest {
             assertNotNull(summary);
             assertEquals(HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet), summary.isForAdmin());
         }
+    }
+
+    @Test
+    public void testEmptySearchString() {
+        final SearchEvent searchEvent = new SearchEvent("");
+
+        presenter.onSearchEvent(searchEvent);
+
+        verify(viewMock).applyFilterOnPresenter(anyString());
+        assertEquals(searchEvent.getFilter(), presenter.getTextSearchStr());
+    }
+
+    @Test
+    public void testSearchString() {
+        final SearchEvent searchEvent = new SearchEvent(RandomStringUtils.random(10));
+
+        presenter.onSearchEvent(searchEvent);
+
+        verify(viewMock).applyFilterOnPresenter(anyString());
+        assertEquals(searchEvent.getFilter(), presenter.getTextSearchStr());
     }
 
 }
