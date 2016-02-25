@@ -46,11 +46,10 @@ import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
-import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
-import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.jbpm.console.ng.gc.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.console.ng.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
+import org.jbpm.console.ng.pr.client.perspectives.DataSetProcessInstancesWithVariablesPerspective;
 import org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
@@ -65,6 +64,8 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
+import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
+import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.uberfire.lifecycle.OnFocus;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
@@ -177,22 +178,16 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                         dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                     }
 
-                    if ( textSearchStr != null && textSearchStr.trim().length() > 0 ) {
-
-                        DataSetFilter filter = new DataSetFilter();
-                        List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-                        filters.add( likeTo( COLUMN_PROCESSNAME, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( COLUMN_PROCESSINSTANCEDESCRIPTION, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( COLUMN_IDENTITY, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filter.addFilterColumn( OR( filters ) );
-
-                        if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {
-                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
+                    final List<ColumnFilter> filters = getColumnFilters(textSearchStr);
+                    if (filters.isEmpty() == false) {
+                        if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
+                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(OR(filters));
                         } else {
-                            currentTableSettings.getDataSetLookup().addOperation( filter );
+                            final DataSetFilter filter = new DataSetFilter();
+                            filter.addFilterColumn(OR(filters));
+                            currentTableSettings.getDataSetLookup().addOperation(filter);
                         }
                     }
-
 
                     dataSetQueryHelper.setCurrentTableSettings( currentTableSettings );
                     dataSetQueryHelper.setDataSetHandler( currentTableSettings );
@@ -204,6 +199,22 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
         } catch ( Exception e ) {
             errorPopup.showMessage(Constants.INSTANCE.UnexpectedError(e.getMessage()));
         }
+    }
+
+    protected List<ColumnFilter> getColumnFilters(final String searchString) {
+        final List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
+        if (searchString != null && searchString.trim().length() > 0) {
+            try {
+                final Long instanceId = Long.valueOf(searchString.trim());
+                filters.add(equalsTo(COLUMN_PROCESSINSTANCEID, instanceId));
+            } catch (NumberFormatException ex) {
+                filters.add(equalsTo(COLUMN_PROCESSID, searchString));
+                filters.add(likeTo(COLUMN_PROCESSNAME, "%" + searchString.toLowerCase() + "%", false));
+                filters.add(likeTo(COLUMN_PROCESSINSTANCEDESCRIPTION, "%" + searchString.toLowerCase() + "%", false));
+                filters.add(likeTo(COLUMN_IDENTITY, "%" + searchString.toLowerCase() + "%", false));
+            }
+        }
+        return filters;
     }
 
     protected DataSetReadyCallback createDataSetDomainSpecificCallback( final int startRange, final int totalRowSize, final List<ProcessInstanceSummary> instances, final FilterSettings tableSettings ) {
@@ -360,7 +371,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
     @OnOpen
     public void onOpen() {
-        this.textSearchStr = place.getParameter("processName", "");
+        this.textSearchStr = place.getParameter(DataSetProcessInstancesWithVariablesPerspective.PROCESS_ID, "");
         refreshGrid();
     }
 

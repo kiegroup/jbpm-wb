@@ -37,6 +37,7 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 public class DataSetProcessInstancesWithVariablesPerspective extends AbstractPerspective {
 
     public static final String PERSPECTIVE_ID = "DataSet Process Instances With Variables";
+    public static final String PROCESS_ID = "processDefinitionId";
 
     @Inject
     private Event<SetSearchTextEvent> setSearchTextEvents;
@@ -48,7 +49,7 @@ public class DataSetProcessInstancesWithVariablesPerspective extends AbstractPer
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(ClosableSimpleWorkbenchPanelPresenter.class.getName());
         p.setName(PERSPECTIVE_ID);
         final DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(DataSetProcessInstanceWithVariablesListPresenter.SCREEN_ID);
-        defaultPlaceRequest.addParameter("processName", currentProcessDefinition);
+        defaultPlaceRequest.addParameter(PROCESS_ID, currentProcessDefinition);
         p.getRoot().addPart(new PartDefinitionImpl(defaultPlaceRequest));
         return p;
     }
@@ -60,7 +61,7 @@ public class DataSetProcessInstancesWithVariablesPerspective extends AbstractPer
 
     @OnStartup
     public void onStartup(final PlaceRequest place) {
-        this.currentProcessDefinition = place.getParameter("processName", "");
+        this.currentProcessDefinition = place.getParameter(PROCESS_ID, "");
         setSearchTextEvents.fire(new SetSearchTextEvent(currentProcessDefinition));
     }
 }

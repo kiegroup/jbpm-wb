@@ -16,10 +16,8 @@
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
@@ -51,8 +49,6 @@ import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
-import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
-import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.jbpm.console.ng.gc.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.console.ng.ht.client.editors.quicknewtask.QuickNewTaskPopup;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
@@ -64,6 +60,8 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
+import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
+import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.uberfire.mvp.Command;
 import org.uberfire.paging.PageResponse;
 import org.uberfire.workbench.model.menu.MenuFactory;
@@ -157,21 +155,15 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                         dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                     }
 
-                    if ( textSearchStr != null && textSearchStr.trim().length() > 0 ) {
-
-                        DataSetFilter filter = new DataSetFilter();
-                        List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-                        filters.add( likeTo( COLUMN_NAME, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( COLUMN_DESCRIPTION, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( COLUMN_PROCESSID, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filter.addFilterColumn( OR( filters ) );
-
-                        if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {
-                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
+                    final List<ColumnFilter> filters = getColumnFilters(textSearchStr);
+                    if (filters.isEmpty() == false) {
+                        if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
+                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(OR(filters));
                         } else {
-                            currentTableSettings.getDataSetLookup().addOperation( filter );
+                            final DataSetFilter filter = new DataSetFilter();
+                            filter.addFilterColumn(OR(filters));
+                            currentTableSettings.getDataSetLookup().addOperation(filter);
                         }
-                        textSearchStr = "";
                     }
                     dataSetQueryHelper.setDataSetHandler(currentTableSettings);
                     dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), createDataSetTaskCallback(visibleRange.getStart(), currentTableSettings));
@@ -181,6 +173,21 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
             errorPopup.showMessage(Constants.INSTANCE.UnexpectedError(e.getMessage()) );
         }
 
+    }
+
+    protected List<ColumnFilter> getColumnFilters(final String searchString) {
+        final List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
+        if (searchString != null && searchString.trim().length() > 0) {
+            try {
+                final Long taskId = Long.valueOf(searchString.trim());
+                filters.add(equalsTo(COLUMN_TASKID, taskId));
+            } catch (NumberFormatException ex) {
+                filters.add(likeTo(COLUMN_NAME, "%" + searchString.toLowerCase() + "%", false));
+                filters.add(likeTo(COLUMN_DESCRIPTION, "%" + searchString.toLowerCase() + "%", false));
+                filters.add(likeTo(COLUMN_PROCESSID, "%" + searchString.toLowerCase() + "%", false));
+            }
+        }
+        return filters;
     }
 
     protected DataSetReadyCallback createDataSetTaskCallback(final int startRange, final FilterSettings tableSettings){
