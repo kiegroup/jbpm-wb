@@ -102,7 +102,7 @@ public abstract class BaseProcessDefDetailsMultiPresenter implements RefreshMenu
 
     public void viewProcessInstances() {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest( DataSetProcessInstancesWithVariablesPerspective.PERSPECTIVE_ID );
-        placeRequestImpl.addParameter( "processName", processId );
+        placeRequestImpl.addParameter( DataSetProcessInstancesWithVariablesPerspective.PROCESS_ID, processId );
         placeManager.goTo( placeRequestImpl );
     }
 

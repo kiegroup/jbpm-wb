@@ -28,6 +28,7 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
@@ -252,6 +253,53 @@ public class DataSetTasksListGridPresenterTest {
 
         verify(viewMock).applyFilterOnPresenter(anyString());
         assertEquals(searchEvent.getFilter(), presenter.getTextSearchStr());
+    }
+
+    @Test
+    public void testSearchFilterEmpty() {
+        final List<ColumnFilter> filters = presenter.getColumnFilters("");
+
+        assertTrue(filters.isEmpty());
+    }
+
+    @Test
+    public void testSearchFilterNull() {
+        final List<ColumnFilter> filters = presenter.getColumnFilters(null);
+
+        assertTrue(filters.isEmpty());
+    }
+
+    @Test
+    public void testSearchFilterEmptyTrim() {
+        final List<ColumnFilter> filters = presenter.getColumnFilters("     ");
+
+        assertTrue(filters.isEmpty());
+    }
+
+    @Test
+    public void testSearchFilterId() {
+        final List<ColumnFilter> filters = presenter.getColumnFilters("1");
+
+        assertEquals(1, filters.size());
+        assertEquals(COLUMN_TASK_ID, filters.get(0).getColumnId());
+    }
+
+    @Test
+    public void testSearchFilterIdTrim() {
+        final List<ColumnFilter> filters = presenter.getColumnFilters(" 1 ");
+
+        assertEquals(1, filters.size());
+        assertEquals(COLUMN_TASK_ID, filters.get(0).getColumnId());
+    }
+
+    @Test
+    public void testSearchFilterString() {
+        final List<ColumnFilter> filters = presenter.getColumnFilters("taskName");
+
+        assertEquals(3, filters.size());
+        assertEquals(COLUMN_NAME, filters.get(0).getColumnId());
+        assertEquals(COLUMN_DESCRIPTION, filters.get(1).getColumnId());
+        assertEquals(COLUMN_PROCESS_ID, filters.get(2).getColumnId());
     }
 
 }

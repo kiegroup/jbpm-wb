@@ -31,6 +31,7 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
@@ -337,6 +338,54 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
 
         verify(viewMock).applyFilterOnPresenter(anyString());
         assertEquals(searchEvent.getFilter(), presenter.getTextSearchStr());
+    }
+
+    @Test
+    public void testSearchFilterEmpty() {
+        final List<ColumnFilter> filters = presenter.getColumnFilters("");
+
+        assertTrue(filters.isEmpty());
+    }
+
+    @Test
+    public void testSearchFilterNull() {
+        final List<ColumnFilter> filters = presenter.getColumnFilters(null);
+
+        assertTrue(filters.isEmpty());
+    }
+
+    @Test
+    public void testSearchFilterEmptyTrim() {
+        final List<ColumnFilter> filters = presenter.getColumnFilters("     ");
+
+        assertTrue(filters.isEmpty());
+    }
+
+    @Test
+    public void testSearchFilterId() {
+        final List<ColumnFilter> filters = presenter.getColumnFilters("1");
+
+        assertEquals(1, filters.size());
+        assertEquals(COLUMN_PROCESS_INSTANCE_ID, filters.get(0).getColumnId());
+    }
+
+    @Test
+    public void testSearchFilterIdTrim() {
+        final List<ColumnFilter> filters = presenter.getColumnFilters(" 1 ");
+
+        assertEquals(1, filters.size());
+        assertEquals(COLUMN_PROCESS_INSTANCE_ID, filters.get(0).getColumnId());
+    }
+
+    @Test
+    public void testSearchFilterString() {
+        final List<ColumnFilter> filters = presenter.getColumnFilters("processName");
+
+        assertEquals(4, filters.size());
+        assertEquals(COLUMN_PROCESS_ID, filters.get(0).getColumnId());
+        assertEquals(COLUMN_PROCESS_NAME, filters.get(1).getColumnId());
+        assertEquals(COLUMN_PROCESS_INSTANCE_DESCRIPTION, filters.get(2).getColumnId());
+        assertEquals(COLUMN_IDENTITY, filters.get(3).getColumnId());
     }
 
 }
