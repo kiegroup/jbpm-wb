@@ -95,14 +95,14 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @Inject
     private PlaceManager placeManager;
 
-    private String[] priorities = { "0 - High", "1", "2", "3", "4", "5 - Medium", "6", "7", "8", "9", "10 - Low" };
+    private String[] priorities = { "0 - " + constants.High(), "1", "2", "3", "4", "5 - " + constants.Medium(), "6", "7", "8", "9", "10 - " + constants.Low() };
 
     @Inject
     private Event<NotificationEvent> notification;
     // Commented out until we add the posibility of adding sub tasks
     // private String[] subTaskStrategies = {"NoAction", "EndParentOnAllSubTasksEnd", "SkipAllSubTasksOnParentSkip"};
 
-    private Constants constants = GWT.create( Constants.class );
+    private static Constants constants = Constants.INSTANCE;
 
     @Override
     public void init( TaskDetailsPresenter presenter ) {
