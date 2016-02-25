@@ -61,7 +61,7 @@ public abstract class BaseProcessDefDetailsMultiPresenterTest {
         verify(placeManager).goTo(captor.capture());
         final PlaceRequest request = captor.getValue();
         assertEquals(DataSetProcessInstancesWithVariablesPerspective.PERSPECTIVE_ID, request.getIdentifier());
-        assertEquals(process, request.getParameter("processName", null));
+        assertEquals(process, request.getParameter(DataSetProcessInstancesWithVariablesPerspective.PROCESS_ID, null));
     }
 
 }

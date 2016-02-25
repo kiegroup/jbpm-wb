@@ -155,21 +155,15 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                         dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                     }
 
-                    if ( textSearchStr != null && textSearchStr.trim().length() > 0 ) {
-
-                        DataSetFilter filter = new DataSetFilter();
-                        List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-                        filters.add(likeTo(COLUMN_NAME, "%" + textSearchStr.toLowerCase() + "%", false));
-                        filters.add(likeTo(COLUMN_DESCRIPTION, "%" + textSearchStr.toLowerCase() + "%", false));
-                        filters.add(likeTo(COLUMN_PROCESS_ID, "%" + textSearchStr.toLowerCase() + "%", false));
-                        filter.addFilterColumn( OR( filters ) );
-
-                        if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {
-                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
+                    final List<ColumnFilter> filters = getColumnFilters(textSearchStr);
+                    if (filters.isEmpty() == false) {
+                        if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
+                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(OR(filters));
                         } else {
-                            currentTableSettings.getDataSetLookup().addOperation( filter );
+                            final DataSetFilter filter = new DataSetFilter();
+                            filter.addFilterColumn(OR(filters));
+                            currentTableSettings.getDataSetLookup().addOperation(filter);
                         }
-                        textSearchStr = "";
                     }
                     dataSetQueryHelper.setDataSetHandler(currentTableSettings);
                     dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), createDataSetTaskCallback(visibleRange.getStart(), currentTableSettings));
@@ -179,6 +173,21 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
             errorPopup.showMessage(Constants.INSTANCE.UnexpectedError(e.getMessage()) );
         }
 
+    }
+
+    protected List<ColumnFilter> getColumnFilters(final String searchString) {
+        final List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
+        if (searchString != null && searchString.trim().length() > 0) {
+            try {
+                final Long taskId = Long.valueOf(searchString.trim());
+                filters.add(equalsTo(COLUMN_TASK_ID, taskId));
+            } catch (NumberFormatException ex) {
+                filters.add(likeTo(COLUMN_NAME, "%" + searchString.toLowerCase() + "%", false));
+                filters.add(likeTo(COLUMN_DESCRIPTION, "%" + searchString.toLowerCase() + "%", false));
+                filters.add(likeTo(COLUMN_PROCESS_ID, "%" + searchString.toLowerCase() + "%", false));
+            }
+        }
+        return filters;
     }
 
     protected DataSetReadyCallback createDataSetTaskCallback(final int startRange, final FilterSettings tableSettings){
