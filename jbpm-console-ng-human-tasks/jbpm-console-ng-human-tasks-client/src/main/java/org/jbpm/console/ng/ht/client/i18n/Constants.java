@@ -288,4 +288,6 @@ public interface Constants extends Messages {
     String CommentCannotBeEmpty();
 
     String CommentDeleted();
+
+    String TaskDetailsUpdatedForTaskId(Long taskId);
 }

@@ -128,7 +128,7 @@ public class TaskDetailsPresenter {
             taskOperationsService.call( new RemoteCallback<Void>() {
                 @Override
                 public void callback( Void nothing ) {
-                    view.displayNotification( "Task Details Updated for Task id = " + currentTaskId + ")" );
+                    view.displayNotification(constants.TaskDetailsUpdatedForTaskId(currentTaskId));
                     taskRefreshed.fire( new TaskRefreshedEvent( currentTaskId ) );
                     taskCalendarEvent.fire( new TaskCalendarEvent( currentTaskId ) );
                 }
