@@ -18,10 +18,8 @@ package org.jbpm.console.ng.bd.backend.server;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -33,13 +31,13 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-
 import org.guvnor.common.services.project.events.NewProjectEvent;
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.common.services.project.model.POM;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.Repository;
+import org.guvnor.structure.repositories.RepositoryEnvironmentConfigurations;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.server.config.ConfigGroup;
 import org.guvnor.structure.server.config.ConfigType;
@@ -47,23 +45,16 @@ import org.guvnor.structure.server.config.ConfigurationFactory;
 import org.guvnor.structure.server.config.ConfigurationService;
 import org.jbpm.console.ng.bd.api.Vfs;
 import org.jbpm.console.ng.bd.service.AdministrationService;
-
-
-
 import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
 import org.jbpm.console.ng.bd.service.DeploymentUnitProvider;
 import org.jbpm.console.ng.bd.service.Initializable;
-
-
 import org.jbpm.runtime.manager.impl.deploy.DeploymentDescriptorManager;
 import org.jbpm.services.api.DeploymentService;
 import org.jbpm.services.api.model.DeploymentUnit;
-
 import org.jbpm.services.cdi.Kjar;
 import org.kie.internal.runtime.conf.DeploymentDescriptor;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
@@ -129,14 +120,17 @@ public class AdministrationServiceImpl implements AdministrationService {
             repository = repositoryService.getRepository( repoAlias );
             if ( repository == null ) {
 
-                final Map<String, Object> env = new HashMap<String, Object>( 3 );
-                if ( repoUrl != null ) {
-                    env.put( "origin", repoUrl );
-                }
-                env.put( "username", userName );
-                env.put( "crypt:password", password );
+                final RepositoryEnvironmentConfigurations configurations = new RepositoryEnvironmentConfigurations();
 
-                repository = repositoryService.createRepository( "git", repoAlias, env );
+                if ( repoUrl != null ) {
+                    configurations.setOrigin( repoUrl );
+                }
+                configurations.setUserName( userName );
+                configurations.setPassword( password );
+
+                repository = repositoryService.createRepository( "git",
+                                                                 repoAlias,
+                                                                 configurations );
             }
         } catch ( Exception e ) {
             // don't fail on creation of repository, just log the cause
