@@ -16,6 +16,7 @@
 package org.jbpm.console.ng.wi.client.editors.deployment.descriptor;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 import org.jbpm.console.ng.wi.dd.model.DeploymentDescriptorModel;
 
 import org.kie.workbench.common.widgets.metadata.client.KieEditorView;
@@ -27,4 +28,8 @@ public interface DeploymentDescriptorView extends KieEditorView, IsWidget {
     void updateContent(final DeploymentDescriptorModel deploymentDescriptorModel);
 
     boolean confirmClose();
+
+    Widget getSourceEditor();
+
+    void setSource( String source );
 }

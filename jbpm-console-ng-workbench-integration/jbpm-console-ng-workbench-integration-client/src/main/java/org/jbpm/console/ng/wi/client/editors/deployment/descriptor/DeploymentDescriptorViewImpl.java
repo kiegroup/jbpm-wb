@@ -38,6 +38,8 @@ import org.jbpm.console.ng.wi.dd.model.ItemObjectModel;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.ext.widgets.common.client.ace.AceEditorMode;
+import org.uberfire.ext.widgets.core.client.editors.texteditor.TextEditorView;
 
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -269,6 +271,9 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
     @UiField
     CheckBox limitSerializationClassesCheckBox;
+
+    @Inject
+    private TextEditorView xmlViewer;
 
     public DeploymentDescriptorViewImpl() {
         initWidget( uiBinder.createAndBindUi( this ) );
@@ -1283,6 +1288,16 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
                 return;
             }
         }
+    }
+
+    @Override
+    public void setSource( String source ) {
+        xmlViewer.setContent( source, AceEditorMode.XML );
+    }
+
+    @Override
+    public Widget getSourceEditor() {
+        return xmlViewer;
     }
 
 }
