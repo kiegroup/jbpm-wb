@@ -181,9 +181,9 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
                         DataSetFilter filter = new DataSetFilter();
                         List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-                        filters.add( likeTo( COLUMN_PROCESSNAME, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( COLUMN_PROCESSINSTANCEDESCRIPTION, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( COLUMN_IDENTITY, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo(COLUMN_PROCESS_NAME, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add( likeTo(COLUMN_IDENTITY, "%" + textSearchStr.toLowerCase() + "%", false ) );
                         filter.addFilterColumn( OR( filters ) );
 
                         if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {
@@ -293,7 +293,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
                     if ( filter instanceof CoreFunctionFilter ) {
                         CoreFunctionFilter coreFilter = ( ( CoreFunctionFilter ) filter );
-                        if ( filter.getColumnId().toUpperCase().equals( COLUMN_PROCESSID.toUpperCase() ) &&
+                        if ( filter.getColumnId().toUpperCase().equals( COLUMN_PROCESS_ID.toUpperCase() ) &&
                                 ((CoreFunctionFilter) filter).getType() == CoreFunctionType.EQUALS_TO ) {
 
                             List parameters = coreFilter.getParameters();
@@ -326,17 +326,17 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
     private ProcessInstanceSummary createProcessInstanceSummaryFromDataSet( DataSet dataSet, int i ) {
         return new ProcessInstanceSummary(
-                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PROCESSINSTANCEID, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESSID, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_EXTERNALID, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESSNAME, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESSVERSION, i ),
+                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PROCESS_INSTANCE_ID, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESS_ID, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_EXTERNAL_ID, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESS_NAME, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESS_VERSION, i ),
                 dataSetQueryHelper.getColumnIntValue( dataSet, COLUMN_STATUS, i ),
                 dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_START, i ),
                 dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_IDENTITY, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESSINSTANCEDESCRIPTION, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_CORRELATIONKEY, i ),
-                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENTPROCESSINSTANCEID, i ) );
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESS_INSTANCE_DESCRIPTION, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_CORRELATION_KEY, i ),
+                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENT_PROCESS_INSTANCE_ID, i ) );
     }
 
 

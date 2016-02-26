@@ -16,10 +16,8 @@
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
@@ -51,8 +49,6 @@ import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
-import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
-import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.jbpm.console.ng.gc.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.console.ng.ht.client.editors.quicknewtask.QuickNewTaskPopup;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
@@ -64,6 +60,8 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
+import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
+import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.uberfire.mvp.Command;
 import org.uberfire.paging.PageResponse;
 import org.uberfire.workbench.model.menu.MenuFactory;
@@ -153,7 +151,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                         dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
                         dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
                     } else {
-                        dataSetQueryHelper.setLastOrderedColumn( COLUMN_CREATEDON );
+                        dataSetQueryHelper.setLastOrderedColumn(COLUMN_CREATED_ON);
                         dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                     }
 
@@ -161,9 +159,9 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
                         DataSetFilter filter = new DataSetFilter();
                         List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-                        filters.add( likeTo( COLUMN_NAME, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( COLUMN_DESCRIPTION, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( COLUMN_PROCESSID, "%" + textSearchStr.toLowerCase() + "%", false ) );
+                        filters.add(likeTo(COLUMN_NAME, "%" + textSearchStr.toLowerCase() + "%", false));
+                        filters.add(likeTo(COLUMN_DESCRIPTION, "%" + textSearchStr.toLowerCase() + "%", false));
+                        filters.add(likeTo(COLUMN_PROCESS_ID, "%" + textSearchStr.toLowerCase() + "%", false));
                         filter.addFilterColumn( OR( filters ) );
 
                         if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {
@@ -260,7 +258,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
         dataSetQueryHelperDomainSpecific.setDataSetHandler(variablesTableSettings);
         dataSetQueryHelperDomainSpecific.setCurrentTableSettings(variablesTableSettings);
-        dataSetQueryHelperDomainSpecific.setLastOrderedColumn(COLUMN_TASKID);
+        dataSetQueryHelperDomainSpecific.setLastOrderedColumn(COLUMN_TASK_ID);
         dataSetQueryHelperDomainSpecific.setLastSortOrder(SortOrder.ASCENDING);
 
         List<Comparable> tasksIds = new ArrayList<Comparable>();
@@ -268,7 +266,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
             tasksIds.add(task.getTaskId());
         }
         DataSetFilter filter = new DataSetFilter();
-        ColumnFilter filter1 = FilterFactory.equalsTo(COLUMN_TASK_VARIABLE_TASKID, tasksIds);
+        ColumnFilter filter1 = FilterFactory.equalsTo(COLUMN_TASK_VARIABLE_TASK_ID, tasksIds);
         filter.addFilterColumn(filter1);
         variablesTableSettings.getDataSetLookup().addOperation(filter);
 
@@ -283,7 +281,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                 if(dataSet.getRowCount()>0) {
                     Set<String> columns = new HashSet<String>();
                     for (int i = 0; i < dataSet.getRowCount(); i++) {
-                        Long taskId = dataSetQueryHelperDomainSpecific.getColumnLongValue(dataSet, COLUMN_TASKID, i);
+                        Long taskId = dataSetQueryHelperDomainSpecific.getColumnLongValue(dataSet, COLUMN_TASK_ID, i);
                         String variableName = dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSet,COLUMN_TASK_VARIABLE_NAME, i);
                         String variableValue = dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSet,COLUMN_TASK_VARIABLE_VALUE, i);
 
@@ -315,21 +313,21 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
     protected TaskSummary createTaskSummaryFromDataSet(final DataSet dataSet, int i) {
         return new TaskSummary(
-                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_TASKID, i ),
+                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_TASK_ID, i ),
                 dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_NAME, i ),
                 dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_DESCRIPTION, i ),
                 dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_STATUS, i ),
                 dataSetQueryHelper.getColumnIntValue(dataSet, COLUMN_PRIORITY, i),
-                dataSetQueryHelper.getColumnStringValue( dataSet,COLUMN_ACTUALOWNER, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_CREATEDBY, i ),
-                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_CREATEDON, i),
-                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_ACTIVATIONTIME, i),
-                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_DUEDATE, i),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_PROCESSID, i),
-                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESSSESSIONID, i),
-                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESSINSTANCEID, i),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_DEPLOYMENTID, i ),
-                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENTID, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_ACTUAL_OWNER, i ),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_CREATED_BY, i ),
+                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_CREATED_ON, i),
+                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_ACTIVATION_TIME, i),
+                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_DUE_DATE, i),
+                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_PROCESS_ID, i),
+                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESS_SESSION_ID, i),
+                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESS_INSTANCE_ID, i),
+                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_DEPLOYMENT_ID, i ),
+                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENT_ID, i ),
                 HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet.getUUID()));
     }
 
