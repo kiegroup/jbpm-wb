@@ -35,6 +35,7 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartTitleDecoration;
 import org.uberfire.client.annotations.WorkbenchPartView;
+import org.uberfire.client.views.pfly.multipage.PageImpl;
 import org.uberfire.ext.editor.commons.client.file.SaveOperationService;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.ext.widgets.common.client.callbacks.HasBusyIndicatorDefaultErrorCallback;
@@ -142,6 +143,23 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
         concurrentUpdateSessionInfo = null;
     }
 
+    protected void addSourcePage() {
+
+        addPage( new PageImpl( view.getSourceEditor(),
+                CommonConstants.INSTANCE.SourceTabTitle() ) {
+            @Override
+            public void onFocus() {
+                onSourceTabSelected();
+            }
+
+            @Override
+            public void onLostFocus() {
+
+            }
+
+        } );
+    }
+
     @Override
     public void onSourceTabSelected() {
         view.updateContent(model);
@@ -151,6 +169,10 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
                 updateSource( source );
             }
         } ).toSource( versionRecordManager.getCurrentPath(), model );
+    }
+
+    protected void updateSource(String source) {
+        view.setSource( source );
     }
 
     @WorkbenchPartView
