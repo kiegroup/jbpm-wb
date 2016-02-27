@@ -1039,5 +1039,43 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return genericColumn;
     }
 
+    public void resetDefaultFilterTitleAndDescription() {
+
+        HashMap<String, Object> tabSettingsValues = null;
+
+        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(DATASET_TASK_LIST_PREFIX + "_0");
+        if (tabSettingsValues != null) {
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Active());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterActive());
+            filterPagedTable.saveTabSettings(DATASET_TASK_LIST_PREFIX + "_0", tabSettingsValues);
+        }
+
+        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(DATASET_TASK_LIST_PREFIX + "_1");
+        if (tabSettingsValues != null) {
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Personal());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterPersonal());
+            filterPagedTable.saveTabSettings(DATASET_TASK_LIST_PREFIX + "_1", tabSettingsValues);
+        }
+
+        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(DATASET_TASK_LIST_PREFIX + "_2");
+        if (tabSettingsValues != null) {
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Group());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterGroup());
+            filterPagedTable.saveTabSettings(DATASET_TASK_LIST_PREFIX + "_2", tabSettingsValues);
+        }
+
+        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(DATASET_TASK_LIST_PREFIX + "_3");
+        if (tabSettingsValues != null) {
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.All());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterAll());
+            filterPagedTable.saveTabSettings(DATASET_TASK_LIST_PREFIX + "_3", tabSettingsValues);
+        }
+        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(DATASET_TASK_LIST_PREFIX + "_4");
+        if (tabSettingsValues != null) {
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Task_Admin());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterTaskAdmin());
+            filterPagedTable.saveTabSettings(DATASET_TASK_LIST_PREFIX + "_4", tabSettingsValues);
+        }
+    }
 
 }

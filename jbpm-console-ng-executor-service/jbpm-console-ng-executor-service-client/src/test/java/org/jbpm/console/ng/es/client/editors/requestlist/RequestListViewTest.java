@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
@@ -26,7 +27,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -36,6 +39,12 @@ public class RequestListViewTest {
 
     @Mock
     protected ExtendedPagedTable<RequestSummary> currentListGrid;
+
+    @Mock
+    FilterPagedTable filterPagedTableMock;
+
+    @Mock
+    MultiGridPreferencesStore multiGridPreferencesStoreMock;
 
     @InjectMocks
     private RequestListViewImpl view;
@@ -56,6 +65,15 @@ public class RequestListViewTest {
         view.initColumns( currentListGrid );
 
         verify( currentListGrid ).addColumns( anyList() );
+    }
+
+    @Test
+    public void setDefaultFilterTitleAndDescriptionTest() {
+        when(filterPagedTableMock.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStoreMock);
+        view.resetDefaultFilterTitleAndDescription();
+
+        verify(filterPagedTableMock, times(7)).getMultiGridPreferencesStore();
+        verify(filterPagedTableMock, times(7)).saveTabSettings(anyString(), any(HashMap.class));
     }
 
 }

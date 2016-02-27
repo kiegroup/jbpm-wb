@@ -518,5 +518,58 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         filterPagedTable.saveNewRefreshInterval( newValue );
     }
 
+    public void resetDefaultFilterTitleAndDescription() {
+
+        HashMap<String, Object> tabSettingsValues = null;
+
+        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_0");
+        if (tabSettingsValues != null) {
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.All());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterAll());
+            filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_0", tabSettingsValues);
+        }
+
+        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_1");
+        if (tabSettingsValues != null) {
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Queued());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterQueued());
+            filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_0", tabSettingsValues);
+        }
+
+        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_2");
+        if (tabSettingsValues != null) {
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Running());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterRunning());
+            filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_2", tabSettingsValues);
+        }
+
+        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_3");
+        if (tabSettingsValues != null) {
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Retrying());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterRetrying());
+            filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_3", tabSettingsValues);
+        }
+
+        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_4");
+        if (tabSettingsValues != null) {
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Error());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterError());
+            filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_4", tabSettingsValues);
+        }
+
+        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_5");
+        if (tabSettingsValues != null) {
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Completed());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterCompleted());
+            filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_5", tabSettingsValues);
+        }
+
+        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_6");
+        if (tabSettingsValues != null) {
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Cancelled());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterCancelled());
+            filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_6", tabSettingsValues);
+        }
+    }
 
 }
