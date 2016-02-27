@@ -133,7 +133,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
                 if ( existingGrids != null && existingGrids.size() > 0 ) {
                     String key;
-
+                    resetDefaultFilterTitleAndDescription();
                     presenter.setAddingDefaultFilters( true );
                     for ( int i = 0; i < existingGrids.size(); i++ ) {
                         key = existingGrids.get( i );
@@ -296,4 +296,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public void setPreferencesService(Caller<UserPreferencesService> preferencesService){
         this.preferencesService = preferencesService;
     }
+
+    public void resetDefaultFilterTitleAndDescription(){
+    }
+
 }
