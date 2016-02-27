@@ -39,7 +39,7 @@ import org.uberfire.mvp.Command;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-@RunWith( GwtMockitoTestRunner.class )
+@RunWith(GwtMockitoTestRunner.class)
 public class DataSetProcessInstanceWithVariablesListViewTest {
 
     @Mock
@@ -67,38 +67,46 @@ public class DataSetProcessInstanceWithVariablesListViewTest {
 
         view = new ProcessInstancesWithVariableListViewExtension();
         view.setUpMocks(currentListGrid, filterPagedTable, dataSetEditorManager, presenter);
+        when(filterPagedTable.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStore);
 
     }
 
-        @Test
+    @Test
     public void testDataStoreNameIsSet() {
-        when (gridPreferencesStore.getColumnPreferences()).thenReturn(new ArrayList<GridColumnPreference>());
+        when(gridPreferencesStore.getColumnPreferences()).thenReturn(new ArrayList<GridColumnPreference>());
         when(currentListGrid.getGridPreferencesStore()).thenReturn(gridPreferencesStore);
-        doAnswer( new Answer() {
+        doAnswer(new Answer() {
             @Override
-            public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[ 0 ];
-                for ( ColumnMeta columnMeta : columns ) {
-                    assertNotNull( columnMeta.getColumn().getDataStoreName() );
+            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+                final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[0];
+                for (ColumnMeta columnMeta : columns) {
+                    assertNotNull(columnMeta.getColumn().getDataStoreName());
                 }
                 return null;
             }
-        } ).when(currentListGrid).addColumns(anyList());
+        }).when(currentListGrid).addColumns(anyList());
 
 
-        view.initColumns( currentListGrid );
+        view.initColumns(currentListGrid);
 
-        verify( currentListGrid ).addColumns( anyList() );
+        verify(currentListGrid).addColumns(anyList());
     }
 
     @Test
     public void testInitDefaultFilters() {
-        when(filterPagedTable.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStore);
 
-        view.initDefaultFilters(new GridGlobalPreferences( "testGrid", new ArrayList<String>(),new ArrayList<String>()), null);
+        view.initDefaultFilters(new GridGlobalPreferences("testGrid", new ArrayList<String>(), new ArrayList<String>()), null);
 
-        verify(filterPagedTable,times(3)).addTab((ExtendedPagedTable) any(), anyString(), (Command) any());
-        verify(filterPagedTable,times(3)).saveNewTabSettings(anyString(), (HashMap) any());
+        verify(filterPagedTable, times(3)).addTab((ExtendedPagedTable) any(), anyString(), (Command) any());
+        verify(filterPagedTable, times(3)).saveNewTabSettings(anyString(), (HashMap) any());
+    }
+
+    @Test
+    public void setDefaultFilterTitleAndDescriptionTest() {
+        view.resetDefaultFilterTitleAndDescription();
+
+        verify(filterPagedTable, times(3)).getMultiGridPreferencesStore();
+        verify(filterPagedTable, times(3)).saveTabSettings(anyString(), any(HashMap.class));
     }
 
 }

@@ -836,4 +836,30 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         filterPagedTable.saveNewRefreshInterval( newValue );
     }
 
+    public void resetDefaultFilterTitleAndDescription(){
+
+        HashMap<String, Object> tabSettingsValues =null;
+
+        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0");
+        if(tabSettingsValues!=null){
+            tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Active() );
+            tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterActive() );
+            filterPagedTable.saveTabSettings(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0",tabSettingsValues);
+        }
+
+        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1");
+        if(tabSettingsValues!=null){
+            tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Completed() );
+            tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterCompleted() );
+            filterPagedTable.saveTabSettings(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1",tabSettingsValues);
+        }
+
+        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2");
+        if(tabSettingsValues!=null){
+            tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Aborted() );
+            tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterAborted() );
+            filterPagedTable.saveTabSettings(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2",tabSettingsValues);
+        }
+
+    }
 }
