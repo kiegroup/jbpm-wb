@@ -16,6 +16,7 @@
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -97,7 +98,7 @@ public class DataSetTasksListGridViewTest {
         when(presenter.getDataProvider()).thenReturn(mock(AsyncDataProvider.class));
 
         when(filterPagedTableMock.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStoreMock);
-
+        when(currentListGrid.getGridPreferencesStore()).thenReturn(new GridPreferencesStore());
         callerMockUserPreferencesService = new CallerMock<UserPreferencesService>(userPreferencesServiceMock);
         view.setPreferencesService(callerMockUserPreferencesService);
     }
@@ -115,9 +116,7 @@ public class DataSetTasksListGridViewTest {
             }
         } ).when( currentListGrid ).addColumns( anyList() );
 
-        when(currentListGrid.getGridPreferencesStore()).thenReturn(new GridPreferencesStore());
-
-        view.initColumns( currentListGrid );
+        view.initColumns(currentListGrid);
 
         verify( currentListGrid ).addColumns( anyList() );
     }
@@ -223,6 +222,14 @@ public class DataSetTasksListGridViewTest {
             i++;
         }
 
+    }
+
+    @Test
+    public void setDefaultFilterTitleAndDescriptionTest() {
+        view.resetDefaultFilterTitleAndDescription();
+
+        verify(filterPagedTableMock, times(5)).getMultiGridPreferencesStore();
+        verify(filterPagedTableMock, times(5)).saveTabSettings(anyString(), any(HashMap.class));
     }
 
 }
