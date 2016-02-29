@@ -20,7 +20,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -97,108 +97,126 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
 
     private String[] priorities = { "0 - " + constants.High(), "1", "2", "3", "4", "5 - " + constants.Medium(), "6", "7", "8", "9", "10 - " + constants.Low() };
 
-    @Inject
-    private Event<NotificationEvent> notification;
-    // Commented out until we add the posibility of adding sub tasks
-    // private String[] subTaskStrategies = {"NoAction", "EndParentOnAllSubTasksEnd", "SkipAllSubTasksOnParentSkip"};
-
     private static Constants constants = Constants.INSTANCE;
 
+    @Inject
+    private Event<NotificationEvent> notification;
+
     @Override
-    public void init( TaskDetailsPresenter presenter ) {
+    public void init(TaskDetailsPresenter presenter) {
         this.presenter = presenter;
 
-        // Commented out until we add the posibility of adding sub tasks
-        // for (String strategy : subTaskStrategies) {
-        // subTaskStrategyListBox.addItem(strategy);
-        //
-        // }
-
-        for ( int i = 0; i < priorities.length; i++) {
+        for (int i = 0; i < priorities.length; i++) {
             final Option option = new Option();
-            option.setText( priorities[i] );
-            option.setValue( String.valueOf( i ) );
-            taskPriorityListBox.add( option );
+            option.setText(priorities[i]);
+            option.setValue(String.valueOf(i));
+            taskPriorityListBox.add(option);
         }
-        taskPriorityListBox.refresh();
+        refreshPriorities();
 
-        taskStatusLabel.setText( constants.Status() );
-        userLabel.setText( constants.User() );
-        dueDateLabel.setText( constants.Due_On() );
+        taskStatusLabel.setText(constants.Status());
+        userLabel.setText(constants.User());
+        dueDateLabel.setText(constants.Due_On());
 
-        taskPriorityLabel.setText( constants.Priority() );
+        taskPriorityLabel.setText(constants.Priority());
 
-        taskDescriptionLabel.setText( constants.Description() );
+        taskDescriptionLabel.setText(constants.Description());
 
-        updateTaskButton.setText( constants.Update() );
+        updateTaskButton.setText(constants.Update());
 
-        dueDate.getDateBox().setContainer( this );
+        dueDate.getDateBox().setContainer(this);
     }
 
     @EventHandler("updateTaskButton")
-    public void updateTaskButton( ClickEvent e ) {
+    public void updateTaskButton(ClickEvent e) {
 
-        presenter.updateTask( taskDescriptionTextArea.getText(),
-                              userText.getText(),
-                              // subTaskStrategyListBox.getItemText(subTaskStrategyListBox.getSelectedIndex()),
-                              ( dueDate.getValue() != null && dueDateTime.getValue() != null ) ? UTCDateBox.utc2date( dueDate.getValue() + dueDateTime.getValue() ) : null,
-                              Integer.valueOf( taskPriorityListBox.getValue() ) );
+        presenter.updateTask(taskDescriptionTextArea.getText(),
+                userText.getText(),
+                // subTaskStrategyListBox.getItemText(subTaskStrategyListBox.getSelectedIndex()),
+                (dueDate.getValue() != null && dueDateTime.getValue() != null) ? UTCDateBox.utc2date(dueDate.getValue() + dueDateTime.getValue()) : null,
+                Integer.valueOf(taskPriorityListBox.getValue()));
 
     }
 
     @Override
-    public TextBox getUserText() {
-        return userText;
+    public void setTaskDescription(final String text) {
+        taskDescriptionTextArea.setText(text);
     }
 
     @Override
-    public TextArea getTaskDescriptionTextArea() {
-        return taskDescriptionTextArea;
+    public void setDueDate(final Long date) {
+        dueDate.setValue(date);
     }
 
     @Override
-    public Select getTaskPriorityListBox() {
-        return taskPriorityListBox;
+    public void setDueDateTime(final Long time) {
+        dueDateTime.setValue(time);
     }
 
     @Override
-    public UTCDateBox getDueDate() {
-        return dueDate;
+    public void setUser(final String user) {
+        userText.setText(user);
     }
 
-    // Commented out until we add the posibility of adding sub tasks
-    // public ListBox getSubTaskStrategyListBox() {
-    // return subTaskStrategyListBox;
-    // }
+    @Override
+    public void setUserEnabled(final Boolean enabled) {
+        userText.setEnabled(enabled);
+    }
+
+    @Override
+    public void setTaskStatus(final String status) {
+        taskStatusText.setText(status);
+    }
+
+    @Override
+    public void setTaskStatusEnabled(final Boolean enabled) {
+        taskStatusText.setEnabled(enabled);
+    }
+
+    @Override
+    public void setTaskPriority(final String priority) {
+        taskPriorityListBox.setValue(priority);
+    }
+
+    @Override
+    public void setTaskDescriptionEnabled(final Boolean enabled) {
+        taskDescriptionTextArea.setEnabled(enabled);
+    }
+
+    @Override
+    public void setDueDateEnabled(final Boolean enabled) {
+        dueDate.setEnabled(enabled);
+    }
+
+    @Override
+    public void setDueDateTimeEnabled(final Boolean enabled) {
+        dueDateTime.setEnabled(enabled);
+    }
+
+    @Override
+    public void setTaskPriorityEnabled(final Boolean enabled) {
+        taskPriorityListBox.setEnabled(enabled);
+        refreshPriorities();
+    }
+
+    @Override
+    public void setUpdateTaskVisible(final Boolean enabled) {
+        updateTaskButton.setVisible(enabled);
+    }
+
+    private void refreshPriorities() {
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                taskPriorityListBox.refresh();
+            }
+        });
+    }
 
     @Override
     public void displayNotification( String text ) {
         notification.fire( new NotificationEvent( text ) );
     }
 
-    // Commented out until we add the posibility of adding sub tasks
-    // public String[] getSubTaskStrategies() {
-    // return subTaskStrategies;
-    // }
-
-    @Override
-    public String[] getPriorities() {
-        return priorities;
-    }
-
-    @Override
-    public TextBox getTaskStatusText() {
-        return taskStatusText;
-    }
-
-    @Override
-    public UTCTimeBox getDueDateTime() {
-        return dueDateTime;
-    }
-
-    @Override
-    public Button getUpdateTaskButton() {
-        return updateTaskButton;
-    }
 
 }

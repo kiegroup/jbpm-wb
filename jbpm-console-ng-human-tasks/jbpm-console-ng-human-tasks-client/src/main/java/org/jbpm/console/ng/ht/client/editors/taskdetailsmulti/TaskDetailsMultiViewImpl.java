@@ -40,13 +40,15 @@ public class TaskDetailsMultiViewImpl extends Composite
 
     }
 
-    private static Binder uiBinder = GWT.create( Binder.class );
+    private static Binder uiBinder = GWT.create(Binder.class);
+
+    private Constants constants = GWT.create(Constants.class);
 
     @UiField
-    NavTabs navTabs;
+    NavTabs navTabs = GWT.create(NavTabs.class);
 
     @UiField
-    TabContent tabContent;
+    TabContent tabContent = GWT.create(TabContent.class);
 
     private TaskDetailsMultiPresenter presenter;
 
@@ -72,162 +74,172 @@ public class TaskDetailsMultiViewImpl extends Composite
     private TabListItem taskLogsTab;
 
     @Override
-    public void init( final TaskDetailsMultiPresenter presenter ) {
-        initWidget( uiBinder.createAndBindUi( this ) );
+    public void init(final TaskDetailsMultiPresenter presenter) {
+        initWidget(uiBinder.createAndBindUi(this));
         this.presenter = presenter;
         initTabs();
     }
 
-    private void initTabs() {
+    protected void initTabs() {
         {
-            genericFormDisplayPane = new TabPane() {{
-                add( presenter.getGenericFormView() );
-            }};
-            genericFormDisplayTab = new TabListItem( Constants.INSTANCE.Work() ) {{
-                setDataTargetWidget( genericFormDisplayPane );
-                addStyleName( "uf-dropdown-tab-list-item" );
-            }};
-            navTabs.add( genericFormDisplayTab );
-            tabContent.add( genericFormDisplayPane );
+            genericFormDisplayPane = GWT.create(TabPane.class);
+            genericFormDisplayPane.add(presenter.getGenericFormView());
+
+            genericFormDisplayTab = GWT.create(TabListItem.class);
+            genericFormDisplayTab.setText(constants.Work());
+            genericFormDisplayTab.setDataTargetWidget(genericFormDisplayPane);
+            genericFormDisplayTab.addStyleName("uf-dropdown-tab-list-item");
+
+            navTabs.add(genericFormDisplayTab);
+            tabContent.add(genericFormDisplayPane);
         }
 
         {
-            taskDetailsPane = new TabPane() {{
-                add( presenter.getTaskDetailsView() );
-            }};
-            taskDetailsTab = new TabListItem( Constants.INSTANCE.Details() ) {{
-                setDataTargetWidget( taskDetailsPane );
-                addStyleName( "uf-dropdown-tab-list-item" );
-            }};
-            navTabs.add( taskDetailsTab );
-            tabContent.add( taskDetailsPane );
-            taskDetailsTab.addShowHandler( new TabShowHandler() {
+            taskDetailsPane = GWT.create(TabPane.class);
+            taskDetailsPane.add(presenter.getTaskDetailsView());
+
+            taskDetailsTab = GWT.create(TabListItem.class);
+            taskDetailsTab.setText(constants.Details());
+            taskDetailsTab.setDataTargetWidget(taskDetailsPane);
+            taskDetailsTab.addStyleName("uf-dropdown-tab-list-item");
+
+            navTabs.add(taskDetailsTab);
+            tabContent.add(taskDetailsPane);
+            taskDetailsTab.addShowHandler(new TabShowHandler() {
                 @Override
-                public void onShow( final TabShowEvent event ) {
+                public void onShow(final TabShowEvent event) {
                     presenter.taskDetailsRefresh();
                 }
-            } );
+            });
         }
 
         {
-            processContextPane = new TabPane() {{
-                add( presenter.getProcessContextView() );
-            }};
-            processContextTab = new TabListItem( Constants.INSTANCE.Process_Context() ) {{
-                setDataTargetWidget( processContextPane );
-                addStyleName( "uf-dropdown-tab-list-item" );
-            }};
-            navTabs.add( processContextTab );
-            tabContent.add( processContextPane );
-            processContextTab.addShowHandler( new TabShowHandler() {
+            processContextPane = GWT.create(TabPane.class);
+            processContextPane.add(presenter.getProcessContextView());
+
+            processContextTab = GWT.create(TabListItem.class);
+            processContextTab.setText(constants.Process_Context());
+            processContextTab.setDataTargetWidget(processContextPane);
+            processContextTab.addStyleName("uf-dropdown-tab-list-item");
+
+            navTabs.add(processContextTab);
+            tabContent.add(processContextPane);
+            processContextTab.addShowHandler(new TabShowHandler() {
                 @Override
-                public void onShow( final TabShowEvent event ) {
+                public void onShow(final TabShowEvent event) {
                     presenter.taskProcessContextRefresh();
                 }
-            } );
+            });
         }
 
         {
-            taskAssignmentsPane = new TabPane() {{
-                add( presenter.getTaskAssignmentsView() );
-            }};
-            taskAssignmentsTab = new TabListItem( Constants.INSTANCE.Assignments() ) {{
-                setDataTargetWidget( taskAssignmentsPane );
-                addStyleName( "uf-dropdown-tab-list-item" );
-            }};
-            navTabs.add( taskAssignmentsTab );
-            tabContent.add( taskAssignmentsPane );
-            taskAssignmentsTab.addShowHandler( new TabShowHandler() {
+            taskAssignmentsPane = GWT.create(TabPane.class);
+            taskAssignmentsPane.add(presenter.getTaskAssignmentsView());
+
+            taskAssignmentsTab = GWT.create(TabListItem.class);
+            taskAssignmentsTab.setText(constants.Assignments());
+            taskAssignmentsTab.setDataTargetWidget(taskAssignmentsPane);
+            taskAssignmentsTab.addStyleName("uf-dropdown-tab-list-item");
+
+            navTabs.add(taskAssignmentsTab);
+            tabContent.add(taskAssignmentsPane);
+            taskAssignmentsTab.addShowHandler(new TabShowHandler() {
                 @Override
-                public void onShow( final TabShowEvent event ) {
+                public void onShow(final TabShowEvent event) {
                     presenter.taskAssignmentsRefresh();
                 }
-            } );
+            });
         }
 
         {
-            taskCommentsPane = new TabPane() {{
-                add( presenter.getTaskCommentsView() );
-            }};
-            taskCommentsTab = new TabListItem( Constants.INSTANCE.Comments() ) {{
-                setDataTargetWidget( taskCommentsPane );
-                addStyleName( "uf-dropdown-tab-list-item" );
-            }};
-            navTabs.add( taskCommentsTab );
-            tabContent.add( taskCommentsPane );
-            taskCommentsTab.addShowHandler( new TabShowHandler() {
+            taskCommentsPane = GWT.create(TabPane.class);
+            taskCommentsPane.add(presenter.getTaskCommentsView());
+
+            taskCommentsTab = GWT.create(TabListItem.class);
+            taskCommentsTab.setText(constants.Comments());
+            taskCommentsTab.setDataTargetWidget(taskCommentsPane);
+            taskCommentsTab.addStyleName("uf-dropdown-tab-list-item");
+
+            navTabs.add(taskCommentsTab);
+            tabContent.add(taskCommentsPane);
+            taskCommentsTab.addShowHandler(new TabShowHandler() {
                 @Override
-                public void onShow( final TabShowEvent event ) {
+                public void onShow(final TabShowEvent event) {
                     presenter.taskCommentsRefresh();
                 }
-            } );
+            });
         }
 
         {
-            taskAdminPane = new TabPane() {{
-                add( presenter.getTaskAdminView() );
-            }};
-            taskAdminTab = new TabListItem( Constants.INSTANCE.Task_Admin() ) {{
-                setDataTargetWidget( taskAdminPane );
-                addStyleName( "uf-dropdown-tab-list-item" );
-            }};
-            navTabs.add( taskAdminTab );
-            tabContent.add( taskAdminPane );
-            taskAdminTab.addShowHandler( new TabShowHandler() {
+            taskAdminPane = GWT.create(TabPane.class);
+            taskAdminPane.add(presenter.getTaskAdminView());
+
+            taskAdminTab = GWT.create(TabListItem.class);
+            taskAdminTab.setText(constants.Task_Admin());
+            taskAdminTab.setDataTargetWidget(taskAdminPane);
+            taskAdminTab.addStyleName("uf-dropdown-tab-list-item");
+
+            navTabs.add(taskAdminTab);
+            tabContent.add(taskAdminPane);
+            taskAdminTab.addShowHandler(new TabShowHandler() {
                 @Override
-                public void onShow( final TabShowEvent event ) {
+                public void onShow(final TabShowEvent event) {
                     presenter.taskAdminRefresh();
                 }
-            } );
+            });
         }
 
         {
-            taskLogsPane = new TabPane() {{
-                add( presenter.getTaskLogsView() );
-            }};
-            taskLogsTab = new TabListItem( Constants.INSTANCE.Logs() ) {{
-                setDataTargetWidget( taskLogsPane );
-                addStyleName( "uf-dropdown-tab-list-item" );
-            }};
-            navTabs.add( taskLogsTab );
-            tabContent.add( taskLogsPane );
-            taskLogsTab.addShowHandler( new TabShowHandler() {
+            taskLogsPane = GWT.create(TabPane.class);
+            taskLogsPane.add(presenter.getTaskLogsView());
+
+            taskLogsTab = GWT.create(TabListItem.class);
+            taskLogsTab.setText(constants.Logs());
+            taskLogsTab.setDataTargetWidget(taskLogsPane);
+            taskLogsTab.addStyleName("uf-dropdown-tab-list-item");
+
+            navTabs.add(taskLogsTab);
+            tabContent.add(taskLogsPane);
+            taskLogsTab.addShowHandler(new TabShowHandler() {
                 @Override
-                public void onShow( final TabShowEvent event ) {
+                public void onShow(final TabShowEvent event) {
                     presenter.taskLogsRefresh();
                 }
-            } );
+            });
         }
     }
 
     @Override
-    public void setAdminTabVisible( final boolean value ) {
-        taskAdminTab.setVisible( value );
-        taskAdminPane.setVisible( value );
+    public void setAdminTabVisible(final boolean value) {
+        taskAdminTab.setVisible(value);
+        taskAdminPane.setVisible(value);
     }
 
     @Override
     public void displayAllTabs() {
-        for ( Widget active : navTabs ) {
-            active.setVisible( true );
+        for (Widget active : navTabs) {
+            active.setVisible(true);
         }
-        for ( Widget active : tabContent ) {
-            active.setVisible( true );
+        for (Widget active : tabContent) {
+            active.setVisible(true);
         }
-        ( (TabListItem) navTabs.getWidget( 0 ) ).showTab();
+        ((TabListItem) navTabs.getWidget(0)).showTab();
     }
 
     @Override
     public void displayOnlyLogTab() {
-        for ( Widget active : navTabs ) {
-            active.setVisible( false );
+        for (Widget active : navTabs) {
+            active.setVisible(false);
         }
-        for ( Widget active : tabContent ) {
-            active.setVisible( false );
+        for (Widget active : tabContent) {
+            active.setVisible(false);
         }
-        taskLogsPane.setVisible( true );
-        taskLogsTab.setVisible( true );
-        taskLogsTab.showTab();
+        taskDetailsPane.setVisible(true);
+        taskDetailsTab.setVisible(true);
+
+        taskLogsPane.setVisible(true);
+        taskLogsTab.setVisible(true);
+        taskDetailsTab.showTab();
     }
 
 }
