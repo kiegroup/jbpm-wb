@@ -106,6 +106,10 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
 
     private String processId = "";
 
+    private boolean forLog = false;
+
+    private boolean forAdmin = false;
+
     @WorkbenchPartView
     public UberView<TaskDetailsMultiPresenter> getView() {
         return view;
@@ -122,43 +126,62 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
     }
 
     @OnStartup
-    public void onStartup( final PlaceRequest place ) {
+    public void onStartup(final PlaceRequest place) {
         this.place = place;
     }
 
-    public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
-        deploymentId = String.valueOf( event.getTaskId() );
+    public boolean isForAdmin() {
+        return forAdmin;
+    }
+
+    public void setIsForAdmin(boolean isForAdmin) {
+        this.forAdmin = isForAdmin;
+    }
+
+    public boolean isForLog() {
+        return forLog;
+    }
+
+    public void setIsForLog(boolean isForLog) {
+        this.forLog = isForLog;
+    }
+
+    public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
+        deploymentId = String.valueOf(event.getTaskId());
         processId = event.getTaskName();
 
-        taskFormPresenter.getTaskFormView().getDisplayerView().setOnCloseCommand( new Command() {
+        taskFormPresenter.getTaskFormView().getDisplayerView().setOnCloseCommand(new Command() {
             @Override
             public void execute() {
                 closeDetails();
             }
-        } );
-        taskFormDisplayProvider.setup( new HumanTaskDisplayerConfig( new TaskKey( event.getTaskId() ) ), taskFormPresenter.getTaskFormView().getDisplayerView() );
+        });
+        taskFormDisplayProvider.setup(new HumanTaskDisplayerConfig(new TaskKey(event.getTaskId())), taskFormPresenter.getTaskFormView().getDisplayerView());
 
-        if ( event.isForLog() ) {
+        setIsForLog(event.isForLog());
+        setIsForAdmin(event.isForAdmin());
+
+        changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place, String.valueOf(deploymentId) + " - " + processId));
+        if (isForLog()) {
             view.displayOnlyLogTab();
-            changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( deploymentId ) + " - " + processId + " (Log)" ) );
+            disableTaskDetailsEdition();
         } else {
             view.displayAllTabs();
-            changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf( deploymentId ) + " - " + processId ) );
         }
-        if ( event.isForAdmin() ) {
-            view.setAdminTabVisible( true );
+        if (isForAdmin()) {
+            view.setAdminTabVisible(true);
         } else {
-            view.setAdminTabVisible( false );
+            view.setAdminTabVisible(false);
         }
     }
 
     public void closeDetails() {
-        placeManager.closePlace( place );
+        placeManager.closePlace(place);
     }
 
     @Override
     public void onRefresh() {
-        taskSelected.fire(new TaskSelectionEvent(Long.valueOf(deploymentId), processId));
+        taskSelected.fire(new TaskSelectionEvent(Long.valueOf(deploymentId), processId, isForAdmin(), isForLog()));
     }
 
     @WorkbenchMenu
@@ -199,6 +222,10 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
 
     public void taskDetailsRefresh() {
         taskDetailsPresenter.refreshTask();
+    }
+
+    public void disableTaskDetailsEdition() {
+        taskDetailsPresenter.setReadOnlyTaskDetail();
     }
 
     public void taskProcessContextRefresh() {
