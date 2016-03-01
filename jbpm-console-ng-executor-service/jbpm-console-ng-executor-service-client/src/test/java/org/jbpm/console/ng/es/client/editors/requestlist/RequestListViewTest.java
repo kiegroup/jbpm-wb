@@ -15,6 +15,7 @@
  */
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,6 +28,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
+import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
@@ -45,6 +48,9 @@ public class RequestListViewTest {
 
     @Mock
     MultiGridPreferencesStore multiGridPreferencesStoreMock;
+
+    @Mock
+    protected GridPreferencesStore gridPreferencesStoreMock;
 
     @InjectMocks
     private RequestListViewImpl view;
@@ -74,6 +80,26 @@ public class RequestListViewTest {
 
         verify(filterPagedTableMock, times(7)).getMultiGridPreferencesStore();
         verify(filterPagedTableMock, times(7)).saveTabSettings(anyString(), any(HashMap.class));
+    }
+
+    @Test
+    public void initColumnsTest() {
+        doAnswer( new Answer() {
+            @Override
+            public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
+                final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[ 0 ];
+                assertTrue(columns.size()==6);
+                return null;
+            }
+        } ).when( currentListGrid ).addColumns(anyList());
+
+        ArrayList<GridColumnPreference> columnPreferences = new ArrayList<GridColumnPreference>();
+        when(currentListGrid.getGridPreferencesStore()).thenReturn(gridPreferencesStoreMock);
+        when(gridPreferencesStoreMock.getColumnPreferences()).thenReturn(columnPreferences);
+
+        view.initColumns(currentListGrid);
+
+        verify( currentListGrid ).addColumns(anyList());
     }
 
 }

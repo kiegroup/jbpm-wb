@@ -56,6 +56,7 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.client.util.ResizableHeader;
+import org.jbpm.console.ng.es.model.RequestDataSetConstants;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
@@ -177,6 +178,10 @@ public class QuickNewJobPopup extends BaseModal {
                 ButtonType.PRIMARY );
 
         add( footer );
+    }
+
+    public void setExecutorService(Caller<ExecutorServiceEntryPoint> executorServices){
+        this.executorServices = executorServices;
     }
 
     public void show() {
@@ -388,8 +393,8 @@ public class QuickNewJobPopup extends BaseModal {
                 ctx.put( param.getKey(), param.getValue() );
             }
         }
-        ctx.put( "retries", String.valueOf( numberOfTries ) ); // TODO make legacy keys hard to repeat by accident
-        ctx.put( "jobName", jobName ); // TODO make legacy keys hard to repeat by accident
+        ctx.put(RequestDataSetConstants.COLUMN_RETRIES, String.valueOf( numberOfTries ) ); // TODO make legacy keys hard to repeat by accident
+        ctx.put(RequestDataSetConstants.COLUMN_BUSINESSKEY, jobName ); // TODO make legacy keys hard to repeat by accident
 
         executorServices.call( new RemoteCallback<Long>() {
             @Override
