@@ -25,4 +25,5 @@ public interface RequestDataSetConstants {
     String COLUMN_COMMANDNAME = "commandName";
     String COLUMN_MESSAGE = "message";
     String COLUMN_BUSINESSKEY = "businessKey";
+    String COLUMN_RETRIES= "retries";
 }
