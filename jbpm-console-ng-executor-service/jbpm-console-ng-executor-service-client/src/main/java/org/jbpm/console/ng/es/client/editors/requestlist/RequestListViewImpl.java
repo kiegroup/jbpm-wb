@@ -74,7 +74,7 @@ import static org.jbpm.console.ng.es.model.RequestDataSetConstants.*;
 public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, RequestListPresenter>
         implements RequestListPresenter.RequestListView {
 
-    private Constants constants = GWT.create( Constants.class );
+    private final Constants constants = Constants.INSTANCE;
 
     public static String REQUEST_LIST_PREFIX = "DS_RequestListGrid";
     public static final String COL_ID_ACTIONS = "Actions";
@@ -107,6 +107,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         bannedColumns.add( COL_ID_ACTIONS );
         final List<String> initColumns = new ArrayList<String>();
         initColumns.add( COLUMN_ID );
+        initColumns.add( COLUMN_BUSINESSKEY );
         initColumns.add( COLUMN_COMMANDNAME );
         initColumns.add( COL_ID_ACTIONS );
         final Button button = new Button();
@@ -137,7 +138,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                 };
                 FilterSettings tableSettings = createTableSettingsPrototype();
                 tableSettings.setKey( key );
-                dataSetEditorManager.showTableSettingsEditor( filterPagedTable, Constants.INSTANCE.New_JobList(), tableSettings, addNewGrid );
+                dataSetEditorManager.showTableSettingsEditor( filterPagedTable, constants.New_JobList(), tableSettings, addNewGrid );
 
             }
         } );
@@ -152,17 +153,19 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     @Override
     public void initColumns( ExtendedPagedTable extendedPagedTable ) {
         Column jobIdColumn = initJobIdColumn();
+        Column jobNameColumn = initJobNameColumn();
         Column jobTypeColumn = initJobTypeColumn();
         Column statusColumn = initStatusColumn();
         Column dueDateColumn = initDueDateColumn();
         actionsColumn = initActionsColumn();
 
         List<ColumnMeta<RequestSummary>> columnMetas = new ArrayList<ColumnMeta<RequestSummary>>();
-        columnMetas.add( new ColumnMeta<RequestSummary>( jobIdColumn, constants.Id() ) );
-        columnMetas.add( new ColumnMeta<RequestSummary>( jobTypeColumn, constants.Type() ) );
-        columnMetas.add( new ColumnMeta<RequestSummary>( statusColumn, constants.Status() ) );
-        columnMetas.add( new ColumnMeta<RequestSummary>( dueDateColumn, constants.Due_On() ) );
-        columnMetas.add( new ColumnMeta<RequestSummary>( actionsColumn, constants.Actions() ) );
+        columnMetas.add(new ColumnMeta<RequestSummary>(jobIdColumn, constants.Id()));
+        columnMetas.add(new ColumnMeta<RequestSummary>(jobNameColumn, constants.JobName()));
+        columnMetas.add(new ColumnMeta<RequestSummary>(jobTypeColumn, constants.Type()));
+        columnMetas.add(new ColumnMeta<RequestSummary>(statusColumn, constants.Status()));
+        columnMetas.add(new ColumnMeta<RequestSummary>(dueDateColumn, constants.Due_On()));
+        columnMetas.add(new ColumnMeta<RequestSummary>(actionsColumn, constants.Actions()));
         extendedPagedTable.addColumns( columnMetas );
 
     }
@@ -259,8 +262,22 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
     }
 
+    private Column initJobNameColumn() {
+        // Job name
+        Column<RequestSummary, String> jobNameColumn = new Column<RequestSummary, String>( new TextCell() ) {
+            @Override
+            public String getValue( RequestSummary object ) {
+                return object.getKey();
+            }
+        };
+        jobNameColumn.setSortable( true );
+        jobNameColumn.setDataStoreName( COLUMN_BUSINESSKEY );
+        return jobNameColumn;
+
+    }
+
     private Column initJobTypeColumn() {
-        // Name
+        // Job type
         Column<RequestSummary, String> jobTypeColumn = new Column<RequestSummary, String>( new TextCell() ) {
             @Override
             public String getValue( RequestSummary object ) {
@@ -311,7 +328,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         allStatuses.add( "ERROR" );
         allStatuses.add( "RETRYING" );
         allStatuses.add( "RUNNING" );
-        cells.add( new ActionHasCell( Constants.INSTANCE.Details(), allStatuses, new Delegate<RequestSummary>() {
+        cells.add( new ActionHasCell( constants.Details(), allStatuses, new Delegate<RequestSummary>() {
             @Override
             public void execute( RequestSummary job ) {
                 jobDetailsPopup.show( String.valueOf( job.getJobId() ) );
@@ -322,10 +339,10 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         activeStatuses.add( "QUEUED" );
         activeStatuses.add( "RETRYING" );
         activeStatuses.add( "RUNNING" );
-        cells.add( new ActionHasCell( Constants.INSTANCE.Cancel(), activeStatuses, new Delegate<RequestSummary>() {
+        cells.add( new ActionHasCell( constants.Cancel(), activeStatuses, new Delegate<RequestSummary>() {
             @Override
             public void execute( RequestSummary job ) {
-                if ( Window.confirm( Constants.INSTANCE.CancelJob() ) ) {
+                if ( Window.confirm( constants.CancelJob() ) ) {
                     presenter.cancelRequest( job.getJobId() );
                 }
             }
@@ -334,10 +351,10 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         List<String> requeueStatuses = new ArrayList<String>();
         requeueStatuses.add( "ERROR" );
         requeueStatuses.add( "RUNNING" );
-        cells.add( new ActionHasCell( Constants.INSTANCE.Requeue(), requeueStatuses, new Delegate<RequestSummary>() {
+        cells.add( new ActionHasCell( constants.Requeue(), requeueStatuses, new Delegate<RequestSummary>() {
             @Override
             public void execute( RequestSummary job ) {
-                if ( Window.confirm( Constants.INSTANCE.RequeueJob() ) ) {
+                if ( Window.confirm( constants.RequeueJob() ) ) {
                     presenter.requeueRequest( job.getJobId() );
                 }
             }
@@ -381,37 +398,37 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         presenter.setAddingDefaultFilters( true );
         statuses = new ArrayList<String>();
 
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_0", Constants.INSTANCE.All(), Constants.INSTANCE.FilterAll(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_0", constants.All(), constants.FilterAll(), statuses );
 
         statuses = new ArrayList<String>();
         statuses.add( "QUEUED" );
 
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_1", Constants.INSTANCE.Queued(), Constants.INSTANCE.FilterQueued(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_1", constants.Queued(), constants.FilterQueued(), statuses );
 
         statuses = new ArrayList<String>();
         statuses.add( "RUNNING" );
 
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_2", Constants.INSTANCE.Running(), Constants.INSTANCE.FilterRunning(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_2", constants.Running(), constants.FilterRunning(), statuses );
 
         statuses = new ArrayList<String>();
         statuses.add( "RETRYING" );
 
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_3", Constants.INSTANCE.Retrying(), Constants.INSTANCE.FilterRetrying(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_3", constants.Retrying(), constants.FilterRetrying(), statuses );
 
         statuses = new ArrayList<String>();
         statuses.add( "ERROR" );
 
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_4", Constants.INSTANCE.Error(), Constants.INSTANCE.FilterError(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_4", constants.Error(), constants.FilterError(), statuses );
 
         statuses = new ArrayList<String>();
         statuses.add( "DONE" );
 
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_5", Constants.INSTANCE.Completed(), Constants.INSTANCE.FilterCompleted(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_5", constants.Completed(), constants.FilterCompleted(), statuses );
 
         statuses = new ArrayList<String>();
         statuses.add( "CANCELLED" );
 
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_6", Constants.INSTANCE.Cancelled(), Constants.INSTANCE.FilterCancelled(), statuses );
+        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_6", constants.Cancelled(), constants.FilterCancelled(), statuses );
 
         filterPagedTable.addAddTableButton( createTabButton );
         presenter.setAddingDefaultFilters( false );
@@ -524,50 +541,50 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
         tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_0");
         if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.All());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterAll());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, constants.All());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, constants.FilterAll());
             filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_0", tabSettingsValues);
         }
 
         tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_1");
         if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Queued());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterQueued());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, constants.Queued());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, constants.FilterQueued());
             filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_0", tabSettingsValues);
         }
 
         tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_2");
         if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Running());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterRunning());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, constants.Running());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, constants.FilterRunning());
             filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_2", tabSettingsValues);
         }
 
         tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_3");
         if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Retrying());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterRetrying());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, constants.Retrying());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, constants.FilterRetrying());
             filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_3", tabSettingsValues);
         }
 
         tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_4");
         if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Error());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterError());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, constants.Error());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, constants.FilterError());
             filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_4", tabSettingsValues);
         }
 
         tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_5");
         if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Completed());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterCompleted());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, constants.Completed());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, constants.FilterCompleted());
             filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_5", tabSettingsValues);
         }
 
         tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_6");
         if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Cancelled());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterCancelled());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, constants.Cancelled());
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, constants.FilterCancelled());
             filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_6", tabSettingsValues);
         }
     }
