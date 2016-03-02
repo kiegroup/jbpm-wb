@@ -24,18 +24,13 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.gc.client.util.UTCDateBox;
-import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
@@ -47,35 +42,42 @@ import org.jbpm.console.ng.ht.service.TaskQueryService;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 public class TaskDetailsPresenter {
 
     public interface TaskDetailsView extends IsWidget {
 
-        void init( final TaskDetailsPresenter presenter );
+        void init(final TaskDetailsPresenter presenter);
 
         void displayNotification( final String text );
 
-        TextArea getTaskDescriptionTextArea();
+        void setTaskDescription(String text);
 
-        Select getTaskPriorityListBox();
+        void setTaskDescriptionEnabled(Boolean enabled);
 
-        UTCDateBox getDueDate();
+        void setDueDate(Long date);
 
-        UTCTimeBox getDueDateTime();
+        void setDueDateEnabled(Boolean enabled);
 
-        TextBox getUserText();
+        void setDueDateTime(Long time);
 
-        // Commented out until we add the posibility of adding sub tasks
-        // ListBox getSubTaskStrategyListBox();
-        // Commented out until we add the posibility of adding sub tasks
-        // public String[] getSubTaskStrategies();
-        public String[] getPriorities();
+        void setDueDateTimeEnabled(Boolean enabled);
 
-        TextBox getTaskStatusText();
-        
-        Button getUpdateTaskButton();
+        void setUser(String user);
+
+        void setUserEnabled(Boolean enabled);
+
+        void setTaskStatus(String status);
+
+        void setTaskStatusEnabled(Boolean enabled);
+
+        void setTaskPriority(String priority);
+
+        void setTaskPriorityEnabled(Boolean enabled);
+
+        void setUpdateTaskVisible(Boolean enabled);
     }
 
     private Constants constants = Constants.INSTANCE;
@@ -108,24 +110,23 @@ public class TaskDetailsPresenter {
 
     @PostConstruct
     public void init() {
-        view.init( this );
+        view.init(this);
     }
 
     public IsWidget getView() {
         return view;
     }
 
+    public void updateTask(final String taskDescription,
+                           final String userId,
+                           final Date dueDate,
+                           final int priority) {
 
-    public void updateTask( final String taskDescription,
-                            final String userId,
-                            final Date dueDate,
-                            final int priority ) {
-
-        if ( currentTaskId > 0 ) {
+        if (currentTaskId > 0) {
             List<String> descriptions = new ArrayList<String>();
-            descriptions.add( taskDescription );
+            descriptions.add(taskDescription);
 
-            taskOperationsService.call( new RemoteCallback<Void>() {
+            taskOperationsService.call(new RemoteCallback<Void>() {
                 @Override
                 public void callback( Void nothing ) {
                     view.displayNotification(constants.TaskDetailsUpdatedForTaskId(currentTaskId));
@@ -134,12 +135,12 @@ public class TaskDetailsPresenter {
                 }
             }, new ErrorCallback<Message>() {
                 @Override
-                public boolean error( Message message,
-                                      Throwable throwable ) {
-                    ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
+                public boolean error(Message message,
+                                     Throwable throwable) {
+                    ErrorPopup.showMessage(constants.UnexpectedError(throwable.getMessage()));
                     return true;
                 }
-            } ).updateTask( currentTaskId, priority, descriptions, dueDate );
+            }).updateTask(currentTaskId, priority, descriptions, dueDate);
 
         }
 
@@ -147,72 +148,55 @@ public class TaskDetailsPresenter {
 
     public void refreshTask() {
 
-        taskQueryService.call( new RemoteCallback<TaskSummary>() {
+        taskQueryService.call(new RemoteCallback<TaskSummary>() {
             @Override
-            public void callback( TaskSummary details ) {
-                if ( details == null ) {
-                    view.getTaskDescriptionTextArea().setEnabled( false );
-                    view.getDueDate().setEnabled( false );
-                    view.getUserText().setEnabled( false );
-                    view.getTaskStatusText().setEnabled( false );
-                    view.getDueDateTime().setEnabled(false);
-                    view.getTaskPriorityListBox().setEnabled(false);
-                    view.getUpdateTaskButton().setEnabled(false);
+            public void callback(TaskSummary details) {
+                if (details == null) {
+                    setReadOnlyTaskDetail();
                     return;
                 }
-                if ( details.getStatus().equals( "Completed" ) ) {
-
-                    view.getTaskDescriptionTextArea().setEnabled( false );
-                    view.getDueDate().setEnabled( false );
-                    view.getUserText().setEnabled( false );
-                    view.getTaskStatusText().setEnabled( false );
-                    view.getDueDateTime().setEnabled(false);
-                    view.getTaskPriorityListBox().setEnabled(false);
-                    view.getUpdateTaskButton().setEnabled(false);
-
+                if (details.getStatus().equals("Completed")) {
+                    setReadOnlyTaskDetail();
                 }
-
-                view.getTaskDescriptionTextArea().setText( details.getDescription() );
-                view.getDueDate().setValue( UTCDateBox.date2utc( details.getExpirationTime() ) );
-                view.getDueDateTime().setValue( UTCDateBox.date2utc( details.getExpirationTime() ) );
-                view.getUserText().setText( details.getActualOwner() );
-                view.getUserText().setEnabled( false );
-                view.getTaskStatusText().setText( details.getStatus() );
-                view.getTaskStatusText().setEnabled( false );
-
-                int i = 0;
-                // Commented out until we add the posibility of adding sub tasks
-                // for (String strategy : view.getSubTaskStrategies()) {
-                // if (details.getSubTaskStrategy().equals(strategy)) {
-                // view.getSubTaskStrategyListBox().setSelectedIndex(i);
-                // }
-                // i++;
-                // }
-                i = 0;
-                for ( String priority : view.getPriorities() ) {
-                    if ( details.getPriority() == i ) {
-                        view.getTaskPriorityListBox().setValue( String.valueOf( i ) );
-                    }
-                    i++;
+                view.setTaskDescription(details.getDescription());
+                final Long date = UTCDateBox.date2utc(details.getExpirationTime());
+                if (date != null) {
+                    view.setDueDate(date);
+                    view.setDueDateTime(date);
                 }
+                view.setUser(details.getActualOwner());
+                view.setUserEnabled(false);
+                view.setTaskStatus(details.getStatus());
+                view.setTaskStatusEnabled(false);
+                view.setTaskPriority(String.valueOf(details.getPriority()));
             }
         }, new ErrorCallback<Message>() {
             @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
+            public boolean error(Message message,
+                                 Throwable throwable) {
+                ErrorPopup.showMessage(constants.UnexpectedError(throwable.getMessage()));
                 return true;
             }
-        } ).getItem( new TaskKey( currentTaskId ) );
+        }).getItem(new TaskKey(currentTaskId));
     }
 
-    public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
+    public void setReadOnlyTaskDetail() {
+        view.setTaskDescriptionEnabled(false);
+        view.setDueDateEnabled(false);
+        view.setUserEnabled(false);
+        view.setTaskStatusEnabled(false);
+        view.setDueDateTimeEnabled(false);
+        view.setTaskPriorityEnabled(false);
+        view.setUpdateTaskVisible(false);
+    }
+
+    public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
         this.currentTaskId = event.getTaskId();
         refreshTask();
     }
 
-    public void onTaskRefreshedEvent( @Observes final TaskRefreshedEvent event ) {
-        if ( currentTaskId == event.getTaskId() ) {
+    public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {
+        if (currentTaskId == event.getTaskId()) {
             refreshTask();
         }
     }
