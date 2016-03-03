@@ -52,6 +52,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         extends Composite implements RequiresResize {
 
     public static String FILTER_TABLE_SETTINGS = "tableSettings";
+    public static String USER_DEFINED = "ud_";
 
     interface Binder extends UiBinder<Widget, AbstractMultiGridView> {
     }
@@ -115,7 +116,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         this.currentGlobalPreferences = preferences;
         this.createTabButton = createNewGridButton;
 
-        filterPagedTable = new FilterPagedTable<T>();
+        filterPagedTable = GWT.create(FilterPagedTable.class);
         column.add( filterPagedTable.makeWidget() );
 
         filterPagedTable.setPreferencesService( preferencesService );
@@ -137,9 +138,9 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                     presenter.setAddingDefaultFilters( true );
                     for ( int i = 0; i < existingGrids.size(); i++ ) {
                         key = existingGrids.get( i );
-                        final ExtendedPagedTable<T> extendedPagedTable = createGridInstance( preferences, key );
+                        final ExtendedPagedTable<T> extendedPagedTable = loadGridInstance( preferences, key );
                         currentListGrid = extendedPagedTable;
-                        extendedPagedTable.setDataProvider( presenter.dataProvider );
+                        extendedPagedTable.setDataProvider( presenter.getDataProvider());
                         final String filterKey = key;
                         filterPagedTable.addTab( extendedPagedTable, key, new Command() {
                             @Override
@@ -148,8 +149,9 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                 applyFilterOnPresenter( filterKey );
                             }
                         } );
-                        if ( currentListGrid != null && key.equals( selectedGridId ) )
+                        if ( currentListGrid != null && key.equals( selectedGridId ) ) {
                             currentListGrid = extendedPagedTable;
+                        }
                     }
 
                     filterPagedTable.addAddTableButton( createNewGridButton );
@@ -223,7 +225,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     public String getValidKeyForAdditionalListGrid( String baseName ) {
-        return filterPagedTable.getValidKeyForAdditionalListGrid( baseName );
+        return filterPagedTable.getValidKeyForAdditionalListGrid( baseName + USER_DEFINED  );
     }
 
     public ExtendedPagedTable<T> createGridInstance( final GridGlobalPreferences preferences,
@@ -231,6 +233,23 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         final ExtendedPagedTable<T> newListGrid = new ExtendedPagedTable<T>( 10, preferences );
         newListGrid.setShowLastPagerButton( true );
         newListGrid.setShowFastFordwardPagerButton( true );
+        newListGrid.setPreferencesService( preferencesService );
+        newListGrid.setGridPreferencesStore( new GridPreferencesStore( preferences ) );
+        initColumns( newListGrid );
+        initGenericToolBar( newListGrid );
+        newListGrid.loadPageSizePreferences();
+        newListGrid.createPageSizesListBox(5, 20, 5);
+        initExtraButtons(newListGrid);
+
+        return newListGrid;
+    }
+
+
+    public ExtendedPagedTable<T> loadGridInstance( final GridGlobalPreferences preferences,
+                                                     final String key ) {
+        final ExtendedPagedTable<T> newListGrid = new ExtendedPagedTable<T>( 10, preferences );
+        newListGrid.setShowLastPagerButton(true);
+        newListGrid.setShowFastFordwardPagerButton(true);
         preferencesService.call( new RemoteCallback<GridPreferencesStore>() {
 
             @Override
@@ -300,4 +319,11 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public void resetDefaultFilterTitleAndDescription(){
     }
 
+    public FilterPagedTable<T> getFilterPagedTable() {
+        return filterPagedTable;
+    }
+
+    public void setFilterPagedTable(FilterPagedTable<T> filterPagedTable) {
+        this.filterPagedTable = filterPagedTable;
+    }
 }
