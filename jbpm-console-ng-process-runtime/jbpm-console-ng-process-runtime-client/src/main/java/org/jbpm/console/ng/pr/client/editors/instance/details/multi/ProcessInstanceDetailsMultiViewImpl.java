@@ -81,64 +81,69 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
         initTabs();
     }
 
-    private void initTabs() {
+    public void initTabs() {
         {
-            instanceDetailsPane = new TabPane() {{
-                add( presenter.getProcessIntanceView() );
-            }};
-            instanceDetailsTab = new TabListItem( constants.Process_Instance_Details() ) {{
-                setDataTargetWidget( instanceDetailsPane );
-                addStyleName( "uf-dropdown-tab-list-item" );
-            }};
+            instanceDetailsPane = GWT.create(TabPane.class);
+            instanceDetailsPane.add( presenter.getProcessIntanceView() );
+
+            instanceDetailsTab = GWT.create(TabListItem.class);
+            instanceDetailsTab.setText(constants.Process_Instance_Details());
+            instanceDetailsTab.setDataTargetWidget(instanceDetailsPane);
+            instanceDetailsTab.addStyleName("uf-dropdown-tab-list-item");
+
             tabContent.add( instanceDetailsPane );
             navTabs.add( instanceDetailsTab );
         }
 
         {
-            processVariablesPane = new TabPane() {{
-                add( presenter.getProcessVariablesView() );
-            }};
-            processVariablesTab = new TabListItem( constants.Process_Variables() ) {{
-                setDataTargetWidget( processVariablesPane );
-                addStyleName( "uf-dropdown-tab-list-item" );
-            }};
+            processVariablesPane = GWT.create(TabPane.class);
+            processVariablesPane.add( presenter.getProcessVariablesView() );
+
+            processVariablesTab = GWT.create(TabListItem.class);
+            processVariablesTab.setText( constants.Process_Variables() );
+            processVariablesTab.setDataTargetWidget(processVariablesPane);
+            processVariablesTab.addStyleName("uf-dropdown-tab-list-item");
+
             tabContent.add( processVariablesPane );
             navTabs.add( processVariablesTab );
-            processVariablesTab.addShowHandler( new TabShowHandler() {
+            processVariablesTab.addShowHandler(new TabShowHandler() {
                 @Override
-                public void onShow( final TabShowEvent event ) {
+                public void onShow(final TabShowEvent event) {
                     presenter.variableListRefreshGrid();
                 }
-            } );
+            });
 
         }
 
         {
-            documentPane = new TabPane() {{
-                add( presenter.getDocumentView() );
-            }};
-            documentTab = new TabListItem( constants.Documents() ) {{
-                setDataTargetWidget( documentPane );
-                addStyleName( "uf-dropdown-tab-list-item" );
-            }};
-            tabContent.add( documentPane );
-            navTabs.add( documentTab );
-            documentTab.addShowHandler( new TabShowHandler() {
+            documentPane = GWT.create(TabPane.class);
+            documentPane.add( presenter.getDocumentView() );
+
+            documentTab = GWT.create(TabListItem.class);
+            documentTab.setText( constants.Documents() );
+            documentTab.setDataTargetWidget(documentPane);
+            documentTab.addStyleName( "uf-dropdown-tab-list-item" );
+
+            tabContent.add(documentPane);
+            navTabs.add(documentTab);
+
+            documentTab.addShowHandler(new TabShowHandler() {
                 @Override
-                public void onShow( final TabShowEvent event ) {
+                public void onShow(final TabShowEvent event) {
                     presenter.documentListRefreshGrid();
                 }
-            } );
+            });
         }
 
         {
-            logsPane = new TabPane() {{
-                add( presenter.getLogsView() );
-            }};
-            logsTab = new TabListItem( constants.Logs() ) {{
-                setDataTargetWidget( logsPane );
-                addStyleName( "uf-dropdown-tab-list-item" );
-            }};
+            logsPane = GWT.create(TabPane.class);
+            logsPane.add( presenter.getLogsView() );
+
+            logsTab = GWT.create(TabListItem.class);
+            logsTab.setText( constants.Logs() );
+            logsTab.setDataTargetWidget( logsPane );
+            logsTab.addStyleName( "uf-dropdown-tab-list-item" );
+
             tabContent.add( logsPane );
             navTabs.add( logsTab );
         }
@@ -185,5 +190,33 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
     public void selectInstanceDetailsTab() {
         instanceDetailsTab.showTab();
     }
+
+    @Override
+    public void displayAllTabs() {
+        for (Widget active : navTabs) {
+            active.setVisible(true);
+        }
+        for (Widget active : tabContent) {
+            active.setVisible(true);
+        }
+        ((TabListItem) navTabs.getWidget(0)).showTab();
+    }
+
+    @Override
+    public void displayOnlyLogTab() {
+        for (Widget active : navTabs) {
+            active.setVisible(false);
+        }
+        for (Widget active : tabContent) {
+            active.setVisible(false);
+        }
+        instanceDetailsPane.setVisible(true);
+        instanceDetailsTab.setVisible(true);
+
+        logsPane.setVisible(true);
+        logsTab.setVisible(true);
+        instanceDetailsTab.showTab();
+    }
+
 
 }

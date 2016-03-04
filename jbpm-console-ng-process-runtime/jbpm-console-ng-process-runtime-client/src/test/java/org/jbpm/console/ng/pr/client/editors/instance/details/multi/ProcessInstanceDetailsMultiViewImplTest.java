@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.ht.client.editors.taskdetailsmulti;
+package org.jbpm.console.ng.pr.client.editors.instance.details.multi;
 
 import java.util.Iterator;
 
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-
 import org.gwtbootstrap3.client.ui.NavTabs;
 import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
@@ -33,7 +32,7 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class TaskDetailsMultiViewImplTest {
+public class ProcessInstanceDetailsMultiViewImplTest {
 
     @Mock
     private NavTabs navTabs;
@@ -41,53 +40,36 @@ public class TaskDetailsMultiViewImplTest {
     @Mock
     TabContent tabContent;
 
-    @Mock(name = "genericFormDisplayPane")
-    private TabPane genericFormDisplayPane;
+    @Mock(name = "instanceDetailsTab")
+    private TabListItem instanceDetailsTab;
 
-    @Mock(name = "genericFormDisplayTab")
-    private TabListItem genericFormDisplayTab;
+    @Mock(name = "instanceDetailsPane")
+    private TabPane instanceDetailsPane;
 
-    @Mock(name = "taskDetailsPane")
-    private TabPane taskDetailsPane;
+    @Mock(name = "processVariablesTab")
+    private TabListItem processVariablesTab;
 
-    @Mock(name = "taskDetailsTab")
-    private TabListItem taskDetailsTab;
+    @Mock(name = "processVariablesPane")
+    private TabPane processVariablesPane;
 
-    @Mock(name = "processContextPane")
-    private TabPane processContextPane;
+    @Mock(name = "documentTab")
+    private TabListItem documentTab;
 
-    @Mock(name = "processContextTab")
-    private TabListItem processContextTab;
+    @Mock(name = "documentPane")
+    private TabPane documentPane;
 
-    @Mock(name = "taskAssignmentsPane")
-    private TabPane taskAssignmentsPane;
+    @Mock(name = "logsTab")
+    private TabListItem logsTab;
 
-    @Mock(name = "taskAssignmentsTab")
-    private TabListItem taskAssignmentsTab;
+    @Mock(name = "logsPane")
+    private TabPane logsPane;
 
-    @Mock(name = "taskCommentsPane")
-    private TabPane taskCommentsPane;
-
-    @Mock(name = "taskCommentsTab")
-    private TabListItem taskCommentsTab;
-
-    @Mock(name = "taskAdminPane")
-    private TabPane taskAdminPane;
-
-    @Mock(name = "taskAdminTab")
-    private TabListItem taskAdminTab;
-
-    @Mock(name = "taskLogsPane")
-    private TabPane taskLogsPane;
-
-    @Mock(name = "taskLogsTab")
-    private TabListItem taskLogsTab;
 
     @Mock
-    private TaskDetailsMultiPresenter presenter;
+    private ProcessInstanceDetailsMultiPresenter presenter;
 
     @InjectMocks
-    private TaskDetailsMultiViewImpl taskDetailsMultiView;
+    private ProcessInstanceDetailsMultiViewImpl processInstanceDetailsMultiView;
 
     @Before
     public void setupMocks() {
@@ -127,29 +109,27 @@ public class TaskDetailsMultiViewImplTest {
 
     @Test
     public void displayOnlyLogTabTest() {
-        taskDetailsMultiView.displayOnlyLogTab();
+        processInstanceDetailsMultiView.displayOnlyLogTab();
 
-        verify(taskDetailsPane).setVisible(true);
-        verify(taskDetailsTab).setVisible(true);
-        verify(taskLogsPane).setVisible(true);
-        verify(taskLogsTab).setVisible(true);
-        verify(taskDetailsTab).showTab();
+        verify(instanceDetailsPane).setVisible(true);
+        verify(instanceDetailsTab).setVisible(true);
+        verify(logsPane).setVisible(true);
+        verify(logsTab).setVisible(true);
+        verify(instanceDetailsTab).showTab();
     }
 
     @Test
     public void initTabsTest() {
-        taskDetailsMultiView.initTabs();
+        processInstanceDetailsMultiView.initTabs();
 
-        verify(presenter).getGenericFormView();
-        verify(presenter).getTaskDetailsView();
-        verify(presenter).getProcessContextView();
-        verify(presenter).getTaskAssignmentsView();
-        verify(presenter).getTaskCommentsView();
-        verify(presenter).getTaskAdminView();
-        verify(presenter).getTaskLogsView();
+        verify(presenter).getProcessIntanceView();
+        verify(presenter).getProcessVariablesView();
+        verify(presenter).getDocumentView();
+        verify(presenter).getLogsView();
 
-        verify(navTabs, times(7)).add(any(TabListItem.class));
-        verify(tabContent, times(7)).add(any(TabPane.class));
+
+        verify(navTabs, times(4)).add(any(TabListItem.class));
+        verify(tabContent, times(4)).add(any(TabPane.class));
 
     }
 
