@@ -74,17 +74,19 @@ public class DataSetDefsBootstrap {
                 .name("Domain Specific Process Instances")
                 .dataSource(jbpmDataSource)
                 .dbSQL("select " +
-                            "pil.processInstanceId as \""+ PROCESS_INSTANCE_ID + "\", " +
-                            "pil.processId as \"" + PROCESS_NAME + "\", " +
-                            "v.id as \"" + VARIABLE_ID + "\", " +
-                            "v.variableId as \"" + VARIABLE_NAME + "\", " +
-                            "v.value as \"" + VARIABLE_VALUE + "\" " +
-                            "from ProcessInstanceLog pil " +
-                            "inner join (select vil.processInstanceId, vil.variableId, MAX(vil.ID) as maxvilid FROM VariableInstanceLog vil " +
-                            "GROUP BY vil.processInstanceId, vil.variableId) x " +
-                            "on (x.processInstanceId = pil.processInstanceId) " +
-                            "INNER JOIN VariableInstanceLog v " +
-                            "ON (v.variableId = x.variableId  AND v.id = x.maxvilid )", false )
+                            "vil.processInstanceId, " +
+                            "vil.processId, " +
+                            "vil.id, " +
+                            "vil.variableId, " +
+                            "vil.value " +
+                        "from VariableInstanceLog vil " +
+                        "where " +
+                            "vil.id = " +
+                                "(select MAX(v.id) " +
+                                "from VariableInstanceLog v " +
+                                "where " +
+                                "V.variableId = vil.variableId and " +
+                                "V.processInstanceId = vil.processInstanceId)" , false )
                 .number(PROCESS_INSTANCE_ID)
                 .label(PROCESS_NAME)
                 .number(VARIABLE_ID)
