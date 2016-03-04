@@ -71,6 +71,10 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
         IsWidget getOptionsButton();
 
         void selectInstanceDetailsTab();
+
+        void displayAllTabs();
+
+        void displayOnlyLogTab();
     }
 
     @Inject
@@ -120,6 +124,8 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
 
     private String processId = "";
 
+    private boolean forLog = false;
+
     @WorkbenchPartView
     public UberView<ProcessInstanceDetailsMultiPresenter> getView() {
         return view;
@@ -142,21 +148,35 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
         this.place = place;
     }
 
+    public boolean isForLog() {
+        return forLog;
+    }
+
+    public void setIsForLog(boolean isForLog) {
+        this.forLog = isForLog;
+    }
+
     public void onProcessSelectionEvent( @Observes ProcessInstanceSelectionEvent event ) {
         deploymentId = String.valueOf( event.getProcessInstanceId() );
         processId = event.getProcessDefId();
         selectedDeploymentId = event.getDeploymentId();
         selectedProcessInstanceStatus = event.getProcessInstanceStatus();
         selectedProcessDefName = event.getProcessDefName();
+        setIsForLog(event.isForLog());
 
         changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf(deploymentId) + " - " + selectedProcessDefName ) );
 
+        if (isForLog()) {
+            view.displayOnlyLogTab();
+        } else {
+            view.displayAllTabs();
+        }
         view.selectInstanceDetailsTab();
     }
 
     @Override
     public void onRefresh() {
-        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedDeploymentId, Long.valueOf( deploymentId ), processId, selectedProcessDefName, selectedProcessInstanceStatus ) );
+        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedDeploymentId, Long.valueOf( deploymentId ), processId, selectedProcessDefName, selectedProcessInstanceStatus,isForLog() ) );
     }
 
     public void signalProcessInstance() {
