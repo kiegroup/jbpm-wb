@@ -117,7 +117,7 @@ public class DataSetDefsDatabaseTest {
                 ResultSet rs = ps.executeQuery();
                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
                 for (int i = 0; i < dataSet.getColumns().size(); i++) {
-                    assertEquals("select column name don't match", dataSet.getColumns().get(i).getId(), resultSetMetaData.getColumnLabel(i + 1));
+                    assertTrue("select column name don't match", dataSet.getColumns().get(i).getId().equalsIgnoreCase(resultSetMetaData.getColumnLabel(i + 1)));
                 }
                 ps.close();
 

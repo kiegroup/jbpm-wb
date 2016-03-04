@@ -146,7 +146,7 @@ public class DataSetTasksListGridViewTest {
             if(op.getType().equals(DataSetOpType.FILTER)){
                 List<ColumnFilter> columnFilters = ((DataSetFilter)op).getColumnFilterList();
                 for(ColumnFilter columnFilter : columnFilters){
-                    assertTrue((columnFilter).toString().contains(COLUMN_NAME + " = Test"));
+                    assertTrue((columnFilter).toString().contains(COLUMN_TASK_VARIABLE_TASK_NAME + " = Test"));
                 }
             }
         }
