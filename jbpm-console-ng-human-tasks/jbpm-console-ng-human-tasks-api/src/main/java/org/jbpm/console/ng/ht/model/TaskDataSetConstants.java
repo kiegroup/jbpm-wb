@@ -22,28 +22,28 @@ public final class TaskDataSetConstants {
     public static final String HUMAN_TASKS_WITH_ADMIN_DATASET = "jbpmHumanTasksWithAdmin";
     public static final String HUMAN_TASKS_WITH_VARIABLES_DATASET = "jbpmHumanTasksWithVariables";
 
-    public static final String COLUMN_ACTIVATION_TIME = "ACTIVATIONTIME";
-    public static final String COLUMN_ACTUAL_OWNER = "ACTUALOWNER";
-    public static final String COLUMN_CREATED_BY = "CREATEDBY";
-    public static final String COLUMN_CREATED_ON = "CREATEDON";
-    public static final String COLUMN_DEPLOYMENT_ID = "DEPLOYMENTID";
-    public static final String COLUMN_DESCRIPTION = "DESCRIPTION";
-    public static final String COLUMN_DUE_DATE = "DUEDATE";
-    public static final String COLUMN_NAME = "NAME";
-    public static final String COLUMN_PARENT_ID = "PARENTID";
-    public static final String COLUMN_PRIORITY = "PRIORITY";
-    public static final String COLUMN_PROCESS_ID = "PROCESSID";
-    public static final String COLUMN_PROCESS_INSTANCE_ID = "PROCESSINSTANCEID";
-    public static final String COLUMN_PROCESS_SESSION_ID = "PROCESSSESSIONID";
-    public static final String COLUMN_STATUS = "STATUS";
-    public static final String COLUMN_TASK_ID = "TASKID";
-    public static final String COLUMN_WORK_ITEM_ID = "WORKITEMID";
-    public static final String COLUMN_ORGANIZATIONAL_ENTITY = "ID";
+    public static final String COLUMN_ACTIVATION_TIME = "activationTime";
+    public static final String COLUMN_ACTUAL_OWNER = "actualOwner";
+    public static final String COLUMN_CREATED_BY = "createdBy";
+    public static final String COLUMN_CREATED_ON = "createdOn";
+    public static final String COLUMN_DEPLOYMENT_ID = "deploymentId";
+    public static final String COLUMN_DESCRIPTION = "description";
+    public static final String COLUMN_DUE_DATE = "dueDate";
+    public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_PARENT_ID = "parentId";
+    public static final String COLUMN_PRIORITY = "priority";
+    public static final String COLUMN_PROCESS_ID = "processId";
+    public static final String COLUMN_PROCESS_INSTANCE_ID = "processInstanceId";
+    public static final String COLUMN_PROCESS_SESSION_ID = "processSessionId";
+    public static final String COLUMN_STATUS = "status";
+    public static final String COLUMN_TASK_ID = "taskId";
+    public static final String COLUMN_WORK_ITEM_ID = "workItemId";
+    public static final String COLUMN_ORGANIZATIONAL_ENTITY = "id";
 
-    public static final String COLUMN_TASK_VARIABLE_TASK_ID = "TASKID";
-    public static final String COLUMN_TASK_VARIABLE_TASK_NAME = "NAME";
-    public static final String COLUMN_TASK_VARIABLE_NAME = "VARNAME";
-    public static final String COLUMN_TASK_VARIABLE_VALUE = "VARVALUE";
+    public static final String COLUMN_TASK_VARIABLE_TASK_ID = "taskId";
+    public static final String COLUMN_TASK_VARIABLE_TASK_NAME = "TASKNAME";
+    public static final String COLUMN_TASK_VARIABLE_NAME = "name";
+    public static final String COLUMN_TASK_VARIABLE_VALUE = "value";
 
     private TaskDataSetConstants(){}
 }

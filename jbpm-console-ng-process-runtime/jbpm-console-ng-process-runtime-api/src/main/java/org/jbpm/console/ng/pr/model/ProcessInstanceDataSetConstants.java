@@ -40,11 +40,11 @@ public final class ProcessInstanceDataSetConstants {
 
     public static final String PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX = "DS_ProcessInstancesWithVariablesIncludedGrid";
 
-    public static final String PROCESS_INSTANCE_ID = "PID";
-    public static final String PROCESS_NAME = "PNAME";
-    public static final String VARIABLE_NAME = "VARNAME";
-    public static final String VARIABLE_VALUE = "VARVALUE";
-    public static final String VARIABLE_ID = "VARID";
+    public static final String PROCESS_INSTANCE_ID = "processInstanceId";
+    public static final String PROCESS_NAME = "processId";
+    public static final String VARIABLE_NAME = "variableId";
+    public static final String VARIABLE_VALUE = "value";
+    public static final String VARIABLE_ID = "id";
 
     public static final String COL_ID_SELECT = "Select";
     public static final String COL_ID_ACTIONS = "Actions";

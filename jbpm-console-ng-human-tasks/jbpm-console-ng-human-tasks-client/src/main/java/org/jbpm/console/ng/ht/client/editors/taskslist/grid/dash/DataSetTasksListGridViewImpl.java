@@ -1012,7 +1012,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.initBuilder();
 
         builder.dataset(HUMAN_TASKS_WITH_VARIABLES_DATASET);
-        builder.filter(FilterFactory.equalsTo(COLUMN_NAME, taskName));
+        builder.filter(FilterFactory.equalsTo(COLUMN_TASK_VARIABLE_TASK_NAME, taskName));
 
         builder.filterOn(true, true, true);
         builder.tableOrderEnabled(true);

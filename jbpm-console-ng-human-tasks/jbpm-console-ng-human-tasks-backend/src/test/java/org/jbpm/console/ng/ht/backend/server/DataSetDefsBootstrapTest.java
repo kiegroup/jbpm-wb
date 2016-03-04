@@ -69,7 +69,7 @@ public class DataSetDefsBootstrapTest {
     }
 
     @Test
-    public void columnAliasPresentInHumanTaskWithUserDataSet() {
+    public void columnAliasNotPresentInHumanTaskWithUserDataSet() {
         dataSetsBootstrap.registerDataSetDefinitions();
         ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
         verify(dataSetDefRegistryMock, times(4)).registerDataSetDef(argument.capture());
@@ -80,10 +80,7 @@ public class DataSetDefsBootstrapTest {
         String[] columnsStr = strSQL.substring(strSQL.indexOf("select") + 6, strSQL.indexOf("from")).split(",");
         for (String columnStr : columnsStr) {
             final String[] split = columnStr.trim().split(" ");
-            assertEquals(3, split.length);
-            assertEquals("as", split[1]);
-            final String alias = split[0].substring(split[0].indexOf(".") + 1).toUpperCase();
-            assertEquals(split[2], "\"" + alias + "\"");
+            assertEquals(1, split.length);
         }
 
     }
