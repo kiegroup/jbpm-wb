@@ -284,7 +284,7 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
         instanceSelectionEvent.fire(new ProcessInstanceSelectionEvent(
                 deploymentId, processInstanceId,
                 processDefId, processDefName,
-                processInstanceStatus));
+                processInstanceStatus, true));
     }
 
     public void showDashboard() {
