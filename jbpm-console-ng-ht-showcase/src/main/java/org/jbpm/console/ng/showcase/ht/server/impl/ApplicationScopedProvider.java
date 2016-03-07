@@ -38,14 +38,14 @@ import org.jbpm.services.task.lifecycle.listeners.BAMTaskEventListener;
 import org.kie.api.task.TaskLifeCycleEventListener;
 import org.kie.api.task.UserGroupCallback;
 import org.kie.internal.task.api.UserInfo;
-import org.uberfire.ext.metadata.backend.lucene.LuceneConfig;
-import org.uberfire.ext.metadata.io.IOSearchIndex;
-import org.uberfire.ext.metadata.io.IOServiceIndexedImpl;
 import org.uberfire.backend.server.IOWatchServiceNonDotImpl;
 import org.uberfire.commons.cluster.ClusterServiceFactory;
 import org.uberfire.commons.services.cdi.Startup;
 import org.uberfire.commons.services.cdi.StartupType;
-import org.uberfire.io.IOSearchService;
+import org.uberfire.ext.metadata.backend.lucene.LuceneConfig;
+import org.uberfire.ext.metadata.io.IOSearchServiceImpl;
+import org.uberfire.ext.metadata.io.IOServiceIndexedImpl;
+import org.uberfire.ext.metadata.search.IOSearchService;
 import org.uberfire.io.IOService;
 import org.uberfire.io.attribute.DublinCoreView;
 import org.uberfire.io.impl.cluster.IOServiceClusterImpl;
@@ -96,7 +96,7 @@ public class ApplicationScopedProvider {
                                                   clusterServiceFactory,
                                                   false );
         }
-        this.ioSearchService = new IOSearchIndex( config.getSearchIndex(), ioService );
+        this.ioSearchService = new IOSearchServiceImpl( config.getSearchIndex(), ioService );
 
     }
 
