@@ -319,10 +319,6 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
         return variableNameColumn;
     }
 
-    public void onProcessInstanceSelectionEvent( @Observes ProcessInstancesWithDetailsRequestEvent event ) {
-
-    }
-
     public void initDefaultFilters( GridGlobalPreferences preferences,
                                     Button createTabButton ) {
 
