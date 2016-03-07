@@ -518,13 +518,6 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
         return descriptionColumn;
     }
 
-    public void onProcessInstanceSelectionEvent( @Observes ProcessInstancesWithDetailsRequestEvent event ) {
-        placeManager.goTo( "Process Instance Details Multi" );
-        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( event.getDeploymentId(),
-                                                                         event.getProcessInstanceId(), event.getProcessDefId(),
-                                                                         event.getProcessDefName(), event.getProcessInstanceStatus() ) );
-    }
-
     public void formClosed( @Observes BeforeClosePlaceEvent closed ) {
         if ( "Signal Process Popup".equals( closed.getPlace().getIdentifier() ) ) {
             presenter.refreshGrid();
