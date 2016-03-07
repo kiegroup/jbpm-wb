@@ -20,6 +20,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
@@ -31,8 +32,6 @@ import org.jbpm.console.ng.ht.service.TaskQueryService;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
 import org.uberfire.client.mvp.PlaceManager;
-
-import com.google.gwt.user.client.ui.IsWidget;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
@@ -91,7 +90,7 @@ public class TaskProcessContextPresenter {
         dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
             @Override
             public void callback(ProcessInstanceSummary summary) {
-                placeManager.goTo("Process Instances");
+                placeManager.goTo("DataSet Process Instances With Variables");
                 processInstanceSelected.fire(new ProcessInstancesWithDetailsRequestEvent(
                         summary.getDeploymentId(),
                         summary.getProcessInstanceId(),
