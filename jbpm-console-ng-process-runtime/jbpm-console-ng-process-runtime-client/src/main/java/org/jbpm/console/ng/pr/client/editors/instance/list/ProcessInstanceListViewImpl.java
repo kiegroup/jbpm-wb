@@ -533,13 +533,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         return descriptionColumn;
     }
 
-    public void onProcessInstanceSelectionEvent( @Observes ProcessInstancesWithDetailsRequestEvent event ) {
-        placeManager.goTo( "Process Instance Details Multi" );
-        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( event.getDeploymentId(),
-                                                                         event.getProcessInstanceId(), event.getProcessDefId(),
-                                                                         event.getProcessDefName(), event.getProcessInstanceStatus() ) );
-    }
-
     private class AbortActionHasCell implements HasCell<ProcessInstanceSummary, ProcessInstanceSummary> {
 
         private ActionCell<ProcessInstanceSummary> cell;

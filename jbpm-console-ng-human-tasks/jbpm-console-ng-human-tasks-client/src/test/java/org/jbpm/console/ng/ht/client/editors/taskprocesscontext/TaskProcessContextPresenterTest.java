@@ -22,11 +22,15 @@ import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,8 +43,13 @@ public class TaskProcessContextPresenterTest {
 
     @Mock
     private TaskProcessContextView viewMock;
+
     @Mock
     private PlaceManager placeManager;
+
+    @Mock
+    DataServiceEntryPoint dataServiceEntryPoint;
+
     @Mock
     Event<ProcessInstancesWithDetailsRequestEvent> procNavigationMock;
 
@@ -63,8 +72,7 @@ public class TaskProcessContextPresenterTest {
                 = new CallerMock<TaskQueryService>(tqs);
 
         // DataService caller mock
-        CallerMock<DataServiceEntryPoint> dataServiceCallerMock
-                = new CallerMock<DataServiceEntryPoint>(mock(DataServiceEntryPoint.class));
+        CallerMock<DataServiceEntryPoint> dataServiceCallerMock = new CallerMock<DataServiceEntryPoint>(dataServiceEntryPoint);
 
         presenter = new TaskProcessContextPresenter(
                 viewMock,
@@ -100,4 +108,28 @@ public class TaskProcessContextPresenterTest {
         verify(viewMock).setProcessInstanceId("123");
         verify(viewMock).enablePIDetailsButton(true);
     }
+
+    @Test
+    public void testGoToProcessInstanceDetails() {
+        final ProcessInstanceSummary summary = new ProcessInstanceSummary();
+        summary.setDeploymentId("deploymentId");
+        summary.setProcessInstanceId(-1l);
+        summary.setProcessId("processId");
+        summary.setProcessName("processName");
+        summary.setState(1);
+        when(dataServiceEntryPoint.getProcessInstanceById(-1)).thenReturn(summary);
+
+        presenter.goToProcessInstanceDetails();
+
+        verify(placeManager).goTo("DataSet Process Instances With Variables");
+        final ArgumentCaptor<ProcessInstancesWithDetailsRequestEvent> eventCaptor = ArgumentCaptor.forClass(ProcessInstancesWithDetailsRequestEvent.class);
+        verify(procNavigationMock).fire(eventCaptor.capture());
+        final ProcessInstancesWithDetailsRequestEvent event = eventCaptor.getValue();
+        assertEquals(summary.getDeploymentId(), event.getDeploymentId());
+        assertEquals(summary.getProcessInstanceId(), event.getProcessInstanceId());
+        assertEquals(summary.getProcessId(), event.getProcessDefId());
+        assertEquals(summary.getProcessName(), event.getProcessDefName());
+        assertEquals(Integer.valueOf(summary.getState()), event.getProcessInstanceStatus());
+    }
+
 }
