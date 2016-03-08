@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.pr.client.editors.instance.list.dash;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +36,6 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Element;
@@ -60,12 +58,12 @@ import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.console.ng.df.client.list.base.DataSetEditorManager;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractMultiGridView;
+import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.jbpm.console.ng.pr.client.editors.instance.list.ProcessInstanceSummaryActionCell;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
-import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
@@ -439,12 +437,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
         Column<ProcessInstanceSummary, String> startTimeColumn = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
             @Override
             public String getValue( ProcessInstanceSummary object ) {
-                Date startTime = object.getStartTime();
-                if ( startTime != null ) {
-                    DateTimeFormat format = DateTimeFormat.getFormat( "dd/MM/yyyy HH:mm" );
-                    return format.format( startTime );
-                }
-                return "";
+                return DateUtils.getDateTimeStr(object.getStartTime());
             }
         };
         startTimeColumn.setSortable( true );
@@ -567,8 +560,8 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
 
         builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, "processInstanceId" );
         builder.setColumn(COLUMN_PROCESS_ID, "processId" );
-        builder.setColumn(COLUMN_START, "start", "MMM dd E, yyyy");
-        builder.setColumn(COLUMN_END, "end", "MMM dd E, yyyy");
+        builder.setColumn(COLUMN_START, "start", DateUtils.getDateTimeFormatMask());
+        builder.setColumn(COLUMN_END, "end", DateUtils.getDateTimeFormatMask());
         builder.setColumn(COLUMN_STATUS, "status");
         builder.setColumn(COLUMN_PARENT_PROCESS_INSTANCE_ID, "parentProcessInstanceId");
         builder.setColumn(COLUMN_OUTCOME, "outcome");
@@ -636,8 +629,8 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
 
         builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, "processInstanceId" );
         builder.setColumn(COLUMN_PROCESS_ID, "processId" );
-        builder.setColumn(COLUMN_START, "start", "MMM dd E, yyyy");
-        builder.setColumn(COLUMN_END, "end", "MMM dd E, yyyy");
+        builder.setColumn(COLUMN_START, "start", DateUtils.getDateTimeFormatMask());
+        builder.setColumn(COLUMN_END, "end", DateUtils.getDateTimeFormatMask());
         builder.setColumn(COLUMN_STATUS, "status");
         builder.setColumn(COLUMN_PARENT_PROCESS_INSTANCE_ID, "parentProcessInstanceId");
         builder.setColumn(COLUMN_OUTCOME, "outcome");

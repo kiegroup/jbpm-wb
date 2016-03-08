@@ -33,7 +33,6 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
@@ -47,6 +46,7 @@ import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
@@ -155,8 +155,7 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
         Column<CommentSummary, String> addedAtColumn = new Column<CommentSummary, String>( new TextCell() ) {
             @Override
             public String getValue( CommentSummary c ) {
-                DateTimeFormat format = DateTimeFormat.getFormat( "dd/MM/yyyy HH:mm" );
-                return format.format( c.getAddedAt() );
+                return DateUtils.getDateTimeStr(c.getAddedAt());
             }
         };
         addedAtColumn.setSortable( true );

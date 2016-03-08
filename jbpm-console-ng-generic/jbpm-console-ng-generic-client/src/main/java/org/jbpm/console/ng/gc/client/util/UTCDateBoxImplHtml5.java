@@ -30,7 +30,7 @@ import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
  */
 public class UTCDateBoxImplHtml5 extends UTCDateBoxImplShared {
 
-    private static final DateTimeFormat dateInputFormat = DateTimeFormat.getFormat("dd/MM/yyyy");
+    private static final DateTimeFormat dateInputFormat = DateTimeFormat.getFormat(DateUtils.getDateFormatMask());
     
     private DateTimeFormat dateFormat;
     private InputWidget widget;
