@@ -51,6 +51,7 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.PopoverTextCell;
+import org.uberfire.mvp.ParameterizedCommand;
 
 @Dependent
 public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariableSummary, ProcessVariableListPresenter>
@@ -228,15 +229,20 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
             @Override
             public void execute( ProcessVariableSummary variable ) {
                 variableEditPopup.show( variable.getProcessInstanceId(), variable.getVariableId(), variable.getNewValue() );
-
             }
         } ) );
 
         cells.add( new VariableHistoryActionHasCell( constants.History(), new Delegate<ProcessVariableSummary>() {
             @Override
-            public void execute( ProcessVariableSummary variable ) {
-                variableHistoryPopup.show( variable.getProcessInstanceId(), variable.getVariableId() );
-
+            public void execute( final ProcessVariableSummary variable ) {
+                showBusyIndicator(constants.Loading());
+                presenter.loadVariableHistory(new ParameterizedCommand<List<ProcessVariableSummary>>() {
+                    @Override
+                    public void execute(final List<ProcessVariableSummary> processVariableSummaries) {
+                        hideBusyIndicator();
+                        variableHistoryPopup.show(variable.getVariableId(), processVariableSummaries);
+                    }
+                }, variable.getVariableId());
             }
         } ) );
 
