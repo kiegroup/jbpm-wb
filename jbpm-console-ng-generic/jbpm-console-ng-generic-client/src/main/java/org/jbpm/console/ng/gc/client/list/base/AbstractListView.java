@@ -15,8 +15,6 @@
  */
 package org.jbpm.console.ng.gc.client.list.base;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.ui.Composite;
@@ -24,12 +22,9 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.console.ng.gc.client.i18n.Constants;
 import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.uberfire.client.mvp.PlaceManager;
@@ -39,6 +34,7 @@ import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
+import org.uberfire.ext.widgets.common.client.common.HasBusyIndicator;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import javax.enterprise.event.Event;
@@ -90,7 +86,7 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
 
     protected DefaultSelectionEventManager<T> noActionColumnManager;
 
-    public interface BasicListView<T extends GenericSummary> extends IsWidget {
+    public interface BasicListView<T extends GenericSummary> extends IsWidget, HasBusyIndicator {
 
         void showBusyIndicator( String message );
 
