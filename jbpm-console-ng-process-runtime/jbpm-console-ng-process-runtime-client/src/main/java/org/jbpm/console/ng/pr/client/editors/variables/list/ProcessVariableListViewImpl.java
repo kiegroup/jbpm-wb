@@ -32,7 +32,6 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.view.client.CellPreviewEvent;
@@ -42,6 +41,7 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.gc.client.util.ButtonActionCell;
+import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.jbpm.console.ng.pr.client.editors.variables.edit.VariableEditPopup;
 import org.jbpm.console.ng.pr.client.editors.variables.history.VariableHistoryPopup;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
@@ -209,10 +209,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
 
             @Override
             public String getValue( ProcessVariableSummary object ) {
-
-                Date lastMofidication = new Date( object.getTimestamp() );
-                DateTimeFormat format = DateTimeFormat.getFormat( "dd/MM/yyyy HH:mm" );
-                return format.format( lastMofidication );
+                return DateUtils.getDateTimeStr(new Date(object.getTimestamp()));
 
             }
         };

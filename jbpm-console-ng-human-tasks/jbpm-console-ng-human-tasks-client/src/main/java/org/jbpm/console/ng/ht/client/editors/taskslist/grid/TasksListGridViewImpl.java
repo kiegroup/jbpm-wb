@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,7 +35,6 @@ import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
@@ -50,6 +48,7 @@ import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractMultiGridView;
 import org.jbpm.console.ng.gc.client.util.ButtonActionCell;
+import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.jbpm.console.ng.gc.client.util.TaskUtils;
 import org.jbpm.console.ng.ht.client.editors.quicknewtask.QuickNewTaskPopup;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
@@ -399,12 +398,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
         Column<TaskSummary, String> createdOnDateColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue( TaskSummary object ) {
-                if ( object.getCreatedOn() != null ) {
-                    Date createdOn = object.getCreatedOn();
-                    DateTimeFormat format = DateTimeFormat.getFormat( "dd/MM/yyyy HH:mm" );
-                    return format.format( createdOn );
-                }
-                return "";
+                return DateUtils.getDateTimeStr(object.getCreatedOn());
             }
         };
         createdOnDateColumn.setSortable( true );
@@ -416,12 +410,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
         Column<TaskSummary, String> dueDateColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue( TaskSummary object ) {
-                if ( object.getExpirationTime() != null ) {
-                    Date expirationTime = object.getExpirationTime();
-                    DateTimeFormat format = DateTimeFormat.getFormat( "dd/MM/yyyy HH:mm" );
-                    return format.format( expirationTime );
-                }
-                return "";
+                return DateUtils.getDateTimeStr(object.getExpirationTime());
             }
         };
         dueDateColumn.setSortable( true );
