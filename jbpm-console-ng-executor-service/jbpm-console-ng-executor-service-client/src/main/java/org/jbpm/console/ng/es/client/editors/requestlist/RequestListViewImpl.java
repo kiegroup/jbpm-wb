@@ -31,7 +31,6 @@ import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -60,6 +59,7 @@ import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractMultiGridView;
 import org.jbpm.console.ng.gc.client.util.ButtonActionCell;
+import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
@@ -310,7 +310,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         Column<RequestSummary, String> dueDateColumn = new Column<RequestSummary, String>( new TextCell() ) {
             @Override
             public String getValue( RequestSummary object ) {
-                return object.getTime().toString();
+                return DateUtils.getDateTimeStr(object.getTime());
             }
         };
         dueDateColumn.setSortable( true );
@@ -455,10 +455,10 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
             builder.filter( equalsTo( COLUMN_STATUS, names ) );
         }
         builder.dataset( REQUEST_LIST_DATASET );
-        builder.setColumn( COLUMN_ID, constants.Id() );
-        builder.setColumn( COLUMN_TIMESTAMP, constants.Time(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_ID, constants.Id());
+        builder.setColumn( COLUMN_TIMESTAMP, constants.Time(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn( COLUMN_STATUS, constants.Status() );
-        builder.setColumn( COLUMN_COMMANDNAME, constants.CommandName(), "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_COMMANDNAME, constants.CommandName() );
         builder.setColumn( COLUMN_MESSAGE, constants.Message() );
         builder.setColumn( COLUMN_BUSINESSKEY, constants.Key() );
 
@@ -512,9 +512,9 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
         builder.dataset( REQUEST_LIST_DATASET );
         builder.setColumn( COLUMN_ID, constants.Id() );
-        builder.setColumn( COLUMN_TIMESTAMP, constants.Time(), "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_TIMESTAMP, constants.Time(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn( COLUMN_STATUS, constants.Status() );
-        builder.setColumn( COLUMN_COMMANDNAME, constants.CommandName(), "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_COMMANDNAME, constants.CommandName(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn( COLUMN_MESSAGE, constants.Message() );
         builder.setColumn( COLUMN_BUSINESSKEY, constants.Key() );
 
