@@ -20,11 +20,16 @@ import java.util.Date;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
+import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
 
 /**
  * Provides utility methods for manipulating with {@link Date}s.
  */
 public class DateUtils {
+    public static String DEFAULT_DATE_FORMAT_MASK = "dd/MM/yyyy";
+    public static String DEFAULT_DATE_AND_TIME_FORMAT_MASK = "dd/MM/yyyy HH:mm";
+    public static String DEFAULT_TIME_FORMAT_MASK = "HH:mm";
+
     /**
      * Creates new {@link Date} object using default format - "yyyy-MM-dd" (e.g. 2013-04-25).
      *
@@ -167,5 +172,66 @@ public class DateUtils {
         }
         return desiredDate;
     }
+
+    /** Check for the system property override, if it isn't exists */
+    public static String getDateFormatMask() {
+        try {
+            String fmt = ApplicationPreferences.getDroolsDateFormat();
+            if (fmt != null) {
+                return fmt;
+            }
+        } catch (Exception e){
+
+        }
+        return DEFAULT_DATE_FORMAT_MASK;
+    }
+
+    /** Check for the system property override, if it isn't exists */
+    public static String getDateTimeFormatMask() {
+        try {
+            String fmt = ApplicationPreferences.getDroolsDateTimeFormat();
+            if (fmt != null) {
+                return fmt;
+            }
+        } catch (Exception e){
+
+        }
+        return DEFAULT_DATE_AND_TIME_FORMAT_MASK;
+
+    }
+
+
+    public static String getTimeFormatMask() {
+
+        return DEFAULT_TIME_FORMAT_MASK;
+    }
+
+    public static String getDateStr(Date date){
+        if(date!=null) {
+            DateTimeFormat format = DateTimeFormat.getFormat(getDateFormatMask());
+            return format.format(date);
+        }
+        return "";
+    }
+
+    public static String getDateTimeStr(Date date){
+        if(date!=null) {
+            DateTimeFormat format = DateTimeFormat.getFormat(getDateTimeFormatMask());
+            return format.format(date);
+        }
+        return "";
+    }
+
+
+    // Gets the Date string representation depending on the current navigation Locale
+    public static String getLocaleDateStr(Date date){
+       return  DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_SHORT).format(date);
+    }
+
+    // Get the DateTime string representation depending on the current navigation Locale
+    public static String getLocaleDateTimeStr(Date date){
+        return  DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_SHORT).format(date);
+    }
+
 
 }

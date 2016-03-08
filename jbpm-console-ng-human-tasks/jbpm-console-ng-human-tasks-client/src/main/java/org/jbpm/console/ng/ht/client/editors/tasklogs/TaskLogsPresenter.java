@@ -22,7 +22,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.bus.client.api.messaging.Message;
@@ -31,6 +30,7 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.ga.model.QueryFilter;
+import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
@@ -83,9 +83,8 @@ public class TaskLogsPresenter {
             @Override
             public void callback( PageResponse<TaskEventSummary> events ) {
                 SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                DateTimeFormat format = DateTimeFormat.getFormat( "dd/MM/yyyy HH:mm" );
                 for ( TaskEventSummary tes : events.getPageRowList() ) {
-                    String timeStamp = format.format( tes.getLogTime() );
+                    String timeStamp = DateUtils.getDateTimeStr(tes.getLogTime());
                     if(tes.getType().equals("UPDATED")){
                         safeHtmlBuilder.appendEscapedLines(timeStamp + ": Task " + tes.getType() + " (" + tes.getMessage() + ") \n");
                     }else {

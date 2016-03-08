@@ -27,6 +27,7 @@ import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
+import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -123,9 +124,9 @@ public class RequestListPresenterTest {
 
         builder.dataset( REQUEST_LIST_DATASET );
         builder.setColumn( COLUMN_ID, "id" );
-        builder.setColumn( COLUMN_TIMESTAMP, "time" , "MMM dd E, yyyy");
+        builder.setColumn( COLUMN_TIMESTAMP, "time" , DateUtils.getDateTimeFormatMask());
         builder.setColumn( COLUMN_STATUS,"status" );
-        builder.setColumn( COLUMN_COMMANDNAME , "commandName", "MMM dd E, yyyy" );
+        builder.setColumn( COLUMN_COMMANDNAME , "commandName" );
         builder.setColumn( COLUMN_MESSAGE, "status" );
         builder.setColumn( COLUMN_BUSINESSKEY, "key" );
 

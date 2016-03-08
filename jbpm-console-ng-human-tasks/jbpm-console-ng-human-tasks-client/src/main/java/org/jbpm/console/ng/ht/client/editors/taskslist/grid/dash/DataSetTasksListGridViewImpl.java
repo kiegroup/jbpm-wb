@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +36,6 @@ import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
@@ -57,6 +55,7 @@ import org.jbpm.console.ng.df.client.list.base.DataSetEditorManager;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractMultiGridView;
 import org.jbpm.console.ng.gc.client.util.ButtonActionCell;
+import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.jbpm.console.ng.gc.client.util.TaskUtils;
 import org.jbpm.console.ng.ht.client.editors.quicknewtask.QuickNewTaskPopup;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
@@ -368,12 +367,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         Column<TaskSummary, String> createdOnDateColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue( TaskSummary object ) {
-                if ( object.getCreatedOn() != null ) {
-                    Date createdOn = object.getCreatedOn();
-                    DateTimeFormat format = DateTimeFormat.getFormat( "dd/MM/yyyy HH:mm" );
-                    return format.format( createdOn );
-                }
-                return "";
+                return DateUtils.getDateTimeStr(object.getCreatedOn());
             }
         };
         createdOnDateColumn.setSortable( true );
@@ -385,12 +379,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         Column<TaskSummary, String> dueDateColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue( TaskSummary object ) {
-                if ( object.getExpirationTime() != null ) {
-                    Date expirationTime = object.getExpirationTime();
-                    DateTimeFormat format = DateTimeFormat.getFormat( "dd/MM/yyyy HH:mm" );
-                    return format.format( expirationTime );
-                }
-                return "";
+                return DateUtils.getDateTimeStr(object.getExpirationTime());
             }
         };
         dueDateColumn.setSortable( true );
@@ -607,13 +596,13 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.filter( COLUMN_ORGANIZATIONAL_ENTITY, OR( condList ) );
         builder.group(COLUMN_TASK_ID);
 
-        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner() );
         builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy() );
-        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId() );
         builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
-        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn(COLUMN_NAME, constants.Task());
         builder.setColumn(COLUMN_PARENT_ID, constants.ParentId() );
         builder.setColumn(COLUMN_PRIORITY, constants.Priority());
@@ -685,13 +674,13 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         builder.group(COLUMN_TASK_ID);
 
-        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(),DateUtils.getDateTimeFormatMask() );
         builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner() );
         builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy() );
-        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId() );
         builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
-        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn(COLUMN_NAME, constants.Task());
         builder.setColumn(COLUMN_PARENT_ID, constants.ParentId() );
         builder.setColumn(COLUMN_PRIORITY, constants.Priority());
@@ -751,13 +740,13 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.filter( equalsTo( COLUMN_STATUS, names ) );
         builder.filter( equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier() ) );
 
-        builder.setColumn(COLUMN_ACTIVATION_TIME, "Activation Time", "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_ACTIVATION_TIME, "Activation Time", DateUtils.getDateTimeFormatMask() );
         builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner() );
         builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy() );
-        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId() );
         builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
-        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn(COLUMN_NAME, constants.Task());
         builder.setColumn(COLUMN_PARENT_ID, constants.ParentId() );
         builder.setColumn(COLUMN_PRIORITY, constants.Priority());
@@ -831,13 +820,13 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.filter( OR( myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier() ) ) );
         builder.group(COLUMN_TASK_ID);
 
-        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner() );
         builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy() );
-        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId() );
         builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
-        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn(COLUMN_NAME, constants.Task());
         builder.setColumn(COLUMN_PARENT_ID, constants.ParentId() );
         builder.setColumn(COLUMN_PRIORITY, constants.Priority());
@@ -916,13 +905,13 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.filter( OR( myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier() ) ) );
         builder.group(COLUMN_TASK_ID);
 
-        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner() );
         builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy() );
-        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId() );
         builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
-        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), "MMM dd E, yyyy" );
+        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn(COLUMN_NAME, constants.Task());
         builder.setColumn(COLUMN_PARENT_ID, constants.ParentId() );
         builder.setColumn(COLUMN_PRIORITY, constants.Priority());

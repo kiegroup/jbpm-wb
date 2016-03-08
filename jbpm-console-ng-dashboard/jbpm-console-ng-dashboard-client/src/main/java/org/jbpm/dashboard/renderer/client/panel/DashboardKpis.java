@@ -20,6 +20,7 @@ import org.dashbuilder.dataset.group.DateIntervalType;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.DisplayerSettingsFactory;
 import org.dashbuilder.renderer.client.DefaultRenderer;
+import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardI18n;
 
@@ -50,8 +51,8 @@ public class DashboardKpis {
                         .column(COLUMN_PROCESS_USER_ID).format(i18n.processTableInitiator())
                         .column(COLUMN_PROCESS_STATUS).format(i18n.processTableStatus()).expression(processStatusExpression(i18n))
                         .column(COLUMN_PROCESS_VERSION).format(i18n.processTableVersion())
-                        .column(COLUMN_PROCESS_START_DATE).format(i18n.processTableStartDate(), "MMM dd, yyyy HH:mm")
-                        .column(COLUMN_PROCESS_END_DATE).format(i18n.processTableEndDate(), "MMM dd, yyyy HH:mm")
+                        .column(COLUMN_PROCESS_START_DATE).format(i18n.processTableStartDate(), DateUtils.getDateTimeFormatMask())
+                        .column(COLUMN_PROCESS_END_DATE).format(i18n.processTableEndDate(), DateUtils.getDateTimeFormatMask())
                         .column(COLUMN_PROCESS_DURATION).format(i18n.processTableDuration())
                         .tablePageSize(10)
                         .tableOrderEnabled(true)
@@ -289,8 +290,8 @@ public class DashboardKpis {
                         .column(COLUMN_TASK_NAME).format(i18n.taskTableName())
                         .column(COLUMN_TASK_OWNER_ID).format(i18n.taskTableOwner())
                         .column(COLUMN_TASK_STATUS).format(i18n.taskTableStatus())
-                        .column(COLUMN_TASK_CREATED_DATE).format(i18n.taskTableStartDate(), "MMM dd, yyyy HH:mm")
-                        .column(COLUMN_TASK_END_DATE).format(i18n.taskTableEndDate(), "MMM dd, yyyy HH:mm")
+                        .column(COLUMN_TASK_CREATED_DATE).format(i18n.taskTableStartDate(), DateUtils.getDateTimeFormatMask())
+                        .column(COLUMN_TASK_END_DATE).format(i18n.taskTableEndDate(), DateUtils.getDateTimeFormatMask())
                         .column(COLUMN_TASK_DURATION).format(i18n.taskTableDuration())
                         .tablePageSize(10)
                         .tableOrderEnabled(true)

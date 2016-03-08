@@ -45,7 +45,7 @@ public class UTCDateBox extends Composite implements HasValue<Long>, HasValueCha
 
     private UTCDateBoxImplHtml4 impl;
     
-    private static final DateTimeFormat dateInputFormat = DateTimeFormat.getFormat("dd/MM/yyyy");
+    private static final DateTimeFormat dateInputFormat = DateTimeFormat.getFormat(DateUtils.getDateFormatMask());
     /**
      * Creates a new UTCDateBox with the medium date format for the
      * current locale.

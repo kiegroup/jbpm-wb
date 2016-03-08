@@ -25,7 +25,6 @@ import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -40,6 +39,7 @@ import org.gwtbootstrap3.client.ui.FormControlStatic;
 import org.gwtbootstrap3.client.ui.Pagination;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.gwt.DataGrid;
+import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.util.DataGridUtils;
 import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
@@ -163,10 +163,8 @@ public class VariableHistoryPopup extends BaseModal {
             public void render( Cell.Context context,
                                 ProcessVariableSummary variableSummary,
                                 SafeHtmlBuilder sb ) {
-                Date lastModification = new Date( variableSummary.getTimestamp() );
-                DateTimeFormat format = DateTimeFormat.getFormat( "dd/MM/yyyy HH:mm" );
 
-                String title = format.format( lastModification );
+                String title = DateUtils.getDateTimeStr(new Date(variableSummary.getTimestamp()));
                 sb.append( DataGridUtils.createDivStart( title ) );
                 super.render( context, variableSummary, sb );
                 sb.append( DataGridUtils.createDivEnd() );
@@ -174,9 +172,7 @@ public class VariableHistoryPopup extends BaseModal {
 
             @Override
             public String getValue( ProcessVariableSummary variable ) {
-                Date lastModification = new Date( variable.getTimestamp() );
-                DateTimeFormat format = DateTimeFormat.getFormat( "dd/MM/yyyy HH:mm" );
-                return DataGridUtils.trimToColumnWidth( processVarListGrid, this, format.format( lastModification ) );
+                return DataGridUtils.trimToColumnWidth( processVarListGrid, this, DateUtils.getDateTimeStr(new Date(variable.getTimestamp())) );
             }
         };
         lastTimeChangedColumn.setSortable( true );

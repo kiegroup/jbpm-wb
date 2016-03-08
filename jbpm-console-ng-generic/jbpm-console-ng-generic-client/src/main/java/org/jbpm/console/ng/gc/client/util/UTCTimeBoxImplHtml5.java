@@ -27,7 +27,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
  */
 public class UTCTimeBoxImplHtml5 extends UTCTimeBoxImplShared {
     
-    private static final DateTimeFormat timeInputFormat = DateTimeFormat.getFormat("HH:mm");
+    private static final DateTimeFormat timeInputFormat = DateTimeFormat.getFormat(DateUtils.DEFAULT_TIME_FORMAT_MASK);
     
     private InputWidget widget;
     
