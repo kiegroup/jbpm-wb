@@ -239,7 +239,9 @@ public class AdministrationServiceImpl implements AdministrationService {
             if ( repository != null ) {
                 String projectLocation = repository.getUri() + ioService.getFileSystem( URI.create( repository.getUri() ) ).getSeparator() + artifact;
                 if ( !ioService.exists( ioService.get( URI.create( projectLocation ) ) ) ) {
-                    projectService.newProject( repository, new POM( gav ), "/" );
+                    projectService.newProject( repository.getBranchRoot( repository.getDefaultBranch() ),
+                                               new POM( gav ),
+                                               "/" );
                 }
             } else {
                 logger.error( "Repository " + repoAlias + " was not found, cannot add project" );
