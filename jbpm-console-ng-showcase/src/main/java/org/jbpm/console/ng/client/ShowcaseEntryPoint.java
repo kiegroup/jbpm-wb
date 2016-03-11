@@ -17,6 +17,7 @@ package org.jbpm.console.ng.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -138,16 +139,7 @@ public class ShowcaseEntryPoint {
 
         final AbstractWorkbenchPerspectiveActivity defaultPerspective = getDefaultPerspectiveActivity();
         final Menus menus = MenuFactory
-                .newTopLevelMenu( constants.Home() ).respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        if ( defaultPerspective != null ) {
-                            placeManager.goTo( new DefaultPlaceRequest( defaultPerspective.getIdentifier() ) );
-                        } else {
-                            Window.alert( "Default perspective not found." );
-                        }
-                    }
-                } ).endMenu()
+                .newTopLevelMenu( constants.Home() ).place( new DefaultPlaceRequest( defaultPerspective.getIdentifier() ) ).endMenu()
                 .newTopLevelMenu( constants.Authoring() ).withItems( getAuthoringViews() ).endMenu()
                 .newTopLevelMenu( constants.Deploy() ).withItems( getDeploymentViews() ).endMenu()
                 .newTopLevelMenu( "Case Management" ).withItems( getCaseMGMTViews() ).endMenu()
@@ -202,98 +194,37 @@ public class ShowcaseEntryPoint {
     }
 
     private List<? extends MenuItem> getAuthoringViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
-
-        result.add( MenuFactory.newSimpleItem( constants.Process_Authoring() ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Authoring" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
-
-        return result;
+        return Collections.singletonList(
+            MenuFactory.newSimpleItem( constants.Process_Authoring() ).perspective( constants.Authoring() ).endMenu().build().getItems().get( 0 )
+        );
     }
 
     private List<? extends MenuItem> getCaseMGMTViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
-
-        result.add( MenuFactory.newSimpleItem( "Cases" ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Cases" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
-
-
-        return result;
+        return Collections.singletonList(
+                MenuFactory.newSimpleItem( "Cases" ).perspective( "Cases" ).endMenu().build().getItems().get( 0 )
+        );
     }
 
     private List<? extends MenuItem> getProcessMGMTViews() {
-        final List<MenuItem> result = new ArrayList<MenuItem>( 4 );
+        final List<MenuItem> result = new ArrayList<MenuItem>( 3 );
 
-        result.add( MenuFactory.newSimpleItem( constants.Process_Definitions() ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Process Definitions" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
+        result.add( MenuFactory.newSimpleItem( constants.Process_Definitions() ).perspective( "Process Definitions" ).endMenu().build().getItems().get( 0 ) );
 
-        result.add( MenuFactory.newSimpleItem( " Variables" ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "DataSet Process Instances Variables" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
+        result.add( MenuFactory.newSimpleItem( constants.Process_Instances() ).perspective( "DataSet Process Instances With Variables" ).endMenu().build().getItems().get( 0 ) );
 
-        result.add( MenuFactory.newSimpleItem( "Process With Variables" ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "DataSet Process Instances With Variables" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
-
-        result.add( MenuFactory.newSimpleItem( constants.Process_Instances() ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "DataSet Process Instances" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
-
-        result.add( MenuFactory.newSimpleItem( constants.Process_Instances_Admin() ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Process Admin" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
+        result.add( MenuFactory.newSimpleItem( constants.Process_Instances_Admin() ).perspective( "Process Admin" ).endMenu().build().getItems().get( 0 ) );
 
         return result;
     }
 
     private List<? extends MenuItem> getExperimentalViews() {
+        final List<MenuItem> result = new ArrayList<MenuItem>( 3 );
 
-        final List<MenuItem> result = new ArrayList<MenuItem>( 4 );
+        result.add( MenuFactory.newSimpleItem( "Grid Base Test" ).perspective( "Grid Base Test" ).endMenu().build().getItems().get( 0 ) );
 
+        result.add( MenuFactory.newSimpleItem( constants.Logs() ).perspective( "Logs" ).endMenu().build().getItems().get( 0 ) );
 
-        result.add( MenuFactory.newSimpleItem( "Grid Base Test" ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Grid Base Test" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
-
-        result.add( MenuFactory.newSimpleItem( constants.Logs() ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Logs" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
-
-        result.add( MenuFactory.newSimpleItem( "Documents" ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Documents Perspective" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
+        result.add( MenuFactory.newSimpleItem( "Documents" ).perspective( "Documents Perspective" ).endMenu().build().getItems().get( 0 ) );
 
         return result;
     }
@@ -301,87 +232,31 @@ public class ShowcaseEntryPoint {
     private List<? extends MenuItem> getDeploymentViews() {
         final List<MenuItem> result = new ArrayList<MenuItem>( 3 );
 
-        result.add( MenuFactory.newSimpleItem( constants.Deployments() ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Deployments" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
+        result.add( MenuFactory.newSimpleItem( constants.Deployments() ).perspective( "Deployments" ).endMenu().build().getItems().get( 0 ) );
 
-        result.add( MenuFactory.newSimpleItem( constants.Jobs() ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Jobs" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
+        result.add( MenuFactory.newSimpleItem( constants.Jobs() ).perspective( "Jobs" ).endMenu().build().getItems().get( 0 ) );
 
-        result.add( MenuFactory.newSimpleItem( constants.Asset_Management() ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Asset Management" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
+        result.add( MenuFactory.newSimpleItem( constants.Asset_Management() ).perspective( "Asset Management" ).endMenu().build().getItems().get( 0 ) );
 
-
-       /* result.add( MenuFactory.newSimpleItem( "Data Sets (new)" ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "DataSetAuthoringPerspective" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
-        */
-        result.add( MenuFactory.newSimpleItem( "DataSet Task List" ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "DataSet Tasks" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
         return result;
     }
 
     private List<? extends MenuItem> getWorkViews() {
         final List<MenuItem> result = new ArrayList<MenuItem>( 4 );
 
-        result.add( MenuFactory.newSimpleItem( constants.Tasks_List() ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Tasks" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
+        result.add( MenuFactory.newSimpleItem( constants.Tasks_List() ).perspective( "DataSet Tasks" ).endMenu().build().getItems().get( 0 ) );
 
-        result.add( MenuFactory.newSimpleItem( constants.Tasks_List_Admin() ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "Tasks Admin" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
+        result.add( MenuFactory.newSimpleItem( constants.Tasks_List_Admin() ).perspective( "Tasks Admin" ).endMenu().build().getItems().get( 0 ) );
 
+        result.add( MenuFactory.newSimpleItem( "Data Sets" ).perspective( "DataSetAuthoringPerspective" ).endMenu().build().getItems().get( 0 ) );
 
-        result.add( MenuFactory.newSimpleItem( "Data Sets (new)" ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "DataSetAuthoringPerspective" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
-
-        result.add( MenuFactory.newSimpleItem( "DataSet Task List" ).respondsWith( new Command() {
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "DataSet Tasks" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
         return result;
     }
 
     private List<? extends MenuItem> getDashboardsViews() {
         final List<MenuItem> result = new ArrayList<MenuItem>( 1 );
-        result.add( MenuFactory.newSimpleItem( constants.Process_Dashboard() ).respondsWith( new Command() {
 
-            @Override
-            public void execute() {
-                placeManager.goTo( new DefaultPlaceRequest( "DashboardPerspective" ) );
-            }
-        } ).endMenu().build().getItems().get( 0 ) );
+        result.add( MenuFactory.newSimpleItem( constants.Process_Dashboard() ).perspective( "DashboardPerspective" ).endMenu().build().getItems().get( 0 ) );
 
         final String dashbuilderURL = DashboardURLBuilder.getDashboardURL( "/dashbuilder/workspace", null, LocaleInfo.getCurrentLocale().getLocaleName() );
         result.add( MenuFactory.newSimpleItem( constants.Business_Dashboard() ).respondsWith( new Command() {
