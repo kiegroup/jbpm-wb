@@ -222,11 +222,11 @@ public class QuickNewJobPopup extends BaseModal {
         advancedTabPane.setActive( false );
         basicTab.showTab();
 
-        long now = System.currentTimeMillis() + 120 * 1000;
+        long nextDueDate = System.currentTimeMillis() + 1800 * 1000;
+        // 30' minutes in the future
         jobDueDate.setEnabled( true );
-        jobDueDate.setValue( now );
-        // Two minutes in the future
-        jobDueDateTime.setValue( UTCDateBox.date2utc( new Date( now ) ) );
+        jobDueDate.setValue( nextDueDate );
+        jobDueDateTime.setValue( UTCDateBox.date2utc( new Date( nextDueDate ) ) );
         jobNameText.setText( "" );
         jobTypeText.setText( "" );
         jobRetriesNumber.setText( "0" );
