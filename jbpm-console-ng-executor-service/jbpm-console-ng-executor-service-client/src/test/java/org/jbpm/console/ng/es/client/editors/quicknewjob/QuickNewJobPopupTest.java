@@ -26,6 +26,8 @@ import org.gwtbootstrap3.client.ui.html.Text;
 import org.jbpm.console.ng.es.model.RequestDataSetConstants;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
+import org.jbpm.console.ng.gc.client.util.UTCDateBox;
+import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +55,9 @@ public class QuickNewJobPopupTest {
     @Mock
     private ExecutorServiceEntryPoint executorServicesMock;
 
+    @Mock
+    public UTCTimeBox jobDueDateTime;
+
     @InjectMocks
     private QuickNewJobPopup quickNewJobPopup;
 
@@ -78,8 +83,29 @@ public class QuickNewJobPopupTest {
         quickNewJobPopup.createJob(JOB_NAME, new Date(), JOB_TYPE, JOB_RETRIES, new ArrayList<RequestParameterSummary>());
 
         verify(executorServicesMock).scheduleRequest(anyString(), any(Date.class), any(HashMap.class));
+   }
+
+    @Test
+    public void dueTimeSetToFutureTimeTest() {
+
+        final Long nextHalfHour =  UTCDateBox.date2utc(new Date(System.currentTimeMillis() + 1800 * 1000));
+        final Long nextHour =  UTCDateBox.date2utc(new Date(System.currentTimeMillis() + 3600 * 1000));
+        // now is current time + 30'
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+                final Long setTime = (Long) invocationOnMock.getArguments()[0];
+                //assert that the jobDueDateTime is set later than 30' in the future and less than 1h
+                assertTrue(setTime > nextHalfHour);
+                assertTrue(setTime < nextHour);
+                return null;
+            }
+        }).when(jobDueDateTime).setValue(anyLong());
 
 
+        quickNewJobPopup.cleanForm();
+
+        verify(jobDueDateTime).setValue(anyLong());
     }
 
 }
