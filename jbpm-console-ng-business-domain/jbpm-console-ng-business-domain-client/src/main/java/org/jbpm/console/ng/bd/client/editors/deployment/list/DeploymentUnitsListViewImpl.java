@@ -45,7 +45,7 @@ import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.gc.client.util.ButtonActionCell;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 @Dependent
 public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploymentUnitSummary, DeploymentUnitsListPresenter>

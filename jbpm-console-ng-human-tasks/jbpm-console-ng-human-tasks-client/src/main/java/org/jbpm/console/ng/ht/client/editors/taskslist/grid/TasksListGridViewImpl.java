@@ -59,8 +59,8 @@ import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.util.TaskRoleDefinition;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 

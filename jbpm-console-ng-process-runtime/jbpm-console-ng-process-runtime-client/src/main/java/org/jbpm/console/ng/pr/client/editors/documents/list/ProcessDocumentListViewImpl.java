@@ -49,7 +49,7 @@ import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.DocumentSummary;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 @Dependent
 public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummary, ProcessDocumentListPresenter>

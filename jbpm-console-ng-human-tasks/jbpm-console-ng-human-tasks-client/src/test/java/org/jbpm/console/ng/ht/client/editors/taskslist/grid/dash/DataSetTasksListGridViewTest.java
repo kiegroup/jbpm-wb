@@ -47,8 +47,8 @@ import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mvp.Command;
 

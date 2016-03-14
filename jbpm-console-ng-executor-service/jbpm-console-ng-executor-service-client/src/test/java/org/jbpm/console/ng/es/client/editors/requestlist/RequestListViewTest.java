@@ -31,8 +31,8 @@ import org.mockito.stubbing.Answer;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
