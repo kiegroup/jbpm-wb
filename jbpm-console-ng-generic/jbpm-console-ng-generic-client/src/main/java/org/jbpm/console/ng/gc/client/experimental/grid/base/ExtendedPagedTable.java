@@ -22,12 +22,9 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
 import com.google.gwt.view.client.ProvidesKey;
 import org.jbpm.console.ng.ga.model.GenericSummary;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.PagedTable;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
-/**
- * @author salaboy
- */
 public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> {
 
     public ExtendedPagedTable( int pageSize,

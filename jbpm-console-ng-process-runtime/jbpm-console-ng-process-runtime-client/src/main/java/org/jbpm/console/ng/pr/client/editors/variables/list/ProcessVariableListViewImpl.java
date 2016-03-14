@@ -49,8 +49,8 @@ import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.PopoverTextCell;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.ParameterizedCommand;
 
 @Dependent
