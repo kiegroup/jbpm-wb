@@ -228,7 +228,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
             @Override
             public String getValue( KModuleDeploymentUnitSummary unit ) {
                 String kbaseName = unit.getKbaseName();
-                if ( kbaseName.equals( "" ) ) {
+                if ( kbaseName == null || kbaseName.trim().isEmpty() ) {
                     kbaseName = "DEFAULT";
                 }
                 return kbaseName;
@@ -246,7 +246,7 @@ public class DeploymentUnitsListViewImpl extends AbstractListView<KModuleDeploym
             @Override
             public String getValue( KModuleDeploymentUnitSummary unit ) {
                 String ksessionName = unit.getKsessionName();
-                if ( ksessionName.equals( "" ) ) {
+                if ( ksessionName == null || ksessionName.trim().isEmpty() ) {
                     ksessionName = "DEFAULT";
                 }
                 return ksessionName;
