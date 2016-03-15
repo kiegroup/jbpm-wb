@@ -15,12 +15,15 @@
  */
 package org.jbpm.console.ng.bd.client.editors.deployment.list;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.user.cellview.client.Column;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jbpm.console.ng.bd.client.i18n.Constants;
 import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
-import org.jbpm.console.ng.ht.model.TaskSummary;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -41,6 +44,8 @@ public class DeploymentUnitsListViewTest {
     @InjectMocks
     private DeploymentUnitsListViewImpl view;
 
+
+
     @Test
     public void testDataStoreNameIsSet() {
         doAnswer( new Answer() {
@@ -57,6 +62,83 @@ public class DeploymentUnitsListViewTest {
         view.initColumns(currentListGrid);
 
         verify( currentListGrid ).addColumns(anyList());
+    }
+
+
+    @Test
+    public void testKBaseColumnValueSetToDefault() {
+
+        final KModuleDeploymentUnitSummary unitWithNull = new KModuleDeploymentUnitSummary("a:b:c", "a", "b", "c", null, null, "Singleton", "MERGE_COLLECTIONS");
+        final KModuleDeploymentUnitSummary unitEmptyString = new KModuleDeploymentUnitSummary("a:b:c", "a", "b", "c", "", "", "Singleton", "MERGE_COLLECTIONS");
+        final KModuleDeploymentUnitSummary unitWhiteSpace = new KModuleDeploymentUnitSummary("a:b:c", "a", "b", "c", "    ", "   ", "Singleton", "MERGE_COLLECTIONS");
+
+        doAnswer( new Answer() {
+            @Override
+            public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
+                final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[ 0 ];
+                for ( ColumnMeta columnMeta : columns ) {
+                    if (columnMeta.getCaption().equals("KieBaseName")) {
+                        Column column = columnMeta.getColumn();
+
+                        Object value = column.getValue(unitWithNull);
+                        assertNotNull(value);
+                        assertEquals("DEFAULT", value);
+
+                        value = column.getValue(unitEmptyString);
+                        assertNotNull(value);
+                        assertEquals("DEFAULT", value);
+
+                        value = column.getValue(unitWhiteSpace);
+                        assertNotNull(value);
+                        assertEquals("DEFAULT", value);
+                    }
+                }
+                return null;
+            }
+        } ).when( currentListGrid ).addColumns(anyList());
+
+        view.initColumns(currentListGrid);
+
+        verify( currentListGrid ).addColumns(anyList());
+
+    }
+
+    @Test
+    public void testKSessionColumnValueSetToDefault() {
+
+        final KModuleDeploymentUnitSummary unitWithNull = new KModuleDeploymentUnitSummary("a:b:c", "a", "b", "c", null, null, "Singleton", "MERGE_COLLECTIONS");
+        final KModuleDeploymentUnitSummary unitEmptyString = new KModuleDeploymentUnitSummary("a:b:c", "a", "b", "c", "", "", "Singleton", "MERGE_COLLECTIONS");
+        final KModuleDeploymentUnitSummary unitWhiteSpace = new KModuleDeploymentUnitSummary("a:b:c", "a", "b", "c", "    ", "   ", "Singleton", "MERGE_COLLECTIONS");
+
+        doAnswer( new Answer() {
+            @Override
+            public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
+                final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[ 0 ];
+                for ( ColumnMeta columnMeta : columns ) {
+                    if (columnMeta.getCaption().equals("KieSessionName")) {
+                        Column column = columnMeta.getColumn();
+
+                        Object value = column.getValue(unitWithNull);
+                        assertNotNull(value);
+                        assertEquals("DEFAULT", value);
+
+                        value = column.getValue(unitEmptyString);
+                        assertNotNull(value);
+                        assertEquals("DEFAULT", value);
+
+                        value = column.getValue(unitWhiteSpace);
+                        assertNotNull(value);
+                        assertEquals("DEFAULT", value);
+                    }
+                }
+                return null;
+            }
+        } ).when( currentListGrid ).addColumns(anyList());
+
+        view.initColumns(currentListGrid);
+
+        verify( currentListGrid ).addColumns(anyList());
+
     }
 
 }
