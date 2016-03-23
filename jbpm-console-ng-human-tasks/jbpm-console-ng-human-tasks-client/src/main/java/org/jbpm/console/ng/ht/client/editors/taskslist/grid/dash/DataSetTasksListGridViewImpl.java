@@ -582,18 +582,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         }
         builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names ) );
 
-        Set<Group> groups = identity.getGroups();
-
         builder.filter(COLUMN_ACTUAL_OWNER, OR(equalsTo(""), isNull()) );
-        List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
-        for ( Group g : groups ) {
-            condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, g.getName() ) );
 
-        }
-        //Adding own identity to check against potential owners
-        condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier() ) );
-
-        builder.filter( COLUMN_ORGANIZATIONAL_ENTITY, OR( condList ) );
         builder.group(COLUMN_TASK_ID);
 
         builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), DateUtils.getDateTimeFormatMask() );
@@ -659,18 +649,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             names.add( s );
         }
         builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names ) );
-
-        Set<Group> groups = identity.getGroups();
-
-        List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
-        for ( Group g : groups ) {
-            condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, g.getName() ) );
-
-        }
-        //Adding own identity to check against potential owners
-        condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier() ) );
-
-        builder.filter( COLUMN_ORGANIZATIONAL_ENTITY, OR( condList ) );
 
         builder.group(COLUMN_TASK_ID);
 
@@ -805,19 +783,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         }
         builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names ) );
 
-        Set<Group> groups = identity.getGroups();
-        List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
-        for ( Group g : groups ) {
-            condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, g.getName() ) );
-
-        }
-        //Adding own identity to check against potential owners
-        condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier() ) );
-
-        ColumnFilter myGroupFilter = FilterFactory.AND(FilterFactory.OR(condList),
-                    FilterFactory.OR(FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, ""), FilterFactory.isNull(COLUMN_ACTUAL_OWNER)));
-
-        builder.filter( OR( myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier() ) ) );
         builder.group(COLUMN_TASK_ID);
 
         builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), DateUtils.getDateTimeFormatMask() );
@@ -888,21 +853,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.initBuilder();
 
         builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
-        List<Comparable> names = new ArrayList<Comparable>();
-
-        Set<Group> groups = identity.getGroups();
-        List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
-        for ( Group g : groups ) {
-            condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, g.getName() ) );
-
-        }
-        //Adding own identity to check against potential owners
-        condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier() ) );
-
-        ColumnFilter myGroupFilter = FilterFactory.AND(FilterFactory.OR(condList),
-                FilterFactory.OR(FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, ""), FilterFactory.isNull(COLUMN_ACTUAL_OWNER)));
-
-        builder.filter( OR( myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier() ) ) );
         builder.group(COLUMN_TASK_ID);
 
         builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), DateUtils.getDateTimeFormatMask() );
