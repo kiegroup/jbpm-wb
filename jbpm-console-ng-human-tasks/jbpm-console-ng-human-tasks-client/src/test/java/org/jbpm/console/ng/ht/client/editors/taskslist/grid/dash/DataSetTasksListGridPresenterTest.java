@@ -30,7 +30,11 @@ import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.dataset.filter.LogicalExprFilter;
+import org.dashbuilder.dataset.filter.LogicalExprType;
 import org.dashbuilder.dataset.sort.SortOrder;
+import org.jboss.errai.security.shared.api.Group;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
@@ -41,6 +45,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -83,14 +88,22 @@ public class DataSetTasksListGridPresenterTest {
     @Mock
     private FilterSettings filterSettings;
 
+    @Mock
+    public User identity;
+
+
     //Thing under test
     private DataSetTasksListGridPresenter presenter;
+
 
     @Before
     public void setupMocks() {
         //Mock that actually calls the callbacks
+        DataSetLookup dataSetLookup= new DataSetLookup();
+        dataSetLookup.setDataSetUUID(HUMAN_TASKS_DATASET);
+
         callerMockTaskOperationsService = new CallerMock<TaskLifeCycleService>(taskLifeCycleServiceMock);
-        when(filterSettings.getDataSetLookup()).thenReturn(new DataSetLookup());
+        when(filterSettings.getDataSetLookup()).thenReturn(dataSetLookup);
 
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(viewMock.getVariablesTableSettings(anyString())).thenReturn(new DataSetTasksListGridViewImpl().getVariablesTableSettings("taskName"));
@@ -117,7 +130,9 @@ public class DataSetTasksListGridPresenterTest {
                 return null;
             }
         }).when(dataSetDomainDataQueryHelperMock).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
-        presenter = new DataSetTasksListGridPresenter(viewMock, callerMockTaskOperationsService, dataSetQueryHelperMock, dataSetDomainDataQueryHelperMock);
+        presenter = new DataSetTasksListGridPresenter(viewMock, callerMockTaskOperationsService,
+                dataSetQueryHelperMock, dataSetDomainDataQueryHelperMock,identity);
+
     }
 
     @Test
@@ -302,4 +317,90 @@ public class DataSetTasksListGridPresenterTest {
         assertEquals(COLUMN_PROCESS_ID, filters.get(2).getColumnId());
     }
 
+    @Test
+    public void testGetUserGroupFilters() {
+        Group group1 = new Group() {
+            @Override
+            public String getName() {
+                return "group1";
+            }
+        };
+        Group group2 = new Group() {
+            @Override
+            public String getName() {
+                return "group2";
+            }
+        };
+        HashSet<Group> groups = new HashSet<Group>();
+        groups.add(group1);
+        groups.add(group2);
+        when(identity.getGroups()).thenReturn(groups);
+        when(identity.getIdentifier()).thenReturn("userId");
+
+        final ColumnFilter userTaskFilter = presenter.getUserGroupFilters();
+        //(((id = group2 OR id = group1 OR id = userId) AND (actualOwner =  OR actualOwner is_null )) OR actualOwner = userId)
+
+        List<ColumnFilter> columnFilters = ((LogicalExprFilter) userTaskFilter).getLogicalTerms();
+
+        assertEquals(columnFilters.size(), 2);
+        assertEquals(((LogicalExprFilter) userTaskFilter).getLogicalOperator(), LogicalExprType.OR); //userOwnerTask or userGroupTask
+
+        //userGroupTask
+        // ((id = group2 OR id = group1 OR id = userId) AND (actualOwner =  OR actualOwner is_null ))
+        assertEquals(((LogicalExprFilter) columnFilters.get(0)).getLogicalOperator(), LogicalExprType.AND);
+        List<ColumnFilter> userGroupFilter = ((LogicalExprFilter) columnFilters.get(0)).getLogicalTerms();
+        assertEquals(userGroupFilter.size(), 2);
+        assertEquals(((LogicalExprFilter) userGroupFilter.get(0)).getLogicalOperator(), LogicalExprType.OR);
+
+        List<ColumnFilter> groupFilter = ((LogicalExprFilter) userGroupFilter.get(0)).getLogicalTerms();
+        List<ColumnFilter> withoutActualOwnerFilter = ((LogicalExprFilter) userGroupFilter.get(1)).getLogicalTerms();
+
+        assertEquals(((LogicalExprFilter) userGroupFilter.get(1)).getLogicalOperator(), LogicalExprType.OR);
+        assertEquals(withoutActualOwnerFilter.size(), 2); //actual_owner empty or null
+        assertEquals(COLUMN_ACTUAL_OWNER, withoutActualOwnerFilter.get(0).getColumnId());
+        assertEquals(COLUMN_ACTUAL_OWNER, withoutActualOwnerFilter.get(1).getColumnId());
+
+        assertEquals(((LogicalExprFilter) userGroupFilter.get(0)).getLogicalOperator(), LogicalExprType.OR);
+        assertEquals(groupFilter.size(), 3); //(id = group2 OR id = group1 OR id = userId)
+        assertEquals(COLUMN_ORGANIZATIONAL_ENTITY, groupFilter.get(0).getColumnId());
+        assertEquals(COLUMN_ORGANIZATIONAL_ENTITY, groupFilter.get(1).getColumnId());
+        assertEquals(COLUMN_ORGANIZATIONAL_ENTITY, groupFilter.get(2).getColumnId());
+
+        //userOwnerTask
+        // (actualOwner = userId)
+        ColumnFilter userOwnerFilter = columnFilters.get(1);//actualOwner = userId
+        assertEquals(userOwnerFilter.getColumnId(),COLUMN_ACTUAL_OWNER);
+    }
+
+    @Test
+    public void addDynamicUserRolesTest() {
+        // Test with one group to avoid problems in test the the set of groups.
+        Group group1 = new Group() {
+            @Override
+            public String getName() {
+                return "group1";
+            }
+        };
+
+        HashSet<Group> groups = new HashSet<Group>();
+        groups.add(group1);
+        when(identity.getGroups()).thenReturn(groups);
+        when(identity.getIdentifier()).thenReturn("userId");
+        presenter.setAddingDefaultFilters(false);
+        filterSettings.getDataSetLookup().setDataSetUUID(HUMAN_TASKS_WITH_USER_DATASET);
+
+        when(dataSetMock.getRowCount()).thenReturn(1);//1 task
+        //Task summary creation
+        when(dataSetQueryHelperMock.getColumnLongValue(dataSetMock, COLUMN_TASK_ID, 0)).thenReturn(Long.valueOf(1));
+
+
+        presenter.getData(new Range(0, 5));
+
+        final ColumnFilter userTaskFilter = presenter.getUserGroupFilters();
+        // Check the datasetLookup applied include the addition of the user groups restrictions
+
+        assertEquals(filterSettings.getDataSetLookup().getFirstFilterOp().getColumnFilterList().get(0).toString(),
+                userTaskFilter.toString());
+
+    }
 }

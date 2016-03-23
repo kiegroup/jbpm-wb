@@ -42,6 +42,8 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.security.shared.api.Group;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.gc.client.dataset.AbstractDataSetReadyCallback;
@@ -126,12 +128,14 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
     public DataSetTasksListGridPresenter(DataSetTaskListView view,
             Caller<TaskLifeCycleService> taskOperationsService,
             DataSetQueryHelper dataSetQueryHelper,
-            DataSetQueryHelper dataSetQueryHelperDomainSpecific
+            DataSetQueryHelper dataSetQueryHelperDomainSpecific,
+                                         User identity
     ) {
         this.view = view;
         this.taskOperationsService = taskOperationsService;
         this.dataSetQueryHelper = dataSetQueryHelper;
         this.dataSetQueryHelperDomainSpecific = dataSetQueryHelperDomainSpecific;
+        this.identity=identity;
     }
 
     @Override
@@ -165,6 +169,18 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                             currentTableSettings.getDataSetLookup().addOperation(filter);
                         }
                     }
+                    if( currentTableSettings.getDataSetLookup().getDataSetUUID().equals(HUMAN_TASKS_WITH_ADMIN_DATASET) ||
+                        currentTableSettings.getDataSetLookup().getDataSetUUID().equals(HUMAN_TASKS_WITH_USER_DATASET)) {
+
+                        if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
+                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(getUserGroupFilters()); // add actualowner = idenfier or in my groups
+                        } else {
+                            final DataSetFilter filter = new DataSetFilter();
+                            filter.addFilterColumn(getUserGroupFilters());
+                            currentTableSettings.getDataSetLookup().addOperation(filter);
+                        }
+
+                    }
                     dataSetQueryHelper.setDataSetHandler(currentTableSettings);
                     dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), createDataSetTaskCallback(visibleRange.getStart(), currentTableSettings));
                 }
@@ -188,6 +204,22 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
             }
         }
         return filters;
+    }
+
+    protected ColumnFilter getUserGroupFilters( ) {
+        Set<Group> groups = identity.getGroups();
+        List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
+        for ( Group g : groups ) {
+            condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, g.getName() ) );
+
+        }
+        //Adding own identity to check against potential owners
+        condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier() ) );
+
+        ColumnFilter myGroupFilter = FilterFactory.AND(FilterFactory.OR(condList),
+                FilterFactory.OR(FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, ""), FilterFactory.isNull(COLUMN_ACTUAL_OWNER)));
+
+        return FilterFactory.OR(myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier()));
     }
 
     protected DataSetReadyCallback createDataSetTaskCallback(final int startRange, final FilterSettings tableSettings){
