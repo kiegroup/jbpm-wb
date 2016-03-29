@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 JBoss Inc
+ * Copyright 2012 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,12 +31,15 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.dataset.filter.FilterFactory;
 import org.dashbuilder.dataset.sort.SortOrder;
 
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.security.shared.api.Group;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 
 
@@ -61,6 +64,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jbpm.console.ng.ht.client.editors.quicknewtask.QuickNewTaskPopup;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -121,11 +125,13 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
     public DataSetTasksListGridPresenter(DataSetTaskListView view,
             Caller<TaskLifeCycleService> taskOperationsService,
-            DataSetQueryHelper dataSetQueryHelper
+            DataSetQueryHelper dataSetQueryHelper,
+                                         User identity
             ) {
         this.view = view;
         this.taskOperationsService = taskOperationsService;
         this.dataSetQueryHelper = dataSetQueryHelper;
+        this.identity = identity;
     }
 
     @Override
@@ -164,6 +170,18 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                             currentTableSettings.getDataSetLookup().addOperation( filter );
                         }
                         textSearchStr = "";
+                    }
+                    if( currentTableSettings.getDataSetLookup().getDataSetUUID().equals(DataSetTasksListGridViewImpl.HUMAN_TASKS_WITH_ADMINS_DATASET) ||
+                            currentTableSettings.getDataSetLookup().getDataSetUUID().equals(DataSetTasksListGridViewImpl.HUMAN_TASKS_WITH_USERS_DATASET)) {
+
+                        if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
+                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(getUserGroupFilters()); // add actualowner = idenfier or in my groups
+                        } else {
+                            final DataSetFilter filter = new DataSetFilter();
+                            filter.addFilterColumn(getUserGroupFilters());
+                            currentTableSettings.getDataSetLookup().addOperation(filter);
+                        }
+
                     }
                     dataSetQueryHelper.setDataSetHandler( currentTableSettings );
                     dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), new DataSetReadyCallback() {
@@ -229,6 +247,22 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
         }
 
     }
+
+    protected ColumnFilter getUserGroupFilters( ) {
+        Set<Group> groups = identity.getGroups();
+        List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
+        for ( Group g : groups ) {
+            condList.add( FilterFactory.equalsTo(DataSetTasksListGridViewImpl.COLUMN_ORGANIZATIONAL_ENTITY, g.getName()) );
+        }
+        //Adding own identity to check against potential owners
+        condList.add( FilterFactory.equalsTo( DataSetTasksListGridViewImpl.COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier() ) );
+
+        ColumnFilter myGroupFilter = FilterFactory.AND(FilterFactory.OR(condList),
+                FilterFactory.OR(FilterFactory.equalsTo(DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, ""), FilterFactory.isNull(DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER)));
+
+        return FilterFactory.OR(myGroupFilter, FilterFactory.equalsTo(DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, identity.getIdentifier()));
+    }
+
 
     public void filterGrid(FilterSettings tableSettings) {
         dataSetQueryHelper.setCurrentTableSettings( tableSettings );
