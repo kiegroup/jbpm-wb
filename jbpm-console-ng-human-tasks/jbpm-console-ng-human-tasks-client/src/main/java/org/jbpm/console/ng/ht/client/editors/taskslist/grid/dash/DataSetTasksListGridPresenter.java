@@ -169,14 +169,15 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
                             currentTableSettings.getDataSetLookup().addOperation(filter);
                         }
                     }
-                    if( currentTableSettings.getDataSetLookup().getDataSetUUID().equals(HUMAN_TASKS_WITH_ADMIN_DATASET) ||
-                        currentTableSettings.getDataSetLookup().getDataSetUUID().equals(HUMAN_TASKS_WITH_USER_DATASET)) {
+                    boolean isAdminDataset = currentTableSettings.getDataSetLookup().getDataSetUUID().equals(HUMAN_TASKS_WITH_ADMIN_DATASET);
 
+                    if( isAdminDataset ||
+                        currentTableSettings.getDataSetLookup().getDataSetUUID().equals(HUMAN_TASKS_WITH_USER_DATASET)) {
                         if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
-                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(getUserGroupFilters()); // add actualowner = idenfier or in my groups
+                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(getUserGroupFilters(isAdminDataset));
                         } else {
                             final DataSetFilter filter = new DataSetFilter();
-                            filter.addFilterColumn(getUserGroupFilters());
+                            filter.addFilterColumn(getUserGroupFilters(isAdminDataset));
                             currentTableSettings.getDataSetLookup().addOperation(filter);
                         }
 
@@ -206,20 +207,31 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
         return filters;
     }
 
-    protected ColumnFilter getUserGroupFilters( ) {
+    /**
+     * Generates a dataset filter depending of the user roles and the kind of dataset.
+     * <br>In case of the adminDataset (isAdminDateset=true), retrieve the tasks that are accessible for the user logged
+     * roles, without restriction over the task owner.
+     * <br>In other cases, retrieve the tasks available for the user logged roles AND without owner(claimed by the groups
+     * members) OR the user logged owned tasks
+     * @param isAdminDataset true if the filter to create is an adminDataSet
+     * @return the dynamic filter to add, depeding on the user logged roles and the kind of dataset
+     */
+    protected ColumnFilter getUserGroupFilters(boolean isAdminDataset ) {
         Set<Group> groups = identity.getGroups();
         List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
         for ( Group g : groups ) {
             condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, g.getName() ) );
 
         }
-        //Adding own identity to check against potential owners
         condList.add( FilterFactory.equalsTo( COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier() ) );
-
-        ColumnFilter myGroupFilter = FilterFactory.AND(FilterFactory.OR(condList),
-                FilterFactory.OR(FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, ""), FilterFactory.isNull(COLUMN_ACTUAL_OWNER)));
-
-        return FilterFactory.OR(myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier()));
+        ColumnFilter myGroupFilter;
+        if(isAdminDataset){
+            return  FilterFactory.OR( COLUMN_ORGANIZATIONAL_ENTITY,  condList  );
+        } else {
+            myGroupFilter = FilterFactory.AND(FilterFactory.OR(condList),
+                    FilterFactory.OR(FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, ""), FilterFactory.isNull(COLUMN_ACTUAL_OWNER)));
+            return FilterFactory.OR(myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier()));
+        }
     }
 
     protected DataSetReadyCallback createDataSetTaskCallback(final int startRange, final FilterSettings tableSettings){
