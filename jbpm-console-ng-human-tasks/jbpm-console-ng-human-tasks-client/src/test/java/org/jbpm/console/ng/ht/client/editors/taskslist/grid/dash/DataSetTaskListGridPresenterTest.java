@@ -16,11 +16,14 @@
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
+import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.FilterFactory;
 import org.dashbuilder.dataset.sort.SortOrder;
@@ -41,6 +44,7 @@ import static org.dashbuilder.dataset.filter.FilterFactory.OR;
 import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
 
 import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class DataSetTaskListGridPresenterTest {
@@ -57,10 +61,19 @@ public class DataSetTaskListGridPresenterTest {
     private DataSetTasksListGridViewImpl viewMock;
 
     @Mock
+    private DataSet dataSetMock;
+
+    @Mock
+    private DataSetLookup dataSetLookupMock;
+
+    @Mock
     DataSetQueryHelper dataSetQueryHelper;
 
     @Mock
     private ExtendedPagedTable<TaskSummary> extendedPagedTable;
+
+    @Mock
+    private FilterSettings filterSettingsMock;
 
     private FilterSettings filterSettings;
 
@@ -150,6 +163,25 @@ public class DataSetTaskListGridPresenterTest {
 
         return  builder.buildSettings();
 
+    }
+
+    @Test
+    public void testTaskSummaryAdmin() {
+        final List<String> dataSets = Arrays.asList(
+                DataSetTasksListGridViewImpl.HUMAN_TASKS_WITH_ADMINS_DATASET,
+                DataSetTasksListGridViewImpl.HUMAN_TASKS_WITH_USERS_DATASET,
+                DataSetTasksListGridViewImpl.HUMAN_TASKS_DATASET);
+
+        for (final String dataSet : dataSets) {
+            when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettingsMock);
+            when(filterSettingsMock.getDataSetLookup()).thenReturn(dataSetLookupMock);
+            when(dataSetLookupMock.getDataSetUUID()).thenReturn(dataSet);
+
+            final TaskSummary summary = presenter.createTaskSummaryFromDataSet(dataSetMock, 0);
+
+            assertNotNull(summary);
+            assertEquals(DataSetTasksListGridViewImpl.HUMAN_TASKS_WITH_ADMINS_DATASET.equals(dataSet), summary.isForAdmin());
+        }
     }
 
 }
