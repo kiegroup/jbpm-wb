@@ -17,6 +17,7 @@ package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import com.google.gwt.view.client.Range;
@@ -26,8 +27,12 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.FilterFactory;
+import org.dashbuilder.dataset.filter.LogicalExprFilter;
+import org.dashbuilder.dataset.filter.LogicalExprType;
 import org.dashbuilder.dataset.sort.SortOrder;
 
+import org.jboss.errai.security.shared.api.Group;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
@@ -38,13 +43,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import static org.junit.Assert.*;
 import org.uberfire.mocks.CallerMock;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.OR;
 import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
 
 import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class DataSetTaskListGridPresenterTest {
@@ -70,6 +75,9 @@ public class DataSetTaskListGridPresenterTest {
     DataSetQueryHelper dataSetQueryHelper;
 
     @Mock
+    public User identity;
+
+    @Mock
     private ExtendedPagedTable<TaskSummary> extendedPagedTable;
 
     @Mock
@@ -82,6 +90,7 @@ public class DataSetTaskListGridPresenterTest {
 
     @Before
     public void setupMocks() {
+
         //Mock that actually calls the callbacks
         callerMockTaskOperationsService = new CallerMock<TaskLifeCycleService>(taskLifeCycleServiceMock);
         filterSettings= createTableSettingsPrototype();
@@ -91,8 +100,9 @@ public class DataSetTaskListGridPresenterTest {
         when(extendedPagedTable.getColumnSortList()).thenReturn(null);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
 
-        //dataSetQueryHelper.setCurrentTableSettings(createTableSettingsPrototype());
-        presenter = new DataSetTasksListGridPresenter(viewMock, callerMockTaskOperationsService,dataSetQueryHelper);
+        presenter = new DataSetTasksListGridPresenter(viewMock, callerMockTaskOperationsService,
+                dataSetQueryHelper, identity );
+
     }
 
     @Test
@@ -101,7 +111,6 @@ public class DataSetTaskListGridPresenterTest {
         presenter.getData(new Range(0, 5));
 
         verify(dataSetQueryHelper).setLastSortOrder(SortOrder.ASCENDING);
-        verify(viewMock).hideBusyIndicator();
     }
 
     @Test
@@ -127,35 +136,26 @@ public class DataSetTaskListGridPresenterTest {
 
         builder.dataset(DataSetTasksListGridViewImpl.HUMAN_TASKS_WITH_USERS_DATASET);
 
-        //Set<Group> groups = identity.getGroups();
-        List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
-        //for(Group g : groups){
-        //    condList.add( FilterFactory.equalsTo(DataSetTasksListGridViewImpl.COLUMN_ORGANIZATIONAL_ENTITY, g.getName()));
-        // }
-        ColumnFilter myGroupFilter = FilterFactory.AND( FilterFactory.OR( condList ), FilterFactory.equalsTo( DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, "" ) );
-
-        builder.filter(OR(myGroupFilter, FilterFactory.equalsTo(DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, "admin")));
-
         builder.group(DataSetTasksListGridViewImpl.COLUMN_TASKID);
 
         builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, "actual owner");
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_CREATEDBY,"CreatedBy" );
+        builder.setColumn(DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, "actual owner");
+        builder.setColumn(DataSetTasksListGridViewImpl.COLUMN_CREATEDBY, "CreatedBy");
         builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_CREATEDON , "Created on", "MMM dd E, yyyy" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_DEPLOYMENTID, "DeploymentId" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION, "description" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy" );
+        builder.setColumn(DataSetTasksListGridViewImpl.COLUMN_DEPLOYMENTID, "DeploymentId");
+        builder.setColumn(DataSetTasksListGridViewImpl.COLUMN_DESCRIPTION, "description");
+        builder.setColumn(DataSetTasksListGridViewImpl.COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy");
         builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_NAME, "tasks" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_PARENTID,  "ParentId");
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_PRIORITY, "Priority" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_PROCESSID, "ProcessId" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_PROCESSINSTANCEID, "ProcessInstanceId" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_PROCESSSESSIONID, "ProcessSesionId" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_STATUS, "status" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_TASKID, "id" );
-        builder.setColumn( DataSetTasksListGridViewImpl.COLUMN_WORKITEMID, "WorkItemId" );
+        builder.setColumn(DataSetTasksListGridViewImpl.COLUMN_PARENTID, "ParentId");
+        builder.setColumn(DataSetTasksListGridViewImpl.COLUMN_PRIORITY, "Priority");
+        builder.setColumn(DataSetTasksListGridViewImpl.COLUMN_PROCESSID, "ProcessId");
+        builder.setColumn(DataSetTasksListGridViewImpl.COLUMN_PROCESSINSTANCEID, "ProcessInstanceId");
+        builder.setColumn(DataSetTasksListGridViewImpl.COLUMN_PROCESSSESSIONID, "ProcessSesionId");
+        builder.setColumn(DataSetTasksListGridViewImpl.COLUMN_STATUS, "status");
+        builder.setColumn(DataSetTasksListGridViewImpl.COLUMN_TASKID, "id");
+        builder.setColumn(DataSetTasksListGridViewImpl.COLUMN_WORKITEMID, "WorkItemId");
 
-        builder.filterOn( true, true, true);
+        builder.filterOn(true, true, true);
         builder.tableOrderEnabled(true);
         builder.tableOrderDefault( DataSetTasksListGridViewImpl.COLUMN_CREATEDON, DESCENDING );
         builder.tableWidth(1000);
@@ -182,6 +182,106 @@ public class DataSetTaskListGridPresenterTest {
             assertNotNull(summary);
             assertEquals(DataSetTasksListGridViewImpl.HUMAN_TASKS_WITH_ADMINS_DATASET.equals(dataSet), summary.isForAdmin());
         }
+    }
+    @Test
+    public void testGetUserGroupFilters() {
+        Group group1 = new Group() {
+            @Override
+            public String getName() {
+                return "group1";
+            }
+        };
+        Group group2 = new Group() {
+            @Override
+            public String getName() {
+                return "group2";
+            }
+        };
+        HashSet<Group> groups = new HashSet<Group>();
+        groups.add(group1);
+        groups.add(group2);
+        when(identity.getGroups()).thenReturn(groups);
+        when(identity.getIdentifier()).thenReturn("userId");
+
+        final ColumnFilter userTaskFilter = presenter.getUserGroupFilters(false);
+
+        List<ColumnFilter> columnFilters = ((LogicalExprFilter) userTaskFilter).getLogicalTerms();
+
+        assertEquals(columnFilters.size(), 2);
+        assertEquals(((LogicalExprFilter) userTaskFilter).getLogicalOperator(), LogicalExprType.OR);
+
+        //userGroupTask
+        // ((id = group2 OR id = group1 OR id = userId) AND (actualOwner =  OR actualOwner is_null ))
+        assertEquals(((LogicalExprFilter) columnFilters.get(0)).getLogicalOperator(), LogicalExprType.AND);
+        List<ColumnFilter> userGroupFilter = ((LogicalExprFilter) columnFilters.get(0)).getLogicalTerms();
+        assertEquals(userGroupFilter.size(), 2);
+        assertEquals(((LogicalExprFilter) userGroupFilter.get(0)).getLogicalOperator(), LogicalExprType.OR);
+
+        List<ColumnFilter> groupFilter = ((LogicalExprFilter) userGroupFilter.get(0)).getLogicalTerms();
+        List<ColumnFilter> withoutActualOwnerFilter = ((LogicalExprFilter) userGroupFilter.get(1)).getLogicalTerms();
+
+        assertEquals(((LogicalExprFilter) userGroupFilter.get(1)).getLogicalOperator(), LogicalExprType.OR);
+        assertEquals(withoutActualOwnerFilter.size(), 2); //actual_owner empty or null
+        assertEquals(DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, withoutActualOwnerFilter.get(0).getColumnId());
+        assertEquals(DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER, withoutActualOwnerFilter.get(1).getColumnId());
+
+        assertEquals(((LogicalExprFilter) userGroupFilter.get(0)).getLogicalOperator(), LogicalExprType.OR);
+        assertEquals(groupFilter.size(), 3); //(id = group2 OR id = group1 OR id = userId)
+        assertEquals(DataSetTasksListGridViewImpl.COLUMN_ORGANIZATIONAL_ENTITY, groupFilter.get(0).getColumnId());
+        assertEquals(DataSetTasksListGridViewImpl.COLUMN_ORGANIZATIONAL_ENTITY, groupFilter.get(1).getColumnId());
+        assertEquals(DataSetTasksListGridViewImpl.COLUMN_ORGANIZATIONAL_ENTITY, groupFilter.get(2).getColumnId());
+
+        ColumnFilter userOwnerFilter = columnFilters.get(1);
+        assertEquals(userOwnerFilter.getColumnId(),DataSetTasksListGridViewImpl.COLUMN_ACTUALOWNER);
+    }
+
+    @Test
+    public void addDynamicUserRolesTest() {
+        Group group1 = new Group() {
+            @Override
+            public String getName() {
+                return "group1";
+            }
+        };
+
+        HashSet<Group> groups = new HashSet<Group>();
+        groups.add(group1);
+        when(identity.getGroups()).thenReturn(groups);
+        when(identity.getIdentifier()).thenReturn("userId");
+
+        presenter.setAddingDefaultFilters(false);
+        filterSettings.getDataSetLookup().setDataSetUUID(DataSetTasksListGridViewImpl.HUMAN_TASKS_WITH_USERS_DATASET);
+
+        presenter.getData(new Range(0, 5));
+
+        final ColumnFilter userTaskFilter = presenter.getUserGroupFilters(false);
+
+        assertEquals(filterSettings.getDataSetLookup().getFirstFilterOp().getColumnFilterList().get(0).toString(),
+                userTaskFilter.toString());
+    }
+
+    @Test
+    public void addDynamicAdminRolesTest() {
+        Group group1 = new Group() {
+            @Override
+            public String getName() {
+                return "group1";
+            }
+        };
+
+        HashSet<Group> groups = new HashSet<Group>();
+        groups.add(group1);
+        when(identity.getGroups()).thenReturn(groups);
+        when(identity.getIdentifier()).thenReturn("userId");
+        presenter.setAddingDefaultFilters(false);
+        filterSettings.getDataSetLookup().setDataSetUUID(DataSetTasksListGridViewImpl.HUMAN_TASKS_WITH_ADMINS_DATASET);
+
+        presenter.getData(new Range(0, 5));
+
+        final ColumnFilter userTaskFilter = presenter.getUserGroupFilters(true);
+
+        assertEquals(filterSettings.getDataSetLookup().getFirstFilterOp().getColumnFilterList().get(0).toString(),
+                userTaskFilter.toString());
     }
 
 }
