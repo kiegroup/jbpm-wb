@@ -47,8 +47,6 @@ public class TaskDetailsPresenterTest {
 
         verify(view).setTaskDescriptionEnabled(false);
         verify(view).setDueDateEnabled(false);
-        verify(view).setUserEnabled(false);
-        verify(view).setTaskStatusEnabled(false);
         verify(view).setDueDateTimeEnabled(false);
         verify(view).setTaskPriorityEnabled(false);
         verify(view).setUpdateTaskVisible(false);

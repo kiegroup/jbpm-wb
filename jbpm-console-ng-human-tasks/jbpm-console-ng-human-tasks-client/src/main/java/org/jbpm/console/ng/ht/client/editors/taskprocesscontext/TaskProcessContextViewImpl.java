@@ -23,7 +23,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.html.Paragraph;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -50,11 +50,11 @@ public class TaskProcessContextViewImpl extends Composite implements TaskProcess
 
     @Inject
     @DataField
-    public TextBox processInstanceIdText;
+    public Paragraph processInstanceIdText;
 
     @Inject
     @DataField
-    public TextBox processIdText;
+    public Paragraph processIdText;
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -66,13 +66,9 @@ public class TaskProcessContextViewImpl extends Composite implements TaskProcess
         this.presenter = presenter;
         // Instance id
         processInstanceIdLabel.setText( constants.Process_Instance_Id() );
-        processInstanceIdText.setReadOnly( true );
-        processInstanceIdText.setEnabled( false );
 
         //Process Id
         processIdLabel.setText( constants.Process_Definition_Id() );
-        processIdText.setReadOnly( true );
-        processIdText.setEnabled( false );
 
         pIDetailsButton.setText( constants.Process_Instance_Details() );
     }
