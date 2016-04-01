@@ -17,7 +17,6 @@ package org.jbpm.console.ng.ht.client.editors.taskdetails;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.jbpm.console.ng.gc.client.util.UTCDateBox;
@@ -34,12 +33,6 @@ public class TaskDetailsViewImplTest {
 
     @Mock
     private TaskDetailsPresenter presenter;
-
-    @Mock
-    public TextBox userText;
-
-    @Mock
-    public TextBox taskStatusText;
 
     @Mock
     public TextArea taskDescriptionTextArea;
@@ -64,9 +57,6 @@ public class TaskDetailsViewImplTest {
     @Test
     public void disableFieldsTest() {
 
-        view.setUserEnabled(false);
-        verify(userText).setEnabled(false);
-
         view.setDueDateEnabled(false);
         verify(dueDate).setEnabled(false);
 
@@ -78,9 +68,6 @@ public class TaskDetailsViewImplTest {
 
         view.setTaskPriorityEnabled(false);
         verify(taskPriorityListBox).setEnabled(false);
-
-        view.setTaskStatusEnabled(false);
-        verify(taskStatusText).setEnabled(false);
 
         view.setUpdateTaskVisible(false);
         verify(updateTaskButton).setVisible(false);

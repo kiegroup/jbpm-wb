@@ -25,8 +25,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.html.Paragraph;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -46,11 +46,11 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
 
     @Inject
     @DataField
-    public TextBox userText;
+    public Paragraph userText;
 
     @Inject
     @DataField
-    public TextBox taskStatusText;
+    public Paragraph taskStatusText;
 
     @Inject
     @DataField
@@ -159,18 +159,8 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     }
 
     @Override
-    public void setUserEnabled(final Boolean enabled) {
-        userText.setEnabled(enabled);
-    }
-
-    @Override
     public void setTaskStatus(final String status) {
         taskStatusText.setText(status);
-    }
-
-    @Override
-    public void setTaskStatusEnabled(final Boolean enabled) {
-        taskStatusText.setEnabled(enabled);
     }
 
     @Override
