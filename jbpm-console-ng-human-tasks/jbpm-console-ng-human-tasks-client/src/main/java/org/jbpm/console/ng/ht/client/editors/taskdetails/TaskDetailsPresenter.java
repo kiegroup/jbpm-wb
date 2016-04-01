@@ -65,11 +65,7 @@ public class TaskDetailsPresenter {
 
         void setUser(String user);
 
-        void setUserEnabled(Boolean enabled);
-
         void setTaskStatus(String status);
-
-        void setTaskStatusEnabled(Boolean enabled);
 
         void setTaskPriority(String priority);
 
@@ -168,9 +164,7 @@ public class TaskDetailsPresenter {
                     view.setDueDateTime(date);
                 }
                 view.setUser(details.getActualOwner());
-                view.setUserEnabled(false);
                 view.setTaskStatus(details.getStatus());
-                view.setTaskStatusEnabled(false);
                 view.setTaskPriority(String.valueOf(details.getPriority()));
             }
         }, new ErrorCallback<Message>() {
@@ -186,8 +180,6 @@ public class TaskDetailsPresenter {
     public void setReadOnlyTaskDetail() {
         view.setTaskDescriptionEnabled(false);
         view.setDueDateEnabled(false);
-        view.setUserEnabled(false);
-        view.setTaskStatusEnabled(false);
         view.setDueDateTimeEnabled(false);
         view.setTaskPriorityEnabled(false);
         view.setUpdateTaskVisible(false);
