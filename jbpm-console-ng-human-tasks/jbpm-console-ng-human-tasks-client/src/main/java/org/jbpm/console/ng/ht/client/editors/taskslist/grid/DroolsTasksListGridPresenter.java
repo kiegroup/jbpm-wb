@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,44 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
+package org.jbpm.console.ng.ht.client.editors.taskslist.grid;
 
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.gc.client.menu.RestoreDefaultFiltersMenuBuilder;
-import org.jbpm.console.ng.ht.client.editors.quicknewtask.QuickNewTaskPopup;
-import org.jbpm.console.ng.ht.client.editors.taskslist.grid.AbstractTasksListGridPresenter;
-import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
-import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
-@WorkbenchScreen(identifier = DataSetTasksListGridPresenter.SCREEN_ID)
-public class DataSetTasksListGridPresenter extends AbstractTasksListGridPresenter {
+@WorkbenchScreen(identifier = DroolsTasksListGridPresenter.SCREEN_ID)
+public class DroolsTasksListGridPresenter extends AbstractTasksListGridPresenter {
 
-    public static final String SCREEN_ID = "DataSet Tasks List";
+    public static final String SCREEN_ID = "Drools Tasks List";
 
-    @Inject
-    private QuickNewTaskPopup quickNewTaskPopup;
-
-    public DataSetTasksListGridPresenter() {
+    public DroolsTasksListGridPresenter() {
         super();
     }
 
-    public DataSetTasksListGridPresenter(final DataSetTaskListView view,
-                                         final Caller<TaskLifeCycleService> taskOperationsService,
-                                         final DataSetQueryHelper dataSetQueryHelper,
-                                         final DataSetQueryHelper dataSetQueryHelperDomainSpecific,
-                                         final User identity) {
+    public DroolsTasksListGridPresenter(final DataSetTaskListView view,
+                                        final Caller<TaskLifeCycleService> taskOperationsService,
+                                        final DataSetQueryHelper dataSetQueryHelper,
+                                        final DataSetQueryHelper dataSetQueryHelperDomainSpecific,
+                                        final User identity) {
         super(view, taskOperationsService, dataSetQueryHelper, dataSetQueryHelperDomainSpecific, identity);
     }
 
@@ -58,14 +50,6 @@ public class DataSetTasksListGridPresenter extends AbstractTasksListGridPresente
     @Override
     public Menus getMenus() {
         return MenuFactory
-                .newTopLevelMenu(Constants.INSTANCE.New_Task())
-                .respondsWith(new Command() {
-                    @Override
-                    public void execute() {
-                        quickNewTaskPopup.show();
-                    }
-                })
-                .endMenu()
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
                 .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()
                 .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
