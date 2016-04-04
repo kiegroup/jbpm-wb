@@ -45,11 +45,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.mocks.CallerMock;
+import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
@@ -93,8 +93,7 @@ public class DataSetTasksListGridPresenterTest {
 
 
     //Thing under test
-    private DataSetTasksListGridPresenter presenter;
-
+    protected DataSetTasksListGridPresenter presenter;
 
     @Before
     public void setupMocks() {
@@ -130,9 +129,17 @@ public class DataSetTasksListGridPresenterTest {
                 return null;
             }
         }).when(dataSetDomainDataQueryHelperMock).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
-        presenter = new DataSetTasksListGridPresenter(viewMock, callerMockTaskOperationsService,
-                dataSetQueryHelperMock, dataSetDomainDataQueryHelperMock,identity);
+        presenter = createPresenter(viewMock, callerMockTaskOperationsService, dataSetQueryHelperMock, dataSetDomainDataQueryHelperMock, identity);
 
+    }
+
+    protected DataSetTasksListGridPresenter createPresenter(final DataSetTasksListGridViewImpl viewMock,
+                                                            final CallerMock<TaskLifeCycleService> callerMockTaskOperationsService,
+                                                            final DataSetQueryHelper dataSetQueryHelperMock,
+                                                            final DataSetQueryHelper dataSetDomainDataQueryHelperMock,
+                                                            final User identity) {
+        return new DataSetTasksListGridPresenter(viewMock, callerMockTaskOperationsService,
+                dataSetQueryHelperMock, dataSetDomainDataQueryHelperMock,identity);
     }
 
     @Test
@@ -422,4 +429,12 @@ public class DataSetTasksListGridPresenterTest {
                 userTaskFilter.toString());
 
     }
+
+    @Test
+    public void testMenus(){
+        final Menus menus = presenter.getMenus();
+
+        assertEquals(4, menus.getItems().size());
+    }
+
 }

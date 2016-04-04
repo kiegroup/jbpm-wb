@@ -109,7 +109,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
     @Inject
     private ErrorPopupPresenter errorPopup;
 
-    private RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder(this);
+    protected RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder(this);
 
     public DataSetTasksListGridPresenter() {
 
@@ -129,13 +129,13 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
             Caller<TaskLifeCycleService> taskOperationsService,
             DataSetQueryHelper dataSetQueryHelper,
             DataSetQueryHelper dataSetQueryHelperDomainSpecific,
-                                         User identity
+            User identity
     ) {
         this.view = view;
         this.taskOperationsService = taskOperationsService;
         this.dataSetQueryHelper = dataSetQueryHelper;
         this.dataSetQueryHelperDomainSpecific = dataSetQueryHelperDomainSpecific;
-        this.identity=identity;
+        this.identity = identity;
     }
 
     @Override
@@ -237,10 +237,8 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
     protected DataSetReadyCallback createDataSetTaskCallback(final int startRange, final FilterSettings tableSettings){
         return new AbstractDataSetReadyCallback( errorPopup, view, tableSettings.getDataSet() )  {
 
-
             @Override
             public void callback(DataSet dataSet) {
-
                 if (dataSet != null) {
                     final List<TaskSummary> myTasksFromDataSet = new ArrayList<TaskSummary>();
 
@@ -271,10 +269,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
 
                 }
                 view.hideBusyIndicator();
-
             }
-
-
 
         };
     }
@@ -304,6 +299,7 @@ public class DataSetTasksListGridPresenter extends AbstractScreenListPresenter<T
         return null;
 
     }
+
     public void getDomainSpecifDataForTasks(final int startRange, final int rowCountNotTrimmed, String filterValue, final List<TaskSummary> myTasksFromDataSet) {
 
         FilterSettings variablesTableSettings = view.getVariablesTableSettings(filterValue);
