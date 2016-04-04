@@ -17,11 +17,21 @@ package org.jbpm.console.ng.pr.client.editors.instance.list.variables.dash;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jbpm.console.ng.df.client.list.base.DataSetEditorManager;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.console.ng.pr.client.i18n.Constants;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +68,14 @@ public class DataSetProcessInstanceWithVariablesListViewTest {
     protected FilterPagedTable filterPagedTable;
 
     @Mock
+    protected HasWidgets rigthToolbar;
+
+    @GwtMock
+    protected Button selectAllButton;
+
+    ClickHandler clickHandler;
+
+    @Mock
     protected DataSetProcessInstanceWithVariablesListPresenter presenter;
 
     private ProcessInstancesWithVariableListViewExtension view;
@@ -68,6 +86,7 @@ public class DataSetProcessInstanceWithVariablesListViewTest {
         view = new ProcessInstancesWithVariableListViewExtension();
         view.setUpMocks(currentListGrid, filterPagedTable, dataSetEditorManager, presenter);
         when(filterPagedTable.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStore);
+        when(currentListGrid.getRightActionsToolbar()).thenReturn(rigthToolbar);
 
     }
 
@@ -109,4 +128,62 @@ public class DataSetProcessInstanceWithVariablesListViewTest {
         verify(filterPagedTable, times(3)).saveTabSettings(anyString(), any(HashMap.class));
     }
 
+    @Test
+    public void selectAllButtonAddedTest() {
+        ExtendedPagedTable extendedPagedTable = new ExtendedPagedTable(10,new GridGlobalPreferences("testGrid", new ArrayList<String>(), new ArrayList<String>()));
+
+        view.initBulkActions(extendedPagedTable);
+
+        Iterator it = extendedPagedTable.getRightActionsToolbar().iterator();
+        if(it.hasNext()){
+            Button selectAll = (Button)it.next();
+            assertEquals(selectAll.getType(),IconType.SQUARE_O);
+            assertEquals(selectAll.getText(),Constants.INSTANCE.SelectAll());
+            assertEquals(selectAll.getTitle(),Constants.INSTANCE.SelectAllTooltip());
+        }
+    }
+
+    @Test
+    public void selectAllProcessInstancesClickTest() {
+        when(selectAllButton.addClickHandler(any(ClickHandler.class))).thenAnswer(new Answer() {
+            public Object answer(InvocationOnMock aInvocation) throws Throwable {
+                clickHandler = (ClickHandler) aInvocation.getArguments()[0];
+                return null;
+            }
+        });
+
+        ExtendedPagedTable extendedPagedTable = new ExtendedPagedTable(10,new GridGlobalPreferences("testGrid", new ArrayList<String>(), new ArrayList<String>()));
+        view.initBulkActions(extendedPagedTable);
+
+        when(selectAllButton.getIcon()).thenReturn(IconType.SQUARE_O);
+        clickHandler.onClick(new ClickEvent() {
+        });
+
+        verify(presenter).getDisplayedProcessInstances();
+        verify(selectAllButton).setIcon(IconType.CHECK_SQUARE_O);
+        verify(selectAllButton).setText(Constants.INSTANCE.UnselectAll());
+        verify(selectAllButton).setTitle(Constants.INSTANCE.UnselectAllTooltip());
+        verify(presenter).refreshGrid();
+    }
+    @Test
+    public void unselectAllProcessInstancesClickTest() {
+        when(selectAllButton.addClickHandler(any(ClickHandler.class))).thenAnswer(new Answer() {
+            public Object answer(InvocationOnMock aInvocation) throws Throwable {
+                clickHandler = (ClickHandler) aInvocation.getArguments()[0];
+                return null;
+            }
+        });
+
+        ExtendedPagedTable extendedPagedTable = new ExtendedPagedTable(10,new GridGlobalPreferences("testGrid", new ArrayList<String>(), new ArrayList<String>()));
+        view.initBulkActions(extendedPagedTable);
+        view.initExtraButtons(extendedPagedTable);
+
+        when(selectAllButton.getIcon()).thenReturn(IconType.CHECK_SQUARE_O);
+        clickHandler.onClick(new ClickEvent() {
+        });
+        verify(selectAllButton,times(2)).setIcon(IconType.SQUARE_O);
+        verify(selectAllButton,times(2)).setText(Constants.INSTANCE.SelectAll());
+        verify(selectAllButton,times(2)).setTitle(Constants.INSTANCE.SelectAllTooltip());
+        verify(presenter).refreshGrid();
+    }
 }
