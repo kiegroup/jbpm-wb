@@ -50,6 +50,7 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.jbpm.console.ng.client.i18n.Constants;
 import org.jbpm.console.ng.ga.forms.service.PlaceManagerActivityService;
+import org.jbpm.console.ng.ht.client.perspectives.DroolsTasksListPerspective;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
 import org.kie.workbench.common.screens.search.client.menu.SearchMenuBuilder;
 import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
@@ -245,6 +246,8 @@ public class ShowcaseEntryPoint {
         final List<MenuItem> result = new ArrayList<MenuItem>( 4 );
 
         result.add( MenuFactory.newSimpleItem( constants.Tasks_List() ).perspective( "DataSet Tasks" ).endMenu().build().getItems().get( 0 ) );
+
+        result.add( MenuFactory.newSimpleItem( constants.Tasks_List() + " Drools" ).perspective( DroolsTasksListPerspective.PERSPECTIVE_ID ).endMenu().build().getItems().get( 0 ) );
 
         result.add( MenuFactory.newSimpleItem( constants.Tasks_List_Admin() ).perspective( "Tasks Admin" ).endMenu().build().getItems().get( 0 ) );
 
