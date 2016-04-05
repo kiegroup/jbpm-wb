@@ -43,12 +43,10 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.FilterFactory;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.jboss.errai.security.shared.api.Group;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.console.ng.df.client.list.base.DataSetEditorManager;
@@ -58,6 +56,7 @@ import org.jbpm.console.ng.gc.client.util.ButtonActionCell;
 import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.jbpm.console.ng.gc.client.util.TaskUtils;
 import org.jbpm.console.ng.ht.client.editors.quicknewtask.QuickNewTaskPopup;
+import org.jbpm.console.ng.ht.client.editors.taskslist.grid.AbstractTasksListGridPresenter;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
@@ -77,8 +76,8 @@ import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
 import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.*;
 
 @Dependent
-public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, DataSetTasksListGridPresenter>
-        implements DataSetTasksListGridPresenter.DataSetTaskListView {
+public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, AbstractTasksListGridPresenter>
+        implements AbstractTasksListGridPresenter.DataSetTaskListView {
 
     public static String DATASET_TASK_LIST_PREFIX = "DataSetTaskListGrid";
 
@@ -98,7 +97,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     private DataSetEditorManager dataSetEditorManager;
 
     @Override
-    public void init( final DataSetTasksListGridPresenter presenter ) {
+    public void init( final AbstractTasksListGridPresenter presenter ) {
 
         final List<String> bannedColumns = new ArrayList<String>();
         bannedColumns.add( COLUMN_NAME );

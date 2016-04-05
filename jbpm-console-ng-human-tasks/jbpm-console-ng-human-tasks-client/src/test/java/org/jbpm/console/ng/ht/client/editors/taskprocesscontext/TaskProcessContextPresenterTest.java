@@ -15,7 +15,10 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskprocesscontext;
 
+import java.util.Collections;
 import javax.enterprise.event.Event;
+
+import com.google.common.collect.Sets;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter.TaskProcessContextView;
 import org.jbpm.console.ng.ht.model.TaskKey;
@@ -29,23 +32,26 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.client.mvp.Activity;
+import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mocks.CallerMock;
+import org.uberfire.mvp.PlaceRequest;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskProcessContextPresenterTest {
 
-    @Mock
-    private TaskProcessContextView viewMock;
+    private static final Long TASK_ID_NO_PROCESS = 1L;
+    private static final Long TASK_ID_WITH_PROC = 2L;
+    private static final Long TASK_ID_NULL_DETAILS = 3L;
 
-    @Mock
-    private PlaceManager placeManager;
+    TaskSummary taskNoProcess = new TaskSummary(TASK_ID_NO_PROCESS, "task without process", null, null, 0, null, null, null, null, null, null/*ProcessID*/, -1, -1 /*Proc instId*/, null, -1);
+    TaskSummary taskWithProcess = new TaskSummary(TASK_ID_WITH_PROC, "task with process", null, null, 0, null, null, null, null, null, "TEST_PROCESS_ID"/*ProcessID*/, -1, 123L /*Proc inst Id*/, null, -1);
 
     @Mock
     DataServiceEntryPoint dataServiceEntryPoint;
@@ -53,13 +59,14 @@ public class TaskProcessContextPresenterTest {
     @Mock
     Event<ProcessInstancesWithDetailsRequestEvent> procNavigationMock;
 
-    private TaskProcessContextPresenter presenter;
-    private static final Long TASK_ID_NO_PROCESS = 1L;
-    private static final Long TASK_ID_WITH_PROC = 2L;
-    private static final Long TASK_ID_NULL_DETAILS = 3L;
+    @Mock
+    private TaskProcessContextView viewMock;
+    @Mock
+    private PlaceManager placeManager;
+    @Mock
+    private ActivityManager activityManager;
 
-    TaskSummary taskNoProcess = new TaskSummary(TASK_ID_NO_PROCESS, "task without process", null, null, 0, null, null, null, null, null, null/*ProcessID*/, -1, -1 /*Proc instId*/, null, -1);
-    TaskSummary taskWithProcess = new TaskSummary(TASK_ID_WITH_PROC, "task with process", null, null, 0, null, null, null, null, null, "TEST_PROCESS_ID"/*ProcessID*/, -1, 123L /*Proc inst Id*/, null, -1);
+    private TaskProcessContextPresenter presenter;
 
     @Before
     public void before() {
@@ -79,7 +86,8 @@ public class TaskProcessContextPresenterTest {
                 placeManager,
                 taskQueryServiceMock,
                 dataServiceCallerMock,
-                procNavigationMock);
+                procNavigationMock,
+                activityManager);
     }
 
     @Test
@@ -106,7 +114,7 @@ public class TaskProcessContextPresenterTest {
 
         verify(viewMock).setProcessId("TEST_PROCESS_ID");
         verify(viewMock).setProcessInstanceId("123");
-        verify(viewMock).enablePIDetailsButton(true);
+        verify(viewMock, times(2)).enablePIDetailsButton(true);
     }
 
     @Test
@@ -130,6 +138,24 @@ public class TaskProcessContextPresenterTest {
         assertEquals(summary.getProcessId(), event.getProcessDefId());
         assertEquals(summary.getProcessName(), event.getProcessDefName());
         assertEquals(Integer.valueOf(summary.getState()), event.getProcessInstanceStatus());
+    }
+
+    @Test
+    public void testProcessContextEnabled() {
+        when(activityManager.getActivities(any(PlaceRequest.class))).thenReturn(Sets.newHashSet(mock(Activity.class)));
+
+        presenter.init();
+
+        verify(viewMock).enablePIDetailsButton(true);
+    }
+
+    @Test
+    public void testProcessContextDisabled() {
+        when(activityManager.getActivities(any(PlaceRequest.class))).thenReturn(Collections.<Activity>emptySet());
+
+        presenter.init();
+
+        verify(viewMock).enablePIDetailsButton(false);
     }
 
 }
