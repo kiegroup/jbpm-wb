@@ -95,6 +95,16 @@ public class VariableHistoryPopup extends BaseModal {
         add( footer );
     }
 
+    public VariableHistoryPopup(DataGrid<ProcessVariableSummary> processVarListGrid,
+                                Pagination pagination,
+                                FormControlStatic variableNameTextBox) {
+        this.processVarListGrid =processVarListGrid;
+        this.pagination = pagination;
+        this.variableNameTextBox =variableNameTextBox;
+
+        init();
+    }
+
     public void init() {
         pager = new SimplePager( SimplePager.TextLocation.CENTER, false, true );
         pagination.rebuild( pager );
@@ -123,7 +133,7 @@ public class VariableHistoryPopup extends BaseModal {
 
             @Override
             public String getValue( ProcessVariableSummary object ) {
-                return object.getNewValue();
+                return object.getNewValue()!=null? object.getNewValue():"" ;
             }
         };
 
@@ -133,7 +143,9 @@ public class VariableHistoryPopup extends BaseModal {
             @Override
             public int compare( ProcessVariableSummary o1,
                                 ProcessVariableSummary o2 ) {
-                return o1.getNewValue().compareTo( o2.getNewValue() );
+                String o1NewValue = o1.getNewValue() != null ? o1.getNewValue() :"";
+                String o2NewValue = o2.getNewValue() != null ? o2.getNewValue() :"";
+                return o1NewValue.compareTo( o2NewValue );
             }
         } );
 
@@ -142,7 +154,7 @@ public class VariableHistoryPopup extends BaseModal {
 
             @Override
             public String getValue( ProcessVariableSummary object ) {
-                return object.getOldValue();
+                return object.getOldValue()!=null? object.getOldValue():"" ;
             }
         };
         oldValueColumn.setSortable( true );
@@ -152,7 +164,9 @@ public class VariableHistoryPopup extends BaseModal {
             @Override
             public int compare( ProcessVariableSummary o1,
                                 ProcessVariableSummary o2 ) {
-                return o1.getOldValue().compareTo( o2.getOldValue() );
+                String o1OldValue = o1.getOldValue() != null ? o1.getOldValue() :"";
+                String o2OldValue = o2.getOldValue() != null ? o2.getOldValue() :"";
+                return o1OldValue.compareTo(o2OldValue);
             }
         } );
 
@@ -216,6 +230,10 @@ public class VariableHistoryPopup extends BaseModal {
         dataProvider.getList().addAll(processVariableSummaries);
         dataProvider.flush();
         pagination.rebuild(pager);
+    }
+
+    public ColumnSortEvent.ListHandler<ProcessVariableSummary> getSortHandler(){
+        return sortHandler;
     }
 
 }
