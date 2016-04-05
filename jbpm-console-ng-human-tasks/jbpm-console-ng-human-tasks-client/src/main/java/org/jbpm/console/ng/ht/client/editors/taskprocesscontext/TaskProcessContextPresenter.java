@@ -14,6 +14,7 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskprocesscontext;
 
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -31,12 +32,17 @@ import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
 import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
+import org.uberfire.client.mvp.Activity;
+import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
 public class TaskProcessContextPresenter {
+
+    public static final String PROCESS_INSTANCE_DETAILS = "DataSet Process Instances With Variables";
 
     public interface TaskProcessContextView extends UberView<TaskProcessContextPresenter> {
 
@@ -51,6 +57,8 @@ public class TaskProcessContextPresenter {
 
     private PlaceManager placeManager;
 
+    private ActivityManager activityManager;
+
     private TaskProcessContextView view;
 
     private Event<ProcessInstancesWithDetailsRequestEvent> processInstanceSelected;
@@ -61,25 +69,29 @@ public class TaskProcessContextPresenter {
 
     private long currentTaskId = 0;
     private long currentProcessInstanceId = -1L;
+    private boolean enableProcessInstanceDetails = true;
 
     @Inject
-    public TaskProcessContextPresenter(
-            TaskProcessContextView view,
-            PlaceManager placeManager,
-            Caller<TaskQueryService> taskQueryService,
-            Caller<DataServiceEntryPoint> dataServices,
-            Event<ProcessInstancesWithDetailsRequestEvent> processInstanceSelected
-    ) {
+    public TaskProcessContextPresenter(TaskProcessContextView view,
+                                       PlaceManager placeManager,
+                                       Caller<TaskQueryService> taskQueryService,
+                                       Caller<DataServiceEntryPoint> dataServices,
+                                       Event<ProcessInstancesWithDetailsRequestEvent> processInstanceSelected,
+                                       ActivityManager activityManager) {
         this.view = view;
         this.taskQueryService = taskQueryService;
         this.dataServices = dataServices;
         this.placeManager = placeManager;
         this.processInstanceSelected = processInstanceSelected;
+        this.activityManager = activityManager;
     }
 
     @PostConstruct
     public void init() {
         view.init(this);
+        final Set<Activity> activity = activityManager.getActivities(new DefaultPlaceRequest(PROCESS_INSTANCE_DETAILS));
+        enableProcessInstanceDetails = activity.isEmpty() == false;
+        view.enablePIDetailsButton(enableProcessInstanceDetails);
     }
 
     public IsWidget getView() {
@@ -88,39 +100,40 @@ public class TaskProcessContextPresenter {
 
     public void goToProcessInstanceDetails() {
         dataServices.call(new RemoteCallback<ProcessInstanceSummary>() {
-            @Override
-            public void callback(ProcessInstanceSummary summary) {
-                placeManager.goTo("DataSet Process Instances With Variables");
-                processInstanceSelected.fire(new ProcessInstancesWithDetailsRequestEvent(
-                        summary.getDeploymentId(),
-                        summary.getProcessInstanceId(),
-                        summary.getProcessId(),
-                        summary.getProcessName(),
-                        summary.getState())
-                );
-            }
-        },
+                              @Override
+                              public void callback(ProcessInstanceSummary summary) {
+                                  placeManager.goTo(PROCESS_INSTANCE_DETAILS);
+                                  processInstanceSelected.fire(new ProcessInstancesWithDetailsRequestEvent(
+                                          summary.getDeploymentId(),
+                                          summary.getProcessInstanceId(),
+                                          summary.getProcessId(),
+                                          summary.getProcessName(),
+                                          summary.getState())
+                                  );
+                              }
+                          },
                 new DefaultErrorCallback()
         ).getProcessInstanceById(currentProcessInstanceId);
     }
 
     public void refreshProcessContextOfTask() {
         taskQueryService.call(new RemoteCallback<TaskSummary>() {
-            @Override
-            public void callback(TaskSummary details) {
-                if (details == null || details.getProcessInstanceId() == -1) {
-                    view.setProcessInstanceId("None");
-                    view.setProcessId("None");
-                    view.enablePIDetailsButton(false);
-                    return;
-                }
+                                  @Override
+                                  public void callback(TaskSummary details) {
+                                      if (details == null || details.getProcessInstanceId() == -1) {
+                                          view.setProcessInstanceId("None");
+                                          view.setProcessId("None");
+                                          view.enablePIDetailsButton(false);
+                                          return;
+                                      }
 
-                currentProcessInstanceId = details.getProcessInstanceId();
-                view.setProcessInstanceId(String.valueOf(currentProcessInstanceId));
-                view.setProcessId(details.getProcessId());
-                view.enablePIDetailsButton(true);
-            }
-        },
+                                      currentProcessInstanceId = details.getProcessInstanceId();
+                                      view.setProcessInstanceId(String.valueOf(currentProcessInstanceId));
+                                      view.setProcessId(details.getProcessId());
+                                      view.enablePIDetailsButton(true);
+                                      view.enablePIDetailsButton(enableProcessInstanceDetails);
+                                  }
+                              },
                 new DefaultErrorCallback()
         ).getItem(new TaskKey(currentTaskId));
     }
