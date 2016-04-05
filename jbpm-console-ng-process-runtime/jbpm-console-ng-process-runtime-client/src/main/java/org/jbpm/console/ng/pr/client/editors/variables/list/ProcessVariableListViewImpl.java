@@ -180,7 +180,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
 
             @Override
             public String getValue( ProcessVariableSummary object ) {
-                return object.getNewValue();
+                return (object.getNewValue()!=null? object.getNewValue():"");
             }
         };
         valueColumn.setSortable( true );
@@ -225,7 +225,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
         cells.add( new EditVariableActionHasCell( constants.Edit(), new Delegate<ProcessVariableSummary>() {
             @Override
             public void execute( ProcessVariableSummary variable ) {
-                variableEditPopup.show( variable.getProcessInstanceId(), variable.getVariableId(), variable.getNewValue() );
+                variableEditPopup.show( variable.getProcessInstanceId(), variable.getVariableId(), (variable.getNewValue()!=null?variable.getNewValue():"") );
             }
         } ) );
 
