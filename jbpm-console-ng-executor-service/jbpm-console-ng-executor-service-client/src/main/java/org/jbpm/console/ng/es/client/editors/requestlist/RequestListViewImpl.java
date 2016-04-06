@@ -161,7 +161,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
         List<ColumnMeta<RequestSummary>> columnMetas = new ArrayList<ColumnMeta<RequestSummary>>();
         columnMetas.add(new ColumnMeta<RequestSummary>(jobIdColumn, constants.Id()));
-        columnMetas.add(new ColumnMeta<RequestSummary>(jobNameColumn, constants.JobName()));
+        columnMetas.add(new ColumnMeta<RequestSummary>(jobNameColumn, constants.BusinessKey()));
         columnMetas.add(new ColumnMeta<RequestSummary>(jobTypeColumn, constants.Type()));
         columnMetas.add(new ColumnMeta<RequestSummary>(statusColumn, constants.Status()));
         columnMetas.add(new ColumnMeta<RequestSummary>(dueDateColumn, constants.Due_On()));
