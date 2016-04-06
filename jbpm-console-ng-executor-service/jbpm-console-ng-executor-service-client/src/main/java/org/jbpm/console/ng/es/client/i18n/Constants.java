@@ -94,7 +94,7 @@ public interface Constants extends Messages {
 
     String Create();
 
-    String Name();
+    String BusinessKey();
 
     String Type();
 
@@ -108,13 +108,11 @@ public interface Constants extends Messages {
 
     String Frequency();
 
-    String JobName();
-
     String RequestsListTitle();
 
     String No_Jobs_Found();
 
-    String The_Job_Must_Have_A_Name();
+    String The_Job_Must_Have_A_BusinessKey();
 
     String The_Job_Must_Have_A_Due_Date_In_The_Future();
 
