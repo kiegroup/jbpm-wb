@@ -233,4 +233,15 @@ public class DataSetTasksListGridViewTest {
         verify(filterPagedTableMock, times(5)).saveTabSettings(anyString(), any(HashMap.class));
     }
 
+    @Test
+    public void initialColumsTest(){
+        view.init(presenter);
+        List<GridColumnPreference> columnPreferences = view.getListGrid().getGridPreferencesStore().getColumnPreferences();
+        assertEquals(columnPreferences.get(0).getName(),COLUMN_NAME);
+        assertEquals(columnPreferences.get(1).getName(), COLUMN_PROCESS_ID);
+        assertEquals(columnPreferences.get(2).getName(), COLUMN_STATUS);
+        assertEquals(columnPreferences.get(3).getName(), COLUMN_CREATED_ON);
+        assertEquals(columnPreferences.get(4).getName(),  DataSetTasksListGridViewImpl.COL_ID_ACTIONS);
+    }
+
 }
