@@ -46,10 +46,10 @@
                                     <b:FieldSet>
                                         <b:FormGroup ui:field="jobNameControlGroup">
                                             <b:FormLabel for="jobNameText" showRequiredIndicator="true" addStyleNames="col-md-3">
-                                                <ui:text from="{i18n.Name}"/>
+                                                <ui:text from="{i18n.BusinessKey}"/>
                                             </b:FormLabel>
                                             <b:Column size="MD_9">
-                                                <b:TextBox ui:field="jobNameText" placeholder="{i18n.Name}"/>
+                                                <b:TextBox ui:field="jobNameText" placeholder="{i18n.BusinessKey}" />
                                                 <b:HelpBlock ui:field="jobNameHelpInline"/>
                                             </b:Column>
                                         </b:FormGroup>
