@@ -104,7 +104,9 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         bannedColumns.add( COL_ID_ACTIONS );
         final List<String> initColumns = new ArrayList<String>();
         initColumns.add( COLUMN_NAME );
-        initColumns.add( COLUMN_DESCRIPTION );
+        initColumns.add( COLUMN_PROCESS_ID );
+        initColumns.add( COLUMN_STATUS );
+        initColumns.add( COLUMN_CREATED_ON );
         initColumns.add( COL_ID_ACTIONS );
         final Button button = GWT.create(Button.class);
         button.setIcon( IconType.PLUS );
