@@ -85,8 +85,8 @@ public class DataSetDefsBootstrap {
                                 "(select MAX(v.id) " +
                                 "from VariableInstanceLog v " +
                                 "where " +
-                                "V.variableId = vil.variableId and " +
-                                "V.processInstanceId = vil.processInstanceId)" , false )
+                                "v.variableId = vil.variableId and " +
+                                "v.processInstanceId = vil.processInstanceId)" , false )
                 .number(PROCESS_INSTANCE_ID)
                 .label(PROCESS_NAME)
                 .number(VARIABLE_ID)
