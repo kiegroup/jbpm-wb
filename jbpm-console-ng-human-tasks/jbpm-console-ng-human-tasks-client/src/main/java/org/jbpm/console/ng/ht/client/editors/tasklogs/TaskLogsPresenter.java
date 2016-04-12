@@ -79,21 +79,22 @@ public class TaskLogsPresenter {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put( "taskId", currentTaskId );
         QueryFilter filter = new PortableQueryFilter( 0, 0, false, "", "", false, "", params );
-        taskAuditService.call( new RemoteCallback<PageResponse<TaskEventSummary>>() {
+        taskAuditService.call(new RemoteCallback<PageResponse<TaskEventSummary>>() {
             @Override
-            public void callback( PageResponse<TaskEventSummary> events ) {
+            public void callback(PageResponse<TaskEventSummary> events) {
                 SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                for ( TaskEventSummary tes : events.getPageRowList() ) {
-                    String timeStamp = DateUtils.getDateTimeStr(tes.getLogTime());
-                    if(tes.getType().equals("UPDATED")){
-                        safeHtmlBuilder.appendEscapedLines(timeStamp + ": Task " + tes.getType() + " (" + tes.getMessage() + ") \n");
-                    }else {
-                        safeHtmlBuilder.appendEscapedLines(timeStamp + ": Task - " + tes.getType() + " (" + tes.getUserId() + ") \n");
-                    }
+                for (TaskEventSummary tes : events.getPageRowList()) {
+                    String summaryStr = summaryToString(tes);
+                    safeHtmlBuilder.appendEscapedLines(summaryStr);
                 }
-                view.setLogTextAreaText( safeHtmlBuilder.toSafeHtml().asString() );
+                view.setLogTextAreaText(safeHtmlBuilder.toSafeHtml().asString());
             }
 
+            public String summaryToString(TaskEventSummary tes) {
+                String timeStamp = DateUtils.getDateTimeStr(tes.getLogTime());
+                String additionalDetail = "UPDATED".equals(tes.getType()) ? tes.getMessage() : tes.getUserId();
+                return timeStamp + ": Task " + tes.getType() + " (" + additionalDetail + ")\n";
+            }
         }, new ErrorCallback<Message>() {
             @Override
             public boolean error( Message message,
