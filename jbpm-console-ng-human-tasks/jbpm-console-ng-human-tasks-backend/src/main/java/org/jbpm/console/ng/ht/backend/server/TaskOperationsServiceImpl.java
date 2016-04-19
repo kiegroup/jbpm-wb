@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -34,28 +34,26 @@ import org.jbpm.services.api.UserTaskService;
 import org.jbpm.services.task.utils.TaskFluent;
 import org.kie.api.task.model.Group;
 import org.kie.api.task.model.OrganizationalEntity;
+import org.kie.api.task.model.Status;
 import org.kie.api.task.model.Task;
 import org.kie.api.task.model.User;
 import org.kie.internal.task.api.InternalTaskService;
-/**
- *
- * @author salaboy
- */
+
 @Service
 @ApplicationScoped
-public class TaskOperationsServiceImpl implements TaskOperationsService{
+public class TaskOperationsServiceImpl implements TaskOperationsService {
 
-  @Inject
-  private InternalTaskService internalTaskService;
+    @Inject
+    private InternalTaskService internalTaskService;
     
-  @Inject
-  private UserTaskService taskService;
+    @Inject
+    private UserTaskService taskService;
 
-  @Inject
-  private RuntimeDataService runtimeDataService;
+    @Inject
+    private RuntimeDataService runtimeDataService;
 
-  @Override
-  public long addQuickTask(
+    @Override
+    public long addQuickTask(
                          final String taskName,
                          int priority,
                          Date dueDate, final List<String> users, List<String> groups, String identity, boolean start,
@@ -94,8 +92,8 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
         return taskId;
     }
 
-  @Override
-  public void updateTask(long taskId, int priority, List<String> taskDescription,
+    @Override
+    public void updateTask(long taskId, int priority, List<String> taskDescription,
             Date dueDate) {
         taskService.setPriority(taskId, priority);
         if(taskDescription != null){
@@ -104,7 +102,7 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
         if(dueDate != null){
           taskService.setExpirationDate(taskId, dueDate);
         }
-  }
+    }
   
   
     @Override
@@ -112,7 +110,7 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
         Task task = taskService.getTask(taskId);
         if (task != null) {
             List<OrganizationalEntity> potentialOwners = task.getPeopleAssignments().getPotentialOwners();
-            List<String> potOwnersString = getPotentialOwnersForTaskIds(potentialOwners);
+            List<String> potOwnersString = getPotentialOwnersByTaskId(potentialOwners);
             return new TaskSummary(task.getId(), task.getName(),
                     task.getDescription(), task.getTaskData().getStatus().name(), task.getPriority(), (task.getTaskData().getActualOwner() != null) ? task.getTaskData().getActualOwner()
                     .getId() : "", (task.getTaskData().getCreatedBy() != null) ? task.getTaskData().getCreatedBy().getId()
@@ -134,32 +132,15 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
         return runtimeDataService.getTaskById(taskId) == null ? false : true;
     }
   
-    private List<String> getPotentialOwnersForTaskIds(List<OrganizationalEntity> potentialOwners){
-        
-         List<String> orgEntitiesSimple = new ArrayList<String>(potentialOwners.size());
-         for (OrganizationalEntity entity : potentialOwners) {
-            if (entity instanceof Group) {
-              
-              orgEntitiesSimple.add("Group:" + entity.getId());
-             } else if (entity instanceof User) {
-               
-                 orgEntitiesSimple.add("User:" + entity.getId());
-              }
-         }
-         return orgEntitiesSimple;
-      
-  }
-  
     @Override
     public TaskAssignmentSummary getTaskAssignmentDetails(long taskId) {
         Task task = taskService.getTask(taskId);
         if (task != null) {
             List<OrganizationalEntity> potentialOwners = task.getPeopleAssignments().getPotentialOwners();
-            List<String> potOwnersString = null;
+            List<String> potOwnersString = new ArrayList<String>();
             if (potentialOwners != null) {
-                potOwnersString = new ArrayList<String>(potentialOwners.size());
                 potOwnersString = getPotentialOwnersByTaskId(potentialOwners);
-                }
+            }
             
             return new TaskAssignmentSummary(task.getId(),task.getName(),(task.getTaskData().getActualOwner() != null) ? task.getTaskData().getActualOwner()
                 .getId() : "",potOwnersString);
@@ -186,4 +167,67 @@ public class TaskOperationsServiceImpl implements TaskOperationsService{
    	public void executeReminderForTask(long taskId,String fromUser) {
     	internalTaskService.executeReminderForTask(taskId,fromUser);
    	}
+
+    /**
+     * Checks if the user is allowed to delegate the given task
+     *
+     * @param taskId
+     * @param userId
+     * @param groups
+     * @return
+     */
+    @Override
+    public Boolean allowDelegate(long taskId, final String userId, final Set<String> groups) {
+        final Task task = taskService.getTask(taskId);
+        if (task == null) {
+            return false;
+        }
+
+        if (task.getTaskData().getStatus() == Status.Completed) {
+            return false;
+        }
+
+        final User actualOwner = task.getTaskData().getActualOwner();
+        if (actualOwner != null && actualOwner.getId().equals(userId)) {
+            return true;
+        }
+
+        final User initiator = task.getPeopleAssignments().getTaskInitiator();
+        if (initiator != null && initiator.getId().equals(userId)) {
+            return true;
+        }
+
+        final List<OrganizationalEntity> potentialOwners = task.getPeopleAssignments().getPotentialOwners();
+        if (potentialOwners != null && (isUserInList(potentialOwners, userId) || isGroupInList(potentialOwners, groups))) {
+            return true;
+        }
+
+        final List<OrganizationalEntity> businessAdministrators = task.getPeopleAssignments().getBusinessAdministrators();
+        if (businessAdministrators != null && (isUserInList(businessAdministrators, userId) || isGroupInList(businessAdministrators, groups))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isUserInList(final List<OrganizationalEntity> entities, final String userId) {
+        for (final OrganizationalEntity entity : entities) {
+            if (entity instanceof User && entity.getId().equals(userId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isGroupInList(final List<OrganizationalEntity> entities, final Set<String> groups) {
+        for (final OrganizationalEntity entity : entities) {
+            if (entity instanceof Group && groups.contains(entity.getId())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }

@@ -19,18 +19,14 @@ package org.jbpm.console.ng.ht.service;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.ht.model.TaskAssignmentSummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 
-
-/**
- *
- * @author salaboy
- */
 @Remote
-public interface TaskOperationsService{
+public interface TaskOperationsService {
   
   public long addQuickTask(
                          final String taskName,
@@ -49,5 +45,7 @@ public interface TaskOperationsService{
   TaskAssignmentSummary getTaskAssignmentDetails(long taskId); 
   
   void executeReminderForTask(long taskId,String fromUser);
-  
+
+  Boolean allowDelegate(long taskId, String userId, Set<String> groups);
+
 }
