@@ -15,6 +15,8 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskassignments;
 
+import javax.enterprise.event.Event;
+
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -27,15 +29,17 @@ import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
+import org.mockito.InOrder;
 import org.mockito.Mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anySet;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskAssignmentsPresenterTest {
@@ -64,17 +68,30 @@ public class TaskAssignmentsPresenterTest {
 
         lifecycleServiceCallerMock = new CallerMock<TaskLifeCycleService>(lifecycleServiceMock);
         operationsServiceCallerMock = new CallerMock<TaskOperationsService>(operationsServiceMock);
+        final Event<TaskRefreshedEvent> taskRefreshed = spy(new EventSourceMock<TaskRefreshedEvent>());
+        doNothing().when(taskRefreshed).fire(any(TaskRefreshedEvent.class));
 
         presenter = new TaskAssignmentsPresenter(
                 viewMock, userMock,
                 lifecycleServiceCallerMock,
                 operationsServiceCallerMock,
-                new MockEventTaskRefreshed()
+                taskRefreshed
         );
     }
 
     @Test
-    public void delegationButtonDisabled_whenDelegationSuccessfull() {
+    public void delegationButtonDisabled_whenDelegationSuccessful() {
+        final long TASK_ID = 1;
+        when(operationsServiceMock.getTaskDetails(TASK_ID))
+                .thenReturn(new TaskSummary(TASK_ID, null, null,
+                        "Completed"/*status*/, 0, CURRENT_USER/*actual owner*/,
+                        null, null, null, null, null, 0, 0, null, 0));
+        when(operationsServiceMock.allowDelegate(
+                eq(TASK_ID),
+                eq(CURRENT_USER),
+                anySet()))
+                .thenReturn(true);
+
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(1L));
         presenter.delegateTask(OTHER_USER);
 
@@ -107,12 +124,19 @@ public class TaskAssignmentsPresenterTest {
                 .thenReturn(new TaskSummary(COMPLETED_TASK_ID, null, null,
                                 "Completed"/*status*/, 0, CURRENT_USER/*actual owner*/,
                                 null, null, null, null, null, 0, 0, null, 0));
+        when(operationsServiceMock.allowDelegate(
+                eq(COMPLETED_TASK_ID),
+                eq(CURRENT_USER),
+                anySet()))
+                .thenReturn(false);
 
         // When task in status Completed is selected
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(COMPLETED_TASK_ID));
 
-        verify(viewMock).enableDelegateButton(false);
-        verify(viewMock).enableUserOrGroupInput(false);
+        verify(viewMock, times(2)).enableDelegateButton(false);
+        verify(viewMock, times(2)).enableUserOrGroupInput(false);
+        verify(viewMock, never()).enableDelegateButton(true);
+        verify(viewMock, never()).enableUserOrGroupInput(true);
     }
 
     @Test
@@ -122,12 +146,19 @@ public class TaskAssignmentsPresenterTest {
                 .thenReturn(new TaskSummary(TASK_OWNED_BY_SOMEONE_ELSE_ID, null,
                                 null, "Ready"/*status*/, 0, OTHER_USER/*actual owner*/,
                                 null, null, null, null, null, 0, 0, null, 0));
+        when(operationsServiceMock.allowDelegate(
+                eq(TASK_OWNED_BY_SOMEONE_ELSE_ID),
+                eq(OTHER_USER),
+                anySet()))
+                .thenReturn(false);
 
         // When task not owned by Current user
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_OWNED_BY_SOMEONE_ELSE_ID));
 
-        verify(viewMock).enableDelegateButton(false);
-        verify(viewMock).enableUserOrGroupInput(false);
+        verify(viewMock, times(2)).enableDelegateButton(false);
+        verify(viewMock, times(2)).enableUserOrGroupInput(false);
+        verify(viewMock, never()).enableDelegateButton(true);
+        verify(viewMock, never()).enableUserOrGroupInput(true);
     }
 
     @Test
@@ -137,18 +168,20 @@ public class TaskAssignmentsPresenterTest {
                 .thenReturn(new TaskSummary(TASK_OWNED_BY_CURRENT_USER, null,
                                 null, "Ready"/*status*/, 0, CURRENT_USER/*actual owner*/,
                                 null, null, null, null, null, 0, 0, null, 0));
+        when(operationsServiceMock.allowDelegate(
+                eq(TASK_OWNED_BY_CURRENT_USER),
+                eq(CURRENT_USER),
+                anySet()))
+                .thenReturn(true);
 
         // When task not owned by Current user
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_OWNED_BY_CURRENT_USER));
 
-        verify(viewMock).enableDelegateButton(true);
-        verify(viewMock).enableUserOrGroupInput(true);
+        final InOrder inOrder = inOrder(viewMock);
+        inOrder.verify(viewMock).enableDelegateButton(false);
+        inOrder.verify(viewMock).enableUserOrGroupInput(false);
+        inOrder.verify(viewMock).enableDelegateButton(true);
+        inOrder.verify(viewMock).enableUserOrGroupInput(true);
     }
 
-    private static class MockEventTaskRefreshed extends EventSourceMock<TaskRefreshedEvent> {
-
-        @Override
-        public void fire(TaskRefreshedEvent t) {
-        }
-    }
 }
