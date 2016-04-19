@@ -719,7 +719,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.filter( equalsTo( COLUMN_STATUS, names ) );
         builder.filter( equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier() ) );
 
-        builder.setColumn(COLUMN_ACTIVATION_TIME, "Activation Time", DateUtils.getDateTimeFormatMask() );
+        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner() );
         builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy() );
         builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), DateUtils.getDateTimeFormatMask() );
