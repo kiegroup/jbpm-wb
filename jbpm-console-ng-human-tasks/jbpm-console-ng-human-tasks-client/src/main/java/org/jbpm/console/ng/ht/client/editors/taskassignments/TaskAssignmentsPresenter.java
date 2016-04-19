@@ -15,6 +15,8 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskassignments;
 
+import java.util.HashSet;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -25,9 +27,9 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.security.shared.api.Group;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.model.TaskAssignmentSummary;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
@@ -119,39 +121,33 @@ public class TaskAssignmentsPresenter {
 
     public void refreshTaskPotentialOwners() {
         if (currentTaskId != 0) {
+            view.enableDelegateButton(false);
+            view.enableUserOrGroupInput(false);
+            view.setPotentialOwnersInfo("");
+
             taskOperationsService.call(new RemoteCallback<TaskSummary>() {
                 @Override
-                public void callback(TaskSummary response) {
-                    if (response == null
-                            || response.getStatus().equals("Completed")
-                            || response.getActualOwner().equals("")
-                            || !response.getActualOwner().equals(identity.getIdentifier())) {
-                        view.enableDelegateButton(false);
-                        view.enableUserOrGroupInput(false);
+                public void callback(final TaskSummary response) {
+                    if (response.getPotOwnersString() == null || response.getPotOwnersString().isEmpty()) {
+                        view.setPotentialOwnersInfo(constants.No_Potential_Owners());
                     } else {
-                        view.enableDelegateButton(true);
-                        view.enableUserOrGroupInput(true);
+                        view.setPotentialOwnersInfo(response.getPotOwnersString().toString());
                     }
                 }
-            }).getTaskDetails(currentTaskId);
+            }, new DefaultErrorCallback()).getTaskDetails(currentTaskId);
 
-            taskOperationsService.call(
-                    new RemoteCallback<TaskAssignmentSummary>() {
-                        @Override
-                        public void callback(TaskAssignmentSummary ts) {
-                            if (ts == null) {
-                                return;
-                            }
+            final Set<String> groups = new HashSet<String>();
+            for( final Group group : identity.getGroups()){
+                groups.add( group.getName() );
+            }
 
-                            if (ts.getPotOwnersString() == null || ts.getPotOwnersString().isEmpty()) {
-                                view.setPotentialOwnersInfo(constants.No_Potential_Owners());
-                            } else {
-                                view.setPotentialOwnersInfo(ts.getPotOwnersString().toString());
-                            }
-                        }
-                    },
-                    new DefaultErrorCallback()
-            ).getTaskAssignmentDetails(currentTaskId);
+            taskOperationsService.call(new RemoteCallback<Boolean>() {
+                @Override
+                public void callback(final Boolean delegateEnabled) {
+                    view.enableDelegateButton(delegateEnabled);
+                    view.enableUserOrGroupInput(delegateEnabled);
+                }
+            }, new DefaultErrorCallback()).allowDelegate(currentTaskId, identity.getIdentifier(), groups);
         }
     }
 
