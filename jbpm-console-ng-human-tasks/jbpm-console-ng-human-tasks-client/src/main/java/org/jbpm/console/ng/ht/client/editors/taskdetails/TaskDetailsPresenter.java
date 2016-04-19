@@ -25,9 +25,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.gc.client.util.UTCDateBox;
@@ -41,7 +39,7 @@ import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.jbpm.console.ng.ht.service.TaskQueryService;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
+import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
@@ -117,64 +115,53 @@ public class TaskDetailsPresenter {
     }
 
     public void updateTask(final String taskDescription,
-                           final String userId,
-                           final Date dueDate,
-                           final int priority) {
+            final String userId,
+            final Date dueDate,
+            final int priority) {
 
         if (currentTaskId > 0) {
             List<String> descriptions = new ArrayList<String>();
             descriptions.add(taskDescription);
 
-            taskOperationsService.call(new RemoteCallback<Void>() {
-                @Override
-                public void callback( Void nothing ) {
-                    view.displayNotification(constants.TaskDetailsUpdatedForTaskId(currentTaskId));
-                    taskRefreshed.fire( new TaskRefreshedEvent( currentTaskId ) );
-                    taskCalendarEvent.fire( new TaskCalendarEvent( currentTaskId ) );
-                }
-            }, new ErrorCallback<Message>() {
-                @Override
-                public boolean error(Message message,
-                                     Throwable throwable) {
-                    ErrorPopup.showMessage(constants.UnexpectedError(throwable.getMessage()));
-                    return true;
-                }
-            }).updateTask(currentTaskId, priority, descriptions, dueDate);
-
+            taskOperationsService.call(
+                    new RemoteCallback<Void>() {
+                        @Override
+                        public void callback(Void nothing) {
+                            view.displayNotification(constants.TaskDetailsUpdatedForTaskId(currentTaskId));
+                            taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
+                            taskCalendarEvent.fire(new TaskCalendarEvent(currentTaskId));
+                        }
+                    },
+                    new DefaultErrorCallback()
+            ).updateTask(currentTaskId, priority, descriptions, dueDate);
         }
-
     }
 
     public void refreshTask() {
-
-        taskQueryService.call(new RemoteCallback<TaskSummary>() {
-            @Override
-            public void callback(TaskSummary details) {
-                if (details == null) {
-                    setReadOnlyTaskDetail();
-                    return;
-                }
-                if (details.getStatus().equals("Completed")) {
-                    setReadOnlyTaskDetail();
-                }
-                view.setTaskDescription(details.getDescription());
-                final Long date = UTCDateBox.date2utc(details.getExpirationTime());
-                if (date != null) {
-                    view.setDueDate(date);
-                    view.setDueDateTime(date);
-                }
-                view.setUser(details.getActualOwner());
-                view.setTaskStatus(details.getStatus());
-                view.setTaskPriority(String.valueOf(details.getPriority()));
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error(Message message,
-                                 Throwable throwable) {
-                ErrorPopup.showMessage(constants.UnexpectedError(throwable.getMessage()));
-                return true;
-            }
-        }).getItem(new TaskKey(currentTaskId));
+        taskQueryService.call(
+                new RemoteCallback<TaskSummary>() {
+                    @Override
+                    public void callback(TaskSummary details) {
+                        if (details == null) {
+                            setReadOnlyTaskDetail();
+                            return;
+                        }
+                        if (details.getStatus().equals("Completed")) {
+                            setReadOnlyTaskDetail();
+                        }
+                        view.setTaskDescription(details.getDescription());
+                        final Long date = UTCDateBox.date2utc(details.getExpirationTime());
+                        if (date != null) {
+                            view.setDueDate(date);
+                            view.setDueDateTime(date);
+                        }
+                        view.setUser(details.getActualOwner());
+                        view.setTaskStatus(details.getStatus());
+                        view.setTaskPriority(String.valueOf(details.getPriority()));
+                    }
+                },
+                new DefaultErrorCallback()
+        ).getItem(new TaskKey(currentTaskId));
     }
 
     public void setReadOnlyTaskDetail() {

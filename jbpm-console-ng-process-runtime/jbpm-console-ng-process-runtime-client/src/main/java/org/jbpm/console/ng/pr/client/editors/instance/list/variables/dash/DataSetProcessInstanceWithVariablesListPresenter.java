@@ -34,9 +34,7 @@ import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionType;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
-import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
@@ -63,7 +61,6 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.uberfire.lifecycle.OnFocus;
@@ -78,6 +75,7 @@ import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.*;
+import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 @Dependent
 @WorkbenchScreen( identifier = DataSetProcessInstanceWithVariablesListPresenter.SCREEN_ID)
@@ -375,36 +373,28 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
         refreshGrid();
     }
 
-    public void abortProcessInstance( long processInstanceId ) {
-        kieSessionServices.call( new RemoteCallback<Void>() {
-            @Override
-            public void callback( Void v ) {
-                refreshGrid();
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage(Constants.INSTANCE.UnexpectedError(throwable.getMessage()));
-                return true;
-            }
-        } ).abortProcessInstance( processInstanceId );
+    public void abortProcessInstance(long processInstanceId) {
+        kieSessionServices.call(
+                new RemoteCallback<Void>() {
+                    @Override
+                    public void callback(Void v) {
+                        refreshGrid();
+                    }
+                },
+                new DefaultErrorCallback()
+        ).abortProcessInstance(processInstanceId);
     }
 
-    public void abortProcessInstance( List<Long> processInstanceIds ) {
-        kieSessionServices.call( new RemoteCallback<Void>() {
-            @Override
-            public void callback( Void v ) {
-                refreshGrid();
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage(Constants.INSTANCE.UnexpectedError(throwable.getMessage()));
-                return true;
-            }
-        } ).abortProcessInstances( processInstanceIds );
+    public void abortProcessInstance(List<Long> processInstanceIds) {
+        kieSessionServices.call(
+                new RemoteCallback<Void>() {
+                    @Override
+                    public void callback(Void v) {
+                        refreshGrid();
+                    }
+                },
+                new DefaultErrorCallback()
+        ).abortProcessInstances(processInstanceIds);
     }
 
     public void bulkSignal( List<ProcessInstanceSummary> processInstances ) {

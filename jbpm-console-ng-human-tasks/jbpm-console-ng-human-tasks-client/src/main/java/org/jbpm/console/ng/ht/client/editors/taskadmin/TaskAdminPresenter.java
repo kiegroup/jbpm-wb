@@ -27,9 +27,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.FormControlStatic;
 import org.gwtbootstrap3.client.ui.TextBox;
-import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
@@ -38,7 +36,7 @@ import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.jbpm.console.ng.ht.service.TaskOperationsService;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
+import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 @Dependent
 public class TaskAdminPresenter {
@@ -88,79 +86,66 @@ public class TaskAdminPresenter {
         return view;
     }
 
-    public void forwardTask( String entity ) {
-        taskServices.call( new RemoteCallback<Void>() {
-            @Override
-            public void callback( Void nothing ) {
-                view.displayNotification(constants.TaskSuccessfullyForwarded());
-                taskRefreshed.fire( new TaskRefreshedEvent( currentTaskId ) );
-                refreshTaskPotentialOwners();
-            }
+    public void forwardTask(String entity) {
+        taskServices.call(
+                new RemoteCallback<Void>() {
+                    @Override
+                    public void callback(Void nothing) {
+                        view.displayNotification(constants.TaskSuccessfullyForwarded());
+                        taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
+                        refreshTaskPotentialOwners();
+                    }
 
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()));
-                return true;
-            }
-        } ).delegate( currentTaskId, identity.getIdentifier(), entity );
+                },
+                new DefaultErrorCallback()
+        ).delegate(currentTaskId, identity.getIdentifier(), entity);
     }
 
     public void reminder() {
-        taskOperationsServices.call( new RemoteCallback<TaskAssignmentSummary>() {
-            @Override
-            public void callback( TaskAssignmentSummary ts ) {
-                view.displayNotification(constants.ReminderSentTo(identity.getIdentifier()));
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
-                return true;
-            }
-        } ).executeReminderForTask( currentTaskId, identity.getIdentifier() );
+        taskOperationsServices.call(
+                new RemoteCallback<TaskAssignmentSummary>() {
+                    @Override
+                    public void callback(TaskAssignmentSummary ts) {
+                        view.displayNotification(constants.ReminderSentTo(identity.getIdentifier()));
+                    }
+                },
+                new DefaultErrorCallback()
+        ).executeReminderForTask(currentTaskId, identity.getIdentifier());
     }
 
     public void refreshTaskPotentialOwners() {
-        List<Long> taskIds = new ArrayList<Long>( 1 );
-        taskIds.add( currentTaskId );
+        List<Long> taskIds = new ArrayList<Long>(1);
+        taskIds.add(currentTaskId);
 
-        taskOperationsServices.call( new RemoteCallback<TaskAssignmentSummary>() {
-            @Override
-            public void callback( TaskAssignmentSummary ts ) {
-                if ( ts == null ) {
-                    view.getReminderButton().setEnabled( false );
-                    view.getForwardButton().setEnabled( false );
-                    view.getUserOrGroupText().setEnabled( false );
-                    return;
-                }
-                if ( ts.getPotOwnersString() != null && ts.getPotOwnersString().isEmpty() ) {
-                    view.getUsersGroupsControlsPanel().setText( Constants.INSTANCE.No_Potential_Owners() );
-                } else {
-                    view.getUsersGroupsControlsPanel().setText( "" + ts.getPotOwnersString().toString() );
-                }
-                view.getForwardButton().setEnabled( true );
-                view.getUserOrGroupText().setEnabled( true );
+        taskOperationsServices.call(
+                new RemoteCallback<TaskAssignmentSummary>() {
+                    @Override
+                    public void callback(TaskAssignmentSummary ts) {
+                        if (ts == null) {
+                            view.getReminderButton().setEnabled(false);
+                            view.getForwardButton().setEnabled(false);
+                            view.getUserOrGroupText().setEnabled(false);
+                            return;
+                        }
+                        if (ts.getPotOwnersString() != null && ts.getPotOwnersString().isEmpty()) {
+                            view.getUsersGroupsControlsPanel().setText(Constants.INSTANCE.No_Potential_Owners());
+                        } else {
+                            view.getUsersGroupsControlsPanel().setText("" + ts.getPotOwnersString().toString());
+                        }
+                        view.getForwardButton().setEnabled(true);
+                        view.getUserOrGroupText().setEnabled(true);
 
-                if ( ts.getActualOwner() == null || ts.getActualOwner().equals( "" ) ) {
-                    view.getReminderButton().setEnabled( false );
-                    view.getActualOwnerPanel().setText( Constants.INSTANCE.No_Actual_Owner() );
-                } else {
-                    view.getReminderButton().setEnabled( true );
-                    view.getActualOwnerPanel().setText( ts.getActualOwner() );
-                }
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
-                return true;
-            }
-        } ).getTaskAssignmentDetails( currentTaskId );
-
+                        if (ts.getActualOwner() == null || ts.getActualOwner().equals("")) {
+                            view.getReminderButton().setEnabled(false);
+                            view.getActualOwnerPanel().setText(Constants.INSTANCE.No_Actual_Owner());
+                        } else {
+                            view.getReminderButton().setEnabled(true);
+                            view.getActualOwnerPanel().setText(ts.getActualOwner());
+                        }
+                    }
+                },
+                new DefaultErrorCallback()
+        ).getTaskAssignmentDetails(currentTaskId);
     }
 
     public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {

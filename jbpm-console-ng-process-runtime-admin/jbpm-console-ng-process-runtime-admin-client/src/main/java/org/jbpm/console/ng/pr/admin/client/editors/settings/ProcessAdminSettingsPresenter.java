@@ -22,9 +22,7 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.TextBox;
-import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.pr.admin.client.i18n.ProcessAdminConstants;
 
@@ -34,7 +32,7 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
+import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
@@ -89,25 +87,20 @@ public class ProcessAdminSettingsPresenter {
     }
 
 
-    public void generateMockInstances(String deployId,String processId, int amountOfTasks) {
-        instancesAdminServices.call(new RemoteCallback<Long>() {
-            @Override
-            public void callback(Long taskId) {
-                view.displayNotification(constants.ProcessInstancesSuccessfullyCreated());
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error(Message message, Throwable throwable) {
-                ErrorPopup.showMessage(constants.UnexpectedError(throwable.getMessage()));
-                return true;
-            }
-        }).generateMockInstances( deployId, processId, amountOfTasks );
-
+    public void generateMockInstances(String deployId, String processId, int amountOfTasks) {
+        instancesAdminServices.call(
+                new RemoteCallback<Long>() {
+                    @Override
+                    public void callback(Long taskId) {
+                        view.displayNotification(constants.ProcessInstancesSuccessfullyCreated());
+                    }
+                },
+                new DefaultErrorCallback()
+        ).generateMockInstances(deployId, processId, amountOfTasks);
     }
 
     @OnOpen
     public void onOpen() {
         view.getDeploymentIdText().setFocus( true );
-
     }
 }

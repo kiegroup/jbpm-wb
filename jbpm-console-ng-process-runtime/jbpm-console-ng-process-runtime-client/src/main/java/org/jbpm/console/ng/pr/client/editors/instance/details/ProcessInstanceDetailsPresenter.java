@@ -26,9 +26,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
-import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
@@ -44,10 +42,10 @@ import org.jbpm.console.ng.pr.model.events.ProcessInstanceStyleEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.jbpm.console.ng.pr.service.ProcessInstanceService;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 @Dependent
 public class ProcessInstanceDetailsPresenter {
@@ -131,151 +129,131 @@ public class ProcessInstanceDetailsPresenter {
                                             final String processDefId ) {
         processSelected = null;
 
-        view.getProcessDefinitionIdText().setText( processId );
-        dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
-            @Override
-            public void callback( List<NodeInstanceSummary> details ) {
-                view.setCurrentActiveNodes( details );
-                view.getCurrentActivitiesListBox().setText( "" );
-                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                for ( NodeInstanceSummary nis : details ) {
-                    safeHtmlBuilder.appendEscapedLines( nis.getTimestamp() + ": "
-                                                                + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType() + ") \n" );
-                }
-                view.getCurrentActivitiesListBox().setHTML( safeHtmlBuilder.toSafeHtml() );
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
-                return true;
-            }
-        } ).getProcessInstanceActiveNodes( Long.parseLong( processId ) );
-
-        dataServices.call( new RemoteCallback<ProcessSummary>() {
-            @Override
-            public void callback( ProcessSummary process ) {
-                view.getProcessDefinitionIdText().setText( process.getProcessDefId() );
-                view.getProcessVersionText().setText( process.getVersion() );
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
-                return true;
-            }
-        } ).getProcessDesc( deploymentId, processDefId );
-
-        processInstanceService.call( new RemoteCallback<ProcessInstanceSummary>() {
-            @Override
-            public void callback( ProcessInstanceSummary process ) {
-                view.getProcessDeploymentText().setText( process.getDeploymentId() );
-                view.getCorrelationKeyText().setText(process.getCorrelationKey());
-                if(process.getParentId() > 0){
-                    view.getParentProcessInstanceIdText().setText(process.getParentId().toString());
-                }else{
-                    view.getParentProcessInstanceIdText().setText(constants.No_Parent_Process_Instance());
-                }
-
-                view.setProcessInstance( process );
-
-                String statusStr = constants.Unknown();
-                switch ( process.getState() ) {
-                    case ProcessInstance.STATE_ACTIVE:
-                        statusStr = constants.Active();
-                        break;
-                    case ProcessInstance.STATE_ABORTED:
-                        statusStr = constants.Aborted();
-                        break;
-                    case ProcessInstance.STATE_COMPLETED:
-                        statusStr = constants.Completed();
-                        break;
-                    case ProcessInstance.STATE_PENDING:
-                        statusStr = constants.Pending();
-                        break;
-                    case ProcessInstance.STATE_SUSPENDED:
-                        statusStr = constants.Suspended();
-                        break;
-                    default:
-                        break;
-                }
-                view.getActiveTasksListBox().setText( "" );
-                if (process.getActiveTasks() != null && !process.getActiveTasks().isEmpty()) {
-                    SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-
-                    for ( UserTaskSummary uts : process.getActiveTasks() ) {
-                        safeHtmlBuilder.appendEscapedLines( uts.getName() + " (" + uts.getStatus() +")  "+constants.Owner() +": " + uts.getOwner() +" \n" );
+        view.getProcessDefinitionIdText().setText(processId);
+        dataServices.call(
+                new RemoteCallback<List<NodeInstanceSummary>>() {
+                    @Override
+                    public void callback(List<NodeInstanceSummary> details) {
+                        view.setCurrentActiveNodes(details);
+                        view.getCurrentActivitiesListBox().setText("");
+                        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+                        for (NodeInstanceSummary nis : details) {
+                            safeHtmlBuilder.appendEscapedLines(nis.getTimestamp() + ": "
+                                    + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType() + ") \n");
+                        }
+                        view.getCurrentActivitiesListBox().setHTML(safeHtmlBuilder.toSafeHtml());
                     }
-                    view.getActiveTasksListBox().setHTML( safeHtmlBuilder.toSafeHtml() );
-                }
-                view.getStateText().setText( statusStr );
-                processSelected = process;
-                changeStyleRow( Long.parseLong( processId ), processSelected.getProcessName(), processSelected.getProcessVersion(),
-                                processSelected.getStartTime() );
+                },
+                new DefaultErrorCallback()
+        ).getProcessInstanceActiveNodes(Long.parseLong(processId));
 
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
-                return true;
-            }
-        } ).getItem(new ProcessInstanceKey(Long.parseLong(processId)));
+        dataServices.call(
+                new RemoteCallback<ProcessSummary>() {
+                    @Override
+                    public void callback(ProcessSummary process) {
+                        view.getProcessDefinitionIdText().setText(process.getProcessDefId());
+                        view.getProcessVersionText().setText(process.getVersion());
+                    }
+                },
+                new DefaultErrorCallback()
+        ).getProcessDesc(deploymentId, processDefId);
 
-        dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
-            @Override
-            public void callback( List<NodeInstanceSummary> details ) {
-                view.setCurrentCompletedNodes( details );
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
-                return true;
-            }
-        } ).getProcessInstanceCompletedNodes( Long.parseLong( processId ) );
+        processInstanceService.call(
+                new RemoteCallback<ProcessInstanceSummary>() {
+                    @Override
+                    public void callback(ProcessInstanceSummary process) {
+                        view.getProcessDeploymentText().setText(process.getDeploymentId());
+                        view.getCorrelationKeyText().setText(process.getCorrelationKey());
+                        if (process.getParentId() > 0) {
+                            view.getParentProcessInstanceIdText().setText(process.getParentId().toString());
+                        } else {
+                            view.getParentProcessInstanceIdText().setText(constants.No_Parent_Process_Instance());
+                        }
 
-        dataServices.call( new RemoteCallback<ProcessSummary>() {
-            @Override
-            public void callback( final ProcessSummary process ) {
-                if ( process != null ) {
-                    view.setEncodedProcessSource( process.getEncodedProcessSource() );
-                    if ( process.getOriginalPath() != null ) {
-                        fileServices.call( new RemoteCallback<Path>() {
-                            @Override
-                            public void callback( Path processPath ) {
-                                view.setProcessAssetPath( processPath );
-                                if ( processSelected != null ) {
-                                    changeStyleRow( processSelected.getProcessInstanceId(), processSelected.getProcessName(), processSelected.getProcessVersion(),
-                                                    processSelected.getStartTime() );
-                                }
+                        view.setProcessInstance(process);
+
+                        String statusStr = constants.Unknown();
+                        switch (process.getState()) {
+                            case ProcessInstance.STATE_ACTIVE:
+                                statusStr = constants.Active();
+                                break;
+                            case ProcessInstance.STATE_ABORTED:
+                                statusStr = constants.Aborted();
+                                break;
+                            case ProcessInstance.STATE_COMPLETED:
+                                statusStr = constants.Completed();
+                                break;
+                            case ProcessInstance.STATE_PENDING:
+                                statusStr = constants.Pending();
+                                break;
+                            case ProcessInstance.STATE_SUSPENDED:
+                                statusStr = constants.Suspended();
+                                break;
+                            default:
+                                break;
+                        }
+                        view.getActiveTasksListBox().setText("");
+                        if (process.getActiveTasks() != null && !process.getActiveTasks().isEmpty()) {
+                            SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+
+                            for (UserTaskSummary uts : process.getActiveTasks()) {
+                                safeHtmlBuilder.appendEscapedLines(uts.getName() + " (" + uts.getStatus() + ")  " + constants.Owner() + ": " + uts.getOwner() + " \n");
                             }
-                        } ).get( process.getOriginalPath() );
-                    } else {
-                        view.setProcessAssetPath( new DummyProcessPath( process.getProcessDefId() ) );
+                            view.getActiveTasksListBox().setHTML(safeHtmlBuilder.toSafeHtml());
+                        }
+                        view.getStateText().setText(statusStr);
+                        processSelected = process;
+                        changeStyleRow(Long.parseLong(processId), processSelected.getProcessName(), processSelected.getProcessVersion(),
+                                processSelected.getStartTime());
+
                     }
-                    if ( processSelected != null ) {
-                        changeStyleRow( processSelected.getProcessInstanceId(), processSelected.getProcessName(), processSelected.getProcessVersion(),
-                                        processSelected.getStartTime() );
+                },
+                new DefaultErrorCallback()
+        ).getItem(new ProcessInstanceKey(Long.parseLong(processId)));
+
+        dataServices.call(
+                new RemoteCallback<List<NodeInstanceSummary>>() {
+                    @Override
+                    public void callback(List<NodeInstanceSummary> details) {
+                        view.setCurrentCompletedNodes(details);
                     }
-                } else {
-                    // set to null to ensure it's clear state
-                    view.setEncodedProcessSource( null );
-                    view.setProcessAssetPath( null );
-                }
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
-                return true;
-            }
-        } ).getProcessById( deploymentId, processDefId );
+                },
+                new DefaultErrorCallback()
+        ).getProcessInstanceCompletedNodes(Long.parseLong(processId));
+
+        dataServices.call(
+                new RemoteCallback<ProcessSummary>() {
+                    @Override
+                    public void callback(final ProcessSummary process) {
+                        if (process != null) {
+                            view.setEncodedProcessSource(process.getEncodedProcessSource());
+                            if (process.getOriginalPath() != null) {
+                                fileServices.call(new RemoteCallback<Path>() {
+                                    @Override
+                                    public void callback(Path processPath) {
+                                        view.setProcessAssetPath(processPath);
+                                        if (processSelected != null) {
+                                            changeStyleRow(processSelected.getProcessInstanceId(), processSelected.getProcessName(), processSelected.getProcessVersion(),
+                                                    processSelected.getStartTime());
+                                        }
+                                    }
+                                }).get(process.getOriginalPath());
+                            } else {
+                                view.setProcessAssetPath(new DummyProcessPath(process.getProcessDefId()));
+                            }
+                            if (processSelected != null) {
+                                changeStyleRow(processSelected.getProcessInstanceId(), processSelected.getProcessName(), processSelected.getProcessVersion(),
+                                        processSelected.getStartTime());
+                            }
+                        } else {
+                            // set to null to ensure it's clear state
+                            view.setEncodedProcessSource(null);
+                            view.setProcessAssetPath(null);
+                        }
+                    }
+                },
+                new DefaultErrorCallback()
+        ).getProcessById(deploymentId, processDefId);
     }
 
     private void changeStyleRow( long processInstanceId,

@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.dm.client.document.details;
 
-import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -25,9 +23,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
 import org.gwtbootstrap3.client.ui.Button;
-import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.dm.client.i18n.Constants;
 import org.jbpm.console.ng.dm.model.CMSContentSummary;
@@ -41,198 +37,109 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.split.WorkbenchSplitLayoutPanel;
+import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
-import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
 @WorkbenchScreen(identifier = "Document Details")
 public class DocumentDetailsPresenter {
 
-	private PlaceRequest place;
+    private PlaceRequest place;
 
-	public interface DocumentDetailsView extends
-			UberView<DocumentDetailsPresenter> {
+    public interface DocumentDetailsView extends
+            UberView<DocumentDetailsPresenter> {
 
-		void displayNotification(String text);
+        void displayNotification(String text);
 
-		HTML getDocumentNameText();
+        HTML getDocumentNameText();
 
-		HTML getDocumentIdText();
+        HTML getDocumentIdText();
 
-		Button getOpenDocumentButton();
-	}
+        Button getOpenDocumentButton();
+    }
 
-	private Menus menus;
+    private Menus menus;
 
-	private static String linkURL = "http://127.0.0.1:8888/documentview"; // TODO
-																			// not
-																			// hardcoded
-																			// please!
+    private static String linkURL = "http://127.0.0.1:8888/documentview"; // TODO not hardcoded please!
 
-	@Inject
-	private PlaceManager placeManager;
-	
-	private Constants constants = GWT.create(Constants.class);
+    @Inject
+    private PlaceManager placeManager;
 
-	@Inject
-	private DocumentDetailsView view;
+    private Constants constants = GWT.create(Constants.class);
 
-	@Inject
-	private Caller<DocumentServiceEntryPoint> dataServices;
+    @Inject
+    private DocumentDetailsView view;
 
-	private CMSContentSummary document;
+    @Inject
+    private Caller<DocumentServiceEntryPoint> dataServices;
 
-	public DocumentDetailsPresenter() {
-		makeMenuBar();
-	}
+    private CMSContentSummary document;
 
-	@DefaultPosition
-	public Position getPosition() {
-		return CompassPosition.EAST;
-	}
+    public DocumentDetailsPresenter() {
+    }
 
-	@OnStartup
-	public void onStartup(final PlaceRequest place) {
-		this.place = place;
-	}
+    @DefaultPosition
+    public Position getPosition() {
+        return CompassPosition.EAST;
+    }
 
-	@WorkbenchPartTitle
-	public String getTitle() {
-		return "Document Details";
-	}
+    @OnStartup
+    public void onStartup(final PlaceRequest place) {
+        this.place = place;
+    }
 
-	@WorkbenchPartView
-	public UberView<DocumentDetailsPresenter> getView() {
-		return view;
-	}
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return "Document Details";
+    }
 
-	private void changeStyleRow(String processDefName, String processDefVersion) {
-		// processDefStyleEvent.fire( new ProcessDefStyleEvent( processDefName,
-		// processDefVersion ) );
-	}
+    @WorkbenchPartView
+    public UberView<DocumentDetailsPresenter> getView() {
+        return view;
+    }
 
-	public void refreshProcessDef(final String documentId) {
-		dataServices.call(new RemoteCallback<CMSContentSummary>() {
-			@Override
-			public void callback(CMSContentSummary content) {
-				document = content;
-				view.getDocumentIdText().setText(content.getId());
-				view.getDocumentNameText().setText(content.getName());
-			}
-		}, new ErrorCallback<Message>() {
-			@Override
-			public boolean error(Message message, Throwable throwable) {
-				org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
-				return true;
-			}
-		}).getDocument(documentId);
-	}
+    public void refreshProcessDef(final String documentId) {
+        dataServices.call(
+                new RemoteCallback<CMSContentSummary>() {
+                    @Override
+                    public void callback(CMSContentSummary content) {
+                        document = content;
+                        view.getDocumentIdText().setText(content.getId());
+                        view.getDocumentNameText().setText(content.getName());
+                    }
+                },
+                new DefaultErrorCallback()
+        ).getDocument(documentId);
+    }
 
-	@OnOpen
-	public void onOpen() {
-		WorkbenchSplitLayoutPanel splitPanel = (WorkbenchSplitLayoutPanel) view
-				.asWidget().getParent().getParent().getParent().getParent()
-				.getParent().getParent().getParent().getParent().getParent()
-				.getParent().getParent();
-		splitPanel.setWidgetMinSize(splitPanel.getWidget(0), 500);
-	}
+    @OnOpen
+    public void onOpen() {
+        WorkbenchSplitLayoutPanel splitPanel = (WorkbenchSplitLayoutPanel) view
+                .asWidget().getParent().getParent().getParent().getParent()
+                .getParent().getParent().getParent().getParent().getParent()
+                .getParent().getParent();
+        splitPanel.setWidgetMinSize(splitPanel.getWidget(0), 500);
+    }
 
-	public void onDocumentDefSelectionEvent(
-			@Observes DocumentDefSelectionEvent event) {
-		refreshProcessDef(event.getDocumentId());
-	}
+    public void onDocumentDefSelectionEvent(@Observes DocumentDefSelectionEvent event) {
+        refreshProcessDef(event.getDocumentId());
+    }
 
-	public void downloadDocument() {
-		if (document != null) {
-			Window.open(linkURL + "?documentId=" + document.getId()
-					+ "&documentName=" + document.getName(),
-					"_blank", "");
-		}
-	}
+    public void downloadDocument() {
+        if (document != null) {
+            Window.open(linkURL + "?documentId=" + document.getId()
+                    + "&documentName=" + document.getName(),
+                    "_blank", "");
+        }
+    }
 
-	@WorkbenchMenu
-	public Menus getMenus() {
-		return menus;
-	}
-
-	private void makeMenuBar() {
-		// menus = MenuFactory
-		// .newTopLevelMenu( constants.New_Instance()).respondsWith(new
-		// Command() {
-		// @Override
-		// public void execute() {
-		// PlaceRequest placeRequestImpl = new DefaultPlaceRequest(
-		// "Form Display Popup" );
-		// placeRequestImpl.addParameter( "processId",
-		// view.getProcessIdText().getText() );
-		// placeRequestImpl.addParameter( "domainId",
-		// view.getDeploymentIdText().getText() );
-		// placeRequestImpl.addParameter( "processName",
-		// view.getProcessNameText().getText() );
-		// placeManager.goTo( placeRequestImpl );
-		// }
-		// }).endMenu()
-		// .newTopLevelMenu( constants.Options())
-		// .withItems(getOptions())
-		// .endMenu()
-		// .newTopLevelMenu( constants.Refresh() )
-		// .respondsWith( new Command() {
-		// @Override
-		// public void execute() {
-		// refreshProcessDef( view.getDeploymentIdText().getText(),
-		// view.getProcessNameText().getText() );
-		// view.displayNotification(
-		// constants.Process_Definition_Details_Refreshed() );
-		// }
-		// } )
-		// .endMenu().build();
-
-	}
-
-	private List<MenuItem> getOptions() {
-		// List<MenuItem> menuItems = new ArrayList<MenuItem>(2);
-		//
-		// menuItems.add( MenuFactory.newSimpleItem(
-		// constants.View_Process_Model()).respondsWith( new Command() {
-		// @Override
-		// public void execute() {
-		// PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Designer"
-		// );
-		//
-		// // if ( view.getEncodedProcessSource() != null ) {
-		// placeRequestImpl.addParameter( "readOnly", "true" );
-		// //placeRequestImpl.addParameter( "encodedProcessSource",
-		// view.getEncodedProcessSource() );
-		// placeRequestImpl.addParameter("processId",
-		// view.getProcessIdText().getText());
-		// placeRequestImpl.addParameter("deploymentId",
-		// view.getDeploymentIdText().getText());
-		//
-		// //}
-		// placeManager.goTo( view.getProcessAssetPath(), placeRequestImpl );
-		// }
-		// } ).endMenu().build().getItems().get( 0 ) );
-		//
-		// menuItems.add( MenuFactory.newSimpleItem(
-		// constants.View_Process_Instances()).respondsWith( new Command() {
-		// @Override
-		// public void execute() {
-		// PlaceRequest placeRequestImpl = new DefaultPlaceRequest(
-		// "Process Instances" );
-		// placeRequestImpl.addParameter( "processName",
-		// view.getProcessNameText().getText() );
-		// placeManager.goTo( placeRequestImpl );
-		// }
-		// } ).endMenu().build().getItems().get( 0 ) );
-		//
-		//
-		// return menuItems;
-		return null;
-	}
-
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return menus;
+    }
 }
