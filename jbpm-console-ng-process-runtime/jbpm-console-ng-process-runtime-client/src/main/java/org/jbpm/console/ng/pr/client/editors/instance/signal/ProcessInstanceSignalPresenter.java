@@ -24,19 +24,17 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
@@ -97,23 +95,17 @@ public class ProcessInstanceSignalPresenter {
         return view;
     }
 
-    public void signalProcessInstances( List<Long> processInstanceIds ) {
-
-        kieSessionServices.call( new RemoteCallback<Void>() {
-            @Override
-            public void callback( Void v ) {
-                processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
-                
-                placeManager.closePlace( place );
-                
-            }
-        }, new ErrorCallback<Message>() {
-             @Override
-             public boolean error( Message message, Throwable throwable ) {
-                 ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
-                 return true;
-             }
-         } ).signalProcessInstances( processInstanceIds, view.getSignalRefText(), view.getEventText() );
+    public void signalProcessInstances(List<Long> processInstanceIds) {
+        kieSessionServices.call(
+                new RemoteCallback<Void>() {
+                    @Override
+                    public void callback(Void v) {
+                        processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
+                        placeManager.closePlace(place);
+                    }
+                },
+                new DefaultErrorCallback()
+        ).signalProcessInstances(processInstanceIds, view.getSignalRefText(), view.getEventText());
     }
 
     @OnOpen
@@ -131,20 +123,16 @@ public class ProcessInstanceSignalPresenter {
         }
     }
 
-    public void getAvailableSignals( long processInstanceId ) {
-        kieSessionServices.call( new RemoteCallback<Collection<String>>() {
-            @Override
-            public void callback( Collection<String> signals ) {
-                view.setAvailableSignals( signals );
+    public void getAvailableSignals(long processInstanceId) {
+        kieSessionServices.call(
+                new RemoteCallback<Collection<String>>() {
+                    @Override
+                    public void callback(Collection<String> signals) {
+                        view.setAvailableSignals(signals);
 
-            }
-        }, new ErrorCallback<Message>() {
-             @Override
-             public boolean error( Message message, Throwable throwable ) {
-                 ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
-                 return true;
-             }
-         } ).getAvailableSignals( processInstanceId );
+                    }
+                },
+                new DefaultErrorCallback()
+        ).getAvailableSignals(processInstanceId);
     }
-
 }

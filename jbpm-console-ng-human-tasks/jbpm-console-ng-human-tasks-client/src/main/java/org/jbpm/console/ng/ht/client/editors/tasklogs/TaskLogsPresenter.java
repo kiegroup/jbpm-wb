@@ -24,9 +24,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.IsWidget;
-import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.ga.model.QueryFilter;
@@ -36,7 +34,7 @@ import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskAuditService;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
+import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.paging.PageResponse;
 
 @Dependent
@@ -77,33 +75,28 @@ public class TaskLogsPresenter {
 
     public void refreshLogs() {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put( "taskId", currentTaskId );
-        QueryFilter filter = new PortableQueryFilter( 0, 0, false, "", "", false, "", params );
-        taskAuditService.call(new RemoteCallback<PageResponse<TaskEventSummary>>() {
-            @Override
-            public void callback(PageResponse<TaskEventSummary> events) {
-                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                for (TaskEventSummary tes : events.getPageRowList()) {
-                    String summaryStr = summaryToString(tes);
-                    safeHtmlBuilder.appendEscapedLines(summaryStr);
-                }
-                view.setLogTextAreaText(safeHtmlBuilder.toSafeHtml().asString());
-            }
+        params.put("taskId", currentTaskId);
+        QueryFilter filter = new PortableQueryFilter(0, 0, false, "", "", false, "", params);
+        taskAuditService.call(
+                new RemoteCallback<PageResponse<TaskEventSummary>>() {
+                    @Override
+                    public void callback(PageResponse<TaskEventSummary> events) {
+                        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+                        for (TaskEventSummary tes : events.getPageRowList()) {
+                            String summaryStr = summaryToString(tes);
+                            safeHtmlBuilder.appendEscapedLines(summaryStr);
+                        }
+                        view.setLogTextAreaText(safeHtmlBuilder.toSafeHtml().asString());
+                    }
 
-            public String summaryToString(TaskEventSummary tes) {
-                String timeStamp = DateUtils.getDateTimeStr(tes.getLogTime());
-                String additionalDetail = "UPDATED".equals(tes.getType()) ? tes.getMessage() : tes.getUserId();
-                return timeStamp + ": Task " + tes.getType() + " (" + additionalDetail + ")\n";
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
-                return true;
-            }
-        } ).getData( filter );
-
+                    public String summaryToString(TaskEventSummary tes) {
+                        String timeStamp = DateUtils.getDateTimeStr(tes.getLogTime());
+                        String additionalDetail = "UPDATED".equals(tes.getType()) ? tes.getMessage() : tes.getUserId();
+                        return timeStamp + ": Task " + tes.getType() + " (" + additionalDetail + ")\n";
+                    }
+                },
+                new DefaultErrorCallback()
+        ).getData(filter);
     }
 
     public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {

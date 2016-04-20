@@ -24,9 +24,7 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
-import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
@@ -50,7 +48,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
+import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -187,97 +185,80 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
     }
 
     public void abortProcessInstance() {
-        dataServices.call( new RemoteCallback<ProcessInstanceSummary>() {
-            @Override
-            public void callback( ProcessInstanceSummary processInstance ) {
-                if ( processInstance.getState() == ProcessInstance.STATE_ACTIVE ||
-                        processInstance.getState() == ProcessInstance.STATE_PENDING ) {
-                    if ( Window.confirm( constants.Abort_Process_Instance() ) ) {
-                        final long processInstanceId = Long.parseLong(deploymentId);
-                        kieSessionServices.call( new RemoteCallback<Void>() {
-                            @Override
-                            public void callback( Void v ) {
-                                processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
+        dataServices.call(
+                new RemoteCallback<ProcessInstanceSummary>() {
+                    @Override
+                    public void callback(ProcessInstanceSummary processInstance) {
+                        if (processInstance.getState() == ProcessInstance.STATE_ACTIVE
+                        || processInstance.getState() == ProcessInstance.STATE_PENDING) {
+                            if (Window.confirm(constants.Abort_Process_Instance())) {
+                                final long processInstanceId = Long.parseLong(deploymentId);
+                                kieSessionServices.call(
+                                        new RemoteCallback<Void>() {
+                                            @Override
+                                            public void callback(Void v) {
+                                                processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
+                                            }
+                                        },
+                                        new DefaultErrorCallback()
+                                ).abortProcessInstance(processInstanceId);
                             }
-                        }, new ErrorCallback<Message>() {
-                            @Override
-                            public boolean error( Message message,
-                                                  Throwable throwable ) {
-                                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
-                                return true;
-                            }
-                        } ).abortProcessInstance( processInstanceId );
+                        } else {
+                            Window.alert(constants.ProcessInstanceNeedsToBeActiveInOrderToBeAborted());
+                        }
                     }
-                } else {
-                    Window.alert(constants.ProcessInstanceNeedsToBeActiveInOrderToBeAborted());
-                }
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
-                return true;
-            }
-        } ).getProcessInstanceById( Long.parseLong( deploymentId ) );
+                },
+                new DefaultErrorCallback()
+        ).getProcessInstanceById(Long.parseLong(deploymentId));
     }
 
     public void goToProcessInstanceModelPopup() {
-        if ( place != null && !deploymentId.equals( "" ) ) {
-            dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
-                @Override
-                public void callback( List<NodeInstanceSummary> activeNodes ) {
-                    final StringBuffer nodeParam = new StringBuffer();
-                    for ( NodeInstanceSummary activeNode : activeNodes ) {
-                        nodeParam.append( activeNode.getNodeUniqueName() + "," );
-                    }
-                    if ( nodeParam.length() > 0 ) {
-                        nodeParam.deleteCharAt( nodeParam.length() - 1 );
-                    }
-
-                    dataServices.call( new RemoteCallback<List<NodeInstanceSummary>>() {
+        if (place != null && !deploymentId.equals("")) {
+            dataServices.call(
+                    new RemoteCallback<List<NodeInstanceSummary>>() {
                         @Override
-                        public void callback( List<NodeInstanceSummary> completedNodes ) {
-                            StringBuffer completedNodeParam = new StringBuffer();
-                            for ( NodeInstanceSummary completedNode : completedNodes ) {
-                                if ( completedNode.isCompleted() ) {
-                                    // insert outgoing sequence flow and node as this is for on entry event
-                                    completedNodeParam.append( completedNode.getNodeUniqueName() + "," );
-                                    completedNodeParam.append( completedNode.getConnection() + "," );
-                                } else if ( completedNode.getConnection() != null ) {
-                                    // insert only incoming sequence flow as node id was already inserted
-                                    completedNodeParam.append( completedNode.getConnection() + "," );
-                                }
+                        public void callback(List<NodeInstanceSummary> activeNodes) {
+                            final StringBuffer nodeParam = new StringBuffer();
+                            for (NodeInstanceSummary activeNode : activeNodes) {
+                                nodeParam.append(activeNode.getNodeUniqueName() + ",");
                             }
-                            completedNodeParam.deleteCharAt( completedNodeParam.length() - 1 );
+                            if (nodeParam.length() > 0) {
+                                nodeParam.deleteCharAt(nodeParam.length() - 1);
+                            }
 
-                            placeManager.goTo( ProcessDiagramUtil.buildPlaceRequest( new DefaultPlaceRequest( "" )
-                                                                                             .addParameter( "activeNodes", nodeParam.toString() )
-                                                                                             .addParameter( "completedNodes", completedNodeParam.toString() )
-                                                                                             .addParameter( "readOnly", "true" )
-                                                                                             .addParameter( "processId", processId)
-                                                                                             .addParameter( "deploymentId", selectedDeploymentId ) ) );
+                            dataServices.call(
+                                    new RemoteCallback<List<NodeInstanceSummary>>() {
+                                        @Override
+                                        public void callback(List<NodeInstanceSummary> completedNodes) {
+                                            StringBuffer completedNodeParam = new StringBuffer();
+                                            for (NodeInstanceSummary completedNode : completedNodes) {
+                                                if (completedNode.isCompleted()) {
+                                                    // insert outgoing sequence flow and node as this is for on entry event
+                                                    completedNodeParam.append(completedNode.getNodeUniqueName() + ",");
+                                                    completedNodeParam.append(completedNode.getConnection() + ",");
+                                                } else if (completedNode.getConnection() != null) {
+                                                    // insert only incoming sequence flow as node id was already inserted
+                                                    completedNodeParam.append(completedNode.getConnection() + ",");
+                                                }
+                                            }
+                                            completedNodeParam.deleteCharAt(completedNodeParam.length() - 1);
+
+                                            placeManager.goTo(ProcessDiagramUtil.buildPlaceRequest(new DefaultPlaceRequest("")
+                                                            .addParameter("activeNodes", nodeParam.toString())
+                                                            .addParameter("completedNodes", completedNodeParam.toString())
+                                                            .addParameter("readOnly", "true")
+                                                            .addParameter("processId", processId)
+                                                            .addParameter("deploymentId", selectedDeploymentId)));
+
+                                        }
+                                    },
+                                    new DefaultErrorCallback()
+                            ).getProcessInstanceCompletedNodes(Long.parseLong(deploymentId));
 
                         }
-                    }, new ErrorCallback<Message>() {
-                        @Override
-                        public boolean error( Message message,
-                                              Throwable throwable ) {
-                            ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
-                            return true;
-                        }
-                    } ).getProcessInstanceCompletedNodes( Long.parseLong(deploymentId) );
-
-                }
-            }, new ErrorCallback<Message>() {
-                @Override
-                public boolean error( Message message,
-                                      Throwable throwable ) {
-                    ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
-                    return true;
-                }
-            } ).getProcessInstanceActiveNodes( Long.parseLong(deploymentId) );
-
+                    },
+                    new DefaultErrorCallback()
+            ).getProcessInstanceActiveNodes(Long.parseLong(deploymentId));
         }
     }
 

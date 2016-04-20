@@ -19,12 +19,9 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.TextBox;
-import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ht.admin.client.i18n.Constants;
 import org.jbpm.console.ng.ht.admin.service.TaskServiceAdminEntryPoint;
@@ -32,7 +29,7 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
+import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
@@ -83,24 +80,19 @@ public class TaskAdminSettingsPresenter {
     }
 
     public void generateMockTasks(String userName, int amountOfTasks) {
-        taskAdminServices.call(new RemoteCallback<Long>() {
-            @Override
-            public void callback(Long taskId) {
-                view.displayNotification(constants.TaskSuccessfullyCreated());
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error(Message message, Throwable throwable) {
-                ErrorPopup.showMessage( constants.UnexpectedError(throwable.getMessage()) );
-                return true;
-            }
-        }).generateMockTasks(userName, amountOfTasks);
-
+        taskAdminServices.call(
+                new RemoteCallback<Long>() {
+                    @Override
+                    public void callback(Long taskId) {
+                        view.displayNotification(constants.TaskSuccessfullyCreated());
+                    }
+                },
+                new DefaultErrorCallback()
+        ).generateMockTasks(userName, amountOfTasks);
     }
 
     @OnOpen
     public void onOpen() {
         view.getUserNameText().setFocus(true);
-
     }
 }

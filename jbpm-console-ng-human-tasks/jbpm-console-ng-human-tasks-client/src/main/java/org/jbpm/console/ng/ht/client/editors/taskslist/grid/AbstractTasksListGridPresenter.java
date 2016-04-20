@@ -38,9 +38,7 @@ import org.dashbuilder.dataset.filter.CoreFunctionType;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.filter.FilterFactory;
 import org.dashbuilder.dataset.sort.SortOrder;
-import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.Group;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -65,6 +63,7 @@ import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
+import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 public abstract class AbstractTasksListGridPresenter extends AbstractScreenListPresenter<TaskSummary> {
 
@@ -383,41 +382,30 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
         return view;
     }
 
-    public void releaseTask(final Long taskId,
-                            final String userId) {
-        taskOperationsService.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void nothing) {
-                view.displayNotification(Constants.INSTANCE.TaskReleased(String.valueOf(taskId)));
-                refreshGrid();
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error(Message message,
-                                 Throwable throwable) {
-                errorPopup.showMessage(Constants.INSTANCE.UnexpectedError(throwable.getMessage()));
-                return true;
-            }
-        }).release(taskId, userId);
+    public void releaseTask(final Long taskId, final String userId) {
+        taskOperationsService.call(
+                new RemoteCallback<Void>() {
+                    @Override
+                    public void callback(Void nothing) {
+                        view.displayNotification(Constants.INSTANCE.TaskReleased(String.valueOf(taskId)));
+                        refreshGrid();
+                    }
+                },
+                new DefaultErrorCallback()
+        ).release(taskId, userId);
     }
 
-    public void claimTask(final Long taskId,
-                          final String userId,
-                          final String deploymentId) {
-        taskOperationsService.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void nothing) {
-                view.displayNotification(Constants.INSTANCE.TaskClaimed(String.valueOf(taskId)));
-                refreshGrid();
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error(Message message,
-                                 Throwable throwable) {
-                errorPopup.showMessage(Constants.INSTANCE.UnexpectedError(throwable.getMessage()));
-                return true;
-            }
-        }).claim(taskId, userId, deploymentId);
+    public void claimTask(final Long taskId, final String userId, final String deploymentId) {
+        taskOperationsService.call(
+                new RemoteCallback<Void>() {
+                    @Override
+                    public void callback(Void nothing) {
+                        view.displayNotification(Constants.INSTANCE.TaskClaimed(String.valueOf(taskId)));
+                        refreshGrid();
+                    }
+                },
+                new DefaultErrorCallback()
+        ).claim(taskId, userId, deploymentId);
     }
 
     @Override
