@@ -20,9 +20,8 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.jbpm.console.ng.ga.forms.display.GenericFormDisplayer;
+import org.jbpm.console.ng.gc.forms.client.display.GenericFormDisplayer;
 import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
-import org.jbpm.console.ng.ga.forms.display.view.FormDisplayerView;
 import org.uberfire.mvp.Command;
 
 public class EmbeddedFormDisplayView implements FormDisplayerView {

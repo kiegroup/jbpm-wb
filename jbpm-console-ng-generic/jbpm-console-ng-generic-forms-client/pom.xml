@@ -97,6 +97,10 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-generic-api</artifactId>
+    </dependency>
 
     <!-- hack to disable sisu annotation processing (that scans client side types) -->
     <dependency>
@@ -105,8 +109,5 @@
       <scope>runtime</scope>
     </dependency>
   </dependencies>
-
-
-
 
 </project>

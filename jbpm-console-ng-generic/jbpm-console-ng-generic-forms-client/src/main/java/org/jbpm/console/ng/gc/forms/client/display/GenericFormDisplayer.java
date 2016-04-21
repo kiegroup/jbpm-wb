@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 JBoss by Red Hat.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ga.forms.display;
+package org.jbpm.console.ng.gc.forms.client.display;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Panel;
-import org.jbpm.console.ng.ga.service.ItemKey;
+import org.jbpm.console.ng.ga.forms.display.FormDisplayerConfig;
 import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
+import org.jbpm.console.ng.ga.service.ItemKey;
 import org.uberfire.mvp.Command;
 
-/**
- *
- * @author salaboy
- * @param <T>
- */
 public interface GenericFormDisplayer<T extends ItemKey> {
+
     boolean supportsContent(String content);
 
     void init(FormDisplayerConfig<T> config, Command onCloseCommand, Command onRefreshCommand, FormContentResizeListener formContentResizeListener);
@@ -37,7 +34,7 @@ public interface GenericFormDisplayer<T extends ItemKey> {
     IsWidget getFooter();
 
     void addOnCloseCallback(Command callback);
-    
+
     void addOnRefreshCallback(Command callback);
 
     int getPriority();
@@ -45,4 +42,5 @@ public interface GenericFormDisplayer<T extends ItemKey> {
     void close();
 
     String getOpener();
+
 }

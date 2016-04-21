@@ -31,7 +31,7 @@ import org.jbpm.console.ng.ht.client.editors.tasklogs.TaskLogsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskDisplayerConfig;
-import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayProvider;
+import org.jbpm.console.ng.ht.forms.client.display.ht.api.HumanTaskFormDisplayProvider;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.uberfire.client.annotations.DefaultPosition;

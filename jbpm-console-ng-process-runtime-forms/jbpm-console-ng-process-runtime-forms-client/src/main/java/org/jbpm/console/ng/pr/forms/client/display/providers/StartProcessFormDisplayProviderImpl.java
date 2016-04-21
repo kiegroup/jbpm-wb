@@ -30,12 +30,12 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.*;
 import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
-import org.jbpm.console.ng.ga.forms.display.view.FormDisplayerView;
+import org.jbpm.console.ng.gc.forms.client.display.views.FormDisplayerView;
 import org.jbpm.console.ng.ga.forms.service.FormServiceEntryPoint;
 import org.jbpm.console.ng.pr.forms.client.i18n.Constants;
 import org.jbpm.console.ng.pr.forms.display.process.api.ProcessDisplayerConfig;
-import org.jbpm.console.ng.pr.forms.display.process.api.StartProcessFormDisplayProvider;
-import org.jbpm.console.ng.pr.forms.display.process.api.StartProcessFormDisplayer;
+import org.jbpm.console.ng.pr.forms.client.display.process.api.StartProcessFormDisplayProvider;
+import org.jbpm.console.ng.pr.forms.client.display.process.api.StartProcessFormDisplayer;
 
 @ApplicationScoped
 public class StartProcessFormDisplayProviderImpl implements StartProcessFormDisplayProvider {

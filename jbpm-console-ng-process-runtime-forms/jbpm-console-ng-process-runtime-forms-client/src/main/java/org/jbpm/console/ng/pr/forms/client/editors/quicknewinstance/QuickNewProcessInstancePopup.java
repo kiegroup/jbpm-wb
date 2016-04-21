@@ -24,7 +24,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -44,16 +43,16 @@ import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.console.ng.ga.forms.display.GenericFormDisplayer;
+import org.jbpm.console.ng.gc.forms.client.display.GenericFormDisplayer;
 import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
-import org.jbpm.console.ng.ga.forms.display.view.FormDisplayerView;
+import org.jbpm.console.ng.gc.forms.client.display.views.FormDisplayerView;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.pr.forms.client.display.displayers.process.AbstractStartProcessFormDisplayer;
 import org.jbpm.console.ng.pr.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.console.ng.pr.forms.client.i18n.Constants;
 import org.jbpm.console.ng.pr.forms.display.process.api.ProcessDisplayerConfig;
-import org.jbpm.console.ng.pr.forms.display.process.api.StartProcessFormDisplayProvider;
+import org.jbpm.console.ng.pr.forms.client.display.process.api.StartProcessFormDisplayProvider;
 import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
@@ -76,9 +75,6 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
 
     @UiField
     public FlowPanel basicForm;
-
-    //@UiField
-    //public Form filterForm;
 
     @UiField
     public HelpBlock errorMessages;
