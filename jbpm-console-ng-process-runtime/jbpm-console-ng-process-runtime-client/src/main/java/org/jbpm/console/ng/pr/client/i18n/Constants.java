@@ -302,4 +302,14 @@ public interface Constants extends Messages {
     String AccessDocument();
 
     String ProcessInstanceNeedsToBeActiveInOrderToBeAborted();
+
+    String GridActions();
+
+    String SelectAll();
+
+    String UnselectAll();
+
+    String SelectAllTooltip();
+
+    String UnselectAllTooltip();
 }
