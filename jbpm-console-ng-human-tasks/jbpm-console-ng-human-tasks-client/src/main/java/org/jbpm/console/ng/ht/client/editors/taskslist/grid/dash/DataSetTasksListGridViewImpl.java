@@ -73,7 +73,6 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.dashbuilder.dataset.sort.SortOrder.*;
 import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
-import static org.jbpm.console.ng.ht.util.TaskRoleDefinition.*;
 
 @Dependent
 public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, AbstractTasksListGridPresenter>
@@ -539,23 +538,23 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         presenter.setAddingDefaultFilters( true );
         //Filter status Active
         states = TaskUtils.getStatusByType( TaskUtils.TaskType.ACTIVE );
-        initOwnTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), Constants.INSTANCE.FilterActive(), states, TASK_ROLE_POTENTIALOWNER );
+        initOwnTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), Constants.INSTANCE.FilterActive(), states);
 
         //Filter status Personal
         states = TaskUtils.getStatusByType( TaskUtils.TaskType.PERSONAL );
-        initPersonalTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_1", Constants.INSTANCE.Personal(), Constants.INSTANCE.FilterPersonal(), states, TASK_ROLE_POTENTIALOWNER );
+        initPersonalTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_1", Constants.INSTANCE.Personal(), Constants.INSTANCE.FilterPersonal(), states);
 
         //Filter status Group
         states = TaskUtils.getStatusByType( TaskUtils.TaskType.GROUP );
-        initGroupTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_2", Constants.INSTANCE.Group(), Constants.INSTANCE.FilterGroup(), states, TASK_ROLE_POTENTIALOWNER );
+        initGroupTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_2", Constants.INSTANCE.Group(), Constants.INSTANCE.FilterGroup(), states);
 
         //Filter status All
         states = TaskUtils.getStatusByType( TaskUtils.TaskType.ALL );
-        initOwnTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_3", Constants.INSTANCE.All(), Constants.INSTANCE.FilterAll(), states, TASK_ROLE_POTENTIALOWNER );
+        initOwnTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_3", Constants.INSTANCE.All(), Constants.INSTANCE.FilterAll(), states);
 
         //Filter status Admin
         states = TaskUtils.getStatusByType( TaskUtils.TaskType.ADMIN );
-        initAdminTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_4", Constants.INSTANCE.Task_Admin(), Constants.INSTANCE.FilterTaskAdmin(), states, TASK_ROLE_ADMINISTRATOR );
+        initAdminTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_4", Constants.INSTANCE.Task_Admin(), Constants.INSTANCE.FilterTaskAdmin(), states);
 
         filterPagedTable.addAddTableButton( createTabButton );
         presenter.setAddingDefaultFilters( false );
@@ -570,280 +569,142 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                                      final String key,
                                      String tabName,
                                      String tabDesc,
-                                     List<String> states,
-                                     String role ) {
+                                     List<String> states ) {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
         builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
-        List<Comparable> names = new ArrayList<Comparable>();
-
-        for ( String s : states ) {
-            names.add( s );
-        }
+        List<Comparable> names = new ArrayList<>(states);
         builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names ) );
 
         builder.filter(COLUMN_ACTUAL_OWNER, OR(equalsTo(""), isNull()) );
 
         builder.group(COLUMN_TASK_ID);
 
-        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner() );
-        builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy() );
-        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId() );
-        builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
-        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn(COLUMN_NAME, constants.Task());
-        builder.setColumn(COLUMN_PARENT_ID, constants.ParentId() );
-        builder.setColumn(COLUMN_PRIORITY, constants.Priority());
-        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Id() );
-        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
-        builder.setColumn(COLUMN_PROCESS_SESSION_ID, constants.ProcessSessionId() );
-        builder.setColumn(COLUMN_STATUS, constants.Status());
-        builder.setColumn(COLUMN_TASK_ID, constants.Id() );
-        builder.setColumn(COLUMN_WORK_ITEM_ID, constants.WorkItemId() );
+        addCommonColumnSettings(builder);
 
-        builder.filterOn( true, true, true );
-        builder.tableOrderEnabled( true );
-        builder.tableOrderDefault(COLUMN_CREATED_ON, DESCENDING );
-
-        FilterSettings tableSettings = builder.buildSettings();
-        tableSettings.setKey( key );
-        tableSettings.setTableName( tabName );
-        tableSettings.setTableDescription( tabDesc );
-
-        HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
-
-        tabSettingsValues.put( FILTER_TABLE_SETTINGS, dataSetEditorManager.getTableSettingsToStr( tableSettings ) );
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName() );
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription() );
-
-        filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
-
-        final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
-        currentListGrid = extendedPagedTable;
-        extendedPagedTable.setDataProvider( presenter.getDataProvider() );
-
-        filterPagedTable.addTab( extendedPagedTable, key, new Command() {
-            @Override
-            public void execute() {
-                currentListGrid = extendedPagedTable;
-                applyFilterOnPresenter( key );
-            }
-        } );
+        initFilterTab(builder , key, tabName, tabDesc, preferences);
     }
+
+    
 
     private void initAdminTabFilter( GridGlobalPreferences preferences,
                                      final String key,
                                      String tabName,
                                      String tabDesc,
-                                     List<String> states,
-                                     String role ) {
+                                     List<String> states ) {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
         builder.dataset(HUMAN_TASKS_WITH_ADMIN_DATASET);
-        List<Comparable> names = new ArrayList<Comparable>();
-
-        for ( String s : states ) {
-            names.add( s );
-        }
+        List<Comparable> names = new ArrayList<>(states);
         builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names ) );
 
         builder.group(COLUMN_TASK_ID);
 
-        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(),DateUtils.getDateTimeFormatMask() );
-        builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner() );
-        builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy() );
-        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId() );
-        builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
-        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn(COLUMN_NAME, constants.Task());
-        builder.setColumn(COLUMN_PARENT_ID, constants.ParentId() );
-        builder.setColumn(COLUMN_PRIORITY, constants.Priority());
-        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Id() );
-        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
-        builder.setColumn(COLUMN_PROCESS_SESSION_ID, constants.ProcessSessionId() );
-        builder.setColumn(COLUMN_STATUS, constants.Status());
-        builder.setColumn(COLUMN_TASK_ID, constants.Id() );
-        builder.setColumn(COLUMN_WORK_ITEM_ID, constants.WorkItemId() );
+        addCommonColumnSettings(builder);
 
-        builder.filterOn( true, true, true );
-        builder.tableOrderEnabled( true );
-        builder.tableOrderDefault(COLUMN_CREATED_ON, DESCENDING );
-
-        FilterSettings tableSettings = builder.buildSettings();
-        tableSettings.setKey( key );
-        tableSettings.setTableName( tabName );
-        tableSettings.setTableDescription( tabDesc );
-
-        HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
-
-        tabSettingsValues.put( FILTER_TABLE_SETTINGS, dataSetEditorManager.getTableSettingsToStr( tableSettings ) );
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName() );
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription() );
-
-        filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
-
-        final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
-        currentListGrid = extendedPagedTable;
-        extendedPagedTable.setDataProvider( presenter.getDataProvider() );
-
-        filterPagedTable.addTab( extendedPagedTable, key, new Command() {
-            @Override
-            public void execute() {
-                currentListGrid = extendedPagedTable;
-                applyFilterOnPresenter( key );
-            }
-        } );
+        initFilterTab(builder, key, tabName, tabDesc, preferences );
     }
 
     private void initPersonalTabFilter( GridGlobalPreferences preferences,
                                         final String key,
                                         String tabName,
                                         String tabDesc,
-                                        List<String> states,
-                                        String role ) {
+                                        List<String> states ) {
 
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
         builder.dataset( HUMAN_TASKS_DATASET );
-        List<Comparable> names = new ArrayList<Comparable>();
-
-        for ( String s : states ) {
-            names.add( s );
-        }
+        List<Comparable> names = new ArrayList<>(states);
         builder.filter( equalsTo( COLUMN_STATUS, names ) );
         builder.filter( equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier() ) );
 
-        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner() );
-        builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy() );
-        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId() );
-        builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
-        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn(COLUMN_NAME, constants.Task());
-        builder.setColumn(COLUMN_PARENT_ID, constants.ParentId() );
-        builder.setColumn(COLUMN_PRIORITY, constants.Priority());
-        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Id() );
-        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
-        builder.setColumn(COLUMN_PROCESS_SESSION_ID, constants.ProcessSessionId() );
-        builder.setColumn(COLUMN_STATUS, constants.Status());
-        builder.setColumn(COLUMN_TASK_ID, constants.Id() );
-        builder.setColumn(COLUMN_WORK_ITEM_ID, constants.WorkItemId() );
+        addCommonColumnSettings(builder);
 
-        builder.filterOn( true, true, true );
-        builder.tableOrderEnabled( true );
-        builder.tableOrderDefault(COLUMN_CREATED_ON, DESCENDING );
-
-        FilterSettings tableSettings = builder.buildSettings();
-        tableSettings.setKey( key );
-        tableSettings.setTableName( tabName );
-        tableSettings.setTableDescription( tabDesc );
-
-        HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
-
-        tabSettingsValues.put( FILTER_TABLE_SETTINGS, dataSetEditorManager.getTableSettingsToStr( tableSettings ) );
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName() );
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription() );
-
-        filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
-
-        final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
-        currentListGrid = extendedPagedTable;
-        extendedPagedTable.setDataProvider( presenter.getDataProvider() );
-
-        filterPagedTable.addTab( extendedPagedTable, key, new Command() {
-            @Override
-            public void execute() {
-                currentListGrid = extendedPagedTable;
-                applyFilterOnPresenter( key );
-            }
-        } );
-
+        initFilterTab(builder, key, tabName, tabDesc, preferences );
     }
 
     private void initOwnTabFilter( GridGlobalPreferences preferences,
                                    final String key,
                                    String tabName,
                                    String tabDesc,
-                                   List<String> states,
-                                   String role ) {
+                                   List<String> states ) {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
         builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
-        List<Comparable> names = new ArrayList<Comparable>();
-
-        for ( String s : states ) {
-            names.add( s );
-        }
+        List<Comparable> names = new ArrayList<>(states);
         builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names ) );
 
         builder.group(COLUMN_TASK_ID);
 
-        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner() );
-        builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy() );
-        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId() );
+        addCommonColumnSettings(builder);
+
+        initFilterTab(builder, key, tabName, tabDesc, preferences );
+    }
+
+    private void addCommonColumnSettings(FilterSettingsBuilderHelper builder) {
+        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), DateUtils.getDateTimeFormatMask());
+        builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner());
+        builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy());
+        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), DateUtils.getDateTimeFormatMask());
+        builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId());
         builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
-        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), DateUtils.getDateTimeFormatMask() );
+        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), DateUtils.getDateTimeFormatMask());
         builder.setColumn(COLUMN_NAME, constants.Task());
-        builder.setColumn(COLUMN_PARENT_ID, constants.ParentId() );
+        builder.setColumn(COLUMN_PARENT_ID, constants.ParentId());
         builder.setColumn(COLUMN_PRIORITY, constants.Priority());
-        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Id() );
-        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
-        builder.setColumn(COLUMN_PROCESS_SESSION_ID, constants.ProcessSessionId() );
+        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Id());
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id());
+        builder.setColumn(COLUMN_PROCESS_SESSION_ID, constants.ProcessSessionId());
         builder.setColumn(COLUMN_STATUS, constants.Status());
-        builder.setColumn(COLUMN_TASK_ID, constants.Id() );
-        builder.setColumn(COLUMN_WORK_ITEM_ID, constants.WorkItemId() );
+        builder.setColumn(COLUMN_TASK_ID, constants.Id());
+        builder.setColumn(COLUMN_WORK_ITEM_ID, constants.WorkItemId());
 
-        builder.filterOn( true, true, true );
-        builder.tableOrderEnabled( true );
-        builder.tableOrderDefault(COLUMN_CREATED_ON, DESCENDING );
+        builder.filterOn(true, true, true);
+        builder.tableOrderEnabled(true);
+        builder.tableOrderDefault(COLUMN_CREATED_ON, DESCENDING);
+    }
 
+    private void initFilterTab(FilterSettingsBuilderHelper builder, final String key, String tabName, String tabDesc, GridGlobalPreferences preferences) {
         FilterSettings tableSettings = builder.buildSettings();
-        tableSettings.setKey( key );
-        tableSettings.setTableName( tabName );
-        tableSettings.setTableDescription( tabDesc );
+        tableSettings.setKey(key);
+        tableSettings.setTableName(tabName);
+        tableSettings.setTableDescription(tabDesc);
 
         HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
 
-        tabSettingsValues.put( FILTER_TABLE_SETTINGS, dataSetEditorManager.getTableSettingsToStr( tableSettings ) );
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName() );
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription() );
+        tabSettingsValues.put(FILTER_TABLE_SETTINGS, dataSetEditorManager.getTableSettingsToStr(tableSettings));
+        tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName());
+        tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription());
 
-        filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
+        filterPagedTable.saveNewTabSettings(key, tabSettingsValues);
 
-        final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
+        final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance(new GridGlobalPreferences(key, preferences.getInitialColumns(), preferences.getBannedColumns()), key);
         currentListGrid = extendedPagedTable;
-        extendedPagedTable.setDataProvider( presenter.getDataProvider() );
+        extendedPagedTable.setDataProvider(presenter.getDataProvider());
 
-        filterPagedTable.addTab( extendedPagedTable, key, new Command() {
+        filterPagedTable.addTab(extendedPagedTable, key, new Command() {
             @Override
             public void execute() {
                 currentListGrid = extendedPagedTable;
-                applyFilterOnPresenter( key );
+                applyFilterOnPresenter(key);
             }
-        } );
+        });
+    }
+    
+    public void applyFilterOnPresenter(HashMap<String, Object> params) {
+        String tableSettingsJSON = (String) params.get(FILTER_TABLE_SETTINGS);
+        FilterSettings tableSettings = dataSetEditorManager.getStrToTableSettings(tableSettingsJSON);
+        presenter.filterGrid(tableSettings);
     }
 
-    public void applyFilterOnPresenter( HashMap<String, Object> params ) {
-
-        String tableSettingsJSON = (String) params.get( FILTER_TABLE_SETTINGS );
-        FilterSettings tableSettings = dataSetEditorManager.getStrToTableSettings( tableSettingsJSON );
-        presenter.filterGrid( tableSettings );
-
-    }
-
-    public void applyFilterOnPresenter( String key ) {
+    @Override
+    public void applyFilterOnPresenter(String key) {
         initSelectionModel();
-        applyFilterOnPresenter( filterPagedTable.getMultiGridPreferencesStore().getGridSettings( key ) );
+        applyFilterOnPresenter(filterPagedTable.getMultiGridPreferencesStore().getGridSettings(key));
     }
     /*-------------------------------------------------*/
     /*---              DashBuilder                   --*/
@@ -856,29 +717,9 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
         builder.group(COLUMN_TASK_ID);
 
-        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner() );
-        builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy() );
-        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId() );
-        builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
-        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn(COLUMN_NAME, constants.Task());
-        builder.setColumn(COLUMN_PARENT_ID, constants.ParentId() );
-        builder.setColumn(COLUMN_PRIORITY, constants.Priority());
-        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Id() );
-        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
-        builder.setColumn(COLUMN_PROCESS_SESSION_ID, constants.ProcessSessionId() );
-        builder.setColumn(COLUMN_STATUS, constants.Status());
-        builder.setColumn(COLUMN_TASK_ID, constants.Id() );
-        builder.setColumn(COLUMN_WORK_ITEM_ID, constants.WorkItemId() );
-
-        builder.filterOn( true, true, true );
-        builder.tableOrderEnabled( true );
-        builder.tableOrderDefault(COLUMN_CREATED_ON, DESCENDING );
+        addCommonColumnSettings(builder);
 
         return builder.buildSettings();
-
     }
 
     public int getRefreshValue() {
