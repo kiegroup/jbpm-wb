@@ -19,9 +19,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jbpm.console.ng.df.client.list.base.DataSetEditorManager;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+
+import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,7 +67,15 @@ public class DataSetProcessInstanceWithVariablesListViewTest {
     protected FilterPagedTable filterPagedTable;
 
     @Mock
+    protected HasWidgets rigthToolbar;
+
+    ClickHandler clickHandler;
+
+    @Mock
     protected DataSetProcessInstanceWithVariablesListPresenter presenter;
+
+    @GwtMock
+    AnchorListItem anchorListNavLink;
 
     private ProcessInstancesWithVariableListViewExtension view;
 
@@ -68,6 +85,7 @@ public class DataSetProcessInstanceWithVariablesListViewTest {
         view = new ProcessInstancesWithVariableListViewExtension();
         view.setUpMocks(currentListGrid, filterPagedTable, dataSetEditorManager, presenter);
         when(filterPagedTable.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStore);
+        when(currentListGrid.getRightActionsToolbar()).thenReturn(rigthToolbar);
 
     }
 
@@ -97,8 +115,8 @@ public class DataSetProcessInstanceWithVariablesListViewTest {
 
         view.initDefaultFilters(new GridGlobalPreferences("testGrid", new ArrayList<String>(), new ArrayList<String>()), null);
 
-        verify(filterPagedTable, times(3)).addTab((ExtendedPagedTable) any(), anyString(), (Command) any());
-        verify(filterPagedTable, times(3)).saveNewTabSettings(anyString(), (HashMap) any());
+        verify(filterPagedTable, times(3)).addTab( any(), anyString(),  any());
+        verify(filterPagedTable, times(3)).saveNewTabSettings(anyString(),  any());
     }
 
     @Test
@@ -107,6 +125,49 @@ public class DataSetProcessInstanceWithVariablesListViewTest {
 
         verify(filterPagedTable, times(3)).getMultiGridPreferencesStore();
         verify(filterPagedTable, times(3)).saveTabSettings(anyString(), any(HashMap.class));
+    }
+
+
+    @Test
+    public void selectAllProcessInstancesClickTest() {
+        when(anchorListNavLink.addClickHandler(any(ClickHandler.class))).thenAnswer(new Answer() {
+            public Object answer(InvocationOnMock aInvocation) throws Throwable {
+                clickHandler = (ClickHandler) aInvocation.getArguments()[0];
+                return null;
+            }
+        });
+
+        view.initBulkActions(currentListGrid);
+        view.createSelectAllButton(anchorListNavLink, currentListGrid);
+        clickHandler.onClick(new ClickEvent() {
+        });
+
+        verify(presenter).getDisplayedProcessInstances();
+        verify(anchorListNavLink,times(2)).setIcon(IconType.CHECK_SQUARE_O);
+        verify(anchorListNavLink,times(2)).setText(Constants.INSTANCE.SelectAll());
+        verify(anchorListNavLink,times(2)).setTitle(Constants.INSTANCE.SelectAllTooltip());
+        verify(currentListGrid).redraw();
+        verify(rigthToolbar, times(2)).add(any());
+    }
+    @Test
+    public void unSelectAllProcessInstancesClickTest() {
+       when(anchorListNavLink.addClickHandler(any(ClickHandler.class))).thenAnswer(new Answer() {
+            public Object answer(InvocationOnMock aInvocation) throws Throwable {
+                clickHandler = (ClickHandler) aInvocation.getArguments()[0];
+                return null;
+            }
+        });
+
+        view.initBulkActions(currentListGrid);
+        view.createUnSelectAllButton(anchorListNavLink, currentListGrid);
+        clickHandler.onClick(new ClickEvent() {
+        });
+
+        verify(anchorListNavLink,times(2)).setIcon(IconType.SQUARE_O);
+        verify(anchorListNavLink,times(2)).setText(Constants.INSTANCE.UnselectAll());
+        verify(anchorListNavLink,times(2)).setTitle(Constants.INSTANCE.UnselectAllTooltip());
+        verify(currentListGrid).redraw();
+        verify(rigthToolbar, times(2)).add(any());
     }
 
 }
