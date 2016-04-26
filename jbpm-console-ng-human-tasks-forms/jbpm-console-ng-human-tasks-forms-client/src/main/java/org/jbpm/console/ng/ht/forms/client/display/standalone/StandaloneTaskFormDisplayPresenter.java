@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.console.ng.gc.forms.client.display.views.EmbeddedFormDisplayView;
 import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskDisplayerConfig;
-import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayProvider;
+import org.jbpm.console.ng.ht.forms.client.display.ht.api.HumanTaskFormDisplayProvider;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -33,9 +33,6 @@ import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 
-/**
- * @author pefernan
- */
 @Dependent
 @WorkbenchScreen(identifier = "Standalone Task Form Display")
 public class StandaloneTaskFormDisplayPresenter {

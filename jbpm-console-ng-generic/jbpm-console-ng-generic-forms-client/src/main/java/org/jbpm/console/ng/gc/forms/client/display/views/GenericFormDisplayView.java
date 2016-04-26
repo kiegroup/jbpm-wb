@@ -26,11 +26,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import org.jbpm.console.ng.ga.forms.display.view.FormDisplayerView;
 
-/**
- * @author salaboy
- */
 @Dependent
 @Templated(value = "GenericFormDisplayView.html")
 public class GenericFormDisplayView extends Composite implements GenericFormDisplayPresenter.GenericFormDisplayView {

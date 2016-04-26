@@ -21,13 +21,9 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.console.ng.ga.forms.display.view.FormDisplayerView;
 import org.jbpm.console.ng.ga.forms.service.FormServiceEntryPoint;
 import org.uberfire.mvp.Command;
 
-/**
- * @author salaboy
- */
 @ApplicationScoped
 public class GenericFormDisplayPresenter {
 

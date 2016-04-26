@@ -44,7 +44,7 @@ import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
 import org.jbpm.console.ng.gc.forms.client.display.displayers.util.ActionRequest;
 import org.jbpm.console.ng.gc.forms.client.display.displayers.util.JSNIHelper;
 import org.jbpm.console.ng.pr.forms.client.i18n.Constants;
-import org.jbpm.console.ng.pr.forms.display.process.api.StartProcessFormDisplayer;
+import org.jbpm.console.ng.pr.forms.client.display.process.api.StartProcessFormDisplayer;
 import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
@@ -52,9 +52,6 @@ import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
-/**
- * @author salaboy
- */
 public abstract class AbstractStartProcessFormDisplayer implements StartProcessFormDisplayer {
 
     public static final String ACTION_START_PROCESS = "startProcess";

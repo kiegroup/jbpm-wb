@@ -30,9 +30,9 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskDisplayerConfig;
-import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayer;
-import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayProvider;
-import org.jbpm.console.ng.ga.forms.display.view.FormDisplayerView;
+import org.jbpm.console.ng.ht.forms.client.display.ht.api.HumanTaskFormDisplayer;
+import org.jbpm.console.ng.ht.forms.client.display.ht.api.HumanTaskFormDisplayProvider;
+import org.jbpm.console.ng.gc.forms.client.display.views.FormDisplayerView;
 import org.jbpm.console.ng.ga.forms.service.FormServiceEntryPoint;
 import org.uberfire.mvp.Command;
 

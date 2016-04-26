@@ -41,7 +41,7 @@ import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
 import org.jbpm.console.ng.gc.forms.client.display.displayers.util.ActionRequest;
 import org.jbpm.console.ng.gc.forms.client.display.displayers.util.JSNIHelper;
 import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
-import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayer;
+import org.jbpm.console.ng.ht.forms.client.display.ht.api.HumanTaskFormDisplayer;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
@@ -50,10 +50,6 @@ import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mvp.Command;
 
-/**
- *
- * @author salaboy
- */
 public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDisplayer {
     public static final String ACTION_CLAIM_TASK = "claimTask";
     public static final String ACTION_START_TASK = "startTask";
