@@ -21,8 +21,8 @@ import org.jboss.errai.bus.server.annotations.Remote;
 @Remote
 public interface FormServiceEntryPoint {
 
-    public String getFormDisplayTask(String serverTemplateId, String domainId, long taskId);
+    String getFormDisplayTask(String serverTemplateId, String domainId, long taskId);
 
-    public String getFormDisplayProcess(String serverTemplateId, String domainId, String processId);
+    String getFormDisplayProcess(String serverTemplateId, String domainId, String processId);
 
 }

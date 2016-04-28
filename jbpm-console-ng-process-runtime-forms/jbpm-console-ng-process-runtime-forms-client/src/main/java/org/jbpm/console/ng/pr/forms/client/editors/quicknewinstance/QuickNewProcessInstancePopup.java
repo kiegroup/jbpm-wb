@@ -49,7 +49,6 @@ import org.jbpm.console.ng.gc.forms.client.display.views.FormDisplayerView;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.pr.forms.client.display.displayers.process.AbstractStartProcessFormDisplayer;
-import org.jbpm.console.ng.pr.forms.client.display.process.api.StartProcessFormDisplayProvider;
 import org.jbpm.console.ng.pr.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.console.ng.pr.forms.client.i18n.Constants;
 import org.jbpm.console.ng.pr.forms.display.process.api.ProcessDisplayerConfig;
@@ -118,12 +117,7 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
 
     private Long parentProcessInstanceId = -1L;
 
-    @Inject
-    private StartProcessFormDisplayProvider widgetPresenter;
-
     private Command onCloseCommand;
-
-    private Command childCloseCommand;
 
     private FormContentResizeListener formContentResizeListener;
 
@@ -350,7 +344,7 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
 
     @Override
     public void setOnCloseCommand( Command onCloseCommand ) {
-        this.childCloseCommand = onCloseCommand;
+        this.onCloseCommand = onCloseCommand;
     }
 
     @Override

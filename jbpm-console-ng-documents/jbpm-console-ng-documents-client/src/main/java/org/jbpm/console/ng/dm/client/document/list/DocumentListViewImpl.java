@@ -62,7 +62,6 @@ import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, DocumentListPresenter> implements
@@ -98,9 +97,6 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
     @Inject
     private Event<DocumentRemoveSearchEvent> removeDocEvent;
 
-    @Inject
-    private Event<NotificationEvent> notification;
-
     @Override
     public void init( final DocumentListPresenter presenter ) {
 
@@ -122,7 +118,6 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
         selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
             @Override
             public void onSelectionChange( SelectionChangeEvent event ) {
-                boolean close = false;
                 if ( selectedRow == -1 ) {
                     listGrid.setRowStyles( selectedStyles );
                     selectedRow = listGrid.getKeyboardSelectedRow();
@@ -132,8 +127,6 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
                     listGrid.setRowStyles( selectedStyles );
                     selectedRow = listGrid.getKeyboardSelectedRow();
                     listGrid.redraw();
-                } else {
-                    close = true;
                 }
 
                 selectedItem = selectionModel.getLastSelectedObject();
@@ -153,12 +146,11 @@ public class DocumentListViewImpl extends AbstractListView<CMSContentSummary, Do
                     public DefaultSelectionEventManager.SelectAction translateSelectionEvent(
                             CellPreviewEvent<CMSContentSummary> event ) {
                         NativeEvent nativeEvent = event.getNativeEvent();
-                        if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) ) {
+                        if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) &&
                             // Ignore if the event didn't occur in the correct
                             // column.
-                            if ( listGrid.getColumnIndex( actionsColumn ) == event.getColumn() ) {
+                            listGrid.getColumnIndex( actionsColumn ) == event.getColumn() ) {
                                 return DefaultSelectionEventManager.SelectAction.IGNORE;
-                            }
                         }
                         return DefaultSelectionEventManager.SelectAction.DEFAULT;
                     }

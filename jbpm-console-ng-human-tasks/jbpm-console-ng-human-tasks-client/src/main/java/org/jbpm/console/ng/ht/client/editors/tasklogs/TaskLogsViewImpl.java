@@ -33,8 +33,6 @@ import org.uberfire.workbench.events.NotificationEvent;
 @Templated(value = "TaskLogsViewImpl.html")
 public class TaskLogsViewImpl extends Composite implements TaskLogsPresenter.TaskLogsView {
 
-    private TaskLogsPresenter presenter;
-
     @Inject
     @DataField
     public HTML logTextArea;
@@ -50,8 +48,6 @@ public class TaskLogsViewImpl extends Composite implements TaskLogsPresenter.Tas
 
     @Override
     public void init( final TaskLogsPresenter presenter ) {
-        this.presenter = presenter;
-
         logTextLabel.setText( constants.Task_Log() );
     }
 

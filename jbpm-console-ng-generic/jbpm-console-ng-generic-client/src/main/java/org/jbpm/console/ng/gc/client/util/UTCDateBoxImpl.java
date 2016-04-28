@@ -26,33 +26,31 @@ import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
 /**
  * Interface for UTCDateBox implementations that are quite different
  * in appearance (HTML4 vs HTML5).
- * 
- * @author andy
  */
 public interface UTCDateBoxImpl extends IsWidget, HasValue<Long>, HasValueChangeHandlers<Long>, HasText, HasEnabled {
-    
+
     /**
      * Sets the DateTimeFormat for this UTCDateBox. The HTML5
      * implementation will ignore this.
      */
-    public void setDateFormat(DateTimeFormat dateFormat);
+    void setDateFormat(DateTimeFormat dateFormat);
 
     /**
      * Sets the visible length of the date input. The HTML5
      * implementation will ignore this.
      */
-    public void setVisibleLength(int length);    
+    void setVisibleLength(int length);
 
     /**
-     * Sets the tab index for the control. 
+     * Sets the tab index for the control.
      */
-    public void setTabIndex(int tabIndex);
+    void setTabIndex(int tabIndex);
 
     /**
      * Returns the DateBox (if any) that this implementation uses. For
      * HTML5, this will return null. This was only added to make my
      * r52 tree compile and I don't intend to check it in.
      */
-    public DatePicker getDateBox();
+    DatePicker getDateBox();
 
 }

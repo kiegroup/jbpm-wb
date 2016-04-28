@@ -19,7 +19,6 @@ import java.util.List;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
-import org.jbpm.console.ng.pr.client.editors.definition.list.ProcessDefinitionListViewImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

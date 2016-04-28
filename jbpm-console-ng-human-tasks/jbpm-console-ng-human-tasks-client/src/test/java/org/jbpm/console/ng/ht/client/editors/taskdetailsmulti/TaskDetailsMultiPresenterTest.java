@@ -54,10 +54,10 @@ public class TaskDetailsMultiPresenterTest {
     @Mock
     private TaskDetailsMultiViewImpl view;
 
-    @Mock
+    @Mock @SuppressWarnings("unused")
     private HumanTaskFormDisplayProvider taskFormDisplayProvider;
 
-    @Mock
+    @Mock @SuppressWarnings("unused")
     private TaskDetailsPresenter taskDetailsPresenter;
 
     @Spy

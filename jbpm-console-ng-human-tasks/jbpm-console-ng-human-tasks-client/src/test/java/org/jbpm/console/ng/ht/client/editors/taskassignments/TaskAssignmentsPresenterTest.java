@@ -20,7 +20,6 @@ import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskAssignmentSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
@@ -34,12 +33,9 @@ import org.mockito.Mock;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.eq;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskAssignmentsPresenterTest {
@@ -51,9 +47,6 @@ public class TaskAssignmentsPresenterTest {
     private TaskAssignmentsPresenter.TaskAssignmentsView viewMock;
 
     @Mock
-    private User userMock;
-
-    @Mock
     private TaskService taskService;
 
     private Caller<TaskService> remoteTaskServiceCaller;
@@ -63,15 +56,12 @@ public class TaskAssignmentsPresenterTest {
 
     @Before
     public void initMocks() {
-        when(userMock.getIdentifier()).thenReturn(CURRENT_USER);
-
         remoteTaskServiceCaller = new CallerMock<TaskService>(taskService);
         final Event<TaskRefreshedEvent> taskRefreshed = spy(new EventSourceMock<TaskRefreshedEvent>());
         doNothing().when(taskRefreshed).fire(any(TaskRefreshedEvent.class));
 
         presenter = new TaskAssignmentsPresenter(
                 viewMock,
-                userMock,
                 remoteTaskServiceCaller,
                 taskRefreshed
         );

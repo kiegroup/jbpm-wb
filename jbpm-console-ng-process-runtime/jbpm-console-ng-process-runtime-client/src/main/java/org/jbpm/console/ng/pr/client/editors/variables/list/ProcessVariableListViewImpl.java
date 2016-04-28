@@ -93,7 +93,6 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
             @Override
             public void onSelectionChange( SelectionChangeEvent event ) {
 
-                boolean close = false;
                 if ( selectedRow == -1 ) {
                     listGrid.setRowStyles( selectedStyles );
                     selectedRow = listGrid.getKeyboardSelectedRow();
@@ -103,8 +102,6 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
                     listGrid.setRowStyles( selectedStyles );
                     selectedRow = listGrid.getKeyboardSelectedRow();
                     listGrid.redraw();
-                } else {
-                    close = true;
                 }
 
                 selectedItem = selectionModel.getLastSelectedObject();
@@ -123,14 +120,11 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
                     @Override
                     public DefaultSelectionEventManager.SelectAction translateSelectionEvent( CellPreviewEvent<ProcessVariableSummary> event ) {
                         NativeEvent nativeEvent = event.getNativeEvent();
-                        if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) ) {
+                        if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) &&
                             // Ignore if the event didn't occur in the correct column.
-                            if ( listGrid.getColumnIndex( actionsColumn ) == event.getColumn() ) {
+                            listGrid.getColumnIndex( actionsColumn ) == event.getColumn() ) {
                                 return DefaultSelectionEventManager.SelectAction.IGNORE;
-                            }
-
                         }
-
                         return DefaultSelectionEventManager.SelectAction.DEFAULT;
                     }
 

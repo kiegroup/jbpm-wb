@@ -31,8 +31,6 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
-import org.uberfire.mvp.PlaceRequest;
 
 @Dependent
 @WorkbenchScreen(identifier = "Tasks Admin Settings")
@@ -54,13 +52,6 @@ public class TaskAdminSettingsPresenter {
 
     @Inject
     Caller<TaskServiceAdmin> taskAdminServices;
-
-    private PlaceRequest place;
-
-    @OnStartup
-    public void onStartup(final PlaceRequest place) {
-        this.place = place;
-    }
 
     @WorkbenchPartTitle
     public String getTitle() {

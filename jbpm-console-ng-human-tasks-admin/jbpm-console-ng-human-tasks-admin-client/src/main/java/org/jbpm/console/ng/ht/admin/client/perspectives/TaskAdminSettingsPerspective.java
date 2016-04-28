@@ -37,7 +37,7 @@ public class TaskAdminSettingsPerspective extends Composite {
     FlowPanel tasksAdminSettings;
 
     @PostConstruct
-    private void init() {
+    public void init() {
         initWidget( tasksAdminSettings );
     }
 }

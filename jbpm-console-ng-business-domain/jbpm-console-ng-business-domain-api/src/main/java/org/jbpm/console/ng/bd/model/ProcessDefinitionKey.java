@@ -19,72 +19,64 @@ package org.jbpm.console.ng.bd.model;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.console.ng.ga.service.ItemKey;
 
-/**
- *
- * @author salaboy
- */
 @Portable
 public class ProcessDefinitionKey implements ItemKey {
-  private String serverTemplateId;
-  private String deploymentId;
-  private String processId;
-  private String processName;
 
-  public ProcessDefinitionKey(String serverTemplateId, String deploymentId, String processId) {
-    this.serverTemplateId = serverTemplateId;
-    this.deploymentId = deploymentId;
-    this.processId = processId;
-  }
+    private String serverTemplateId;
+    private String deploymentId;
+    private String processId;
 
-  public ProcessDefinitionKey() {
-  }
-
-  public String getDeploymentId() {
-    return deploymentId;
-  }
-
-  public String getProcessId() {
-    return processId;
-  }
-
-  public String getServerTemplateId() {
-    return serverTemplateId;
-  }
-
-  public String getProcessName() {
-    return processName == null ? processId : processName;
-  }
-
-  @Override
-  public String toString() {
-    return "ProcessDefinitionKey{" + "deploymentId=" + deploymentId + ", processId=" + processId + '}';
-  }
-
-  @Override
-  public int hashCode() {
-    int hash = 7;
-    hash = 97 * hash + (this.deploymentId != null ? this.deploymentId.hashCode() : 0);
-    hash = 97 * hash + (this.processId != null ? this.processId.hashCode() : 0);
-    return hash;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
+    public ProcessDefinitionKey(String serverTemplateId, String deploymentId, String processId) {
+        this.serverTemplateId = serverTemplateId;
+        this.deploymentId = deploymentId;
+        this.processId = processId;
     }
-    if (getClass() != obj.getClass()) {
-      return false;
+
+    public ProcessDefinitionKey() {
     }
-    final ProcessDefinitionKey other = (ProcessDefinitionKey) obj;
-    if ((this.deploymentId == null) ? (other.deploymentId != null) : !this.deploymentId.equals(other.deploymentId)) {
-      return false;
+
+    public String getDeploymentId() {
+        return deploymentId;
     }
-    if ((this.processId == null) ? (other.processId != null) : !this.processId.equals(other.processId)) {
-      return false;
+
+    public String getProcessId() {
+        return processId;
     }
-    return true;
-  }
-  
-  
+
+    public String getServerTemplateId() {
+        return serverTemplateId;
+    }
+
+    @Override
+    public String toString() {
+        return "ProcessDefinitionKey{" + "deploymentId=" + deploymentId + ", processId=" + processId + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + (this.deploymentId != null ? this.deploymentId.hashCode() : 0);
+        hash = 97 * hash + (this.processId != null ? this.processId.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ProcessDefinitionKey other = (ProcessDefinitionKey) obj;
+        if (this.deploymentId == null ? other.deploymentId != null : !this.deploymentId.equals(other.deploymentId)) {
+            return false;
+        }
+        if (this.processId == null ? other.processId != null : !this.processId.equals(other.processId)) {
+            return false;
+        }
+        return true;
+    }
+
+
 }

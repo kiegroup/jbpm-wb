@@ -20,7 +20,7 @@ import com.google.gwt.i18n.client.Messages;
 
 public interface FiltersConstants extends Messages {
 
-    public static final FiltersConstants INSTANCE = GWT.create(FiltersConstants.class);
+    FiltersConstants INSTANCE = GWT.create(FiltersConstants.class);
 
     String ok();
 
@@ -85,9 +85,5 @@ public interface FiltersConstants extends Messages {
     String Labels();
 
     String Filter_parameters();
-
-
-
-
 
 }

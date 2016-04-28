@@ -56,7 +56,6 @@ import org.gwtbootstrap3.extras.select.client.ui.Select;
  * textbox.
  * </p>
  * 
- * @author andy
  */
 public class UTCTimeBoxImplHtml4 extends UTCTimeBoxImplShared {
 
@@ -192,7 +191,7 @@ public class UTCTimeBoxImplHtml4 extends UTCTimeBoxImplShared {
     }
 
     protected boolean isSameValue(Long a, Long b) {
-        return (a == null) ? (b == null) : a.equals(b);
+        return a == null ? b == null : a.equals(b);
     }
 
     @Override

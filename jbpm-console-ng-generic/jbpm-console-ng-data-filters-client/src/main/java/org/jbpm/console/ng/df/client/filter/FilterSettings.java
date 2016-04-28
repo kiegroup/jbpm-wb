@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.df.client.filter;
 
-import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.displayer.ColumnSettings;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.DisplayerType;
@@ -80,6 +79,7 @@ public class FilterSettings extends DisplayerSettings {
         this.serverTemplateId = serverTemplateId;
     }
 
+    @Override
     public boolean equals( Object obj ) {
         try {
             FilterSettings other = ( FilterSettings ) obj;
@@ -91,8 +91,12 @@ public class FilterSettings extends DisplayerSettings {
         }
     }
 
+    @Override
+    public int hashCode() {
+        return tableName != null ? tableName.hashCode() : 0;
+    }
 
-    public static FilterSettings cloneFrom( DisplayerSettings settings ) {
+    public static FilterSettings cloneFrom(DisplayerSettings settings ) {
         FilterSettings tableSettings = new FilterSettings();
         tableSettings.setType( DisplayerType.TABLE );
         tableSettings.setUUID( settings.getUUID() );
@@ -120,7 +124,4 @@ public class FilterSettings extends DisplayerSettings {
         return clone;
     }
 
-    public DataSet getDataSet() {
-        return super.getDataSet();
-    }
 }

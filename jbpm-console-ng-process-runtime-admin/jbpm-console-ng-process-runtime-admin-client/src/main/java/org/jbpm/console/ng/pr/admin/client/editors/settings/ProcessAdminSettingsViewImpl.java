@@ -31,7 +31,6 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.admin.client.i18n.ProcessAdminConstants;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
@@ -69,9 +68,6 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
     @Inject
     @DataField
     public Select processList;
-
-    @Inject
-    private PlaceManager placeManager;
 
     private ProcessAdminSettingsPresenter presenter;
 

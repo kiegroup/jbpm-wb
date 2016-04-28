@@ -30,10 +30,6 @@ import org.uberfire.ext.widgets.common.client.forms.GetFormParamsEvent;
 import org.uberfire.ext.widgets.common.client.forms.RequestFormParamsEvent;
 import org.uberfire.ext.widgets.common.client.forms.SetFormParamsEvent;
 
-/**
- *
- * @author salaboy
- */
 @Dependent
 public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
 
@@ -98,8 +94,8 @@ public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
 
             return jsonValue.isString().stringValue().equals( "handledByPlaceManagerFormProvider" );
         } catch ( Exception e ) {
+            return false;
         }
-        return false;
     }
 
     public void complete() {
@@ -137,7 +133,7 @@ public class PlaceManagerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
 
     }
 
-    private void completeOrSaveFromEvent(@Observes GetFormParamsEvent event) {
+    protected void completeOrSaveFromEvent(@Observes GetFormParamsEvent event) {
 
         if (taskId == -1) return;
 

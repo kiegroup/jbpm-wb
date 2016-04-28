@@ -51,7 +51,6 @@ public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessF
 
     }
     
-
     @Override
     protected void initDisplayer() {
         JSONValue jsonValue = JSONParser.parseStrict( formContent );
@@ -94,18 +93,13 @@ public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessF
 
             return jsonValue.isString().stringValue().equals( "handledByPlaceManagerFormProvider" );
         } catch ( Exception e ) {
+            return false;
         }
-        return false;
     }
 
     @Override
     public int getPriority() {
         return 2;
-    }
-
-    @Override
-    public void close() {
-        super.close();
     }
 
     public void startProcess() {

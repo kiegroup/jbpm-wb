@@ -18,7 +18,6 @@ package org.jbpm.console.ng.pr.client.editors.variables.list;
 import java.util.List;
 
 import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.TextCell;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.junit.Test;

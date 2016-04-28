@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.CompositeCell;
@@ -100,11 +99,10 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
                     @Override
                     public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<ProcessSummary> event) {
                         NativeEvent nativeEvent = event.getNativeEvent();
-                        if (BrowserEvents.CLICK.equals(nativeEvent.getType())) {
+                        if (BrowserEvents.CLICK.equals(nativeEvent.getType()) &&
                             // Ignore if the event didn't occur in the correct column.
-                            if (listGrid.getColumnIndex(actionsColumn) == event.getColumn()) {
+                            listGrid.getColumnIndex(actionsColumn) == event.getColumn()) {
                                 return DefaultSelectionEventManager.SelectAction.IGNORE;
-                            }
                         }
                         return DefaultSelectionEventManager.SelectAction.DEFAULT;
                     }

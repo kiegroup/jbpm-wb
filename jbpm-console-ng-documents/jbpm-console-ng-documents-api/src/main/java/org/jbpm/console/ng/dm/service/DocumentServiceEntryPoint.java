@@ -25,13 +25,12 @@ import org.jbpm.console.ng.dm.model.DocumentSummary;
 @Remote
 public interface DocumentServiceEntryPoint {
 
-	public List<CMSContentSummary> getDocuments(String path);
+	List<CMSContentSummary> getDocuments(String path);
 	
 
-	public CMSContentSummary getDocument(String id);
+	CMSContentSummary getDocument(String id);
 
-	public void removeDocument(String id);
-	
+	void removeDocument(String id);
 
 	void addDocument(DocumentSummary doc);
 	
@@ -40,6 +39,5 @@ public interface DocumentServiceEntryPoint {
 	Long setConfigurationParameters(Map<String,String> parameters);
 	
 	Boolean testConnection();
-
 
 }

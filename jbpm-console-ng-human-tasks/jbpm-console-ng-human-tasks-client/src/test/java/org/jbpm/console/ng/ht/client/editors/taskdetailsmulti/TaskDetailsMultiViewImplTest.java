@@ -41,12 +41,6 @@ public class TaskDetailsMultiViewImplTest {
     @Mock
     TabContent tabContent;
 
-    @Mock(name = "genericFormDisplayPane")
-    private TabPane genericFormDisplayPane;
-
-    @Mock(name = "genericFormDisplayTab")
-    private TabListItem genericFormDisplayTab;
-
     @Mock(name = "taskDetailsPane")
     private TabPane taskDetailsPane;
 
@@ -54,27 +48,35 @@ public class TaskDetailsMultiViewImplTest {
     private TabListItem taskDetailsTab;
 
     @Mock(name = "processContextPane")
+    @SuppressWarnings("unused")
     private TabPane processContextPane;
 
     @Mock(name = "processContextTab")
+    @SuppressWarnings("unused")
     private TabListItem processContextTab;
 
     @Mock(name = "taskAssignmentsPane")
+    @SuppressWarnings("unused")
     private TabPane taskAssignmentsPane;
 
     @Mock(name = "taskAssignmentsTab")
+    @SuppressWarnings("unused")
     private TabListItem taskAssignmentsTab;
 
     @Mock(name = "taskCommentsPane")
+    @SuppressWarnings("unused")
     private TabPane taskCommentsPane;
 
     @Mock(name = "taskCommentsTab")
+    @SuppressWarnings("unused")
     private TabListItem taskCommentsTab;
 
     @Mock(name = "taskAdminPane")
+    @SuppressWarnings("unused")
     private TabPane taskAdminPane;
 
     @Mock(name = "taskAdminTab")
+    @SuppressWarnings("unused")
     private TabListItem taskAdminTab;
 
     @Mock(name = "taskLogsPane")
@@ -150,7 +152,6 @@ public class TaskDetailsMultiViewImplTest {
 
         verify(navTabs, times(7)).add(any(TabListItem.class));
         verify(tabContent, times(7)).add(any(TabPane.class));
-
     }
 
 }

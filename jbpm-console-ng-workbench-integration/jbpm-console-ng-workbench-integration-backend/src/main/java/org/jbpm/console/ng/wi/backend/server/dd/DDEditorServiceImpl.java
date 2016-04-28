@@ -75,7 +75,7 @@ public class DDEditorServiceImpl
 
         InputStream input = ioService.newInputStream( Paths.convert( path ) );
 
-        org.kie.internal.runtime.conf.DeploymentDescriptor originDD = DeploymentDescriptorIO.fromXml(input);
+        DeploymentDescriptor originDD = DeploymentDescriptorIO.fromXml(input);
 
         DeploymentDescriptorModel ddModel = marshal( originDD );
 
@@ -144,7 +144,7 @@ public class DDEditorServiceImpl
 
     // helper methods
 
-    protected DeploymentDescriptorModel marshal(org.kie.internal.runtime.conf.DeploymentDescriptor originDD) {
+    protected DeploymentDescriptorModel marshal(DeploymentDescriptor originDD) {
         DeploymentDescriptorModel ddModel = new DeploymentDescriptorModel();
         ddModel.setPersistenceUnitName(originDD.getPersistenceUnit());
         ddModel.setAuditPersistenceUnitName(originDD.getAuditPersistenceUnit());
@@ -192,7 +192,7 @@ public class DDEditorServiceImpl
     }
 
 
-    protected org.kie.internal.runtime.conf.DeploymentDescriptor unmarshal(Path path, DeploymentDescriptorModel model) {
+    protected DeploymentDescriptor unmarshal(Path path, DeploymentDescriptorModel model) {
 
         if (model == null) {
             return new DeploymentDescriptorManager().getDefaultDescriptor();

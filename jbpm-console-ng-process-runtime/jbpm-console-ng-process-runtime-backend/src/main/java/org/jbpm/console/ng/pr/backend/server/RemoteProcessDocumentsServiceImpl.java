@@ -83,8 +83,8 @@ public class RemoteProcessDocumentsServiceImpl extends AbstractKieServerService 
         SimpleDateFormat sdf = new SimpleDateFormat(Document.DOCUMENT_DATE_PATTERN);
         List<DocumentSummary> documents = new ArrayList<DocumentSummary>();
         for (ProcessVariableSummary pv : processVariables) {
-            if ("org.jbpm.document.Document".equals(pv.getType())) {
-                if (pv.getNewValue() != null && !pv.getNewValue().isEmpty()) {
+            if ("org.jbpm.document.Document".equals(pv.getType()) &&
+                pv.getNewValue() != null && !pv.getNewValue().isEmpty()) {
                     String[] values = pv.getNewValue().split(Document.PROPERTIES_SEPARATOR);
                     if (values.length == 4) {
                         Date lastModified = null;
@@ -95,7 +95,6 @@ public class RemoteProcessDocumentsServiceImpl extends AbstractKieServerService 
                         }
                         documents.add(new DocumentSummary(values[0], lastModified, Long.valueOf(values[1]), getDocumentLink(serverTemplateId, values[3])));
                     }
-                }
             }
         }
         return documents;

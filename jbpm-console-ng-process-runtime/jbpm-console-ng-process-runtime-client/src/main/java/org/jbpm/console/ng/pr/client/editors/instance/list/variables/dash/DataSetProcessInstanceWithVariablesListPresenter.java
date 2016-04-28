@@ -146,8 +146,8 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                     currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
                     ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
                     if ( columnSortList != null && columnSortList.size() > 0 ) {
-                        dataSetQueryHelper.setLastOrderedColumn( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
-                        dataSetQueryHelper.setLastSortOrder( ( columnSortList.size() > 0 ) && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
+                        dataSetQueryHelper.setLastOrderedColumn( columnSortList.size() > 0 ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
+                        dataSetQueryHelper.setLastSortOrder( columnSortList.size() > 0 && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
                     } else {
                         dataSetQueryHelper.setLastOrderedColumn( COLUMN_START );
                         dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );

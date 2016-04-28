@@ -22,14 +22,10 @@ import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.bd.integration.AbstractKieServerService;
 import org.jbpm.console.ng.pr.service.ProcessImageService;
 import org.kie.server.client.UIServicesClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 @ApplicationScoped
 public class RemoteProcessImageServiceImpl extends AbstractKieServerService implements ProcessImageService {
-
-    private static final Logger logger = LoggerFactory.getLogger(RemoteProcessImageServiceImpl.class);
 
     @Override
     public String getProcessInstanceDiagram(String serverTemplateId, String containerId, Long processInstanceId) {

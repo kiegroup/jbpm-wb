@@ -16,7 +16,6 @@
 
 package org.jbpm.console.ng.client.perspectives;
 
-import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcesMenu;
 import org.kie.workbench.common.widgets.client.menu.RepositoryMenu;
 import org.kie.workbench.common.workbench.client.docks.AuthoringWorkbenchDocks;
@@ -42,9 +41,6 @@ public class ProjectAuthoringPerspective {
 
     @Inject
     private PlaceManager placeManager;
-
-    @Inject
-    private NewResourcePresenter newResourcePresenter;
 
     @Inject
     private NewResourcesMenu newResourcesMenu;

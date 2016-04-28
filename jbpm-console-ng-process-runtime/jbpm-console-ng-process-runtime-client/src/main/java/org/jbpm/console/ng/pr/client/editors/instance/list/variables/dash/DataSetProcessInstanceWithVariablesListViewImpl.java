@@ -66,7 +66,6 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
-import org.uberfire.ext.widgets.table.client.ColumnChangedHandler;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 
@@ -545,7 +544,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
             public Boolean getValue() {
                 List<ProcessInstanceSummary> displayedInstances = presenter.getDisplayedProcessInstances();
                 return displayedInstances.size() > 0
-                        && (selectedProcessInstances.size() == presenter.getDisplayedProcessInstances().size());
+                        && selectedProcessInstances.size() == presenter.getDisplayedProcessInstances().size();
             }
         };
         selectPageHeader.setUpdater(new ValueUpdater<Boolean>() {

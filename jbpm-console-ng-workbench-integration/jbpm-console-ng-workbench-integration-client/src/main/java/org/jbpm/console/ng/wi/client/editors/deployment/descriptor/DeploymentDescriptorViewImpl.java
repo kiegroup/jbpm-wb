@@ -37,7 +37,6 @@ import org.jbpm.console.ng.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.console.ng.wi.dd.model.ItemObjectModel;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.widgets.common.client.ace.AceEditorMode;
 import org.uberfire.ext.widgets.core.client.editors.texteditor.TextEditorView;
 
@@ -67,9 +66,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     private static DeploymentDescriptorBinder uiBinder = GWT.create( DeploymentDescriptorBinder.class );
 
     private Constants constants = Constants.INSTANCE;
-
-    @Inject
-    private PlaceManager placeManager;
 
     @Inject
     private DDParametersPopup ddParametersPopup;

@@ -20,8 +20,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.Button;
@@ -30,8 +28,6 @@ import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.dm.client.i18n.Constants;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
 import org.uberfire.workbench.events.NotificationEvent.NotificationType;
 
@@ -40,12 +36,7 @@ import org.uberfire.workbench.events.NotificationEvent.NotificationType;
 public class CMISConfigurationViewImpl extends Composite implements
 		CMISConfigurationPresenter.CMISConfigurationView {
 
-	@Inject
-	private PlaceManager placeManager;
-
 	private CMISConfigurationPresenter presenter;
-
-	private Constants constants = GWT.create(Constants.class);
 
 	@Inject
 	private Event<NotificationEvent> notification;

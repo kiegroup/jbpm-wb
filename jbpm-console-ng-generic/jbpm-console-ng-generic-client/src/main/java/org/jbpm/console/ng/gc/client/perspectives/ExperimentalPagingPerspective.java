@@ -17,15 +17,10 @@ package org.jbpm.console.ng.gc.client.perspectives;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
-
-import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
-import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.uberfire.client.annotations.WorkbenchPanel;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.util.Layouts;
@@ -34,27 +29,21 @@ import org.uberfire.client.util.Layouts;
  * A Perspective to show File Explorer
  */
 @Dependent
-@WorkbenchPerspective( identifier = ExperimentalPagingPerspective.PERSPECTIVE_ID )
+@WorkbenchPerspective(identifier = ExperimentalPagingPerspective.PERSPECTIVE_ID)
 public class ExperimentalPagingPerspective extends AbstractPerspective implements IsWidget {
 
     public static final String PERSPECTIVE_ID = "Experimental Paging";
 
-    @Inject
-    private ContextualSearch contextualSearch;
-
-    @Inject
-    private Event<SearchEvent> searchEvents;
-
-    @WorkbenchPanel( parts = "Pagination For Tables" )
-    FlowPanel paginationTables = new FlowPanel();
-
     private final FlowPanel view = new FlowPanel();
+
+    @WorkbenchPanel(parts = "Pagination For Tables")
+    FlowPanel paginationTables = new FlowPanel();
 
     @PostConstruct
     protected void init() {
         super.init();
-        Layouts.setToFillParent( paginationTables );
-        view.add( paginationTables );
+        Layouts.setToFillParent(paginationTables);
+        view.add(paginationTables);
     }
 
     @Override
@@ -65,4 +54,5 @@ public class ExperimentalPagingPerspective extends AbstractPerspective implement
     public String getPerspectiveId() {
         return PERSPECTIVE_ID;
     }
+
 }

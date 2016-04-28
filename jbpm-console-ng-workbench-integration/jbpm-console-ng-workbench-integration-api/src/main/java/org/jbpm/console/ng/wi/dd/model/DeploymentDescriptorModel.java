@@ -242,6 +242,7 @@ public class DeploymentDescriptorModel {
         return true;
     }
 
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     @Override
     public int hashCode() {
         int result = persistenceUnitName != null ? persistenceUnitName.hashCode() : 0;

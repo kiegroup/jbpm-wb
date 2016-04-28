@@ -59,8 +59,6 @@ import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 @WorkbenchScreen(identifier = "Documents Presenter")
 public class DocumentListPresenter extends AbstractScreenListPresenter<CMSContentSummary> {
 
-
-
     public interface DocumentListView extends ListView<CMSContentSummary, DocumentListPresenter> {
 
         void updatePathLink();
@@ -98,8 +96,8 @@ public class DocumentListPresenter extends AbstractScreenListPresenter<CMSConten
         ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
         if (currentFilter == null) {
             currentFilter = new PortableQueryFilter(visibleRange.getStart(), visibleRange.getLength(), false, "",
-                    (columnSortList.size() > 0) ? columnSortList.get(0).getColumn().getDataStoreName() : "",
-                    (columnSortList.size() > 0) ? columnSortList.get(0).isAscending() : true);
+                    columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "",
+                    columnSortList.size() == 0 || columnSortList.get(0).isAscending());
         }
         // If we are refreshing after a search action, we need to go
         // back to offset 0
@@ -112,9 +110,9 @@ public class DocumentListPresenter extends AbstractScreenListPresenter<CMSConten
             currentFilter.setOffset(0);
             currentFilter.setCount(view.getListGrid().getPageSize());
         }
-        currentFilter.setOrderBy((columnSortList.size() > 0) ? columnSortList.get(0).getColumn().getDataStoreName()
+        currentFilter.setOrderBy(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName()
                 : "");
-        currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0).isAscending() : true);
+        currentFilter.setIsAscending(columnSortList.size() == 0 || columnSortList.get(0).isAscending());
         if (id != null) {
             Map<String, Object> params = currentFilter.getParams();
             if (params == null){

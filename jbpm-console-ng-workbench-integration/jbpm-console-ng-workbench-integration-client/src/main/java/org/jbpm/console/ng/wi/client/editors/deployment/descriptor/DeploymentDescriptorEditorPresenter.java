@@ -50,6 +50,7 @@ import org.uberfire.workbench.model.menu.Menus;
 
 @WorkbenchEditor(identifier = "org.kie.jbpmconsole.dd", supportedTypes = { DDResourceType.class }, priority = 101)
 public class DeploymentDescriptorEditorPresenter extends KieEditor {
+
     @Inject
     private Caller<DDEditorService> ddEditorService;
 
@@ -192,7 +193,7 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
     }
 
     @WorkbenchPartTitleDecoration
-    public com.google.gwt.user.client.ui.IsWidget getTitle() {
+    public IsWidget getTitle() {
         return super.getTitle();
     }
 

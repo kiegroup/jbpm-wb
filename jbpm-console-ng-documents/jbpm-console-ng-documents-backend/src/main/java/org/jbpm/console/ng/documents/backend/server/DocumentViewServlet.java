@@ -33,13 +33,13 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.jbpm.console.ng.dm.model.DocumentSummary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DocumentViewServlet extends HttpServlet {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3950781302033089580L;
+	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentViewServlet.class);
 
 	@Inject
 	private DocumentService documentService;
@@ -90,7 +90,7 @@ public class DocumentViewServlet extends HttpServlet {
 			response.getWriter().write(processUpload(file, folder));
 			response.setContentType("text/html");
 		} catch (Exception e) {
-
+			LOGGER.error("Exception while uploading file", e);
 		}
 	}
 
@@ -111,10 +111,8 @@ public class DocumentViewServlet extends HttpServlet {
 	private void uploadFile(final FileItem uploadItem, String folder)
 			throws IOException {
 		InputStream fileData = uploadItem.getInputStream();
-		// GAV gav = uploadItem.getGav();
 
 		try {
-			// if ( gav == null ) {
 			if (!fileData.markSupported()) {
 				fileData = new BufferedInputStream(fileData);
 			}
@@ -123,12 +121,12 @@ public class DocumentViewServlet extends HttpServlet {
 			fileData.mark(fileData.available());
 
 			byte[] bytes = IOUtils.toByteArray(fileData);
-			DocumentSummary documenSummary = new DocumentSummary(
+			DocumentSummary documentSummary = new DocumentSummary(
 					uploadItem.getName(), "", folder);
-			documenSummary.setContent(bytes);
-			this.documentService.createDocument(documenSummary);
+			documentSummary.setContent(bytes);
+			this.documentService.createDocument(documentSummary);
 		} catch (Exception e) {
-
+			LOGGER.error("Exception while uploading file", e);
 		}
 	}
 }

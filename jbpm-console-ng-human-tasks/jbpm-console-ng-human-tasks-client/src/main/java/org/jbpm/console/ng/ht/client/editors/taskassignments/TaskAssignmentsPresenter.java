@@ -15,21 +15,16 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskassignments;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.common.collect.FluentIterable;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskAssignmentSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
@@ -61,7 +56,6 @@ public class TaskAssignmentsPresenter {
 
     private Constants constants = Constants.INSTANCE;
     private TaskAssignmentsView view;
-    private User identity;
     private Caller<TaskService> taskService;
     private Event<TaskRefreshedEvent> taskRefreshed;
     private long currentTaskId = 0;
@@ -71,12 +65,10 @@ public class TaskAssignmentsPresenter {
     @Inject
     public TaskAssignmentsPresenter(
             TaskAssignmentsView view,
-            User identity,
             Caller<TaskService> taskService,
             Event<TaskRefreshedEvent> taskRefreshed
     ) {
         this.view = view;
-        this.identity = identity;
         this.taskService = taskService;
         this.taskRefreshed = taskRefreshed;
     }

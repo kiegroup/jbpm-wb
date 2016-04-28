@@ -18,10 +18,6 @@ package org.jbpm.console.ng.pr.client.editors.instance.details.multi;
 import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jbpm.console.ng.pr.client.editors.documents.list.ProcessDocumentListPresenter;
-import org.jbpm.console.ng.pr.client.editors.instance.details.ProcessInstanceDetailsPresenter;
-import org.jbpm.console.ng.pr.client.editors.instance.log.RuntimeLogPresenter;
-import org.jbpm.console.ng.pr.client.editors.variables.list.ProcessVariableListPresenter;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,19 +41,6 @@ public class ProcessInstanceDetailsMultiPresenterTest {
     private static final String PI_PROCESS_DEF_NAME = "processDefNameTest";
     @Mock
     public ProcessInstanceDetailsMultiPresenter.ProcessInstanceDetailsMultiView view;
-
-
-    @Mock
-    private ProcessInstanceDetailsPresenter detailsPresenter;
-
-    @Mock
-    private ProcessVariableListPresenter variableListPresenter;
-
-    @Mock
-    private ProcessDocumentListPresenter documentListPresenter;
-
-    @Mock
-    private RuntimeLogPresenter runtimeLogPresenter;
 
     @Spy
     Event<ProcessInstanceSelectionEvent> processInstanceSelected = new EventSourceMock<ProcessInstanceSelectionEvent>();

@@ -19,54 +19,47 @@ package org.jbpm.console.ng.bd.model;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.console.ng.ga.service.ItemKey;
 
-/**
- *
- * @author salaboy
- */
 @Portable
 public class DocumentKey implements ItemKey {
-  private String documentId;
-  
 
-  public DocumentKey(String documentId) {
-    this.documentId = documentId;
-  }
+    private String documentId;
 
-  public DocumentKey() {
-  }
-
-  public String getDocumentId() {
-    return documentId;
-  }
-
-  @Override
-  public String toString() {
-    return "DocumentKey{" + "documentId=" + documentId + '}';
-  }
-  
-  @Override
-  public int hashCode() {
-    int hash = 3;
-    hash = 31 * hash + (this.documentId != null ? this.documentId.hashCode() : 0);
-    return hash;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
+    public DocumentKey(String documentId) {
+        this.documentId = documentId;
     }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final DocumentKey other = (DocumentKey) obj;
-    if ((this.documentId == null) ? (other.documentId != null) : !this.documentId.equals(other.documentId)) {
-      return false;
-    }
-    return true;
-  }
 
-  
-  
-  
+    public DocumentKey() {
+    }
+
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    @Override
+    public String toString() {
+        return "DocumentKey{" + "documentId=" + documentId + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 31 * hash + (this.documentId != null ? this.documentId.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DocumentKey other = (DocumentKey) obj;
+        if (this.documentId == null ? other.documentId != null : !this.documentId.equals(other.documentId)) {
+            return false;
+        }
+        return true;
+    }
+
 }

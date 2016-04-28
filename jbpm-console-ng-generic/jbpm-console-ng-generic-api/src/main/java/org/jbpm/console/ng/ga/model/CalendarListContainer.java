@@ -15,12 +15,10 @@
  */
 package org.jbpm.console.ng.ga.model;
 
-/**
- *
- * @author salaboy
- */
 public interface CalendarListContainer {
-    public void setDayView();
-    public void setWeekView();
-    public void setMonthView();
+
+    void setDayView();
+    void setWeekView();
+    void setMonthView();
+
 }

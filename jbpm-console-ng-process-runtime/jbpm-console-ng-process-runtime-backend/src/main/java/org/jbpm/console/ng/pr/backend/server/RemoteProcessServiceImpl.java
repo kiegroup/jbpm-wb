@@ -27,14 +27,10 @@ import org.jbpm.console.ng.pr.backend.server.model.RemoteCorrelationKey;
 import org.jbpm.console.ng.pr.service.ProcessService;
 import org.kie.internal.process.CorrelationKey;
 import org.kie.server.client.ProcessServicesClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 @ApplicationScoped
 public class RemoteProcessServiceImpl extends AbstractKieServerService implements ProcessService {
-
-    private static final Logger logger = LoggerFactory.getLogger(RemoteProcessServiceImpl.class);
 
     @Override
     public void abortProcessInstance(String serverTemplateId, String containerId, Long processInstanceId) {

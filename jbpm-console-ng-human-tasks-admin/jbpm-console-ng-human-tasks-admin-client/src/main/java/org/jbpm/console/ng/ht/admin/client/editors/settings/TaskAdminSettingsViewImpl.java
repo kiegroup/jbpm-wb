@@ -29,15 +29,11 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.ht.admin.client.i18n.Constants;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "TaskAdminSettingsViewImpl.html")
 public class TaskAdminSettingsViewImpl extends Composite implements TaskAdminSettingsPresenter.TaskAdminSettingsView {
-
-    @Inject
-    private PlaceManager placeManager;
 
     private TaskAdminSettingsPresenter presenter;
 

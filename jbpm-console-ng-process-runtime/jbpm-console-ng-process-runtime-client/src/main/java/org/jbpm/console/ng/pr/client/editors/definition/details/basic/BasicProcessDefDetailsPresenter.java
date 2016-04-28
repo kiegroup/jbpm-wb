@@ -24,9 +24,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.bd.model.ProcessSummary;
 import org.jbpm.console.ng.pr.client.editors.definition.details.BaseProcessDefDetailsPresenter;
-import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
-import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 @Dependent
@@ -37,16 +35,11 @@ public class BasicProcessDefDetailsPresenter extends BaseProcessDefDetailsPresen
 
     }
 
-    private Constants constants = Constants.INSTANCE;
-
     @Inject
     private BasicProcessDefDetailsView view;
 
     @Inject
     private Caller<ProcessRuntimeDataService> processRuntimeDataService;
-
-    @Inject
-    private Caller<VFSService> fileServices;
 
     @Override
     public IsWidget getWidget() {

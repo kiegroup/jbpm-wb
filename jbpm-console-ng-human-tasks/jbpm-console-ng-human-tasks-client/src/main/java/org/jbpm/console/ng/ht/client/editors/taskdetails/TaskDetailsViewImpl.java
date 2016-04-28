@@ -35,7 +35,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.gc.client.util.UTCDateBox;
 import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
@@ -92,9 +91,6 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @DataField
     public FormLabel taskDescriptionLabel;
 
-    @Inject
-    private PlaceManager placeManager;
-
     private String[] priorities = { "0 - " + constants.High(), "1", "2", "3", "4", "5 - " + constants.Medium(), "6", "7", "8", "9", "10 - " + constants.Low() };
 
     private static Constants constants = Constants.INSTANCE;
@@ -132,8 +128,7 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
 
         presenter.updateTask(taskDescriptionTextArea.getText(),
                 userText.getText(),
-                // subTaskStrategyListBox.getItemText(subTaskStrategyListBox.getSelectedIndex()),
-                (dueDate.getValue() != null && dueDateTime.getValue() != null) ? UTCDateBox.utc2date(dueDate.getValue() + dueDateTime.getValue()) : null,
+                dueDate.getValue() != null && dueDateTime.getValue() != null ? UTCDateBox.utc2date(dueDate.getValue() + dueDateTime.getValue()) : null,
                 Integer.valueOf(taskPriorityListBox.getValue()));
 
     }

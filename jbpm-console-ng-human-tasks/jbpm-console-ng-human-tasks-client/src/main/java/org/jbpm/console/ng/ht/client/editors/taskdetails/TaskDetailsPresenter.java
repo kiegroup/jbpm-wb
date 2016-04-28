@@ -33,10 +33,7 @@ import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskService;
-import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
-import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 public class TaskDetailsPresenter {
@@ -72,11 +69,7 @@ public class TaskDetailsPresenter {
 
     private Constants constants = Constants.INSTANCE;
 
-    private PlaceManager placeManager;
-
     TaskDetailsView view;
-
-    private Event<ProcessInstancesWithDetailsRequestEvent> processInstanceSelected;
 
     @Inject
     private Caller<TaskService> taskService;
@@ -85,26 +78,18 @@ public class TaskDetailsPresenter {
 
     private Event<TaskCalendarEvent> taskCalendarEvent;
 
-    private Event<NotificationEvent> notification;
-
     private long currentTaskId = 0;
     private String currentServerTemplateId;
     private String currentContainerId;
 
     @Inject
     public TaskDetailsPresenter(
-            PlaceManager placeManager,
             TaskDetailsView view,
-            Event<ProcessInstancesWithDetailsRequestEvent> processInstanceSelected,
             Event<TaskRefreshedEvent> taskRefreshed,
-            Event<TaskCalendarEvent> taskCalendarEvent,
-            Event<NotificationEvent> notification) {
-        this.placeManager = placeManager;
+            Event<TaskCalendarEvent> taskCalendarEvent) {
         this.view = view;
-        this.processInstanceSelected = processInstanceSelected;
         this.taskRefreshed = taskRefreshed;
         this.taskCalendarEvent = taskCalendarEvent;
-        this.notification = notification;
     }
 
     @PostConstruct

@@ -20,8 +20,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.console.ng.ga.forms.service.FormServiceEntryPoint;
 import org.uberfire.mvp.Command;
 
 @ApplicationScoped
@@ -30,35 +28,30 @@ public class GenericFormDisplayPresenter {
     @Inject
     private GenericFormDisplayView view;
 
-    @Inject
-    private Caller<FormServiceEntryPoint> formServices;
+    @PostConstruct
+    public void init() {
+    }
 
-  
+    public void setup(final long currentTaskId,
+                      final String currentProcessId,
+                      final String currentDeploymentId,
+                      final String opener,
+                      final Command onClose) {
+
+        view.getDisplayerView().setOnCloseCommand(onClose);
+
+    }
+
+    public IsWidget getView() {
+        return view;
+    }
+
+
     public interface GenericFormDisplayView extends IsWidget {
 
         FormDisplayerView getDisplayerView();
 
         void displayNotification(final String text);
-    }
-
-    @PostConstruct
-    public void init() {
-    }
-
-    public void setup( final long currentTaskId,
-                       final String currentProcessId,
-                       final String currentDeploymentId,
-                       final String opener,
-                       final Command onClose ) {
-
-        view.getDisplayerView().setOnCloseCommand(onClose);
-
-       
-    }
-
-
-    public IsWidget getView() {
-        return view;
     }
 
 }

@@ -36,19 +36,14 @@ import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ga.service.GenericServiceEntryPoint;
 import org.kie.api.executor.RequestInfo;
 import org.kie.api.executor.STATUS;
-import org.kie.api.runtime.query.QueryContext;
 import org.kie.server.api.model.instance.JobRequestInstance;
 import org.kie.server.api.model.instance.RequestInfoInstance;
 import org.kie.server.client.JobServicesClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.uberfire.paging.PageResponse;
 
 @Service
 @ApplicationScoped
 public class RemoteExecutorServiceImpl extends AbstractKieServerService implements ExecutorService,GenericServiceEntryPoint<RequestKey, RequestSummary> {
-
-    private static final Logger logger = LoggerFactory.getLogger(RemoteExecutorServiceImpl.class);
 
     @Override
     public RequestDetails getRequestDetails(String serverTemplateId, Long requestId) {
@@ -73,7 +68,6 @@ public class RemoteExecutorServiceImpl extends AbstractKieServerService implemen
                 .command(commandName)
                 .data(data)
                 .build();
-
 
         return jobClient.scheduleRequest(jobRequest);
     }
@@ -134,8 +128,6 @@ public class RemoteExecutorServiceImpl extends AbstractKieServerService implemen
         if (filter.getParams() != null) {
             states = (List<String>) filter.getParams().get("states");
         }
-        QueryContext qf = new QueryContext(filter.getOffset(), filter.getCount() + 1,
-                filter.getOrderBy(), filter.isAscending());
 
         Collection<RequestInfo> requestInfoList = null;
         if (states == null || states.isEmpty()) {

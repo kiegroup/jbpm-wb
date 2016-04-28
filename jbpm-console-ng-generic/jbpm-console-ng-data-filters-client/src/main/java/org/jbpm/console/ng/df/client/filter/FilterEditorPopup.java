@@ -245,8 +245,6 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
 
     public void error( String message,
                        Throwable e ) {
-        String cause = e != null ? e.getMessage() : null;
-
         if ( e != null ) {
             GWT.log( message, e );
         } else {

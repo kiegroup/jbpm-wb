@@ -46,16 +46,12 @@ public class ProcessInstanceDetailsMultiViewImplTest {
     @Mock(name = "instanceDetailsPane")
     private TabPane instanceDetailsPane;
 
-    @Mock(name = "processVariablesTab")
-    private TabListItem processVariablesTab;
-
-    @Mock(name = "processVariablesPane")
-    private TabPane processVariablesPane;
-
     @Mock(name = "documentTab")
+    @SuppressWarnings("unused")
     private TabListItem documentTab;
 
     @Mock(name = "documentPane")
+    @SuppressWarnings("unused")
     private TabPane documentPane;
 
     @Mock(name = "logsTab")
@@ -63,7 +59,6 @@ public class ProcessInstanceDetailsMultiViewImplTest {
 
     @Mock(name = "logsPane")
     private TabPane logsPane;
-
 
     @Mock
     private ProcessInstanceDetailsMultiPresenter presenter;

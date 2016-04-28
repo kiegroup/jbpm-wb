@@ -41,7 +41,6 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import org.dashbuilder.dataset.filter.FilterFactory;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
@@ -192,11 +191,10 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                     @Override
                     public DefaultSelectionEventManager.SelectAction translateSelectionEvent( CellPreviewEvent<TaskSummary> event ) {
                         NativeEvent nativeEvent = event.getNativeEvent();
-                        if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) ) {
+                        if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) &&
                             // Ignore if the event didn't occur in the correct column.
-                            if ( extendedPagedTable.getColumnIndex( actionsColumn ) == event.getColumn() ) {
+                            extendedPagedTable.getColumnIndex( actionsColumn ) == event.getColumn() ) {
                                 return DefaultSelectionEventManager.SelectAction.IGNORE;
-                            }
                         }
                         return DefaultSelectionEventManager.SelectAction.DEFAULT;
                     }
@@ -218,7 +216,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         Column createdOnDateColumn = initTaskCreatedOnColumn();
         Column dueDateColumn = initTaskDueColumn();
 
-        actionsColumn = initActionsColumn( extendedPagedTable );
+        actionsColumn = initActionsColumn();
 
         List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
         columnMetas.add( new ColumnMeta<TaskSummary>( taskIdColumn, constants.Id() ) );
@@ -377,7 +375,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return taskProcessInstanceIdColumn;
     }
 
-    private Column initActionsColumn( final ExtendedPagedTable extendedPagedTable ) {
+    private Column initActionsColumn() {
         List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
         cells.add( new ClaimActionHasCell( constants.Claim(), new ActionCell.Delegate<TaskSummary>() {
             @Override
@@ -718,7 +716,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.initBuilder();
 
         builder.dataset(HUMAN_TASKS_WITH_VARIABLES_DATASET);
-        builder.filter(FilterFactory.equalsTo(COLUMN_TASK_VARIABLE_TASK_NAME, taskName));
+        builder.filter(equalsTo(COLUMN_TASK_VARIABLE_TASK_NAME, taskName));
 
         builder.filterOn(true, true, true);
         builder.tableOrderEnabled(true);
