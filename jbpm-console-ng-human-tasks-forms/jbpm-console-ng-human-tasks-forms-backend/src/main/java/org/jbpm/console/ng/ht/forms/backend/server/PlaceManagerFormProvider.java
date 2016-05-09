@@ -15,18 +15,19 @@
  */
 package org.jbpm.console.ng.ht.forms.backend.server;
 
-import com.google.gson.Gson;
-import org.jbpm.services.api.model.ProcessDefinition;
-import org.kie.api.task.model.Task;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.jbpm.kie.services.impl.form.provider.AbstractFormProvider;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import com.google.gson.Gson;
 import org.kie.workbench.common.services.shared.service.PlaceManagerActivityService;
+import org.jbpm.formModeler.kie.services.form.ProcessDefinition;
+import org.jbpm.formModeler.kie.services.form.TaskDefinition;
+import org.jbpm.formModeler.kie.services.form.provider.AbstractFormProvider;
+import org.kie.api.task.model.Task;
 
 /**
  * @author salaboy
@@ -72,7 +73,7 @@ public class PlaceManagerFormProvider extends AbstractFormProvider {
     }
 
     @Override
-    public String render(String name, Task task, ProcessDefinition process, Map<String, Object> renderContext) {
+    public String render(String name, TaskDefinition task, ProcessDefinition process, Map<String, Object> renderContext) {
         Map<String, Object> params = new HashMap<String, Object>(renderContext.size());
         String taskName = (renderContext.get("TaskName") != null) ? (String) renderContext.get("TaskName") : "";
         for (String key : renderContext.keySet()) {
@@ -85,7 +86,7 @@ public class PlaceManagerFormProvider extends AbstractFormProvider {
             params.put("taskId", task.getId().toString());
             params.put("taskName", task.getName());
             params.put("taskDescription", task.getDescription());
-            params.put("taskStatus", task.getTaskData().getStatus().toString());
+            params.put("taskStatus", task.getStatus());
         }
         if (process != null) {
             params.put("processId", process.getId());

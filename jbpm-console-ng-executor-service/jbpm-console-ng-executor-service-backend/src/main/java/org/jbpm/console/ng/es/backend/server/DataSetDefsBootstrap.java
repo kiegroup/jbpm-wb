@@ -22,7 +22,8 @@ import javax.inject.Inject;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefFactory;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
-import org.jbpm.persistence.settings.JpaSettings;
+import org.jbpm.console.ng.bd.integration.KieServerDataSetProvider;
+import org.kie.server.api.KieServerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
@@ -34,19 +35,18 @@ import static org.jbpm.console.ng.es.model.RequestDataSetConstants.*;
 public class DataSetDefsBootstrap {
 
     private static final Logger logger = LoggerFactory.getLogger(DataSetDefsBootstrap.class);
+    private static final String JBPM_DATA_SOURCE = "${"+ KieServerConstants.CFG_PERSISTANCE_DS + "}";
 
     @Inject
     protected DataSetDefRegistry dataSetDefRegistry;
 
     @PostConstruct
     protected void registerDataSetDefinitions() {
-        String jbpmDataSource = JpaSettings.get().getDataSourceJndiName();
-
         DataSetDef requestListDef = DataSetDefFactory.newSQLDataSetDef()
                 .uuid(REQUEST_LIST_DATASET)
                 .name("Request List")
-                .dataSource(jbpmDataSource)
-                .dbTable("RequestInfo", false)
+                .dataSource(JBPM_DATA_SOURCE)
+                .dbSQL("select id, timestamp, status, commandName, message, businessKey from RequestInfo", false)
                 .number(COLUMN_ID)
                 .date(COLUMN_TIMESTAMP)
                 .label(COLUMN_STATUS)
@@ -57,9 +57,11 @@ public class DataSetDefsBootstrap {
 
         // Hide all these internal data set from end user view
         requestListDef.setPublic(false);
+        requestListDef.setProvider(KieServerDataSetProvider.TYPE);
 
         // Register the data set definitions
         dataSetDefRegistry.registerDataSetDef(requestListDef);
         logger.info("Executor service datasets registered");
     }
+
 }

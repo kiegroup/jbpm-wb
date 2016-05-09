@@ -86,7 +86,8 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
                 displayerCoordinator,
                 placeManager,
                 instanceSelectionEvent,
-                processDashboardFocusEvent);
+                processDashboardFocusEvent,
+                serverTemplateSelectorMenuBuilder);
     }
 
     @Test

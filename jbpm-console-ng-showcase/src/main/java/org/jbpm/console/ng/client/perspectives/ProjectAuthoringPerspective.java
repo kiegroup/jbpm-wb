@@ -16,8 +16,6 @@
 
 package org.jbpm.console.ng.client.perspectives;
 
-import com.google.gwt.core.client.GWT;
-import org.jbpm.console.ng.client.i18n.Constants;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcesMenu;
 import org.kie.workbench.common.widgets.client.menu.RepositoryMenu;
@@ -42,8 +40,6 @@ import javax.inject.Inject;
 @WorkbenchPerspective(identifier = "Authoring")
 public class ProjectAuthoringPerspective {
 
-    private Constants constants = GWT.create(Constants.class);
-
     @Inject
     private PlaceManager placeManager;
 
@@ -65,14 +61,10 @@ public class ProjectAuthoringPerspective {
     }
 
 
-    public ProjectAuthoringPerspective() {
-    }
-
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(MultiListWorkbenchPanelPresenter.class.getName());
         p.setName("Project Authoring Perspective");
-
         return p;
     }
 
@@ -98,6 +90,5 @@ public class ProjectAuthoringPerspective {
 
                 .build();
     }
-
 
 }

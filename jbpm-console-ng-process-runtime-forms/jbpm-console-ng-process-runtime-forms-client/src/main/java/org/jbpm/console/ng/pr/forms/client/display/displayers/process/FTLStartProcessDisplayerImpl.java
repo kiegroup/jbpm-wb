@@ -17,7 +17,6 @@ package org.jbpm.console.ng.pr.forms.client.display.displayers.process;
 
 import java.util.Map;
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.DOM;
@@ -33,8 +32,6 @@ import org.gwtbootstrap3.client.ui.PanelGroup;
 import org.gwtbootstrap3.client.ui.PanelHeader;
 import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
-import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 
 /**
  * @author salaboy
@@ -129,8 +126,8 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
 
     public void startProcess( JavaScriptObject values ) {
         final Map<String, Object> params = jsniHelper.getParameters( values );
-        sessionServices.call( getStartProcessRemoteCallback(), getUnexpectedErrorCallback() )
-                .startProcess( deploymentId, processDefId, getCorrelationKey(), params );
+        processService.call( getStartProcessRemoteCallback(), getUnexpectedErrorCallback() )
+                .startProcess( serverTemplateId, deploymentId, processDefId, getCorrelationKey(), params );
     }
 
     protected native void publish( FTLStartProcessDisplayerImpl ftl )/*-{

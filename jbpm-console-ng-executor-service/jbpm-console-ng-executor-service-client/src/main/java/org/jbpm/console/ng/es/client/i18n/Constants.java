@@ -84,10 +84,6 @@ public interface Constants extends Messages {
 
     String Actions();
 
-    String Started();
-
-    String Stopped();
-
     String No_Parameters_added_yet();
 
     String Add_Parameter();
@@ -100,13 +96,7 @@ public interface Constants extends Messages {
 
     String Retries();
 
-    String Start_StopService();
-
     String Status();
-
-    String Number_of_Threads();
-
-    String Frequency();
 
     String RequestsListTitle();
 
@@ -120,16 +110,6 @@ public interface Constants extends Messages {
 
     String The_Job_Must_Have_A_Positive_Number_Of_Reties();
 
-    String Please_Provide_A_Valid_Frequency();
-
-    String Please_Provide_The_Number_Of_Executors();
-
-    String Please_Provide_A_Valid_Number_Of_Executors();
-
-    String Stop();
-
-    String Start();
-
     String Loading();
 
     String Advanced();
@@ -137,12 +117,6 @@ public interface Constants extends Messages {
     String Basic();
 
     String The_Job_Must_Have_A_Valid_Type();
-
-    String ServiceStarted();
-
-    String ServiceStopped();
-
-    String Job_Service_Settings();
 
     String Number_Of_Attempted_Retries();
 
@@ -168,10 +142,6 @@ public interface Constants extends Messages {
 
     String RequeueJob();
 
-    String ExecutorServiceStarted();
-
-    String ExecutorServiceDisabled();
-
     String RequestScheduled(Long requestId);
 
     String RequestCancelled(Long requestId);
@@ -179,4 +149,7 @@ public interface Constants extends Messages {
     String ErrorRetrievingJobs(String message);
 
     String ClickToEdit();
+
+    String SelectServerTemplate();
+
 }

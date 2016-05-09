@@ -65,6 +65,7 @@
   -->
   <inherits name="org.jbpm.console.ng.pr.admin.JbpmConsoleNGProcessRuntimeAdminClient"/>
   <inherits name="org.jbpm.console.ng.pr.JbpmConsoleNGProcessRuntimeClient"/>
+  <inherits name="org.jbpm.console.ng.bd.JbpmConsoleNGBusinessDomainAPI"/>
   <inherits name="org.jbpm.console.ng.bd.JbpmConsoleNGBusinessDomainClient"/>
   <inherits name="org.jbpm.console.ng.es.JbpmConsoleNGExecutorServiceClient"/>
   <inherits name="org.jbpm.console.ng.gc.JbpmConsoleNGGenericClient"/>
@@ -75,6 +76,9 @@
 
   <!-- asset mgmt -->
 
+  <!-- kie server -->
+  <inherits name="org.kie.workbench.common.screens.server.management.ServerManagementAPI"/>
+  <inherits name="org.kie.workbench.common.screens.server.management.ServerManagementClient"/>
 
   <!-- designer -->
   <inherits name="org.jbpm.designer.jBPMDesignerAPI"/>

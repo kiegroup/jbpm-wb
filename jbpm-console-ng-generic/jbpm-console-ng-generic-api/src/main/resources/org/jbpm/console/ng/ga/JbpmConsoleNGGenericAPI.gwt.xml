@@ -25,6 +25,6 @@
 
   <source path="model" />
   <source path="service" />
-  <source path="exception" />
+  <source path="events" />
 
 </module>

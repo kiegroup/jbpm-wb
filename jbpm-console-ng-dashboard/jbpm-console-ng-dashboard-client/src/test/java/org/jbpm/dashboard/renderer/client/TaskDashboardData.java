@@ -28,6 +28,7 @@ public class TaskDashboardData extends RawDataSet {
                     // Ensure the tests also works with columns in a different case,
                     // which is actually the case when working with some DBs
                     COLUMN_PROCESS_NAME.toUpperCase(),
+                    COLUMN_PROCESS_INSTANCE_ID.toUpperCase(),
                     COLUMN_TASK_ID.toUpperCase(),
                     COLUMN_TASK_NAME.toUpperCase(),
                     COLUMN_TASK_OWNER_ID.toUpperCase(),
@@ -39,6 +40,7 @@ public class TaskDashboardData extends RawDataSet {
             new Class[] {
                     String.class,
                     Integer.class,
+                    Integer.class,
                     String.class,
                     String.class,
                     Date.class,
@@ -47,14 +49,15 @@ public class TaskDashboardData extends RawDataSet {
                     String.class,
                     Integer.class},
             new String[][] {
-                    {"Process A", "1", "Task 1", "user1", "01/01/19 10:00", "01/01/19 12:00", null, TASK_STATUS_IN_PROGRESS, null},
-                    {"Process A", "2", "Task 2", "user1", "01/01/19 09:00", "11/01/19 12:00", "01/01/19 13:00", TASK_STATUS_COMPLETED, "9000"},
-                    {"Process A", "3", "Task 3", "user2", "01/01/19 08:00", "10/01/19 12:00", null, TASK_STATUS_SUSPENDED, null},
-                    {"Process A", "4", "Task 4", "user2", "01/01/19 10:00", "09/01/19 12:00", null, TASK_STATUS_IN_PROGRESS, null},
-                    {"Process B", "5", "Task 2", "user1", "01/01/19 06:00", "08/01/19 12:00", null, TASK_STATUS_IN_PROGRESS, null},
-                    {"Process B", "6", "Task 2", "user3", "01/01/19 07:00", "07/01/19 12:00", null, TASK_STATUS_ERROR, null},
-                    {"Process B", "7", "Task 3", "user4", "01/01/19 08:00", "05/01/19 12:00", null, TASK_STATUS_RESERVED, null},
-                    {"Process B", "8", "Task 4", "user4", "01/01/19 10:00", "05/11/19 12:00", "12/02/19 16:00", TASK_STATUS_COMPLETED, "10000"},
+                    {"Process A", "1", "1", "Task 1", "user1", "01/01/19 10:00", "01/01/19 12:00", null, TASK_STATUS_IN_PROGRESS, null},
+                    {"Process A", "1", "2", "Task 2", "user1", "01/01/19 09:00", "11/01/19 12:00", "01/01/19 13:00", TASK_STATUS_COMPLETED, "9000"},
+                    {"Process A", "1", "3", "Task 3", "user2", "01/01/19 08:00", "10/01/19 12:00", null, TASK_STATUS_SUSPENDED, null},
+                    {"Process A", "1", "4", "Task 4", "user2", "01/01/19 10:00", "09/01/19 12:00", null, TASK_STATUS_IN_PROGRESS, null},
+                    {"Process B", "2", "5", "Task 2", "user1", "01/01/19 06:00", "08/01/19 12:00", null, TASK_STATUS_IN_PROGRESS, null},
+                    {"Process B", "2", "6", "Task 2", "user3", "01/01/19 07:00", "07/01/19 12:00", null, TASK_STATUS_ERROR, null},
+                    {"Process B", "2", "7", "Task 3", "user4", "01/01/19 08:00", "05/01/19 12:00", null, TASK_STATUS_RESERVED, null},
+                    {"Process B", "2", "8", "Task 4", "user4", "01/01/19 10:00", "05/11/19 12:00", "12/02/19 16:00", TASK_STATUS_COMPLETED, "10000"},
+                    {"Process B", "2", "9", "Task 4", "user4", "01/01/19 10:00", "05/11/19 12:00", null, TASK_STATUS_EXITED, null}
             });
 
     public TaskDashboardData(String[] columnIds, Class[] types, String[][] data) {

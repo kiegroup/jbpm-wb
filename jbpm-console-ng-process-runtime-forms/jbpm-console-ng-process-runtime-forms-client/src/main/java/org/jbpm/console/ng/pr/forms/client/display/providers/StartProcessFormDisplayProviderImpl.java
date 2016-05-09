@@ -113,7 +113,7 @@ public class StartProcessFormDisplayProviderImpl implements StartProcessFormDisp
                         }
                     }
                 }
-            }).getFormDisplayProcess(config.getKey().getDeploymentId(), config.getKey().getProcessId());
+            }).getFormDisplayProcess(config.getKey().getServerTemplateId(), config.getKey().getDeploymentId(), config.getKey().getProcessId());
         }
     }
 

@@ -44,12 +44,12 @@
       <artifactId>jbpm-console-ng-generic-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-api</artifactId>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-business-domain-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-kie-services</artifactId>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-api</artifactId>
     </dependency>
   </dependencies>
 

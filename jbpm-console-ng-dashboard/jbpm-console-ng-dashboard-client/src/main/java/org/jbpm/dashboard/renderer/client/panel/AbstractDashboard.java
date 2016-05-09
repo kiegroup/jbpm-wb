@@ -18,6 +18,7 @@ package org.jbpm.dashboard.renderer.client.panel;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.client.DataSetClientServices;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.client.AbstractDisplayer;
@@ -26,6 +27,8 @@ import org.dashbuilder.displayer.client.DisplayerCoordinator;
 import org.dashbuilder.displayer.client.DisplayerLocator;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
+import org.jbpm.console.ng.ga.model.dataset.ConsoleDataSetLookup;
+import org.jbpm.console.ng.gc.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardI18n;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
@@ -47,6 +50,8 @@ public abstract class AbstractDashboard {
     protected DisplayerLocator displayerLocator;
     protected DisplayerCoordinator displayerCoordinator;
 
+    protected ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
+
     public interface View extends IsWidget {
 
         void showBreadCrumb(String processName);
@@ -66,7 +71,14 @@ public abstract class AbstractDashboard {
         DashboardI18n getI18nService();
     }
 
-    public AbstractDashboard(final DashboardFactory dashboardFactory, final DataSetClientServices dataSetClientServices, final PlaceManager placeManager, final DashboardI18n i18n, final ProcessBreadCrumb processBreadCrumb, final DisplayerLocator displayerLocator, final DisplayerCoordinator displayerCoordinator) {
+    public AbstractDashboard(final DashboardFactory dashboardFactory,
+                             final DataSetClientServices dataSetClientServices,
+                             final PlaceManager placeManager,
+                             final DashboardI18n i18n,
+                             final ProcessBreadCrumb processBreadCrumb,
+                             final DisplayerLocator displayerLocator,
+                             final DisplayerCoordinator displayerCoordinator,
+                             final ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder) {
         this.dashboardFactory = dashboardFactory;
         this.dataSetClientServices = dataSetClientServices;
         this.placeManager = placeManager;
@@ -74,21 +86,26 @@ public abstract class AbstractDashboard {
         this.processBreadCrumb = processBreadCrumb;
         this.displayerLocator = displayerLocator;
         this.displayerCoordinator = displayerCoordinator;
+        this.serverTemplateSelectorMenuBuilder = serverTemplateSelectorMenuBuilder;
     }
 
     public MetricDisplayer createMetricDisplayer(DisplayerSettings settings) {
         checkNotNull("displayerSettings", settings);
         MetricDisplayer metricDisplayer = dashboardFactory.createMetricDisplayer();
         metricDisplayer.setDisplayerSettings(settings);
-        metricDisplayer.setDataSetHandler(new DataSetHandlerImpl(dataSetClientServices, settings.getDataSetLookup()));
+        metricDisplayer.setDataSetHandler(new DataSetHandlerImpl(dataSetClientServices, getDataSetLookup(settings)));
         return metricDisplayer;
+    }
+
+    private DataSetLookup getDataSetLookup(final DisplayerSettings settings) {
+        return ConsoleDataSetLookup.fromInstance(settings.getDataSetLookup(), serverTemplateSelectorMenuBuilder.getSelectedServerTemplate());
     }
 
     public TableDisplayer createTableDisplayer(DisplayerSettings settings, final String columnId, final DurationFormatter durationFormatter) {
         checkNotNull("displayerSettings", settings);
         final TableDisplayer tableDisplayer = dashboardFactory.createTableDisplayer();
         tableDisplayer.setDisplayerSettings(settings);
-        tableDisplayer.setDataSetHandler(new DataSetHandlerImpl(dataSetClientServices, settings.getDataSetLookup()));
+        tableDisplayer.setDataSetHandler(new DataSetHandlerImpl(dataSetClientServices, getDataSetLookup(settings)));
         tableDisplayer.addFormatter(columnId, durationFormatter);
         tableDisplayer.setOnCellSelectedCommand(new Command() {
             public void execute() {
@@ -147,7 +164,9 @@ public abstract class AbstractDashboard {
 
     public AbstractDisplayer createDisplayer(DisplayerSettings settings) {
         checkNotNull("displayerSettings", settings);
-        return (AbstractDisplayer) displayerLocator.lookupDisplayer(settings);
+        AbstractDisplayer displayer = (AbstractDisplayer) displayerLocator.lookupDisplayer(settings);
+        displayer.setDataSetHandler(new DataSetHandlerImpl(dataSetClientServices, getDataSetLookup(settings)));
+        return displayer;
     }
 
     public void changeCurrentProcess(String name) {
@@ -161,4 +180,5 @@ public abstract class AbstractDashboard {
         updateHeaderText();
         getView().hideBreadCrumb();
     }
+
 }

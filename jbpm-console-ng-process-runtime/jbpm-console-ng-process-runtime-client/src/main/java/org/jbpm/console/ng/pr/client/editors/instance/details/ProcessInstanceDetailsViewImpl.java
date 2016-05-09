@@ -16,23 +16,16 @@
 
 package org.jbpm.console.ng.pr.client.editors.instance.details;
 
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
-import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
-import org.uberfire.backend.vfs.Path;
-import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "ProcessInstanceDetailsViewImpl.html")
@@ -103,19 +96,8 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     @DataField
     public FormLabel activeTasksListLabel;
 
-    @Inject
-    private Event<NotificationEvent> notification;
+    private Constants constants = Constants.INSTANCE;
 
-    private Constants constants = GWT.create( Constants.class );
-
-    private ProcessInstanceSummary processInstance;
-    private Path processAssetPath;
-    private String encodedProcessSource;
-    private List<NodeInstanceSummary> activeNodes;
-    private List<NodeInstanceSummary> completedNodes;
-
-  
-    
     @PostConstruct
     public void init(  ) {
         processDefinitionIdLabel.setText( constants.Process_Definition_Id() );
@@ -145,16 +127,6 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     }
 
     @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
-    }
-
-    @Override
-    public void setProcessInstance( ProcessInstanceSummary processInstance ) {
-        this.processInstance = processInstance;
-    }
-
-    @Override
     public HTML getStateText() {
         return this.stateText;
     }
@@ -179,51 +151,4 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
         return processVersionText;
     }
 
-    @Override
-    public void setProcessAssetPath( Path processAssetPath ) {
-        this.processAssetPath = processAssetPath;
-    }
-
-    @Override
-    public void setCurrentActiveNodes( List<NodeInstanceSummary> activeNodes ) {
-        this.activeNodes = activeNodes;
-
-    }
-
-    @Override
-    public void setCurrentCompletedNodes( List<NodeInstanceSummary> completedNodes ) {
-        this.completedNodes = completedNodes;
-    }
-
-    @Override
-    public void setEncodedProcessSource( String encodedProcessSource ) {
-        this.encodedProcessSource = encodedProcessSource;
-    }
-
-    public List<NodeInstanceSummary> getActiveNodes() {
-        return activeNodes;
-    }
-
-    public void setActiveNodes(List<NodeInstanceSummary> activeNodes) {
-        this.activeNodes = activeNodes;
-    }
-
-    public List<NodeInstanceSummary> getCompletedNodes() {
-        return completedNodes;
-    }
-
-    public void setCompletedNodes(List<NodeInstanceSummary> completedNodes) {
-        this.completedNodes = completedNodes;
-    }
-
-    public Path getProcessAssetPath() {
-        return processAssetPath;
-    }
-
-    public String getEncodedProcessSource() {
-        return encodedProcessSource;
-    }
-
-    
-    
 }

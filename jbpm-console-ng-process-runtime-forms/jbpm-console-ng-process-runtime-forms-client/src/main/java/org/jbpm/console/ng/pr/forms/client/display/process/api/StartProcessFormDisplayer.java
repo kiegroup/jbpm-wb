@@ -18,8 +18,8 @@ package org.jbpm.console.ng.pr.forms.client.display.process.api;
 import java.util.Map;
 
 import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
+import org.jbpm.console.ng.bd.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.gc.forms.client.display.GenericFormDisplayer;
-import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 
 public interface StartProcessFormDisplayer extends GenericFormDisplayer<ProcessDefinitionKey> {
 

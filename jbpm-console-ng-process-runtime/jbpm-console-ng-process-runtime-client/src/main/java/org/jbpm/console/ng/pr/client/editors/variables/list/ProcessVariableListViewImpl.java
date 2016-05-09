@@ -29,7 +29,6 @@ import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -45,7 +44,7 @@ import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.jbpm.console.ng.pr.client.editors.variables.edit.VariableEditPopup;
 import org.jbpm.console.ng.pr.client.editors.variables.history.VariableHistoryPopup;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
+import org.jbpm.console.ng.bd.model.ProcessVariableSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
@@ -63,7 +62,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
     public static final String COL_ID_LASTMOD = "lastMod";
     public static final String COL_ID_ACTIONS = "Actions";
 
-    private Constants constants = GWT.create( Constants.class );
+    private Constants constants = Constants.INSTANCE;
 
     private Column actionsColumn;
 
@@ -225,7 +224,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
         cells.add( new EditVariableActionHasCell( constants.Edit(), new Delegate<ProcessVariableSummary>() {
             @Override
             public void execute( ProcessVariableSummary variable ) {
-                variableEditPopup.show( variable.getProcessInstanceId(), variable.getVariableId(), (variable.getNewValue()!=null?variable.getNewValue():"") );
+                variableEditPopup.show( variable.getServerTemplateId(), variable.getDeploymentId(), variable.getProcessInstanceId(), variable.getVariableId(), (variable.getNewValue()!=null?variable.getNewValue():"") );
             }
         } ) );
 
@@ -283,8 +282,5 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
                 super.render( context, value, sb );
         }
     }
-
-
-
 
 }

@@ -153,7 +153,7 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
             if ( event.getContext().getErrors() == 0 ) {
                 if ( ACTION_START_PROCESS.equals( action ) ) {
                     renderContextServices.call( getStartProcessRemoteCallback(), getUnexpectedErrorCallback() )
-                            .startProcessFromRenderContext( formContent, deploymentId, processDefId, getCorrelationKey(), parentProcessInstanceId );
+                            .startProcessFromRenderContext( formContent, serverTemplateId, deploymentId, processDefId, getCorrelationKey(), parentProcessInstanceId );
                 }
             }
         }

@@ -15,16 +15,18 @@
  */
 package org.jbpm.console.ng.pr.admin.client.editors.settings;
 
+import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.extras.select.client.ui.Option;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -37,29 +39,16 @@ import org.uberfire.workbench.events.NotificationEvent;
 public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAdminSettingsPresenter.ProcessAdminSettingsView {
 
     @Inject
-    private PlaceManager placeManager;
-
-    private ProcessAdminSettingsPresenter presenter;
-
-    @Inject
     @DataField
     public Button generateMockInstancesButton;
 
     @Inject
     @DataField
-    public FormLabel deploymentIdLabel;
+    public Button resetButton;
 
     @Inject
     @DataField
-    public TextBox deploymentIdText;
-
-    @Inject
-    @DataField
-    public FormLabel processIdLabel;
-
-    @Inject
-    @DataField
-    public TextBox processIdText;
+    public FormLabel processListLabel;
 
     @Inject
     @DataField
@@ -70,45 +59,97 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
     public TextBox amountOfTasksText;
 
     @Inject
+    @DataField
+    public Select serverTemplate;
+
+    @Inject
+    @DataField
+    public FormLabel serverTemplateLabel;
+
+    @Inject
+    @DataField
+    public Select processList;
+
+    @Inject
+    private PlaceManager placeManager;
+
+    private ProcessAdminSettingsPresenter presenter;
+
+    @Inject
     private Event<NotificationEvent> notification;
 
-    private ProcessAdminConstants processAdminConstants = GWT.create( ProcessAdminConstants.class );
+    private ProcessAdminConstants constants = ProcessAdminConstants.INSTANCE;
 
     @Override
-    public void init( ProcessAdminSettingsPresenter presenter ) {
+    public void init(final ProcessAdminSettingsPresenter presenter) {
         this.presenter = presenter;
 
-        amountOfTasksLabel.setText( processAdminConstants.Amount_Of_Tasks() );
-        deploymentIdLabel.setText( processAdminConstants.DeploymentId() );
-        processIdLabel.setText( processAdminConstants.ProcessId() );
-        generateMockInstancesButton.setText( processAdminConstants.Generate_Mock_Instances() );
+        serverTemplateLabel.setText(constants.ServerTemplate());
+        serverTemplateLabel.setShowRequiredIndicator(true);
+
+        processListLabel.setText(constants.ProcessId());
+        processListLabel.setShowRequiredIndicator(true);
+
+        amountOfTasksLabel.setText(constants.Amount_Of_Tasks());
+        amountOfTasksLabel.setShowRequiredIndicator(true);
+        amountOfTasksText.setText("1");
+
+        generateMockInstancesButton.setText(constants.Generate_Mock_Instances());
+        resetButton.setText(constants.Reset());
+
+        serverTemplate.addChangeHandler(e -> presenter.onServerTemplateSelected(serverTemplate.getValue()));
+    }
+
+    @EventHandler("resetButton")
+    public void resetClick(ClickEvent e) {
+        serverTemplate.setValue("");
+        amountOfTasksText.setText("1");
+        clearProcessList();
     }
 
     @EventHandler("generateMockInstancesButton")
-    public void setGenerateMockInstancesButton( ClickEvent e ) {
-
-        presenter.generateMockInstances( deploymentIdText.getText(), processIdText.getText(), Integer.parseInt( amountOfTasksText.getText() ) );
-
+    public void generateMockInstancesButton(ClickEvent e) {
+        presenter.generateMockInstances(serverTemplate.getValue(), processList.getValue(), Integer.parseInt(amountOfTasksText.getText()));
     }
 
     @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     @Override
-    public TextBox getDeploymentIdText() {
-        return deploymentIdText;
+    public void addServerTemplates(final Set<String> serverTemplateIds) {
+        serverTemplate.clear();
+        serverTemplate.setValue("");
+
+        for (final String serverTemplateId : serverTemplateIds) {
+            final Option option = new Option();
+            option.setText(serverTemplateId);
+            option.setValue(serverTemplateId);
+            serverTemplate.add(option);
+        }
+
+        serverTemplate.refresh();
     }
 
     @Override
-    public TextBox getProcessIdText() {
-        return processIdText;
+    public void clearProcessList() {
+        processList.clear();
+        processList.setValue("");
+        processList.refresh();
     }
 
     @Override
-    public Button getGenerateMockInstancesButton() {
-        return generateMockInstancesButton;
-    }
+    public void addProcessList(final Set<String> processIds) {
+        clearProcessList();
 
+        for (final String processId : processIds) {
+            final Option option = new Option();
+            option.setText(processId);
+            option.setValue(processId);
+            processList.add(option);
+        }
+
+        processList.refresh();
+    }
 }

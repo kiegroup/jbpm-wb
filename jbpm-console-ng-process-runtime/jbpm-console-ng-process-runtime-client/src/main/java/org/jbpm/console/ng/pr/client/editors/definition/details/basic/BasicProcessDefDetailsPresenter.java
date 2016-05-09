@@ -18,18 +18,15 @@ package org.jbpm.console.ng.pr.client.editors.definition.details.basic;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.ga.model.process.DummyProcessPath;
+import org.jbpm.console.ng.bd.model.ProcessDefinitionKey;
+import org.jbpm.console.ng.bd.model.ProcessSummary;
 import org.jbpm.console.ng.pr.client.editors.definition.details.BaseProcessDefDetailsPresenter;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
-import org.jbpm.console.ng.pr.model.ProcessSummary;
-import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
-import org.uberfire.backend.vfs.Path;
+import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
 import org.uberfire.backend.vfs.VFSService;
-
-import com.google.gwt.user.client.ui.IsWidget;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 @Dependent
@@ -46,7 +43,7 @@ public class BasicProcessDefDetailsPresenter extends BaseProcessDefDetailsPresen
     private BasicProcessDefDetailsView view;
 
     @Inject
-    private Caller<ProcessDefinitionService> processDefService;
+    private Caller<ProcessRuntimeDataService> processRuntimeDataService;
 
     @Inject
     private Caller<VFSService> fileServices;
@@ -57,44 +54,34 @@ public class BasicProcessDefDetailsPresenter extends BaseProcessDefDetailsPresen
     }
 
     @Override
-    protected void refreshView( String currentProcessDefId, String currentDeploymentId ) {
+    protected void refreshView(  final String serverTemplateId, String currentProcessDefId, String currentDeploymentId ) {
         view.getProcessIdText().setText( currentProcessDefId );
         view.getDeploymentIdText().setText( currentDeploymentId );
     }
 
-    private void refreshProcessItems(final String deploymentId, final String processId) {
-        processDefService.call(
-                new RemoteCallback<ProcessSummary>() {
-                    @Override
-                    public void callback(ProcessSummary process) {
-                        if (process != null) {
-                            view.setEncodedProcessSource(process.getEncodedProcessSource());
-                            view.getProcessNameText().setText(process.getName());
-                            if (process.getOriginalPath() != null) {
-                                fileServices.call(new RemoteCallback<Path>() {
-                                    @Override
-                                    public void callback(Path processPath) {
-                                        view.setProcessAssetPath(processPath);
-                                    }
-                                }).get(process.getOriginalPath());
-                            } else {
-                                view.setProcessAssetPath(new DummyProcessPath(process
-                                                .getProcessDefId()));
-                            }
-                            changeStyleRow(process.getName(), process.getVersion());
-                        } else {
-                            // set to null to ensure it's clear state
-                            view.setEncodedProcessSource(null);
-                            view.setProcessAssetPath(null);
-                        }
-                    }
-                },
-                new DefaultErrorCallback()
-        ).getItem(new ProcessDefinitionKey(deploymentId, processId));
+    private void refreshProcessItems( final String serverTemplateId, final String deploymentId, final String processId ) {
+
+        processRuntimeDataService.call(new RemoteCallback<ProcessSummary>() {
+
+            @Override
+            public void callback( ProcessSummary process ) {
+                if (process != null) {
+                    view.setEncodedProcessSource( process.getEncodedProcessSource() );
+                    view.getProcessNameText().setText( process.getName() );
+
+                    changeStyleRow( process.getName(), process.getVersion() );
+                } else {
+                    // set to null to ensure it's clear state
+                    view.setEncodedProcessSource( null );
+                    view.setProcessAssetPath( null );
+                }
+            }
+        }, new DefaultErrorCallback() ).getProcess(serverTemplateId, new ProcessDefinitionKey(serverTemplateId, deploymentId, processId));
+
     }
 
     @Override
-    protected void refreshProcessDef( String deploymentId, String processId ) {
-        refreshProcessItems( deploymentId, processId );
+    protected void refreshProcessDef(  final String serverTemplateId, String deploymentId, String processId ) {
+        refreshProcessItems( serverTemplateId, deploymentId, processId );
     }
 }

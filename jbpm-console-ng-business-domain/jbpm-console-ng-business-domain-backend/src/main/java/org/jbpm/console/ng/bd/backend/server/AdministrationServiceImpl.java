@@ -22,12 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -39,19 +34,10 @@ import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryEnvironmentConfigurations;
 import org.guvnor.structure.repositories.RepositoryService;
-import org.guvnor.structure.server.config.ConfigGroup;
-import org.guvnor.structure.server.config.ConfigType;
 import org.guvnor.structure.server.config.ConfigurationFactory;
 import org.guvnor.structure.server.config.ConfigurationService;
-import org.jbpm.console.ng.bd.api.Vfs;
+import org.jbpm.console.ng.bd.backend.server.dd.DeploymentDescriptorManager;
 import org.jbpm.console.ng.bd.service.AdministrationService;
-import org.jbpm.console.ng.bd.service.DeploymentManagerEntryPoint;
-import org.jbpm.console.ng.bd.service.DeploymentUnitProvider;
-import org.jbpm.console.ng.bd.service.Initializable;
-import org.jbpm.runtime.manager.impl.deploy.DeploymentDescriptorManager;
-import org.jbpm.services.api.DeploymentService;
-import org.jbpm.services.api.model.DeploymentUnit;
-import org.jbpm.services.cdi.Kjar;
 import org.kie.internal.runtime.conf.DeploymentDescriptor;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
@@ -65,7 +51,6 @@ import org.uberfire.java.nio.file.Path;
 @ApplicationScoped
 public class AdministrationServiceImpl implements AdministrationService {
 
-    private static final String DEPLOYMENT_SERVICE_TYPE_CONFIG = "deployment.service";
     private static final Logger logger = LoggerFactory.getLogger( AdministrationServiceImpl.class );
     @Inject
     @Named("ioStrategy")
@@ -84,27 +69,8 @@ public class AdministrationServiceImpl implements AdministrationService {
     private ConfigurationFactory configurationFactory;
 
     @Inject
-    private DeploymentManagerEntryPoint deploymentManager;
-
-    @Inject
     private KieProjectService projectService;
 
-    @Inject
-    @Any
-    private Instance<DeploymentService> deploymentService;
-
-    @Inject
-    @Any
-    private Instance<DeploymentUnitProvider<DeploymentUnit>> deploymentUnitProviders;
-
-    private String deploymentServiceType = "kjar";
-
-    /**
-     * This flag is necessary to let dependent services know when the deployments have been bootstrapped.
-     * Because retrieving the status of the deployments will be frequently called, it's more efficient
-     * to use a boolean to save this status than to have the dependent services call produceDeploymentUnits().
-     */
-    private volatile boolean bootstrapDeploymentsDone = false;
 
     /* (non-Javadoc)
      * @see org.jbpm.console.ng.bd.backend.server.AdministrationService#bootstrapRepository(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
@@ -161,73 +127,6 @@ public class AdministrationServiceImpl implements AdministrationService {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.jbpm.console.ng.bd.backend.server.AdministrationService#bootstrapConfig()
-     */
-    public void bootstrapConfig() {
-        ConfigGroup deploymentServiceTypeConfig = null;
-        List<ConfigGroup> configGroups = configurationService.getConfiguration( ConfigType.GLOBAL );
-        if ( configGroups != null ) {
-            for ( ConfigGroup configGroup : configGroups ) {
-                if ( DEPLOYMENT_SERVICE_TYPE_CONFIG.equals( configGroup.getName() ) ) {
-                    deploymentServiceTypeConfig = configGroup;
-                    break;
-                }
-            }
-        }
-        if ( deploymentServiceTypeConfig == null ) {
-            deploymentServiceTypeConfig = configurationFactory.newConfigGroup( ConfigType.GLOBAL,
-                                                                               DEPLOYMENT_SERVICE_TYPE_CONFIG, "" );
-            deploymentServiceTypeConfig.addConfigItem( configurationFactory.newConfigItem( "type", "kjar" ) );
-
-            configurationService.addConfiguration( deploymentServiceTypeConfig );
-        }
-
-        deploymentServiceType = deploymentServiceTypeConfig.getConfigItemValue( "type" );
-    }
-
-    /* (non-Javadoc)
-     * @see org.jbpm.console.ng.bd.backend.server.AdministrationService#bootstrapDeployments()
-     */
-    public void bootstrapDeployments() {
-        Set<DeploymentUnit> deploymentUnits = produceDeploymentUnits();
-        ( (Initializable) deploymentManager ).initDeployments( deploymentUnits );
-        bootstrapDeploymentsDone = true;
-    }
-
-    /* (non-Javadoc)
-     * @see org.jbpm.console.ng.bd.backend.server.AdministrationService#areDeploymentsBootstrapped()
-     */
-    public boolean getBootstrapDeploymentsDone() {
-        return bootstrapDeploymentsDone;
-    }
-
-    /* (non-Javadoc)
-     * @see org.jbpm.console.ng.bd.backend.server.AdministrationService#produceDeploymentUnits()
-     */
-    @Produces
-    @RequestScoped
-    @Named("DeployList")
-    public Set<DeploymentUnit> produceDeploymentUnits() {
-        Set<DeploymentUnit> deploymentUnits = new HashSet<DeploymentUnit>();
-
-        Instance<DeploymentUnitProvider<DeploymentUnit>> suitableProviders = this.deploymentUnitProviders.select( getDeploymentType() );
-
-        for ( DeploymentUnitProvider provider : suitableProviders ) {
-            deploymentUnits.addAll( provider.getDeploymentUnits() );
-        }
-
-        return deploymentUnits;
-    }
-
-    /* (non-Javadoc)
-     * @see org.jbpm.console.ng.bd.backend.server.AdministrationService#getDeploymentService()
-     */
-    @Produces
-    public DeploymentService getDeploymentService() {
-        return this.deploymentService.select( getDeploymentType() ).get();
-    }
-
     @Override
     public void bootstrapProject( String repoAlias,
                                   String group,
@@ -248,18 +147,6 @@ public class AdministrationServiceImpl implements AdministrationService {
             }
         } catch ( Exception e ) {
             logger.error( "Unable to bootstrap project {} in repository {}", gav, repoAlias, e );
-        }
-    }
-
-    protected AnnotationLiteral getDeploymentType() {
-        if ( deploymentServiceType.equals( "kjar" ) ) {
-            return new AnnotationLiteral<Kjar>() {
-            };
-        } else if ( deploymentServiceType.equals( "vfs" ) ) {
-            return new AnnotationLiteral<Vfs>() {
-            };
-        } else {
-            throw new IllegalStateException( "Unknown type of deployment service " + deploymentServiceType );
         }
     }
 

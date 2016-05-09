@@ -26,7 +26,7 @@ import org.gwtbootstrap3.client.ui.html.Text;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.model.RequestDataSetConstants;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
-import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
+import org.jbpm.console.ng.es.service.ExecutorService;
 import org.jbpm.console.ng.gc.client.util.UTCDateBox;
 import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
 import org.junit.Assert;
@@ -56,10 +56,10 @@ public class QuickNewJobPopupTest {
     private int JOB_RETRIES = 5;
 
     @Mock
-    private CallerMock<ExecutorServiceEntryPoint> executorServices;
+    private CallerMock<ExecutorService> executorServices;
 
     @Mock
-    private ExecutorServiceEntryPoint executorServicesMock;
+    private ExecutorService executorServicesMock;
 
     @Mock
     private UTCTimeBox jobDueDateTime;
@@ -93,7 +93,7 @@ public class QuickNewJobPopupTest {
 
     @Before
     public void setupMocks() {
-        executorServices = new CallerMock<ExecutorServiceEntryPoint>(executorServicesMock);
+        executorServices = new CallerMock<ExecutorService>(executorServicesMock);
         quickNewJobPopup.setExecutorService(executorServices);
     }
 
@@ -108,12 +108,12 @@ public class QuickNewJobPopupTest {
                 assertTrue(invocationOnMock.getArguments()[2].equals(JOB_TYPE));
                 return null;
             }
-        }).when(executorServicesMock).scheduleRequest(anyString(), any(Date.class), any(Map.class));
+        }).when(executorServicesMock).scheduleRequest(anyString(), anyString(), any(Date.class), any(Map.class));
 
         quickNewJobPopup.createJob(JOB_NAME, new Date(), JOB_TYPE, JOB_RETRIES, new ArrayList<RequestParameterSummary>());
 
-        verify(executorServicesMock).scheduleRequest(anyString(), any(Date.class), any(HashMap.class));
-    }
+        verify(executorServicesMock).scheduleRequest(anyString(),anyString(), any(Date.class), any(HashMap.class));
+   }
 
     @Test
     public void dueTimeSetToFutureTimeTest() {

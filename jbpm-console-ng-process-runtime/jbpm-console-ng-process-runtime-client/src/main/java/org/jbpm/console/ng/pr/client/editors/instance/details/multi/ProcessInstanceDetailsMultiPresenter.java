@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.pr.client.editors.instance.details.multi;
 
-import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -26,20 +25,15 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
-import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
-import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.console.ng.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.console.ng.pr.client.editors.documents.list.ProcessDocumentListPresenter;
 import org.jbpm.console.ng.pr.client.editors.instance.details.ProcessInstanceDetailsPresenter;
 import org.jbpm.console.ng.pr.client.editors.instance.log.RuntimeLogPresenter;
 import org.jbpm.console.ng.pr.client.editors.variables.list.ProcessVariableListPresenter;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
-import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.jbpm.console.ng.pr.service.ProcessService;
 import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -49,6 +43,7 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
+import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -82,16 +77,12 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
 
     @Inject
     private PlaceManager placeManager;
-
     @Inject
-    private Caller<KieSessionEntryPoint> kieSessionServices;
-
-    @Inject
-    private Caller<DataServiceEntryPoint> dataServices;
+    private Caller<ProcessService> processService;
 
     @Inject
     private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
-    
+
     @Inject
     private Event<ProcessInstancesUpdateEvent> processInstancesUpdatedEvent;
 
@@ -118,9 +109,13 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
 
     private PlaceRequest place;
 
-    private String processInstanceId = "";
+    private String deploymentId = "";
 
     private String processId = "";
+
+    private Long processInstanceId;
+
+    private String serverTemplateId = "";
 
     private boolean forLog = false;
 
@@ -155,8 +150,11 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
     }
 
     public void onProcessSelectionEvent( @Observes ProcessInstanceSelectionEvent event ) {
-        processInstanceId = String.valueOf( event.getProcessInstanceId() );
+
+        deploymentId = event.getDeploymentId();
         processId = event.getProcessDefId();
+        processInstanceId = event.getProcessInstanceId();
+        serverTemplateId = event.getServerTemplateId();
         selectedDeploymentId = event.getDeploymentId();
         selectedProcessInstanceStatus = event.getProcessInstanceStatus();
         selectedProcessDefName = event.getProcessDefName();
@@ -174,91 +172,35 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
 
     @Override
     public void onRefresh() {
-        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedDeploymentId, Long.valueOf(processInstanceId), processId, selectedProcessDefName, selectedProcessInstanceStatus,isForLog() ) );
+        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedDeploymentId, processInstanceId, processId, selectedProcessDefName, selectedProcessInstanceStatus,isForLog(), serverTemplateId ) );
     }
 
     public void signalProcessInstance() {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Signal Process Popup" );
-        placeRequestImpl.addParameter( "processInstanceId", processInstanceId);
+
+        placeRequestImpl.addParameter( "processInstanceId", String.valueOf(processInstanceId) );
+        placeRequestImpl.addParameter( "deploymentId", deploymentId );
+        placeRequestImpl.addParameter( "serverTemplateId", serverTemplateId );
         placeManager.goTo( placeRequestImpl );
 
     }
 
     public void abortProcessInstance() {
-        final long pInstanceId = Long.parseLong(processInstanceId);
-        dataServices.call(
-                new RemoteCallback<ProcessInstanceSummary>() {
-                    @Override
-                    public void callback(ProcessInstanceSummary processInstance) {
-                        if (processInstance.getState() == ProcessInstance.STATE_ACTIVE
-                        || processInstance.getState() == ProcessInstance.STATE_PENDING) {
-                            if (Window.confirm(constants.Abort_Process_Instance())) {
-                                kieSessionServices.call(
-                                        new RemoteCallback<Void>() {
-                                            @Override
-                                            public void callback(Void v) {
-                                                processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
-                                            }
-                                        },
-                                        new DefaultErrorCallback()
-                                ).abortProcessInstance(pInstanceId);
-                            }
-                        } else {
-                            Window.alert(constants.ProcessInstanceNeedsToBeActiveInOrderToBeAborted());
-                        }
-                    }
-                },
-                new DefaultErrorCallback()
-        ).getProcessInstanceById(pInstanceId);
+        if ( Window.confirm( constants.Abort_Process_Instance() ) ) {
+            processService.call(new RemoteCallback<Void>() {
+                @Override
+                public void callback(Void processInstance) {
+
+                    processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
+
+                }
+            }, new DefaultErrorCallback()).abortProcessInstance(serverTemplateId, deploymentId, processInstanceId);
+        }
     }
 
     public void goToProcessInstanceModelPopup() {
-        if (place != null && !processInstanceId.equals("")) {
-            dataServices.call(
-                    new RemoteCallback<List<NodeInstanceSummary>>() {
-                        @Override
-                        public void callback(List<NodeInstanceSummary> activeNodes) {
-                            final StringBuffer nodeParam = new StringBuffer();
-                            for (NodeInstanceSummary activeNode : activeNodes) {
-                                nodeParam.append(activeNode.getNodeUniqueName() + ",");
-                            }
-                            if (nodeParam.length() > 0) {
-                                nodeParam.deleteCharAt(nodeParam.length() - 1);
-                            }
-
-                            dataServices.call(
-                                    new RemoteCallback<List<NodeInstanceSummary>>() {
-                                        @Override
-                                        public void callback(List<NodeInstanceSummary> completedNodes) {
-                                            StringBuffer completedNodeParam = new StringBuffer();
-                                            for (NodeInstanceSummary completedNode : completedNodes) {
-                                                if (completedNode.isCompleted()) {
-                                                    // insert outgoing sequence flow and node as this is for on entry event
-                                                    completedNodeParam.append(completedNode.getNodeUniqueName() + ",");
-                                                    completedNodeParam.append(completedNode.getConnection() + ",");
-                                                } else if (completedNode.getConnection() != null) {
-                                                    // insert only incoming sequence flow as node id was already inserted
-                                                    completedNodeParam.append(completedNode.getConnection() + ",");
-                                                }
-                                            }
-                                            completedNodeParam.deleteCharAt(completedNodeParam.length() - 1);
-
-                                            placeManager.goTo(ProcessDiagramUtil.buildPlaceRequest(new DefaultPlaceRequest("")
-                                                            .addParameter("activeNodes", nodeParam.toString())
-                                                            .addParameter("completedNodes", completedNodeParam.toString())
-                                                            .addParameter("readOnly", "true")
-                                                            .addParameter("processId", processId)
-                                                            .addParameter("deploymentId", selectedDeploymentId)));
-
-                                        }
-                                    },
-                                    new DefaultErrorCallback()
-                            ).getProcessInstanceCompletedNodes(Long.parseLong(processInstanceId));
-
-                        }
-                    },
-                    new DefaultErrorCallback()
-            ).getProcessInstanceActiveNodes(Long.parseLong(processInstanceId));
+        if ( place != null && !deploymentId.equals( "" ) ) {
+            placeManager.goTo(ProcessDiagramUtil.buildPlaceRequest(serverTemplateId, deploymentId, processInstanceId));
         }
     }
 

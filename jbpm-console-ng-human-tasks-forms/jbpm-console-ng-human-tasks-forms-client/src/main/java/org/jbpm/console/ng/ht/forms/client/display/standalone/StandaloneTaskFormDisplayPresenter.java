@@ -86,7 +86,7 @@ public class StandaloneTaskFormDisplayPresenter {
         } );
 
         if (currentTaskId != -1) {
-            TaskKey key = new TaskKey(currentTaskId);
+            TaskKey key = new TaskKey(null, null, currentTaskId);
             HumanTaskDisplayerConfig config = new HumanTaskDisplayerConfig(key);
             config.setFormOpener(opener);
             humanTaskFormDisplayProvider.setup(config, view);

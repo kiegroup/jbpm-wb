@@ -45,20 +45,6 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-generic-api</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-process-runtime-api</artifactId>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-services-cdi</artifactId>
-    </dependency>
    
     <dependency>
       <groupId>org.kie.workbench.services</groupId>
@@ -68,6 +54,11 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-dataset-api</artifactId>
     </dependency>
    
   </dependencies>

@@ -61,7 +61,7 @@ public class DataSetDefsBootstrapTest {
         verify(dataSetDefRegistryMock, times(4)).registerDataSetDef(argument.capture());
 
         List<DataSetDef> dsList = argument.getAllValues();
-        assertNull(((SQLDataSetDef) dsList.get(0)).getDbSQL());
+        assertFalse(((SQLDataSetDef) dsList.get(0)).getDbSQL().contains("order by"));
         assertFalse(((SQLDataSetDef) dsList.get(1)).getDbSQL().contains("order by"));
         assertFalse(((SQLDataSetDef) dsList.get(2)).getDbSQL().contains("order by"));
         assertFalse(((SQLDataSetDef) dsList.get(3)).getDbSQL().contains("order by"));

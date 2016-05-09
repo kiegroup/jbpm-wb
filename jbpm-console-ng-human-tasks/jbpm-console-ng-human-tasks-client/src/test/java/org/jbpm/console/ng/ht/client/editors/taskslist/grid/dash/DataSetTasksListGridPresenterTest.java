@@ -16,13 +16,10 @@
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.ht.client.editors.taskslist.grid.AbstractTasksListGridPresenterTest;
-import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.uberfire.mocks.CallerMock;
+import org.mockito.InjectMocks;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.junit.Assert.*;
@@ -30,14 +27,12 @@ import static org.junit.Assert.*;
 @RunWith(GwtMockitoTestRunner.class)
 public class DataSetTasksListGridPresenterTest extends AbstractTasksListGridPresenterTest {
 
+    @InjectMocks
+    protected DataSetTasksListGridPresenter presenter;
+
     @Override
-    protected DataSetTasksListGridPresenter createPresenter(final DataSetTasksListGridViewImpl viewMock,
-                                                            final CallerMock<TaskLifeCycleService> callerMockTaskOperationsService,
-                                                            final DataSetQueryHelper dataSetQueryHelperMock,
-                                                            final DataSetQueryHelper dataSetDomainDataQueryHelperMock,
-                                                            final User identity) {
-        return new DataSetTasksListGridPresenter(viewMock, callerMockTaskOperationsService,
-                dataSetQueryHelperMock, dataSetDomainDataQueryHelperMock, identity);
+    public DataSetTasksListGridPresenter getPresenter() {
+        return presenter;
     }
 
     @Test

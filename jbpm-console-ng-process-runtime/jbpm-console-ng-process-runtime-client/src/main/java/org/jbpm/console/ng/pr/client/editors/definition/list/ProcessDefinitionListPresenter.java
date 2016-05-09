@@ -15,7 +15,10 @@
  */
 package org.jbpm.console.ng.pr.client.editors.definition.list;
 
+import java.util.List;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
@@ -32,15 +35,20 @@ import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.console.ng.pr.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.console.ng.pr.forms.display.process.api.ProcessDisplayerConfig;
-import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
-import org.jbpm.console.ng.pr.model.ProcessSummary;
-import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
+import org.jbpm.console.ng.bd.model.ProcessDefinitionKey;
+import org.jbpm.console.ng.bd.model.ProcessSummary;
+import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
+import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.paging.PageResponse;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
@@ -55,8 +63,6 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     @Inject
     StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
 
-
-
     public interface ProcessDefinitionListView extends ListView<ProcessSummary, ProcessDefinitionListPresenter> {
 
     }
@@ -65,9 +71,17 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     private ProcessDefinitionListView view;
 
     @Inject
-    private Caller<ProcessDefinitionService> processDefinitionService;
+    private Caller<ProcessRuntimeDataService> processRuntimeDataService;
 
-    private Constants constants = GWT.create( Constants.class );
+    @Inject
+    private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
+
+    @Inject
+    private Event<ProcessDefSelectionEvent> processDefSelected;
+
+    private Constants constants = Constants.INSTANCE;
+
+    private String placeIdentifier;
 
     public ProcessDefinitionListPresenter() {
         super();
@@ -87,7 +101,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                                  final String deploymentId,
                                  final String processDefName ) {
 
-        ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(deploymentId, processDefId), processDefName);
+        ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(selectedServerTemplate, deploymentId, processDefId), processDefName);
 
         formDisplayPopUp.setTitle(processDefName);
 
@@ -126,9 +140,22 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
         currentFilter.setIsAscending((columnSortList.size() > 0) ? columnSortList.get(0)
                 .isAscending() : true);
 
-        processDefinitionService.call( new RemoteCallback<PageResponse<ProcessSummary>>() {
+        processRuntimeDataService.call(new RemoteCallback<List<ProcessSummary>>() {
             @Override
-            public void callback( PageResponse<ProcessSummary> response ) {
+            public void callback( List<ProcessSummary> processDefsSums ) {
+
+                PageResponse<ProcessSummary> response = new PageResponse<ProcessSummary>();
+
+                response.setStartRowIndex(currentFilter.getOffset());
+                response.setTotalRowSize(processDefsSums.size());
+                response.setPageRowList(processDefsSums);
+                response.setTotalRowSizeExact( processDefsSums.isEmpty() );
+                if ( processDefsSums.size() < visibleRange.getLength() ) {
+                    response.setLastPage( true );
+                } else {
+                    response.setLastPage( false );
+                }
+
                 updateDataOnCallback(response);
             }
         }, new ErrorCallback<Message>() {
@@ -140,15 +167,53 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                 GWT.log( throwable.toString() );
                 return true;
             }
-        } ).getData(currentFilter);
+        } ).getProcesses(selectedServerTemplate, currentFilter.getOffset() / currentFilter.getCount(), currentFilter.getCount(),
+                currentFilter.getOrderBy(), currentFilter.isAscending());
     }
 
     @WorkbenchMenu
     public Menus buildMenu() {
         return MenuFactory
+                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder)
+                .endMenu()
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this))
                 .endMenu()
                 .build();
+    }
+
+    protected void selectProcessDefinition(final ProcessSummary processSummary, final Boolean close) {
+        PlaceStatus instanceDetailsStatus = placeManager.getStatus( new DefaultPlaceRequest( "Process Instance Details Multi" ) );
+
+        if ( instanceDetailsStatus == PlaceStatus.OPEN ) {
+            placeManager.closePlace( "Process Instance Details Multi" );
+        }
+
+        placeIdentifier = "Advanced Process Details Multi";
+        PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( placeIdentifier ) );
+
+        if ( status == PlaceStatus.CLOSE ) {
+            placeManager.goTo( placeIdentifier );
+            processDefSelected.fire( new ProcessDefSelectionEvent( processSummary.getProcessDefId(), processSummary.getDeploymentId(), selectedServerTemplate ) );
+        } else if ( status == PlaceStatus.OPEN && !close ) {
+            processDefSelected.fire( new ProcessDefSelectionEvent( processSummary.getProcessDefId(), processSummary.getDeploymentId(), selectedServerTemplate ) );
+        } else if ( status == PlaceStatus.OPEN && close ) {
+            placeManager.closePlace( placeIdentifier );
+        }
+    }
+
+    public void refreshNewProcessInstance( @Observes NewProcessInstanceEvent newProcessInstance ) {
+        placeIdentifier = "Advanced Process Details Multi";
+
+        PlaceStatus definitionDetailsStatus = placeManager.getStatus( new DefaultPlaceRequest( placeIdentifier ) );
+        if ( definitionDetailsStatus == PlaceStatus.OPEN ) {
+            placeManager.closePlace( placeIdentifier );
+        }
+        placeManager.goTo( "Process Instance Details Multi" );
+        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( newProcessInstance.getDeploymentId(),
+                newProcessInstance.getNewProcessInstanceId(),
+                newProcessInstance.getNewProcessDefId(), newProcessInstance.getProcessDefName(),
+                newProcessInstance.getNewProcessInstanceStatus(), newProcessInstance.getServerTemplateId() ) );
+
     }
 
 }

@@ -15,29 +15,30 @@
  */
 package org.jbpm.console.ng.pr.admin.client.perspectives;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-
-import org.uberfire.client.annotations.WorkbenchPanel;
-import org.uberfire.client.annotations.WorkbenchPerspective;
 
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
+import org.jbpm.console.ng.pr.admin.client.editors.settings.ProcessAdminSettingsPresenter;
+import org.uberfire.client.annotations.Perspective;
+import org.uberfire.client.annotations.WorkbenchPerspective;
+import org.uberfire.client.workbench.panels.impl.ClosableSimpleWorkbenchPanelPresenter;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.PerspectiveDefinition;
+import org.uberfire.workbench.model.impl.PartDefinitionImpl;
+import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
-/**
- * A Perspective
- */
 @Dependent
-@WorkbenchPerspective(identifier = "Process Admin")
+@WorkbenchPerspective(identifier = ProcessAdminSettingsPerspective.PERSPECTIVE_ID)
 public class ProcessAdminSettingsPerspective extends Composite {
 
-    @Inject
-    @WorkbenchPanel(parts = "Process Admin Settings")
-    FlowPanel tasksAdminSettings;
+    public static final String PERSPECTIVE_ID = "Process Admin";
 
-    @PostConstruct
-    private void init() {
-        initWidget( tasksAdminSettings );
+    @Perspective
+    public PerspectiveDefinition getPerspective() {
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(ClosableSimpleWorkbenchPanelPresenter.class.getName());
+        p.setName(PERSPECTIVE_ID);
+        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(ProcessAdminSettingsPresenter.SCREEN_ID)));
+        return p;
     }
+
 }

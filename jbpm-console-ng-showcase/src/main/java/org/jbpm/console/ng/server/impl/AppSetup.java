@@ -73,11 +73,7 @@ public class AppSetup extends BaseAppSetup {
             administrationService.bootstrapRepository( "example", "repository1", null, "", "" );
             administrationService.bootstrapProject( "repository1", "org.kie.example", "project1", "1.0.0-SNAPSHOT" );
         }
-
-        administrationService.bootstrapConfig();
-
-        administrationService.bootstrapDeployments();
-
+        
         configurationService.addConfiguration( getGlobalConfiguration() );
 
         // notify cluster service that bootstrap is completed to start synchronization

@@ -24,9 +24,8 @@ import org.dashbuilder.dataset.DataSetLookupFactory;
 import org.dashbuilder.dataset.DataSetManager;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
-import org.jbpm.kie.services.impl.security.DeploymentRolesManager;
-import org.jbpm.persistence.settings.JpaSettings;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.internal.identity.IdentityProvider;
@@ -36,27 +35,16 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.in;
+import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.jbpm.dashboard.renderer.model.DashboardData.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.jbpm.dashboard.renderer.backend.DataSetDefsBootstrap.*;
-import static org.jbpm.dashboard.renderer.model.DashboardData.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DataSetDefsBootstrapTest {
 
     @Mock
-    DeploymentRolesManager deploymentRolesManager;
-
-    @Mock
     IdentityProvider identityProvider;
-
-    @Mock
-    JpaSettings jpaSettings;
-
-    @Spy
-    DeploymentIdsPreprocessor deploymentIdsPreprocessor;
-
     @Spy
     DataSetDefRegistry dataSetRegistry = DataSetCore.get().getDataSetDefRegistry();
 
@@ -72,11 +60,9 @@ public class DataSetDefsBootstrapTest {
     public void setUp() {
         // The two lines below is Mockito's issue work-around:
         // Can not use @_InjectMocks together with a @Spy annotation => https://github.com/mockito/mockito/issues/169
-        deploymentIdsPreprocessor.deploymentRolesManager = deploymentRolesManager;
-        deploymentIdsPreprocessor.identityProvider = identityProvider;
 
         dataSetsBootstrap.registerDataSetDefinitions();
-        when(deploymentRolesManager.getDeploymentsForUser(identityProvider)).thenReturn(deploymentIds);
+//        when(deploymentRolesManager.getDeploymentsForUser(identityProvider)).thenReturn(deploymentIds);
     }
 
     @Test
@@ -86,40 +72,41 @@ public class DataSetDefsBootstrapTest {
 
         List<DataSetDef> dataSetDefList = argument.getAllValues();
         assertEquals(dataSetDefList.size(), 2);
-        assertEquals(dataSetDefList.get(0).getUUID(), PROCESSES_MONITORING_DATASET);
-        assertEquals(dataSetDefList.get(1).getUUID(), TASKS_MONITORING_DATASET);
+        assertEquals(dataSetDefList.get(0).getUUID(), DATASET_PROCESS_INSTANCES);
+        assertEquals(dataSetDefList.get(1).getUUID(), DATASET_HUMAN_TASKS);
     }
 
-    @Test
+
+    //TODO Needs redesign as data source is deployed to kie server
+    @Ignore
     public void procInstancesPreprocessorTest() {
         DataSetLookup lookup = DataSetLookupFactory.newDataSetLookupBuilder()
-                .dataset(PROCESSES_MONITORING_DATASET)
+                .dataset(DATASET_PROCESS_INSTANCES)
                 .buildLookup();
 
         dataSetManager.lookupDataSet(lookup);
         ArgumentCaptor<DataSetLookup> argument = ArgumentCaptor.forClass(DataSetLookup.class);
 
-        verify(deploymentIdsPreprocessor).preprocess(lookup);
         verify(dataSetManager).lookupDataSet(argument.capture());
         assertEquals(argument.getValue(), DataSetLookupFactory.newDataSetLookupBuilder()
-                .dataset(PROCESSES_MONITORING_DATASET)
+                .dataset(DATASET_PROCESS_INSTANCES)
                 .filter(in(COLUMN_PROCESS_EXTERNAL_ID, deploymentIds))
                 .buildLookup());
     }
 
-    @Test
+    //TODO Needs redesign as data source is deployed to kie server
+    @Ignore
     public void tasksPreprocessorTest() {
         DataSetLookup lookup = DataSetLookupFactory.newDataSetLookupBuilder()
-                .dataset(TASKS_MONITORING_DATASET)
+                .dataset(DATASET_HUMAN_TASKS)
                 .buildLookup();
 
         dataSetManager.lookupDataSet(lookup);
         ArgumentCaptor<DataSetLookup> argument = ArgumentCaptor.forClass(DataSetLookup.class);
 
-        verify(deploymentIdsPreprocessor).preprocess(lookup);
         verify(dataSetManager).lookupDataSet(argument.capture());
         assertEquals(argument.getValue(), DataSetLookupFactory.newDataSetLookupBuilder()
-                .dataset(TASKS_MONITORING_DATASET)
+                .dataset(DATASET_HUMAN_TASKS)
                 .filter(in(COLUMN_PROCESS_EXTERNAL_ID, deploymentIds))
                 .buildLookup());
     }

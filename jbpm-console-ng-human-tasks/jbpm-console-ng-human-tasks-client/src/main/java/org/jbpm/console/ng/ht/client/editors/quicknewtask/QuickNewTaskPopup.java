@@ -24,8 +24,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -52,18 +50,12 @@ import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
-import org.jboss.errai.bus.client.api.messaging.Message;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.gc.client.util.UTCDateBox;
 import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
-import org.jbpm.console.ng.ht.service.TaskFormManagementService;
-import org.jbpm.console.ng.ht.service.TaskOperationsService;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.mvp.Command;
@@ -162,12 +154,6 @@ public class QuickNewTaskPopup extends BaseModal {
     @Inject
     private Event<NewTaskEvent> newTaskEvent;
 
-    @Inject
-    private Caller<TaskOperationsService> taskOperationsService;
-
-    @Inject
-    private Caller<TaskFormManagementService> taskFormManagementService;
-
     private static Binder uiBinder = GWT.create( Binder.class );
 
     private HandlerRegistration textKeyPressHandler;
@@ -215,7 +201,6 @@ public class QuickNewTaskPopup extends BaseModal {
 
     public void show() {
         cleanForm();
-        loadFormValues();
         super.show();
     }
 
@@ -271,37 +256,7 @@ public class QuickNewTaskPopup extends BaseModal {
         } );
     }
 
-    protected void loadFormValues() {
-        taskFormManagementService.call( new RemoteCallback<List<String>>() {
-            @Override
-            public void callback( List<String> deployments ) {
-                taskFormDeploymentId.addItem( "" );
-                if ( deployments != null ) {
-                    for ( String deployment : deployments ) {
-                        taskFormDeploymentId.addItem( deployment );
-                    }
-                }
-            }
-        } ).getAvailableDeployments();
 
-        taskFormDeploymentId.addChangeHandler( new ChangeHandler() {
-            @Override
-            public void onChange( ChangeEvent event ) {
-                taskFormManagementService.call( new RemoteCallback<List<String>>() {
-                    @Override
-                    public void callback( List<String> forms ) {
-                        taskFormName.clear();
-                        taskFormName.addItem( "" );
-                        if ( forms != null ) {
-                            for ( String form : forms ) {
-                                taskFormName.addItem( form );
-                            }
-                        }
-                    }
-                } ).getFormsByDeployment( taskFormDeploymentId.getSelectedValue() );
-            }
-        } );
-    }
 
     public void cleanForm() {
 
@@ -496,6 +451,8 @@ public class QuickNewTaskPopup extends BaseModal {
             }
         }
 
+/*
+
         taskOperationsService.call( new RemoteCallback<Long>() {
             @Override
             public void callback( Long taskId ) {
@@ -513,7 +470,7 @@ public class QuickNewTaskPopup extends BaseModal {
             }
         } ).addQuickTask( taskName, priority, due, users, groups, identity.getIdentifier(), start, claim,
                           taskFormName, deploymentId, processInstanceId );
-
+*/
     }
 
     private void refreshNewTask( Long taskId,
@@ -560,12 +517,6 @@ public class QuickNewTaskPopup extends BaseModal {
                 return;
             }
         }
-    }
-
-    public void setTaskServices(Caller<TaskOperationsService> taskOperationsService,
-                                Caller<TaskFormManagementService> taskFormManagementService){
-        this.taskOperationsService = taskOperationsService;
-        this.taskFormManagementService = taskFormManagementService;
     }
 
 }

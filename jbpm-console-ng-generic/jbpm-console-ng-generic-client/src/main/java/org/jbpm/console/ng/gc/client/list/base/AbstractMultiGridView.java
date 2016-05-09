@@ -231,8 +231,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public ExtendedPagedTable<T> createGridInstance( final GridGlobalPreferences preferences,
             final String key ) {
         final ExtendedPagedTable<T> newListGrid = new ExtendedPagedTable<T>( 10, preferences );
-        newListGrid.setShowLastPagerButton( true );
-        newListGrid.setShowFastFordwardPagerButton( true );
+        newListGrid.setShowLastPagerButton( false );
+        newListGrid.setShowFastFordwardPagerButton( false );
         newListGrid.setPreferencesService( preferencesService );
         newListGrid.setGridPreferencesStore( new GridPreferencesStore( preferences ) );
         initColumns( newListGrid );
@@ -248,8 +248,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public ExtendedPagedTable<T> loadGridInstance( final GridGlobalPreferences preferences,
                                                      final String key ) {
         final ExtendedPagedTable<T> newListGrid = new ExtendedPagedTable<T>( 10, preferences );
-        newListGrid.setShowLastPagerButton(true);
-        newListGrid.setShowFastFordwardPagerButton(true);
+        newListGrid.setShowLastPagerButton(false);
+        newListGrid.setShowFastFordwardPagerButton(false);
         preferencesService.call( new RemoteCallback<GridPreferencesStore>() {
 
             @Override

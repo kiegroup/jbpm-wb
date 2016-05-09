@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import org.jbpm.console.ng.bd.backend.server.dd.DeploymentDescriptorImpl;
 import org.jbpm.console.ng.wi.dd.model.DeploymentDescriptorModel;
-import org.jbpm.runtime.manager.impl.deploy.DeploymentDescriptorImpl;
 import org.jgroups.util.UUID;
 import org.junit.Test;
 import org.kie.internal.runtime.conf.AuditMode;

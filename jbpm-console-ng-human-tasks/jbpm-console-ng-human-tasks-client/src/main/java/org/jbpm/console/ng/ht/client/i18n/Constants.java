@@ -83,8 +83,6 @@ public interface Constants extends Messages {
 
     String Actions();
 
-    String No_Parent();
-
     String User();
 
     String Process_Id();
@@ -137,19 +135,13 @@ public interface Constants extends Messages {
 
     String Refresh();
 
-    String Tasks_Refreshed();
-
     String Add_User();
 
     String Add_Group();
 
     String Remove_User();
 
-    String Remove_Group();
-
     String Assignments();
-
-    String Auto_Assign_To_Me();
 
     String Created_On();
 
@@ -159,10 +151,6 @@ public interface Constants extends Messages {
 
     String ParentId();
 
-    String Text_Require();
-
-    String UserOrGroup();
-
     String Forward();
 
     String Delegate();
@@ -170,12 +158,6 @@ public interface Constants extends Messages {
     String Potential_Owners();
 
     String No_Potential_Owners();
-
-    String Add_TypeRole();
-
-    String Type_Role();
-
-    String Parent_Group();
 
     String Save();
 
@@ -188,10 +170,6 @@ public interface Constants extends Messages {
     String Task_Log();
 
     String Provide_User_Or_Group();
-
-    String Show_Details();
-
-    String Hide_Details();
 
     String Task_Admin();
 
@@ -239,25 +217,13 @@ public interface Constants extends Messages {
 
     String InProgress();
 
-    String Suspended();
-
     String Failed();
 
     String Error();
 
-    String Exited();
-
     String Obsolete();
 
     String Completed();
-
-    String TaskRole();
-
-    String Initiator();
-
-    String Stakeholder();
-
-    String Potential_Owner();
 
     String Administrator();
 
@@ -272,8 +238,6 @@ public interface Constants extends Messages {
     String Administrators();
 
     String UnexpectedError(String errorMessage);
-
-    String NotFoundDataSetWithId();
 
     String TaskReleased(String taskId);
 

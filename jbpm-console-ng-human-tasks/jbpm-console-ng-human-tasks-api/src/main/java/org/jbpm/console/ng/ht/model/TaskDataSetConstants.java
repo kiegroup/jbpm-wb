@@ -44,6 +44,9 @@ public final class TaskDataSetConstants {
     public static final String COLUMN_TASK_VARIABLE_TASK_NAME = "TASKNAME";
     public static final String COLUMN_TASK_VARIABLE_NAME = "name";
     public static final String COLUMN_TASK_VARIABLE_VALUE = "value";
+    public static final String COLUMN_USER = "userId";
+    public static final String COLUMN_STARTED_ON = "startDate";
+    public static final String COLUMN_END_ON = "endDate";
 
     private TaskDataSetConstants(){}
 }

@@ -19,9 +19,9 @@ package org.jbpm.console.ng.pr.forms.client.display.displayers.process;
 import java.util.HashMap;
 
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.gc.forms.client.display.displayers.util.JSNIHelper;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
+import org.jbpm.console.ng.pr.service.ProcessService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -43,10 +43,10 @@ public abstract class AbstractStartProcessFormDisplayerTest {
     protected EventSourceMock<NewProcessInstanceEvent> newProcessInstanceEvent = new EventSourceMock<NewProcessInstanceEvent>();
 
     @Mock
-    protected Caller<KieSessionEntryPoint> sessionServices;
+    protected Caller<ProcessService> processServiceCaller;
 
     @Mock
-    protected KieSessionEntryPoint kieSessionEntryPoint;
+    protected ProcessService processService;
 
     @Mock
     protected JSNIHelper jsniHelper;
@@ -55,8 +55,8 @@ public abstract class AbstractStartProcessFormDisplayerTest {
 
     @Before
     public void setupMocks() {
-        sessionServices = new CallerMock<KieSessionEntryPoint>( kieSessionEntryPoint );
-        getStartProcessFormDisplayer().setSessionServices( sessionServices );
+        processServiceCaller = new CallerMock<ProcessService>(processService);
+        getStartProcessFormDisplayer().setProcessService(processServiceCaller);
     }
 
     @Test

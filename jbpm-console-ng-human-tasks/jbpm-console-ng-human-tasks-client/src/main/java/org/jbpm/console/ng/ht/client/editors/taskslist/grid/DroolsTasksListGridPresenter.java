@@ -17,11 +17,7 @@ package org.jbpm.console.ng.ht.client.editors.taskslist.grid;
 
 import javax.enterprise.context.Dependent;
 
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.gc.client.menu.RestoreDefaultFiltersMenuBuilder;
-import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
@@ -34,22 +30,11 @@ public class DroolsTasksListGridPresenter extends AbstractTasksListGridPresenter
 
     public static final String SCREEN_ID = "Drools Tasks List";
 
-    public DroolsTasksListGridPresenter() {
-        super();
-    }
-
-    public DroolsTasksListGridPresenter(final DataSetTaskListView view,
-                                        final Caller<TaskLifeCycleService> taskOperationsService,
-                                        final DataSetQueryHelper dataSetQueryHelper,
-                                        final DataSetQueryHelper dataSetQueryHelperDomainSpecific,
-                                        final User identity) {
-        super(view, taskOperationsService, dataSetQueryHelper, dataSetQueryHelperDomainSpecific, identity);
-    }
-
     @WorkbenchMenu
     @Override
     public Menus getMenus() {
         return MenuFactory
+                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder).endMenu()
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
                 .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()
                 .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()

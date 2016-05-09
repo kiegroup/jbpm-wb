@@ -16,6 +16,7 @@
 
 package org.jbpm.console.ng.pr.client.editors.instance.signal;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -26,9 +27,9 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
+import org.jbpm.console.ng.pr.service.ProcessService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
@@ -73,7 +74,10 @@ public class ProcessInstanceSignalPresenter {
     private PlaceRequest place;
 
     @Inject
-    private Caller<KieSessionEntryPoint> kieSessionServices;
+    private Caller<ProcessService> processService;
+
+    private String serverTemplateId;
+    private String[] deploymentId;
 
     @PostConstruct
     public void init() {
@@ -96,7 +100,7 @@ public class ProcessInstanceSignalPresenter {
     }
 
     public void signalProcessInstances(List<Long> processInstanceIds) {
-        kieSessionServices.call(
+        processService.call(
                 new RemoteCallback<Void>() {
                     @Override
                     public void callback(Void v) {
@@ -105,11 +109,13 @@ public class ProcessInstanceSignalPresenter {
                     }
                 },
                 new DefaultErrorCallback()
-        ).signalProcessInstances(processInstanceIds, view.getSignalRefText(), view.getEventText());
+        ).signalProcessInstances( serverTemplateId, Arrays.asList(deploymentId), processInstanceIds, view.getSignalRefText(), view.getEventText());
     }
 
     @OnOpen
     public void onOpen() {
+        serverTemplateId = place.getParameter( "serverTemplateId", "" ).toString();
+        deploymentId = place.getParameter( "deploymentId", "" ).toString().split(",");
         String processInstanceIds = place.getParameter( "processInstanceId", "-1" ).toString();
         String[] ids = processInstanceIds.split( "," );
         for ( String id : ids ) {
@@ -119,12 +125,12 @@ public class ProcessInstanceSignalPresenter {
 
         // for single process instance load available signals
         if ( ids.length == 1 && Long.parseLong( ids[ 0 ] ) != -1 ) {
-            getAvailableSignals( Long.parseLong( ids[ 0 ] ) );
+            getAvailableSignals(Long.parseLong( ids[ 0 ] ) );
         }
     }
 
     public void getAvailableSignals(long processInstanceId) {
-        kieSessionServices.call(
+        processService.call(
                 new RemoteCallback<Collection<String>>() {
                     @Override
                     public void callback(Collection<String> signals) {
@@ -133,6 +139,6 @@ public class ProcessInstanceSignalPresenter {
                     }
                 },
                 new DefaultErrorCallback()
-        ).getAvailableSignals(processInstanceId);
+        ).getAvailableSignals(serverTemplateId, deploymentId[0], processInstanceId);
     }
 }

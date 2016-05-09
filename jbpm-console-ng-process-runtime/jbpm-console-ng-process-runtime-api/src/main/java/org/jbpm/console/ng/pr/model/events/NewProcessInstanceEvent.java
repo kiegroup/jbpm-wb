@@ -23,7 +23,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 public class NewProcessInstanceEvent implements Serializable {
 
   private Long newProcessInstanceId;
-
+  private String serverTemplateId;
   private String newProcessDefId;
   private String deploymentId;
   private Integer newProcessInstanceStatus;
@@ -32,7 +32,8 @@ public class NewProcessInstanceEvent implements Serializable {
   public NewProcessInstanceEvent() {
   }
 
-  public NewProcessInstanceEvent(String deploymentId, Long newProcessInstanceId, String newProcessDefId, String processDefName,  Integer newProcessInstanceStatus) {
+  public NewProcessInstanceEvent(String serverTemplateId, String deploymentId, Long newProcessInstanceId, String newProcessDefId, String processDefName,  Integer newProcessInstanceStatus) {
+    this.serverTemplateId = serverTemplateId;
     this.newProcessInstanceId = newProcessInstanceId;
     this.newProcessDefId = newProcessDefId;
     this.deploymentId = deploymentId;
@@ -60,9 +61,14 @@ public class NewProcessInstanceEvent implements Serializable {
     return processDefName;
   }
 
+  public String getServerTemplateId() {
+    return serverTemplateId;
+  }
+
   @Override
   public int hashCode() {
     int hash = 7;
+    hash = 31 * hash + (this.serverTemplateId != null ? this.serverTemplateId.hashCode() : 0);
     hash = 31 * hash + (this.newProcessInstanceId != null ? this.newProcessInstanceId.hashCode() : 0);
     hash = 31 * hash + (this.newProcessDefId != null ? this.newProcessDefId.hashCode() : 0);
     hash = 31 * hash + (this.deploymentId != null ? this.deploymentId.hashCode() : 0);
@@ -95,12 +101,15 @@ public class NewProcessInstanceEvent implements Serializable {
     if ((this.processDefName == null) ? (other.processDefName != null) : !this.processDefName.equals(other.processDefName)) {
       return false;
     }
+    if ((this.serverTemplateId == null) ? (other.serverTemplateId != null) : !this.serverTemplateId.equals(other.serverTemplateId)) {
+      return false;
+    }
     return true;
   }
 
   @Override
   public String toString() {
-    return "NewProcessInstanceEvent{" + "newProcessInstanceId=" + newProcessInstanceId + ", newProcessDefId=" + newProcessDefId + ", deploymentId=" + deploymentId + ", newProcessInstanceStatus=" + newProcessInstanceStatus + ", processDefName=" + processDefName + '}';
+    return "NewProcessInstanceEvent{serverTemplateId=" +serverTemplateId + ", " + "newProcessInstanceId=" + newProcessInstanceId + ", newProcessDefId=" + newProcessDefId + ", deploymentId=" + deploymentId + ", newProcessInstanceStatus=" + newProcessInstanceStatus + ", processDefName=" + processDefName + '}';
   }
 
   

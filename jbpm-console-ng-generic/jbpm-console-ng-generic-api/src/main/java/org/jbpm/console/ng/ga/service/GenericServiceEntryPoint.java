@@ -15,7 +15,6 @@
  */
 package org.jbpm.console.ng.ga.service;
 
-import java.util.List;
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.uberfire.paging.AbstractPageRow;
@@ -27,11 +26,5 @@ public interface GenericServiceEntryPoint<K extends  ItemKey, T extends Abstract
    * Get Paged, Sorted and Filtered Data
   */
   PageResponse<T> getData(QueryFilter filter);
-  /* 
-   * Get One Item By key
-  */
-  T getItem(K key);
-  
-  List<T> getAll(QueryFilter filter);
-  
+
 }

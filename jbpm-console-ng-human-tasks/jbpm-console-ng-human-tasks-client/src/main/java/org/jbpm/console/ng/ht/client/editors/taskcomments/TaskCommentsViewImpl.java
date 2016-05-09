@@ -31,7 +31,6 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
@@ -140,16 +139,13 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
         Column<CommentSummary, String> addedByColumn = new Column<CommentSummary, String>( new TextCell() ) {
             @Override
             public String getValue( CommentSummary c ) {
-                // for some reason the username comes in format [User:'<name>'], so parse just the <name>
-                int first = c.getAddedBy().indexOf( '\'' );
-                int last = c.getAddedBy().lastIndexOf( '\'' );
-                return c.getAddedBy().substring( first + 1, last );
+                return c.getAddedBy();
             }
         };
         addedByColumn.setSortable( false );
         addedByColumn.setDataStoreName(COL_ADDEDBY);
         commentsListGrid.addColumn( addedByColumn, constants.Added_By() );
-        commentsListGrid.setColumnWidth( addedByColumn, 100, Style.Unit.PX );
+
 
         // date
         Column<CommentSummary, String> addedAtColumn = new Column<CommentSummary, String>( new TextCell() ) {

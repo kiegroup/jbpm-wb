@@ -15,29 +15,31 @@
  */
 package org.jbpm.console.ng.client.perspectives;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
+import javax.enterprise.context.ApplicationScoped;
 
-import org.uberfire.client.annotations.WorkbenchPanel;
+import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
+import org.uberfire.client.workbench.panels.impl.StaticWorkbenchPanelPresenter;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.PerspectiveDefinition;
+import org.uberfire.workbench.model.impl.PartDefinitionImpl;
+import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 /**
- * A Perspective to show File Explorer
+ * Home Perspective
  */
-@Dependent
-@WorkbenchPerspective(identifier = "Home Perspective", isDefault = true)
-public class HomePerspective extends Composite {
+@ApplicationScoped
+@WorkbenchPerspective(identifier = HomePerspective.PERSPECTIVE_ID, isDefault = true)
+public class HomePerspective {
 
-    @Inject
-    @WorkbenchPanel(parts = "Home Screen")
-    FlowPanel homeScreen;
+    public static final String PERSPECTIVE_ID = "Home Perspective";
 
-    @PostConstruct
-    private void init() {
-        initWidget( homeScreen );
+    @Perspective
+    public PerspectiveDefinition getPerspective() {
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(StaticWorkbenchPanelPresenter.class.getName());
+        p.setName(PERSPECTIVE_ID);
+        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Home Screen")));
+        return p;
     }
+
 }

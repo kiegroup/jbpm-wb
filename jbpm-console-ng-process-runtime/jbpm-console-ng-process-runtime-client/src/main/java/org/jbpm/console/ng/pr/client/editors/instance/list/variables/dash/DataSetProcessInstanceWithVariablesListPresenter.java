@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
@@ -36,7 +37,7 @@ import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
+import org.jbpm.console.ng.bd.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.gc.client.dataset.AbstractDataSetReadyCallback;
@@ -49,33 +50,33 @@ import org.jbpm.console.ng.pr.client.editors.instance.signal.ProcessInstanceSign
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.perspectives.DataSetProcessInstancesWithVariablesPerspective;
 import org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup;
-import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
+import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
-import org.jbpm.console.ng.pr.service.ProcessInstanceService;
+import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
+import org.jbpm.console.ng.pr.service.ProcessService;
+import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
+import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
-import org.uberfire.lifecycle.OnFocus;
 import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.paging.PageResponse;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.*;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
+import static org.jbpm.console.ng.bd.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
 @WorkbenchScreen( identifier = DataSetProcessInstanceWithVariablesListPresenter.SCREEN_ID)
@@ -102,12 +103,6 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
     private DataSetProcessInstanceWithVariablesListView view;
 
     @Inject
-    private Caller<ProcessInstanceService> processInstanceService;
-
-    @Inject
-    private Caller<KieSessionEntryPoint> kieSessionServices;
-
-    @Inject
     private DataSetQueryHelper dataSetQueryHelper;
 
     @Inject
@@ -123,34 +118,13 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
     protected final List<ProcessInstanceSummary> myProcessInstancesFromDataSet = new ArrayList<ProcessInstanceSummary>();
 
-    public DataSetProcessInstanceWithVariablesListPresenter() {
-        super();
-    }
+    @Inject
+    private Caller<ProcessRuntimeDataService> processRuntimeDataService;
 
-    public DataSetProcessInstanceWithVariablesListPresenter( DataSetProcessInstanceWithVariablesListView view, DataSetQueryHelper dataSetQueryHelper,
-                                                             DataSetQueryHelper dataSetQueryHelperDomainSpecific ) {
-        this();
-        this.dataSetQueryHelper = dataSetQueryHelper;
-        this.dataSetQueryHelperDomainSpecific = dataSetQueryHelperDomainSpecific;
-        this.view = view;
+    private Caller<ProcessService> processService;
 
-    }
-
-    public DataSetProcessInstanceWithVariablesListPresenter(
-            DataSetProcessInstanceWithVariablesListView view,
-            Caller<ProcessInstanceService> processInstanceService,
-            Caller<KieSessionEntryPoint> kieSessionServices,
-            DataSetQueryHelper dataSetQueryHelper,
-            DataSetQueryHelper dataSetQueryHelperDomainSpecific,
-            PlaceManager placeManager) {
-        this();
-        this.dataSetQueryHelper = dataSetQueryHelper;
-        this.processInstanceService = processInstanceService;
-        this.kieSessionServices = kieSessionServices;
-        this.dataSetQueryHelperDomainSpecific = dataSetQueryHelperDomainSpecific;
-        this.view = view;
-        this.placeManager = placeManager;
-    }
+    @Inject
+    private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
 
     public void filterGrid( FilterSettings tableSettings ) {
         dataSetQueryHelper.setCurrentTableSettings( tableSettings );
@@ -167,7 +141,8 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
         try {
             if ( !isAddingDefaultFilters() ) {
                 final FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
-                if ( currentTableSettings != null ) {
+                if ( currentTableSettings != null) {
+                    currentTableSettings.setServerTemplateId( selectedServerTemplate );
                     currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
                     ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
                     if ( columnSortList != null && columnSortList.size() > 0 ) {
@@ -193,11 +168,31 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                     dataSetQueryHelper.setDataSetHandler( currentTableSettings );
                     dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), createDataSetProcessInstanceCallback( visibleRange.getStart(), currentTableSettings ) );
                 } else {
-                    view.hideBusyIndicator();
+                    List<Integer> statuses = new ArrayList<Integer>();
+                    if (currentTableSettings.getKey().equals(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX+"_0")) {
+                        statuses.add(ProcessInstance.STATE_ACTIVE);
+                    } else if (currentTableSettings.getKey().equals(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX+"_1")) {
+                        statuses.add(ProcessInstance.STATE_COMPLETED);
+                    } else if (currentTableSettings.getKey().equals(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX+"_2")) {
+                        statuses.add(ProcessInstance.STATE_ABORTED);
+                    }
+                    processRuntimeDataService.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
+                        @Override
+                        public void callback(List<ProcessInstanceSummary> processInstanceSummaries) {
+                            boolean lastPageExactCount=false;
+                            if ( processInstanceSummaries.size() < visibleRange.getLength() ) {
+                                lastPageExactCount = true;
+                            }
+                            updateDataOnCallback(processInstanceSummaries, visibleRange.getStart(), visibleRange.getStart()+processInstanceSummaries.size(), lastPageExactCount);
+
+                        }
+                    }).getProcessInstances(selectedServerTemplate, statuses, visibleRange.getStart()/visibleRange.getLength(), visibleRange.getLength());
+
                 }
             }
         } catch ( Exception e ) {
             errorPopup.showMessage(Constants.INSTANCE.UnexpectedError(e.getMessage()));
+            view.hideBusyIndicator();
         }
     }
 
@@ -217,7 +212,8 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
         return filters;
     }
 
-    protected DataSetReadyCallback createDataSetDomainSpecificCallback( final int startRange, final int totalRowSize, final List<ProcessInstanceSummary> instances, final FilterSettings tableSettings ) {
+    protected DataSetReadyCallback createDataSetDomainSpecificCallback( final int startRange,
+                                                                        final FilterSettings tableSettings,boolean lastPage ) {
         return new AbstractDataSetReadyCallback( errorPopup, view, tableSettings.getDataSet() ) {
             @Override
             public void callback( DataSet dataSet ) {
@@ -227,27 +223,16 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                     String variableName = dataSetQueryHelperDomainSpecific.getColumnStringValue( dataSet, VARIABLE_NAME, i );
                     String variableValue = dataSetQueryHelperDomainSpecific.getColumnStringValue( dataSet, VARIABLE_VALUE, i );
 
-                    for ( ProcessInstanceSummary pis : instances ) {
+                    for ( ProcessInstanceSummary pis : myProcessInstancesFromDataSet ) {
                         if ( pis.getProcessInstanceId().equals( processInstanceId ) ) {
                             pis.addDomainData( variableName, variableValue );
                             columns.add( variableName );
                         }
                     }
                 }
-                view.addDomainSpecifColumns( view.getListGrid(), columns );
+                view.addDomainSpecifColumns(view.getListGrid(), columns);
 
-                PageResponse<ProcessInstanceSummary> processInstanceSummaryPageResponse = new PageResponse<ProcessInstanceSummary>();
-                processInstanceSummaryPageResponse.setPageRowList( instances );
-                processInstanceSummaryPageResponse.setStartRowIndex( startRange );
-                processInstanceSummaryPageResponse.setTotalRowSize( totalRowSize );
-                processInstanceSummaryPageResponse.setTotalRowSizeExact( true );
-                if ( startRange + instances.size() == totalRowSize ) {
-                    processInstanceSummaryPageResponse.setLastPage( true );
-                } else {
-                    processInstanceSummaryPageResponse.setLastPage( false );
-                }
-
-                DataSetProcessInstanceWithVariablesListPresenter.this.updateDataOnCallback( processInstanceSummaryPageResponse );
+                updateDataOnCallback(myProcessInstancesFromDataSet, startRange, startRange+myProcessInstancesFromDataSet.size(), lastPage);
             }
 
         };
@@ -269,22 +254,15 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                     List<DataSetOp> ops = tableSettings.getDataSetLookup().getOperationList();
                     String filterValue = isFilteredByProcessId( ops );
 
+                    boolean lastPage=false;
+                    if( dataSet.getRowCount() < view.getListGrid().getPageSize()) {
+                        lastPage=true;
+                    }
 
                     if ( filterValue != null ) {
-                        getDomainSpecifDataForProcessInstances( startRange, dataSet, filterValue, myProcessInstancesFromDataSet );
+                        getDomainSpecifDataForProcessInstances( startRange, filterValue, lastPage );
                     } else {
-                        PageResponse<ProcessInstanceSummary> processInstanceSummaryPageResponse = new PageResponse<ProcessInstanceSummary>();
-                        processInstanceSummaryPageResponse.setPageRowList( myProcessInstancesFromDataSet );
-                        processInstanceSummaryPageResponse.setStartRowIndex( startRange );
-                        processInstanceSummaryPageResponse.setTotalRowSize( dataSet.getRowCountNonTrimmed() );
-                        processInstanceSummaryPageResponse.setTotalRowSizeExact( true );
-                        if ( startRange + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed() ) {
-                            processInstanceSummaryPageResponse.setLastPage( true );
-                        } else {
-                            processInstanceSummaryPageResponse.setLastPage( false );
-                        }
-
-                        DataSetProcessInstanceWithVariablesListPresenter.this.updateDataOnCallback( processInstanceSummaryPageResponse );
+                        updateDataOnCallback(myProcessInstancesFromDataSet, startRange, startRange+myProcessInstancesFromDataSet.size(), lastPage);
                     }
 
                 }
@@ -321,17 +299,17 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
     }
 
-    public void getDomainSpecifDataForProcessInstances( final int startRange, DataSet dataSet, String filterValue, final List<ProcessInstanceSummary> myProcessInstancesFromDataSet ) {
+    public void getDomainSpecifDataForProcessInstances( final int startRange, String filterValue, boolean lastPage ) {
 
-        final int rowCountNotTrimmed = dataSet.getRowCountNonTrimmed();
         FilterSettings variablesTableSettings = view.getVariablesTableSettings( filterValue );
+        variablesTableSettings.setServerTemplateId( selectedServerTemplate );
         variablesTableSettings.setTablePageSize( -1 );
 
         dataSetQueryHelperDomainSpecific.setDataSetHandler( variablesTableSettings );
         dataSetQueryHelperDomainSpecific.setCurrentTableSettings( variablesTableSettings );
         dataSetQueryHelperDomainSpecific.setLastOrderedColumn( PROCESS_INSTANCE_ID );
         dataSetQueryHelperDomainSpecific.setLastSortOrder( SortOrder.ASCENDING );
-        dataSetQueryHelperDomainSpecific.lookupDataSet( 0, createDataSetDomainSpecificCallback( startRange, rowCountNotTrimmed, myProcessInstancesFromDataSet, variablesTableSettings ) );
+        dataSetQueryHelperDomainSpecific.lookupDataSet( 0, createDataSetDomainSpecificCallback( startRange, variablesTableSettings,  lastPage ) );
 
     }
 
@@ -359,44 +337,28 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
         refreshGrid();
     }
 
-    @OnStartup
-    public void onStartup( final PlaceRequest place ) {
-        this.place = place;
-    }
-
-    @OnFocus
-    public void onFocus() {
-        refreshGrid();
-    }
-
     @OnOpen
     public void onOpen() {
         this.textSearchStr = place.getParameter(DataSetProcessInstancesWithVariablesPerspective.PROCESS_ID, "");
-        refreshGrid();
+        super.onOpen();
     }
 
-    public void abortProcessInstance(long processInstanceId) {
-        kieSessionServices.call(
-                new RemoteCallback<Void>() {
-                    @Override
-                    public void callback(Void v) {
-                        refreshGrid();
-                    }
-                },
-                new DefaultErrorCallback()
-        ).abortProcessInstance(processInstanceId);
+    public void abortProcessInstance( String containerId, long processInstanceId ) {
+        processService.call(new RemoteCallback<Void>() {
+            @Override
+            public void callback( Void v ) {
+                refreshGrid();
+            }
+        }, new DefaultErrorCallback() ).abortProcessInstance( selectedServerTemplate, containerId, processInstanceId );
     }
 
-    public void abortProcessInstance(List<Long> processInstanceIds) {
-        kieSessionServices.call(
-                new RemoteCallback<Void>() {
-                    @Override
-                    public void callback(Void v) {
-                        refreshGrid();
-                    }
-                },
-                new DefaultErrorCallback()
-        ).abortProcessInstances(processInstanceIds);
+    public void abortProcessInstance( List<String> containers, List<Long> processInstanceIds ) {
+        processService.call(new RemoteCallback<Void>() {
+            @Override
+            public void callback( Void v ) {
+                refreshGrid();
+            }
+        }, new DefaultErrorCallback() ).abortProcessInstances( selectedServerTemplate,containers, processInstanceIds );
     }
 
     public void bulkSignal( List<ProcessInstanceSummary> processInstances ) {
@@ -405,12 +367,14 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
         }
 
         final StringBuilder processIdsParam = new StringBuilder();
+        final StringBuilder deploymentIdsParam = new StringBuilder();
         for ( ProcessInstanceSummary selected : processInstances ) {
             if ( selected.getState() != ProcessInstance.STATE_ACTIVE ) {
                 view.displayNotification(Constants.INSTANCE.Signaling_Process_Instance_Not_Allowed(selected.getId()));
                 continue;
             }
             processIdsParam.append( selected.getId() + "," );
+            deploymentIdsParam.append( selected.getDeploymentId() + "," );
         }
 
         if ( processIdsParam.length() == 0 ) {
@@ -418,9 +382,12 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
         } else {
             // remove last ,
             processIdsParam.deleteCharAt( processIdsParam.length() - 1 );
+            deploymentIdsParam.deleteCharAt( deploymentIdsParam.length() - 1 );
         }
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest(ProcessInstanceSignalPresenter.SIGNAL_PROCESS_POPUP);
         placeRequestImpl.addParameter( "processInstanceId", processIdsParam.toString() );
+        placeRequestImpl.addParameter( "deploymentId", deploymentIdsParam.toString() );
+        placeRequestImpl.addParameter( "serverTemplateId", selectedServerTemplate );
 
         placeManager.goTo( placeRequestImpl );
         view.displayNotification( Constants.INSTANCE.Signaling_Process_Instance() );
@@ -431,17 +398,18 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
             return;
         }
         final List<Long> ids = new ArrayList<Long>();
+        final List<String> containers = new ArrayList<String>();
         for ( ProcessInstanceSummary selected : processInstances ) {
             if ( selected.getState() != ProcessInstance.STATE_ACTIVE ) {
                 view.displayNotification(Constants.INSTANCE.Aborting_Process_Instance_Not_Allowed(selected.getId()));
                 continue;
             }
             ids.add( selected.getProcessInstanceId() );
-
+            containers.add( selected.getDeploymentId() );
             view.displayNotification(Constants.INSTANCE.Aborting_Process_Instance(selected.getId()));
         }
         if( ids.size() > 0 ) {
-            abortProcessInstance(ids);
+            abortProcessInstance(containers, ids);
         }
     }
 
@@ -462,10 +430,15 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                 .respondsWith(new Command() {
                     @Override
                     public void execute() {
-                        newProcessInstancePopup.show();
+                        if (selectedServerTemplate != null && !selectedServerTemplate.isEmpty()) {
+                            newProcessInstancePopup.show(selectedServerTemplate);
+                        } else {
+                            view.displayNotification(Constants.INSTANCE.SelectServerTemplate());
+                        }
                     }
                 })
                 .endMenu()
+                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder).endMenu()
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
                 .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()
                 .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder( this )).endMenu()
@@ -493,4 +466,48 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
         return  myProcessInstancesFromDataSet;
     }
 
+    public void signalProcessInstance(final ProcessInstanceSummary processInstance) {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Signal Process Popup" );
+        placeRequestImpl.addParameter( "processInstanceId", Long.toString( processInstance.getProcessInstanceId() ) );
+        placeRequestImpl.addParameter( "deploymentId", processInstance.getDeploymentId() );
+        placeRequestImpl.addParameter( "serverTemplateId", selectedServerTemplate );
+
+        placeManager.goTo( placeRequestImpl );
+    }
+
+    public void selectProcessInstance(final ProcessInstanceSummary summary, final Boolean close) {
+        PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( "Process Instance Details Multi" ) );
+
+        if ( status == PlaceStatus.CLOSE ) {
+            placeManager.goTo( "Process Instance Details Multi" );
+            processInstanceSelected.fire( new ProcessInstanceSelectionEvent( summary.getDeploymentId(),
+                    summary.getProcessInstanceId(), summary.getProcessId(),
+                    summary.getProcessName(), summary.getState(), selectedServerTemplate ) );
+        } else if ( status == PlaceStatus.OPEN && !close ) {
+            processInstanceSelected.fire( new ProcessInstanceSelectionEvent( summary.getDeploymentId(),
+                    summary.getProcessInstanceId(), summary.getProcessId(),
+                    summary.getProcessName(), summary.getState(), selectedServerTemplate ) );
+        } else if ( status == PlaceStatus.OPEN && close ) {
+            placeManager.closePlace( "Process Instance Details Multi" );
+        }
+    }
+
+    public void onProcessInstanceSelectionEvent( @Observes ProcessInstancesWithDetailsRequestEvent event ) {
+        placeManager.goTo( "Process Instance Details Multi" );
+        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( event.getDeploymentId(),
+                event.getProcessInstanceId(), event.getProcessDefId(),
+                event.getProcessDefName(), event.getProcessInstanceStatus(),
+                event.getServerTemplateId()) );
+    }
+
+    public void formClosed( @Observes BeforeClosePlaceEvent closed ) {
+        if ( "Signal Process Popup".equals( closed.getPlace().getIdentifier() ) ) {
+            refreshGrid();
+        }
+    }
+
+    @Inject
+    public void setProcessService(final Caller<ProcessService> processService) {
+        this.processService = processService;
+    }
 }

@@ -29,6 +29,8 @@ import org.kie.api.executor.CommandContext;
 import org.kie.api.executor.ErrorInfo;
 import org.kie.api.executor.RequestInfo;
 import org.kie.api.executor.STATUS;
+import org.kie.server.api.model.instance.ErrorInfoInstance;
+import org.kie.server.api.model.instance.RequestInfoInstance;
 
 public class RequestSummaryHelper {
 
@@ -45,11 +47,33 @@ public class RequestSummaryHelper {
                 request.getMessage(), request.getKey());
     }
 
+    public static List<RequestSummary> adaptRequestInstanceList(List<RequestInfoInstance> requests) {
+        List<RequestSummary> requestSummaries = new ArrayList<RequestSummary>(requests.size());
+        for (RequestInfoInstance request : requests) {
+            requestSummaries.add(adaptRequest(request));
+        }
+        return requestSummaries;
+    }
+
+    public static RequestSummary adaptRequest(RequestInfoInstance request) {
+        return new RequestSummary(request.getId(), request.getScheduledDate(), request.getStatus(), request.getCommandName(),
+                request.getMessage(), request.getBusinessKey());
+    }
+
     public static List<ErrorSummary> adaptErrorList(List<? extends ErrorInfo> errors) {
         List<ErrorSummary> errorSummaries = new ArrayList<ErrorSummary>(errors.size());
         for (ErrorInfo error : errors) {
             errorSummaries.add(new ErrorSummary(error.getId(), error.getTime(), error.getMessage(), error.getStacktrace(),
-                    ((org.jbpm.executor.entities.ErrorInfo) error).getRequestInfo().getId()));
+                    null));
+        }
+        return errorSummaries;
+    }
+
+    public static List<ErrorSummary> adaptErrorInstanceList(List<ErrorInfoInstance> errors) {
+        List<ErrorSummary> errorSummaries = new ArrayList<ErrorSummary>(errors.size());
+        for (ErrorInfoInstance error : errors) {
+            errorSummaries.add(new ErrorSummary(error.getId(), error.getErrorDate(), error.getMessage(), error.getStacktrace(),
+                    null));
         }
         return errorSummaries;
     }
@@ -62,13 +86,11 @@ public class RequestSummaryHelper {
         return statusList;
     }
 
-    public static List<RequestParameterSummary> adaptInternalMap(RequestInfo request) {
-        ByteArrayInputStream bain = new ByteArrayInputStream(request.getRequestData());
+    public static List<RequestParameterSummary> adaptInternalMap(RequestInfoInstance request) {
+
         List<RequestParameterSummary> retval = new ArrayList<RequestParameterSummary>();
         try {
-            ObjectInputStream oin = new ObjectInputStream(bain);
-            CommandContext ctx = (CommandContext) oin.readObject();
-            Map<String, Object> map = ctx.getData();
+            Map<String, Object> map = request.getData();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 retval.add(new RequestParameterSummary(entry.getKey(), String.valueOf(entry.getValue())));
             }

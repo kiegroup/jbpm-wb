@@ -31,7 +31,7 @@ public class RequestSummary extends GenericSummary {
     private String message;
     // Business Key for callback
     private String key;
-    // Number of times that this request must be retryied
+    // Number of times that this request must be retried
     private int retries = 0;
     // Number of times that this request has been executed
     private int executions = 0;

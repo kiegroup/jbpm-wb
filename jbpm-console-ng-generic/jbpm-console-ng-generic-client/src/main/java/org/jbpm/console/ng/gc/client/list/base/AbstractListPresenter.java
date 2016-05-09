@@ -16,6 +16,7 @@
 package org.jbpm.console.ng.gc.client.list.base;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.enterprise.event.Observes;
 
@@ -92,7 +93,7 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
         if (refreshTimer == null) {
             refreshTimer = new Timer() {
                 public void run() {
-                    getData(dataProvider.getDataDisplays().iterator().next().getVisibleRange());
+                    getData(getListView().getListGrid().getVisibleRange());
                 }
             };
         }else{
@@ -129,6 +130,17 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
         updateRefreshTimer();
     }
 
+    public void updateDataOnCallback(List<T> instanceSummaries, int startRange, int totalRowCount, boolean isExact){
+
+        getListView().hideBusyIndicator();
+        dataProvider.updateRowCount(totalRowCount,
+                isExact);
+        dataProvider.updateRowData(startRange,
+                instanceSummaries);
+
+        updateRefreshTimer();
+    }
+
     public void addDataDisplay( final HasData<T> display ) {
         dataProvider.addDataDisplay(display);
     }
@@ -143,9 +155,8 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
     }
 
     public void refreshGrid() {
-        if(dataProvider.getDataDisplays().size()>0) {
-            HasData<T> next = dataProvider.getDataDisplays().iterator().next();
-            next.setVisibleRangeAndClearData( next.getVisibleRange(), true );
+        if(getListView().getListGrid()!=null) {
+            getListView().getListGrid().setVisibleRangeAndClearData(getListView().getListGrid().getVisibleRange(), true);
         }
     }
 
@@ -198,4 +209,7 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
         return textSearchStr;
     }
 
+    protected void setDataProvider(AsyncDataProvider<T> dataProvider) {
+        this.dataProvider = dataProvider;
+    }
 }

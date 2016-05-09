@@ -24,7 +24,7 @@ import org.gwtbootstrap3.client.ui.FormControlStatic;
 import org.gwtbootstrap3.client.ui.Pagination;
 import org.gwtbootstrap3.client.ui.gwt.DataGrid;
 import org.gwtbootstrap3.client.ui.html.Text;
-import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
+import org.jbpm.console.ng.bd.model.ProcessVariableSummary;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

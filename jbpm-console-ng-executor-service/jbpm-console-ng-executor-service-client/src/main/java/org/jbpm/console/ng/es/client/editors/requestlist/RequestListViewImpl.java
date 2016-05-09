@@ -31,6 +31,7 @@ import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -50,9 +51,7 @@ import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.console.ng.df.client.list.base.DataSetEditorManager;
-import org.jbpm.console.ng.es.client.editors.jobdetails.JobDetailsPopup;
 import org.jbpm.console.ng.es.client.editors.quicknewjob.QuickNewJobPopup;
-import org.jbpm.console.ng.es.client.editors.servicesettings.JobServiceSettingsPopup;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
@@ -85,9 +84,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     private List<RequestSummary> selectedRequestSummary = new ArrayList<RequestSummary>();
 
     @Inject
-    private JobDetailsPopup jobDetailsPopup;
-
-    @Inject
     private QuickNewJobPopup quickNewJobPopup;
 
     @Inject
@@ -95,9 +91,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
     @Inject
     private DataSetEditorManager dataSetEditorManager;
-
-    @Inject
-    private JobServiceSettingsPopup jobServiceSettingsPopup;
 
     @Override
     public void init( final RequestListPresenter presenter ) {
@@ -110,7 +103,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         initColumns.add( COLUMN_BUSINESSKEY );
         initColumns.add( COLUMN_COMMANDNAME );
         initColumns.add( COL_ID_ACTIONS );
-        final Button button = new Button();
+        final Button button = GWT.create(Button.class);
         button.setIcon( IconType.PLUS );
         button.setSize( ButtonSize.SMALL );
         button.addClickHandler( new ClickHandler() {
@@ -167,7 +160,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         columnMetas.add(new ColumnMeta<RequestSummary>(dueDateColumn, constants.Due_On()));
         columnMetas.add(new ColumnMeta<RequestSummary>(actionsColumn, constants.Actions()));
         extendedPagedTable.addColumns( columnMetas );
-
     }
 
     public void initSelectionModel() {
@@ -331,7 +323,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         cells.add( new ActionHasCell( constants.Details(), allStatuses, new Delegate<RequestSummary>() {
             @Override
             public void execute( RequestSummary job ) {
-                jobDetailsPopup.show( String.valueOf( job.getJobId() ) );
+                presenter.showJobDetails( job );
             }
         } ) );
 

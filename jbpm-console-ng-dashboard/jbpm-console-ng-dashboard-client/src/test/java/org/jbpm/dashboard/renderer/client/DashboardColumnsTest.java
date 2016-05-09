@@ -26,6 +26,7 @@ import org.jbpm.services.task.audit.impl.model.BAMTaskSummaryImpl;
 import org.junit.Before;
 import org.junit.Test;
 
+
 import static org.jbpm.dashboard.renderer.model.DashboardData.*;
 import static org.junit.Assert.*;
 

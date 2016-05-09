@@ -17,13 +17,9 @@
 package org.jbpm.console.ng.ht.client.editors.taskslist.grid;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
-import org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash.DataSetTasksListGridViewImpl;
-import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.uberfire.mocks.CallerMock;
+import org.mockito.InjectMocks;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.junit.Assert.*;
@@ -31,21 +27,19 @@ import static org.junit.Assert.*;
 @RunWith(GwtMockitoTestRunner.class)
 public class DroolsTasksListGridPresenterTest extends AbstractTasksListGridPresenterTest {
 
+    @InjectMocks
+    protected DroolsTasksListGridPresenter presenter;
+
     @Override
-    protected AbstractTasksListGridPresenter createPresenter(final DataSetTasksListGridViewImpl viewMock,
-                                                             final CallerMock<TaskLifeCycleService> callerMockTaskOperationsService,
-                                                             final DataSetQueryHelper dataSetQueryHelperMock,
-                                                             final DataSetQueryHelper dataSetDomainDataQueryHelperMock,
-                                                             final User identity) {
-        return new DroolsTasksListGridPresenter(viewMock, callerMockTaskOperationsService,
-                dataSetQueryHelperMock, dataSetDomainDataQueryHelperMock, identity);
+    public DroolsTasksListGridPresenter getPresenter() {
+        return presenter;
     }
 
     @Test
     public void testMenus() {
         final Menus menus = presenter.getMenus();
 
-        assertEquals(3, menus.getItems().size());
+        assertEquals(4, menus.getItems().size());
     }
 
 }
