@@ -30,6 +30,7 @@ import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -39,6 +40,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
@@ -71,6 +73,7 @@ import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
+import org.uberfire.ext.widgets.table.client.ColumnChangedHandler;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
@@ -179,23 +182,23 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
     public void initSelectionModel() {
 
         final ExtendedPagedTable extendedPagedTable = getListGrid();
-        extendedPagedTable.setEmptyTableCaption( constants.No_Process_Instances_Found() );
+        extendedPagedTable.setEmptyTableCaption(constants.No_Process_Instances_Found());
         extendedPagedTable.getRightActionsToolbar().clear();
-        initExtraButtons( extendedPagedTable );
-        initBulkActions( extendedPagedTable );
+        initExtraButtons(extendedPagedTable);
+        initBulkActions(extendedPagedTable);
         selectionModel = new NoSelectionModel<ProcessInstanceSummary>();
-        selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
+        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             @Override
-            public void onSelectionChange( SelectionChangeEvent event ) {
+            public void onSelectionChange(SelectionChangeEvent event) {
 
                 boolean close = false;
-                if ( selectedRow == -1 ) {
-                    extendedPagedTable.setRowStyles( selectedStyles );
+                if (selectedRow == -1) {
+                    extendedPagedTable.setRowStyles(selectedStyles);
                     selectedRow = extendedPagedTable.getKeyboardSelectedRow();
                     extendedPagedTable.redraw();
 
-                } else if ( extendedPagedTable.getKeyboardSelectedRow() != selectedRow ) {
-                    extendedPagedTable.setRowStyles( selectedStyles );
+                } else if (extendedPagedTable.getKeyboardSelectedRow() != selectedRow) {
+                    extendedPagedTable.setRowStyles(selectedStyles);
                     selectedRow = extendedPagedTable.getKeyboardSelectedRow();
                     extendedPagedTable.redraw();
                 } else {
@@ -204,23 +207,23 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
 
                 selectedItem = selectionModel.getLastSelectedObject();
 
-                PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( "Process Instance Details Multi" ) );
+                PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details Multi"));
 
-                if ( status == PlaceStatus.CLOSE ) {
-                    placeManager.goTo( "Process Instance Details Multi" );
-                    processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedItem.getDeploymentId(),
-                                                                                     selectedItem.getProcessInstanceId(), selectedItem.getProcessId(),
-                                                                                     selectedItem.getProcessName(), selectedItem.getState() ) );
-                } else if ( status == PlaceStatus.OPEN && !close ) {
-                    processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedItem.getDeploymentId(),
-                                                                                     selectedItem.getProcessInstanceId(), selectedItem.getProcessId(),
-                                                                                     selectedItem.getProcessName(), selectedItem.getState() ) );
-                } else if ( status == PlaceStatus.OPEN && close ) {
-                    placeManager.closePlace( "Process Instance Details Multi" );
+                if (status == PlaceStatus.CLOSE) {
+                    placeManager.goTo("Process Instance Details Multi");
+                    processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedItem.getDeploymentId(),
+                            selectedItem.getProcessInstanceId(), selectedItem.getProcessId(),
+                            selectedItem.getProcessName(), selectedItem.getState()));
+                } else if (status == PlaceStatus.OPEN && !close) {
+                    processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedItem.getDeploymentId(),
+                            selectedItem.getProcessInstanceId(), selectedItem.getProcessId(),
+                            selectedItem.getProcessName(), selectedItem.getState()));
+                } else if (status == PlaceStatus.OPEN && close) {
+                    placeManager.closePlace("Process Instance Details Multi");
                 }
 
             }
-        } );
+        });
 
         noActionColumnManager = DefaultSelectionEventManager
                 .createCustomManager( new DefaultSelectionEventManager.EventTranslator<ProcessInstanceSummary>() {
@@ -251,6 +254,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
                                         selectedProcessInstances.remove( event.getValue() );
                                         input.setChecked( false );
                                     }
+                                    getListGrid().redraw();
                                     controlBulkOperations();
                                     return DefaultSelectionEventManager.SelectAction.IGNORE;
                                 }
@@ -262,14 +266,14 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
 
                 } );
 
-        extendedPagedTable.setSelectionModel( selectionModel, noActionColumnManager );
-        extendedPagedTable.setRowStyles( selectedStyles );
+        extendedPagedTable.setSelectionModel(selectionModel, noActionColumnManager);
+        extendedPagedTable.setRowStyles(selectedStyles);
     }
 
     @Override
     public void initColumns( ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
 
-        Column checkColumn = initChecksColumn();
+        ColumnMeta checkColumMeta = initChecksColumn();
         Column processInstanceIdColumn = initProcessInstanceIdColumn();
         Column processNameColumn = initProcessNameColumn();
         Column processInitiatorColumn = initInitiatorColumn();
@@ -280,7 +284,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         actionsColumn = initActionsColumn();
 
         List<ColumnMeta<ProcessInstanceSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessInstanceSummary>>();
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( checkColumn, constants.Select() ) );
+        columnMetas.add( checkColumMeta );
         columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processInstanceIdColumn, constants.Id() ) );
         columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processNameColumn, constants.Name() ) );
         columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( descriptionColumn, constants.Process_Instance_Description() ) );
@@ -300,6 +304,8 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
             }
         }
         extendedPagedTable.addColumns( columnMetas );
+        extendedPagedTable.setColumnWidth(checkColumMeta.getColumn(),37, Style.Unit.PX );
+        extendedPagedTable.storeColumnToPreferences();
     }
 
     private boolean isColumnAdded( List<ColumnMeta<ProcessInstanceSummary>> columnMetas,
@@ -366,7 +372,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
             }
         };
         genericColumn.setSortable( true );
-        genericColumn.setDataStoreName( key );
+        genericColumn.setDataStoreName(key);
 
         return genericColumn;
     }
@@ -414,7 +420,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
             }
         } );
 
-        extendedPagedTable.getRightActionsToolbar().add( bulkActions );
+        extendedPagedTable.getRightActionsToolbar().add(bulkActions);
 
         controlBulkOperations();
     }
@@ -561,20 +567,41 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
 
     }
 
-    private Column initChecksColumn() {
-        // Checkbox column. This table will uses a checkbox column for selection.
-        // Alternatively, you can call dataGrid.setSelectionEnabled(true) to enable
-        // mouse selection.
-        Column<ProcessInstanceSummary, Boolean> checkColumn = new Column<ProcessInstanceSummary, Boolean>( new CheckboxCell(
-                true, false ) ) {
+    private ColumnMeta<ProcessInstanceSummary> initChecksColumn() {
+        CheckboxCell checkboxCell = new CheckboxCell(true,false);
+        Column<ProcessInstanceSummary, Boolean> checkColumn = new Column<ProcessInstanceSummary, Boolean>(checkboxCell ) {
             @Override
             public Boolean getValue( ProcessInstanceSummary object ) {
                 // Get the value from the selection model.
                 return selectedProcessInstances.contains( object );
             }
         };
+
+        Header<Boolean> selectPageHeader = new Header<Boolean>(checkboxCell) {
+            @Override
+            public Boolean getValue() {
+                List<ProcessInstanceSummary> displayedInstances = presenter.getDisplayedProcessInstances();
+                return displayedInstances.size() > 0
+                        && (selectedProcessInstances.size() == presenter.getDisplayedProcessInstances().size());
+            }
+        };
+        selectPageHeader.setUpdater(new ValueUpdater<Boolean>() {
+            @Override
+            public void update(Boolean value) {
+                selectedProcessInstances.clear();
+                if (value) {
+                    selectedProcessInstances.addAll(presenter.getDisplayedProcessInstances());
+                }
+                getListGrid().redraw();
+                controlBulkOperations();
+            }
+        });
+
+        checkColumn.setSortable(false);
         checkColumn.setDataStoreName( COL_ID_SELECT );
-        return checkColumn;
+        ColumnMeta<ProcessInstanceSummary> checkColMeta = new ColumnMeta<ProcessInstanceSummary>( checkColumn, "");
+        checkColMeta.setHeader(selectPageHeader);
+        return checkColMeta;
     }
 
     private Column initDescriptionColumn() {
@@ -697,7 +724,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
 
         String tableSettingsJSON = (String) params.get( FILTER_TABLE_SETTINGS );
         FilterSettings tableSettings = dataSetEditorManager.getStrToTableSettings( tableSettingsJSON );
-        presenter.filterGrid( tableSettings );
+        presenter.filterGrid(tableSettings);
 
     }
 

@@ -19,9 +19,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.console.ng.df.client.list.base.DataSetEditorManager;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -107,6 +109,35 @@ public class DataSetProcessInstanceWithVariablesListViewTest {
 
         verify(filterPagedTable, times(3)).getMultiGridPreferencesStore();
         verify(filterPagedTable, times(3)).saveTabSettings(anyString(), any(HashMap.class));
+    }
+
+    @Test
+    public void testSelectColumnAddition() {
+        when(gridPreferencesStore.getColumnPreferences()).thenReturn(new ArrayList<GridColumnPreference>());
+        when(currentListGrid.getGridPreferencesStore()).thenReturn(gridPreferencesStore);
+
+        List<ProcessInstanceSummary> displayedInstances = new ArrayList<>();
+        displayedInstances.add(new ProcessInstanceSummary());
+        displayedInstances.add(new ProcessInstanceSummary());
+
+        when(presenter.getDisplayedProcessInstances()).thenReturn(displayedInstances);
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+                final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[0];
+                ColumnMeta checkColumnMeta = columns.get(0);
+
+                assertTrue(checkColumnMeta.getColumn().getCell() instanceof CheckboxCell);
+                assertTrue(checkColumnMeta.getHeader().getValue() instanceof Boolean);
+
+                return null;
+            }
+        }).when(currentListGrid).addColumns(anyList());
+
+
+        view.initColumns(currentListGrid);
+
+        verify(currentListGrid).addColumns(anyList());
     }
 
 }

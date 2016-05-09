@@ -55,7 +55,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.es.client.i18n.Constants;
-import org.jbpm.console.ng.es.client.util.ResizableHeader;
+
 import org.jbpm.console.ng.es.model.RequestDataSetConstants;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
@@ -64,6 +64,7 @@ import org.jbpm.console.ng.gc.client.util.UTCDateBox;
 import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
+import org.uberfire.ext.widgets.common.client.tables.ResizableHeader;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
