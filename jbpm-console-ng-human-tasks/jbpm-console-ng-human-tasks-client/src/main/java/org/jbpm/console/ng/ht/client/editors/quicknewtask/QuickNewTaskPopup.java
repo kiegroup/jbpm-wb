@@ -340,7 +340,7 @@ public class QuickNewTaskPopup extends BaseModal {
         hide();
     }
 
-    private boolean validateForm() {
+    protected boolean validateForm() {
         boolean valid = true;
         clearErrorMessages();
 
@@ -348,8 +348,6 @@ public class QuickNewTaskPopup extends BaseModal {
             basicTab.showTab();
             taskNameText.setFocus( true );
 
-            errorMessages.setText( Constants.INSTANCE.Task_Must_Have_A_Name() );
-            errorMessagesGroup.setValidationState( ValidationState.ERROR );
             taskNameHelpLabel.setText( Constants.INSTANCE.Task_Must_Have_A_Name() );
             taskNameControlGroup.setValidationState( ValidationState.ERROR );
             valid = false;
@@ -563,4 +561,11 @@ public class QuickNewTaskPopup extends BaseModal {
             }
         }
     }
+
+    public void setTaskServices(Caller<TaskOperationsService> taskOperationsService,
+                                Caller<TaskFormManagementService> taskFormManagementService){
+        this.taskOperationsService = taskOperationsService;
+        this.taskFormManagementService = taskFormManagementService;
+    }
+
 }
