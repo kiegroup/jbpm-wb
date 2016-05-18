@@ -16,19 +16,24 @@
 package org.jbpm.console.ng.gc.forms.client.display.views;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import javax.enterprise.context.Dependent;
 
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.jbpm.console.ng.gc.forms.client.display.GenericFormDisplayer;
 import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
+import org.jbpm.console.ng.gc.forms.client.display.GenericFormDisplayer;
+import org.jbpm.console.ng.gc.forms.client.resources.AppResources;
 import org.uberfire.mvp.Command;
 
-public class EmbeddedFormDisplayView implements FormDisplayerView {
+@Dependent
+public class EmbeddedFormDisplayView extends Composite implements FormDisplayerView {
 
-    @Inject
-    private VerticalPanel formContainer;
+    private final AppResources appResources = AppResources.INSTANCE;
 
+    private FlowPanel formContainer = GWT.create(FlowPanel.class);
+    private FlowPanel formPanel = GWT.create(FlowPanel.class);
     private GenericFormDisplayer currentDisplayer;
 
     private Command onCloseCommand;
@@ -37,20 +42,31 @@ public class EmbeddedFormDisplayView implements FormDisplayerView {
 
     @PostConstruct
     public void init() {
-        formContainer.setWidth("100%");
+        initWidget(formContainer);
+        formContainer.addStyleName(appResources.style().taskFormContainer());
     }
 
-
     @Override
-    public void display(GenericFormDisplayer displayer) {
+    public void display(final GenericFormDisplayer displayer) {
         currentDisplayer = displayer;
+
+        formPanel.clear();
+        formPanel.addStyleName(appResources.style().taskFormPanel());
+        formPanel.add(displayer.getContainer());
+
         formContainer.clear();
-        formContainer.add(displayer.getContainer());
-        if (displayer.getOpener() == null) formContainer.add(displayer.getFooter());
+        formContainer.add(formPanel);
+
+        if (displayer.getOpener() == null) {
+            final FlowPanel buttonsPanel = GWT.create(FlowPanel.class);
+            buttonsPanel.addStyleName(appResources.style().taskButtons());
+            buttonsPanel.add(displayer.getFooter());
+            formContainer.add(buttonsPanel);
+        }
     }
 
     public Widget getView() {
-        return formContainer;
+        return this;
     }
 
     @Override
@@ -77,4 +93,5 @@ public class EmbeddedFormDisplayView implements FormDisplayerView {
     public GenericFormDisplayer getCurrentDisplayer() {
         return currentDisplayer;
     }
+
 }
