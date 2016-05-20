@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.ht.forms.backend.server;
 
 import com.google.gson.Gson;
-import org.jbpm.console.ng.ga.forms.service.PlaceManagerActivityService;
 import org.jbpm.services.api.model.ProcessDefinition;
 import org.kie.api.task.model.Task;
 
@@ -27,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.jbpm.kie.services.impl.form.provider.AbstractFormProvider;
+import org.kie.workbench.common.services.shared.service.PlaceManagerActivityService;
 
 /**
  * @author salaboy

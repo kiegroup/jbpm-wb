@@ -998,6 +998,11 @@
             <groupId>org.kie.workbench.screens</groupId>
             <artifactId>kie-wb-common-search-screen-backend</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-workbench-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- Needed for the Deployment Descriptor Editor -->
         <dependency>
@@ -1220,6 +1225,16 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.gwt.gwtmockito</groupId>
+            <artifactId>gwtmockito</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-testing-utils</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
@@ -1283,6 +1298,8 @@
                         <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-decorated-grid-widget</compileSourcesArtifact>
                         <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-search-screen-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-search-screen-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-workbench-client</compileSourcesArtifact>
+
 
                         <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-client</compileSourcesArtifact>
