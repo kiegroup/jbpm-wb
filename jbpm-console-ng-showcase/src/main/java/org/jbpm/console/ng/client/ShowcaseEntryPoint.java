@@ -25,7 +25,6 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
 import org.guvnor.common.services.shared.config.AppConfigService;
-import org.guvnor.common.services.shared.security.KieWorkbenchACL;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -34,7 +33,6 @@ import org.jbpm.console.ng.client.i18n.Constants;
 import org.jbpm.console.ng.ht.client.perspectives.DroolsTasksListPerspective;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
 import org.kie.workbench.common.screens.search.client.menu.SearchMenuBuilder;
-import org.kie.workbench.common.services.shared.security.KieWorkbenchSecurityService;
 import org.kie.workbench.common.services.shared.service.PlaceManagerActivityService;
 import org.kie.workbench.common.workbench.client.entrypoint.DefaultWorkbenchEntryPoint;
 import org.kie.workbench.common.workbench.client.menu.DefaultWorkbenchFeaturesMenusHelper;
@@ -62,15 +60,13 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
 
     @Inject
     public ShowcaseEntryPoint( final Caller<AppConfigService> appConfigService,
-                               final Caller<KieWorkbenchSecurityService> kieSecurityService,
                                final Caller<PlaceManagerActivityService> pmas,
-                               final KieWorkbenchACL kieACL,
                                final ActivityBeansCache activityBeansCache,
                                final SyncBeanManager iocManager,
                                final User identity,
                                final DefaultWorkbenchFeaturesMenusHelper menusHelper,
                                final WorkbenchMenuBarPresenter menuBar ) {
-        super( appConfigService, kieSecurityService, pmas, kieACL, activityBeansCache );
+        super( appConfigService, pmas, activityBeansCache );
         this.iocManager = iocManager;
         this.identity = identity;
         this.menusHelper = menusHelper;

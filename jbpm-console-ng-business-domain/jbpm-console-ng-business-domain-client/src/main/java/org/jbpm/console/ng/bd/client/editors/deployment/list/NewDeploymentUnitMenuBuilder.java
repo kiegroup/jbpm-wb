@@ -65,12 +65,6 @@ public class NewDeploymentUnitMenuBuilder implements MenuFactory.CustomMenuBuild
             public void setEnabled(boolean enabled) {
 
             }
-
-            @Override
-            public String getSignatureId() {
-                return "org.jbpm.console.ng.bd.client.editors.deployment.list.NewDeploymentUnitMenuBuilder#menuNewButton";
-            }
-
         };
     }
 
