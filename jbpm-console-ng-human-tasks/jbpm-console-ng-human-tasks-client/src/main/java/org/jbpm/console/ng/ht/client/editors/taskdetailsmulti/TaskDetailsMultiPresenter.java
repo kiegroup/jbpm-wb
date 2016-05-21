@@ -102,9 +102,9 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
 
     private PlaceRequest place;
 
-    private String deploymentId = "";
+    private String taskId = "";
 
-    private String processId = "";
+    private String taskName = "";
 
     private boolean forLog = false;
 
@@ -147,8 +147,8 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
-        deploymentId = String.valueOf(event.getTaskId());
-        processId = event.getTaskName();
+        taskId = String.valueOf(event.getTaskId());
+        taskName = event.getTaskName();
 
         taskFormPresenter.getTaskFormView().getDisplayerView().setOnCloseCommand(new Command() {
             @Override
@@ -161,7 +161,7 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
         setIsForLog(event.isForLog());
         setIsForAdmin(event.isForAdmin());
 
-        changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place, String.valueOf(deploymentId) + " - " + processId));
+        changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place, String.valueOf(taskId) + " - " + taskName));
         if (isForLog()) {
             view.displayOnlyLogTab();
             disableTaskDetailsEdition();
@@ -181,7 +181,7 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
 
     @Override
     public void onRefresh() {
-        taskSelected.fire(new TaskSelectionEvent(Long.valueOf(deploymentId), processId, isForAdmin(), isForLog()));
+        taskSelected.fire(new TaskSelectionEvent(Long.valueOf(taskId), taskName, isForAdmin(), isForLog()));
     }
 
     @WorkbenchMenu
