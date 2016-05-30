@@ -24,15 +24,19 @@ import javax.enterprise.event.Event;
 import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.model.GAV;
+import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.structure.server.config.ConfigurationService;
+import org.jbpm.console.ng.bd.exception.DeploymentException;
+import org.jbpm.console.ng.bd.model.DeploymentUnitSummary;
+import org.jbpm.console.ng.bd.model.KModuleDeploymentUnitSummary;
 import org.jbpm.services.api.DeploymentService;
+import org.jbpm.services.api.model.DeployedUnit;
 import org.jbpm.services.api.model.DeploymentUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -79,5 +83,35 @@ public class DeploymentManagerEntryPointImplTest {
         for (BuildMessage msg : result.getErrorMessages()) {
             assertTrue(msg.getText(), msg.getText().contains("already deployed"));
         }
+    }
+
+    @Test
+    public void undeployExceptionShouldBeHandledProperly() {
+        // When deploymentService.undeploy throws some exception
+        String exceptionMessage = "BAD ERROR DURING UNDEPLOYMENT";
+        Mockito.doThrow(new IllegalStateException(exceptionMessage))
+                .when(deploymentService).undeploy(any(DeploymentUnit.class));
+        when(deploymentService.getDeployedUnit(anyString())).thenReturn(mock(DeployedUnit.class));
+
+
+        DeploymentUnitSummary deplUnitWithActiveProcessInstances =
+                new KModuleDeploymentUnitSummary("id", "my.group", "artifactXYZ", "12.5", "myKbase", "myKSession", "strategy", "mergeMode");
+
+        // The exception is wrapped into DeploymentException and rethrown
+        try {
+            deploymentManager.undeploy(deplUnitWithActiveProcessInstances);
+            fail("DeploymentException should have been thrown when undeploy operation failed");
+        } catch (DeploymentException de) {
+            assertTrue(de.getMessage().contains(exceptionMessage));
+        }
+
+        // Build result event is fired with proper error message
+        ArgumentCaptor<BuildResults> buildResultCaptor = ArgumentCaptor.forClass(BuildResults.class);
+        verify(buildResultsEvent).fire(buildResultCaptor.capture());
+        BuildResults buildResult = buildResultCaptor.getValue();
+        assertEquals("Undeployment of unit my.group:artifactXYZ:12.5 failed: " + exceptionMessage,
+                buildResult.getMessages().get(0).getText()
+        );
+        assertEquals(Level.ERROR, buildResult.getMessages().get(0).getLevel());
     }
 }
