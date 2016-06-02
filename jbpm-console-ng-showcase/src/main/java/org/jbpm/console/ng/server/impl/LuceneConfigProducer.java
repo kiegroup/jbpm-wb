@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 
@@ -33,6 +34,7 @@ import org.kie.workbench.common.services.refactoring.model.index.terms.RuleIndex
 import static org.apache.lucene.util.Version.*;
 
 @ApplicationScoped
+@Alternative
 public class LuceneConfigProducer {
 
     private LuceneConfig config;
