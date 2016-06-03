@@ -2,17 +2,12 @@
 <beans xmlns="http://xmlns.jcp.org/xml/ns/javaee" bean-discovery-mode="all">
   <alternatives>
     <class>org.jbpm.services.cdi.producer.JAASUserGroupInfoProducer</class>
+    <class>org.jbpm.console.ng.server.impl.LuceneConfigProducer</class>
   </alternatives>
 
   <scan>
     <!-- These exclusions were added by Errai to avoid deploying client-side classes to the server -->
     <!-- End of Errai exclusions -->
-
-
-
-
-
-
 
     <exclude name="org.jbpm.console.ng.client.**"/>
     <exclude name="org.jbpm.console.ng.showcase.ht.client.**"/>

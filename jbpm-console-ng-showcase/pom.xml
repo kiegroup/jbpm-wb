@@ -231,6 +231,11 @@
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-services-cdi</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-runtime-manager</artifactId>
+        </dependency>
 
         <!-- jBPM Console Panels -->
         <dependency>
@@ -473,7 +478,7 @@
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.cxf</groupId>
-                    <artifactId>cxf-api</artifactId>
+                    <artifactId>cxf-core</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.apache.cxf</groupId>
@@ -487,6 +492,11 @@
                     <groupId>org.apache.cxf</groupId>
                     <artifactId>cxf-rt-transports-http</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.apache.cxf</groupId>
+                    <artifactId>cxf-rt-frontend-simple</artifactId>
+                </exclusion>
+
                 <exclusion>
                     <groupId>javax.mail</groupId>
                     <artifactId>mail</artifactId>
@@ -1002,6 +1012,10 @@
             <groupId>org.kie.workbench.screens</groupId>
             <artifactId>kie-wb-common-workbench-client</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-workbench-backend</artifactId>
         </dependency>
 
         <!-- Needed for the Deployment Descriptor Editor -->
