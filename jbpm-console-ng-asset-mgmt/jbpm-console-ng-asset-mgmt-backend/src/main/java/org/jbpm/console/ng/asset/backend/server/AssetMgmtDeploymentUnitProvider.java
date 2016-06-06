@@ -116,9 +116,7 @@ public class AssetMgmtDeploymentUnitProvider implements DeploymentUnitProvider<D
 
             final GAV gav = new GAV(properties.getProperty("groupId"), properties.getProperty("artifactId"), properties.getProperty("version"));
 
-            final File artifactInRepo = m2repository.getArtifactFileFromRepository(gav);
-
-            if (artifactInRepo == null && inputStream != null) {
+            if ( !m2repository.containsArtifact( gav ) && inputStream != null ) {
                 m2repository.deployArtifact(inputStream, gav, false);
             }
         } catch (Exception e) {
