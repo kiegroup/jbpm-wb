@@ -9,7 +9,6 @@ import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
-import org.jbpm.console.ng.rest.util.JacksonRestEasyTestConfig;
 import org.jbpm.console.ng.rest.util.TestConfig;
 import org.jbpm.kie.services.impl.DeployedUnitImpl;
 import org.jbpm.kie.services.impl.RuntimeDataServiceImpl;
@@ -97,7 +96,6 @@ public abstract class JbpmConsoleNgRestBaseIntegrationTest {
         server.setPort(PORT);
         server.start();
         server.getDeployment().getRegistry().addSingletonResource(getProcessImageRESTResource());
-        server.getDeployment().setProviderFactory(JacksonRestEasyTestConfig.createRestEasyProviderFactory());
     }
 
     private static ProcessImageResourceImpl getProcessImageRESTResource() { 
