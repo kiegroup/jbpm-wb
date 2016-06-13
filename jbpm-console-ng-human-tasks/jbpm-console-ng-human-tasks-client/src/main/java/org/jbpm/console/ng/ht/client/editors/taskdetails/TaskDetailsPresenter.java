@@ -18,6 +18,7 @@ package org.jbpm.console.ng.ht.client.editors.taskdetails;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -71,39 +72,52 @@ public class TaskDetailsPresenter {
 
         void setUpdateTaskVisible(Boolean enabled);
 
-        void displayNotification( final String text );
+        void displayNotification(final String text);
     }
 
     private Constants constants = Constants.INSTANCE;
 
-    @Inject
     private PlaceManager placeManager;
 
-    @Inject
     TaskDetailsView view;
 
-    @Inject
     private Event<ProcessInstancesWithDetailsRequestEvent> processInstanceSelected;
 
-    @Inject
     private Caller<TaskQueryService> taskQueryService;
 
-    @Inject
     private Caller<TaskOperationsService> taskOperationsService;
 
-    @Inject
     private Caller<DataServiceEntryPoint> dataServices;
 
-    @Inject
     private Event<TaskRefreshedEvent> taskRefreshed;
 
-    @Inject
     private Event<TaskCalendarEvent> taskCalendarEvent;
 
-    @Inject
     private Event<NotificationEvent> notification;
 
     private long currentTaskId = 0;
+
+    @Inject
+    public TaskDetailsPresenter(
+            PlaceManager placeManager,
+            TaskDetailsView view,
+            Event<ProcessInstancesWithDetailsRequestEvent> processInstanceSelected,
+            Caller<TaskQueryService> taskQueryService,
+            Caller<TaskOperationsService> taskOperationsService,
+            Caller<DataServiceEntryPoint> dataServices,
+            Event<TaskRefreshedEvent> taskRefreshed,
+            Event<TaskCalendarEvent> taskCalendarEvent,
+            Event<NotificationEvent> notification) {
+        this.placeManager = placeManager;
+        this.view = view;
+        this.processInstanceSelected = processInstanceSelected;
+        this.taskQueryService = taskQueryService;
+        this.taskOperationsService = taskOperationsService;
+        this.dataServices = dataServices;
+        this.taskRefreshed = taskRefreshed;
+        this.taskCalendarEvent = taskCalendarEvent;
+        this.notification = notification;
+    }
 
     @PostConstruct
     public void init() {
