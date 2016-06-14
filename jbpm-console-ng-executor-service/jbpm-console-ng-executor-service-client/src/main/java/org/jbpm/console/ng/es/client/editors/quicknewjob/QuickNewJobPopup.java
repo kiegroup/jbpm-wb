@@ -251,7 +251,7 @@ public class QuickNewJobPopup extends BaseModal {
         hide();
     }
 
-    private boolean validateForm() {
+    boolean validateForm() {
         boolean valid = true;
         cleanErrorMessages();
         if ( jobNameText.getText() == null || jobNameText.getText().trim().isEmpty() ) {

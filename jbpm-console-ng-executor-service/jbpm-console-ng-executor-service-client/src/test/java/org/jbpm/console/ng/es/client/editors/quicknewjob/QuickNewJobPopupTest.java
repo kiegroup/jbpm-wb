@@ -15,30 +15,36 @@
  */
 package org.jbpm.console.ng.es.client.editors.quicknewjob;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.gwtmockito.WithClassesToStub;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.IntegerBox;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.gwtbootstrap3.client.ui.html.Text;
+import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.model.RequestDataSetConstants;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
 import org.jbpm.console.ng.gc.client.util.UTCDateBox;
 import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.mocks.CallerMock;
 
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -56,7 +62,31 @@ public class QuickNewJobPopupTest {
     private ExecutorServiceEntryPoint executorServicesMock;
 
     @Mock
-    public UTCTimeBox jobDueDateTime;
+    private UTCTimeBox jobDueDateTime;
+
+    @Mock
+    private TextBox jobNameText;
+
+    @Mock
+    private FormGroup jobNameControlGroup;
+
+    @Mock
+    private HelpBlock jobNameHelpInline;
+
+    @Mock
+    private IntegerBox jobRetriesNumber;
+
+    @Mock
+    private TextBox jobTypeText;
+
+    @Mock
+    private FormGroup jobTypeControlGroup;
+
+    @Mock
+    private HelpBlock jobTypeHelpInline;
+
+    @Mock
+    private HelpBlock jobDueDateHelpBlock;
 
     @InjectMocks
     private QuickNewJobPopup quickNewJobPopup;
@@ -83,13 +113,12 @@ public class QuickNewJobPopupTest {
         quickNewJobPopup.createJob(JOB_NAME, new Date(), JOB_TYPE, JOB_RETRIES, new ArrayList<RequestParameterSummary>());
 
         verify(executorServicesMock).scheduleRequest(anyString(), any(Date.class), any(HashMap.class));
-   }
+    }
 
     @Test
     public void dueTimeSetToFutureTimeTest() {
-
-        final Long nextHalfHour =  UTCDateBox.date2utc(new Date(System.currentTimeMillis() + 1800 * 1000));
-        final Long nextHour =  UTCDateBox.date2utc(new Date(System.currentTimeMillis() + 3600 * 1000));
+        final Long nextHalfHour = UTCDateBox.date2utc(new Date(System.currentTimeMillis() + 1800 * 1000));
+        final Long nextHour = UTCDateBox.date2utc(new Date(System.currentTimeMillis() + 3600 * 1000));
         // now is current time + 30'
         doAnswer(new Answer() {
             @Override
@@ -108,4 +137,25 @@ public class QuickNewJobPopupTest {
         verify(jobDueDateTime).setValue(anyLong());
     }
 
+    @Test
+    public void emptyJobName_shouldCauseValidationError() {
+        when(jobNameText.getText()).thenReturn(""); // Return empty string
+
+        boolean isValid = quickNewJobPopup.validateForm();
+        Assert.assertFalse("Form with an empty business key should be rejected", isValid);
+
+        verify(jobNameControlGroup).setValidationState(ValidationState.ERROR);
+        verify(jobNameHelpInline).setText(Constants.INSTANCE.The_Job_Must_Have_A_BusinessKey());
+    }
+
+    @Test
+    public void emptyType_shouldCauseValidationError() {
+        when(jobTypeText.getText()).thenReturn("  "); //Return string with spaces
+
+        boolean isValid = quickNewJobPopup.validateForm();
+        Assert.assertFalse("Form with an empty type should be rejected", isValid);
+
+        verify(jobTypeControlGroup).setValidationState(ValidationState.ERROR);
+        verify(jobTypeHelpInline).setText(Constants.INSTANCE.The_Job_Must_Have_A_Type());
+    }
 }
