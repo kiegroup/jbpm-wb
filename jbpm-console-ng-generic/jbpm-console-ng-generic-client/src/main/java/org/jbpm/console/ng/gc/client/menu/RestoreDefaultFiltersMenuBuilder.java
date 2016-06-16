@@ -66,12 +66,6 @@ public class RestoreDefaultFiltersMenuBuilder implements MenuFactory.CustomMenuB
             public void setEnabled(boolean enabled) {
 
             }
-
-            @Override
-            public String getSignatureId() {
-                return "org.jbpm.console.ng.gc.client.list.base.RestoreDefaultFiltersMenuBuilder#menuResetTabsButton";
-            }
-
         };
     }
 
