@@ -48,8 +48,8 @@
 
     <!-- rest -->
     <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>jaxrs-api</artifactId>
+      <groupId>org.jboss.spec.javax.ws.rs</groupId>
+      <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
     </dependency>
 
     <!-- repository -->
@@ -124,12 +124,7 @@
     <!-- rest test -->
     <dependency>
       <groupId>org.jboss.spec.javax.servlet</groupId>
-      <artifactId>jboss-servlet-api_3.0_spec</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-test-tjws</artifactId>
+      <artifactId>jboss-servlet-api_3.1_spec</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
