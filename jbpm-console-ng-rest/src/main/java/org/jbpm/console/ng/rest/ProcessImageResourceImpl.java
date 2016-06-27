@@ -22,7 +22,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.jbpm.kie.services.impl.model.ProcessAssetDesc;
