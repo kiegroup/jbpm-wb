@@ -97,7 +97,7 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
         generateMockInstancesButton.setText(constants.Generate_Mock_Instances());
         resetButton.setText(constants.Reset());
 
-        serverTemplate.addChangeHandler(e -> presenter.onServerTemplateSelected(serverTemplate.getValue()));
+        serverTemplate.addValueChangeHandler(e -> presenter.onServerTemplateSelected(serverTemplate.getValue()));
     }
 
     @EventHandler("resetButton")
