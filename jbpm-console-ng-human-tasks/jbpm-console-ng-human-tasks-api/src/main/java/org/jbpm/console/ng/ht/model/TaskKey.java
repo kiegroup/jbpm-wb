@@ -25,9 +25,13 @@ import org.jbpm.console.ng.ga.service.ItemKey;
  */
 @Portable
 public class TaskKey implements ItemKey {
+   private String serverTemplateId;
+   private String deploymentId;
    private Long taskId;
 
-  public TaskKey(Long taskId) {
+  public TaskKey(String serverTemplateId, String deploymentId, Long taskId) {
+    this.serverTemplateId = serverTemplateId;
+    this.deploymentId = deploymentId;
     this.taskId = taskId;
   }
 
@@ -36,6 +40,14 @@ public class TaskKey implements ItemKey {
 
   public Long getTaskId() {
     return taskId;
+  }
+
+  public String getServerTemplateId() {
+    return serverTemplateId;
+  }
+
+  public String getDeploymentId() {
+    return deploymentId;
   }
 
   @Override

@@ -49,13 +49,13 @@ import org.jbpm.console.ng.gc.forms.client.display.views.FormDisplayerView;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.pr.forms.client.display.displayers.process.AbstractStartProcessFormDisplayer;
+import org.jbpm.console.ng.pr.forms.client.display.process.api.StartProcessFormDisplayProvider;
 import org.jbpm.console.ng.pr.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.console.ng.pr.forms.client.i18n.Constants;
 import org.jbpm.console.ng.pr.forms.display.process.api.ProcessDisplayerConfig;
-import org.jbpm.console.ng.pr.forms.client.display.process.api.StartProcessFormDisplayProvider;
-import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
-import org.jbpm.console.ng.pr.model.ProcessSummary;
-import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
+import org.jbpm.console.ng.bd.model.ProcessDefinitionKey;
+import org.jbpm.console.ng.bd.model.ProcessSummary;
+import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.mvp.Command;
@@ -110,7 +110,7 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
     private Event<NotificationEvent> notification;
 
     @Inject
-    private Caller<ProcessDefinitionService> processDefinitionService;
+    private Caller<ProcessRuntimeDataService> processRuntimeDataService;
 
     protected QueryFilter currentFilter;
 
@@ -133,6 +133,8 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
 
     private int initialWidth = -1;
 
+    private String serverTemplateId;
+
     private String deploymentId;
 
     private String processId;
@@ -153,10 +155,10 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
         this.parentProcessInstanceId = parentProcessInstanceId;
     }
 
-    public void show() {
+    public void show(String serverTemplateId) {
 
         init();
-        loadFormValues();
+        loadFormValues(serverTemplateId);
 
         processForm.setVisible( false );
         basicForm.setVisible( true );
@@ -169,7 +171,8 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
         }
     }
 
-    protected void loadFormValues() {
+    protected void loadFormValues(String serverTemplateId) {
+        this.serverTemplateId = serverTemplateId;
         final Map<String, List<String>> dropDowns = new HashMap<String, List<String>>();
         processDefinitionsListBox.clear();
         processDeploymentIdListBox.clear();
@@ -178,7 +181,7 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
                                                  false, "",
                                                  "",
                                                  true );
-        processDefinitionService.call( new RemoteCallback<List<ProcessSummary>>() {
+        processRuntimeDataService.call(new RemoteCallback<List<ProcessSummary>>() {
             @Override
             public void callback( List<ProcessSummary> processSummaries ) {
 
@@ -197,7 +200,7 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
                 }
 
             }
-        } ).getAll( currentFilter );
+        }).getProcesses(serverTemplateId, 0, 1000, "", true );
 
         processDeploymentIdListBox.addChangeHandler( new ChangeHandler() {
             @Override
@@ -244,7 +247,7 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
             processForm.setVisible( true );
             basicForm.setVisible( false );
 
-            ProcessDisplayerConfig config = new ProcessDisplayerConfig( new ProcessDefinitionKey( deploymentId, processId ), processId );
+            ProcessDisplayerConfig config = new ProcessDisplayerConfig( new ProcessDefinitionKey( serverTemplateId, deploymentId, processId ), processId );
             startProcessDisplayProvider.setup( config, this );
 
         }

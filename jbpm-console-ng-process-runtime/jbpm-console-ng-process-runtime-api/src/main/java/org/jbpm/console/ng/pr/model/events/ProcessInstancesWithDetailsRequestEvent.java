@@ -20,6 +20,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class ProcessInstancesWithDetailsRequestEvent {
 
+  private String serverTemplateId;
   private Long processInstanceId;
   private String processDefId;
   private String deploymentId;
@@ -29,7 +30,8 @@ public class ProcessInstancesWithDetailsRequestEvent {
   public ProcessInstancesWithDetailsRequestEvent() {
   }
 
-  public ProcessInstancesWithDetailsRequestEvent(String deploymentId, Long processInstanceId, String processDefId, String processDefName, int processInstanceStatus) {
+  public ProcessInstancesWithDetailsRequestEvent(String serverTemplateId, String deploymentId, Long processInstanceId, String processDefId, String processDefName, int processInstanceStatus) {
+    this.serverTemplateId = serverTemplateId;
     this.processInstanceId = processInstanceId;
     this.processDefId = processDefId;
     this.deploymentId = deploymentId;
@@ -57,6 +59,10 @@ public class ProcessInstancesWithDetailsRequestEvent {
     return processDefName;
   }
 
+  public String getServerTemplateId() {
+    return serverTemplateId;
+  }
+
   @Override
   public String toString() {
     return "ProcessInstancesWithDetailsRequestEvent{" + "processInstanceId=" + processInstanceId + ", processDefId=" + processDefId + ", deploymentId=" + deploymentId + ", processInstanceStatus=" + processInstanceStatus + ", processDefName=" + processDefName + '}';
@@ -70,6 +76,7 @@ public class ProcessInstancesWithDetailsRequestEvent {
     hash = 71 * hash + (this.deploymentId != null ? this.deploymentId.hashCode() : 0);
     hash = 71 * hash + (this.processInstanceStatus != null ? this.processInstanceStatus.hashCode() : 0);
     hash = 71 * hash + (this.processDefName != null ? this.processDefName.hashCode() : 0);
+    hash = 71 * hash + (this.serverTemplateId != null ? this.serverTemplateId.hashCode() : 0);
     return hash;
   }
 
@@ -95,6 +102,9 @@ public class ProcessInstancesWithDetailsRequestEvent {
       return false;
     }
     if ((this.processDefName == null) ? (other.processDefName != null) : !this.processDefName.equals(other.processDefName)) {
+      return false;
+    }
+    if ((this.serverTemplateId == null) ? (other.serverTemplateId != null) : !this.serverTemplateId.equals(other.serverTemplateId)) {
       return false;
     }
     return true;

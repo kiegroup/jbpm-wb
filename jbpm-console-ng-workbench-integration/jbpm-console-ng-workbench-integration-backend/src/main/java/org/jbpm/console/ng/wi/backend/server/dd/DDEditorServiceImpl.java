@@ -30,13 +30,13 @@ import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.guvnor.common.services.shared.metadata.model.Overview;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.bd.backend.server.dd.DeploymentDescriptorIO;
+import org.jbpm.console.ng.bd.backend.server.dd.DeploymentDescriptorImpl;
+import org.jbpm.console.ng.bd.backend.server.dd.DeploymentDescriptorManager;
 import org.jbpm.console.ng.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.console.ng.wi.dd.model.ItemObjectModel;
 import org.jbpm.console.ng.wi.dd.model.Parameter;
 import org.jbpm.console.ng.wi.dd.service.DDEditorService;
-import org.jbpm.runtime.manager.impl.deploy.DeploymentDescriptorIO;
-import org.jbpm.runtime.manager.impl.deploy.DeploymentDescriptorImpl;
-import org.jbpm.runtime.manager.impl.deploy.DeploymentDescriptorManager;
 import org.kie.internal.runtime.conf.AuditMode;
 import org.kie.internal.runtime.conf.DeploymentDescriptor;
 import org.kie.internal.runtime.conf.NamedObjectModel;
@@ -75,7 +75,7 @@ public class DDEditorServiceImpl
 
         InputStream input = ioService.newInputStream( Paths.convert( path ) );
 
-        org.kie.internal.runtime.conf.DeploymentDescriptor originDD = DeploymentDescriptorIO.fromXml( input );
+        org.kie.internal.runtime.conf.DeploymentDescriptor originDD = DeploymentDescriptorIO.fromXml(input);
 
         DeploymentDescriptorModel ddModel = marshal( originDD );
 

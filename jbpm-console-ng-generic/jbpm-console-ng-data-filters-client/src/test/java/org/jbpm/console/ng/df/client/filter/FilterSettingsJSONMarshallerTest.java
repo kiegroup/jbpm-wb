@@ -117,7 +117,7 @@ public class FilterSettingsJSONMarshallerTest {
         ColumnFilter myGroupFilter = FilterFactory.AND( FilterFactory.OR( condList ),FilterFactory.equalsTo( COLUMN_ACTUALOWNER, "" ));
 
         builder.filter( OR( myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUALOWNER, "user" )) );
-        builder.group(COLUMN_TASKID);
+//        builder.group(COLUMN_TASKID);
 
         builder.setColumn(COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy");
         builder.setColumn( COLUMN_ACTUALOWNER, "Actual_Owner");

@@ -16,7 +16,7 @@
 package org.jbpm.console.ng.pr.forms.display.process.api;
 
 import org.jbpm.console.ng.ga.forms.display.FormDisplayerConfig;
-import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
+import org.jbpm.console.ng.bd.model.ProcessDefinitionKey;
 
 public class ProcessDisplayerConfig implements FormDisplayerConfig<ProcessDefinitionKey> {
 

@@ -21,7 +21,7 @@
              xmlns:bhtml="urn:import:org.gwtbootstrap3.client.ui.html"
              xmlns:bgwt="urn:import:org.gwtbootstrap3.client.ui.gwt">
 
-  <ui:with field="i18n" type="org.jbpm.console.ng.bd.client.i18n.Constants"/>
+  <ui:with field="i18n" type="org.jbpm.console.ng.wi.client.i18n.Constants"/>
   <ui:style>
     .edit-cell input {
       width: 95%;

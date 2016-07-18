@@ -59,7 +59,7 @@ import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.model.RequestDataSetConstants;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
-import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
+import org.jbpm.console.ng.es.service.ExecutorService;
 import org.jbpm.console.ng.gc.client.util.UTCDateBox;
 import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
@@ -148,7 +148,7 @@ public class QuickNewJobPopup extends BaseModal {
     private Event<NotificationEvent> notification;
 
     @Inject
-    private Caller<ExecutorServiceEntryPoint> executorServices;
+    private Caller<ExecutorService> executorServices;
 
     @Inject
     private Event<RequestChangedEvent> requestCreatedEvent;
@@ -156,6 +156,8 @@ public class QuickNewJobPopup extends BaseModal {
     private ListDataProvider<RequestParameterSummary> dataProvider = new ListDataProvider<RequestParameterSummary>();
 
     private static Binder uiBinder = GWT.create( Binder.class );
+
+    private String serverTemplateId;
 
     public QuickNewJobPopup() {
         setTitle( Constants.INSTANCE.New_Job() );
@@ -181,11 +183,12 @@ public class QuickNewJobPopup extends BaseModal {
         add( footer );
     }
 
-    public void setExecutorService(Caller<ExecutorServiceEntryPoint> executorServices){
+    public void setExecutorService(Caller<ExecutorService> executorServices){
         this.executorServices = executorServices;
     }
 
-    public void show() {
+    public void show(String serverTemplateId) {
+        this.serverTemplateId = serverTemplateId;
         cleanForm();
         super.show();
     }
@@ -420,7 +423,7 @@ public class QuickNewJobPopup extends BaseModal {
                 basicTab.showTab();
                 return true;
             }
-        } ).scheduleRequest( jobType, dueDate, ctx );
+        } ).scheduleRequest( serverTemplateId, jobType, dueDate, ctx );
 
     }
 

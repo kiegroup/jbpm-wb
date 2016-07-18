@@ -102,9 +102,13 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
 
     private PlaceRequest place;
 
-    private String taskId = "";
+    private Long taskId;
 
-    private String taskName = "";
+    private String serverTemplateId = "";
+
+    private String containerId = "";
+
+    private String processId = "";
 
     private boolean forLog = false;
 
@@ -147,8 +151,10 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
-        taskId = String.valueOf(event.getTaskId());
-        taskName = event.getTaskName();
+        taskId = event.getTaskId();
+        serverTemplateId = event.getServerTemplateId();
+        containerId = event.getContainerId();
+        processId = event.getTaskName();
 
         taskFormPresenter.getTaskFormView().getDisplayerView().setOnCloseCommand(new Command() {
             @Override
@@ -156,12 +162,13 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
                 closeDetails();
             }
         });
-        taskFormDisplayProvider.setup(new HumanTaskDisplayerConfig(new TaskKey(event.getTaskId())), taskFormPresenter.getTaskFormView().getDisplayerView());
+        taskFormDisplayProvider.setup(new HumanTaskDisplayerConfig(new TaskKey(serverTemplateId, containerId, taskId)), taskFormPresenter.getTaskFormView().getDisplayerView());
 
         setIsForLog(event.isForLog());
         setIsForAdmin(event.isForAdmin());
 
-        changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place, String.valueOf(taskId) + " - " + taskName));
+        changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place, String.valueOf(taskId) + " - " + processId));
+
         if (isForLog()) {
             view.displayOnlyLogTab();
             disableTaskDetailsEdition();
@@ -181,7 +188,7 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
 
     @Override
     public void onRefresh() {
-        taskSelected.fire(new TaskSelectionEvent(Long.valueOf(taskId), taskName, isForAdmin(), isForLog()));
+        taskSelected.fire(new TaskSelectionEvent(serverTemplateId, containerId, taskId, processId, isForAdmin(), isForLog()));
     }
 
     @WorkbenchMenu

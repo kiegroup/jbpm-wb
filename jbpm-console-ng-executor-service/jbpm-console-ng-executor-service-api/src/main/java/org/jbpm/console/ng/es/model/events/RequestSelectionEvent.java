@@ -21,23 +21,12 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class RequestSelectionEvent {
     private Long taskId;
-    // This should be removed from here
-    private String userId;
 
     public RequestSelectionEvent() {
     }
 
     public RequestSelectionEvent(Long taskId) {
         this.taskId = taskId;
-    }
-
-    public RequestSelectionEvent(Long taskId, String userId) {
-        this.taskId = taskId;
-        this.userId = userId;
-    }
-
-    public String getUserId() {
-        return userId;
     }
 
     public long getTaskId() {

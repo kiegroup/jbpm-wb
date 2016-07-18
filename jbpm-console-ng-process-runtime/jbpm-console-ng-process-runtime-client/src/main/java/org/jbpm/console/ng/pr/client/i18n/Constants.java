@@ -302,4 +302,6 @@ public interface Constants extends Messages {
     String AccessDocument();
 
     String ProcessInstanceNeedsToBeActiveInOrderToBeAborted();
+
+    String SelectServerTemplate();
 }

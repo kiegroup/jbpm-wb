@@ -19,7 +19,6 @@ package org.jbpm.console.ng.pr.client.editors.instance.log;
 import java.util.List;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.gwtbootstrap3.client.ui.Button;
@@ -31,10 +30,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogOrder;
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogType;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.workbench.events.NotificationEvent;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
@@ -68,13 +64,7 @@ public class RuntimeLogViewImpl extends Composite
     @DataField
     public Button showDescLogButton;
 
-    @Inject
-    private PlaceManager placeManager;
-
-    @Inject
-    private Event<NotificationEvent> notification;
-
-    private Constants constants = GWT.create( Constants.class );
+    private Constants constants = Constants.INSTANCE;
 
     @Override
     public void init( final RuntimeLogPresenter presenter ) {
@@ -126,11 +116,6 @@ public class RuntimeLogViewImpl extends Composite
             list.add( new ListItem( log ) );
         }
         logTextArea.add( list );
-    }
-
-    @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
     }
 
     public void setActiveLogTypeButton( LogType logType ) {

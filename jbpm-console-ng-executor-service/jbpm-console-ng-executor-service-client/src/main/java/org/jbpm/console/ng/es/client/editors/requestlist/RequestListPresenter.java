@@ -37,12 +37,12 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.console.ng.es.client.editors.jobdetails.JobDetailsPopup;
 import org.jbpm.console.ng.es.client.editors.quicknewjob.QuickNewJobPopup;
-import org.jbpm.console.ng.es.client.editors.servicesettings.JobServiceSettingsPopup;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
-import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
+import org.jbpm.console.ng.es.service.ExecutorService;
 import org.jbpm.console.ng.gc.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
@@ -57,7 +57,6 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mvp.Command;
-import org.uberfire.paging.PageResponse;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -75,6 +74,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         void saveRefreshValue( int newValue );
 
         void applyFilterOnPresenter( String key );
+
     }
 
     private Constants constants = Constants.INSTANCE;
@@ -83,16 +83,13 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     private RequestListView view;
 
     @Inject
-    private Caller<ExecutorServiceEntryPoint> executorServices;
+    private Caller<ExecutorService> executorServices;
 
     @Inject
     private Event<RequestChangedEvent> requestChangedEvent;
 
     @Inject
     DataSetQueryHelper dataSetQueryHelper;
-
-    @Inject
-    private JobServiceSettingsPopup jobServiceSettingsPopup;
 
     @Inject
     private QuickNewJobPopup quickNewJobPopup;
@@ -102,12 +99,15 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     @Inject
     private ErrorPopupPresenter errorPopup;
 
+    @Inject
+    private JobDetailsPopup jobDetailsPopup;
+
     public RequestListPresenter() {
         super();
     }
 
     public RequestListPresenter(RequestListViewImpl view,
-            Caller<ExecutorServiceEntryPoint> executorServices,
+            Caller<ExecutorService> executorServices,
             DataSetQueryHelper dataSetQueryHelper,Event<RequestChangedEvent> requestChangedEvent
     ) {
         this.view = view;
@@ -131,15 +131,6 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         refreshGrid();
     }
 
-    public void init() {
-        executorServices.call( new RemoteCallback<Void>() {
-            @Override
-            public void callback( Void nothing ) {
-                view.displayNotification( constants.ExecutorServiceStarted() );
-            }
-        } ).init();
-    }
-
     public void createRequest() {
         Map<String, String> ctx = new HashMap<String, String>();
         ctx.put( "businessKey", "1234" );
@@ -149,7 +140,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                 view.displayNotification( constants.RequestScheduled(requestId) );
 
             }
-        } ).scheduleRequest( "PrintOutCmd", ctx );
+        } ).scheduleRequest( selectedServerTemplate, "PrintOutCmd", ctx );
     }
 
     @Override
@@ -162,7 +153,9 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         try {
             if(!isAddingDefaultFilters()) {
                 FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
+
                 if ( currentTableSettings != null ) {
+                    currentTableSettings.setServerTemplateId(selectedServerTemplate);
                     currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
                     ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
                     if ( columnSortList != null && columnSortList.size() > 0 ) {
@@ -207,17 +200,12 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                                             dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_BUSINESSKEY, i)));
 
                                 }
-                                PageResponse<RequestSummary> requestSummaryPageResponse = new PageResponse<RequestSummary>();
-                                requestSummaryPageResponse.setPageRowList(myRequestSumaryFromDataSet);
-                                requestSummaryPageResponse.setStartRowIndex(visibleRange.getStart());
-                                requestSummaryPageResponse.setTotalRowSize(dataSet.getRowCountNonTrimmed());
-                                requestSummaryPageResponse.setTotalRowSizeExact(true);
-                                if (visibleRange.getStart() + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed()) {
-                                    requestSummaryPageResponse.setLastPage(true);
-                                } else {
-                                    requestSummaryPageResponse.setLastPage(false);
+                                boolean lastPageExactCount=false;
+                                if( dataSet.getRowCount() < view.getListGrid().getPageSize()) {
+                                    lastPageExactCount=true;
                                 }
-                                updateDataOnCallback(requestSummaryPageResponse);
+                                updateDataOnCallback(myRequestSumaryFromDataSet,visibleRange.getStart(),visibleRange.getStart()+ myRequestSumaryFromDataSet.size(), lastPageExactCount);
+
                             }
                         }
                     });
@@ -242,7 +230,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                 view.displayNotification( constants.RequestCancelled(requestId) );
                 requestChangedEvent.fire( new RequestChangedEvent( requestId ) );
             }
-        } ).cancelRequest( requestId );
+        } ).cancelRequest( selectedServerTemplate, requestId );
     }
 
     public void requeueRequest( final Long requestId ) {
@@ -252,7 +240,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                 view.displayNotification( constants.RequestCancelled(requestId) );
                 requestChangedEvent.fire( new RequestChangedEvent( requestId ) );
             }
-        } ).requeueRequest( requestId );
+        } ).requeueRequest( selectedServerTemplate, requestId );
     }
 
     @WorkbenchMenu
@@ -262,37 +250,16 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                 .respondsWith(new Command() {
                     @Override
                     public void execute() {
-                        executorServices.call(new RemoteCallback<Boolean>() {
-                            @Override
-                            public void callback(Boolean isDisabled) {
-                                if (isDisabled) {
-                                    view.displayNotification(constants.ExecutorServiceDisabled());
-                                } else {
-                                    quickNewJobPopup.show();
-                                }
-                            }
-                        }).isExecutorDisabled();
+                        if (selectedServerTemplate == null || selectedServerTemplate.trim().isEmpty()) {
+                            view.displayNotification(constants.SelectServerTemplate());
+                        } else {
+                            quickNewJobPopup.show(selectedServerTemplate);
+                        }
 
                     }
                 })
                 .endMenu()
-                .newTopLevelMenu(constants.Job_Service_Settings())
-                .respondsWith(new Command() {
-                    @Override
-                    public void execute() {
-                        executorServices.call(new RemoteCallback<Boolean>() {
-                            @Override
-                            public void callback(Boolean isDisabled) {
-                                if (isDisabled) {
-                                    view.displayNotification(constants.ExecutorServiceDisabled());
-                                } else {
-                                    jobServiceSettingsPopup.show();
-                                }
-                            }
-                        }).isExecutorDisabled();
-
-                    }
-                })
+                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder)
                 .endMenu()
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
                 .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()
@@ -317,4 +284,9 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         super.onUpdateRefreshInterval(enableAutoRefresh, newInterval);
         view.saveRefreshValue(newInterval);
     }
+
+    public void showJobDetails(final RequestSummary job){
+        jobDetailsPopup.show( selectedServerTemplate, String.valueOf( job.getJobId() ) );
+    }
+
 }

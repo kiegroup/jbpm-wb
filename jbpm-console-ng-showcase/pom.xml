@@ -63,7 +63,6 @@
         <dependency>
             <groupId>org.guvnor</groupId>
             <artifactId>guvnor-structure-client</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.errai</groupId>
@@ -75,46 +74,21 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-codegen-gwt</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
             <artifactId>errai-security-server</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-security-client</artifactId>
-            <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>org.jboss.spec.javax.interceptor</groupId>
-                    <artifactId>jboss-interceptors-api_1.2_spec</artifactId>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>jaxrs-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-cdi</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-forms-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-human-task-audit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-human-task-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.activation</groupId>
-                    <artifactId>activation</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.mail</groupId>
-                    <artifactId>mail</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.kie</groupId>
@@ -143,11 +117,6 @@
         </dependency>
         <dependency>
             <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-client</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.uberfire</groupId>
             <artifactId>uberfire-commons</artifactId>
         </dependency>
         <dependency>
@@ -165,23 +134,7 @@
         </dependency>
         <dependency>
             <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-workbench-client-backend</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.uberfire</groupId>
             <artifactId>uberfire-security-api</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.spec.javax.interceptor</groupId>
-                    <artifactId>jboss-interceptors-api_1.1_spec</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-security-client</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- identity provider -->
@@ -196,46 +149,23 @@
             <groupId>org.kie</groupId>
             <artifactId>kie-ci</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <scope>provided</scope>
+            <scope>runtime</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-services-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-kie-services</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-services-cdi</artifactId>
-        </dependency>
-        
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-runtime-manager</artifactId>
         </dependency>
 
         <!-- jBPM Console Panels -->
+
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-bpm-home-client</artifactId>
@@ -246,18 +176,15 @@
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-generic-api</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-generic-client</artifactId>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-generic-forms-api</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-generic-forms-client</artifactId>
@@ -279,6 +206,12 @@
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-human-tasks-backend</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jboss-transaction-api_1.2_spec</artifactId>
+                    <groupId>org.jboss.spec.javax.transaction</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -296,6 +229,7 @@
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-process-runtime-admin-backend</artifactId>
         </dependency>
+
 
         <dependency>
             <groupId>org.jbpm</groupId>
@@ -323,11 +257,6 @@
             <artifactId>jbpm-console-ng-process-runtime-forms-client</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-process-runtime-forms-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.jbpm</groupId>
@@ -337,6 +266,11 @@
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-business-domain-client</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-business-domain-api</artifactId>
         </dependency>
 
         <dependency>
@@ -396,11 +330,6 @@
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-workbench-integration-backend</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-asset-mgmt-backend</artifactId>
         </dependency>
 
         <dependency>
@@ -470,66 +399,10 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-workitems</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.cxf</groupId>
-                    <artifactId>cxf-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.cxf</groupId>
-                    <artifactId>cxf-rt-frontend-jaxws</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.cxf</groupId>
-                    <artifactId>cxf-rt-databinding-jaxb</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.cxf</groupId>
-                    <artifactId>cxf-rt-transports-http</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.cxf</groupId>
-                    <artifactId>cxf-rt-frontend-simple</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>javax.mail</groupId>
-                    <artifactId>mail</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.activation</groupId>
-                    <artifactId>activation</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.neethi</groupId>
-                    <artifactId>neethi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>wsdl4j</groupId>
-                    <artifactId>wsdl4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <!-- UberFire -->
         <dependency>
             <groupId>org.uberfire</groupId>
             <artifactId>uberfire-all</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-client-all</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-js</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -574,12 +447,6 @@
 
         <dependency>
             <groupId>org.uberfire</groupId>
-            <artifactId>uberfire-widgets-core-client</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.uberfire</groupId>
             <artifactId>uberfire-widgets-table</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -615,7 +482,6 @@
         <dependency>
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-cdi-client</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -649,12 +515,6 @@
         </dependency>
 
         <dependency>
-            <groupId>de.benediktmeurer.gwt-slf4j</groupId>
-            <artifactId>gwt-slf4j</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.owasp.encoder</groupId>
             <artifactId>encoder</artifactId>
         </dependency>
@@ -668,114 +528,11 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-xjc</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-shared-services</artifactId>
-        </dependency>
-
-        <!--Miscellaneous -->
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-            <scope>runtime</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.transaction</groupId>
-                    <artifactId>jta</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-bpmn2-emfextmodel</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>org.eclipse.bpmn2</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>xalan</groupId>
-            <artifactId>xalan</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>xalan</groupId>
-            <artifactId>serializer</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.abdera</groupId>
-            <artifactId>abdera-i18n</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.geronimo.specs</groupId>
-                    <artifactId>geronimo-activation_1.1_spec</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.abdera</groupId>
-            <artifactId>abdera-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.geronimo.specs</groupId>
-                    <artifactId>geronimo-stax-api_1.0_spec</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.geronimo.specs</groupId>
-                    <artifactId>geronimo-activation_1.1_spec</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.0-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Jboss spec -->
-        <dependency>
-            <groupId>org.jboss.spec.javax.annotation</groupId>
-            <artifactId>jboss-annotations-api_1.2_spec</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -784,88 +541,15 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.jboss.spec.javax.servlet</groupId>
-            <artifactId>jboss-servlet-api_3.1_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
+        <!--Miscellaneous -->
         <dependency>
-            <groupId>org.jboss.spec.javax.servlet.jsp</groupId>
-            <artifactId>jboss-jsp-api_2.3_spec</artifactId>
-            <scope>provided</scope>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-bpmn2-emfextmodel</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>org.jboss.spec.javax.el</groupId>
-            <artifactId>jboss-el-api_3.0_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.spec.javax.servlet.jstl</groupId>
-            <artifactId>jboss-jstl-api_1.2_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.spec.javax.jms</groupId>
-            <artifactId>jboss-jms-api_2.0_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.spec.javax.xml.ws</groupId>
-            <artifactId>jboss-jaxws-api_2.2_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.spec.javax.xml.bind</groupId>
-            <artifactId>jboss-jaxb-api_2.2_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.spec.javax.security.jacc</groupId>
-            <artifactId>jboss-jacc-api_1.5_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.spec.javax.ejb</groupId>
-            <artifactId>jboss-ejb-api_3.2_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- REST -->
-        <dependency>
-            <groupId>org.kie.remote</groupId>
-            <artifactId>kie-remote-services</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-cdi</artifactId>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>javassist</groupId>
-                    <artifactId>javassist</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jackson-provider</artifactId>
-            <scope>provided</scope>
+            <groupId>org.eclipse</groupId>
+            <artifactId>org.eclipse.bpmn2</artifactId>
         </dependency>
 
         <!-- Guvnor -->
@@ -1026,6 +710,7 @@
         </dependency>
 
         <!-- Dashboard -->
+
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-dashboard-client</artifactId>
@@ -1106,6 +791,7 @@
         </dependency>
 
         <!--Dashbuilder -->
+
         <dependency>
             <groupId>org.dashbuilder</groupId>
             <artifactId>dashbuilder-server-all</artifactId>
@@ -1114,18 +800,6 @@
         <dependency>
             <groupId>org.dashbuilder</groupId>
             <artifactId>dashbuilder-client-all</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.dashbuilder</groupId>
-            <artifactId>dashbuilder-common-client</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.dashbuilder</groupId>
-            <artifactId>dashbuilder-widgets</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -1202,15 +876,36 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
+            <groupId>org.jboss.spec.javax.servlet.jstl</groupId>
+            <artifactId>jboss-jstl-api_1.2_spec</artifactId>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <scope>provided</scope>
+            <groupId>org.apache.chemistry.opencmis</groupId>
+            <artifactId>chemistry-opencmis-client-impl</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.chemistry.opencmis</groupId>
+                    <artifactId>chemistry-opencmis-commons-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.chemistry.opencmis</groupId>
+                    <artifactId>chemistry-opencmis-commons-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.chemistry.opencmis</groupId>
+            <artifactId>chemistry-opencmis-commons-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.chemistry.opencmis</groupId>
+            <artifactId>chemistry-opencmis-commons-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.chemistry.opencmis</groupId>
+            <artifactId>chemistry-opencmis-client-bindings</artifactId>
         </dependency>
 
         <dependency>
@@ -1223,6 +918,79 @@
             <groupId>org.eclipse.sisu</groupId>
             <artifactId>org.eclipse.sisu.inject</artifactId>
             <scope>runtime</scope>
+        </dependency>
+
+        <!-- Needed by new Exec Server UI -->
+        <dependency>
+            <groupId>org.kie.server</groupId>
+            <artifactId>kie-server-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.server</groupId>
+            <artifactId>kie-server-controller-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-server-ui-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-server-ui-backend</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-server-ui-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- exclude cxf -->
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-workitems</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.cxf</groupId>
+                    <artifactId>cxf-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.cxf</groupId>
+                    <artifactId>cxf-rt-frontend-jaxws</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.cxf</groupId>
+                    <artifactId>cxf-rt-databinding-jaxb</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.cxf</groupId>
+                    <artifactId>cxf-rt-transports-http</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.mail</groupId>
+                    <artifactId>mail</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>activation</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.neethi</groupId>
+                    <artifactId>neethi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>wsdl4j</groupId>
+                    <artifactId>wsdl4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- login module -->
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-security</artifactId>
         </dependency>
 
         <!-- Test deps -->
@@ -1254,7 +1022,7 @@
                 <artifactId>gwt-maven-plugin</artifactId>
                 <configuration>
                     <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
-                    <extraJvmArgs>-Xms1g -Xmx3g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true</extraJvmArgs>
+                    <extraJvmArgs>-Xms1g -Xmx3g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true -Dorg.uberfire.async.executor.safemode=true</extraJvmArgs>
                     <module>org.jbpm.console.ng.jBPMShowcase</module>
                     <logLevel>INFO</logLevel>
                     <noServer>false</noServer>
@@ -1266,6 +1034,10 @@
                     <!-- drools-compiler has dependency on org.eclipse.jdt.core.compiler:ecj:jar:3.5.1:compile, see http://code.google.com/p/google-web-toolkit/issues/detail?id=4479 -->
                     <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
                     <compileSourcesArtifacts>
+                        <!-- Kie Server needed by Exec Server UI -->
+                        <compileSourcesArtifact>org.kie:kie-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.server:kie-server-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.server:kie-server-controller-api</compileSourcesArtifact>
                         <!-- Guvnor -->
                         <compileSourcesArtifact>org.guvnor:guvnor-asset-mgmt-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.guvnor:guvnor-asset-mgmt-client</compileSourcesArtifact>
@@ -1304,8 +1076,9 @@
                         <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-decorated-grid-widget</compileSourcesArtifact>
                         <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-search-screen-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-search-screen-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-server-ui-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-server-ui-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-workbench-client</compileSourcesArtifact>
-
 
                         <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-client</compileSourcesArtifact>
@@ -1401,6 +1174,11 @@
                         <compileSourcesArtifact>org.jbpm:jbpm-form-modeler-editor-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-form-modeler-renderer-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-form-modeler-renderer-client</compileSourcesArtifact>
+
+                        <!-- Kie Server needed by Exec Server -->
+                        <compileSourcesArtifact>org.kie:kie-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.server:kie-server-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.server:kie-server-controller-api</compileSourcesArtifact>
                     </compileSourcesArtifacts>
                 </configuration>
                 <executions>
@@ -1414,6 +1192,7 @@
                     <execution>
                         <id>gwt-compile</id>
                         <goals>
+                            <goal>resources</goal>
                             <goal>compile</goal>
                         </goals>
                     </execution>
@@ -1422,12 +1201,7 @@
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
-                    <packagingExcludes>
-                        WEB-INF/classes/**/public/**,
-                        WEB-INF/classes/logback.xml,
-                        **/*.gwt.xml,
-                        **/*.symbolMap
-                    </packagingExcludes>
+                    <packagingExcludes>**/*.symbolMap</packagingExcludes>
                     <archive>
                         <addMavenDescriptor>false</addMavenDescriptor>
                     </archive>
@@ -1458,7 +1232,7 @@
                                 <include>src/main/webapp/WEB-INF/tlds/</include>
                                 <include>**/gwt-unitCache/**</include>
                                 <include>.errai/</include>
-                                <include>.niogit/**</include>
+                                <!--<include>.niogit/**</include> exclude it for not so server templates are not removed-->
                                 <include>.index/**</include>
                             </includes>
                         </fileset>
@@ -1529,6 +1303,29 @@
                                     <includes>**/*.tld, **/*.gif, **/*.jpg, **/*.js, **/*.jsp, **/*.css, **/*.png</includes>
                                 </artifactItem>
                             </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${errai.jboss.home}/standalone/configuration</outputDirectory>
+                            <overwrite>true</overwrite>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/config</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>

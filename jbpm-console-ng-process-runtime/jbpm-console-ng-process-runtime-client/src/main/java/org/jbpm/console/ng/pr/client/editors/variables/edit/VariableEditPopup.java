@@ -34,9 +34,9 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
+import org.jbpm.console.ng.pr.service.ProcessService;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.mvp.Command;
@@ -67,13 +67,15 @@ public class VariableEditPopup extends BaseModal {
     private Event<NotificationEvent> notification;
 
     @Inject
-    private Caller<KieSessionEntryPoint> kieSessionServices;
+    private Caller<ProcessService> processService;
 
     @Inject
     private Event<ProcessInstancesUpdateEvent> processInstancesUpdateEvent;
 
     private static Binder uiBinder = GWT.create( Binder.class );
 
+    private String serverTemplateId;
+    private String deploymentId;
     private long processInstanceId;
 
     public VariableEditPopup() {
@@ -102,9 +104,11 @@ public class VariableEditPopup extends BaseModal {
         add( footer );
     }
 
-    public void show( long processInstanceId,
+    public void show( String serverTemplateId, String deploymentId, long processInstanceId,
                       String variableId,
                       String variableValue ) {
+        this.serverTemplateId = serverTemplateId;
+        this.deploymentId = deploymentId;
         this.processInstanceId = processInstanceId;
         this.variableNameTextBox.setText( variableId );
         this.variableValueTextBox.setText( variableValue );
@@ -128,7 +132,7 @@ public class VariableEditPopup extends BaseModal {
     }
 
     public void setProcessVariable() {
-        kieSessionServices.call( new RemoteCallback<Void>() {
+        processService.call( new RemoteCallback<Void>() {
             @Override
             public void callback( Void v ) {
                 displayNotification( Constants.INSTANCE.VariableValueUpdated( variableNameTextBox.getText() ) );
@@ -142,7 +146,7 @@ public class VariableEditPopup extends BaseModal {
                 errorMessagesGroup.setValidationState( ValidationState.ERROR );
                 return true;
             }
-        } ).setProcessVariable( processInstanceId, variableNameTextBox.getText(), variableValueTextBox.getValue() );
+        } ).setProcessVariable( serverTemplateId, deploymentId, processInstanceId, variableNameTextBox.getText(), variableValueTextBox.getValue() );
     }
 
 }

@@ -80,7 +80,7 @@ public class TaskDetailsMultiPresenterTest {
     @Test
     public void isForLogRemainsEnabledAfterRefresh() {
         //When task selected with logOnly
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_ID, TASK_NAME, false, true));
+        presenter.onTaskSelectionEvent(new TaskSelectionEvent(null, null, TASK_ID, TASK_NAME, false, true));
 
         //Then only tab log is displayed
         verify(view).displayOnlyLogTab();
@@ -96,7 +96,7 @@ public class TaskDetailsMultiPresenterTest {
     @Test
     public void isForLogRemainsDisabledAfterRefresh() {
         //When task selected without logOnly
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_ID, TASK_NAME, false, false));
+        presenter.onTaskSelectionEvent(new TaskSelectionEvent(null, null, TASK_ID, TASK_NAME, false, false));
 
         //Then alltabs are displayed
         verify(view).displayAllTabs();

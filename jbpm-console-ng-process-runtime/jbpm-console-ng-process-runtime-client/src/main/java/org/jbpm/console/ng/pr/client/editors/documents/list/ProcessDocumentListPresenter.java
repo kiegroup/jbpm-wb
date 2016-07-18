@@ -33,39 +33,33 @@ import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.model.DocumentSummary;
+import org.jbpm.console.ng.bd.model.DocumentSummary;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
-import org.jbpm.console.ng.pr.service.DocumentsService;
+import org.jbpm.console.ng.pr.service.ProcessDocumentsService;
 import org.uberfire.paging.PageResponse;
 
 @Dependent
 public class ProcessDocumentListPresenter extends AbstractListPresenter<DocumentSummary> {
 
-    private Constants constants = GWT.create( Constants.class );
+    private Constants constants = Constants.INSTANCE;
 
     public interface ProcessDocumentListView extends AbstractListView.ListView<DocumentSummary, ProcessDocumentListPresenter> {
 
-        void init( final ProcessDocumentListPresenter presenter );
     }
 
     @Inject
     private ProcessDocumentListView view;
 
     @Inject
-    private Caller<DocumentsService> documentsServices;
+    private Caller<ProcessDocumentsService> documentsServices;
 
     private String processInstanceId;
     private String processDefId;
     private String deploymentId;
-    private String documentId;
-
-    public ProcessDocumentListPresenter() {
-        super();
-    }
+    private String serverTemplateId;
 
     @PostConstruct
     public void init() {
-
         view.init( this );
     }
 
@@ -77,6 +71,7 @@ public class ProcessDocumentListPresenter extends AbstractListPresenter<Document
         this.processInstanceId = String.valueOf( event.getProcessInstanceId() );
         this.processDefId = event.getProcessDefId();
         this.deploymentId = event.getDeploymentId();
+        this.serverTemplateId = event.getServerTemplateId();
         refreshGrid();
     }
 
@@ -114,6 +109,7 @@ public class ProcessDocumentListPresenter extends AbstractListPresenter<Document
             currentFilter.getParams().put( "processInstanceId", processInstanceId );
             currentFilter.getParams().put( "processDefId", processDefId );
             currentFilter.getParams().put( "deploymentId", deploymentId );
+            currentFilter.getParams().put( "serverTemplateId", serverTemplateId );
 
             currentFilter.setOrderBy( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
                     .getColumn().getDataStoreName() : "" );

@@ -15,63 +15,68 @@
  */
 package org.jbpm.console.ng.pr.admin.client.editors.settings;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.TextBox;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Maps;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jbpm.console.ng.bd.model.ProcessSummary;
 import org.jbpm.console.ng.pr.admin.client.i18n.ProcessAdminConstants;
-
-import org.jbpm.console.ng.pr.admin.service.ProcessServiceAdminEntryPoint;
+import org.jbpm.console.ng.pr.admin.service.ProcessAdminService;
+import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
+import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
-import org.uberfire.mvp.PlaceRequest;
 
 @Dependent
-@WorkbenchScreen(identifier = "Process Admin Settings")
+@WorkbenchScreen(identifier = ProcessAdminSettingsPresenter.SCREEN_ID)
 public class ProcessAdminSettingsPresenter {
 
-    private ProcessAdminConstants processAdminConstants = GWT.create(ProcessAdminConstants.class);
+    public static final String SCREEN_ID = "Process Admin Settings";
 
-    public interface ProcessAdminSettingsView extends UberView<ProcessAdminSettingsPresenter> {
-
-        void displayNotification(String text);
-
-        TextBox getDeploymentIdText();
-
-        TextBox getProcessIdText();
-
-        Button getGenerateMockInstancesButton();
-    }
-
-    @Inject
-    ProcessAdminSettingsView view;
-
-    @Inject
-    Caller<ProcessServiceAdminEntryPoint> instancesAdminServices;
-
-    private PlaceRequest place;
+    private final Map<String, ProcessSummary> processeSummaryMap = Maps.newHashMap();
 
     private ProcessAdminConstants constants = ProcessAdminConstants.INSTANCE;
 
-    @OnStartup
-    public void onStartup(final PlaceRequest place) {
-        this.place = place;
+    @Inject
+    private ProcessAdminSettingsView view;
+
+    @Inject
+    private Caller<ProcessAdminService> instancesAdminServices;
+
+    @Inject
+    private Caller<SpecManagementService> specManagementService;
+
+    @Inject
+    private Caller<ProcessRuntimeDataService> processRuntimeDataService;
+
+    @PostConstruct
+    public void init() {
+        specManagementService.call(
+                (Collection<ServerTemplate> st) -> {
+                    final Set<String> stId = FluentIterable.from(st)
+                            .filter(e -> e.getServerInstanceKeys() != null && !e.getServerInstanceKeys().isEmpty())
+                            .transform(s -> s.getId())
+                            .toSet();
+                    view.addServerTemplates(stId);
+                }
+                , new DefaultErrorCallback())
+                .listServerTemplates();
     }
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return processAdminConstants.Process_Instances_Admin();
+        return constants.Process_Instances_Admin();
     }
 
     @WorkbenchPartView
@@ -79,28 +84,41 @@ public class ProcessAdminSettingsPresenter {
         return view;
     }
 
-    public ProcessAdminSettingsPresenter() {
-    }
+    public void generateMockInstances(final String serverTemplateId, final String processId, int amountOfTasks) {
+        final ProcessSummary summary = processeSummaryMap.get(processId);
 
-    @PostConstruct
-    public void init() {
-    }
-
-
-    public void generateMockInstances(String deployId, String processId, int amountOfTasks) {
+        if (summary == null) return;
         instancesAdminServices.call(
-                new RemoteCallback<Long>() {
-                    @Override
-                    public void callback(Long taskId) {
-                        view.displayNotification(constants.ProcessInstancesSuccessfullyCreated());
-                    }
-                },
-                new DefaultErrorCallback()
-        ).generateMockInstances(deployId, processId, amountOfTasks);
+                p -> view.displayNotification(constants.ProcessInstancesSuccessfullyCreated()),
+                new DefaultErrorCallback())
+                .generateMockInstances(serverTemplateId, summary.getDeploymentId(), summary.getProcessDefId(), null, null, amountOfTasks);
     }
 
-    @OnOpen
-    public void onOpen() {
-        view.getDeploymentIdText().setFocus( true );
+    public void onServerTemplateSelected(final String serverTemplateId) {
+        view.clearProcessList();
+        processRuntimeDataService.call(
+                (List<ProcessSummary> ps) -> {
+                    processeSummaryMap.clear();
+                    final Set<String> pid = FluentIterable.from(ps).transform(p -> {
+                        processeSummaryMap.put(p.getProcessDefId(), p);
+                        return p.getProcessDefId();
+                    }).toSet();
+                    view.addProcessList(pid);
+                },
+                new DefaultErrorCallback())
+                .getProcesses(serverTemplateId, 0, Integer.MAX_VALUE, "", true);
     }
+
+    public interface ProcessAdminSettingsView extends UberView<ProcessAdminSettingsPresenter> {
+
+        void displayNotification(String text);
+
+        void addServerTemplates(Set<String> serverTemplateId);
+
+        void clearProcessList();
+
+        void addProcessList(Set<String> processId);
+
+    }
+
 }

@@ -17,31 +17,26 @@
 package org.jbpm.console.ng.pr.forms.client.display.displayers.process;
 
 import java.util.Map;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import javax.enterprise.event.Event;
 import org.jbpm.console.ng.gc.forms.client.display.displayers.util.PlaceManagerFormActivitySearcher;
+import org.jbpm.console.ng.pr.service.ProcessService;
 import org.uberfire.ext.widgets.common.client.forms.GetFormParamsEvent;
 import org.uberfire.ext.widgets.common.client.forms.RequestFormParamsEvent;
 import org.uberfire.ext.widgets.common.client.forms.SetFormParamsEvent;
 
-/**
- *
- * @author salaboy
- */
 @Dependent
 public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessFormDisplayer {
 
     @Inject
-    private Caller<KieSessionEntryPoint> sessionServices;
+    private Caller<ProcessService> processService;
 
     @Inject
     private PlaceManagerFormActivitySearcher placeManagerFormActivitySearcher;
@@ -122,8 +117,8 @@ public class PlaceManagerStartProcessDisplayerImpl extends AbstractStartProcessF
         if (processDefId == null || deploymentId == null) return;
 
         if(event.getAction().equals("startProcess")){
-            sessionServices.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
-                    .startProcess(deploymentId, processDefId, event.getParams());
+            processService.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
+                    .startProcess(serverTemplateId, deploymentId, processDefId, null, event.getParams());
         }
     }
 

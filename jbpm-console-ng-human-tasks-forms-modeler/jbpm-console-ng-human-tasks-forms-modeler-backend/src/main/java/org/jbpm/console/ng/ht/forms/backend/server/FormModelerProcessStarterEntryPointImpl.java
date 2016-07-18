@@ -15,17 +15,15 @@
  */
 package org.jbpm.console.ng.ht.forms.backend.server;
 
-
-import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
-import org.jbpm.console.ng.ht.forms.modeler.service.FormModelerProcessStarterEntryPoint;
-import org.jbpm.formModeler.api.client.FormRenderContextManager;
-
+import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.Map;
-import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
-import org.jbpm.console.ng.ht.service.TaskOperationsService;
+
+import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.ht.forms.modeler.service.FormModelerProcessStarterEntryPoint;
+import org.jbpm.console.ng.ht.service.TaskService;
+import org.jbpm.console.ng.pr.service.ProcessService;
+import org.jbpm.formModeler.api.client.FormRenderContextManager;
 
 @Service
 @ApplicationScoped
@@ -34,41 +32,39 @@ public class FormModelerProcessStarterEntryPointImpl implements FormModelerProce
     private FormRenderContextManager formRenderContextManager;
 
     @Inject
-    private KieSessionEntryPoint kieSessionEntryPoint;
+    private ProcessService processService;
 
     @Inject
-    private TaskLifeCycleService taskServices;
-    
-    @Inject
-    private TaskOperationsService taskOperationsServices;
+    private TaskService taskService;
 
     @Override
-    public Long startProcessFromRenderContext(String ctxUID, String domainId, String processId, String correlationKey, Long parentProcessInstanceId) {
+    public Long startProcessFromRenderContext(String ctxUID, String serverTemplateId, String domainId, String processId, String correlationKey, Long parentProcessInstanceId) {
         Map<String, Object> params = formRenderContextManager.getFormRenderContext(ctxUID).getOutputData();
         formRenderContextManager.removeContext(ctxUID);
-        if (parentProcessInstanceId == null || parentProcessInstanceId < 1)
-            return kieSessionEntryPoint.startProcess(domainId, processId, correlationKey, params);
 
-        return kieSessionEntryPoint.startProcess(domainId, processId, correlationKey, params, parentProcessInstanceId);
+        return processService.startProcess(serverTemplateId, domainId, processId, correlationKey, params);
+
     }
 
     @Override
-    public Long saveTaskStateFromRenderContext(String ctxUID, Long taskId, boolean clearStatus) {
+    public Long saveTaskStateFromRenderContext(String ctxUID, String serverTemplateId, String containerId, Long taskId, boolean clearStatus) {
         Map<String, Object> params = formRenderContextManager.getFormRenderContext(ctxUID).getOutputData();
         if (clearStatus) formRenderContextManager.removeContext(ctxUID);
-        return taskOperationsServices.saveContent(taskId, params);
+        taskService.saveTaskContent(serverTemplateId, containerId, taskId, params);
+
+        return -1l;
     }
 
     @Override
-    public Long saveTaskStateFromRenderContext(String ctxUID, Long taskId) {
-        return saveTaskStateFromRenderContext(ctxUID, taskId, false);
+    public Long saveTaskStateFromRenderContext(String ctxUID, String serverTemplateId, String containerId, Long taskId) {
+        return saveTaskStateFromRenderContext(ctxUID, serverTemplateId, containerId, taskId, false);
     }
 
     @Override
-    public void completeTaskFromContext(String ctxUID, Long taskId, String identityName) {
+    public void completeTaskFromContext(String ctxUID, String serverTemplateId, String containerId, Long taskId) {
         Map<String, Object> params = formRenderContextManager.getFormRenderContext(ctxUID).getOutputData();
         formRenderContextManager.removeContext(ctxUID);
-        taskServices.complete(taskId,  identityName, params);
+        taskService.completeTask(serverTemplateId, containerId, taskId, params);
     }
 
     @Override

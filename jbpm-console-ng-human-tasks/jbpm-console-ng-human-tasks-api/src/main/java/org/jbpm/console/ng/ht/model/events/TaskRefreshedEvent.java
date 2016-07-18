@@ -21,6 +21,8 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class TaskRefreshedEvent implements Serializable {
+    private String serverTemplateId;
+    private String deploymentId;
     private long taskId;
     private String taskName;
     public TaskRefreshedEvent(long taskId, String taskName) {
@@ -30,6 +32,12 @@ public class TaskRefreshedEvent implements Serializable {
     }
 
     public TaskRefreshedEvent(long taskId) {
+        this.taskId = taskId;
+    }
+
+    public TaskRefreshedEvent(String serverTemplateId, String deploymentId, long taskId) {
+        this.serverTemplateId = serverTemplateId;
+        this.deploymentId = deploymentId;
         this.taskId = taskId;
     }
 
@@ -53,6 +61,11 @@ public class TaskRefreshedEvent implements Serializable {
         this.taskName = taskName;
     }
 
-    
+    public String getServerTemplateId() {
+        return serverTemplateId;
+    }
 
+    public String getDeploymentId() {
+        return deploymentId;
+    }
 }

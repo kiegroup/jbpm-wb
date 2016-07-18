@@ -26,6 +26,7 @@ import org.dashbuilder.dataset.sort.SortOrder;
 import org.dashbuilder.displayer.client.DataSetHandler;
 import org.dashbuilder.displayer.client.DataSetHandlerImpl;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
+import org.jbpm.console.ng.ga.model.dataset.ConsoleDataSetLookup;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -138,7 +139,7 @@ public class DataSetQueryHelper<T> {
     }
 
     public void setDataSetHandler(FilterSettings tableSettings) {
-        this.dataSetHandler = new DataSetHandlerImpl(dataSetClientServices, tableSettings.getDataSetLookup());
+        this.dataSetHandler = new DataSetHandlerImpl(dataSetClientServices, ConsoleDataSetLookup.fromInstance(tableSettings.getDataSetLookup(), tableSettings.getServerTemplateId()));
     }
 
     public void setDataSetHandler(DataSetHandler dataSetHandler) {

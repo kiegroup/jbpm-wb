@@ -72,7 +72,8 @@ public class HumanTaskFormDisplayProviderImpl implements HumanTaskFormDisplayPro
         } );
     }
 
-    @Override public void setup(final HumanTaskDisplayerConfig config, final FormDisplayerView view) {
+    @Override
+    public void setup(final HumanTaskDisplayerConfig config, final FormDisplayerView view) {
         display(config, view);
     }
 
@@ -95,7 +96,7 @@ public class HumanTaskFormDisplayProviderImpl implements HumanTaskFormDisplayPro
                         }
                     }
                 }
-            }).getFormDisplayTask(config.getKey().getTaskId());
+            }).getFormDisplayTask(config.getKey().getServerTemplateId(), config.getKey().getDeploymentId(), config.getKey().getTaskId());
         }
     }
 

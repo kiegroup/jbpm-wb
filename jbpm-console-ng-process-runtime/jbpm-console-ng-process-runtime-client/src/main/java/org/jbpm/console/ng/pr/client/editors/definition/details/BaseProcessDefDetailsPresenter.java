@@ -31,6 +31,7 @@ public abstract class BaseProcessDefDetailsPresenter {
 
     private String currentProcessDefId = "";
     private String currentDeploymentId = "";
+    private String currentServerTemplateId = "";
 
     public interface BaseProcessDefDetailsView extends IsWidget {
 
@@ -59,13 +60,14 @@ public abstract class BaseProcessDefDetailsPresenter {
     public void onProcessDefSelectionEvent( @Observes final ProcessDefSelectionEvent event ) {
         this.currentProcessDefId = event.getProcessId();
         this.currentDeploymentId = event.getDeploymentId();
-        refreshView( currentProcessDefId, currentDeploymentId );
-        refreshProcessDef( currentDeploymentId, currentProcessDefId );
+        this.currentServerTemplateId = event.getServerTemplateId();
+        refreshView( currentServerTemplateId, currentProcessDefId, currentDeploymentId );
+        refreshProcessDef( currentServerTemplateId, currentDeploymentId, currentProcessDefId );
     }
 
     public abstract IsWidget getWidget();
 
-    protected abstract void refreshView( String currentProcessDefId, String currentDeploymentId );
+    protected abstract void refreshView(  final String serverTemplateId, String currentProcessDefId, String currentDeploymentId );
 
-    protected abstract void refreshProcessDef( final String deploymentId, final String processId );
+    protected abstract void refreshProcessDef(  final String serverTemplateId, final String deploymentId, final String processId );
 }

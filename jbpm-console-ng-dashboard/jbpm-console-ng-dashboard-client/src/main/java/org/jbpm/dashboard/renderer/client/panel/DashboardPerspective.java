@@ -33,11 +33,9 @@ public class DashboardPerspective {
 
     @Perspective
     public PerspectiveDefinition buildPerspective() {
-
         PerspectiveDefinition perspective = new PerspectiveDefinitionImpl(SimpleWorkbenchPanelPresenter.class.getName());
         perspective.setName(DashboardConstants.INSTANCE.processDashboardName());
-
-        perspective.getRoot().addPart("DashboardScreen");
+        perspective.getRoot().addPart(DashboardScreen.SCREEN_ID);
         return perspective;
     }
 }

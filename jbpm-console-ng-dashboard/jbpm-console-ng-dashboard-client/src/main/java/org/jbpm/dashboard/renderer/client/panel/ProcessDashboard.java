@@ -37,6 +37,7 @@ import org.dashbuilder.displayer.client.DisplayerListener;
 import org.dashbuilder.displayer.client.DisplayerLocator;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
+import org.jbpm.console.ng.gc.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.dashboard.renderer.client.panel.events.ProcessDashboardFocusEvent;
 import org.jbpm.dashboard.renderer.client.panel.events.TaskDashboardFocusEvent;
@@ -103,9 +104,10 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
                             final DisplayerCoordinator displayerCoordinator,
                             final PlaceManager placeManager,
                             final Event<ProcessInstanceSelectionEvent> instanceSelectionEvent,
-                            final Event<ProcessDashboardFocusEvent> processDashboardFocusEvent) {
+                            final Event<ProcessDashboardFocusEvent> processDashboardFocusEvent,
+                            final ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder) {
 
-        super(dashboardFactory, dataSetClientServices, placeManager, view.getI18nService(), processBreadCrumb, displayerLocator, displayerCoordinator);
+        super(dashboardFactory, dataSetClientServices, placeManager, view.getI18nService(), processBreadCrumb, displayerLocator, displayerCoordinator, serverTemplateSelectorMenuBuilder);
         this.view = view;
         this.instanceSelectionEvent = instanceSelectionEvent;
         this.processDashboardFocusEvent = processDashboardFocusEvent;
@@ -284,7 +286,8 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
         instanceSelectionEvent.fire(new ProcessInstanceSelectionEvent(
                 deploymentId, processInstanceId,
                 processDefId, processDefName,
-                processInstanceStatus, true));
+                processInstanceStatus, true,
+                serverTemplateSelectorMenuBuilder.getSelectedServerTemplate()));
     }
 
     public void showDashboard() {

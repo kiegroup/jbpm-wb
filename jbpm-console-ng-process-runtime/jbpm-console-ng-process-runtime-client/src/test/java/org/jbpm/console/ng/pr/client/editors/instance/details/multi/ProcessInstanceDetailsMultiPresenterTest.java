@@ -39,7 +39,8 @@ import static org.mockito.Mockito.*;
 public class ProcessInstanceDetailsMultiPresenterTest {
 
     private static final Long PI_ID = 1L;
-    private static final String PI_DEPLOYMENTID = "deploymentIdTest";
+    private static final String SERVER_TEMPLATE_ID = "serverTemplateIdTest";
+    private static final String PI_DEPLOYMENT_ID = "deploymentIdTest";
     private static final String PI_PROCESS_DEF_ID = "processDefIdTest";
     private static final String PI_PROCESS_DEF_NAME = "processDefNameTest";
     @Mock
@@ -76,8 +77,8 @@ public class ProcessInstanceDetailsMultiPresenterTest {
     @Test
     public void isForLogRemainsEnabledAfterRefresh() {
         //When task selected with logOnly
-        presenter.onProcessSelectionEvent(new ProcessInstanceSelectionEvent(PI_DEPLOYMENTID, PI_ID, PI_PROCESS_DEF_ID,
-                PI_PROCESS_DEF_NAME, 0, true));
+        presenter.onProcessSelectionEvent(new ProcessInstanceSelectionEvent(PI_DEPLOYMENT_ID, PI_ID, PI_PROCESS_DEF_ID,
+                PI_PROCESS_DEF_NAME, 0, true, SERVER_TEMPLATE_ID));
         //Then only tab log is displayed
         verify(view).displayOnlyLogTab();
         assertTrue(presenter.isForLog());
@@ -89,8 +90,8 @@ public class ProcessInstanceDetailsMultiPresenterTest {
     @Test
     public void isForLogRemainsDisabledAfterRefresh() {
         //When task selected without logOnly
-        presenter.onProcessSelectionEvent(new ProcessInstanceSelectionEvent(PI_DEPLOYMENTID, PI_ID, PI_PROCESS_DEF_ID,
-                PI_PROCESS_DEF_NAME, 0, false));
+        presenter.onProcessSelectionEvent(new ProcessInstanceSelectionEvent(PI_DEPLOYMENT_ID, PI_ID, PI_PROCESS_DEF_ID,
+                PI_PROCESS_DEF_NAME, 0, false, SERVER_TEMPLATE_ID));
 
         //Then alltabs are displayed
         verify(view).displayAllTabs();

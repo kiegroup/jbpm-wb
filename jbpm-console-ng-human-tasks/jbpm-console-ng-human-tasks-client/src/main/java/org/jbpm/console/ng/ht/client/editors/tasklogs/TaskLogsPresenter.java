@@ -15,8 +15,7 @@
  */
 package org.jbpm.console.ng.ht.client.editors.tasklogs;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
@@ -26,16 +25,12 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.ga.model.PortableQueryFilter;
-import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.gc.client.util.DateUtils;
-import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.service.TaskAuditService;
+import org.jbpm.console.ng.ht.service.TaskService;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
-import org.uberfire.paging.PageResponse;
 
 @Dependent
 public class TaskLogsPresenter {
@@ -52,16 +47,16 @@ public class TaskLogsPresenter {
 
     private TaskLogsView view;
 
-    private Caller<TaskAuditService> taskAuditService;
+    private Caller<TaskService> taskService;
 
     private long currentTaskId = 0;
-
-    private Constants constants = Constants.INSTANCE;
+    private String serverTemplateId;
+    private String containerId;
 
     @Inject
-    public TaskLogsPresenter( final TaskLogsView view, final Caller<TaskAuditService> taskAuditService ) {
+    public TaskLogsPresenter( final TaskLogsView view, final Caller<TaskService> taskService) {
         this.view = view;
-        this.taskAuditService = taskAuditService;
+        this.taskService = taskService;
     }
 
     @PostConstruct
@@ -74,15 +69,13 @@ public class TaskLogsPresenter {
     }
 
     public void refreshLogs() {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("taskId", currentTaskId);
-        QueryFilter filter = new PortableQueryFilter(0, 0, false, "", "", false, "", params);
-        taskAuditService.call(
-                new RemoteCallback<PageResponse<TaskEventSummary>>() {
+        view.setLogTextAreaText("");
+        taskService.call(
+                new RemoteCallback<List<TaskEventSummary>>() {
                     @Override
-                    public void callback(PageResponse<TaskEventSummary> events) {
+                    public void callback(List<TaskEventSummary>events) {
                         SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                        for (TaskEventSummary tes : events.getPageRowList()) {
+                        for (TaskEventSummary tes : events) {
                             String summaryStr = summaryToString(tes);
                             safeHtmlBuilder.appendEscapedLines(summaryStr);
                         }
@@ -96,11 +89,13 @@ public class TaskLogsPresenter {
                     }
                 },
                 new DefaultErrorCallback()
-        ).getData(filter);
+        ).getTaskEvents( serverTemplateId, containerId, currentTaskId );
     }
 
     public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
         this.currentTaskId = event.getTaskId();
+        this.containerId = event.getContainerId();
+        this.serverTemplateId = event.getServerTemplateId();
         refreshLogs();
     }
 

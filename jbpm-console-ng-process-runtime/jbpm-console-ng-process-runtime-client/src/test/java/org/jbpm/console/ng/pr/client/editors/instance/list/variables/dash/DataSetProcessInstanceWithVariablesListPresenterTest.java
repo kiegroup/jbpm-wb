@@ -34,19 +34,19 @@ import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
-import org.jbpm.console.ng.bd.service.KieSessionEntryPoint;
+import org.jbpm.console.ng.bd.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.jbpm.console.ng.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
-import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
-import org.jbpm.console.ng.pr.service.ProcessInstanceService;
-import org.jbpm.process.instance.ProcessInstance;
+import org.jbpm.console.ng.pr.service.ProcessService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.api.runtime.process.ProcessInstance;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -55,22 +55,17 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mvp.PlaceRequest;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.*;
+import static org.jbpm.console.ng.bd.model.ProcessInstanceDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class DataSetProcessInstanceWithVariablesListPresenterTest {
 
-    private CallerMock<ProcessInstanceService> callerMockProcessInstanceService;
+    private CallerMock<ProcessService> remoteProcessServiceCaller;
 
     @Mock
-    private ProcessInstanceService processInstanceServiceMock;
-
-    private CallerMock<KieSessionEntryPoint> callerMockKieSessionServices;
-
-    @Mock
-    private KieSessionEntryPoint kieSessionEntryPointMock;
+    private ProcessService processService;
 
     @Mock
     private DataSetProcessInstanceWithVariablesListViewImpl viewMock;
@@ -100,15 +95,14 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
     private FilterSettings variablesTableSettings;
 
     private ArrayList<ProcessInstanceSummary> processInstanceSummaries;
-    //Thing under test
-    private DataSetProcessInstanceWithVariablesListPresenter presenter;
 
+    @InjectMocks
+    private DataSetProcessInstanceWithVariablesListPresenter presenter;
 
     @Before
     public void setupMocks() {
         //Mock that actually calls the callbacks
-        callerMockKieSessionServices = new CallerMock<KieSessionEntryPoint>(kieSessionEntryPointMock);
-        callerMockProcessInstanceService = new CallerMock<ProcessInstanceService>(processInstanceServiceMock);
+        remoteProcessServiceCaller = new CallerMock<ProcessService>(processService);
 
         processInstanceSummaries = createProcessInstanceSummaryList(5);
 
@@ -136,8 +130,7 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
             }
         }).when(dataSetQueryHelperDomainSpecific).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
 
-        presenter = new DataSetProcessInstanceWithVariablesListPresenter(viewMock, callerMockProcessInstanceService, callerMockKieSessionServices,
-                dataSetQueryHelper, dataSetQueryHelperDomainSpecific, placeManager);
+        presenter.setProcessService(remoteProcessServiceCaller);
     }
 
     @Test
@@ -146,7 +139,7 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
         presenter.getData(new Range(0, 5));
 
         verify(dataSetQueryHelper).setLastSortOrder(SortOrder.ASCENDING);
-        //verify(viewMock).hideBusyIndicator();
+        verify(viewMock, times(2)).hideBusyIndicator();
     }
 
     @Test
@@ -172,50 +165,58 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
     @Test
     public void abortProcessInstanceTest() {
         final Long processInstanceId = new Random().nextLong();
+        final String containerId = "container";
 
-        presenter.abortProcessInstance(processInstanceId);
+        presenter.abortProcessInstance(containerId, processInstanceId);
 
-        verify(kieSessionEntryPointMock).abortProcessInstance(processInstanceId);
+        verify(processService).abortProcessInstance(anyString(), eq(containerId), eq(processInstanceId));
     }
 
     @Test
     public void abortProcessInstancesTest() {
         final Random random = new Random();
+        final List<String> containers = new ArrayList<String>();
+        containers.add("container");
+
         final List<Long> pIds = new ArrayList<Long>();
         pIds.add(random.nextLong());
         pIds.add(random.nextLong());
         pIds.add(random.nextLong());
 
-        presenter.abortProcessInstance(pIds);
+        presenter.abortProcessInstance(containers, pIds);
 
-        verify(kieSessionEntryPointMock).abortProcessInstances(pIds);
+        verify(processService).abortProcessInstances(anyString(), eq(containers), eq(pIds));
     }
 
     @Test
     public void bulkAbortProcessInstancesTest() {
         final List<Long> pIds = new ArrayList<Long>();
+        final List<String> containers = new ArrayList<String>();
         for (ProcessInstanceSummary summary : processInstanceSummaries) {
             pIds.add(summary.getProcessInstanceId());
+            containers.add(summary.getDeploymentId());
         }
 
         presenter.bulkAbort(processInstanceSummaries);
 
-        verify(kieSessionEntryPointMock).abortProcessInstances(pIds);
+        verify(processService).abortProcessInstances(anyString(), eq(containers), eq(pIds));
     }
 
     @Test
     public void bulkAbortProcessInstancesStateTest() {
         processInstanceSummaries.add(createProcessInstanceSummary(new Random().nextInt(), ProcessInstance.STATE_ABORTED));
         final List<Long> pIds = new ArrayList<Long>();
+        final List<String> containers = new ArrayList<String>();
         for (ProcessInstanceSummary summary : processInstanceSummaries) {
             if (summary.getState() == ProcessInstance.STATE_ACTIVE) {
                 pIds.add(summary.getProcessInstanceId());
+                containers.add(summary.getDeploymentId());
             }
         }
 
         presenter.bulkAbort(processInstanceSummaries);
 
-        verify(kieSessionEntryPointMock).abortProcessInstances(pIds);
+        verify(processService).abortProcessInstances(anyString(), eq(containers), eq(pIds));
     }
 
     @Test

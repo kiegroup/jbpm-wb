@@ -24,7 +24,7 @@ import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
-import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
+import org.jbpm.console.ng.es.service.ExecutorService;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.jbpm.console.ng.gc.client.util.DateUtils;
@@ -43,13 +43,13 @@ import static org.jbpm.console.ng.es.model.RequestDataSetConstants.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class RequestListPresenterTest {
+
     private static final Long REQUESTID_ID = 1L;
 
-    private CallerMock<ExecutorServiceEntryPoint> callerMockExecutorService;
+    private CallerMock<ExecutorService> callerMockExecutorService;
 
     @Mock
-    private ExecutorServiceEntryPoint executorServiceMock;
-
+    private ExecutorService executorServiceMock;
 
     @Mock
     private RequestListViewImpl viewMock;
@@ -73,7 +73,7 @@ public class RequestListPresenterTest {
     @Before
     public void setupMocks() {
         //Mock that actually calls the callbacks
-        callerMockExecutorService = new CallerMock<ExecutorServiceEntryPoint>(executorServiceMock);
+        callerMockExecutorService = new CallerMock<ExecutorService>(executorServiceMock);
 
         filterSettings= createTableSettingsPrototype();
 
@@ -85,7 +85,6 @@ public class RequestListPresenterTest {
 
         presenter = new RequestListPresenter(viewMock,
                 callerMockExecutorService,dataSetQueryHelper,requestChangedEvent);
-        
     }
 
     @Test
@@ -93,29 +92,24 @@ public class RequestListPresenterTest {
         presenter.setAddingDefaultFilters(false);
         presenter.getData(new Range(0, 5));
 
-
         verify(dataSetQueryHelper).setLastSortOrder(SortOrder.ASCENDING);
         verify(viewMock).hideBusyIndicator();
     }
 
     @Test
     public void cancelRequestTest() {
-
         presenter.cancelRequest(REQUESTID_ID);
-        verify( requestChangedEvent,
-                times( 1 ) ).fire(any(RequestChangedEvent.class));
-        verify(executorServiceMock).cancelRequest(REQUESTID_ID);
 
+        verify(requestChangedEvent, times(1)).fire(any(RequestChangedEvent.class));
+        verify(executorServiceMock).cancelRequest(anyString(), eq(REQUESTID_ID));
     }
 
     @Test
     public void requeueRequestTest() {
-
         presenter.requeueRequest(REQUESTID_ID);
-        verify( requestChangedEvent,
-                times( 1 ) ).fire(any(RequestChangedEvent.class));
-        verify(executorServiceMock).requeueRequest(REQUESTID_ID);
 
+        verify(requestChangedEvent, times(1)).fire(any(RequestChangedEvent.class));
+        verify(executorServiceMock).requeueRequest(anyString(), eq(REQUESTID_ID));
     }
 
     public FilterSettings createTableSettingsPrototype() {

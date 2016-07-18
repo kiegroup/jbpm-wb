@@ -64,4 +64,7 @@ public interface Constants extends Messages {
     String DataSetNotFound(String dataSet);
 
     String DataSetError(String dataSet, String errorMessage);
+
+    String ServerTemplates();
+
 }

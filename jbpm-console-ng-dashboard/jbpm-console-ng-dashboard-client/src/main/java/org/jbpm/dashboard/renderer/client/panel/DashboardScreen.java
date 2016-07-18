@@ -18,21 +18,33 @@ package org.jbpm.dashboard.renderer.client.panel;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import org.jbpm.console.ng.ga.events.ServerTemplateSelected;
+import org.jbpm.console.ng.gc.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
-@WorkbenchScreen(identifier = "DashboardScreen")
+@WorkbenchScreen(identifier = DashboardScreen.SCREEN_ID)
 public class DashboardScreen {
+
+    protected static final String SCREEN_ID = "DashboardScreen";
 
     public interface View extends UberView<DashboardScreen> {
     }
+
+    @Inject
+    private ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
 
     @Inject
     ProcessDashboard processDashboard;
@@ -42,6 +54,9 @@ public class DashboardScreen {
 
     @Inject
     DashboardView view;
+
+    @Inject
+    PlaceManager placeManager;
 
     @PostConstruct
     public void init() {
@@ -65,5 +80,19 @@ public class DashboardScreen {
     public IsWidget getTaskDashboard() {
         return taskDashboard;
     }
-}
 
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return MenuFactory
+                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder)
+                .endMenu()
+                .build();
+    }
+
+    public void onServerTemplateSelected(@Observes final ServerTemplateSelected serverTemplateSelected ) {
+        //Refresh view
+        placeManager.closePlace(SCREEN_ID);
+        placeManager.goTo(SCREEN_ID);
+    }
+
+}

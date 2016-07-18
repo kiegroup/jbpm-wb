@@ -21,8 +21,8 @@ import java.util.List;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
-import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
+import org.jbpm.console.ng.bd.model.ProcessVariableSummary;
+import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.service.ProcessVariablesService;
 import org.junit.Before;
@@ -40,34 +40,34 @@ public class ProcessVariableListPresenterTest {
     @Mock
     ProcessVariableListPresenter.ProcessVariableListView view;
 
+    @Mock
+    ExtendedPagedTable extendedPagedTable;
+
     Caller<ProcessVariablesService> variablesServicesCaller;
 
     @Mock
     ProcessVariablesService processVariablesService;
-
-    Caller<DataServiceEntryPoint> dataServicesCaller;
-
-    @Mock
-    DataServiceEntryPoint dataServiceEntryPoint;
 
     ProcessVariableListPresenter presenter;
 
     @Before
     public void setup() {
         variablesServicesCaller = new CallerMock<ProcessVariablesService>(processVariablesService);
-        dataServicesCaller = new CallerMock<DataServiceEntryPoint>(dataServiceEntryPoint);
-        presenter = new ProcessVariableListPresenter(view, variablesServicesCaller, dataServicesCaller);
+        presenter = new ProcessVariableListPresenter(view, variablesServicesCaller);
     }
 
     @Test
     public void testLoadVariableHistory() {
         final ParameterizedCommand callback = mock(ParameterizedCommand.class);
         final String variableName = "variable";
+        final String deploymentId = "deploymentId";
         final long processInstanceId = 1l;
         final ProcessVariableSummary summary = new ProcessVariableSummary(variableName, "variableInstanceId", processInstanceId, "oldValue", "newValue", System.currentTimeMillis(), "type");
         final List<ProcessVariableSummary> summaries = Arrays.asList(summary);
-        when(dataServiceEntryPoint.getVariableHistory(processInstanceId, variableName)).thenReturn(summaries);
-        final ProcessInstanceSelectionEvent event = new ProcessInstanceSelectionEvent("deploymentId", processInstanceId, "processDefId", "processDefName", 1);
+        when(processVariablesService.getVariableHistory(anyString(), eq(deploymentId), eq(processInstanceId), eq(variableName))).thenReturn(summaries);
+        when(view.getListGrid()).thenReturn(extendedPagedTable);
+
+        final ProcessInstanceSelectionEvent event = new ProcessInstanceSelectionEvent(deploymentId, processInstanceId, "processDefId", "processDefName", 1, "serverTemplateIdTest");
 
         presenter.onProcessInstanceSelectionEvent(event);
         presenter.loadVariableHistory(callback, variableName);

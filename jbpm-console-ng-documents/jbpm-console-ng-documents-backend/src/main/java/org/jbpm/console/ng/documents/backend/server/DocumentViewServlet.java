@@ -16,13 +16,11 @@
 package org.jbpm.console.ng.documents.backend.server;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,10 +32,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
-import org.drools.compiler.kproject.ReleaseIdImpl;
-import org.drools.compiler.kproject.xml.PomModel;
 import org.jbpm.console.ng.dm.model.DocumentSummary;
-import org.kie.api.builder.ReleaseId;
 
 public class DocumentViewServlet extends HttpServlet {
 

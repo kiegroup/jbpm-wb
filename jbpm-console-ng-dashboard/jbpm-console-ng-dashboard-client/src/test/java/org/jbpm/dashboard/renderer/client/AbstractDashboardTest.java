@@ -22,6 +22,7 @@ import org.dashbuilder.displayer.client.DisplayerCoordinator;
 import org.dashbuilder.displayer.client.DisplayerListener;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
+import org.jbpm.console.ng.gc.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.dashboard.renderer.client.panel.AbstractDashboard;
 import org.jbpm.dashboard.renderer.client.panel.DashboardFactory;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardI18n;
@@ -46,6 +47,9 @@ public abstract class AbstractDashboardTest extends AbstractDisplayerTest {
 
     @Mock
     PlaceManager placeManager;
+
+    @Mock
+    ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
 
     DisplayerCoordinator displayerCoordinator;
 

@@ -33,7 +33,7 @@ public interface Constants extends Messages {
     Constants INSTANCE = GWT.create(Constants.class);
 
     String Tasks_List();
-    
+
     String Tasks_List_Admin();
 
     String Dashboards();
@@ -69,9 +69,9 @@ public interface Constants extends Messages {
     String Role();
 
     String User();
-    
+
     String Settings();
-    
+
     String Users();
 
     String Jobs();
@@ -91,6 +91,8 @@ public interface Constants extends Messages {
     String Groups();
 
     String Group();
+
+    String Execution_Servers();
 
     String Case_Management();
 

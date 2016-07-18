@@ -40,4 +40,22 @@ public final class ProcessDiagramUtil {
         defaultPlaceRequest.addParameter( "deploymentId", deploymentId );
         return defaultPlaceRequest;
     }
+
+    public static PlaceRequest buildPlaceRequest( String serverTemplateId, String deploymentId, String processId ) {
+        final PathPlaceRequest defaultPlaceRequest = new PathPlaceRequest( new DummyProcessPath( processId ), "jBPM Process Diagram" );
+
+        defaultPlaceRequest.addParameter( "serverTemplateId", serverTemplateId );
+        defaultPlaceRequest.addParameter( "processId", processId );
+        defaultPlaceRequest.addParameter( "containerId", deploymentId );
+        return defaultPlaceRequest;
+    }
+
+    public static PlaceRequest buildPlaceRequest( String serverTemplateId, String deploymentId, Long processInstanceId ) {
+        final PathPlaceRequest defaultPlaceRequest = new PathPlaceRequest( new DummyProcessPath( processInstanceId.toString() ), "jBPM Process Diagram" );
+
+        defaultPlaceRequest.addParameter( "serverTemplateId", serverTemplateId );
+        defaultPlaceRequest.addParameter( "processInstanceId", processInstanceId.toString() );
+        defaultPlaceRequest.addParameter( "containerId", deploymentId );
+        return defaultPlaceRequest;
+    }
 }

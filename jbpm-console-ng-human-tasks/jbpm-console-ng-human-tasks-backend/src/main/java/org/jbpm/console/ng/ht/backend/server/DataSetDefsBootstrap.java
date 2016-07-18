@@ -22,7 +22,8 @@ import javax.inject.Inject;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefFactory;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
-import org.jbpm.persistence.settings.JpaSettings;
+import org.jbpm.console.ng.bd.integration.KieServerDataSetProvider;
+import org.kie.server.api.KieServerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
@@ -33,20 +34,37 @@ import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
 @ApplicationScoped
 public class DataSetDefsBootstrap {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataSetDefsBootstrap.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataSetDefsBootstrap.class);
+    private static final  String JBPM_DATA_SOURCE = "${"+ KieServerConstants.CFG_PERSISTANCE_DS + "}";
 
     @Inject
     protected DataSetDefRegistry dataSetDefRegistry;
 
     @PostConstruct
     protected void registerDataSetDefinitions() {
-        String jbpmDataSource = JpaSettings.get().getDataSourceJndiName();
-
         DataSetDef humanTasksDef = DataSetDefFactory.newSQLDataSetDef()
                 .uuid(HUMAN_TASKS_DATASET)
                 .name("Human tasks")
-                .dataSource(jbpmDataSource)
-                .dbTable("AuditTaskImpl", false)
+                .dataSource(JBPM_DATA_SOURCE)
+                .dbSQL("select " +
+                            "t.activationTime, " +
+                            "t.actualOwner, " +
+                            "t.createdBy, " +
+                            "t.createdOn, " +
+                            "t.deploymentId, " +
+                            "t.description, " +
+                            "t.dueDate, " +
+                            "t.name, " +
+                            "t.parentId, " +
+                            "t.priority, " +
+                            "t.processId, " +
+                            "t.processInstanceId, " +
+                            "t.processSessionId, " +
+                            "t.status, " +
+                            "t.taskId, " +
+                            "t.workItemId " +
+                        "from " +
+                            "AuditTaskImpl t", false)
                 .date(COLUMN_ACTIVATION_TIME)
                 .label(COLUMN_ACTUAL_OWNER)
                 .label(COLUMN_CREATED_BY)
@@ -67,8 +85,8 @@ public class DataSetDefsBootstrap {
 
         DataSetDef humanTasksWithUserDef = DataSetDefFactory.newSQLDataSetDef()
                 .uuid(HUMAN_TASKS_WITH_USER_DATASET)
-                .name("Human tasks and users")
-                .dataSource(jbpmDataSource)
+                .name("FILTERED_PO_TASK-Human tasks and users")
+                .dataSource(JBPM_DATA_SOURCE)
                 .dbSQL( "select " +
                             "t.activationTime, " +
                             "t.actualOwner, " +
@@ -115,8 +133,8 @@ public class DataSetDefsBootstrap {
 
         DataSetDef humanTaskWithAdminDef = DataSetDefFactory.newSQLDataSetDef()
                 .uuid(HUMAN_TASKS_WITH_ADMIN_DATASET)
-                .name("Human tasks and admins")
-                .dataSource(jbpmDataSource)
+                .name("FILTERED_BA_TASK-Human tasks and admins")
+                .dataSource(JBPM_DATA_SOURCE)
                 .dbSQL("select " +
                             "t.activationTime, " +
                             "t.actualOwner, " +
@@ -156,15 +174,15 @@ public class DataSetDefsBootstrap {
                 .number(COLUMN_PROCESS_INSTANCE_ID)
                 .number(COLUMN_PROCESS_SESSION_ID)
                 .label(COLUMN_STATUS)
-                .label(COLUMN_TASK_ID)     //declaring as label(even though it's numeric) because needs apply groupby and  Group by number not supported
+                .label(COLUMN_TASK_ID)
                 .number(COLUMN_WORK_ITEM_ID)
                 .label(COLUMN_ORGANIZATIONAL_ENTITY)
                 .buildDef();
 
-       DataSetDef humanTasksWithUserDomainDef = DataSetDefFactory.newSQLDataSetDef()       //Add to this dataset TaskName? to apply with the specified filter
+        DataSetDef humanTasksWithUserDomainDef = DataSetDefFactory.newSQLDataSetDef()       //Add to this dataset TaskName? to apply with the specified filter
                 .uuid(HUMAN_TASKS_WITH_VARIABLES_DATASET)
                 .name("Domain Specific Task")
-                .dataSource(jbpmDataSource)
+                .dataSource(JBPM_DATA_SOURCE)
                 .dbSQL("select " +
                             "tvi.taskId, " +
                             "(select ati.name from AuditTaskImpl ati where ati.taskId = tvi.taskId) as \"" + COLUMN_TASK_VARIABLE_TASK_NAME + "\", " +
@@ -181,16 +199,20 @@ public class DataSetDefsBootstrap {
 
         // Hide all these internal data set from end user view
         humanTasksDef.setPublic(false);
+        humanTasksDef.setProvider(KieServerDataSetProvider.TYPE);
         humanTasksWithUserDef.setPublic(false);
+        humanTasksWithUserDef.setProvider(KieServerDataSetProvider.TYPE);
         humanTaskWithAdminDef.setPublic(false);
+        humanTaskWithAdminDef.setProvider(KieServerDataSetProvider.TYPE);
         humanTasksWithUserDomainDef.setPublic(false);
+        humanTasksWithUserDomainDef.setProvider(KieServerDataSetProvider.TYPE);
 
         // Register the data set definitions
         dataSetDefRegistry.registerDataSetDef(humanTasksDef);
         dataSetDefRegistry.registerDataSetDef(humanTasksWithUserDef);
         dataSetDefRegistry.registerDataSetDef(humanTaskWithAdminDef);
         dataSetDefRegistry.registerDataSetDef(humanTasksWithUserDomainDef);
-        logger.info("Human task datasets registered");
-
+        LOGGER.info("Human task datasets registered");
     }
+
 }

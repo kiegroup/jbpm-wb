@@ -15,7 +15,8 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskassignments;
 
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -23,18 +24,17 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.common.collect.FluentIterable;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.security.shared.api.Group;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.model.TaskSummary;
+import org.jbpm.console.ng.ht.model.TaskAssignmentSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
-import org.jbpm.console.ng.ht.service.TaskOperationsService;
+import org.jbpm.console.ng.ht.service.TaskService;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 @Dependent
@@ -62,23 +62,22 @@ public class TaskAssignmentsPresenter {
     private Constants constants = Constants.INSTANCE;
     private TaskAssignmentsView view;
     private User identity;
-    private Caller<TaskLifeCycleService> taskLifecycleService;
-    private Caller<TaskOperationsService> taskOperationsService;
+    private Caller<TaskService> taskService;
     private Event<TaskRefreshedEvent> taskRefreshed;
     private long currentTaskId = 0;
+    private String serverTemplateId;
+    private String containerId;
 
     @Inject
     public TaskAssignmentsPresenter(
             TaskAssignmentsView view,
             User identity,
-            Caller<TaskLifeCycleService> taskLifecycleService,
-            Caller<TaskOperationsService> taskOperationsService,
+            Caller<TaskService> taskService,
             Event<TaskRefreshedEvent> taskRefreshed
     ) {
         this.view = view;
         this.identity = identity;
-        this.taskLifecycleService = taskLifecycleService;
-        this.taskOperationsService = taskOperationsService;
+        this.taskService = taskService;
         this.taskRefreshed = taskRefreshed;
     }
 
@@ -96,7 +95,7 @@ public class TaskAssignmentsPresenter {
             view.setHelpText(constants.DelegationUserInputRequired());
             return;
         }
-        taskLifecycleService.call(
+        taskService.call(
                 new RemoteCallback<Void>() {
                     @Override
                     public void callback(Void nothing) {
@@ -116,7 +115,7 @@ public class TaskAssignmentsPresenter {
                         return super.error(message, throwable);
                     }
                 }
-        ).delegate(currentTaskId, identity.getIdentifier(), entity);
+        ).delegate(serverTemplateId, containerId, currentTaskId, entity);
     }
 
     public void refreshTaskPotentialOwners() {
@@ -125,34 +124,26 @@ public class TaskAssignmentsPresenter {
             view.enableUserOrGroupInput(false);
             view.setPotentialOwnersInfo("");
 
-            taskOperationsService.call(new RemoteCallback<TaskSummary>() {
+            taskService.call(new RemoteCallback<TaskAssignmentSummary>() {
                 @Override
-                public void callback(final TaskSummary response) {
+                public void callback(final TaskAssignmentSummary response) {
                     if (response.getPotOwnersString() == null || response.getPotOwnersString().isEmpty()) {
                         view.setPotentialOwnersInfo(constants.No_Potential_Owners());
                     } else {
                         view.setPotentialOwnersInfo(response.getPotOwnersString().toString());
+                        view.enableDelegateButton(response.isDelegationAllowed());
+                        view.enableUserOrGroupInput(response.isDelegationAllowed());
                     }
                 }
-            }, new DefaultErrorCallback()).getTaskDetails(currentTaskId);
+            }, new DefaultErrorCallback()).getTaskAssignmentDetails(serverTemplateId, containerId, currentTaskId);
 
-            final Set<String> groups = new HashSet<String>();
-            for( final Group group : identity.getGroups()){
-                groups.add( group.getName() );
-            }
-
-            taskOperationsService.call(new RemoteCallback<Boolean>() {
-                @Override
-                public void callback(final Boolean delegateEnabled) {
-                    view.enableDelegateButton(delegateEnabled);
-                    view.enableUserOrGroupInput(delegateEnabled);
-                }
-            }, new DefaultErrorCallback()).allowDelegate(currentTaskId, identity.getIdentifier(), groups);
         }
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
         this.currentTaskId = event.getTaskId();
+        serverTemplateId = event.getServerTemplateId();
+        containerId = event.getContainerId();
         view.setHelpText("");
         view.clearUserOrGroupInput();
         refreshTaskPotentialOwners();
@@ -163,4 +154,5 @@ public class TaskAssignmentsPresenter {
             refreshTaskPotentialOwners();
         }
     }
+
 }

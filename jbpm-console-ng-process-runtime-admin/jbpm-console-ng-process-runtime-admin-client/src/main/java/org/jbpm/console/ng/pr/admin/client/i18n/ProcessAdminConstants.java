@@ -35,8 +35,6 @@ public interface ProcessAdminConstants extends Messages {
 
     String Amount_Of_Tasks();
 
-    String DeploymentId();
-
     String ProcessId();
 
     String Generate_Mock_Instances();
@@ -44,4 +42,8 @@ public interface ProcessAdminConstants extends Messages {
     String UnexpectedError(String errorMessage);
 
     String ProcessInstancesSuccessfullyCreated();
+
+    String ServerTemplate();
+
+    String Reset();
 }

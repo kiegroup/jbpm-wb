@@ -21,8 +21,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.cell.client.ActionCell;
@@ -55,20 +53,14 @@ import org.jbpm.console.ng.gc.client.list.base.AbstractMultiGridView;
 import org.jbpm.console.ng.gc.client.util.ButtonActionCell;
 import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.jbpm.console.ng.gc.client.util.TaskUtils;
-import org.jbpm.console.ng.ht.client.editors.quicknewtask.QuickNewTaskPopup;
 import org.jbpm.console.ng.ht.client.editors.taskslist.grid.AbstractTasksListGridPresenter;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
-import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
-import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
-import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.dashbuilder.dataset.sort.SortOrder.*;
@@ -78,26 +70,16 @@ import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
 public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, AbstractTasksListGridPresenter>
         implements AbstractTasksListGridPresenter.DataSetTaskListView {
 
-    public static String DATASET_TASK_LIST_PREFIX = "DataSetTaskListGrid";
-
-    private final Constants constants = Constants.INSTANCE;
+    public static final String DATASET_TASK_LIST_PREFIX = "DataSetTaskListGrid";
     public static final String COL_ID_ACTIONS = "actions";
 
-    @Inject
-    private Event<TaskSelectionEvent> taskSelected;
-
-    @Inject
-    private QuickNewTaskPopup quickNewTaskPopup;
-
-    @Inject
-    private NewTabFilterPopup newTabFilterPopup;
+    private final Constants constants = Constants.INSTANCE;
 
     @Inject
     private DataSetEditorManager dataSetEditorManager;
 
     @Override
     public void init( final AbstractTasksListGridPresenter presenter ) {
-
         final List<String> bannedColumns = new ArrayList<String>();
         bannedColumns.add( COLUMN_NAME );
         bannedColumns.add( COL_ID_ACTIONS );
@@ -140,7 +122,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         } );
         super.init( presenter, new GridGlobalPreferences( DATASET_TASK_LIST_PREFIX, initColumns, bannedColumns ), button );
-
     }
 
     public void initSelectionModel() {
@@ -196,21 +177,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
                 selectedItem = selectionModel.getLastSelectedObject();
 
-                DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Task Details Multi" );
-                PlaceStatus status = placeManager.getStatus( defaultPlaceRequest );
-                boolean logOnly = false;
-                if ( selectedItem.getStatus().equals( "Completed" ) && selectedItem.isLogOnly() ) {
-                    logOnly = true;
-                }
-                if ( status == PlaceStatus.CLOSE ) {
-                    placeManager.goTo( defaultPlaceRequest );
-                    taskSelected.fire( new TaskSelectionEvent( selectedItem.getTaskId(), selectedItem.getTaskName(), selectedItem.isForAdmin(), logOnly ) );
-                } else if ( status == PlaceStatus.OPEN && !close ) {
-                    taskSelected.fire( new TaskSelectionEvent( selectedItem.getTaskId(), selectedItem.getTaskName(), selectedItem.isForAdmin(), logOnly ) );
-                } else if ( status == PlaceStatus.OPEN && close ) {
-                    placeManager.closePlace( "Task Details Multi" );
-                }
-
+                presenter.selectTask(selectedItem, close);
             }
         } );
 
@@ -236,7 +203,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                 } );
         extendedPagedTable.setSelectionModel( selectionModel, noActionColumnManager );
         extendedPagedTable.setRowStyles( selectedStyles );
-
     }
 
     @Override
@@ -411,42 +377,27 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return taskProcessInstanceIdColumn;
     }
 
-    public void onTaskRefreshedEvent( @Observes TaskRefreshedEvent event ) {
-        presenter.refreshGrid();
-    }
-
     private Column initActionsColumn( final ExtendedPagedTable extendedPagedTable ) {
         List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
         cells.add( new ClaimActionHasCell( constants.Claim(), new ActionCell.Delegate<TaskSummary>() {
             @Override
-            public void execute( TaskSummary task ) {
-
-                presenter.claimTask( task.getTaskId(), identity.getIdentifier(), task.getDeploymentId() );
-                taskSelected.fire( new TaskSelectionEvent( task.getTaskId(), task.getTaskName() ) );
-                extendedPagedTable.refresh();
+            public void execute( final TaskSummary task ) {
+                presenter.claimTask( task );
             }
         } ) );
 
         cells.add( new ReleaseActionHasCell( constants.Release(), new ActionCell.Delegate<TaskSummary>() {
             @Override
-            public void execute( TaskSummary task ) {
-
-                presenter.releaseTask( task.getTaskId(), identity.getIdentifier() );
-                taskSelected.fire( new TaskSelectionEvent( task.getTaskId(), task.getTaskName() ) );
-                extendedPagedTable.refresh();
+            public void execute( final TaskSummary task ) {
+                presenter.releaseTask( task );
             }
         } ) );
 
         cells.add( new CompleteActionHasCell( constants.Open(), new ActionCell.Delegate<TaskSummary>() {
             @Override
-            public void execute( TaskSummary task ) {
-                placeManager.goTo( "Task Details Multi" );
-                boolean logOnly = false;
-                if ( task.getStatus().equals( "Completed" ) && task.isLogOnly() ) {
-                    logOnly = true;
-                }
+            public void execute( final TaskSummary task ) {
                 selectedRow = -1;
-                taskSelected.fire( new TaskSelectionEvent( task.getTaskId(), task.getName(), task.isForAdmin(), logOnly ) );
+                presenter.selectTask(task, false);
             }
         } ) );
 
@@ -460,19 +411,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         actionsColumn.setDataStoreName( COL_ID_ACTIONS );
         return actionsColumn;
 
-    }
-
-    public void refreshNewTask( @Observes NewTaskEvent newTask ) {
-        presenter.refreshGrid();
-        PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( "Task Details Multi" ) );
-        if ( status == PlaceStatus.OPEN ) {
-            taskSelected.fire( new TaskSelectionEvent( newTask.getNewTaskId(), newTask.getNewTaskName() ) );
-        } else {
-            placeManager.goTo( "Task Details Multi" );
-            taskSelected.fire( new TaskSelectionEvent( newTask.getNewTaskId(), newTask.getNewTaskName() ) );
-        }
-
-        selectionModel.setSelected( new TaskSummary( newTask.getNewTaskId(), newTask.getNewTaskName() ), true );
     }
 
     protected class CompleteActionHasCell extends ButtonActionCell<TaskSummary> {
@@ -515,18 +453,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                     && ( value.getStatus().equals( "Reserved" ) || value.getStatus().equals( "InProgress" ) ) ) {
                 super.render( context, value, sb );
             }
-        }
-    }
-
-    private PlaceStatus getPlaceStatus( String place ) {
-        DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( place );
-        PlaceStatus status = placeManager.getStatus( defaultPlaceRequest );
-        return status;
-    }
-
-    private void closePlace( String place ) {
-        if ( getPlaceStatus( place ) == PlaceStatus.OPEN ) {
-            placeManager.closePlace( place );
         }
     }
 
@@ -586,7 +512,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         initFilterTab(builder , key, tabName, tabDesc, preferences);
     }
 
-    
+
 
     private void initAdminTabFilter( GridGlobalPreferences preferences,
                                      final String key,
@@ -694,7 +620,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         });
     }
-    
+
     public void applyFilterOnPresenter(HashMap<String, Object> params) {
         String tableSettingsJSON = (String) params.get(FILTER_TABLE_SETTINGS);
         FilterSettings tableSettings = dataSetEditorManager.getStrToTableSettings(tableSettingsJSON);
@@ -783,7 +709,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         }
 
         extendedPagedTable.addColumns( columnMetas );
-
     }
 
 
@@ -857,6 +782,11 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterTaskAdmin());
             filterPagedTable.saveTabSettings(DATASET_TASK_LIST_PREFIX + "_4", tabSettingsValues);
         }
+    }
+
+    @Override
+    public void setSelectedTask(final TaskSummary selectedTask) {
+        selectionModel.setSelected( selectedTask, true );
     }
 
 }

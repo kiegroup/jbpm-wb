@@ -20,7 +20,7 @@ import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import org.jbpm.console.ng.gc.client.util.ButtonActionCell;
-import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.bd.model.ProcessInstanceSummary;
 import org.kie.api.runtime.process.ProcessInstance;
 
 public class ProcessInstanceSummaryActionCell extends ButtonActionCell<ProcessInstanceSummary> {

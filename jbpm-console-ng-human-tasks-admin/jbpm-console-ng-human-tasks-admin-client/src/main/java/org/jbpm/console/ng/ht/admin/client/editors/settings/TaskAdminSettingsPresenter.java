@@ -24,7 +24,7 @@ import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ht.admin.client.i18n.Constants;
-import org.jbpm.console.ng.ht.admin.service.TaskServiceAdminEntryPoint;
+import org.jbpm.console.ng.ht.admin.service.TaskServiceAdmin;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -53,7 +53,7 @@ public class TaskAdminSettingsPresenter {
     TaskAdminSettingsView view;
 
     @Inject
-    Caller<TaskServiceAdminEntryPoint> taskAdminServices;
+    Caller<TaskServiceAdmin> taskAdminServices;
 
     private PlaceRequest place;
 

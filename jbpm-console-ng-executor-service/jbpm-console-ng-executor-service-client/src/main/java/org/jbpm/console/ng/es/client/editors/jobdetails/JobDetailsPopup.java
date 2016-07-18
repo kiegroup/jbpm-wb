@@ -44,7 +44,7 @@ import org.jbpm.console.ng.es.model.ErrorSummary;
 import org.jbpm.console.ng.es.model.RequestDetails;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.RequestSummary;
-import org.jbpm.console.ng.es.service.ExecutorServiceEntryPoint;
+import org.jbpm.console.ng.es.service.ExecutorService;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.ext.widgets.common.client.tables.ResizableHeader;
@@ -74,7 +74,7 @@ public class JobDetailsPopup extends BaseModal {
     public FormGroup errorControlGroup;
 
     @Inject
-    private Caller<ExecutorServiceEntryPoint> executorServices;
+    private Caller<ExecutorService> executorServices;
 
     private ListDataProvider<RequestParameterSummary> dataProvider = new ListDataProvider<RequestParameterSummary>();
 
@@ -98,8 +98,8 @@ public class JobDetailsPopup extends BaseModal {
         add( footer );
     }
 
-    public void show( String jobId ) {
-        cleanForm( jobId );
+    public void show( String serverTemplateId, String jobId ) {
+        cleanForm( serverTemplateId, jobId );
         super.show();
     }
 
@@ -129,7 +129,7 @@ public class JobDetailsPopup extends BaseModal {
         this.dataProvider.addDataDisplay( executionParametersGrid );
     }
 
-    public void cleanForm( String requestId ) {
+    public void cleanForm( String serverTemplateId, String requestId ) {
         this.addShownHandler( new ModalShownHandler() {
             @Override
             public void onShown( ModalShownEvent shownEvent ) {
@@ -141,7 +141,7 @@ public class JobDetailsPopup extends BaseModal {
             public void callback( RequestDetails response ) {
                 setRequest( response.getRequest(), response.getErrors(), response.getParams() );
             }
-        } ).getRequestDetails( Long.valueOf( requestId ) );
+        } ).getRequestDetails( serverTemplateId, Long.valueOf( requestId ) );
     }
 
     public void closePopup() {

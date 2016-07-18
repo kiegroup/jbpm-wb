@@ -109,10 +109,10 @@ public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
             if (event.getContext().getErrors() == 0) {
                 if (ACTION_SAVE_TASK.equals(action)) {
                     renderContextServices.call(getSaveTaskStateCallback(),
-                            getUnexpectedErrorCallback()).saveTaskStateFromRenderContext(formContent, taskId);
+                            getUnexpectedErrorCallback()).saveTaskStateFromRenderContext(formContent, serverTemplateId, deploymentId, taskId);
                 } else if (ACTION_COMPLETE_TASK.equals(action)) {
                     renderContextServices.call(getCompleteTaskRemoteCallback(),
-                            getUnexpectedErrorCallback()).completeTaskFromContext(formContent, taskId, identity.getIdentifier());
+                            getUnexpectedErrorCallback()).completeTaskFromContext(formContent, serverTemplateId, deploymentId, taskId);
                 }
             }
         }

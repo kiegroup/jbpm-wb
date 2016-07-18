@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
@@ -41,7 +41,6 @@ import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.Group;
-import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.console.ng.gc.client.dataset.AbstractDataSetReadyCallback;
@@ -52,18 +51,23 @@ import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.jbpm.console.ng.ht.client.editors.taskslist.grid.dash.DataSetTasksListGridPresenter;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
-import org.jbpm.console.ng.ht.service.TaskLifeCycleService;
+import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
+import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
+import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
+import org.jbpm.console.ng.ht.service.TaskService;
+import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
+import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
+import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
-import org.uberfire.paging.PageResponse;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.console.ng.ht.model.TaskDataSetConstants.*;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 public abstract class AbstractTasksListGridPresenter extends AbstractScreenListPresenter<TaskSummary> {
 
@@ -78,29 +82,33 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
         void addDomainSpecifColumns(ExtendedPagedTable<TaskSummary> extendedPagedTable, Set<String> columns);
 
         FilterSettings getVariablesTableSettings(String processName);
+
+        void setSelectedTask(TaskSummary selectedTask);
+
     }
 
-    @Inject
+    private Constants constants = Constants.INSTANCE;
+
     private DataSetTasksListGridPresenter.DataSetTaskListView view;
 
-    private Constants constants = GWT.create(Constants.class);
+    private Caller<TaskService> taskService;
 
-    @Inject
-    private Caller<TaskLifeCycleService> taskOperationsService;
+    protected DataSetQueryHelper dataSetQueryHelper;
 
-    @Inject
-    DataSetQueryHelper dataSetQueryHelper;
-
-    @Inject
     private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
 
     @Inject
     private ErrorPopupPresenter errorPopup;
 
+    @Inject
+    private Caller<SpecManagementService> specManagementService;
+
+    @Inject
+    private Event<TaskSelectionEvent> taskSelected;
+
     protected RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder(this);
 
     public AbstractTasksListGridPresenter() {
-
         dataProvider = new AsyncDataProvider<TaskSummary>() {
 
             @Override
@@ -113,18 +121,6 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
         };
     }
 
-    public AbstractTasksListGridPresenter(DataSetTasksListGridPresenter.DataSetTaskListView view,
-                                          Caller<TaskLifeCycleService> taskOperationsService,
-                                          DataSetQueryHelper dataSetQueryHelper,
-                                          DataSetQueryHelper dataSetQueryHelperDomainSpecific,
-                                          User identity) {
-        this.view = view;
-        this.taskOperationsService = taskOperationsService;
-        this.dataSetQueryHelper = dataSetQueryHelper;
-        this.dataSetQueryHelperDomainSpecific = dataSetQueryHelperDomainSpecific;
-        this.identity = identity;
-    }
-
     @Override
     protected AbstractListView.ListView getListView() {
         return view;
@@ -135,7 +131,9 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
         try {
             if (!isAddingDefaultFilters()) {
                 FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
-                if (currentTableSettings != null) {
+
+                if (currentTableSettings != null ) {
+                    currentTableSettings.setServerTemplateId(selectedServerTemplate);
                     currentTableSettings.setTablePageSize(view.getListGrid().getPageSize());
                     ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
                     if (columnSortList != null && columnSortList.size() > 0) {
@@ -171,10 +169,22 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
                     }
                     dataSetQueryHelper.setDataSetHandler(currentTableSettings);
                     dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), createDataSetTaskCallback(visibleRange.getStart(), currentTableSettings));
+                } else {
+                    taskService.call(new RemoteCallback<List<TaskSummary>>() {
+                        @Override
+                        public void callback(List<TaskSummary> taskSummaries) {
+                            boolean lastPage=false;
+                            if ( taskSummaries.size() < visibleRange.getLength() ) {
+                                lastPage = true;
+                            }
+                            updateDataOnCallback(taskSummaries,visibleRange.getStart(), visibleRange.getStart() + taskSummaries.size(), lastPage);
+
+                        }
+                    }).getActiveTasks(selectedServerTemplate, visibleRange.getStart()/visibleRange.getLength(), visibleRange.getLength());
                 }
             }
         } catch (Exception e) {
-            errorPopup.showMessage(Constants.INSTANCE.UnexpectedError(e.getMessage()));
+            errorPopup.showMessage(constants.UnexpectedError(e.getMessage()));
         }
 
     }
@@ -236,22 +246,15 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
                     List<DataSetOp> ops = tableSettings.getDataSetLookup().getOperationList();
                     String filterValue = isFilteredByTaskName(ops); //Add here the check to add the domain data columns taskName?
 
+                    boolean lastPageExactCount = false;
+                    if( dataSet.getRowCount() < view.getListGrid().getPageSize()) {
+                        lastPageExactCount = true;
+                    }
 
                     if (filterValue != null) {
-                        getDomainSpecifDataForTasks(startRange, dataSet.getRowCountNonTrimmed(), filterValue, myTasksFromDataSet);
+                        getDomainSpecifDataForTasks(startRange, filterValue, myTasksFromDataSet, lastPageExactCount);
                     } else {
-                        PageResponse<TaskSummary> taskSummaryPageResponse = new PageResponse<TaskSummary>();
-                        taskSummaryPageResponse.setPageRowList(myTasksFromDataSet);
-                        taskSummaryPageResponse.setStartRowIndex(startRange);
-                        taskSummaryPageResponse.setTotalRowSize(dataSet.getRowCountNonTrimmed());
-                        taskSummaryPageResponse.setTotalRowSizeExact(true);
-                        if (startRange + dataSet.getRowCount() == dataSet.getRowCountNonTrimmed()) {
-                            taskSummaryPageResponse.setLastPage(true);
-                        } else {
-                            taskSummaryPageResponse.setLastPage(false);
-                        }
-
-                        updateDataOnCallback(taskSummaryPageResponse);
+                        updateDataOnCallback(myTasksFromDataSet, startRange,startRange + myTasksFromDataSet.size(), lastPageExactCount);
                     }
 
                 }
@@ -287,10 +290,11 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
 
     }
 
-    public void getDomainSpecifDataForTasks(final int startRange, final int rowCountNotTrimmed, String filterValue, final List<TaskSummary> myTasksFromDataSet) {
+    public void getDomainSpecifDataForTasks(final int startRange, String filterValue, final List<TaskSummary> myTasksFromDataSet, boolean lastPageExactCount) {
 
         FilterSettings variablesTableSettings = view.getVariablesTableSettings(filterValue);
         variablesTableSettings.setTablePageSize(-1);
+        variablesTableSettings.setServerTemplateId(selectedServerTemplate);
 
         dataSetQueryHelperDomainSpecific.setDataSetHandler(variablesTableSettings);
         dataSetQueryHelperDomainSpecific.setCurrentTableSettings(variablesTableSettings);
@@ -306,11 +310,11 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
         filter.addFilterColumn(filter1);
         variablesTableSettings.getDataSetLookup().addOperation(filter);
 
-        dataSetQueryHelperDomainSpecific.lookupDataSet(0, createDataSetDomainSpecificCallback(startRange, rowCountNotTrimmed, myTasksFromDataSet, variablesTableSettings.getDataSet()));
+        dataSetQueryHelperDomainSpecific.lookupDataSet(0, createDataSetDomainSpecificCallback(startRange, myTasksFromDataSet, variablesTableSettings.getDataSet(),lastPageExactCount));
 
     }
 
-    protected DataSetReadyCallback createDataSetDomainSpecificCallback(final int startRange, final int totalRowSize, final List<TaskSummary> instances, final DataSet dataset) {
+    protected DataSetReadyCallback createDataSetDomainSpecificCallback(final int startRange, final List<TaskSummary> instances, final DataSet dataset, boolean lastPageExactCount) {
         return new AbstractDataSetReadyCallback(errorPopup, view, dataset) {
             @Override
             public void callback(DataSet dataSet) {
@@ -330,18 +334,7 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
                     }
                     view.addDomainSpecifColumns(view.getListGrid(), columns);
                 }
-                PageResponse<TaskSummary> taskSummaryPageResponse = new PageResponse<TaskSummary>();
-                taskSummaryPageResponse.setPageRowList(instances);
-                taskSummaryPageResponse.setStartRowIndex(startRange);
-                taskSummaryPageResponse.setTotalRowSize(totalRowSize);
-                taskSummaryPageResponse.setTotalRowSizeExact(true);
-                if (startRange + instances.size() == totalRowSize) {
-                    taskSummaryPageResponse.setLastPage(true);
-                } else {
-                    taskSummaryPageResponse.setLastPage(false);
-                }
-
-                updateDataOnCallback(taskSummaryPageResponse);
+                updateDataOnCallback(instances, startRange, startRange + instances.size(), lastPageExactCount);
             }
 
         };
@@ -382,30 +375,32 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
         return view;
     }
 
-    public void releaseTask(final Long taskId, final String userId) {
-        taskOperationsService.call(
+    public void releaseTask(final TaskSummary task) {
+        taskService.call(
                 new RemoteCallback<Void>() {
                     @Override
                     public void callback(Void nothing) {
-                        view.displayNotification(Constants.INSTANCE.TaskReleased(String.valueOf(taskId)));
+                        view.displayNotification(constants.TaskReleased(String.valueOf(task.getTaskId())));
                         refreshGrid();
                     }
                 },
                 new DefaultErrorCallback()
-        ).release(taskId, userId);
+        ).releaseTask(selectedServerTemplate, task.getDeploymentId(), task.getTaskId());
+        taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, task.getDeploymentId(),task.getTaskId(), task.getTaskName() ) );
     }
 
-    public void claimTask(final Long taskId, final String userId, final String deploymentId) {
-        taskOperationsService.call(
+    public void claimTask(final TaskSummary task) {
+        taskService.call(
                 new RemoteCallback<Void>() {
                     @Override
                     public void callback(Void nothing) {
-                        view.displayNotification(Constants.INSTANCE.TaskClaimed(String.valueOf(taskId)));
+                        view.displayNotification(constants.TaskClaimed(String.valueOf(task.getTaskId())));
                         refreshGrid();
                     }
                 },
                 new DefaultErrorCallback()
-        ).claim(taskId, userId, deploymentId);
+        ).claimTask(selectedServerTemplate, task.getDeploymentId(), task.getTaskId());
+        taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, task.getDeploymentId(),task.getTaskId(), task.getTaskName() ) );
     }
 
     @Override
@@ -426,4 +421,59 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
     }
 
     public abstract Menus getMenus();
+
+    public void selectTask(final TaskSummary summary, final Boolean close) {
+        final DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Task Details Multi" );
+        final PlaceStatus status = placeManager.getStatus( defaultPlaceRequest );
+        boolean logOnly = false;
+        if ( summary.getStatus().equals( "Completed" ) && summary.isLogOnly() ) {
+            logOnly = true;
+        }
+        if ( status == PlaceStatus.CLOSE ) {
+            placeManager.goTo( defaultPlaceRequest );
+            taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, summary.getDeploymentId(), summary.getTaskId(), summary.getTaskName(), summary.isForAdmin(), logOnly ) );
+        } else if ( status == PlaceStatus.OPEN && !close ) {
+            taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, summary.getDeploymentId(),summary.getTaskId(), summary.getTaskName(), summary.isForAdmin(), logOnly ) );
+        } else if ( status == PlaceStatus.OPEN && close ) {
+            placeManager.closePlace( "Task Details Multi" );
+        }
+    }
+
+    public void refreshNewTask( @Observes NewTaskEvent newTask ) {
+        refreshGrid();
+        PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( "Task Details Multi" ) );
+        if ( status == PlaceStatus.OPEN ) {
+            taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, null, newTask.getNewTaskId(), newTask.getNewTaskName() ) );
+        } else {
+            placeManager.goTo( "Task Details Multi" );
+            taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, null, newTask.getNewTaskId(), newTask.getNewTaskName() ) );
+        }
+
+        view.setSelectedTask(new TaskSummary( newTask.getNewTaskId(), newTask.getNewTaskName() ));
+    }
+
+    public void onTaskRefreshedEvent( @Observes TaskRefreshedEvent event ) {
+        refreshGrid();
+    }
+
+    @Inject
+    public void setView(final DataSetTaskListView view) {
+        this.view = view;
+    }
+
+    @Inject
+    public void setDataSetQueryHelper(final DataSetQueryHelper dataSetQueryHelper) {
+        this.dataSetQueryHelper = dataSetQueryHelper;
+    }
+
+    @Inject
+    public void setDataSetQueryHelperDomainSpecific(final DataSetQueryHelper dataSetQueryHelperDomainSpecific) {
+        this.dataSetQueryHelperDomainSpecific = dataSetQueryHelperDomainSpecific;
+    }
+
+    @Inject
+    public void setTaskService(final Caller<TaskService> taskService) {
+        this.taskService = taskService;
+    }
+
 }

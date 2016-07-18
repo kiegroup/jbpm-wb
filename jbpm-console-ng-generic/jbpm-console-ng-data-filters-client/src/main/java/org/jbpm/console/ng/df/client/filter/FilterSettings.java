@@ -34,6 +34,8 @@ public class FilterSettings extends DisplayerSettings {
     protected String tableDescription;
     protected boolean editable;
 
+    protected String serverTemplateId;
+
     public FilterSettings() {
         super( DisplayerType.TABLE );
     }
@@ -70,6 +72,14 @@ public class FilterSettings extends DisplayerSettings {
         this.key = key;
     }
 
+    public String getServerTemplateId() {
+        return serverTemplateId;
+    }
+
+    public void setServerTemplateId(String serverTemplateId) {
+        this.serverTemplateId = serverTemplateId;
+    }
+
     public boolean equals( Object obj ) {
         try {
             FilterSettings other = ( FilterSettings ) obj;
@@ -100,11 +110,13 @@ public class FilterSettings extends DisplayerSettings {
         clone.tableDescription = tableDescription;
         clone.settings = new HashMap<String, String>( settings );
         clone.columnSettingsList = new ArrayList<ColumnSettings>();
+
         for ( ColumnSettings columnSettings : columnSettingsList ) {
             clone.columnSettingsList.add( columnSettings.cloneInstance() );
         }
         if ( dataSet != null ) clone.dataSet = dataSet.cloneInstance();
         if ( dataSetLookup != null ) clone.dataSetLookup = dataSetLookup.cloneInstance();
+
         return clone;
     }
 

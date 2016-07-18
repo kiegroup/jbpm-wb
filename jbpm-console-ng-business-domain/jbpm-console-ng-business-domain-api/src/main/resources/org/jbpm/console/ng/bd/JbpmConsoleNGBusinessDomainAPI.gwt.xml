@@ -24,8 +24,6 @@
   <inherits name="org.jbpm.console.ng.ga.JbpmConsoleNGGenericAPI" />
 
   <source path="model" />
-  <source path="service" />
-  <source path="exception" />
-  <source path="dd" />
+  <source path="integration" />
 
 </module>

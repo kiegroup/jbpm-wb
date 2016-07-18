@@ -26,22 +26,24 @@ public class ProcessInstanceSelectionEvent {
     private Integer processInstanceStatus;
     private String processDefName;
     private boolean forLog;
+    private String serverTemplateId;
 
     public ProcessInstanceSelectionEvent() {
     }
 
-    public ProcessInstanceSelectionEvent(String deploymentId, Long processInstanceId, String processDefId, String processDefName, Integer processInstanceStatus) {
+    public ProcessInstanceSelectionEvent(String deploymentId, Long processInstanceId, String processDefId, String processDefName, Integer processInstanceStatus, String serverTemplateId) {
         this.processInstanceId = processInstanceId;
         this.processDefId = processDefId;
         this.deploymentId = deploymentId;
         this.processInstanceStatus = processInstanceStatus;
         this.processDefName = processDefName;
+        this.serverTemplateId = serverTemplateId;
         this.forLog = false;
     }
 
     public ProcessInstanceSelectionEvent(String deploymentId, Long processInstanceId, String processDefId,
-                                         String processDefName, Integer processInstanceStatus, boolean forLog) {
-        this(deploymentId, processInstanceId, processDefId, processDefName, processInstanceStatus);
+                                         String processDefName, Integer processInstanceStatus, boolean forLog, String serverTemplateId) {
+        this(deploymentId, processInstanceId, processDefId, processDefName, processInstanceStatus, serverTemplateId);
         this.forLog = forLog;
     }
 
@@ -64,6 +66,11 @@ public class ProcessInstanceSelectionEvent {
     public String getProcessDefName() {
         return processDefName;
     }
+
+    public String getServerTemplateId() {
+        return serverTemplateId;
+    }
+
 
     @Override
     public String toString() {

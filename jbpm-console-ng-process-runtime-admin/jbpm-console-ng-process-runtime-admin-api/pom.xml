@@ -16,24 +16,24 @@
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.jbpm</groupId>
-    <artifactId>jbpm-console-ng-process-runtime-admin</artifactId>
-    <version>7.0.0-SNAPSHOT</version>
-  </parent>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jbpm</groupId>
+        <artifactId>jbpm-console-ng-process-runtime-admin</artifactId>
+        <version>7.0.0-SNAPSHOT</version>
+    </parent>
 
-  <artifactId>jbpm-console-ng-process-runtime-admin-api</artifactId>
-  <packaging>jar</packaging>
+    <artifactId>jbpm-console-ng-process-runtime-admin-api</artifactId>
+    <packaging>jar</packaging>
 
-  <name>jBPM Console NG - Process Runtime Admin API</name>
+    <name>jBPM Console NG - Process Runtime Admin API</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.jboss.errai</groupId>
-      <artifactId>errai-bus</artifactId>
-    </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.jboss.errai</groupId>
+            <artifactId>errai-bus</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

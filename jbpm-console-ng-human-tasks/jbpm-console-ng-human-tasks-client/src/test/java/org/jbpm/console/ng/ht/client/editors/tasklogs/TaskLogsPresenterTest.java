@@ -15,25 +15,24 @@
  */
 package org.jbpm.console.ng.ht.client.editors.tasklogs;
 
-import com.google.gwtmockito.GwtMockitoTestRunner;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
-import org.jbpm.console.ng.ht.service.TaskAuditService;
+import org.jbpm.console.ng.ht.service.TaskService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.uberfire.mocks.CallerMock;
-import org.uberfire.paging.PageResponse;
 
 import static org.mockito.Mockito.*;
 
@@ -43,9 +42,9 @@ public class TaskLogsPresenterTest {
     private static final Long TASK_ID = 1L;
 
     @Mock
-    private TaskAuditService taskAuditServiceMock;
+    private TaskService taskService;
 
-    private Caller<TaskAuditService> taskAuditService;
+    private Caller<TaskService> remoteTaskServiceCaller;
 
     @Mock
     private TaskLogsPresenter.TaskLogsView taskLogsView;
@@ -54,9 +53,9 @@ public class TaskLogsPresenterTest {
 
     @Before
     public void setupMocks() {
-        taskAuditService = new CallerMock<TaskAuditService>( taskAuditServiceMock );
-        presenter = new TaskLogsPresenter( taskLogsView, taskAuditService );
-        when( taskAuditServiceMock.getData( any( QueryFilter.class ) ) ).thenReturn( mock( PageResponse.class ) );
+        remoteTaskServiceCaller = new CallerMock<TaskService>(taskService);
+        presenter = new TaskLogsPresenter( taskLogsView, remoteTaskServiceCaller);
+        when(taskService.getTaskComments("", "", 1l)).thenReturn(mock(List.class));
     }
 
     @Test
@@ -65,8 +64,8 @@ public class TaskLogsPresenterTest {
         presenter.onTaskSelectionEvent( new TaskSelectionEvent( TASK_ID ) );
 
         //Logs retrieved and text area refreshed
-        verify( taskAuditServiceMock ).getData( any( QueryFilter.class ) );
-        verify( taskLogsView ).setLogTextAreaText( "" );
+        verify(taskService).getTaskEvents(anyString(), anyString(), anyLong());
+        verify( taskLogsView, times(2) ).setLogTextAreaText( "" );
     }
 
     @Test
@@ -78,8 +77,8 @@ public class TaskLogsPresenterTest {
         presenter.onTaskRefreshedEvent( new TaskRefreshedEvent( TASK_ID ) );
 
         //Logs retrieved and text area refreshed
-        verify( taskAuditServiceMock, times( 2 ) ).getData( any( QueryFilter.class ) );
-        verify( taskLogsView, times( 2 ) ).setLogTextAreaText( "" );
+        verify(taskService, times( 2 ) ).getTaskEvents(anyString(), anyString(), anyLong());
+        verify( taskLogsView, times( 4 ) ).setLogTextAreaText( "" );
     }
 
     @Test
@@ -91,14 +90,14 @@ public class TaskLogsPresenterTest {
         presenter.onTaskRefreshedEvent( new TaskRefreshedEvent( TASK_ID + 1 ) );
 
         //Logs retrieved and text area refreshed
-        verify( taskAuditServiceMock ).getData( any( QueryFilter.class ) );
-        verify( taskLogsView ).setLogTextAreaText( "" );
+        verify(taskService).getTaskEvents(anyString(), anyString(), anyLong());
+        verify( taskLogsView, times(2) ).setLogTextAreaText( "" );
     }
 
     @Test
     public void logEventsAreFormattedProperly() {
-        PageResponse<TaskEventSummary> eventSummaries = createEventSummariesForTaks(TASK_ID);
-        when(taskAuditServiceMock.getData(any(QueryFilter.class)))
+        List<TaskEventSummary> eventSummaries = createEventSummariesForTaks(TASK_ID);
+        when(taskService.getTaskEvents(anyString(), anyString(), eq(TASK_ID)))
                 .thenReturn(eventSummaries);
 
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_ID));
@@ -108,7 +107,7 @@ public class TaskLogsPresenterTest {
                 + "20/01/2018 00:00: Task CLAIMED (John)<br>");
     }
 
-    private PageResponse<TaskEventSummary> createEventSummariesForTaks(Long taskId) {
+    private List<TaskEventSummary> createEventSummariesForTaks(Long taskId) {
         TaskEventSummary added = new TaskEventSummary(
                 1L, taskId, "ADDED", "Jan", 3L, createDate(2017, Month.DECEMBER, 15), "Jan created this task"
         );
@@ -119,9 +118,8 @@ public class TaskLogsPresenterTest {
                 3L, taskId, "CLAIMED", "John", 3L, createDate(2018, Month.JANUARY, 20), "John claimed this task"
         );
         List<TaskEventSummary> summaryList = Arrays.asList(added, updated, claimed);
-        PageResponse<TaskEventSummary> pageResponse = new PageResponse<>();
-        pageResponse.setPageRowList(summaryList);
-        return pageResponse;
+
+        return summaryList;
     }
 
     private Date createDate(int year, Month month, int day) {

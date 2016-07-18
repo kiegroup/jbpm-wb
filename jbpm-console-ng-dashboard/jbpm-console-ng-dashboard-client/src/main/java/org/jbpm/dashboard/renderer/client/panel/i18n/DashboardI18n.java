@@ -125,12 +125,15 @@ public interface DashboardI18n {
     String taskInstances();
     String taskTableId();
     String taskTableProcess();
+    String taskTableProcessInstanceId();
     String taskTableName();
     String taskTableOwner();
     String taskTableStatus();
     String taskTableStartDate();
     String taskTableEndDate();
     String taskTableDuration();
+
+    String taskDetailsNotAvailable();
 
     String displayerNotFound(String name);
 }
