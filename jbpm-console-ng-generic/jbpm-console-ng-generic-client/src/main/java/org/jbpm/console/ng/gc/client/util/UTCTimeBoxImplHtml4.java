@@ -21,8 +21,6 @@ import java.util.Iterator;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -70,7 +68,7 @@ public class UTCTimeBoxImplHtml4 extends UTCTimeBoxImplShared {
      * Keyboard handler for the TextBox shows and hides the menu,
      * scrolls through the menu, and accepts a value.
      */
-    private class TextBoxHandler implements BlurHandler, ChangeHandler {
+    private class TextBoxHandler implements BlurHandler, ValueChangeHandler<String> {
 
         @Override
         public void onBlur( final BlurEvent event ) {
@@ -79,7 +77,7 @@ public class UTCTimeBoxImplHtml4 extends UTCTimeBoxImplShared {
         }
 
         @Override
-        public void onChange( final ChangeEvent event ) {
+        public void onValueChange( final ValueChangeEvent<String> event ) {
             clearInvalidStyle();
             validate();
         }
@@ -94,8 +92,8 @@ public class UTCTimeBoxImplHtml4 extends UTCTimeBoxImplShared {
 
         final TextBoxHandler handler = new TextBoxHandler();
         textbox.addDomHandler( handler, BlurEvent.getType() );
-        textbox.addChangeHandler( handler );
-        textbox.setVisibleSize( "5" );
+        textbox.addValueChangeHandler( handler );
+        textbox.setFixedMenuSize( 5 );
 
         initWidget( textbox );
     }
@@ -222,7 +220,7 @@ public class UTCTimeBoxImplHtml4 extends UTCTimeBoxImplShared {
             final Option option = (Option) iterator.next();
             final Long optionValue = text2value( option.getValue() );
             if( optionValue <= valueToSelect){
-                textbox.setValue( option );
+                textbox.setValue( option.getValue() );
             }
         }
     }
@@ -253,7 +251,7 @@ public class UTCTimeBoxImplHtml4 extends UTCTimeBoxImplShared {
 
     @Override
     public void setVisibleLength( int length ) {
-        textbox.setVisibleSize( String.valueOf( length ) );
+        textbox.setFixedMenuSize( length );
     }
 
     @Override
