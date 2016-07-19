@@ -17,8 +17,8 @@ package org.jbpm.console.ng.bd.service;
 
 public interface AdministrationService {
 
-    public void bootstrapRepository(String ou, String repoAlias, String repoUrl, String userName, String password);
+    void bootstrapRepository(String ou, String repoAlias, String repoUrl, String userName, String password);
 
-    public void bootstrapProject(String repoAlias, String group, String artifact, String version);
+    void bootstrapProject(String repoAlias, String group, String artifact, String version);
 
 }

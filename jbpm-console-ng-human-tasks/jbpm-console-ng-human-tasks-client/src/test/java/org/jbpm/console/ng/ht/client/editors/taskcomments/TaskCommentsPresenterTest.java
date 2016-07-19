@@ -18,7 +18,6 @@ package org.jbpm.console.ng.ht.client.editors.taskcomments;
 import java.util.Date;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ht.client.editors.taskcomments.TaskCommentsPresenter.TaskCommentsView;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
@@ -40,28 +39,24 @@ public class TaskCommentsPresenterTest {
 
     private static final Long TASK_ID = 1L;
     private static final Long COMMENT_ID = 1L;
-    private static final String USR_ID = "Jan";
 
     private CallerMock<TaskService> callerMock;
+
     @Mock
     private TaskService commentsServiceMock;
+
     @Mock
     private TaskCommentsView viewMock;
-    @Mock
-    private User userMock;
 
     //Thing under test
     private TaskCommentsPresenter presenter;
 
     @Before
     public void setupMocks() {
-        when(userMock.getIdentifier())
-                .thenReturn(USR_ID);
-
         //Mock that actually calls the callbacks
         callerMock = new CallerMock<TaskService>(commentsServiceMock);
 
-        presenter = new TaskCommentsPresenter(viewMock, callerMock, userMock);
+        presenter = new TaskCommentsPresenter(viewMock, callerMock);
     }
 
     @Test

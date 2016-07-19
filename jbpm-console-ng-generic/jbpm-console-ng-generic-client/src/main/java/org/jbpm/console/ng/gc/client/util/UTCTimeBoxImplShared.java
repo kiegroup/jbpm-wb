@@ -128,6 +128,7 @@ public abstract class UTCTimeBoxImplShared extends Composite implements UTCTimeB
      * Attempts to insert a colon so that a value without a colon can
      * be parsed.
      */
+    @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     protected static final Long parseUsingFallbacksWithColon(String text, DateTimeFormat timeFormat) {
         if (text.indexOf(':') == -1) {
             text = text.replace(" ", "");

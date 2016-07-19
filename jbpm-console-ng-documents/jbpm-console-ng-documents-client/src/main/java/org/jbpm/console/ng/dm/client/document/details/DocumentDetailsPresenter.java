@@ -19,13 +19,11 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
 import org.gwtbootstrap3.client.ui.Button;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.dm.client.i18n.Constants;
 import org.jbpm.console.ng.dm.model.CMSContentSummary;
 import org.jbpm.console.ng.dm.model.events.DocumentDefSelectionEvent;
 import org.jbpm.console.ng.dm.service.DocumentServiceEntryPoint;
@@ -34,13 +32,10 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.split.WorkbenchSplitLayoutPanel;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
-import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.Menus;
@@ -48,8 +43,6 @@ import org.uberfire.workbench.model.menu.Menus;
 @Dependent
 @WorkbenchScreen(identifier = "Document Details")
 public class DocumentDetailsPresenter {
-
-    private PlaceRequest place;
 
     public interface DocumentDetailsView extends
             UberView<DocumentDetailsPresenter> {
@@ -68,11 +61,6 @@ public class DocumentDetailsPresenter {
     private static String linkURL = "http://127.0.0.1:8888/documentview"; // TODO not hardcoded please!
 
     @Inject
-    private PlaceManager placeManager;
-
-    private Constants constants = GWT.create(Constants.class);
-
-    @Inject
     private DocumentDetailsView view;
 
     @Inject
@@ -86,11 +74,6 @@ public class DocumentDetailsPresenter {
     @DefaultPosition
     public Position getPosition() {
         return CompassPosition.EAST;
-    }
-
-    @OnStartup
-    public void onStartup(final PlaceRequest place) {
-        this.place = place;
     }
 
     @WorkbenchPartTitle
@@ -142,4 +125,5 @@ public class DocumentDetailsPresenter {
     public Menus getMenus() {
         return menus;
     }
+
 }

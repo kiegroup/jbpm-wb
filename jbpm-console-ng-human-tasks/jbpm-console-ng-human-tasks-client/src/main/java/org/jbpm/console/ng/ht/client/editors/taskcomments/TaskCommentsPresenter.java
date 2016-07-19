@@ -27,7 +27,6 @@ import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.CommentSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
@@ -51,17 +50,15 @@ public class TaskCommentsPresenter {
     private Constants constants = Constants.INSTANCE;
     private final TaskCommentsView view;
     private final Caller<TaskService> taskService;
-    private final User identity;
     private final ListDataProvider<CommentSummary> dataProvider = new ListDataProvider<CommentSummary>();
     private long currentTaskId = 0;
     private String serverTemplateId;
     private String containerId;
 
     @Inject
-    public TaskCommentsPresenter(TaskCommentsView view, Caller<TaskService> taskService, User identity) {
+    public TaskCommentsPresenter(TaskCommentsView view, Caller<TaskService> taskService) {
         this.view = view;
         this.taskService = taskService;
-        this.identity = identity;
     }
 
     @PostConstruct

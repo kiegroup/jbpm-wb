@@ -22,8 +22,6 @@ import java.util.Date;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
-import org.mockito.Mock;
 
 import static org.junit.Assert.*;
 

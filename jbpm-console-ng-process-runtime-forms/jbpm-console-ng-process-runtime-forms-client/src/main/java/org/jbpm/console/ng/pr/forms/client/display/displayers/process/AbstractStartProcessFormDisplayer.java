@@ -30,7 +30,6 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Panel;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.jboss.errai.bus.client.api.messaging.Message;
@@ -61,7 +60,6 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     protected FlowPanel footerButtons = GWT.create( FlowPanel.class );
 
     protected TextBox correlationKey = GWT.create( TextBox.class );
-    protected Label correlationKeyLabel;
 
     protected String formContent;
 
@@ -124,7 +122,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
         startButton.setType(ButtonType.PRIMARY);
         footerButtons.add(startButton);
 
-        processName = config.getKey().getProcessName();
+        processName = config.getKey().getProcessId();
         FocusPanel wrapperFlowPanel = new FocusPanel();
         wrapperFlowPanel.setStyleName("wrapper form-actions");
 
@@ -194,6 +192,12 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     @Override
     public void addOnRefreshCallback(Command callback) {
         this.onRefresh = callback;
+    }
+
+    public void refresh(){
+        if(this.onRefresh != null){
+            this.onRefresh.execute();
+        }
     }
 
     @Override

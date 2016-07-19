@@ -307,10 +307,8 @@ public class DocumentServiceCMISImpl implements DocumentService {
 	public Boolean testConnection() {
 		Session session = getSession();
 
-		if (session != null) {
-			if (session.getRootFolder() != null) {
+		if (session != null && session.getRootFolder() != null) {
 				return true;
-			}
 		}
 
 		return false;

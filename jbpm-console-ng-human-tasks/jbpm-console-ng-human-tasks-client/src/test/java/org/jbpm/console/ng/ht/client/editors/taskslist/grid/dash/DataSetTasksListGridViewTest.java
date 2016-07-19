@@ -91,7 +91,7 @@ public class DataSetTasksListGridViewTest {
     @Mock
     public User identity;
 
-    @Mock
+    @Mock @SuppressWarnings("unused")
     private DataSetEditorManager dataSetEditorManagerMock;
 
     @Before

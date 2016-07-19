@@ -34,8 +34,6 @@ import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryEnvironmentConfigurations;
 import org.guvnor.structure.repositories.RepositoryService;
-import org.guvnor.structure.server.config.ConfigurationFactory;
-import org.guvnor.structure.server.config.ConfigurationService;
 import org.jbpm.console.ng.bd.backend.server.dd.DeploymentDescriptorManager;
 import org.jbpm.console.ng.bd.service.AdministrationService;
 import org.kie.internal.runtime.conf.DeploymentDescriptor;
@@ -63,14 +61,7 @@ public class AdministrationServiceImpl implements AdministrationService {
     private OrganizationalUnitService organizationalUnitService;
 
     @Inject
-    private ConfigurationService configurationService;
-
-    @Inject
-    private ConfigurationFactory configurationFactory;
-
-    @Inject
     private KieProjectService projectService;
-
 
     /* (non-Javadoc)
      * @see org.jbpm.console.ng.bd.backend.server.AdministrationService#bootstrapRepository(java.lang.String, java.lang.String, java.lang.String, java.lang.String)

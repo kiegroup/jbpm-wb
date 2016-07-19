@@ -27,13 +27,8 @@ import org.jbpm.formModeler.api.events.FormSubmittedEvent;
 import org.jbpm.formModeler.api.events.ResizeFormcontainerEvent;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 
-/**
- *
- * @author salaboy
- */
 @Dependent
 public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
-
 
     @Inject
     private FormRendererWidget formRenderer;
@@ -105,8 +100,7 @@ public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
     }
 
     public void onFormSubmitted(@Observes FormSubmittedEvent event) {
-        if (event.isMine(formContent)) {
-            if (event.getContext().getErrors() == 0) {
+        if (event.isMine(formContent) && event.getContext().getErrors() == 0) {
                 if (ACTION_SAVE_TASK.equals(action)) {
                     renderContextServices.call(getSaveTaskStateCallback(),
                             getUnexpectedErrorCallback()).saveTaskStateFromRenderContext(formContent, serverTemplateId, deploymentId, taskId);
@@ -114,7 +108,6 @@ public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
                     renderContextServices.call(getCompleteTaskRemoteCallback(),
                             getUnexpectedErrorCallback()).completeTaskFromContext(formContent, serverTemplateId, deploymentId, taskId);
                 }
-            }
         }
     }
 
@@ -129,4 +122,5 @@ public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
             if (resizeListener != null) resizeListener.resize(event.getWidth(), event.getHeight());
         }
     }
+
 }

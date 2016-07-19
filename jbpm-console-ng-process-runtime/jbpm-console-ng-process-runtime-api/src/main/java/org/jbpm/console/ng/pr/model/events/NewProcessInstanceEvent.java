@@ -89,19 +89,19 @@ public class NewProcessInstanceEvent implements Serializable {
     if (this.newProcessInstanceId != other.newProcessInstanceId && (this.newProcessInstanceId == null || !this.newProcessInstanceId.equals(other.newProcessInstanceId))) {
       return false;
     }
-    if ((this.newProcessDefId == null) ? (other.newProcessDefId != null) : !this.newProcessDefId.equals(other.newProcessDefId)) {
+    if (this.newProcessDefId == null ? other.newProcessDefId != null : !this.newProcessDefId.equals(other.newProcessDefId)) {
       return false;
     }
-    if ((this.deploymentId == null) ? (other.deploymentId != null) : !this.deploymentId.equals(other.deploymentId)) {
+    if (this.deploymentId == null ? other.deploymentId != null : !this.deploymentId.equals(other.deploymentId)) {
       return false;
     }
     if (this.newProcessInstanceStatus != other.newProcessInstanceStatus && (this.newProcessInstanceStatus == null || !this.newProcessInstanceStatus.equals(other.newProcessInstanceStatus))) {
       return false;
     }
-    if ((this.processDefName == null) ? (other.processDefName != null) : !this.processDefName.equals(other.processDefName)) {
+    if (this.processDefName == null ? other.processDefName != null : !this.processDefName.equals(other.processDefName)) {
       return false;
     }
-    if ((this.serverTemplateId == null) ? (other.serverTemplateId != null) : !this.serverTemplateId.equals(other.serverTemplateId)) {
+    if (this.serverTemplateId == null ? other.serverTemplateId != null : !this.serverTemplateId.equals(other.serverTemplateId)) {
       return false;
     }
     return true;
@@ -112,5 +112,4 @@ public class NewProcessInstanceEvent implements Serializable {
     return "NewProcessInstanceEvent{serverTemplateId=" +serverTemplateId + ", " + "newProcessInstanceId=" + newProcessInstanceId + ", newProcessDefId=" + newProcessDefId + ", deploymentId=" + deploymentId + ", newProcessInstanceStatus=" + newProcessInstanceStatus + ", processDefName=" + processDefName + '}';
   }
 
-  
 }

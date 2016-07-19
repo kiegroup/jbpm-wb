@@ -16,7 +16,6 @@
 
 package org.jbpm.console.ng.bh.client.editors.home;
 
-import java.util.Collection;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -30,7 +29,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.Label;
-import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -44,8 +42,6 @@ import org.uberfire.workbench.events.NotificationEvent;
 @Dependent
 @Templated(value = "HomeViewImpl.html")
 public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
-
-    private HomePresenter presenter;
 
     @Inject
     private PlaceManager placeManager;
@@ -71,17 +67,10 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
     @DataField
     public Image carouselImg5;
 
-    // @Inject
-    // @DataField
-    // public IconAnchor discoverLabel;
-
     @Inject
     @DataField
     public Anchor authoringLabel;
 
-    // @Inject
-    // @DataField
-    // public IconAnchor deployLabel;
     @Inject
     @DataField
     public Anchor workLabel;
@@ -89,9 +78,6 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
     @Inject
     @DataField
     public Anchor dashboardsLabel;
-    // @Inject
-    // @DataField
-    // public Anchor improveLabel;
 
     @Inject
     @DataField
@@ -108,9 +94,7 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
     @Inject
     @DataField
     public Anchor workProcessInstancesAnchor;
-    // @Inject
-    // @DataField
-    // public Anchor deployIdentityAnchor;
+
     @Inject
     @DataField
     public Anchor processDashboardsAnchor;
@@ -171,32 +155,24 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
     @DataField
     public Label improveTextLabel;
 
-    // @Inject
-    // @DataField
-    // public Anchor deployJobsAnchor;
-
     @Inject
     private Event<NotificationEvent> notification;
     private Constants constants = GWT.create( Constants.class );
 
     public HomeViewImpl() {
-
         carouselImg5 = new Image();
         carouselImg4 = new Image();
         carouselImg3 = new Image();
         carouselImg2 = new Image();
         carouselImg1 = new Image();
         carouselImg0 = new Image();
-
     }
 
     @Override
     public void init( final HomePresenter presenter ) {
-        this.presenter = presenter;
         String url = GWT.getModuleBaseURL();
         // avatar.setUrl(url + "images/avatars/" + identity.getName() + ".png");
         // avatar.setSize("64px", "64px");
-        Collection<Role> roles = identity.getRoles();
 
         carouselImg5.setUrl( url + "images/mountain.jpg" );
         carouselImg4.setUrl( url + "images/mountain.jpg" );

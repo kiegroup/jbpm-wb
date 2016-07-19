@@ -18,7 +18,6 @@ package org.jbpm.console.ng.es.client.editors.requestlist;
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
@@ -32,7 +31,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 
@@ -59,9 +57,6 @@ public class RequestListPresenterTest {
 
     @Mock
     private ExtendedPagedTable<RequestSummary> extendedPagedTable;
-
-    @Mock
-    private ErrorPopupPresenter errorPopup;
 
     @Mock
     private EventSourceMock<RequestChangedEvent> requestChangedEvent;
@@ -92,7 +87,7 @@ public class RequestListPresenterTest {
         presenter.setAddingDefaultFilters(false);
         presenter.getData(new Range(0, 5));
 
-        verify(dataSetQueryHelper).setLastSortOrder(SortOrder.ASCENDING);
+        verify(dataSetQueryHelper).setLastSortOrder(ASCENDING);
         verify(viewMock).hideBusyIndicator();
     }
 

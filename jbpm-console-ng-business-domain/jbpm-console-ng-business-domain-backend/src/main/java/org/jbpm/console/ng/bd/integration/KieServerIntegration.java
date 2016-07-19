@@ -43,9 +43,7 @@ import org.kie.server.client.credentials.EnteredTokenCredentialsProvider;
 import org.kie.server.client.credentials.SubjectCredentialsProvider;
 import org.kie.server.client.impl.AbstractKieServicesClientImpl;
 import org.kie.server.controller.api.model.events.ServerInstanceConnected;
-import org.kie.server.controller.api.model.events.ServerInstanceDeleted;
 import org.kie.server.controller.api.model.events.ServerInstanceDisconnected;
-import org.kie.server.controller.api.model.events.ServerInstanceUpdated;
 import org.kie.server.controller.api.model.events.ServerTemplateDeleted;
 import org.kie.server.controller.api.model.events.ServerTemplateUpdated;
 import org.kie.server.controller.api.model.runtime.ServerInstance;
@@ -126,7 +124,7 @@ public class KieServerIntegration {
         while (iterator.hasNext()) {
             Map.Entry<String,KieServicesClient> entry = iterator.next();
             if (entry.getKey().startsWith(serverTemplateDeleted.getServerTemplateId())) {
-                KieServicesClient client = entry.getValue();
+                //KieServicesClient client = entry.getValue();
                 //client.close();
                 logger.debug("KieServerClient removed and closed for server template {}", entry.getKey());
 

@@ -92,8 +92,7 @@ public class DDConfigUpdater {
             final Path path, final KieProject kieProject ) {
 
         String marshallingValue = configUpdaterHelper.buildJPAMarshallingStrategyValue( kieProject );
-        if ( marshallingValue != null ) {
-            if ( descriptorModel != null ) {
+        if ( marshallingValue != null && descriptorModel != null ) {
                 ItemObjectModel oldMarshallingStrategy = null;
                 if ( descriptorModel.getMarshallingStrategies() != null ) {
                     //check if the marshalling strategy is already configured
@@ -118,7 +117,6 @@ public class DDConfigUpdater {
                 CommentedOption commentedOption = new CommentedOption( "system", null, "JPA marshalling strategy added by system", new Date() );
                 ( ( DDEditorServiceImpl ) ddEditorService ).save( path, descriptorModel, descriptorModel.getOverview().getMetadata(), commentedOption );
 
-            }
         }
     }
 

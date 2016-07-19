@@ -18,51 +18,47 @@ package org.jbpm.console.ng.bd.model;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.console.ng.ga.service.ItemKey;
 
-/**
- *
- * @author salaboy
- */
 @Portable
 public class ProcessVariableKey implements ItemKey {
 
-  private String processVariableId;
+    private String processVariableId;
 
-  public ProcessVariableKey() {
-  }
-
-  public ProcessVariableKey(String processVariableId) {
-    this.processVariableId = processVariableId;
-  }
-
-  public String getProcessVariableId() {
-    return processVariableId;
-  }
-
-  @Override
-  public int hashCode() {
-    int hash = 3;
-    hash = 13 * hash + (this.processVariableId != null ? this.processVariableId.hashCode() : 0);
-    return hash;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
+    public ProcessVariableKey() {
     }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final ProcessVariableKey other = (ProcessVariableKey) obj;
-    if ((this.processVariableId == null) ? (other.processVariableId != null) : !this.processVariableId.equals(other.processVariableId)) {
-      return false;
-    }
-    return true;
-  }
 
-  @Override
-  public String toString() {
-    return "ProcessVariableKey{" + "processVariableId=" + processVariableId + '}';
-  }
+    public ProcessVariableKey(String processVariableId) {
+        this.processVariableId = processVariableId;
+    }
+
+    public String getProcessVariableId() {
+        return processVariableId;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 13 * hash + (this.processVariableId != null ? this.processVariableId.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ProcessVariableKey other = (ProcessVariableKey) obj;
+        if (this.processVariableId == null ? other.processVariableId != null : !this.processVariableId.equals(other.processVariableId)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ProcessVariableKey{" + "processVariableId=" + processVariableId + '}';
+    }
 
 }

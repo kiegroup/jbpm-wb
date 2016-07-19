@@ -153,7 +153,7 @@ public class JobDetailsPopup extends BaseModal {
                             List<ErrorSummary> errors,
                             List<RequestParameterSummary> params ) {
         this.jobRetries.setText( String.valueOf( r.getExecutions() ) );
-        if ( ( errors != null ) && errors.size() > 0 ) {
+        if ( errors != null && errors.size() > 0 ) {
             errorsOccurredList.clear();
             errorControlGroup.setVisible( true );
             for ( ErrorSummary error : errors ) {

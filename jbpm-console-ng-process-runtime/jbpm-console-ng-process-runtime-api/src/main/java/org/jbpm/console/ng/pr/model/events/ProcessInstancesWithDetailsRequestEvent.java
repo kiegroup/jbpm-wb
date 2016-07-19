@@ -92,19 +92,19 @@ public class ProcessInstancesWithDetailsRequestEvent {
     if (this.processInstanceId != other.processInstanceId && (this.processInstanceId == null || !this.processInstanceId.equals(other.processInstanceId))) {
       return false;
     }
-    if ((this.processDefId == null) ? (other.processDefId != null) : !this.processDefId.equals(other.processDefId)) {
+    if (this.processDefId == null ? other.processDefId != null : !this.processDefId.equals(other.processDefId)) {
       return false;
     }
-    if ((this.deploymentId == null) ? (other.deploymentId != null) : !this.deploymentId.equals(other.deploymentId)) {
+    if (this.deploymentId == null ? other.deploymentId != null : !this.deploymentId.equals(other.deploymentId)) {
       return false;
     }
     if (this.processInstanceStatus != other.processInstanceStatus && (this.processInstanceStatus == null || !this.processInstanceStatus.equals(other.processInstanceStatus))) {
       return false;
     }
-    if ((this.processDefName == null) ? (other.processDefName != null) : !this.processDefName.equals(other.processDefName)) {
+    if (this.processDefName == null ? other.processDefName != null : !this.processDefName.equals(other.processDefName)) {
       return false;
     }
-    if ((this.serverTemplateId == null) ? (other.serverTemplateId != null) : !this.serverTemplateId.equals(other.serverTemplateId)) {
+    if (this.serverTemplateId == null ? other.serverTemplateId != null : !this.serverTemplateId.equals(other.serverTemplateId)) {
       return false;
     }
     return true;

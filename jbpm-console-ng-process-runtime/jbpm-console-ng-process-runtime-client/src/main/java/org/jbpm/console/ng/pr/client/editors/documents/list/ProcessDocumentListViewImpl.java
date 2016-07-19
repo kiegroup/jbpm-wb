@@ -114,14 +114,11 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                     @Override
                     public DefaultSelectionEventManager.SelectAction translateSelectionEvent( CellPreviewEvent<DocumentSummary> event ) {
                         NativeEvent nativeEvent = event.getNativeEvent();
-                        if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) ) {
+                        if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) &&
                             // Ignore if the event didn't occur in the correct column.
-                            if ( listGrid.getColumnIndex( actionsColumn ) == event.getColumn() ) {
+                            listGrid.getColumnIndex( actionsColumn ) == event.getColumn() ) {
                                 return DefaultSelectionEventManager.SelectAction.IGNORE;
-                            }
-
                         }
-
                         return DefaultSelectionEventManager.SelectAction.DEFAULT;
                     }
 

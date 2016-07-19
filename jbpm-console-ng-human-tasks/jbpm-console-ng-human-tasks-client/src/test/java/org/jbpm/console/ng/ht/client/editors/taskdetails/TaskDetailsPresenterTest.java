@@ -15,14 +15,7 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskdetails;
 
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.gwtbootstrap3.extras.select.client.ui.Select;
-import org.jbpm.console.ng.gc.client.util.UTCDateBox;
-import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -36,10 +29,8 @@ public class TaskDetailsPresenterTest {
     @Mock
     private TaskDetailsViewImpl view;
 
-
     @InjectMocks
     private TaskDetailsPresenter presenter;
-
 
     @Test
     public void disableTaskDetailEditionTest() {
@@ -50,7 +41,6 @@ public class TaskDetailsPresenterTest {
         verify(view).setDueDateTimeEnabled(false);
         verify(view).setTaskPriorityEnabled(false);
         verify(view).setUpdateTaskVisible(false);
-
     }
 
 }

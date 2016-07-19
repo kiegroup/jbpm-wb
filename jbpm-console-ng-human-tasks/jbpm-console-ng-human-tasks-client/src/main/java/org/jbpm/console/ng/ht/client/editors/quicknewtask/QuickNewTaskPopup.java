@@ -17,7 +17,6 @@
 package org.jbpm.console.ng.ht.client.editors.quicknewtask;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -54,8 +53,6 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.gc.client.util.UTCDateBox;
 import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
-import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
-import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.mvp.Command;
@@ -148,11 +145,8 @@ public class QuickNewTaskPopup extends BaseModal {
     @Inject
     private Event<NotificationEvent> notification;
 
-    @Inject
-    private Event<TaskRefreshedEvent> taskRefreshed;
-
-    @Inject
-    private Event<NewTaskEvent> newTaskEvent;
+//    @Inject
+//    private Event<NewTaskEvent> newTaskEvent;
 
     private static Binder uiBinder = GWT.create( Binder.class );
 
@@ -440,7 +434,7 @@ public class QuickNewTaskPopup extends BaseModal {
                          String deploymentId,
                          Long processInstanceId
                        ) {
-        Date due = UTCDateBox.utc2date( dueDate + dueDateTime );
+/*        Date due = UTCDateBox.utc2date( dueDate + dueDateTime );
 
         boolean start = false;
         boolean claim = false;
@@ -451,7 +445,7 @@ public class QuickNewTaskPopup extends BaseModal {
             }
         }
 
-/*
+
 
         taskOperationsService.call( new RemoteCallback<Long>() {
             @Override
@@ -473,13 +467,13 @@ public class QuickNewTaskPopup extends BaseModal {
 */
     }
 
-    private void refreshNewTask( Long taskId,
+/*    private void refreshNewTask( Long taskId,
                                  String taskName,
                                  String msj ) {
         displayNotification( msj );
         newTaskEvent.fire( new NewTaskEvent( taskId, taskName ) );
         closePopup();
-    }
+    }*/
 
     public List<String> getTextBoxValues( List<FormGroup> controlGroups ) {
         List<String> filledValues = new ArrayList<String>();

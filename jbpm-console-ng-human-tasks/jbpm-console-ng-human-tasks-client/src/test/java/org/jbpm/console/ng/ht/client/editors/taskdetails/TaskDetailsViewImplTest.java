@@ -32,9 +32,6 @@ import static org.mockito.Mockito.*;
 public class TaskDetailsViewImplTest {
 
     @Mock
-    private TaskDetailsPresenter presenter;
-
-    @Mock
     public TextArea taskDescriptionTextArea;
 
     @Mock
@@ -49,14 +46,11 @@ public class TaskDetailsViewImplTest {
     @Mock
     public Button updateTaskButton;
 
-
     @InjectMocks
     private TaskDetailsViewImpl view;
 
-
     @Test
     public void disableFieldsTest() {
-
         view.setDueDateEnabled(false);
         verify(dueDate).setEnabled(false);
 
@@ -71,7 +65,6 @@ public class TaskDetailsViewImplTest {
 
         view.setUpdateTaskVisible(false);
         verify(updateTaskButton).setVisible(false);
-
     }
 
 }

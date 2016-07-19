@@ -93,7 +93,7 @@ public class DDConfigUpdaterHelper {
     public void addJPAMarshallingStrategy( DeploymentDescriptor dd, Path path ) {
         KieProject kieProject = projectService.resolveProject( path );
         String marshalingValue = null;
-        if ( kieProject != null && ( ( marshalingValue = buildJPAMarshallingStrategyValue( kieProject )) != null ) ) {
+        if ( kieProject != null && ( marshalingValue = buildJPAMarshallingStrategyValue( kieProject )) != null ) {
             List<ObjectModel> marshallingStrategies = new ArrayList<ObjectModel>(  );
             ObjectModel objectModel = new ObjectModel();
             objectModel.setResolver( "mvel" );

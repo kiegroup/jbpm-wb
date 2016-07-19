@@ -38,14 +38,10 @@ import org.kie.server.api.model.instance.TaskEventInstance;
 import org.kie.server.api.model.instance.TaskInstance;
 import org.kie.server.client.KieServicesException;
 import org.kie.server.client.UserTaskServicesClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 @ApplicationScoped
 public class RemoteTaskServiceImpl extends AbstractKieServerService implements TaskService {
-
-    private static final Logger logger = LoggerFactory.getLogger(RemoteTaskServiceImpl.class);
 
     @Inject
     private IdentityProvider identityProvider;

@@ -160,9 +160,8 @@ public class DataSetQueryHelper<T> {
         try{
             return (Date) currentDataSet.getColumnById( columnId ).getValues().get( index );
         } catch ( Exception e ){
-
+            return null;
         }
-        return null;
     }
 
     public int getColumnIntValue(DataSet currentDataSet,String columnId, int index){

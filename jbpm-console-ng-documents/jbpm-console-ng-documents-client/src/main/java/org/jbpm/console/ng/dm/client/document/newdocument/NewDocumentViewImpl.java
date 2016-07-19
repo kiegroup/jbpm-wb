@@ -27,7 +27,6 @@ import org.gwtbootstrap3.client.ui.ListBox;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.dm.client.i18n.Constants;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 import org.uberfire.ext.widgets.common.client.common.FileUpload;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
@@ -46,8 +45,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 @Templated(value = "NewDocumentViewImpl.html")
 public class NewDocumentViewImpl extends Composite implements
 		NewDocumentPresenter.NewDocumentView {
-
-	private Constants constants = GWT.create(Constants.class);
 
 	public TextBox documentNameText = new TextBox();
 

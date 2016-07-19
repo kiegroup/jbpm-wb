@@ -114,10 +114,9 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
                 currentFilter = new PortableQueryFilter( visibleRange.getStart(),
                         visibleRange.getLength(),
                         false, "",
-                        ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+                        columnSortList.size() > 0 ? columnSortList.get( 0 )
                                 .getColumn().getDataStoreName() : "",
-                        ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
-                                .isAscending() : true );
+                        columnSortList.size() == 0 || columnSortList.get( 0 ).isAscending() );
 
             }
             // If we are refreshing after a search action, we need to go back to offset 0
@@ -143,10 +142,9 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
             currentFilter.getParams().put( "processInstanceStatus", processInstanceStatus );
             currentFilter.getParams().put( "serverTemplateId", serverTemplateId );
 
-            currentFilter.setOrderBy( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
+            currentFilter.setOrderBy( columnSortList.size() > 0 ? columnSortList.get( 0 )
                     .getColumn().getDataStoreName() : "" );
-            currentFilter.setIsAscending( ( columnSortList.size() > 0 ) ? columnSortList.get( 0 )
-                    .isAscending() : true );
+            currentFilter.setIsAscending( columnSortList.size() == 0 || columnSortList.get( 0 ).isAscending() );
 
             variablesServices.call( new RemoteCallback<PageResponse<ProcessVariableSummary>>() {
                 @Override

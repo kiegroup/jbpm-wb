@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -23,124 +23,115 @@ import org.jbpm.console.ng.ga.model.GenericSummary;
 @Portable
 public class AuditTaskSummary extends GenericSummary {
 
-  private static final long serialVersionUID = -506604206868228075L;
-  
+    private static final long serialVersionUID = -506604206868228075L;
 
-  private Long taskId;
+    private Long taskId;
+    private String status;
+    private Date activationTime;
+    private String description;
+    private int priority;
+    private String createdBy;
+    private String actualOwner;
+    private Date createdOn;
+    private Date dueDate;
+    private Long processInstanceId;
+    private String processId;
+    private Long processSessionId;
+    private Long parentId;
+    private String deploymentId;
 
-  private String status;
-  private Date activationTime;
-  private String taskName;
-  private String description;
-  private int priority;
-  private String createdBy;
-  private String actualOwner;
-  private Date createdOn;
-  private Date dueDate;
-  private Long processInstanceId;
-  private String processId;
-  private Long processSessionId;
-  private Long parentId;
-  private String deploymentId;
+    public AuditTaskSummary() {
+    }
 
-  public AuditTaskSummary() {
-  }
+    public AuditTaskSummary(Long taskId, String status, Date activationTime,
+                            String name, String description, int priority, String createdBy,
+                            String actualOwner, Date createdOn, Date dueDate, Long processInstanceId,
+                            String processId, Long processSessionId, Long parentId, String deploymentId) {
+        this.id = taskId;
+        this.name = name;
+        this.taskId = taskId;
+        this.status = status;
+        this.activationTime = activationTime;
+        this.description = description;
+        this.priority = priority;
+        this.createdBy = createdBy;
+        this.actualOwner = actualOwner;
+        this.createdOn = createdOn;
+        this.dueDate = dueDate;
+        this.processInstanceId = processInstanceId;
+        this.processId = processId;
+        this.processSessionId = processSessionId;
+        this.parentId = parentId;
+        this.deploymentId = deploymentId;
+    }
 
-  
-  
-  public AuditTaskSummary( Long taskId, String status, Date activationTime,
-          String name, String description, int priority, String createdBy, 
-          String actualOwner, Date createdOn, Date dueDate, Long processInstanceId, 
-          String processId, Long processSessionId, Long parentId, String deploymentId) {
-    this.id = taskId;
-    this.name = name;
-    this.taskId = taskId;
-    this.status = status;
-    this.activationTime = activationTime;
-    this.taskName = name;
-    this.description = description;
-    this.priority = priority;
-    this.createdBy = createdBy;
-    this.actualOwner = actualOwner;
-    this.createdOn = createdOn;
-    this.dueDate = dueDate;
-    this.processInstanceId = processInstanceId;
-    this.processId = processId;
-    this.processSessionId = processSessionId;
-    this.parentId = parentId;
-    this.deploymentId = deploymentId;
-  }
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
 
-  public static long getSerialVersionUID() {
-    return serialVersionUID;
-  }
+    public Long getTaskId() {
+        return taskId;
+    }
 
-  
+    public String getStatus() {
+        return status;
+    }
 
-  public Long getTaskId() {
-    return taskId;
-  }
+    public Date getActivationTime() {
+        return activationTime;
+    }
 
-  public String getStatus() {
-    return status;
-  }
+    public String getTaskName() {
+        return name;
+    }
 
-  public Date getActivationTime() {
-    return activationTime;
-  }
+    public String getDescription() {
+        return description;
+    }
 
-  public String getTaskName() {
-    return name;
-  }
+    public int getPriority() {
+        return priority;
+    }
 
-  public String getDescription() {
-    return description;
-  }
+    public String getCreatedBy() {
+        return createdBy;
+    }
 
-  public int getPriority() {
-    return priority;
-  }
+    public String getActualOwner() {
+        return actualOwner;
+    }
 
-  public String getCreatedBy() {
-    return createdBy;
-  }
+    public Date getCreatedOn() {
+        return createdOn;
+    }
 
-  public String getActualOwner() {
-    return actualOwner;
-  }
+    public Date getDueDate() {
+        return dueDate;
+    }
 
-  public Date getCreatedOn() {
-    return createdOn;
-  }
+    public Long getProcessInstanceId() {
+        return processInstanceId;
+    }
 
-  public Date getDueDate() {
-    return dueDate;
-  }
+    public String getProcessId() {
+        return processId;
+    }
 
-  public Long getProcessInstanceId() {
-    return processInstanceId;
-  }
+    public long getProcessSessionId() {
+        return processSessionId;
+    }
 
-  public String getProcessId() {
-    return processId;
-  }
+    public Long getParentId() {
+        return parentId;
+    }
 
-  public long getProcessSessionId() {
-    return processSessionId;
-  }
+    public String getDeploymentId() {
+        return deploymentId;
+    }
 
-  public Long getParentId() {
-    return parentId;
-  }
+    @Override
+    public String toString() {
+        return "TaskAuditSummary{ taskId=" + taskId + ", status=" + status + ", activationTime=" + activationTime + ", name=" + name + ", description=" + description + ", priority=" + priority + ", createdBy=" + createdBy + ", actualOwner=" + actualOwner + ", createdOn=" + createdOn + ", dueDate=" + dueDate + ", processInstanceId=" + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", parentId=" + parentId + ", deploymentId=" + deploymentId + '}';
+    }
 
-  public String getDeploymentId() {
-    return deploymentId;
-  }
-
-  @Override
-  public String toString() {
-    return "TaskAuditSummary{ taskId=" + taskId + ", status=" + status + ", activationTime=" + activationTime + ", name=" + name + ", description=" + description + ", priority=" + priority + ", createdBy=" + createdBy + ", actualOwner=" + actualOwner + ", createdOn=" + createdOn + ", dueDate=" + dueDate + ", processInstanceId=" + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", parentId=" + parentId + ", deploymentId=" + deploymentId + '}';
-  }
-
-  
 }

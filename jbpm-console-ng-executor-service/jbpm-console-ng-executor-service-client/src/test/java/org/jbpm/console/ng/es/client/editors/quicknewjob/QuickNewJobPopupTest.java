@@ -73,7 +73,7 @@ public class QuickNewJobPopupTest {
     @Mock
     private HelpBlock jobNameHelpInline;
 
-    @Mock
+    @Mock @SuppressWarnings("unused")
     private IntegerBox jobRetriesNumber;
 
     @Mock
@@ -85,7 +85,7 @@ public class QuickNewJobPopupTest {
     @Mock
     private HelpBlock jobTypeHelpInline;
 
-    @Mock
+    @Mock @SuppressWarnings("unused")
     private HelpBlock jobDueDateHelpBlock;
 
     @InjectMocks

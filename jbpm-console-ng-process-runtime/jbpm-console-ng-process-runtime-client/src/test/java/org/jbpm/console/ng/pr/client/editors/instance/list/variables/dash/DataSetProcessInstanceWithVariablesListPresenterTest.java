@@ -91,9 +91,6 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
     @Mock
     private FilterSettings filterSettings;
 
-    @Mock
-    private FilterSettings variablesTableSettings;
-
     private ArrayList<ProcessInstanceSummary> processInstanceSummaries;
 
     @InjectMocks

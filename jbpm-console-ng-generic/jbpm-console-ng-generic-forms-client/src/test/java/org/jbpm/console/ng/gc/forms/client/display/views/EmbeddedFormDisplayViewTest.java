@@ -17,9 +17,6 @@
 package org.jbpm.console.ng.gc.forms.client.display.views;
 
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.console.ng.gc.forms.client.display.GenericFormDisplayer;
 import org.jbpm.console.ng.gc.forms.client.resources.AppResources;
@@ -27,10 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -51,7 +45,6 @@ public class EmbeddedFormDisplayViewTest {
 
     @Test
     public void displayPanelCreationTest() {
-
         view.display(displayerMock);
 
         verify(formContainer).clear();

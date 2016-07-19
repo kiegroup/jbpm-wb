@@ -32,7 +32,6 @@ import org.jbpm.console.ng.bd.model.TaskDefSummary;
 import org.jbpm.console.ng.pr.client.editors.definition.details.BaseProcessDefDetailsPresenter;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
-import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 
@@ -63,9 +62,6 @@ public class AdvancedViewProcessDefDetailsPresenter extends
 
     @Inject
     private Caller<ProcessRuntimeDataService> processRuntimeDataService;
-
-    @Inject
-    private Caller<VFSService> fileServices;
 
     @Override
     public IsWidget getWidget() {

@@ -491,77 +491,63 @@ public class DeploymentDescriptorImpl implements DeploymentDescriptor, Serializa
 
 			@Override
 			public DeploymentDescriptorBuilder addWorkItemHandler(NamedObjectModel model) {
-				if (handler.accepted(model)) {
-					if (!descriptor.workItemHandlers.add(model)) {
+				if (handler.accepted(model) && !descriptor.workItemHandlers.add(model)) {
 						descriptor.workItemHandlers.remove(model);
 						descriptor.workItemHandlers.add(model);
-					}
 				}
 				return this;
 			}
 
 			@Override
 			public DeploymentDescriptorBuilder addTaskEventListener(ObjectModel model) {
-				if (handler.accepted(model)) {
-					if (!descriptor.taskEventListeners.add(model)) {
+				if (handler.accepted(model) && !descriptor.taskEventListeners.add(model)) {
 						descriptor.taskEventListeners.remove(model);
 						descriptor.taskEventListeners.add(model);
-					}
 				}
 				return this;
 			}
 
 			@Override
 			public DeploymentDescriptorBuilder addMarshalingStrategy(ObjectModel model) {
-				if (handler.accepted(model)) {
-					if (!descriptor.marshallingStrategies.add(model)) {
+				if (handler.accepted(model) && !descriptor.marshallingStrategies.add(model)) {
 						descriptor.marshallingStrategies.remove(model);
 						descriptor.marshallingStrategies.add(model);
-					}
 				}
 				return this;
 			}
 
 			@Override
 			public DeploymentDescriptorBuilder addGlobal(NamedObjectModel model) {
-				if (handler.accepted(model)) {
-					if (!descriptor.globals.add(model)) {
+				if (handler.accepted(model) && !descriptor.globals.add(model)) {
 						descriptor.globals.remove(model);
 						descriptor.globals.add(model);
-					}
 				}
 				return this;
 			}
 
 			@Override
 			public DeploymentDescriptorBuilder addEventListener(ObjectModel model) {
-				if (handler.accepted(model)) {
-					if (!descriptor.eventListeners.add(model)) {
+				if (handler.accepted(model) && !descriptor.eventListeners.add(model)) {
 						descriptor.eventListeners.remove(model);
 						descriptor.eventListeners.add(model);
-					}
 				}
 				return this;
 			}
 
 			@Override
 			public DeploymentDescriptorBuilder addEnvironmentEntry(NamedObjectModel model) {
-				if (handler.accepted(model)) {
-					if (!descriptor.environmentEntries.add(model)) {
+				if (handler.accepted(model) && !descriptor.environmentEntries.add(model)) {
 						descriptor.environmentEntries.remove(model);
 						descriptor.environmentEntries.add(model);
-					}
 				}
 				return this;
 			}
 
 			@Override
 			public DeploymentDescriptorBuilder addConfiguration(NamedObjectModel model) {
-				if (handler.accepted(model)) {
-					if (!descriptor.configuration.add(model)) {
+				if (handler.accepted(model) && !descriptor.configuration.add(model)) {
 						descriptor.configuration.remove(model);
 						descriptor.configuration.add(model);
-					}
 				}
 				return this;
 			}

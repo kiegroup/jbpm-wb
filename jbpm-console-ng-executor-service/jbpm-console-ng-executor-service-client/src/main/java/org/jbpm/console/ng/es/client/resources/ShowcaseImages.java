@@ -34,30 +34,30 @@ public interface ShowcaseImages extends ClientBundle {
     ImageResource editIcon();
 
     @Source("images/icons/popup.png")
-    public ImageResource popupIcon();
+    ImageResource popupIcon();
 
     @Source("images/icons/lock.png")
-    public ImageResource lockIcon();
+    ImageResource lockIcon();
 
     @Source("images/icons/unlock.png")
-    public ImageResource unlockIcon();
+    ImageResource unlockIcon();
 
     @Source("images/icons/details.png")
-    public ImageResource workIcon();
+    ImageResource workIcon();
 
     @Source("images/icons/complete.png")
-    public ImageResource completeIcon();
+    ImageResource completeIcon();
 
     @Source("images/icons/start.png")
-    public ImageResource startIcon();
+    ImageResource startIcon();
 
     @Source("images/icons/details.png")
-    public ImageResource detailsIcon();
+    ImageResource detailsIcon();
 
     @Source("images/icons/abort.png")
-    public ImageResource abortIcon();
+    ImageResource abortIcon();
 
     @Source("images/icons/signal.png")
-    public ImageResource signalIcon();
+    ImageResource signalIcon();
 
 }

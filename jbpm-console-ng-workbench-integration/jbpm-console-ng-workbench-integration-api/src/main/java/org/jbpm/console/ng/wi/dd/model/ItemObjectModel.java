@@ -109,6 +109,7 @@ public class ItemObjectModel {
         return true;
     }
 
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;

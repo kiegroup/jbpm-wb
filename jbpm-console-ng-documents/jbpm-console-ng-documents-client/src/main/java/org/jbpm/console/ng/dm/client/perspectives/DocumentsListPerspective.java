@@ -37,7 +37,7 @@ public class DocumentsListPerspective extends Composite {
     FlowPanel documents;
 
     @PostConstruct
-    private void init() {
+    public void init() {
         initWidget( documents );
     }
 }

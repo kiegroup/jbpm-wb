@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
@@ -51,7 +50,6 @@ import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.console.ng.df.client.list.base.DataSetEditorManager;
-import org.jbpm.console.ng.es.client.editors.quicknewjob.QuickNewJobPopup;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.model.events.RequestChangedEvent;
@@ -63,7 +61,6 @@ import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
-import org.uberfire.workbench.events.NotificationEvent;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.dashbuilder.dataset.sort.SortOrder.*;
@@ -78,16 +75,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     public static String REQUEST_LIST_PREFIX = "DS_RequestListGrid";
     public static final String COL_ID_ACTIONS = "Actions";
 
-    @Inject
-    private Event<NotificationEvent> notification;
-
     private List<RequestSummary> selectedRequestSummary = new ArrayList<RequestSummary>();
-
-    @Inject
-    private QuickNewJobPopup quickNewJobPopup;
-
-    @Inject
-    private NewTabFilterPopup newTabFilterPopup;
 
     @Inject
     private DataSetEditorManager dataSetEditorManager;
@@ -166,25 +154,19 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         final ExtendedPagedTable<RequestSummary> extendedPagedTable = getListGrid();
         extendedPagedTable.setEmptyTableCaption( constants.No_Jobs_Found() );
 
-        initLeftToolbarActions( extendedPagedTable );
-
         selectionModel = new NoSelectionModel<RequestSummary>();
         selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
             @Override
             public void onSelectionChange( SelectionChangeEvent event ) {
 
-                boolean close = false;
                 if ( selectedRow == -1 ) {
                     extendedPagedTable.setRowStyles( selectedStyles );
                     selectedRow = extendedPagedTable.getKeyboardSelectedRow();
                     extendedPagedTable.redraw();
-
                 } else if ( extendedPagedTable.getKeyboardSelectedRow() != selectedRow ) {
                     extendedPagedTable.setRowStyles( selectedStyles );
                     selectedRow = extendedPagedTable.getKeyboardSelectedRow();
                     extendedPagedTable.redraw();
-                } else {
-                    close = true;
                 }
             }
         } );
@@ -234,9 +216,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
                 } );
 
-    }
-
-    private void initLeftToolbarActions( ExtendedPagedTable extendedPagedTable ) {
     }
 
     private Column initJobIdColumn() {

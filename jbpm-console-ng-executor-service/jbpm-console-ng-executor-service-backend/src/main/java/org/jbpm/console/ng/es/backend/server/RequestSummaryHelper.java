@@ -16,8 +16,6 @@
 
 package org.jbpm.console.ng.es.backend.server;
 
-import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,14 +23,17 @@ import java.util.Map;
 import org.jbpm.console.ng.es.model.ErrorSummary;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.RequestSummary;
-import org.kie.api.executor.CommandContext;
 import org.kie.api.executor.ErrorInfo;
 import org.kie.api.executor.RequestInfo;
 import org.kie.api.executor.STATUS;
 import org.kie.server.api.model.instance.ErrorInfoInstance;
 import org.kie.server.api.model.instance.RequestInfoInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RequestSummaryHelper {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestSummaryHelper.class);
 
     public static List<RequestSummary> adaptRequestList(List<RequestInfo> requests) {
         List<RequestSummary> requestSummaries = new ArrayList<RequestSummary>(requests.size());
@@ -95,7 +96,7 @@ public class RequestSummaryHelper {
                 retval.add(new RequestParameterSummary(entry.getKey(), String.valueOf(entry.getValue())));
             }
         } catch (Exception e) {
-            // TODO handle exception
+            LOGGER.warn("Exception while reading request data", e);
         }
         return retval;
     }

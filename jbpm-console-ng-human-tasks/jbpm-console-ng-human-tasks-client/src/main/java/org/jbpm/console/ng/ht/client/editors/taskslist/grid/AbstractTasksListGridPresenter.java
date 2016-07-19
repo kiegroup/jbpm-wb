@@ -36,7 +36,6 @@ import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionType;
 import org.dashbuilder.dataset.filter.DataSetFilter;
-import org.dashbuilder.dataset.filter.FilterFactory;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -55,7 +54,6 @@ import org.jbpm.console.ng.ht.model.events.NewTaskEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskService;
-import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.mvp.PlaceStatus;
@@ -101,9 +99,6 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
     private ErrorPopupPresenter errorPopup;
 
     @Inject
-    private Caller<SpecManagementService> specManagementService;
-
-    @Inject
     private Event<TaskSelectionEvent> taskSelected;
 
     protected RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder(this);
@@ -137,7 +132,7 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
                     currentTableSettings.setTablePageSize(view.getListGrid().getPageSize());
                     ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
                     if (columnSortList != null && columnSortList.size() > 0) {
-                        dataSetQueryHelper.setLastOrderedColumn((columnSortList.size() > 0) ? columnSortList.get(0).getColumn().getDataStoreName() : "");
+                        dataSetQueryHelper.setLastOrderedColumn(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "");
                         dataSetQueryHelper.setLastSortOrder((columnSortList.size() > 0) && columnSortList.get(0).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
                     } else {
                         dataSetQueryHelper.setLastOrderedColumn(COLUMN_CREATED_ON);
@@ -217,17 +212,17 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
         Set<Group> groups = identity.getGroups();
         List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
         for (Group g : groups) {
-            condList.add(FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, g.getName()));
+            condList.add(equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, g.getName()));
 
         }
-        condList.add(FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier()));
+        condList.add(equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier()));
         ColumnFilter myGroupFilter;
         if (isAdminDataset) {
-            return FilterFactory.OR(COLUMN_ORGANIZATIONAL_ENTITY, condList);
+            return OR(COLUMN_ORGANIZATIONAL_ENTITY, condList);
         } else {
-            myGroupFilter = FilterFactory.AND(FilterFactory.OR(condList),
-                    FilterFactory.OR(FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, ""), FilterFactory.isNull(COLUMN_ACTUAL_OWNER)));
-            return FilterFactory.OR(myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier()));
+            myGroupFilter = AND(OR(condList),
+                    OR(equalsTo(COLUMN_ACTUAL_OWNER, ""), isNull(COLUMN_ACTUAL_OWNER)));
+            return OR(myGroupFilter, equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier()));
         }
     }
 
@@ -306,7 +301,7 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
             tasksIds.add(task.getTaskId());
         }
         DataSetFilter filter = new DataSetFilter();
-        ColumnFilter filter1 = FilterFactory.equalsTo(COLUMN_TASK_VARIABLE_TASK_ID, tasksIds);
+        ColumnFilter filter1 = equalsTo(COLUMN_TASK_VARIABLE_TASK_ID, tasksIds);
         filter.addFilterColumn(filter1);
         variablesTableSettings.getDataSetLookup().addOperation(filter);
 

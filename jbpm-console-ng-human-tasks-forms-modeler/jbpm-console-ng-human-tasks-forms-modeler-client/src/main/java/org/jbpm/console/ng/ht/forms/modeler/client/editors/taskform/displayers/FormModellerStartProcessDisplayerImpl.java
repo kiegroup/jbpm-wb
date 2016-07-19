@@ -39,9 +39,6 @@ import org.jbpm.formModeler.api.events.FormSubmittedEvent;
 import org.jbpm.formModeler.api.events.ResizeFormcontainerEvent;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 
-/**
- * @author salaboy
- */
 @Dependent
 public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessFormDisplayer {
 
@@ -149,13 +146,11 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
     }
 
     public void onFormSubmitted( @Observes FormSubmittedEvent event ) {
-        if ( event.isMine( formContent ) ) {
-            if ( event.getContext().getErrors() == 0 ) {
-                if ( ACTION_START_PROCESS.equals( action ) ) {
-                    renderContextServices.call( getStartProcessRemoteCallback(), getUnexpectedErrorCallback() )
-                            .startProcessFromRenderContext( formContent, serverTemplateId, deploymentId, processDefId, getCorrelationKey(), parentProcessInstanceId );
-                }
-            }
+        if ( event.isMine( formContent ) &&
+             event.getContext().getErrors() == 0 &&
+             ACTION_START_PROCESS.equals( action ) ) {
+                renderContextServices.call( getStartProcessRemoteCallback(), getUnexpectedErrorCallback() )
+                        .startProcessFromRenderContext( formContent, serverTemplateId, deploymentId, processDefId, getCorrelationKey(), parentProcessInstanceId );
         }
     }
 

@@ -113,7 +113,7 @@ public class ColumnFilterEditor extends Composite {
 
     public boolean hasDetails() {
         CoreFunctionFilter coreFilter = getCoreFilter();
-        return (coreFilter != null && coreFilter.getType().getParametersCount() > 0);
+        return coreFilter != null && coreFilter.getType().getParametersCount() > 0;
     }
 
     public void expand() {

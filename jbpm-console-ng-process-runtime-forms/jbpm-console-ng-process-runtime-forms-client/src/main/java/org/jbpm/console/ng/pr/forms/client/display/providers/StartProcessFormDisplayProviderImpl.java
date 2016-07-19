@@ -15,6 +15,14 @@
 
 package org.jbpm.console.ng.pr.forms.client.display.providers;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -22,20 +30,14 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
-import org.jbpm.console.ng.gc.forms.client.display.views.GenericFormDisplayView;
-import org.uberfire.mvp.Command;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import java.util.*;
-import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
-import org.jbpm.console.ng.gc.forms.client.display.views.FormDisplayerView;
 import org.jbpm.console.ng.ga.forms.service.FormServiceEntryPoint;
-import org.jbpm.console.ng.pr.forms.client.i18n.Constants;
-import org.jbpm.console.ng.pr.forms.display.process.api.ProcessDisplayerConfig;
+import org.jbpm.console.ng.gc.forms.client.display.views.FormDisplayerView;
+import org.jbpm.console.ng.gc.forms.client.display.views.GenericFormDisplayView;
 import org.jbpm.console.ng.pr.forms.client.display.process.api.StartProcessFormDisplayProvider;
 import org.jbpm.console.ng.pr.forms.client.display.process.api.StartProcessFormDisplayer;
+import org.jbpm.console.ng.pr.forms.client.i18n.Constants;
+import org.jbpm.console.ng.pr.forms.display.process.api.ProcessDisplayerConfig;
+import org.uberfire.mvp.Command;
 
 @ApplicationScoped
 public class StartProcessFormDisplayProviderImpl implements StartProcessFormDisplayProvider {
@@ -51,19 +53,7 @@ public class StartProcessFormDisplayProviderImpl implements StartProcessFormDisp
     @Inject
     private Caller<FormServiceEntryPoint> formServices;
 
-    private String currentProcessId;
-
-    private String currentDeploymentId;
-
-    protected String opener;
-
-    private Command onClose;
-
-    private Command onRefresh;
-
     private List<StartProcessFormDisplayer> processDisplayers = new ArrayList<StartProcessFormDisplayer>();
-
-    private FormContentResizeListener resizeListener;
 
     @PostConstruct
     public void init() {
@@ -104,10 +94,11 @@ public class StartProcessFormDisplayProviderImpl implements StartProcessFormDisp
                         if (d.supportsContent(form)) {
                             config.setFormContent(form);
                             d.init(config, view.getOnCloseCommand(), new Command() {
-                                @Override public void execute() {
+                                @Override
+                                public void execute() {
                                     display(config, view);
                                 }
-                            } , view.getResizeListener());
+                            }, view.getResizeListener());
                             view.display(d);
                             return;
                         }

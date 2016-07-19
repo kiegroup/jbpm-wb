@@ -16,7 +16,6 @@
 package org.jbpm.console.ng.dm.client.document.CMISconfig;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -34,27 +33,20 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.client.workbench.widgets.split.WorkbenchSplitLayoutPanel;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
-import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.events.NotificationEvent.NotificationType;
 import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
-import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
 @WorkbenchScreen(identifier = "CMIS Configuration")
 public class CMISConfigurationPresenter {
-
-    private PlaceRequest place;
 
     public interface CMISConfigurationView extends
             UberView<CMISConfigurationPresenter> {
@@ -95,12 +87,6 @@ public class CMISConfigurationPresenter {
 
     private Menus menus;
 
-    @Inject
-    private ErrorPopupPresenter errorPopup;
-
-    @Inject
-    private PlaceManager placeManager;
-
     private Constants constants = GWT.create(Constants.class);
 
     @Inject
@@ -109,8 +95,6 @@ public class CMISConfigurationPresenter {
     @Inject
     private Caller<DocumentServiceEntryPoint> dataServices;
 
-    private Map<String, String> configurationParameters;
-
     public CMISConfigurationPresenter() {
         makeMenuBar();
     }
@@ -118,13 +102,6 @@ public class CMISConfigurationPresenter {
     @DefaultPosition
     public Position getPosition() {
         return CompassPosition.EAST;
-    }
-
-    @OnStartup
-    public void onStartup(final PlaceRequest place) {
-        this.place = place;
-
-        configurationParameters = new HashMap<String, String>();
     }
 
     @WorkbenchPartTitle
@@ -229,7 +206,4 @@ public class CMISConfigurationPresenter {
 
     }
 
-    private List<MenuItem> getOptions() {
-        return null;
-    }
 }

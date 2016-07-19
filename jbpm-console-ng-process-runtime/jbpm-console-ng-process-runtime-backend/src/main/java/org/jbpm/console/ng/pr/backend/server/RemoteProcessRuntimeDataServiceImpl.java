@@ -18,7 +18,6 @@ package org.jbpm.console.ng.pr.backend.server;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jboss.errai.bus.server.annotations.Service;
@@ -41,16 +40,12 @@ import org.kie.server.api.model.instance.TaskSummary;
 import org.kie.server.client.ProcessServicesClient;
 import org.kie.server.client.QueryServicesClient;
 import org.ocpsoft.prettytime.PrettyTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
 
 @Service
 @ApplicationScoped
 public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerService implements ProcessRuntimeDataService {
-
-    private static final Logger logger = LoggerFactory.getLogger(RemoteProcessRuntimeDataServiceImpl.class);
 
     public List<ProcessInstanceSummary> getProcessInstances(String serverTemplateId, List<Integer> statuses, Integer page, Integer pageSize) {
 
@@ -120,11 +115,10 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
             if(nis.getNodeType().equals("HumanTaskNode")){
                 logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(nis.getDate()), "Task '" + nis.getName() + "' was created", "System"));
                 for(TaskEventInstance te : allTaskEventsByProcessInstanceId){
-                    if(te.getWorkItemId() != null && nis.getId() == te.getWorkItemId()){
-                        if(te.getType().equals("CLAIMED") || te.getType().equals("RELEASED") || te.getType().equals("COMPLETED")){
+                    if(te.getWorkItemId() != null && nis.getId() == te.getWorkItemId() &&
+                        (te.getType().equals("CLAIMED") || te.getType().equals("RELEASED") || te.getType().equals("COMPLETED"))){
                             logs.add(new RuntimeLogSummary(nis.getId(), "- " + prettyDateFormatter.format(te.getLogTime()), "Task '" + nis.getName() +
                                     "' was " + te.getType().toLowerCase() + " by user " + te.getUserId(), "Human"));
-                        }
                     }
                 }
             }else if(nis.getNodeType().equals("StartNode")){
@@ -238,7 +232,7 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
 
         final UserTaskDefinitionList userTaskDefinitionList = processServicesClient.getUserTaskDefinitions(containerId, processId);
 
-        return userTaskDefinitionList.getItems().stream().map(t -> new TaskDefSummary(t.getName())).collect(Collectors.toList());
+        return userTaskDefinitionList.getItems().stream().map(t -> new TaskDefSummary(t.getName())).collect(toList());
     }
 
     @Override

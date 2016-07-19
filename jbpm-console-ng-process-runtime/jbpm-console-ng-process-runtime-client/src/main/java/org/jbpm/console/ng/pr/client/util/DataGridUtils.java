@@ -199,7 +199,7 @@ public class DataGridUtils {
                 int offset = range.getStart();
                 int count = 0;
 
-                for (; ( count < table.getVisibleItemCount() ) && ( offset < ( range.getStart() + range.getLength() ) ); ) {
+                while ( count < table.getVisibleItemCount() && offset < range.getStart() + range.getLength() ) {
                     table.redrawRow( offset );
                     count++;
                     offset++;

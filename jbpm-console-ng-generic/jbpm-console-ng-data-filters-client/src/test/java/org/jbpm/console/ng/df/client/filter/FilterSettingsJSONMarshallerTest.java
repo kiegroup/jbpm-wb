@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
-import org.dashbuilder.dataset.filter.FilterFactory;
 import org.dashbuilder.dataset.group.DataSetGroup;
 import org.dashbuilder.dataset.json.DataSetJSONMarshaller;
 import org.dashbuilder.dataset.json.DataSetLookupJSONMarshaller;
@@ -112,11 +111,11 @@ public class FilterSettingsJSONMarshallerTest {
         builder.filter(COLUMN_STATUS, equalsTo(COLUMN_STATUS, names));
 
         List<ColumnFilter> condList = new  ArrayList<ColumnFilter>();
-        condList.add(FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, "user"));
+        condList.add(equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, "user"));
 
-        ColumnFilter myGroupFilter = FilterFactory.AND( FilterFactory.OR( condList ),FilterFactory.equalsTo( COLUMN_ACTUALOWNER, "" ));
+        ColumnFilter myGroupFilter = AND( OR( condList ), equalsTo( COLUMN_ACTUALOWNER, "" ));
 
-        builder.filter( OR( myGroupFilter, FilterFactory.equalsTo(COLUMN_ACTUALOWNER, "user" )) );
+        builder.filter( OR( myGroupFilter, equalsTo(COLUMN_ACTUALOWNER, "user" )) );
 //        builder.group(COLUMN_TASKID);
 
         builder.setColumn(COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy");

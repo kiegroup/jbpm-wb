@@ -17,7 +17,6 @@
 package org.jbpm.console.ng.dm.client.document.details;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
@@ -30,17 +29,11 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.dm.client.i18n.Constants;
-import org.uberfire.backend.vfs.Path;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "DocumentDetailsViewImpl.html")
 public class DocumentDetailsViewImpl extends Composite implements
 		DocumentDetailsPresenter.DocumentDetailsView {
-
-	@Inject
-	private PlaceManager placeManager;
 
 	private DocumentDetailsPresenter presenter;
 	
@@ -69,13 +62,6 @@ public class DocumentDetailsViewImpl extends Composite implements
 	@Inject
     @DataField
     public Button openDocumentButton;
-
-	@Inject
-	private Event<NotificationEvent> notification;
-
-	private Path processAssetPath;
-
-	private String encodedProcessSource;
 
 	@Override
 	public void init(final DocumentDetailsPresenter presenter) {

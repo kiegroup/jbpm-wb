@@ -25,54 +25,54 @@ public interface GenericImages extends ClientBundle {
     GenericImages INSTANCE = GWT.create(GenericImages.class);
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/abort-grid-icon.png")
-    public ImageResource abortGridIcon();
+    ImageResource abortGridIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/complete-grid-icon.png")
-    public ImageResource completeGridIcon();
+    ImageResource completeGridIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/start-grid-icon.png")
-    public ImageResource startGridIcon();
+    ImageResource startGridIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/complete-cal-icon.png")
-    public ImageResource completeCalIcon();
+    ImageResource completeCalIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/start-cal-icon.png")
-    public ImageResource startCalIcon();
+    ImageResource startCalIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/claim-grid-icon.png")
-    public ImageResource claimGridIcon();
+    ImageResource claimGridIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/release-grid-icon.png")
-    public ImageResource releaseGridIcon();
+    ImageResource releaseGridIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/claim-cal-icon.png")
-    public ImageResource claimCalIcon();
+    ImageResource claimCalIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/release-cal-icon.png")
-    public ImageResource releaseCalIcon();
+    ImageResource releaseCalIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/popup-grid-icon.png")
-    public ImageResource popupIcon();
+    ImageResource popupIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/details-grid-icon.png")
-    public ImageResource detailsIcon();
+    ImageResource detailsIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/grouptask-cal-icon.png")
-    public ImageResource groupTaskCalIcon();
+    ImageResource groupTaskCalIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/personaltask-cal-icon.png")
-    public ImageResource personalTaskCalIcon();
+    ImageResource personalTaskCalIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/suboptions-cal-icon.png")
-    public ImageResource subOptionsCalIcon();
+    ImageResource subOptionsCalIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/suboptionsactive-cal-icon.png")
-    public ImageResource subOptionsActiveCalIcon();
+    ImageResource subOptionsActiveCalIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/delete-grid-icon.png")
-    public ImageResource deleteGridIcon();
+    ImageResource deleteGridIcon();
 
     @Source("org/jbpm/console/ng/ht/public/images/icons/edit-grid-icon.png")
-    public ImageResource editGridIcon();
+    ImageResource editGridIcon();
 
 }
