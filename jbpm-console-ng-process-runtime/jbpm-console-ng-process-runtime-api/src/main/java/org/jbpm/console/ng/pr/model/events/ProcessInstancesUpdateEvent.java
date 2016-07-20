@@ -18,12 +18,9 @@ package org.jbpm.console.ng.pr.model.events;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-/**
- *
- * @author salaboy
- */
 @Portable
 public class ProcessInstancesUpdateEvent {
+
     private Long processInstanceId;
 
     public ProcessInstancesUpdateEvent() {
@@ -42,9 +39,11 @@ public class ProcessInstancesUpdateEvent {
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
         int hash = 7;
         hash = 53 * hash + (this.processInstanceId != null ? this.processInstanceId.hashCode() : 0);
+        hash = ~~hash;
         return hash;
     }
 
@@ -62,6 +61,5 @@ public class ProcessInstancesUpdateEvent {
         }
         return true;
     }
-    
-    
+
 }

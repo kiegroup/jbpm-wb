@@ -71,20 +71,25 @@ public class ProcessInstanceSelectionEvent {
         return serverTemplateId;
     }
 
-
     @Override
     public String toString() {
         return "ProcessInstanceSelectionEvent{" + "processInstanceId=" + processInstanceId + ", processDefId=" + processDefId + ", deploymentId=" + deploymentId + ", processInstanceStatus=" + processInstanceStatus + ", processDefName=" + processDefName + '}';
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
         int hash = 7;
         hash = 37 * hash + (this.processInstanceId != null ? this.processInstanceId.hashCode() : 0);
+        hash = ~~hash;
         hash = 37 * hash + (this.processDefId != null ? this.processDefId.hashCode() : 0);
+        hash = ~~hash;
         hash = 37 * hash + (this.deploymentId != null ? this.deploymentId.hashCode() : 0);
+        hash = ~~hash;
         hash = 37 * hash + (this.processInstanceStatus != null ? this.processInstanceStatus.hashCode() : 0);
+        hash = ~~hash;
         hash = 37 * hash + (this.processDefName != null ? this.processDefName.hashCode() : 0);
+        hash = ~~hash;
         return hash;
     }
 

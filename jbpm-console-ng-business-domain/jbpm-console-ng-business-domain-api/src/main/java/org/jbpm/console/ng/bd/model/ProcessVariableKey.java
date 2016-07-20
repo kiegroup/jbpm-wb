@@ -35,9 +35,11 @@ public class ProcessVariableKey implements ItemKey {
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
         int hash = 3;
         hash = 13 * hash + (this.processVariableId != null ? this.processVariableId.hashCode() : 0);
+        hash = ~~hash;
         return hash;
     }
 

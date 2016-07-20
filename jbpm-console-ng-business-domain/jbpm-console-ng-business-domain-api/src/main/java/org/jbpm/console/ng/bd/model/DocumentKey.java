@@ -41,9 +41,11 @@ public class DocumentKey implements ItemKey {
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
         int hash = 3;
         hash = 31 * hash + (this.documentId != null ? this.documentId.hashCode() : 0);
+        hash = ~~hash;
         return hash;
     }
 
