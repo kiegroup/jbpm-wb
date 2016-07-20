@@ -19,63 +19,61 @@ package org.jbpm.console.ng.ht.model;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.console.ng.ga.service.ItemKey;
 
-/**
- *
- * @author salaboy
- */
 @Portable
 public class TaskKey implements ItemKey {
-   private String serverTemplateId;
-   private String deploymentId;
-   private Long taskId;
 
-  public TaskKey(String serverTemplateId, String deploymentId, Long taskId) {
-    this.serverTemplateId = serverTemplateId;
-    this.deploymentId = deploymentId;
-    this.taskId = taskId;
-  }
+    private String serverTemplateId;
+    private String deploymentId;
+    private Long taskId;
 
-  public TaskKey() {
-  }
-
-  public Long getTaskId() {
-    return taskId;
-  }
-
-  public String getServerTemplateId() {
-    return serverTemplateId;
-  }
-
-  public String getDeploymentId() {
-    return deploymentId;
-  }
-
-  @Override
-  public int hashCode() {
-    int hash = 5;
-    hash = 47 * hash + (this.taskId != null ? this.taskId.hashCode() : 0);
-    return hash;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
+    public TaskKey(String serverTemplateId, String deploymentId, Long taskId) {
+        this.serverTemplateId = serverTemplateId;
+        this.deploymentId = deploymentId;
+        this.taskId = taskId;
     }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final TaskKey other = (TaskKey) obj;
-    if (this.taskId != other.taskId && (this.taskId == null || !this.taskId.equals(other.taskId))) {
-      return false;
-    }
-    return true;
-  }
 
-  @Override
-  public String toString() {
-    return "TaskKey{" + "taskId=" + taskId + '}';
-  }
-   
-   
+    public TaskKey() {
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public String getServerTemplateId() {
+        return serverTemplateId;
+    }
+
+    public String getDeploymentId() {
+        return deploymentId;
+    }
+
+    @Override
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
+    public int hashCode() {
+        int hash = 5;
+        hash = 47 * hash + (this.taskId != null ? this.taskId.hashCode() : 0);
+        hash = ~~hash;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TaskKey other = (TaskKey) obj;
+        if (this.taskId != other.taskId && (this.taskId == null || !this.taskId.equals(other.taskId))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "TaskKey{" + "taskId=" + taskId + '}';
+    }
+
 }

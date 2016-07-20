@@ -22,18 +22,17 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class NewTaskEvent implements Serializable {
-    
+
     private static final long serialVersionUID = -7547942104170821133L;
-    
+
     private Long newTaskId;
-    
+
     private String newTaskName;
-    
-    
-    public NewTaskEvent(){
+
+    public NewTaskEvent() {
     }
-    
-    public NewTaskEvent(Long newTaskId, String newTaskName){
+
+    public NewTaskEvent(Long newTaskId, String newTaskName) {
         this.newTaskId = newTaskId;
         this.newTaskName = newTaskName;
     }
@@ -55,11 +54,14 @@ public class NewTaskEvent implements Serializable {
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((newTaskId == null) ? 0 : newTaskId.hashCode());
+        result = ~~result;
         result = prime * result + ((newTaskName == null) ? 0 : newTaskName.hashCode());
+        result = ~~result;
         return result;
     }
 
@@ -84,8 +86,5 @@ public class NewTaskEvent implements Serializable {
             return false;
         return true;
     }
-
-    
-  
 
 }

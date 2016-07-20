@@ -19,61 +19,60 @@ package org.jbpm.console.ng.bd.model;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.console.ng.ga.service.ItemKey;
 
-/**
- *
- * @author salaboy
- */
 @Portable
 public class ProcessInstanceKey implements ItemKey {
-  private String serverTemplateId;
-  private Long processInstanceId;
 
-  public ProcessInstanceKey() {
-  }
+    private String serverTemplateId;
+    private Long processInstanceId;
 
-  public ProcessInstanceKey(String serverTemplateId, Long processInstanceId) {
-    this.serverTemplateId = serverTemplateId;
-    this.processInstanceId = processInstanceId;
-  }
-
-  public Long getProcessInstanceId() {
-    return processInstanceId;
-  }
-
-  public String getServerTemplateId() {
-    return serverTemplateId;
-  }
-
-  @Override
-  public int hashCode() {
-    int hash = 7;
-    hash = 13 * hash + (this.serverTemplateId != null ? this.serverTemplateId.hashCode() : 0);
-    hash = 13 * hash + (this.processInstanceId != null ? this.processInstanceId.hashCode() : 0);
-    return hash;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
+    public ProcessInstanceKey() {
     }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final ProcessInstanceKey other = (ProcessInstanceKey) obj;
-    if (this.serverTemplateId != other.serverTemplateId && (this.serverTemplateId == null || !this.serverTemplateId.equals(other.serverTemplateId))) {
-      return false;
-    }
-    if (this.processInstanceId != other.processInstanceId && (this.processInstanceId == null || !this.processInstanceId.equals(other.processInstanceId))) {
-      return false;
-    }
-    return true;
-  }
 
-  @Override
-  public String toString() {
-    return "ProcessInstanceKey{" + "processInstanceId=" + processInstanceId + '}';
-  }
+    public ProcessInstanceKey(String serverTemplateId, Long processInstanceId) {
+        this.serverTemplateId = serverTemplateId;
+        this.processInstanceId = processInstanceId;
+    }
 
+    public Long getProcessInstanceId() {
+        return processInstanceId;
+    }
+
+    public String getServerTemplateId() {
+        return serverTemplateId;
+    }
+
+    @Override
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
+    public int hashCode() {
+        int hash = 7;
+        hash = 13 * hash + (this.serverTemplateId != null ? this.serverTemplateId.hashCode() : 0);
+        hash = ~~hash;
+        hash = 13 * hash + (this.processInstanceId != null ? this.processInstanceId.hashCode() : 0);
+        hash = ~~hash;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ProcessInstanceKey other = (ProcessInstanceKey) obj;
+        if (this.serverTemplateId != other.serverTemplateId && (this.serverTemplateId == null || !this.serverTemplateId.equals(other.serverTemplateId))) {
+            return false;
+        }
+        if (this.processInstanceId != other.processInstanceId && (this.processInstanceId == null || !this.processInstanceId.equals(other.processInstanceId))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ProcessInstanceKey{" + "processInstanceId=" + processInstanceId + '}';
+    }
 
 }

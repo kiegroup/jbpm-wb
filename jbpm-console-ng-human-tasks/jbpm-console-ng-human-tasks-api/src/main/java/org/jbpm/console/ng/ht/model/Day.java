@@ -56,9 +56,16 @@ public class Day implements Serializable {
     }
 
     @Override
-    @SuppressWarnings("deprecation") // Date needed by GWT
+    @SuppressWarnings({"deprecation", "PMD.AvoidMultipleUnaryOperators"}) // Date needed by GWT
     public int hashCode() {
-        return 31 + 31 * date.getDate() + 31 * date.getMonth() + 31 * date.getYear();
+        int hash = 31;
+        hash = 31 * hash + date.getDate();
+        hash = ~~hash;
+        hash = 31 * hash + date.getMonth();
+        hash = ~~hash;
+        hash = 31 * hash + date.getYear();
+        hash = ~~hash;
+        return hash;
     }
 
 }

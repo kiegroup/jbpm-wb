@@ -65,9 +65,12 @@ public class KieServerDataSetRegistered {
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
         int result = serverInstanceId.hashCode();
+        result = ~~result;
         result = 31 * result + serverTemplateId.hashCode();
+        result = ~~result;
         return result;
     }
 

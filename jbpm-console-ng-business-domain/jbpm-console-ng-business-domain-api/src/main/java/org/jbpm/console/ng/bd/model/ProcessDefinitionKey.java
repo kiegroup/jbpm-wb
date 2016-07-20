@@ -53,10 +53,13 @@ public class ProcessDefinitionKey implements ItemKey {
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
         int hash = 7;
         hash = 97 * hash + (this.deploymentId != null ? this.deploymentId.hashCode() : 0);
+        hash = ~~hash;
         hash = 97 * hash + (this.processId != null ? this.processId.hashCode() : 0);
+        hash = ~~hash;
         return hash;
     }
 

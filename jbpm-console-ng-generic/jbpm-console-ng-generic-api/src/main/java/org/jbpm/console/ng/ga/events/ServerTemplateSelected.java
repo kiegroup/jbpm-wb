@@ -53,8 +53,11 @@ public class ServerTemplateSelected {
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
-        return serverTemplateId.hashCode();
+        int result = serverTemplateId.hashCode();
+        result = ~~result;
+        return result;
     }
 
     @Override
