@@ -30,7 +30,6 @@ import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.client.i18n.Constants;
-import org.jbpm.console.ng.ht.client.perspectives.DroolsTasksListPerspective;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
 import org.kie.workbench.common.screens.search.client.menu.SearchMenuBuilder;
 import org.kie.workbench.common.services.shared.service.PlaceManagerActivityService;
@@ -146,7 +145,6 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
         final List<MenuItem> result = new ArrayList<>( 4 );
 
         result.add( MenuFactory.newSimpleItem( constants.Tasks_List() ).perspective( "DataSet Tasks" ).endMenu().build().getItems().get( 0 ) );
-        result.add( MenuFactory.newSimpleItem( constants.Tasks_List_Drools() ).perspective( DroolsTasksListPerspective.PERSPECTIVE_ID ).endMenu().build().getItems().get( 0 ) );
         result.add( MenuFactory.newSimpleItem( constants.Tasks_List_Admin() ).perspective( "Tasks Admin" ).endMenu().build().getItems().get( 0 ) );
         result.add( MenuFactory.newSimpleItem( constants.Data_Sets() ).perspective( "DataSetAuthoringPerspective" ).endMenu().build().getItems().get( 0 ) );
 
