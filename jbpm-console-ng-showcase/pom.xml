@@ -137,6 +137,34 @@
             <artifactId>uberfire-security-api</artifactId>
         </dependency>
 
+        <!-- UberFire Plugins Extension -->
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-runtime-plugins-backend</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-runtime-plugins-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- UberFire Apps -->
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-apps-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-apps-backend</artifactId>
+        </dependency>
+
+        <!-- Layout Editor API -->
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-layout-editor-api</artifactId>
+        </dependency>
+
         <!-- identity provider -->
         <dependency>
             <groupId>org.kie</groupId>
@@ -1094,6 +1122,10 @@
                         <!-- UberFire Extensions -->
                         <compileSourcesArtifact>org.uberfire:uberfire-commons-editor-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-commons-editor-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:uberfire-runtime-plugins-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:uberfire-runtime-plugins-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:uberfire-apps-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:uberfire-apps-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-widgets-commons</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-widgets-table</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-widgets-service-api</compileSourcesArtifact>
