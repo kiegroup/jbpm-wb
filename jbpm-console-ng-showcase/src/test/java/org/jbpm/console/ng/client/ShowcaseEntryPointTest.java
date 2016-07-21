@@ -156,21 +156,19 @@ public class ShowcaseEntryPointTest {
     public void getDeploymentViewsTest() {
         List<? extends MenuItem> deploymentMenuItems = showcaseEntryPoint.getDeploymentViews();
 
-        assertEquals( 3, deploymentMenuItems.size() );
-        assertEquals( showcaseEntryPoint.constants.Deployments(), deploymentMenuItems.get( 0 ).getCaption() );
+        assertEquals( 2, deploymentMenuItems.size() );
+        assertEquals( showcaseEntryPoint.constants.Execution_Servers(), deploymentMenuItems.get( 0 ).getCaption() );
         assertEquals( showcaseEntryPoint.constants.Jobs(), deploymentMenuItems.get( 1 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Asset_Management(), deploymentMenuItems.get( 2 ).getCaption() );
     }
 
     @Test
     public void getWorkViewsTest() {
         List<? extends MenuItem> workMenuItems = showcaseEntryPoint.getWorkViews();
 
-        assertEquals( 4, workMenuItems.size() );
+        assertEquals( 3, workMenuItems.size() );
         assertEquals( showcaseEntryPoint.constants.Tasks_List(), workMenuItems.get( 0 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Tasks_List_Drools(), workMenuItems.get( 1 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Tasks_List_Admin(), workMenuItems.get( 2 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Data_Sets(), workMenuItems.get( 3 ).getCaption() );
+        assertEquals( showcaseEntryPoint.constants.Tasks_List_Admin(), workMenuItems.get( 1 ).getCaption() );
+        assertEquals( showcaseEntryPoint.constants.Data_Sets(), workMenuItems.get( 2 ).getCaption() );
     }
 
     @Test

@@ -103,6 +103,4 @@ public interface Constants extends Messages {
 
     String Data_Sets();
 
-    String Tasks_List_Drools();
-
 }
