@@ -103,4 +103,6 @@ public interface Constants extends Messages {
 
     String Data_Sets();
 
+    String Extensions();
+
 }

@@ -17,6 +17,12 @@
   <inherits name="org.uberfire.ext.widgets.core.UberfireWidgetsCore"/>
   <inherits name="org.uberfire.UberfireDocksClient"/>
 
+  <!-- Uberfire Extensions - Runtime Plugin -->
+  <inherits name="org.uberfire.ext.plugin.RuntimePluginClient"/>
+
+  <!-- Uberfire Extensions - Apps -->
+  <inherits name="org.uberfire.ext.apps.UberfireAppsClient"/>
+
   <!-- Drools dependencies -->
   <inherits name="org.drools.workbench.models.datamodel.DroolsWorkbenchDataModelAPI"/>
 
