@@ -36,7 +36,6 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartTitleDecoration;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.views.pfly.multipage.PageImpl;
-import org.uberfire.ext.editor.commons.client.file.SaveOperationService;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.ext.widgets.common.client.callbacks.HasBusyIndicatorDefaultErrorCallback;
 import org.uberfire.lifecycle.OnClose;
@@ -127,20 +126,20 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
     }
 
     protected void save() {
-        new SaveOperationService().save( versionRecordManager.getCurrentPath(),
-                new ParameterizedCommand<String>() {
-                    @Override
-                    public void execute( final String comment ) {
-                        view.showSaving();
-                        view.updateContent(model);
-                        ddEditorService.call( getSaveSuccessCallback(model.hashCode()),
-                                new HasBusyIndicatorDefaultErrorCallback( view ) ).save( versionRecordManager.getCurrentPath(),
-                                model,
-                                metadata,
-                                comment );
-                    }
-                }
-        );
+        savePopUpPresenter.show( versionRecordManager.getCurrentPath(),
+                                 new ParameterizedCommand<String>() {
+                                     @Override
+                                     public void execute( final String comment ) {
+                                         view.showSaving();
+                                         view.updateContent( model );
+                                         ddEditorService.call( getSaveSuccessCallback( model.hashCode() ),
+                                                               new HasBusyIndicatorDefaultErrorCallback( view ) ).save( versionRecordManager.getCurrentPath(),
+                                                                                                                        model,
+                                                                                                                        metadata,
+                                                                                                                        comment );
+                                     }
+                                 }
+                               );
         concurrentUpdateSessionInfo = null;
     }
 
