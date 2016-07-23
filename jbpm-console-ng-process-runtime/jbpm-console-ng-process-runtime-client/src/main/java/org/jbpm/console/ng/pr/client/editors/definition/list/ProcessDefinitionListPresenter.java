@@ -31,6 +31,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
+import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.console.ng.pr.forms.client.display.views.PopupFormDisplayerView;
@@ -136,7 +137,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
         currentFilter.setOrderBy( columnSortList.size() > 0 ? columnSortList.get( 0 )
                 .getColumn().getDataStoreName() : "" );
-        currentFilter.setIsAscending(columnSortList.size() == 0 || columnSortList.get(0).isAscending() );
+        currentFilter.setIsAscending(columnSortList.size() == 0 || columnSortList.get(0).isAscending());
 
         processRuntimeDataService.call(new RemoteCallback<List<ProcessSummary>>() {
             @Override
@@ -165,7 +166,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                 GWT.log( throwable.toString() );
                 return true;
             }
-        } ).getProcesses(selectedServerTemplate, currentFilter.getOffset() / currentFilter.getCount(), currentFilter.getCount(),
+        } ).getProcessesByFilter(selectedServerTemplate, textSearchStr, currentFilter.getOffset() / currentFilter.getCount(), currentFilter.getCount(),
                 currentFilter.getOrderBy(), currentFilter.isAscending());
     }
 
@@ -180,7 +181,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     }
 
     protected void selectProcessDefinition(final ProcessSummary processSummary, final Boolean close) {
-        PlaceStatus instanceDetailsStatus = placeManager.getStatus( new DefaultPlaceRequest( "Process Instance Details Multi" ) );
+        PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details Multi"));
 
         if ( instanceDetailsStatus == PlaceStatus.OPEN ) {
             placeManager.closePlace( "Process Instance Details Multi" );
@@ -212,6 +213,17 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                 newProcessInstance.getNewProcessDefId(), newProcessInstance.getProcessDefName(),
                 newProcessInstance.getNewProcessInstanceStatus(), newProcessInstance.getServerTemplateId() ) );
 
+    }
+
+    @Override
+    protected void onSearchEvent(@Observes SearchEvent searchEvent) {
+        textSearchStr = searchEvent.getFilter();
+        refreshGrid();
+    }
+
+    @Inject
+    public void setProcessRuntimeDataService(final Caller<ProcessRuntimeDataService> processRuntimeDataService) {
+        this.processRuntimeDataService = processRuntimeDataService;
     }
 
 }
