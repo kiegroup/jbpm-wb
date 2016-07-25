@@ -155,6 +155,19 @@ public class ProcessImageResourceImpl {
         Collection<NodeInstanceDesc> logs = dataService.getProcessInstanceFullHistory(procInstId, null);
         List<String> active = new ArrayList<String>(2);
         List<String> completed = new ArrayList<String>(logs.size()/2);
+
+        processNodeInstances(logs, active, completed);
+
+        imageSVGString = SVGImageProcessor.transform(
+                    new ByteArrayInputStream(imageSVGString.getBytes()),
+                    completed,
+                    active);
+
+        return Response.ok(imageSVGString, MediaType.APPLICATION_SVG_XML_TYPE).build();
+    }
+
+    protected void processNodeInstances(Collection<NodeInstanceDesc> logs, List<String> active, List<String> completed) {
+
         for( NodeInstanceDesc nodeLog : logs ) {
             String nodeId = nodeLog.getNodeId();
             if( NodeInstanceLog.TYPE_ENTER == ((org.jbpm.kie.services.impl.model.NodeInstanceDesc) nodeLog).getType() ) {
@@ -163,12 +176,11 @@ public class ProcessImageResourceImpl {
                 completed.add(nodeId);
             }
         }
-        imageSVGString = SVGImageProcessor.transform(
-                    new ByteArrayInputStream(imageSVGString.getBytes()),
-                    completed,
-                    active);
-
-        return Response.ok(imageSVGString, MediaType.APPLICATION_SVG_XML_TYPE).build();
+        // remove completed from active
+        for (String completedNode : completed) {
+            // if it has the exit type it's then not active anymore
+            active.remove(completedNode);
+        }
     }
 
 }

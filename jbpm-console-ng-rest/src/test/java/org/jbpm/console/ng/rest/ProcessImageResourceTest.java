@@ -6,10 +6,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
+import org.jbpm.process.audit.NodeInstanceLog;
+import org.jbpm.services.api.model.NodeInstanceDesc;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,5 +110,39 @@ public class ProcessImageResourceTest extends JbpmConsoleNgRestBaseIntegrationTe
         String origContent= IOUtils.toString(origSvgInputStream);
 
         assertEquals( origContent, contentStr);
+    }
+
+    /**
+     * Tests in isolation processing of completed and active nodes that will be used for marking nodes
+     */
+    @Test
+    public void testProcessNodeInstances() {
+        ProcessImageResourceImpl imageResource = new ProcessImageResourceImpl();
+
+        Collection<NodeInstanceDesc> logs =  new ArrayList<NodeInstanceDesc>();
+        org.jbpm.kie.services.impl.model.NodeInstanceDesc startA = new org.jbpm.kie.services.impl.model.NodeInstanceDesc("1", "node1", "start", "", "", 1, null, null, NodeInstanceLog.TYPE_ENTER, null);
+        org.jbpm.kie.services.impl.model.NodeInstanceDesc startC = new org.jbpm.kie.services.impl.model.NodeInstanceDesc("1", "node1", "start", "", "", 1, null, null, NodeInstanceLog.TYPE_EXIT, null);
+
+        org.jbpm.kie.services.impl.model.NodeInstanceDesc taskA = new org.jbpm.kie.services.impl.model.NodeInstanceDesc("2", "node2", "task", "", "", 1, null, null, NodeInstanceLog.TYPE_ENTER, null);
+        org.jbpm.kie.services.impl.model.NodeInstanceDesc taskC = new org.jbpm.kie.services.impl.model.NodeInstanceDesc("2", "node2", "task", "", "", 1, null, null, NodeInstanceLog.TYPE_EXIT, null);
+
+        org.jbpm.kie.services.impl.model.NodeInstanceDesc task2A = new org.jbpm.kie.services.impl.model.NodeInstanceDesc("3", "node3", "task2", "", "", 1, null, null, NodeInstanceLog.TYPE_ENTER, null);
+        logs.add(startA);
+        logs.add(startC);
+        logs.add(taskA);
+        logs.add(taskC);
+        logs.add(task2A);
+
+        List<String> active = new ArrayList<String>(2);
+        List<String> completed = new ArrayList<String>(logs.size()/2);
+
+        imageResource.processNodeInstances(logs, active, completed);
+
+        assertEquals(2, completed.size());
+        assertEquals(1, active.size());
+        //make sure there are no completed nodes in active list
+        for (String id : completed) {
+            assertFalse(active.contains(id));
+        }
     }
 }
