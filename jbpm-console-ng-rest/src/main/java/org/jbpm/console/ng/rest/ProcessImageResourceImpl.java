@@ -34,7 +34,7 @@ import org.jbpm.services.api.model.ProcessDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Path("/runtime/{deploymentId: [\\w\\.-]+(:[\\w\\.-]+){2,2}(:[\\w\\.-]*){0,2}}/process/{processDefId: [_a-zA-Z0-9-:\\.]+}/")
+@Path("/runtime/{deploymentId: [\\w\\.-]+(:[\\w\\.-]+){2,2}(:[\\w\\.-]*){0,2}}/process/{processDefId: [_a-zA-Z0-9-:\\.]+}/image")
 @ApplicationScoped
 public class ProcessImageResourceImpl {
 
@@ -113,8 +113,6 @@ public class ProcessImageResourceImpl {
     // Rest methods --------------------------------------------------------------------------------------------------------------
 
     @GET
-    @Path("/image")
-//    @Produces({MediaType.APPLICATION_SVG_XML, MediaType.APPLICATION_OCTET_STREAM})
     public Response getProcessImage(  @PathParam("deploymentId") String deploymentId, @PathParam("processDefId" ) String processId) {
 
         // find procdef (or throw 404) if the deployment id or pro
@@ -136,7 +134,7 @@ public class ProcessImageResourceImpl {
 
 
     @GET
-    @Path("/image/{procInstId: [0-9]+}")
+    @Path("/{procInstId: [0-9]+}")
     public Response getActiveProcessImage(  @PathParam("deploymentId") String deploymentId, @PathParam("processDefId" ) String processId,
             @PathParam("procInstId") long procInstId) {
 
