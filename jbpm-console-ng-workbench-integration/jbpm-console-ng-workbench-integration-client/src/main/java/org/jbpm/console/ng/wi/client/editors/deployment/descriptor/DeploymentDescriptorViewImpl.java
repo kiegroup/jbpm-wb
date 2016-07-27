@@ -512,7 +512,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
         } );
 
         marshalStrategyTable.addColumn( valueColumn,
-                                        new TextHeader( Constants.INSTANCE.Value() ) );
+                                        new TextHeader( Constants.INSTANCE.Identifier() ) );
         marshalStrategyTable.addColumn( resolverColumn,
                                         new TextHeader( Constants.INSTANCE.Resolver() ) );
         marshalStrategyTable.addColumn( parametersColumn,
@@ -605,7 +605,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
         } );
 
         eventListenersTable.addColumn( valueColumn,
-                                       new TextHeader( Constants.INSTANCE.Value() ) );
+                                       new TextHeader( Constants.INSTANCE.Identifier() ) );
         eventListenersTable.addColumn( resolverColumn,
                                        new TextHeader( Constants.INSTANCE.Resolver() ) );
         eventListenersTable.addColumn( parametersColumn,
@@ -716,9 +716,9 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
         } );
 
         globalsTable.addColumn( nameColumn,
-                                new TextHeader( Constants.INSTANCE.Value() ) );
+                                new TextHeader( Constants.INSTANCE.Name() ) );
         globalsTable.addColumn( valueColumn,
-                                new TextHeader( Constants.INSTANCE.Value() ) );
+                                new TextHeader( Constants.INSTANCE.Identifier() ) );
         globalsTable.addColumn( resolverColumn,
                                 new TextHeader( Constants.INSTANCE.Resolver() ) );
         globalsTable.addColumn( parametersColumn,
@@ -828,9 +828,9 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
         } );
 
         workItemHandlersTable.addColumn( nameColumn,
-                                         new TextHeader( Constants.INSTANCE.Value() ) );
+                                         new TextHeader( Constants.INSTANCE.Name() ) );
         workItemHandlersTable.addColumn( valueColumn,
-                                         new TextHeader( Constants.INSTANCE.Value() ) );
+                                         new TextHeader( Constants.INSTANCE.Identifier() ) );
         workItemHandlersTable.addColumn( resolverColumn,
                                          new TextHeader( Constants.INSTANCE.Resolver() ) );
         workItemHandlersTable.addColumn( parametersColumn,
@@ -923,7 +923,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
         } );
 
         taskEventListenersTable.addColumn( valueColumn,
-                                           new TextHeader( Constants.INSTANCE.Value() ) );
+                                           new TextHeader( Constants.INSTANCE.Identifier() ) );
         taskEventListenersTable.addColumn( resolverColumn,
                                            new TextHeader( Constants.INSTANCE.Resolver() ) );
         taskEventListenersTable.addColumn( parametersColumn,
@@ -1034,9 +1034,9 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
         } );
 
         environmentEntriesTable.addColumn( nameColumn,
-                                           new TextHeader( Constants.INSTANCE.Value() ) );
+                                           new TextHeader( Constants.INSTANCE.Name() ) );
         environmentEntriesTable.addColumn( valueColumn,
-                                           new TextHeader( Constants.INSTANCE.Value() ) );
+                                           new TextHeader( Constants.INSTANCE.Identifier() ) );
         environmentEntriesTable.addColumn( resolverColumn,
                                            new TextHeader( Constants.INSTANCE.Resolver() ) );
         environmentEntriesTable.addColumn( parametersColumn,
@@ -1146,9 +1146,9 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
         } );
 
         configurationTable.addColumn( nameColumn,
-                                      new TextHeader( Constants.INSTANCE.Value() ) );
+                                      new TextHeader( Constants.INSTANCE.Name() ) );
         configurationTable.addColumn( valueColumn,
-                                      new TextHeader( Constants.INSTANCE.Value() ) );
+                                      new TextHeader( Constants.INSTANCE.Identifier() ) );
         configurationTable.addColumn( resolverColumn,
                                       new TextHeader( Constants.INSTANCE.Resolver() ) );
         configurationTable.addColumn( parametersColumn,
