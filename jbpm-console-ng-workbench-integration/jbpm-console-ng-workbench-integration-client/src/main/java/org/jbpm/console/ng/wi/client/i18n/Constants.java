@@ -95,6 +95,10 @@ public interface Constants extends Messages {
 
     String Value();
 
+    String Identifier();
+
+    String Name();
+
     String PromptForRemoval();
 
     String NoDataDefined();
