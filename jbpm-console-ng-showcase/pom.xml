@@ -1110,6 +1110,8 @@
 
                         <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-datasource-mgmt-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-datasource-mgmt-client</compileSourcesArtifact>
 
                         <!-- needed for the Deployment Descriptor Editor -->
                         <compileSourcesArtifact>org.drools:drools-wb-drl-text-editor-api</compileSourcesArtifact>
