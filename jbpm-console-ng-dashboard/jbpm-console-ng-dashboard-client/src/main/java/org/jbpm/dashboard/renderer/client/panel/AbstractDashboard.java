@@ -107,7 +107,7 @@ public abstract class AbstractDashboard {
         tableDisplayer.setDisplayerSettings(settings);
         tableDisplayer.setDataSetHandler(new DataSetHandlerImpl(dataSetClientServices, getDataSetLookup(settings)));
         tableDisplayer.addFormatter(columnId, durationFormatter);
-        tableDisplayer.setOnCellSelectedCommand(new Command() {
+        tableDisplayer.addOnCellSelectedCommand(new Command() {
             public void execute() {
                 tableCellSelected(tableDisplayer.getSelectedCellColumn(), tableDisplayer.getSelectedCellRow());
             }
