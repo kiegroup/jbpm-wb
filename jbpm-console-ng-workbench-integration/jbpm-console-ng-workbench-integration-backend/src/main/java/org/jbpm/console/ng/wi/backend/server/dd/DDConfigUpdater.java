@@ -93,7 +93,7 @@ public class DDConfigUpdater {
 
             if(descriptorModel != null) {
                 if(descriptorModel.getWorkItemHandlers() == null) {
-                    descriptorModel.setWorkItemHandlers(new ArrayList<>());
+                    descriptorModel.setWorkItemHandlers(new ArrayList<ItemObjectModel>());
                 }
 
                 if( isValidWorkitem(workitemInstalledEvent) && !workItemAlreadyInstalled( descriptorModel.getWorkItemHandlers(), workitemInstalledEvent.getName()) ) {
@@ -203,3 +203,4 @@ public class DDConfigUpdater {
     }
 
 }
+
