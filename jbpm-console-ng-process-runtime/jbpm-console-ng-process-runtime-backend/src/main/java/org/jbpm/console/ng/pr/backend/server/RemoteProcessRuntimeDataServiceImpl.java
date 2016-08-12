@@ -42,33 +42,32 @@ import org.kie.server.client.QueryServicesClient;
 import org.ocpsoft.prettytime.PrettyTime;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.Collections.emptyList;
 
 @Service
 @ApplicationScoped
 public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerService implements ProcessRuntimeDataService {
 
     public List<ProcessInstanceSummary> getProcessInstances(String serverTemplateId, List<Integer> statuses, Integer page, Integer pageSize) {
-
-        List<ProcessInstanceSummary> instances = new ArrayList<ProcessInstanceSummary>();
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
-            return instances;
+            return emptyList();
         }
 
         QueryServicesClient queryServicesClient = getClient(serverTemplateId, QueryServicesClient.class);
 
         List<ProcessInstance> processInstances = queryServicesClient.findProcessInstancesByStatus(statuses, page, pageSize);
 
-        for (ProcessInstance processInstance : processInstances) {
-            ProcessInstanceSummary summary = build(processInstance);
-
-            instances.add(summary);
-        }
-
-        return instances;
+        return processInstances
+                .stream()
+                .map( p -> build(p))
+                .collect(toList());
     }
 
     @Override
     public ProcessInstanceSummary getProcessInstance(String serverTemplateId, ProcessInstanceKey processInstanceKey) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return null;
+        }
 
         QueryServicesClient queryServicesClient = getClient(serverTemplateId, QueryServicesClient.class);
 
@@ -79,6 +78,9 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
 
     @Override
     public List<NodeInstanceSummary> getProcessInstanceActiveNodes(String serverTemplateId, Long processInstanceId) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return emptyList();
+        }
 
         List<NodeInstanceSummary> instances = new ArrayList<NodeInstanceSummary>();
         QueryServicesClient queryServicesClient = getClient(serverTemplateId, QueryServicesClient.class);
@@ -103,6 +105,9 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
 
     @Override
     public List<RuntimeLogSummary> getBusinessLogs(String serverTemplateId, String processName, Long processInstanceId) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return emptyList();
+        }
 
         List<NodeInstance> processInstanceHistory = getProcessInstanceHistory(serverTemplateId, processInstanceId);
         List<TaskEventInstance> allTaskEventsByProcessInstanceId = new ArrayList<TaskEventInstance>();//taskAuditService.getAllTaskEventsByProcessInstanceId(processInstanceId, "");
@@ -133,18 +138,16 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
     }
 
     @Override
-    public List<ProcessSummary> getProcesses(String serverTemplateId, Integer page, Integer pageSize, String sort, boolean sortOrder) {
-        List<ProcessSummary> summaries = new ArrayList<ProcessSummary>();
-
+    public List<ProcessSummary> getProcesses(String serverTemplateId, Integer page, Integer pageSize, String sort, Boolean sortOrder) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
-            return summaries;
+            return emptyList();
         }
 
         QueryServicesClient queryServicesClient = getClient(serverTemplateId, QueryServicesClient.class);
 
         List<ProcessDefinition> processes = queryServicesClient.findProcesses(page, pageSize, sort, sortOrder);
 
-        summaries = processes
+        return processes
                 .stream()
                 .map(definition -> new ProcessSummary(definition.getId(),
                         definition.getName(),
@@ -155,12 +158,14 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
                         "",
                         ""))
                 .collect(toList());
-
-        return summaries;
     }
 
     @Override
-    public ProcessSummary getProcess(String serverTemplateId, ProcessDefinitionKey processDefinitionKey) {
+    public ProcessSummary getProcess(final String serverTemplateId, final ProcessDefinitionKey processDefinitionKey) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return null;
+        }
+
         ProcessServicesClient queryServicesClient = getClient(serverTemplateId, ProcessServicesClient.class);
 
         ProcessDefinition definition = queryServicesClient.getProcessDefinition(processDefinitionKey.getDeploymentId(), processDefinitionKey.getProcessId());
@@ -183,13 +188,16 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
     }
 
     @Override
-    public List<ProcessSummary> getProcessesByFilter(String serverTemplateId, String textSearch, Integer page, Integer pageSize, String sort, boolean sortOrder) {
+    public List<ProcessSummary> getProcessesByFilter(String serverTemplateId, String textSearch, Integer page, Integer pageSize, String sort, Boolean sortOrder) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return emptyList();
+        }
 
         QueryServicesClient queryServicesClient = getClient(serverTemplateId, QueryServicesClient.class);
 
         List<ProcessDefinition> processes = queryServicesClient.findProcesses(textSearch, page, pageSize, sort, sortOrder);
 
-        List<ProcessSummary> summaries = processes
+        return processes
                 .stream()
                 .map(definition -> new ProcessSummary(definition.getId(),
                         definition.getName(),
@@ -200,11 +208,14 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
                         "",
                         ""))
                 .collect(toList());
-        return summaries;
     }
 
     @Override
-    public ProcessSummary getProcessesByContainerIdProcessId(String serverTemplateId, String containerId, String processId) {
+    public ProcessSummary getProcessesByContainerIdProcessId(final String serverTemplateId, final String containerId, final String processId) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return null;
+        }
+
         QueryServicesClient queryServicesClient = getClient(serverTemplateId, QueryServicesClient.class);
 
         ProcessDefinition definition = queryServicesClient.findProcessByContainerIdProcessId(containerId, processId);
@@ -228,6 +239,10 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
 
     @Override
     public List<TaskDefSummary> getProcessUserTasks(final String serverTemplateId, final String containerId, final String processId){
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return emptyList();
+        }
+
         ProcessServicesClient processServicesClient = getClient(serverTemplateId, ProcessServicesClient.class);
 
         final UserTaskDefinitionList userTaskDefinitionList = processServicesClient.getUserTaskDefinitions(containerId, processId);
@@ -236,7 +251,11 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
     }
 
     @Override
-    public List<RuntimeLogSummary> getRuntimeLogs(String serverTemplateId, Long processInstanceId) {
+    public List<RuntimeLogSummary> getRuntimeLogs(final String serverTemplateId, final Long processInstanceId) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return emptyList();
+        }
+
         List<NodeInstance> processInstanceHistory = getProcessInstanceHistory(serverTemplateId, processInstanceId);
         List<TaskEventInstance> allTaskEventsByProcessInstanceId = new ArrayList<TaskEventInstance>();//taskAuditService.getAllTaskEventsByProcessInstanceId(processInstanceId, "");
         List<RuntimeLogSummary> logs = new ArrayList<RuntimeLogSummary>(processInstanceHistory.size() + allTaskEventsByProcessInstanceId.size());
@@ -266,7 +285,11 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
         return logs;
     }
 
-    protected List<NodeInstance> getProcessInstanceHistory(String serverTemplateId, Long processInstanceId) {
+    protected List<NodeInstance> getProcessInstanceHistory(final String serverTemplateId, final Long processInstanceId) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return emptyList();
+        }
+
         QueryServicesClient queryServicesClient = getClient(serverTemplateId, QueryServicesClient.class);
 
         return queryServicesClient.findNodeInstances(processInstanceId, 0, 100);

@@ -40,11 +40,11 @@ public interface ProcessRuntimeDataService {
 
     List<RuntimeLogSummary> getBusinessLogs(String serverTemplateId, String processName, Long processInstanceId);
 
-    List<ProcessSummary> getProcesses(String serverTemplateId, Integer page, Integer pageSize, String sort, boolean sortOrder);
+    List<ProcessSummary> getProcesses(String serverTemplateId, Integer page, Integer pageSize, String sort, Boolean sortOrder);
 
     ProcessSummary getProcess(String serverTemplateId, ProcessDefinitionKey processDefinitionKey);
 
-    List<ProcessSummary> getProcessesByFilter(String serverTemplateId, String textSearch, Integer page, Integer pageSize, String sort, boolean sortOrder);
+    List<ProcessSummary> getProcessesByFilter(String serverTemplateId, String textSearch, Integer page, Integer pageSize, String sort, Boolean sortOrder);
 
     ProcessSummary getProcessesByContainerIdProcessId(String serverTemplateId, String containerId, String processId);
 
