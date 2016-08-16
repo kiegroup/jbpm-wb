@@ -18,6 +18,7 @@ package org.jbpm.console.ng.wi.backend.server.dd;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -26,6 +27,7 @@ import javax.inject.Named;
 import org.jbpm.console.ng.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.console.ng.wi.dd.model.ItemObjectModel;
 import org.jbpm.console.ng.wi.dd.service.DDEditorService;
+import org.jbpm.designer.notification.DesignerWorkitemInstalledEvent;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.uberfire.backend.server.util.Paths;
@@ -47,6 +49,10 @@ public class DDConfigUpdater {
 
     private DDConfigUpdaterHelper configUpdaterHelper;
 
+    private static final String MVEL_PREFIX = "mvel:";
+
+    private static final String REFLECTION_PREFIX = "reflection:";
+
     public DDConfigUpdater() {
     }
     
@@ -63,29 +69,103 @@ public class DDConfigUpdater {
     }
 
     public void processResourceAdd( @Observes final ResourceAddedEvent resourceAddedEvent ) {
-        if ( configUpdaterHelper.isPersistenceFile( resourceAddedEvent.getPath() ) ) {
+        if ( configUpdaterHelper.isPersistenceFile(resourceAddedEvent.getPath()) ) {
             //persistence.xml has been added to current project.
-            updateConfig( projectService.resolveProject( resourceAddedEvent.getPath() ) );
+            updateConfig(projectService.resolveProject(resourceAddedEvent.getPath()));
         }
     }
 
     public void processResourceUpdate( @Observes final ResourceUpdatedEvent resourceUpdatedEvent ) {
-        if ( configUpdaterHelper.isPersistenceFile( resourceUpdatedEvent.getPath() ) ) {
+        if ( configUpdaterHelper.isPersistenceFile(resourceUpdatedEvent.getPath()) ) {
             //persistence.xml has been updated in current project.
-            updateConfig( projectService.resolveProject( resourceUpdatedEvent.getPath() ) );
+            updateConfig(projectService.resolveProject(resourceUpdatedEvent.getPath()));
         }
+    }
+
+    public void processWorkitemInstall( @Observes final DesignerWorkitemInstalledEvent workitemInstalledEvent ) {
+        addWorkItemToConfig(projectService.resolveProject(workitemInstalledEvent.getPath()), workitemInstalledEvent);
+    }
+
+    private void addWorkItemToConfig( final KieProject kieProject, final DesignerWorkitemInstalledEvent workitemInstalledEvent) {
+        Path deploymentDescriptorPath = getDeploymentDescriptorPath( kieProject );
+        if ( ioService.exists(Paths.convert(deploymentDescriptorPath)) ) {
+            DeploymentDescriptorModel descriptorModel = ddEditorService.load( deploymentDescriptorPath );
+
+            if(descriptorModel != null) {
+                if(descriptorModel.getWorkItemHandlers() == null) {
+                    descriptorModel.setWorkItemHandlers(new ArrayList<ItemObjectModel>());
+                }
+
+                if( isValidWorkitem(workitemInstalledEvent) && !workItemAlreadyInstalled( descriptorModel.getWorkItemHandlers(), workitemInstalledEvent.getName()) ) {
+                    ItemObjectModel itemModel = new ItemObjectModel(workitemInstalledEvent.getName(),
+                            parseWorkitemValue(workitemInstalledEvent.getValue()),
+                            getWorkitemResolver(workitemInstalledEvent.getValue(), workitemInstalledEvent.getResolver()),
+                            null);
+                    descriptorModel.getWorkItemHandlers().add(itemModel);
+
+                    CommentedOption commentedOption = new CommentedOption( "system", null, "Workitem config added by system.", new Date() );
+                    ( ( DDEditorServiceImpl ) ddEditorService ).save(deploymentDescriptorPath, descriptorModel, descriptorModel.getOverview().getMetadata(), commentedOption);
+                }
+            }
+        }
+    }
+
+    public String parseWorkitemValue(String value) {
+        if(value.trim().toLowerCase().startsWith(MVEL_PREFIX)) {
+            return value.trim().substring(MVEL_PREFIX.length()).trim();
+        } else if(value.trim().toLowerCase().startsWith(REFLECTION_PREFIX)) {
+            return value.trim().substring(REFLECTION_PREFIX.length()).trim();
+        } else {
+            return value.trim();
+        }
+    }
+
+    public String getWorkitemResolver(String value, String defaultResolver) {
+        if(value.trim().toLowerCase().startsWith(MVEL_PREFIX)) {
+            return MVEL_PREFIX.substring(0,MVEL_PREFIX.length()-1);
+        } else if(value.trim().toLowerCase().startsWith(REFLECTION_PREFIX)) {
+            return REFLECTION_PREFIX.substring(0,REFLECTION_PREFIX.length()-1);
+        } else {
+            return defaultResolver;
+        }
+    }
+
+    public boolean isValidWorkitem(DesignerWorkitemInstalledEvent workitemInstalledEvent) {
+        return workitemInstalledEvent != null &&
+                workitemInstalledEvent.getName() != null &&
+                workitemInstalledEvent.getName().trim().length() > 0 &&
+                workitemInstalledEvent.getValue() != null &&
+                workitemInstalledEvent.getValue().trim().length() > 0;
+    }
+
+    private boolean workItemAlreadyInstalled(List<ItemObjectModel> workitemHandlers, String name) {
+        if(name == null || name.trim().length() < 1) {
+            return false;
+        }
+
+        for(ItemObjectModel itemObject : workitemHandlers) {
+            if(itemObject != null && itemObject.getName().equals(name)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void updateConfig( final KieProject kieProject ) {
 
-        Path deploymentDescriptorPath = PathFactory.newPath( "kie-deployment-descriptor.xml",
-                kieProject.getRootPath().toURI() + "/src/main/resources/META-INF/kie-deployment-descriptor.xml" );
+        Path deploymentDescriptorPath = getDeploymentDescriptorPath( kieProject );
 
-        if ( ioService.exists( Paths.convert( deploymentDescriptorPath ) ) ) {
+        if ( ioService.exists(Paths.convert( deploymentDescriptorPath )) ) {
             //if deployment descriptor exists created, then update it.
             DeploymentDescriptorModel descriptorModel = ddEditorService.load( deploymentDescriptorPath );
             updateMarshallingConfig( descriptorModel, deploymentDescriptorPath, kieProject );
         }
+    }
+
+    private Path getDeploymentDescriptorPath( final KieProject kieProject ) {
+        return PathFactory.newPath( "kie-deployment-descriptor.xml",
+                kieProject.getRootPath().toURI() + "/src/main/resources/META-INF/kie-deployment-descriptor.xml" );
     }
 
     private void updateMarshallingConfig( final DeploymentDescriptorModel descriptorModel,
@@ -123,3 +203,4 @@ public class DDConfigUpdater {
     }
 
 }
+
