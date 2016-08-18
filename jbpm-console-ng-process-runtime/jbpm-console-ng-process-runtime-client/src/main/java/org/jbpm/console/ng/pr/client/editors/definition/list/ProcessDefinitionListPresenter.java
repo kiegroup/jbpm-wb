@@ -192,9 +192,9 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
         if ( status == PlaceStatus.CLOSE ) {
             placeManager.goTo( placeIdentifier );
-            processDefSelected.fire( new ProcessDefSelectionEvent( processSummary.getProcessDefId(), processSummary.getDeploymentId(), selectedServerTemplate ) );
+            processDefSelected.fire( new ProcessDefSelectionEvent( processSummary.getProcessDefId(), processSummary.getDeploymentId(), selectedServerTemplate, processSummary.getProcessDefName() ) );
         } else if ( status == PlaceStatus.OPEN && !close ) {
-            processDefSelected.fire( new ProcessDefSelectionEvent( processSummary.getProcessDefId(), processSummary.getDeploymentId(), selectedServerTemplate ) );
+            processDefSelected.fire( new ProcessDefSelectionEvent( processSummary.getProcessDefId(), processSummary.getDeploymentId(), selectedServerTemplate, processSummary.getProcessDefName() ) );
         } else if ( status == PlaceStatus.OPEN && close ) {
             placeManager.closePlace( placeIdentifier );
         }
