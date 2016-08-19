@@ -122,7 +122,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
         startButton.setType(ButtonType.PRIMARY);
         footerButtons.add(startButton);
 
-        processName = config.getKey().getProcessId();
+        processName = config.getKey().getProcessDefName();
         FocusPanel wrapperFlowPanel = new FocusPanel();
         wrapperFlowPanel.setStyleName("wrapper form-actions");
 

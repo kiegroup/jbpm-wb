@@ -38,6 +38,9 @@ public abstract class BaseProcessDefDetailsMultiPresenterTest {
     @Mock
     PlaceManager placeManager;
 
+    @Mock
+    protected EventSourceMock<ProcessDefSelectionEvent> processDefSelectionEvent = new EventSourceMock<ProcessDefSelectionEvent>();
+
     @Spy
     Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent = new EventSourceMock<ChangeTitleWidgetEvent>();
 
@@ -64,4 +67,18 @@ public abstract class BaseProcessDefDetailsMultiPresenterTest {
         assertEquals(process, request.getParameter(DataSetProcessInstancesWithVariablesPerspective.PROCESS_ID, null));
     }
 
+    @Test
+    public void testProcessDefNameInChangeTitleEvent() {
+        final String processDefName = "testProcessDefName";
+        final String deploymentId = "testDeploymentId";
+        ProcessDefSelectionEvent processDefSelectionEvent = new ProcessDefSelectionEvent();
+        processDefSelectionEvent.setProcessDefName( processDefName );
+        processDefSelectionEvent.setDeploymentId( deploymentId );
+
+        getPresenter().onProcessSelectionEvent(processDefSelectionEvent);
+
+        ArgumentCaptor<ChangeTitleWidgetEvent> argument = ArgumentCaptor.forClass( ChangeTitleWidgetEvent.class );
+        verify(changeTitleWidgetEvent).fire( argument.capture() );
+        assertEquals(  deploymentId  + " - " + processDefName , argument.getValue().getTitle());
+    }
 }

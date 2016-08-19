@@ -24,17 +24,24 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 
 import org.jboss.errai.common.client.api.Caller;
 
+import org.jbpm.console.ng.bd.model.ProcessSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 
+import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
 import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mocks.CallerMock;
+import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.PlaceRequest;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -47,6 +54,12 @@ public class ProcessDefinitionListPresenterTest {
 
     @Mock
     ExtendedPagedTable extendedPagedTable;
+
+    @Mock
+    protected PlaceManager placeManager;
+
+    @Mock
+    protected EventSourceMock<ProcessDefSelectionEvent> processDefSelectionEvent = new EventSourceMock<ProcessDefSelectionEvent>();
 
     Caller<ProcessRuntimeDataService> processRuntimeDataServiceCaller;
 
@@ -79,6 +92,24 @@ public class ProcessDefinitionListPresenterTest {
 
         assertEquals(searchEvent.getFilter(), presenter.getTextSearchStr());
         verify(processRuntimeDataService).getProcessesByFilter(anyString(), anyString(), anyInt(), anyInt(), anyString(), anyBoolean());
+    }
+
+    @Test
+    public void testProcessDefNameDefinitionPropagation(){
+        String processDefName = "testProcessDefName";
+
+        ProcessSummary processSummary = new ProcessSummary();
+        processSummary.setProcessDefId("testProcessDefId");
+        processSummary.setDeploymentId("testDeploymentId");
+        processSummary.setProcessDefName(processDefName);
+
+        when(placeManager.getStatus(any(PlaceRequest.class))).thenReturn(PlaceStatus.CLOSE);
+        presenter.selectProcessDefinition(processSummary, true);
+
+        verify(processDefSelectionEvent).fire(any(ProcessDefSelectionEvent.class));
+        ArgumentCaptor<ProcessDefSelectionEvent> argument = ArgumentCaptor.forClass( ProcessDefSelectionEvent.class );
+        verify( processDefSelectionEvent).fire(argument.capture());
+        assertEquals( processDefName, argument.getValue().getProcessDefName() );
     }
 
 }

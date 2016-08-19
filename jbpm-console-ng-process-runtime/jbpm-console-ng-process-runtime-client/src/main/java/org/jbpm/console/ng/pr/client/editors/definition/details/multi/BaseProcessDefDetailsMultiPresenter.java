@@ -68,6 +68,8 @@ public abstract class BaseProcessDefDetailsMultiPresenter implements RefreshMenu
 
     private String processId = "";
 
+    private String processDefName = "";
+
     private String serverTemplateId = "";
 
     @WorkbenchPartTitle
@@ -83,14 +85,15 @@ public abstract class BaseProcessDefDetailsMultiPresenter implements RefreshMenu
     public void onProcessSelectionEvent( @Observes final ProcessDefSelectionEvent event ) {
         deploymentId = event.getDeploymentId();
         processId = event.getProcessId();
+        processDefName = event.getProcessDefName();
         serverTemplateId = event.getServerTemplateId();
 
         changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place,
-                                                                 String.valueOf( deploymentId ) + " - " + processId ) );
+                                                                 String.valueOf( deploymentId ) + " - " + processDefName ) );
     }
 
     public void createNewProcessInstance() {
-        final ProcessDisplayerConfig config = new ProcessDisplayerConfig( new ProcessDefinitionKey( serverTemplateId, deploymentId, processId ), processId );
+        final ProcessDisplayerConfig config = new ProcessDisplayerConfig( new ProcessDefinitionKey( serverTemplateId, deploymentId, processId, processDefName ), processDefName );
 
         formDisplayPopUp.setTitle( "" );
         startProcessDisplayProvider.setup( config, formDisplayPopUp );
@@ -110,7 +113,7 @@ public abstract class BaseProcessDefDetailsMultiPresenter implements RefreshMenu
 
     @Override
     public void onRefresh() {
-        processDefSelectionEvent.fire(new ProcessDefSelectionEvent(processId, deploymentId, serverTemplateId));
+        processDefSelectionEvent.fire(new ProcessDefSelectionEvent(processId, deploymentId, serverTemplateId, processDefName));
     }
 
     public void closeDetails() {
