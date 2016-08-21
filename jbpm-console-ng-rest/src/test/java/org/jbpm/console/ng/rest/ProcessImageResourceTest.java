@@ -60,7 +60,7 @@ public class ProcessImageResourceTest extends JbpmConsoleNgRestBaseIntegrationTe
     }
 
     /**
-     * This tests what happens when the process definition/BPMN2 file is available,
+     * This tests what happens when the process definition/BPMN2 file is not available,
      * but the SVG file is not.
      *
      * @throws Exception
@@ -143,6 +143,28 @@ public class ProcessImageResourceTest extends JbpmConsoleNgRestBaseIntegrationTe
         //make sure there are no completed nodes in active list
         for (String id : completed) {
             assertFalse(active.contains(id));
+        }
+    }
+
+    /**
+     * This tests what happens when the process instance is not available,
+     *
+     * @throws Exception
+     */
+    @Test
+    public void procInstNotAvailable() throws Exception {
+        String procId = "org.test.error";
+
+        String uriStr = "http://localhost:" + PORT + "/runtime/" + DEPLOYMENT_ID + "/process/" + procId + "/image/" + 1234;
+        Request request = Request.Get(uriStr);
+
+        try {
+            Response resp = request.execute();
+            int code = resp.returnResponse().getStatusLine().getStatusCode();
+            assertEquals( "Incorrect HTTP error code:" , 404, code);
+        } catch( Exception e ) {
+            logger.error("[GET] " + uriStr + " FAILED", e);
+            fail("Unexpected exception: " + e.getMessage());
         }
     }
 }

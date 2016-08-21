@@ -22,7 +22,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.jbpm.kie.services.impl.model.ProcessAssetDesc;
@@ -31,6 +30,7 @@ import org.jbpm.process.svg.SVGImageProcessor;
 import org.jbpm.services.api.RuntimeDataService;
 import org.jbpm.services.api.model.NodeInstanceDesc;
 import org.jbpm.services.api.model.ProcessDefinition;
+import org.jbpm.services.api.model.ProcessInstanceDesc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,12 +135,16 @@ public class ProcessImageResourceImpl {
 
     @GET
     @Path("/{procInstId: [0-9]+}")
-    public Response getActiveProcessImage(  @PathParam("deploymentId") String deploymentId, @PathParam("processDefId" ) String processId,
-            @PathParam("procInstId") long procInstId) {
+    public Response getActiveProcessImage(  @PathParam("deploymentId") String deploymentId, @PathParam("processDefId" ) String processId, @PathParam("procInstId") long procInstId) {
+
+        ProcessInstanceDesc procInstDesc = dataService.getProcessInstanceById(procInstId);
+        if( procInstDesc == null ) {
+           return Response.status(Response.Status.NOT_FOUND).entity("Process instance " + procInstId + " could not be found.").build();
+        }
 
         ProcessDefinition procDef = dataService.getProcessesByDeploymentIdProcessId(deploymentId, processId);
         if( procDef == null ) {
-           return Response.status(Response.Status.NOT_FOUND).build();
+           return Response.status(Response.Status.NOT_FOUND).entity("Process definition " + processId + " could not be found.").build();
         }
 
         // get SVG String
