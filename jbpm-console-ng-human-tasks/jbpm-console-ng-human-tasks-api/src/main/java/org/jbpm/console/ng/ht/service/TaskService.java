@@ -53,10 +53,10 @@ public interface TaskService {
 
     List<TaskEventSummary> getTaskEvents(String serverTemplateId, String containerId, Long taskId);
 
-    void delegate(String serverTemplateId, String containerId, long taskId, String entity);
+    void delegate(String serverTemplateId, String containerId, Long taskId, String entity);
 
-    TaskAssignmentSummary getTaskAssignmentDetails(String serverTemplateId, String containerId, long taskId);
+    TaskAssignmentSummary getTaskAssignmentDetails(String serverTemplateId, String containerId, Long taskId);
 
-    void executeReminderForTask(long taskId,String fromUser);
+    void executeReminderForTask(String serverTemplateId, String containerId, Long taskId,String fromUser);
 
 }

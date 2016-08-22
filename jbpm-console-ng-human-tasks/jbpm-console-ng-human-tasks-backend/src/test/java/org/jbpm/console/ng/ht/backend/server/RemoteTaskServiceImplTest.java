@@ -15,10 +15,13 @@
  */
 package org.jbpm.console.ng.ht.backend.server;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 
 import org.jbpm.console.ng.ht.model.TaskEventSummary;
+import org.jbpm.console.ng.ht.service.TaskService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +32,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static java.lang.String.format;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -48,7 +52,6 @@ public class RemoteTaskServiceImplTest {
     public void initMocks() {
         when(identityProvider.getName()).thenReturn(CURRENT_USER);
     }
-
 
     @Test
     public void allowDelegateStatusCompleted() {
@@ -148,6 +151,31 @@ public class RemoteTaskServiceImplTest {
         assertEquals(event.getLogTime(), summary.getLogTime());
         assertEquals(event.getWorkItemId(), summary.getWorkItemId());
         assertEquals(event.getMessage(), summary.getMessage());
+    }
+
+    @Test
+    public void testInvalidServerTemplate() throws Exception {
+        final Method[] methods = TaskService.class.getMethods();
+        for (Method method : methods) {
+            final Class<?> returnType = method.getReturnType();
+            final Object[] args = new Object[method.getParameterCount()];
+            Object result = method.invoke(remoteTaskService, args);
+
+            assertMethodResult(method, returnType, result);
+
+            args[0] = "";
+            result = method.invoke(remoteTaskService, args);
+            assertMethodResult(method, returnType, result);
+        }
+    }
+
+    private void assertMethodResult(final Method method, final Class<?> returnType, final Object result) {
+        if (Collection.class.isAssignableFrom(returnType)) {
+            assertNotNull(format("Returned collection for method %s should not be null", method.getName()), result);
+            assertTrue(format("Returned collection for method %s should be empty", method.getName()), ((Collection) result).isEmpty());
+        } else {
+            assertNull(format("Returned object for method %s should be null", method.getName()), result);
+        }
     }
 
 }
