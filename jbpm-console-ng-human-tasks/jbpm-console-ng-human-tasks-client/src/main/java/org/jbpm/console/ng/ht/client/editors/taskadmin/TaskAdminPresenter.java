@@ -108,7 +108,7 @@ public class TaskAdminPresenter {
                     }
                 },
                 new DefaultErrorCallback()
-        ).executeReminderForTask(currentTaskId, identity.getIdentifier());
+        ).executeReminderForTask(serverTemplateId, containerId, currentTaskId, identity.getIdentifier());
     }
 
     public void refreshTaskPotentialOwners() {
