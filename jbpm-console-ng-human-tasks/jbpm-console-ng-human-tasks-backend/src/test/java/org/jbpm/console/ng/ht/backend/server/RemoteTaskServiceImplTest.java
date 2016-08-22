@@ -16,11 +16,14 @@
 package org.jbpm.console.ng.ht.backend.server;
 
 import java.util.Arrays;
+import java.util.Date;
 
+import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.internal.identity.IdentityProvider;
+import org.kie.server.api.model.instance.TaskEventInstance;
 import org.kie.server.api.model.instance.TaskInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -31,6 +34,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RemoteTaskServiceImplTest {
+
     private static final String CURRENT_USER = "Jan";
     private static final String OTHER_USER = "OTHER_USER";
 
@@ -43,7 +47,6 @@ public class RemoteTaskServiceImplTest {
     @Before
     public void initMocks() {
         when(identityProvider.getName()).thenReturn(CURRENT_USER);
-
     }
 
 
@@ -121,6 +124,30 @@ public class RemoteTaskServiceImplTest {
         when(identityProvider.getRoles()).thenReturn(Arrays.asList(CURRENT_USER));
 
         assertFalse(remoteTaskService.isDelegationAllowed(task));
+    }
+
+    @Test
+    public void testBuildTaskEventSummary() {
+        final TaskEventInstance event =
+                TaskEventInstance.builder().
+                        id(1l).
+                        taskId(2l).
+                        type("UPDATED").
+                        user("admin").
+                        date(new Date()).
+                        workItemId(3l).
+                        message("message").build();
+
+        final TaskEventSummary summary = remoteTaskService.build(event);
+
+        assertNotNull(summary);
+        assertEquals(event.getId(), summary.getEventId());
+        assertEquals(event.getTaskId(), summary.getTaskId());
+        assertEquals(event.getType(), summary.getType());
+        assertEquals(event.getUserId(), summary.getUserId());
+        assertEquals(event.getLogTime(), summary.getLogTime());
+        assertEquals(event.getWorkItemId(), summary.getWorkItemId());
+        assertEquals(event.getMessage(), summary.getMessage());
     }
 
 }
