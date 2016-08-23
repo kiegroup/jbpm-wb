@@ -35,6 +35,8 @@ import org.uberfire.workbench.events.ResourceAddedEvent;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -148,6 +150,8 @@ public class DDConfigUpdaterTest {
         assertEquals("mvel", objectModel3.getResolver());
         assertEquals("new com.myhandlers.MyHandler4()", objectModel3.getValue());
 
+        verify(ddEditorService, never()).createIfNotExists(any(Path.class));
+
     }
 
     @Test
@@ -203,6 +207,24 @@ public class DDConfigUpdaterTest {
         assertEquals("mvel", ddConfigUpdater.getWorkitemResolver("mvel:new com.myhandlers.MyHandler()", "reflection"));
         assertEquals("reflection", ddConfigUpdater.getWorkitemResolver("reflection:new com.myhandlers.MyHandler()", "mvel"));
         assertEquals("reflection", ddConfigUpdater.getWorkitemResolver("reflection:new com.myhandlers.MyHandler()", ""));
+    }
+
+    @Test
+    public void testInstallNonExistingDD() {
+        when(ioService.exists(any(org.uberfire.java.nio.file.Path.class))).thenReturn(false);
+
+        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class), "mvel", "new com.myhandlers.MyHandler()", "MyWorkItem", ""));
+
+        verify(ddEditorService).createIfNotExists(any(Path.class));
+
+        assertNotNull(model.getWorkItemHandlers());
+        assertEquals(1, model.getWorkItemHandlers().size());
+
+        ItemObjectModel objectModel = model.getWorkItemHandlers().get(0);
+        assertNotNull(objectModel);
+        assertEquals("MyWorkItem", objectModel.getName());
+        assertEquals("mvel", objectModel.getResolver());
+        assertEquals("new com.myhandlers.MyHandler()", objectModel.getValue());
     }
 
 }
