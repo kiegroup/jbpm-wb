@@ -88,26 +88,30 @@ public class DDConfigUpdater {
 
     private void addWorkItemToConfig( final KieProject kieProject, final DesignerWorkitemInstalledEvent workitemInstalledEvent) {
         Path deploymentDescriptorPath = getDeploymentDescriptorPath( kieProject );
-        if ( ioService.exists(Paths.convert(deploymentDescriptorPath)) ) {
-            DeploymentDescriptorModel descriptorModel = ddEditorService.load( deploymentDescriptorPath );
 
-            if(descriptorModel != null) {
-                if(descriptorModel.getWorkItemHandlers() == null) {
-                    descriptorModel.setWorkItemHandlers(new ArrayList<ItemObjectModel>());
-                }
+        if (! ioService.exists(Paths.convert(deploymentDescriptorPath)) ) {
+            ddEditorService.createIfNotExists(deploymentDescriptorPath);
+        }
 
-                if( isValidWorkitem(workitemInstalledEvent) && !workItemAlreadyInstalled( descriptorModel.getWorkItemHandlers(), workitemInstalledEvent.getName()) ) {
-                    ItemObjectModel itemModel = new ItemObjectModel(workitemInstalledEvent.getName(),
-                            parseWorkitemValue(workitemInstalledEvent.getValue()),
-                            getWorkitemResolver(workitemInstalledEvent.getValue(), workitemInstalledEvent.getResolver()),
-                            null);
-                    descriptorModel.getWorkItemHandlers().add(itemModel);
+        DeploymentDescriptorModel descriptorModel = ddEditorService.load( deploymentDescriptorPath );
 
-                    CommentedOption commentedOption = new CommentedOption( "system", null, "Workitem config added by system.", new Date() );
-                    ( ( DDEditorServiceImpl ) ddEditorService ).save(deploymentDescriptorPath, descriptorModel, descriptorModel.getOverview().getMetadata(), commentedOption);
-                }
+        if(descriptorModel != null) {
+            if(descriptorModel.getWorkItemHandlers() == null) {
+                descriptorModel.setWorkItemHandlers(new ArrayList<ItemObjectModel>());
+            }
+
+            if( isValidWorkitem(workitemInstalledEvent) && !workItemAlreadyInstalled( descriptorModel.getWorkItemHandlers(), workitemInstalledEvent.getName()) ) {
+                ItemObjectModel itemModel = new ItemObjectModel(workitemInstalledEvent.getName(),
+                        parseWorkitemValue(workitemInstalledEvent.getValue()),
+                        getWorkitemResolver(workitemInstalledEvent.getValue(), workitemInstalledEvent.getResolver()),
+                        null);
+                descriptorModel.getWorkItemHandlers().add(itemModel);
+
+                CommentedOption commentedOption = new CommentedOption( "system", null, "Workitem config added by system.", new Date() );
+                ( ( DDEditorServiceImpl ) ddEditorService ).save(deploymentDescriptorPath, descriptorModel, descriptorModel.getOverview().getMetadata(), commentedOption);
             }
         }
+
     }
 
     public String parseWorkitemValue(String value) {
