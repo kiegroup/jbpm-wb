@@ -35,8 +35,11 @@ import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.dataset.filter.FilterFactory;
+import org.dashbuilder.dataset.group.ColumnGroup;
 import org.dashbuilder.dataset.group.DataSetGroup;
 import org.dashbuilder.dataset.group.GroupFunction;
+import org.dashbuilder.dataset.group.Interval;
 import org.dashbuilder.dataset.impl.DataColumnImpl;
 import org.dashbuilder.dataset.impl.DataSetMetadataImpl;
 import org.dashbuilder.dataset.sort.ColumnSort;
@@ -107,6 +110,14 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
             }
         }
         List<DataColumn> extraColumns = new ArrayList<DataColumn>();
+
+        List<DataSetGroup> dataSetGroups = lookup.getFirstGroupOpSelections();
+        for (DataSetGroup group : dataSetGroups) {
+            if (group.getSelectedIntervalList()!=null && group.getSelectedIntervalList().size()>0) {
+                appendIntervalSelection(group, filterParams);
+            }
+        }
+
         DataSetGroup dataSetGroup = dataSetLookup.getLastGroupOp();
         if (dataSetGroup != null) {
             if (dataSetGroup.getColumnGroup() != null) {
@@ -205,5 +216,54 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
         dataSet.setRowCountNonTrimmed(instances.size());
         return dataSet;
     }
+
+    protected void appendIntervalSelection(DataSetGroup intervalSel, List<QueryParam> filterParams) {
+        if (intervalSel != null && intervalSel.isSelect()) {
+            ColumnGroup cg = intervalSel.getColumnGroup();
+            List<Interval> intervalList = intervalSel.getSelectedIntervalList();
+
+            // Get the filter values
+            List<Comparable> names = new ArrayList<Comparable>();
+            Comparable min = null;
+            Comparable max = null;
+            for (Interval interval : intervalList) {
+                names.add(interval.getName());
+                Comparable intervalMin = (Comparable) interval.getMinValue();
+                Comparable intervalMax = (Comparable) interval.getMaxValue();
+
+                if (intervalMin != null) {
+                    if (min == null) min = intervalMin;
+                    else if (min.compareTo(intervalMin) > 0) min = intervalMin;
+                }
+                if (intervalMax != null) {
+                    if (max == null) max = intervalMax;
+                    else if (max.compareTo(intervalMax) > 0) max = intervalMax;
+                }
+            }
+            // Min can't be greater than max.
+            if (min != null && max != null && min.compareTo(max) > 0) {
+                min = max;
+            }
+
+            ColumnFilter filter;
+            if (min != null && max != null) {
+                filter = FilterFactory.between(cg.getSourceId(), min, max);
+            }
+            else if (min != null) {
+                filter = FilterFactory.greaterOrEqualsTo(cg.getSourceId(), min);
+            }
+            else if (max != null) {
+                filter = FilterFactory.lowerOrEqualsTo(cg.getSourceId(), max);
+            }
+            else {
+                filter = FilterFactory.equalsTo(cg.getSourceId(), names);
+            }
+
+            CoreFunctionFilter coreFunctionFilter = (CoreFunctionFilter) filter;
+            filterParams.add(new QueryParam(coreFunctionFilter.getColumnId(), coreFunctionFilter.getType().toString(), coreFunctionFilter.getParameters()));
+
+        }
+    }
+
 
 }
