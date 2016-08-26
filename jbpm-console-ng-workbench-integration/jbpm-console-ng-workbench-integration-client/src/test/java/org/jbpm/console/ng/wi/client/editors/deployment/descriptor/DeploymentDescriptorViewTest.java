@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 import org.gwtbootstrap3.client.ui.CheckBox;
 import org.gwtbootstrap3.client.ui.ListBox;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.console.ng.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.console.ng.wi.dd.model.ItemObjectModel;
 import org.jbpm.console.ng.wi.dd.model.Parameter;
@@ -46,6 +47,7 @@ import org.junit.runner.RunWith;
 import org.kie.internal.runtime.conf.AuditMode;
 import org.kie.internal.runtime.conf.PersistenceMode;
 import org.kie.internal.runtime.conf.RuntimeStrategy;
+import org.mockito.Mock;
 import org.mockito.Spy;
 
 import com.google.gwtmockito.GwtMock;
@@ -65,6 +67,9 @@ public class DeploymentDescriptorViewTest {
 
     @GwtMock
     private CheckBox checkBox;
+
+    @Mock
+    private TranslationService translationService;
 
     private DeploymentDescriptorModel deploymentDescriptorModel;
 
@@ -195,7 +200,7 @@ public class DeploymentDescriptorViewTest {
         assertTrue( "Fix regular expression: " + jarLocRegexStr, matcher.matches() );
         double jarVersion = Double.parseDouble(matcher.group(1));
 
-        DeploymentDescriptorViewImpl viewImpl = new DeploymentDescriptorViewImpl();
+        DeploymentDescriptorViewImpl viewImpl = new DeploymentDescriptorViewImpl(translationService);
 
         deploymentDescriptorModel.setLimitSerializationClasses(null);
 
