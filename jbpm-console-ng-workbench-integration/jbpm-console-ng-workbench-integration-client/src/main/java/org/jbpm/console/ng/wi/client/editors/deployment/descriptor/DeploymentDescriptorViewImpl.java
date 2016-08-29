@@ -17,7 +17,6 @@
 package org.jbpm.console.ng.wi.client.editors.deployment.descriptor;
 
 import java.util.ArrayList;
-
 import javax.inject.Inject;
 
 import org.gwtbootstrap3.client.ui.Button;
@@ -32,9 +31,13 @@ import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
 import org.gwtbootstrap3.client.ui.gwt.CellTable;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
+
 import org.jbpm.console.ng.wi.client.i18n.Constants;
 import org.jbpm.console.ng.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.console.ng.wi.dd.model.ItemObjectModel;
+import org.kie.workbench.common.screens.server.management.client.util.ClientRuntimeStrategy;
+import org.kie.workbench.common.screens.server.management.model.RuntimeStrategy;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
 import org.uberfire.ext.widgets.common.client.ace.AceEditorMode;
@@ -271,8 +274,12 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @Inject
     private TextEditorView xmlViewer;
 
-    public DeploymentDescriptorViewImpl() {
+    private TranslationService translationService;
+
+    @Inject
+    public DeploymentDescriptorViewImpl(TranslationService translationService) {
         initWidget( uiBinder.createAndBindUi( this ) );
+        this.translationService = translationService;
         setup();
     }
 
@@ -282,11 +289,12 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
         auditModeDropdown.addItem( "NONE", "NONE" );
         auditModeDropdown.addItem( "JPA", "JPA" );
-        auditModeDropdown.addItem( "JMS", "JMS" );
+        auditModeDropdown.addItem("JMS", "JMS");
 
-        runtimeStrategyDropdown.addItem( "SINGLETON", "SINGLETON" );
-        runtimeStrategyDropdown.addItem( "PER_REQUEST", "PER_REQUEST" );
-        runtimeStrategyDropdown.addItem( "PER_PROCESS_INSTANCE", "PER_PROCESS_INSTANCE" );
+        RuntimeStrategy[] strategies = RuntimeStrategy.values();
+        for(RuntimeStrategy runTimeStrategy : strategies){
+            runtimeStrategyDropdown.addItem(runTimeStrategy.name(), ClientRuntimeStrategy.convert(runTimeStrategy).getValue(translationService));
+        }
 
         configureMarshalingTable();
 
