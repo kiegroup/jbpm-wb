@@ -26,6 +26,14 @@ public class GenericSummary extends AbstractPageRow implements Serializable {
     protected Object id;
     protected String name;
 
+    public GenericSummary() {
+    }
+
+    public GenericSummary(final Object id, final String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Object getId() {
         return id;
     }
@@ -43,11 +51,14 @@ public class GenericSummary extends AbstractPageRow implements Serializable {
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = ~~result;
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = ~~result;
         return result;
     }
 
@@ -73,4 +84,11 @@ public class GenericSummary extends AbstractPageRow implements Serializable {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "GenericSummary{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

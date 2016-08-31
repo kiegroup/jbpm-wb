@@ -30,6 +30,7 @@ import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.client.i18n.Constants;
+import org.jbpm.console.ng.cm.client.perspectives.CaseInstanceListPerspective;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
 import org.kie.workbench.common.screens.search.client.menu.SearchMenuBuilder;
 import org.kie.workbench.common.services.shared.service.PlaceManagerActivityService;
@@ -108,7 +109,7 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
     protected List<? extends MenuItem> getCaseManagementViews() {
         final List<MenuItem> result = new ArrayList<>( 1 );
 
-        result.add( MenuFactory.newSimpleItem( constants.Cases() ).perspective( "Cases" ).endMenu().build().getItems().get( 0 ) );
+        result.add( MenuFactory.newSimpleItem( constants.Cases() ).perspective( CaseInstanceListPerspective.PERSPECTIVE_ID ).endMenu().build().getItems().get( 0 ) );
 
         return result;
     }
