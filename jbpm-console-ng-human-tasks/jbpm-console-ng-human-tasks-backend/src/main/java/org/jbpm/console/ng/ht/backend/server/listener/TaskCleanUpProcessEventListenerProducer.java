@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
+
+import org.kie.api.event.process.ProcessEventListener;
 import org.kie.internal.runtime.manager.EventListenerProducer;
 import org.jbpm.runtime.manager.api.qualifiers.Process;
 import org.jbpm.services.task.admin.listener.TaskCleanUpProcessEventListener;
@@ -29,14 +31,14 @@ import org.kie.api.task.TaskService;
  * @author salaboy
  */
 @Process
-public class TaskCleanUpProcessEventListenerProducer implements EventListenerProducer<TaskCleanUpProcessEventListener>{
+public class TaskCleanUpProcessEventListenerProducer implements EventListenerProducer<ProcessEventListener>{
 
     @Inject
     private TaskService taskService;
     
     @Override
-    public List<TaskCleanUpProcessEventListener> getEventListeners(String identifier, Map<String, Object> params) {
-        List<TaskCleanUpProcessEventListener> taskCleanupListeners = new ArrayList<TaskCleanUpProcessEventListener>();
+    public List<ProcessEventListener> getEventListeners(String identifier, Map<String, Object> params) {
+        List<ProcessEventListener> taskCleanupListeners = new ArrayList<ProcessEventListener>();
         taskCleanupListeners.add(new TaskCleanUpProcessEventListener(taskService));
         return taskCleanupListeners;
     }
