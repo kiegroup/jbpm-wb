@@ -273,21 +273,10 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
 
     public DeploymentDescriptorViewImpl() {
         initWidget( uiBinder.createAndBindUi( this ) );
-        setup();
     }
 
-    void setup() {
-        persistenceModeDropdown.addItem( "NONE", "NONE" );
-        persistenceModeDropdown.addItem( "JPA", "JPA" );
-
-        auditModeDropdown.addItem( "NONE", "NONE" );
-        auditModeDropdown.addItem( "JPA", "JPA" );
-        auditModeDropdown.addItem( "JMS", "JMS" );
-
-        runtimeStrategyDropdown.addItem( "SINGLETON", "SINGLETON" );
-        runtimeStrategyDropdown.addItem( "PER_REQUEST", "PER_REQUEST" );
-        runtimeStrategyDropdown.addItem( "PER_PROCESS_INSTANCE", "PER_PROCESS_INSTANCE" );
-
+    @Override
+    public void setup() {
         configureMarshalingTable();
 
         configureEventListenersTable();
@@ -374,7 +363,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
         deploymentDescriptorModel.setAuditMode( auditModeDropdown.getItemText( amSelected ) );
 
         int rsSelected = runtimeStrategyDropdown.getSelectedIndex();
-        deploymentDescriptorModel.setRuntimeStrategy( runtimeStrategyDropdown.getItemText( rsSelected ) );
+        deploymentDescriptorModel.setRuntimeStrategy( runtimeStrategyDropdown.getValue( rsSelected ) );
 
         deploymentDescriptorModel.setMarshallingStrategies( marshalStrategyDataProvider.getList() );
 
@@ -1284,6 +1273,21 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
                 return;
             }
         }
+    }
+
+    @Override
+    public void addRuntimeStrategy(String runtimeStrategyTitle, String runtimeStrategyValue) {
+        runtimeStrategyDropdown.addItem(runtimeStrategyTitle,runtimeStrategyValue);
+    }
+
+    @Override
+    public void addPersistenceMode(String persistenceModeTitle, String persistenceModeValue) {
+        persistenceModeDropdown.addItem(persistenceModeTitle,persistenceModeValue);
+    }
+
+    @Override
+    public void addAuditMode(String auditModeTitle, String auditModeValue) {
+        auditModeDropdown.addItem(auditModeTitle,auditModeValue);
     }
 
     @Override

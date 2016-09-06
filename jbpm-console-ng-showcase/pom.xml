@@ -1206,10 +1206,6 @@
                         <compileSourcesArtifact>org.jbpm:jbpm-form-modeler-renderer-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-form-modeler-renderer-client</compileSourcesArtifact>
 
-                        <!-- Kie Server needed by Exec Server -->
-                        <compileSourcesArtifact>org.kie:kie-api</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.kie.server:kie-server-api</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.kie.server:kie-server-controller-api</compileSourcesArtifact>
                     </compileSourcesArtifacts>
                 </configuration>
                 <executions>
