@@ -23,9 +23,11 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.console.ng.wi.client.editors.deployment.descriptor.type.DDResourceType;
 import org.jbpm.console.ng.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.console.ng.wi.dd.service.DDEditorService;
+import org.kie.workbench.common.screens.server.management.client.util.ClientRuntimeStrategy;
 import org.kie.workbench.common.widgets.client.popups.validation.ValidationPopup;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
 import org.kie.workbench.common.widgets.metadata.client.KieEditor;
@@ -50,7 +52,6 @@ import org.uberfire.workbench.model.menu.Menus;
 @WorkbenchEditor(identifier = "org.kie.jbpmconsole.dd", supportedTypes = { DDResourceType.class }, priority = 101)
 public class DeploymentDescriptorEditorPresenter extends KieEditor {
 
-    @Inject
     private Caller<DDEditorService> ddEditorService;
 
     private DeploymentDescriptorView view;
@@ -63,13 +64,17 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
 
     private DeploymentDescriptorModel model;
 
+    private TranslationService translationService;
+
     @Inject
-    public DeploymentDescriptorEditorPresenter( final DeploymentDescriptorView baseView ) {
+    public DeploymentDescriptorEditorPresenter( final DeploymentDescriptorView baseView,
+                                                final Caller<DDEditorService> ddEditorService ,
+                                                TranslationService translationService) {
         super( baseView );
         view = baseView;
+        this.translationService = translationService;
+        this.ddEditorService = ddEditorService;
     }
-
-
 
     //This is called after the View's content has been loaded
     public void onAfterViewLoaded() {
@@ -80,6 +85,11 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
     public void onStartup( final ObservablePath path, final PlaceRequest place ) {
         ddEditorService.call().createIfNotExists(path);
         init( path, place, type );
+        fillPersistenceModes();
+        fillAuditModes();
+        fillRuntimeStrategies(translationService);
+        view.setup();
+
     }
 
     protected void loadContent() {
@@ -171,6 +181,24 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
         } ).toSource( versionRecordManager.getCurrentPath(), model );
     }
 
+    protected void fillRuntimeStrategies(TranslationService translationService ){
+        ClientRuntimeStrategy[] clientRuntimeStrategies = ClientRuntimeStrategy.values();
+        for (ClientRuntimeStrategy clientRunTimeStrategy : clientRuntimeStrategies) {
+            view.addRuntimeStrategy(clientRunTimeStrategy.getValue(translationService),clientRunTimeStrategy.name());
+        }
+    }
+
+    protected void fillPersistenceModes( ){
+        view.addPersistenceMode( "NONE", "NONE" );
+        view.addPersistenceMode( "JPA", "JPA" );
+    }
+
+    protected void fillAuditModes( ){
+        view.addAuditMode( "NONE", "NONE" );
+        view.addAuditMode( "JPA", "JPA" );
+        view.addAuditMode("JMS", "JMS");
+    }
+
     protected void updateSource(String source) {
         view.setSource( source );
     }
@@ -190,6 +218,7 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
         view.updateContent(model);
         return super.mayClose( model.hashCode() );
     }
+
 
     @WorkbenchPartTitleDecoration
     public IsWidget getTitle() {
@@ -218,4 +247,5 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
                 .addNewTopLevelMenu(versionRecordManager.buildMenu())
                 .build();
     }
+
 }

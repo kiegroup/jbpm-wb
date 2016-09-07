@@ -23,6 +23,8 @@ import org.kie.workbench.common.widgets.metadata.client.KieEditorView;
 
 public interface DeploymentDescriptorView extends KieEditorView, IsWidget {
 
+    void setup();
+
     void setContent(final DeploymentDescriptorModel deploymentDescriptorModel);
 
     void updateContent(final DeploymentDescriptorModel deploymentDescriptorModel);
@@ -32,4 +34,11 @@ public interface DeploymentDescriptorView extends KieEditorView, IsWidget {
     Widget getSourceEditor();
 
     void setSource( String source );
+
+    void addRuntimeStrategy(String runtimeStrategyTitle, String runmimeStrategyValue);
+
+    void addPersistenceMode(String persistenceModeTitle, String persistenceModeValue);
+
+    void addAuditMode(String auditModeTitle, String auditModeValue);
+
 }

@@ -207,4 +207,17 @@ public class DeploymentDescriptorViewTest {
                 ( jarVersion < 7.0d && ! limitSerializationClasses )
                 || (jarVersion >= 7.0d && limitSerializationClasses ) );
     }
+
+    @Test
+    public void runtimeStrategiesSetting() throws Exception {
+        String itemName = "item1_name";
+        String itemValue = "item1_value";
+
+        view.addPersistenceMode(itemName,itemValue);
+        view.addAuditMode(itemName,itemValue);
+        view.addRuntimeStrategy(itemName,itemValue);
+
+        verify(listBox,times(3)).addItem(itemName,itemValue);
+    }
+
 }
