@@ -16,6 +16,7 @@
 
 package org.jbpm.console.ng.bd.integration;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,6 +29,7 @@ import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.dashbuilder.dataset.def.SQLDataSetDef;
 import org.jbpm.console.ng.ga.events.KieServerDataSetRegistered;
+import org.kie.remote.common.rest.KieRemoteHttpRequestException;
 import org.kie.server.api.model.definition.QueryDefinition;
 import org.kie.server.client.KieServicesException;
 import org.kie.server.client.QueryServicesClient;
@@ -42,20 +44,24 @@ public class KieServerDataSetManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KieServerDataSetManager.class);
 
-    @Inject
     private DataSetDefRegistry dataSetDefRegistry;
 
-    @Inject
     private KieServerIntegration kieServerIntegration;
 
-    @Inject
     private Event<KieServerDataSetRegistered> event;
+
+    @Inject
+    public KieServerDataSetManager(DataSetDefRegistry dataSetDefRegistry, KieServerIntegration kieServerIntegration, Event<KieServerDataSetRegistered> event) {
+        this.dataSetDefRegistry = dataSetDefRegistry;
+        this.kieServerIntegration = kieServerIntegration;
+        this.event = event;
+    }
 
     public void registerInKieServer(@Observes final ServerInstanceConnected serverInstanceConnected) {
         final ServerInstance serverInstance = serverInstanceConnected.getServerInstance();
         final String serverInstanceId = serverInstance.getServerInstanceId();
         final String serverTemplateId = serverInstance.getServerTemplateId();
-        LOGGER.debug("Server instance '{}' connected, registering data sets", serverInstanceId);
+        LOGGER.info("Server instance '{}' connected, registering data sets", serverInstanceId);
 
         final List<DataSetDef> dataSetDefs = dataSetDefRegistry.getDataSetDefs(false);
 
@@ -67,11 +73,7 @@ public class KieServerDataSetManager {
 
         SimpleAsyncExecutorService.getDefaultInstance().execute(() -> {
             try {
-                long waitLimit = 5 * 60 * 1000;   // default 5 min
-                long elapsed = 0;
-
-                LOGGER.info("Registering data set definitions on connected server instance '{}'", serverInstanceId);
-                final QueryServicesClient queryClient = kieServerIntegration.getAdminServerClient(serverTemplateId).getServicesClient(QueryServicesClient.class);
+                LOGGER.debug("Registering data set definitions on connected server instance '{}'", serverInstanceId);
 
                 final Set<QueryDefinition> queryDefinitions = dataSetDefs.stream()
                                         .filter(dataSetDef -> dataSetDef.getProvider().getName().equals("REMOTE"))
@@ -85,27 +87,44 @@ public class KieServerDataSetManager {
                                                                 .build()
                                         ).collect(Collectors.toSet());
 
-                while (elapsed < waitLimit) {
-                    try {
-                        queryDefinitions.forEach(definition -> {
-                            queryClient.replaceQuery(definition);
-                            LOGGER.info("Query definition {} (type {}) successfully registered on kie server '{}'", definition.getName(), definition.getTarget(), serverInstanceId);
-                        });
+                registerQueriesWithRetry(serverTemplateId, serverInstanceId, queryDefinitions);
 
-                        event.fire(new KieServerDataSetRegistered(serverInstanceId, serverTemplateId));
-                        return;
-                    } catch (KieServicesException e) {
-                        // unable to register, might still be booting
-                        Thread.sleep(500);
-                        elapsed += 500;
-                        LOGGER.debug("Cannot reach KIE Server, elapsed time while waiting '{}', max time '{}'", elapsed, waitLimit);
-                    }
-                }
                 LOGGER.warn("Timeout while trying to register query definition on '{}'", serverInstanceId);
             } catch (Exception e) {
                 LOGGER.warn("Unable to register query definition on '{}' due to {}", serverInstanceId, e.getMessage(), e);
             }
         });
+    }
+
+    protected void registerQueriesWithRetry(String serverTemplateId, String serverInstanceId, Set<QueryDefinition> queryDefinitions) throws Exception{
+        long waitLimit = 5 * 60 * 1000;   // default 5 min
+        long elapsed = 0;
+
+        QueryServicesClient queryClient = kieServerIntegration.getAdminServerClient(serverTemplateId).getServicesClient(QueryServicesClient.class);
+
+        while (elapsed < waitLimit) {
+            try {
+                Iterator<QueryDefinition> definitionIt = queryDefinitions.iterator();
+
+                while (definitionIt.hasNext()) {
+                    QueryDefinition definition = definitionIt.next();
+                    queryClient.replaceQuery(definition);
+                    LOGGER.info("Query definition {} (type {}) successfully registered on kie server '{}'", definition.getName(), definition.getTarget(), serverInstanceId);
+                    // remove successfully stored definition to avoid duplicated reads in case of intermediate error
+                    definitionIt.remove();
+                }
+
+                event.fire(new KieServerDataSetRegistered(serverInstanceId, serverTemplateId));
+                return;
+            } catch (KieServicesException | KieRemoteHttpRequestException e) {
+                // unable to register, might still be booting
+                Thread.sleep(500);
+                elapsed += 500;
+                // get admin client with forced check of endpoints as they might have been banned (marked as failed)
+                queryClient = kieServerIntegration.getAdminServerClientCheckEndpoints(serverTemplateId).getServicesClient(QueryServicesClient.class);
+                LOGGER.debug("Cannot reach KIE Server, elapsed time while waiting '{}', max time '{}' error {}", elapsed, waitLimit, e.getMessage());
+            }
+        }
     }
 
 }
