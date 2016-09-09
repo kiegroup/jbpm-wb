@@ -50,7 +50,6 @@ import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.paging.PageResponse;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -141,21 +140,9 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
         processRuntimeDataService.call(new RemoteCallback<List<ProcessSummary>>() {
             @Override
-            public void callback( List<ProcessSummary> processDefsSums ) {
-
-                PageResponse<ProcessSummary> response = new PageResponse<ProcessSummary>();
-
-                response.setStartRowIndex(currentFilter.getOffset());
-                response.setTotalRowSize(processDefsSums.size());
-                response.setPageRowList(processDefsSums);
-                response.setTotalRowSizeExact( processDefsSums.isEmpty() );
-                if ( processDefsSums.size() < visibleRange.getLength() ) {
-                    response.setLastPage( true );
-                } else {
-                    response.setLastPage( false );
-                }
-
-                updateDataOnCallback(response);
+            public void callback( final List<ProcessSummary> processDefsSums ) {
+                boolean lastPageExactCount = processDefsSums.size() < visibleRange.getLength();
+                updateDataOnCallback(processDefsSums, visibleRange.getStart(), visibleRange.getStart() + processDefsSums.size(), lastPageExactCount);
             }
         }, new ErrorCallback<Message>() {
             @Override
@@ -166,7 +153,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                 GWT.log( throwable.toString() );
                 return true;
             }
-        } ).getProcessesByFilter(selectedServerTemplate, textSearchStr, currentFilter.getOffset() / currentFilter.getCount(), currentFilter.getCount(),
+        } ).getProcessesByFilter(selectedServerTemplate, textSearchStr, visibleRange.getStart() / visibleRange.getLength(), visibleRange.getLength(),
                 currentFilter.getOrderBy(), currentFilter.isAscending());
     }
 
