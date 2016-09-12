@@ -550,7 +550,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         if (tabSettingsValues != null) {
             tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, constants.Queued());
             tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, constants.FilterQueued());
-            filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_0", tabSettingsValues);
+            filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_1", tabSettingsValues);
         }
 
         tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_2");

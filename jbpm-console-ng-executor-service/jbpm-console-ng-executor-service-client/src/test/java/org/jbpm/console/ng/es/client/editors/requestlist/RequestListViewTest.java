@@ -80,6 +80,14 @@ public class RequestListViewTest {
 
         verify(filterPagedTableMock, times(7)).getMultiGridPreferencesStore();
         verify(filterPagedTableMock, times(7)).saveTabSettings(anyString(), any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_0"), any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_1"), any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_2"), any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_3"), any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_4"), any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_5"), any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_6"), any(HashMap.class));
+
     }
 
     @Test
