@@ -30,7 +30,6 @@ import org.jbpm.console.ng.ht.model.TaskEventSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskService;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 @Dependent
 public class TaskLogsPresenter {
@@ -87,8 +86,7 @@ public class TaskLogsPresenter {
                         String additionalDetail = "UPDATED".equals(tes.getType()) ? tes.getMessage() : tes.getUserId();
                         return timeStamp + ": Task " + tes.getType() + " (" + additionalDetail + ")\n";
                     }
-                },
-                new DefaultErrorCallback()
+                }
         ).getTaskEvents( serverTemplateId, containerId, currentTaskId );
     }
 

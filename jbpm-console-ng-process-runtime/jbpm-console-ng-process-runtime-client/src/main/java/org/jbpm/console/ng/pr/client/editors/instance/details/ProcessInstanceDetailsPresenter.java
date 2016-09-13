@@ -36,7 +36,6 @@ import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceStyleEvent;
 import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 @Dependent
 public class ProcessInstanceDetailsPresenter {
@@ -163,7 +162,7 @@ public class ProcessInstanceDetailsPresenter {
                         processSelected.getStartTime() );
 
             }
-        }, new DefaultErrorCallback() ).getProcessInstance(serverTemplateId, new ProcessInstanceKey(serverTemplateId, Long.parseLong(processId)));
+        } ).getProcessInstance(serverTemplateId, new ProcessInstanceKey(serverTemplateId, Long.parseLong(processId)));
 
 
         processRuntimeDataService.call(new RemoteCallback<List<NodeInstanceSummary>>() {
@@ -176,7 +175,7 @@ public class ProcessInstanceDetailsPresenter {
                 }
                 view.getCurrentActivitiesListBox().setHTML( safeHtmlBuilder.toSafeHtml() );
             }
-        }, new DefaultErrorCallback() ).getProcessInstanceActiveNodes( serverTemplateId, Long.parseLong( processId ) );
+        } ).getProcessInstanceActiveNodes( serverTemplateId, Long.parseLong( processId ) );
     }
 
 }

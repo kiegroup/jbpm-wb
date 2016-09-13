@@ -33,7 +33,6 @@ import org.jbpm.console.ng.ht.model.events.TaskCalendarEvent;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskService;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 @Dependent
 public class TaskDetailsPresenter {
@@ -115,8 +114,7 @@ public class TaskDetailsPresenter {
                     taskRefreshed.fire( new TaskRefreshedEvent( currentTaskId ) );
                     taskCalendarEvent.fire( new TaskCalendarEvent( currentTaskId ) );
                 }
-            }, new DefaultErrorCallback())
-                    .updateTask(currentServerTemplateId, currentContainerId, currentTaskId, priority, taskDescription, dueDate);
+            }).updateTask(currentServerTemplateId, currentContainerId, currentTaskId, priority, taskDescription, dueDate);
 
         }
     }
@@ -144,7 +142,7 @@ public class TaskDetailsPresenter {
                 view.setTaskStatus(details.getStatus());
                 view.setTaskPriority(String.valueOf(details.getPriority()));
             }
-        }, new DefaultErrorCallback()).getTask(currentServerTemplateId, currentContainerId, currentTaskId);
+        }).getTask(currentServerTemplateId, currentContainerId, currentTaskId);
     }
 
     public void setReadOnlyTaskDetail() {

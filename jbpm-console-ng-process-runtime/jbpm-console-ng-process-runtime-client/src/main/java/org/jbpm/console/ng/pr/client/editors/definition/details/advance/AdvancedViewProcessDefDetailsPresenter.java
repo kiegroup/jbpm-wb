@@ -32,7 +32,6 @@ import org.jbpm.console.ng.bd.model.TaskDefSummary;
 import org.jbpm.console.ng.pr.client.editors.definition.details.BaseProcessDefDetailsPresenter;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 
 @Dependent
@@ -193,7 +192,7 @@ public class AdvancedViewProcessDefDetailsPresenter extends
                 }
             }
 
-        }, new DefaultErrorCallback()).getProcessUserTasks(serverTemplateId, deploymentId, processId);
+        } ).getProcessUserTasks(serverTemplateId, deploymentId, processId);
 
     }
 
@@ -224,7 +223,7 @@ public class AdvancedViewProcessDefDetailsPresenter extends
                     view.setProcessAssetPath( null );
                 }
             }
-        }, new DefaultErrorCallback() ).getProcess(serverTemplateId, new ProcessDefinitionKey(serverTemplateId, deploymentId, processId));
+        } ).getProcess(serverTemplateId, new ProcessDefinitionKey(serverTemplateId, deploymentId, processId));
 
     }
 }

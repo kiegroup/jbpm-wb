@@ -33,7 +33,6 @@ import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskService;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 @Dependent
 public class TaskCommentsPresenter {
@@ -83,8 +82,7 @@ public class TaskCommentsPresenter {
                         dataProvider.getList().addAll(comments);
                         view.redrawDataGrid();
                     }
-                },
-                new DefaultErrorCallback()
+                }
         ).getTaskComments(serverTemplateId, containerId, currentTaskId);
     }
 
@@ -104,8 +102,7 @@ public class TaskCommentsPresenter {
                         refreshComments();
                         view.clearCommentInput();
                     }
-                },
-                new DefaultErrorCallback()
+                }
         ).addTaskComment(serverTemplateId, containerId, currentTaskId, text, addedOn);
     }
 
@@ -118,8 +115,7 @@ public class TaskCommentsPresenter {
                         view.clearCommentInput();
                         view.displayNotification(constants.CommentDeleted());
                     }
-                },
-                new DefaultErrorCallback()
+                }
         ).deleteTaskComment(serverTemplateId, containerId, currentTaskId, commentId);
     }
 

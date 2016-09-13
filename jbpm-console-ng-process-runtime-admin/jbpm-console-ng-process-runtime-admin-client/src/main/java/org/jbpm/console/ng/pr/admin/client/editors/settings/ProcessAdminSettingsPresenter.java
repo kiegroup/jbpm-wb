@@ -36,7 +36,6 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 @Dependent
 @WorkbenchScreen(identifier = ProcessAdminSettingsPresenter.SCREEN_ID)
@@ -69,9 +68,7 @@ public class ProcessAdminSettingsPresenter {
                             .transform(s -> s.getId())
                             .toSet();
                     view.addServerTemplates(stId);
-                }
-                , new DefaultErrorCallback())
-                .listServerTemplates();
+                } ).listServerTemplates();
     }
 
     @WorkbenchPartTitle
@@ -89,8 +86,7 @@ public class ProcessAdminSettingsPresenter {
 
         if (summary == null) return;
         instancesAdminServices.call(
-                p -> view.displayNotification(constants.ProcessInstancesSuccessfullyCreated()),
-                new DefaultErrorCallback())
+                p -> view.displayNotification(constants.ProcessInstancesSuccessfullyCreated()))
                 .generateMockInstances(serverTemplateId, summary.getDeploymentId(), summary.getProcessDefId(), null, null, amountOfTasks);
     }
 
@@ -104,8 +100,7 @@ public class ProcessAdminSettingsPresenter {
                         return p.getProcessDefId();
                     }).toSet();
                     view.addProcessList(pid);
-                },
-                new DefaultErrorCallback())
+                })
                 .getProcesses(serverTemplateId, 0, Integer.MAX_VALUE, "", true);
     }
 

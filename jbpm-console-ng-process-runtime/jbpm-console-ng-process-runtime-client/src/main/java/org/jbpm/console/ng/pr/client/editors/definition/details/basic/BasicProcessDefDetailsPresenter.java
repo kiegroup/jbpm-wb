@@ -25,7 +25,6 @@ import org.jbpm.console.ng.bd.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.bd.model.ProcessSummary;
 import org.jbpm.console.ng.pr.client.editors.definition.details.BaseProcessDefDetailsPresenter;
 import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 @Dependent
 public class BasicProcessDefDetailsPresenter extends BaseProcessDefDetailsPresenter {
@@ -69,7 +68,7 @@ public class BasicProcessDefDetailsPresenter extends BaseProcessDefDetailsPresen
                     view.setProcessAssetPath( null );
                 }
             }
-        }, new DefaultErrorCallback() ).getProcess(serverTemplateId, new ProcessDefinitionKey(serverTemplateId, deploymentId, processId));
+        } ).getProcess(serverTemplateId, new ProcessDefinitionKey(serverTemplateId, deploymentId, processId));
 
     }
 
