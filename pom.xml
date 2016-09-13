@@ -46,6 +46,7 @@
     <module>jbpm-console-ng-dashboard</module>
     <module>jbpm-console-ng-generic</module>
     <module>jbpm-console-ng-documents</module>
+    <module>jbpm-console-ng-case-mgmt</module>
     <module>jbpm-console-ng-showcase</module>
   </modules>
 

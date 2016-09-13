@@ -58,8 +58,8 @@
 
 
   <!-- jbpm-wb -->
-  <!--inherits name="org.jbpm.console.ng.cm.JbpmConsoleNGCaseMgmtAPI"/>
-  <inherits name="org.jbpm.console.ng.cm.JbpmConsoleNGCaseMgmtClient"/-->
+  <inherits name="org.jbpm.console.ng.cm.JbpmConsoleNGCaseMgmtAPI"/>
+  <inherits name="org.jbpm.console.ng.cm.JbpmConsoleNGCaseMgmtClient"/>
   <inherits name="org.jbpm.console.ng.bh.JbpmConsoleNGBPMHomeClient"/>
   <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksClient"/>
   <inherits name="org.jbpm.console.ng.ht.forms.JbpmConsoleNGHumanTasksFormsClient"/>

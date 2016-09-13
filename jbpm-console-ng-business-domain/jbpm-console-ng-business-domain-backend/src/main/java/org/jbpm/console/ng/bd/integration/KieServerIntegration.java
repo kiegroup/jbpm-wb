@@ -258,6 +258,7 @@ public class KieServerIntegration {
             if (serverTemplate.getCapabilities().contains(Capability.PROCESS.name())) {
                 mappedCapabilities.add(KieServerConstants.CAPABILITY_BPM);
                 mappedCapabilities.add(KieServerConstants.CAPABILITY_BPM_UI);
+                mappedCapabilities.add(KieServerConstants.CAPABILITY_CASE);
             }
             if (serverTemplate.getCapabilities().contains(Capability.RULE.name())) {
                 mappedCapabilities.add(KieServerConstants.CAPABILITY_BRM);
