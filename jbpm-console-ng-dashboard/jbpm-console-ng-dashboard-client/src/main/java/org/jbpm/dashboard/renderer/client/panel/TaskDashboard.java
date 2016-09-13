@@ -49,7 +49,6 @@ import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
@@ -355,8 +354,7 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
         processRuntimeDataService.call( (ProcessInstanceSummary p) -> {
                     openTaskDetailsScreen();
                     taskSelectionEvent.fire(new TaskSelectionEvent(serverTemplateId, p.getDeploymentId(), taskId, taskName, false, true));
-                }
-        , new DefaultErrorCallback()).getProcessInstance(serverTemplateId, new ProcessInstanceKey(serverTemplateId, processInstanceId));
+                }).getProcessInstance(serverTemplateId, new ProcessInstanceKey(serverTemplateId, processInstanceId));
     }
 
     public void showDashboard() {

@@ -34,7 +34,6 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.split.WorkbenchSplitLayoutPanel;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
@@ -95,8 +94,7 @@ public class DocumentDetailsPresenter {
                         view.getDocumentIdText().setText(content.getId());
                         view.getDocumentNameText().setText(content.getName());
                     }
-                },
-                new DefaultErrorCallback()
+                }
         ).getDocument(documentId);
     }
 

@@ -31,7 +31,6 @@ import org.jbpm.console.ng.pr.client.util.LogUtils.LogOrder;
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogType;
 import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 
 @Dependent
@@ -82,7 +81,7 @@ public class RuntimeLogPresenter {
 
                     view.setLogs( logsLine );
                 }
-            }, new DefaultErrorCallback() ).getRuntimeLogs(currentServerTemplateId, currentProcessInstanceId);
+            } ).getRuntimeLogs(currentServerTemplateId, currentProcessInstanceId);
         } else {
             processRuntimeDataService.call(new RemoteCallback<List<RuntimeLogSummary>>() {
                 @Override
@@ -98,7 +97,7 @@ public class RuntimeLogPresenter {
 
                     view.setLogs( logsLine );
                 }
-            }, new DefaultErrorCallback() ).getBusinessLogs(currentServerTemplateId, currentProcessName, currentProcessInstanceId );
+            } ).getBusinessLogs(currentServerTemplateId, currentProcessName, currentProcessInstanceId );
         }
     }
 

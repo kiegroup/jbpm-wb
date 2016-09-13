@@ -29,7 +29,6 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.lifecycle.OnOpen;
 
 @Dependent
@@ -77,8 +76,7 @@ public class TaskAdminSettingsPresenter {
                     public void callback(Long taskId) {
                         view.displayNotification(constants.TaskSuccessfullyCreated());
                     }
-                },
-                new DefaultErrorCallback()
+                }
         ).generateMockTasks(userName, amountOfTasks);
     }
 

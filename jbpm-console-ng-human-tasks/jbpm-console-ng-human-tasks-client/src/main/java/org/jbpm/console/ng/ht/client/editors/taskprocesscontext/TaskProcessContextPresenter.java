@@ -36,7 +36,6 @@ import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
@@ -114,8 +113,7 @@ public class TaskProcessContextPresenter {
                                           summary.getState())
                                   );
                               }
-                          },
-                new DefaultErrorCallback()
+                          }
         ).getProcessInstance(serverTemplateId, new ProcessInstanceKey(serverTemplateId, currentProcessInstanceId));
     }
 
@@ -136,8 +134,7 @@ public class TaskProcessContextPresenter {
                                       view.enablePIDetailsButton(true);
                                       view.enablePIDetailsButton(enableProcessInstanceDetails);
                                   }
-                              },
-                new DefaultErrorCallback()
+                              }
         ).getTask(serverTemplateId, containerId, currentTaskId);
     }
 

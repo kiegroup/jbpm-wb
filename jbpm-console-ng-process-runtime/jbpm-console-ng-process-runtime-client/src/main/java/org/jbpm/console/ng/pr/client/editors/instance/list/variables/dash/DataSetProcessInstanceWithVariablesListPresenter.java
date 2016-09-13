@@ -65,7 +65,6 @@ import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.uberfire.lifecycle.OnOpen;
@@ -349,7 +348,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
             public void callback( Void v ) {
                 refreshGrid();
             }
-        }, new DefaultErrorCallback() ).abortProcessInstance( selectedServerTemplate, containerId, processInstanceId );
+        } ).abortProcessInstance( selectedServerTemplate, containerId, processInstanceId );
     }
 
     public void abortProcessInstance( List<String> containers, List<Long> processInstanceIds ) {
@@ -358,7 +357,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
             public void callback( Void v ) {
                 refreshGrid();
             }
-        }, new DefaultErrorCallback() ).abortProcessInstances( selectedServerTemplate,containers, processInstanceIds );
+        } ).abortProcessInstances( selectedServerTemplate,containers, processInstanceIds );
     }
 
     public void bulkSignal( List<ProcessInstanceSummary> processInstances ) {

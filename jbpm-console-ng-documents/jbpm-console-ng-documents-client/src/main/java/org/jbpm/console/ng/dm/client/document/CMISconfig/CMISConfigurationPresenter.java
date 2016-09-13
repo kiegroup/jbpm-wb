@@ -35,7 +35,6 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.split.WorkbenchSplitLayoutPanel;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent.NotificationType;
@@ -132,8 +131,7 @@ public class CMISConfigurationPresenter {
                         view.getUserTextBox().setText(parameters.get(SessionParameter.USER));
                         view.getPasswordTextBox().setText(parameters.get(SessionParameter.PASSWORD));
                     }
-                },
-                new DefaultErrorCallback()
+                }
         ).getConfigurationParameters();
     }
 
@@ -168,8 +166,7 @@ public class CMISConfigurationPresenter {
                     public void callback(Long taskId) {
                         view.displayNotification("Updated", NotificationType.SUCCESS);
                     }
-                },
-                new DefaultErrorCallback()
+                }
         ).setConfigurationParameters(parameters);
     }
 
@@ -184,8 +181,7 @@ public class CMISConfigurationPresenter {
                             view.displayNotification("Connection Failed", NotificationType.ERROR);
                         }
                     }
-                },
-                new DefaultErrorCallback()
+                }
         ).testConnection();
     }
 

@@ -42,7 +42,6 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
@@ -194,7 +193,7 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
                     processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
 
                 }
-            }, new DefaultErrorCallback()).abortProcessInstance(serverTemplateId, deploymentId, processInstanceId);
+            } ).abortProcessInstance(serverTemplateId, deploymentId, processInstanceId);
         }
     }
 

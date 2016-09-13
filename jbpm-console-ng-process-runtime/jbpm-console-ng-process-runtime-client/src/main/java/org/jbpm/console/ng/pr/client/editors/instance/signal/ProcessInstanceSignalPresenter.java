@@ -35,7 +35,6 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
@@ -107,8 +106,7 @@ public class ProcessInstanceSignalPresenter {
                         processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
                         placeManager.closePlace(place);
                     }
-                },
-                new DefaultErrorCallback()
+                }
         ).signalProcessInstances( serverTemplateId, Arrays.asList(deploymentId), processInstanceIds, view.getSignalRefText(), view.getEventText());
     }
 
@@ -137,8 +135,7 @@ public class ProcessInstanceSignalPresenter {
                         view.setAvailableSignals(signals);
 
                     }
-                },
-                new DefaultErrorCallback()
+                }
         ).getAvailableSignals(serverTemplateId, deploymentId[0], processInstanceId);
     }
 }

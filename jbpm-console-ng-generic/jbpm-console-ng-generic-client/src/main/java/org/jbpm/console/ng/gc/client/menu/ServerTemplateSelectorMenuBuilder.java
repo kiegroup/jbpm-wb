@@ -33,7 +33,6 @@ import org.kie.server.controller.api.model.events.ServerTemplateDeleted;
 import org.kie.server.controller.api.model.events.ServerTemplateUpdated;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
@@ -85,7 +84,7 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
 
             view.setVisible(ids.size() > 1);
 
-        }, new DefaultErrorCallback()).listServerTemplates();
+        }).listServerTemplates();
     }
 
     @Override

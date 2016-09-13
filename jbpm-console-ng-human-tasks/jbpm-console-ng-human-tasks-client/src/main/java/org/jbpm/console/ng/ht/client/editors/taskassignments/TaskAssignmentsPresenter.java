@@ -127,7 +127,7 @@ public class TaskAssignmentsPresenter {
                         view.enableUserOrGroupInput(response.isDelegationAllowed());
                     }
                 }
-            }, new DefaultErrorCallback()).getTaskAssignmentDetails(serverTemplateId, containerId, currentTaskId);
+            }).getTaskAssignmentDetails(serverTemplateId, containerId, currentTaskId);
 
         }
     }

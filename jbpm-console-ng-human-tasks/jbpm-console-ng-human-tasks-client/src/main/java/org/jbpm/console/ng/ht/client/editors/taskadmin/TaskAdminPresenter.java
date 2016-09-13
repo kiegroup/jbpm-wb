@@ -35,7 +35,6 @@ import org.jbpm.console.ng.ht.model.TaskAssignmentSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskService;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
 @Dependent
 public class TaskAdminPresenter {
@@ -94,8 +93,7 @@ public class TaskAdminPresenter {
                         refreshTaskPotentialOwners();
                     }
 
-                },
-                new DefaultErrorCallback()
+                }
         ).delegate(serverTemplateId, containerId, currentTaskId, entity);
     }
 
@@ -106,8 +104,7 @@ public class TaskAdminPresenter {
                     public void callback(TaskAssignmentSummary ts) {
                         view.displayNotification(constants.ReminderSentTo(identity.getIdentifier()));
                     }
-                },
-                new DefaultErrorCallback()
+                }
         ).executeReminderForTask(serverTemplateId, containerId, currentTaskId, identity.getIdentifier());
     }
 
@@ -141,8 +138,7 @@ public class TaskAdminPresenter {
                             view.getActualOwnerPanel().setText(ts.getActualOwner());
                         }
                     }
-                },
-                new DefaultErrorCallback()
+                }
         ).getTaskAssignmentDetails(serverTemplateId, containerId, currentTaskId);
     }
 

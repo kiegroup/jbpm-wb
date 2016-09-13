@@ -59,7 +59,6 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.Menus;
@@ -378,9 +377,7 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
                         view.displayNotification(constants.TaskReleased(String.valueOf(task.getTaskId())));
                         refreshGrid();
                     }
-                },
-                new DefaultErrorCallback()
-        ).releaseTask(selectedServerTemplate, task.getDeploymentId(), task.getTaskId());
+                }).releaseTask(selectedServerTemplate, task.getDeploymentId(), task.getTaskId());
         taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, task.getDeploymentId(),task.getTaskId(), task.getTaskName() ) );
     }
 
@@ -392,8 +389,7 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
                         view.displayNotification(constants.TaskClaimed(String.valueOf(task.getTaskId())));
                         refreshGrid();
                     }
-                },
-                new DefaultErrorCallback()
+                }
         ).claimTask(selectedServerTemplate, task.getDeploymentId(), task.getTaskId());
         taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, task.getDeploymentId(),task.getTaskId(), task.getTaskName() ) );
     }
