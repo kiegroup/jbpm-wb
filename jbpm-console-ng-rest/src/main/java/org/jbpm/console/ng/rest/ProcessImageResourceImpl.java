@@ -123,7 +123,7 @@ public class ProcessImageResourceImpl {
         }
 
         // get SVG String
-        String imageSVGString = getProcesImageSVGFromDeployment(deploymentId, procDef);
+        String imageSVGString = getProcesImageSVGFromDeployment(procDef.getDeploymentId(), procDef);
         if( imageSVGString == null ) {
             logger.warn("Could not find SVG image file for process '" + processId + "', returning status 412 (PRECONDITION FAILED). Has the 'storesvgonsave' option in the jbpm.xml file in the war been set to true?");
             return Response.status(Response.Status.PRECONDITION_FAILED).build();
@@ -148,7 +148,7 @@ public class ProcessImageResourceImpl {
         }
 
         // get SVG String
-        String imageSVGString = getProcesImageSVGFromDeployment(deploymentId, procDef);
+        String imageSVGString = getProcesImageSVGFromDeployment(procDef.getDeploymentId(), procDef);
         if( imageSVGString == null ) {
             return Response.status(Response.Status.PRECONDITION_FAILED).build();
         }
