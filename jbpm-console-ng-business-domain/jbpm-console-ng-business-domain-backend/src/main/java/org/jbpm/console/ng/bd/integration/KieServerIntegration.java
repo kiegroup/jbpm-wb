@@ -98,6 +98,15 @@ public class KieServerIntegration {
         return adminClients.get(serverTemplateId);
     }
 
+    public KieServicesClient getAdminServerClientCheckEndpoints(String serverTemplateId) {
+        KieServicesClient adminClient = adminClients.get(serverTemplateId);
+        if (adminClient != null) {
+            LoadBalancer loadBalancer = ((AbstractKieServicesClientImpl) adminClient).getLoadBalancer();
+            loadBalancer.checkFailedEndpoints();
+        }
+        return adminClient;
+    }
+
     protected void indexServerInstances(ServerTemplate serverTemplate) {
         for (ServerInstanceKey serverInstanceKey : serverTemplate.getServerInstanceKeys()) {
             serverInstancesById.put(serverInstanceKey.getServerInstanceId(), serverInstanceKey);
