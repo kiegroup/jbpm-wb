@@ -16,8 +16,11 @@
 
 package org.jbpm.console.ng.cm.model;
 
+import java.util.Date;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.console.ng.ga.model.GenericSummary;
+import org.kie.api.runtime.process.ProcessInstance;
 
 @Portable
 public class CaseInstanceSummary extends GenericSummary {
@@ -25,6 +28,9 @@ public class CaseInstanceSummary extends GenericSummary {
     private String description;
     private Integer status;
     private String containerId;
+    private String owner;
+    private Date startedAt;
+    private Date completedAt;
 
     public CaseInstanceSummary() {
     }
@@ -68,16 +74,63 @@ public class CaseInstanceSummary extends GenericSummary {
         this.containerId = containerId;
     }
 
+    public String getStatusString(){
+        if(status == null){
+            return "";
+        }
+        switch (status){
+            case ProcessInstance.STATE_PENDING:
+                return "Pending";
+            case ProcessInstance.STATE_ACTIVE:
+                return "Active";
+            case ProcessInstance.STATE_COMPLETED:
+                return "Completed";
+            case ProcessInstance.STATE_ABORTED:
+                return "Aborted";
+            case ProcessInstance.STATE_SUSPENDED:
+                return "Suspended";
+            default:
+                return "";
+        }
+    }
+
     public Boolean isActive() {
         return status == 1;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(final String owner) {
+        this.owner = owner;
+    }
+
+    public Date getStartedAt() {
+        return startedAt;
+    }
+
+    public void setStartedAt(final Date startedAt) {
+        this.startedAt = startedAt;
+    }
+
+    public Date getCompletedAt() {
+        return completedAt;
+    }
+
+    public void setCompletedAt(final Date completedAt) {
+        this.completedAt = completedAt;
     }
 
     @Override
     public String toString() {
         return "CaseInstanceSummary{" +
                 "description='" + description + '\'' +
-                ", status='" + status + '\'' +
+                ", status=" + status +
                 ", containerId='" + containerId + '\'' +
+                ", owner='" + owner + '\'' +
+                ", startedAt=" + startedAt +
+                ", completedAt=" + completedAt +
                 "} " + super.toString();
     }
 

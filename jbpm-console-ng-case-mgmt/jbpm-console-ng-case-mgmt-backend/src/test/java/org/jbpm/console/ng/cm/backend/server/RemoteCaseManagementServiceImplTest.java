@@ -37,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static java.lang.String.format;
+import static org.jbpm.console.ng.cm.backend.server.CaseInstanceMapperTest.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -119,10 +120,7 @@ public class RemoteCaseManagementServiceImplTest {
         assertNotNull(instances);
         assertEquals(1, instances.size());
         final CaseInstanceSummary caseInstanceSummary = instances.get(0);
-        assertEquals(instance.getCaseDescription(), caseInstanceSummary.getDescription());
-        assertEquals(instance.getCaseId(), caseInstanceSummary.getId());
-        assertEquals(instance.getCaseStatus(), caseInstanceSummary.getStatus());
-        assertEquals(instance.getContainerId(), caseInstanceSummary.getContainerId());
+        assertCaseInstance(instance, caseInstanceSummary);
         assertTrue(caseInstanceSummary.isActive());
     }
 
@@ -154,6 +152,27 @@ public class RemoteCaseManagementServiceImplTest {
         service.destroyCaseInstance("server", container, caseId);
 
         verify(caseServicesClient).destroyCaseInstance(container, caseId);
+    }
+
+    @Test
+    public void testGetCaseInstanceNull() throws Exception {
+        final CaseInstanceSummary cis = service.getCaseInstance("server", "container", "CASE-1");
+
+        assertNull(cis);
+    }
+
+    @Test
+    public void testGetCaseInstance() throws Exception {
+        final CaseInstance ci = new CaseInstance();
+        ci.setCaseDescription("New case");
+        ci.setCaseId("CASE-1");
+        ci.setCaseStatus(1);
+        ci.setContainerId("org.jbpm");
+        when(caseServicesClient.getCaseInstance(ci.getContainerId(), ci.getCaseId(), true, true, true, true)).thenReturn(ci);
+
+        final CaseInstanceSummary cis = service.getCaseInstance("server", ci.getContainerId(), ci.getCaseId());
+
+        assertCaseInstance(ci, cis);
     }
 
 }

@@ -31,20 +31,20 @@ import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.cm.client.resources.i18n.Constants;
 import org.uberfire.ext.widgets.common.client.common.StyleHelper;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 
 import static com.google.common.base.Strings.*;
+import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.*;
 
 @Dependent
 @Templated
 public class NewCaseInstanceViewImpl extends Composite implements NewCaseInstancePresenter.NewCaseInstanceView {
 
-    private final Constants constants = Constants.INSTANCE;
     private final BaseModal modal = GWT.create(BaseModal.class);
 
     @DataField("definition-name-group")
@@ -61,24 +61,26 @@ public class NewCaseInstanceViewImpl extends Composite implements NewCaseInstanc
     @DataField("definition-name-label")
     FormLabel caseDefinitionNameLabel;
 
+    @Inject
+    private TranslationService translationService;
+
     private NewCaseInstancePresenter presenter;
 
     @Override
     public void init(final NewCaseInstancePresenter presenter) {
         this.presenter = presenter;
 
-        this.modal.setTitle(constants.NewCaseInstance());
+        this.modal.setTitle(translationService.format(NEW_CASE_INSTANCE));
         this.modal.setBody(this);
         final GenericModalFooter footer = GWT.create(GenericModalFooter.class);
         footer.addButton(
-                Constants.INSTANCE.Create(),
+                translationService.format(CREATE),
                 () -> okButton(),
                 IconType.PLUS,
                 ButtonType.PRIMARY
         );
         this.modal.add(footer);
 
-        caseDefinitionNameLabel.setText(constants.CaseDefinition());
         caseDefinitionNameLabel.setShowRequiredIndicator(true);
     }
 
@@ -127,7 +129,7 @@ public class NewCaseInstanceViewImpl extends Composite implements NewCaseInstanc
 
         if (isNullOrEmpty(caseTemplatesList.getValue())) {
             caseTemplatesList.setFocus(true);
-            definitionNameHelp.setText(constants.PleaseSelectACaseDefinition());
+            definitionNameHelp.setText(translationService.format(PLEASE_SELECT_CASE_DEFINITION));
             setCaseDefinitionNameGroupStyle(ValidationState.ERROR);
             return false;
         } else {

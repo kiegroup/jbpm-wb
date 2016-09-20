@@ -1,0 +1,154 @@
+/*
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.jbpm.console.ng.cm.client.overview;
+
+import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
+import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jbpm.console.ng.cm.client.AbstractCaseInstancePresenter;
+import org.jbpm.console.ng.cm.client.details.CaseDetailsPresenter;
+import org.jbpm.console.ng.cm.client.events.CaseCancelEvent;
+import org.jbpm.console.ng.cm.client.events.CaseDestroyEvent;
+import org.jbpm.console.ng.cm.client.events.CaseRefreshEvent;
+import org.jbpm.console.ng.cm.client.perspectives.CaseInstanceListPerspective;
+import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
+import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchPartView;
+import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.UberView;
+import org.uberfire.lifecycle.OnOpen;
+
+import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.*;
+
+@Dependent
+@WorkbenchScreen(identifier = CaseOverviewPresenter.SCREEN_ID)
+public class CaseOverviewPresenter extends AbstractCaseInstancePresenter {
+
+    public static final String SCREEN_ID = "Case Overview";
+
+    @Inject
+    PlaceManager placeManager;
+
+    @Inject
+    private CaseOverviewView view;
+
+    @Inject
+    private TranslationService translationService;
+
+    private Event<CaseCancelEvent> caseCancelEvent;
+
+    private Event<CaseDestroyEvent> caseDestroyEvent;
+
+    private Event<CaseRefreshEvent> caseRefreshEvent;
+
+    @PostConstruct
+    public void init() {
+        view.init(this);
+    }
+
+    @WorkbenchPartView
+    public UberView<CaseOverviewPresenter> getView() {
+        return view;
+    }
+
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return translationService.format(CASE_OVERVIEW);
+    }
+
+    @OnOpen
+    public void onOpen() {
+        view.addCaseDetails(CaseDetailsPresenter.SCREEN_ID, place.getParameters());
+    }
+
+    protected void refreshCase() {
+        caseRefreshEvent.fire(new CaseRefreshEvent(caseId));
+    }
+
+    @Override
+    protected void loadCaseInstance() {
+        view.setCaseTitle("");
+        view.setCaseId("");
+        if (caseId == null) {
+            return;
+        }
+        caseService.call((CaseInstanceSummary cis) -> {
+            view.setCaseTitle(cis.getDescription());
+            view.setCaseId(cis.getCaseId());
+        }).getCaseInstance(serverTemplateId, containerId, caseId);
+    }
+
+    protected void cancelCaseInstance() {
+        caseService.call(
+                e -> caseCancelEvent.fire(new CaseCancelEvent(caseId))
+        ).cancelCaseInstance(serverTemplateId, containerId, caseId);
+    }
+
+    protected void destroyCaseInstance() {
+        caseService.call(
+                e -> caseDestroyEvent.fire(new CaseDestroyEvent(caseId))
+        ).destroyCaseInstance(serverTemplateId, containerId, caseId);
+    }
+
+    protected void backToList() {
+        placeManager.goTo(CaseInstanceListPerspective.PERSPECTIVE_ID);
+    }
+
+    @Inject
+    public void setCaseCancelEvent(final Event<CaseCancelEvent> caseCancelEvent) {
+        this.caseCancelEvent = caseCancelEvent;
+    }
+
+    @Inject
+    public void setCaseDestroyEvent(final Event<CaseDestroyEvent> caseDestroyEvent) {
+        this.caseDestroyEvent = caseDestroyEvent;
+    }
+
+    @Inject
+    public void setCaseRefreshEvent(final Event<CaseRefreshEvent> caseRefreshEvent) {
+        this.caseRefreshEvent = caseRefreshEvent;
+    }
+
+    public interface CaseOverviewView extends UberView<CaseOverviewPresenter> {
+
+        void setCaseTitle(String title);
+
+        void setCaseId(String caseId);
+
+        void addCaseDetails(String placeId, Map<String, String> properties);
+
+        void addCaseStages(String placeId, Map<String, String> properties);
+
+        void addCaseActions(String placeId, Map<String, String> properties);
+
+        void addCaseComments(String placeId, Map<String, String> properties);
+
+        void addCaseFiles(String placeId, Map<String, String> properties);
+
+        void addCaseRoles(String placeId, Map<String, String> properties);
+
+        void addCaseMilestones(String placeId, Map<String, String> properties);
+
+        void addCaseActivities(String placeId, Map<String, String> properties);
+
+    }
+
+}

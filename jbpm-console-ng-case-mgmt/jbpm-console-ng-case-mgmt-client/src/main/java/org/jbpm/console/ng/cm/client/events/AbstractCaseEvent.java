@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.cm.model.events;
+package org.jbpm.console.ng.cm.client.events;
 
 public abstract class AbstractCaseEvent {
 
@@ -53,4 +53,10 @@ public abstract class AbstractCaseEvent {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "AbstractCaseEvent{" +
+                "caseId='" + caseId + '\'' +
+                '}';
+    }
 }

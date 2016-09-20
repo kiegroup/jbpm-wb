@@ -21,9 +21,10 @@ import java.util.Arrays;
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.console.ng.cm.client.overview.CaseOverviewPresenter;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
-import org.jbpm.console.ng.cm.model.events.CaseCancelEvent;
-import org.jbpm.console.ng.cm.model.events.CaseDestroyEvent;
+import org.jbpm.console.ng.cm.client.events.CaseCancelEvent;
+import org.jbpm.console.ng.cm.client.events.CaseDestroyEvent;
 import org.jbpm.console.ng.cm.service.CaseManagementService;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.menu.ServerTemplateSelectorMenuBuilder;
@@ -33,8 +34,10 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -45,7 +48,7 @@ public class CaseInstanceListPresenterTest {
     @Mock
     CaseManagementService caseManagementService;
 
-    Caller<CaseManagementService> casesService;
+    Caller<CaseManagementService> caseService;
 
     @Mock
     ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
@@ -62,13 +65,16 @@ public class CaseInstanceListPresenterTest {
     @Mock
     EventSourceMock<CaseDestroyEvent> caseDestroyEvent;
 
+    @Mock
+    PlaceManager placeManager;
+
     @InjectMocks
     CaseInstanceListPresenter presenter;
 
     @Before
     public void init() {
-        casesService = new CallerMock<>(caseManagementService);
-        presenter.setCasesService(casesService);
+        caseService = new CallerMock<>(caseManagementService);
+        presenter.setCaseService(caseService);
         presenter.setCaseCancelEvent(caseCancelEvent);
         presenter.setCaseDestroyEvent(caseDestroyEvent);
         when(view.getListGrid()).thenReturn(pagedTable);
@@ -122,4 +128,23 @@ public class CaseInstanceListPresenterTest {
         verify(view).hideBusyIndicator();
     }
 
+    @Test
+    public void testSelectCaseInstance(){
+        final String serverTemplateId = "serverTemplateId";
+        when(serverTemplateSelectorMenuBuilder.getSelectedServerTemplate()).thenReturn(serverTemplateId);
+
+        presenter.onOpen();
+
+        final CaseInstanceSummary cis = new CaseInstanceSummary("caseId", "description", 0, "containerId");
+        presenter.selectCaseInstance(cis);
+
+        final ArgumentCaptor<DefaultPlaceRequest> captor = ArgumentCaptor.forClass(DefaultPlaceRequest.class);
+        verify(placeManager).goTo(captor.capture());
+
+        final DefaultPlaceRequest dpr = captor.getValue();
+        assertNotNull(dpr);
+        assertEquals(serverTemplateId, dpr.getParameter(CaseOverviewPresenter.PARAMETER_SERVER_TEMPLATE_ID, null));
+        assertEquals(cis.getContainerId(), dpr.getParameter(CaseOverviewPresenter.PARAMETER_CONTAINER_ID, null));
+        assertEquals(cis.getCaseId(), dpr.getParameter(CaseOverviewPresenter.PARAMETER_CASE_ID, null));
+    }
 }

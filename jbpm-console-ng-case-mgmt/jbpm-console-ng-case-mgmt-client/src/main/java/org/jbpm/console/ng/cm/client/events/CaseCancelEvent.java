@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.cm.model.events;
+package org.jbpm.console.ng.cm.client.events;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
+public class CaseCancelEvent extends AbstractCaseEvent {
 
-@Portable
-public class CaseCreatedEvent extends AbstractCaseEvent {
-
-    public CaseCreatedEvent() {
+    public CaseCancelEvent(final String caseId) {
+        super(caseId);
     }
 
-    public CaseCreatedEvent(final String caseId) {
-        super(caseId);
+    public CaseCancelEvent() {
     }
 
     @Override
     public String toString() {
-        return "CaseCreatedEvent{" + "caseId=" + getCaseId() + '}';
+        return "CaseCancelEvent{} " + super.toString();
     }
 }
