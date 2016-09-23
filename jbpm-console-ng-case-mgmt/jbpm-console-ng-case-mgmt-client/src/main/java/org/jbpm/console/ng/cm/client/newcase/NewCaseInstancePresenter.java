@@ -27,13 +27,14 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.console.ng.cm.client.resources.i18n.Constants;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
-import org.jbpm.console.ng.cm.model.events.CaseCreatedEvent;
+import org.jbpm.console.ng.cm.client.events.CaseCreatedEvent;
 import org.jbpm.console.ng.cm.service.CaseManagementService;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.workbench.events.NotificationEvent;
+
+import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.*;
 
 @Dependent
 public class NewCaseInstancePresenter {
@@ -48,6 +49,9 @@ public class NewCaseInstancePresenter {
     private Event<NotificationEvent> notification;
 
     private Event<CaseCreatedEvent> newCaseEvent;
+
+    @Inject
+    private TranslationService translationService;
 
     private String serverTemplateId;
 
@@ -74,24 +78,22 @@ public class NewCaseInstancePresenter {
                     Collections.sort(definitionNames);
                     view.addCaseDefinitions(definitionNames);
                     view.show();
-                },
-                new DefaultErrorCallback()
+                }
         ).getCaseDefinitions(serverTemplateId, 0, Integer.MAX_VALUE);
     }
 
     protected void createCaseInstance(final String caseDefinitionName) {
         final CaseDefinitionSummary caseDefinition = caseDefinitions.get(caseDefinitionName);
         if (caseDefinition == null) {
-            notification.fire(new NotificationEvent(Constants.INSTANCE.InvalidCaseDefinition(), NotificationEvent.NotificationType.ERROR));
+            notification.fire(new NotificationEvent(translationService.format(INVALID_CASE_DEFINITION), NotificationEvent.NotificationType.ERROR));
             return;
         }
         caseService.call(
                 (String caseId) -> {
                     view.hide();
-                    notification.fire(new NotificationEvent(Constants.INSTANCE.CaseCreatedWithId(caseId), NotificationEvent.NotificationType.SUCCESS));
+                    notification.fire(new NotificationEvent(translationService.format(CASE_CREATED_WITH_ID, caseId), NotificationEvent.NotificationType.SUCCESS));
                     newCaseEvent.fire(new CaseCreatedEvent(caseId));
-                },
-                new DefaultErrorCallback()
+                }
         ).startCaseInstance(serverTemplateId, caseDefinition.getContainerId(), caseDefinition.getCaseDefinitionId());
     }
 

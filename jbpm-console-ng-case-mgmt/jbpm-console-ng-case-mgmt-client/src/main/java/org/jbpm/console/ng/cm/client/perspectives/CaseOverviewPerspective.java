@@ -18,33 +18,42 @@ package org.jbpm.console.ng.cm.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.jbpm.console.ng.cm.client.list.CaseInstanceListPresenter;
-import org.jbpm.console.ng.gc.client.perspectives.AbstractPerspective;
+import org.jbpm.console.ng.cm.client.overview.CaseOverviewPresenter;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
+import org.uberfire.client.workbench.panels.impl.StaticWorkbenchPanelPresenter;
+import org.uberfire.lifecycle.OnStartup;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 @ApplicationScoped
-@WorkbenchPerspective(identifier = CaseInstanceListPerspective.PERSPECTIVE_ID)
-public class CaseInstanceListPerspective extends AbstractPerspective {
+@WorkbenchPerspective(identifier = CaseOverviewPerspective.PERSPECTIVE_ID)
+public class CaseOverviewPerspective {
 
-    public static final String PERSPECTIVE_ID = "Case List Perspective";
+    public static final String PERSPECTIVE_ID = "Case Overview Perspective";
+
+    private final DefaultPlaceRequest overview = new DefaultPlaceRequest(CaseOverviewPresenter.SCREEN_ID);
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(SimpleWorkbenchPanelPresenter.class.getName());
-        p.setName(PERSPECTIVE_ID);
-        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(CaseInstanceListPresenter.SCREEN_ID)));
-        return p;
+        final PerspectiveDefinition perspectiveDefinition = new PerspectiveDefinitionImpl(StaticWorkbenchPanelPresenter.class.getName());
+        perspectiveDefinition.setName(PERSPECTIVE_ID);
+        perspectiveDefinition.getRoot().addPart(new PartDefinitionImpl(overview));
+        return perspectiveDefinition;
     }
 
-    @Override
-    public String getPerspectiveId() {
-        return PERSPECTIVE_ID;
+    @OnStartup
+    public void onStartup(final PlaceRequest place) {
+        overview.getParameters().clear();
+        for (final String param : place.getParameterNames()) {
+            overview.addParameter(param, place.getParameter(param, null));
+        }
     }
 
+    protected DefaultPlaceRequest getOverview() {
+        return overview;
+    }
 }

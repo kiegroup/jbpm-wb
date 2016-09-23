@@ -16,45 +16,68 @@
 
 package org.jbpm.console.ng.cm.client.resources.i18n;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.i18n.client.Messages;
+import org.jboss.errai.ui.shared.api.annotations.TranslationKey;
 
-public interface Constants extends Messages {
+public interface Constants {
 
-    Constants INSTANCE = GWT.create(Constants.class);
+    @TranslationKey(defaultValue = "")
+    String ID = "Id";
 
-    String Id();
+    @TranslationKey(defaultValue = "")
+    String CASE = "Case";
 
-    String Case();
+    @TranslationKey(defaultValue = "")
+    String DESCRIPTION = "Description";
 
-    String Description();
+    @TranslationKey(defaultValue = "")
+    String STATUS = "Status";
 
-    String Status();
+    @TranslationKey(defaultValue = "")
+    String OWNER = "Owner";
 
-    String Actions();
+    @TranslationKey(defaultValue = "")
+    String STARTED_AT = "StartedAt";
 
-    String NoCasesFound();
+    @TranslationKey(defaultValue = "")
+    String ACTIONS = "Actions";
 
-    String CasesList();
+    @TranslationKey(defaultValue = "")
+    String NO_CASES_FOUND = "NoCasesFound";
 
-    String Create();
+    @TranslationKey(defaultValue = "")
+    String CASES_LIST = "CasesList";
 
-    String NewCaseInstance();
+    @TranslationKey(defaultValue = "")
+    String CREATE = "Create";
 
-    String CaseCreatedWithId(String caseId);
+    @TranslationKey(defaultValue = "")
+    String NEW_CASE_INSTANCE = "NewCaseInstance";
 
-    String Close();
+    @TranslationKey(defaultValue = "")
+    String CASE_CREATED_WITH_ID = "CaseCreatedWithId";
 
-    String SelectServerTemplate();
+    @TranslationKey(defaultValue = "")
+    String CLOSE = "Close";
 
-    String Complete();
+    @TranslationKey(defaultValue = "")
+    String SELECT_SERVER_TEMPLATE = "SelectServerTemplate";
 
-    String Active();
+    @TranslationKey(defaultValue = "")
+    String COMPLETE = "Complete";
 
-    String InvalidCaseDefinition();
+    @TranslationKey(defaultValue = "")
+    String ACTIVE = "Active";
 
-    String CaseDefinition();
+    @TranslationKey(defaultValue = "")
+    String INVALID_CASE_DEFINITION = "InvalidCaseDefinition";
 
-    String PleaseSelectACaseDefinition();
+    @TranslationKey(defaultValue = "")
+    String PLEASE_SELECT_CASE_DEFINITION = "PleaseSelectCaseDefinition";
+
+    @TranslationKey(defaultValue = "")
+    String CASE_OVERVIEW = "CaseOverview";
+
+    @TranslationKey(defaultValue = "")
+    String CASE_DETAILS = "CaseDetails";
 
 }

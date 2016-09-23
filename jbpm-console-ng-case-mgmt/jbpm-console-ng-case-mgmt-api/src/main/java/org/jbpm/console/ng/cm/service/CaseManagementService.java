@@ -31,6 +31,8 @@ public interface CaseManagementService {
 
     List<CaseInstanceSummary> getCaseInstances(String serverTemplateId, Integer page, Integer pageSize);
 
+    CaseInstanceSummary getCaseInstance(String serverTemplateId, String containerId, String caseId);
+
     void cancelCaseInstance(String serverTemplateId, String containerId, String caseId);
 
     void destroyCaseInstance(String serverTemplateId, String containerId, String caseId);

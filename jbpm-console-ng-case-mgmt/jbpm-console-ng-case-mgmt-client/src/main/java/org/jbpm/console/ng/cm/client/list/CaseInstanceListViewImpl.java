@@ -19,6 +19,7 @@ package org.jbpm.console.ng.cm.client.list;
 import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
@@ -33,15 +34,17 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
-import org.jbpm.console.ng.cm.client.resources.i18n.Constants;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.gc.client.util.ButtonActionCell;
+import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import static java.util.Arrays.*;
+import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.*;
 
 @Dependent
 public class CaseInstanceListViewImpl extends AbstractListView<CaseInstanceSummary, CaseInstanceListPresenter>
@@ -49,16 +52,19 @@ public class CaseInstanceListViewImpl extends AbstractListView<CaseInstanceSumma
 
     public static final String COL_ID_CASE_ID = "caseId";
     public static final String COL_ID_DESCRIPTION = "description";
+    public static final String COL_ID_OWNER = "owner";
+    public static final String COL_ID_STARTED_AT = "startedAt";
     public static final String COL_ID_STATUS = "status";
     public static final String COL_ID_ACTIONS = "Actions";
     public static final String CASE_INSTANCE_LIST_GRID = "CaseInstanceListGrid";
 
-    private final Constants constants = Constants.INSTANCE;
+    @Inject
+    private TranslationService translationService;
 
     @Override
     public void init(final CaseInstanceListPresenter presenter) {
         final List<String> bannedColumns = asList(COL_ID_CASE_ID, COL_ID_ACTIONS);
-        final List<String> initColumns = asList(COL_ID_CASE_ID, COL_ID_DESCRIPTION, COL_ID_STATUS, COL_ID_ACTIONS);
+        final List<String> initColumns = asList(COL_ID_CASE_ID, COL_ID_DESCRIPTION, COL_ID_STATUS, COL_ID_OWNER, COL_ID_STARTED_AT, COL_ID_ACTIONS);
         super.init(presenter, new GridGlobalPreferences(CASE_INSTANCE_LIST_GRID, initColumns, bannedColumns));
 
         selectionModel = new NoSelectionModel<>();
@@ -73,7 +79,7 @@ public class CaseInstanceListViewImpl extends AbstractListView<CaseInstanceSumma
                 listGrid.redraw();
             }
 
-            selectedItem = selectionModel.getLastSelectedObject();
+            presenter.selectCaseInstance(selectionModel.getLastSelectedObject());
         });
 
         noActionColumnManager = DefaultSelectionEventManager
@@ -96,7 +102,7 @@ public class CaseInstanceListViewImpl extends AbstractListView<CaseInstanceSumma
                     }
                 });
         listGrid.setSelectionModel(selectionModel, noActionColumnManager);
-        listGrid.setEmptyTableCaption(constants.NoCasesFound());
+        listGrid.setEmptyTableCaption(translationService.format(NO_CASES_FOUND));
         listGrid.setRowStyles(selectedStyles);
 
         listGrid.getElement().getStyle().setPaddingRight(20, Style.Unit.PX);
@@ -109,13 +115,17 @@ public class CaseInstanceListViewImpl extends AbstractListView<CaseInstanceSumma
         final Column idColumn = initIdColumn();
         final Column descriptionColumn = initDescriptionColumn();
         final Column statusColumn = initStatusColumn();
+        final Column ownerColumn = initOwnerColumn();
+        final Column startedAtColumn = initStartedAtColumn();
         actionsColumn = initActionsColumn();
 
         table.addColumns(asList(
-                new ColumnMeta<>(idColumn, constants.Id()),
-                new ColumnMeta<>(descriptionColumn, constants.Description()),
-                new ColumnMeta<>(statusColumn, constants.Status()),
-                new ColumnMeta<>(actionsColumn, constants.Actions())
+                new ColumnMeta<>(idColumn, translationService.format(ID)),
+                new ColumnMeta<>(descriptionColumn, translationService.format(DESCRIPTION)),
+                new ColumnMeta<>(statusColumn, translationService.format(STATUS)),
+                new ColumnMeta<>(ownerColumn, translationService.format(OWNER)),
+                new ColumnMeta<>(startedAtColumn, translationService.format(STARTED_AT)),
+                new ColumnMeta<>(actionsColumn, translationService.format(ACTIONS))
         ));
     }
 
@@ -137,8 +147,8 @@ public class CaseInstanceListViewImpl extends AbstractListView<CaseInstanceSumma
     private Column initIdColumn() {
         final Column<CaseInstanceSummary, String> caseIdColumn = new Column<CaseInstanceSummary, String>(new TextCell()) {
             @Override
-            public String getValue(final CaseInstanceSummary caseInstanceSummary) {
-                return caseInstanceSummary.getCaseId();
+            public String getValue(final CaseInstanceSummary cis) {
+                return cis.getCaseId();
             }
         };
         caseIdColumn.setSortable(true);
@@ -149,8 +159,8 @@ public class CaseInstanceListViewImpl extends AbstractListView<CaseInstanceSumma
     private Column initDescriptionColumn() {
         final Column<CaseInstanceSummary, String> descriptionColumn = new Column<CaseInstanceSummary, String>(new TextCell()) {
             @Override
-            public String getValue(final CaseInstanceSummary caseInstanceSummary) {
-                return caseInstanceSummary.getDescription();
+            public String getValue(final CaseInstanceSummary cis) {
+                return cis.getDescription();
             }
         };
         descriptionColumn.setSortable(true);
@@ -158,15 +168,35 @@ public class CaseInstanceListViewImpl extends AbstractListView<CaseInstanceSumma
         return descriptionColumn;
     }
 
+    private Column initOwnerColumn() {
+        final Column<CaseInstanceSummary, String> ownerColumn = new Column<CaseInstanceSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(final CaseInstanceSummary cis) {
+                return cis.getOwner();
+            }
+        };
+        ownerColumn.setSortable(true);
+        ownerColumn.setDataStoreName(COL_ID_OWNER);
+        return ownerColumn;
+    }
+
+    private Column initStartedAtColumn() {
+        final Column<CaseInstanceSummary, String> startedAtColumn = new Column<CaseInstanceSummary, String>(new TextCell()) {
+            @Override
+            public String getValue(final CaseInstanceSummary cis) {
+                return DateUtils.getDateTimeStr(cis.getStartedAt());
+            }
+        };
+        startedAtColumn.setSortable(true);
+        startedAtColumn.setDataStoreName(COL_ID_STARTED_AT);
+        return startedAtColumn;
+    }
+
     private Column initStatusColumn() {
         final Column<CaseInstanceSummary, String> statusColumn = new Column<CaseInstanceSummary, String>(new TextCell()) {
             @Override
-            public String getValue(final CaseInstanceSummary caseInstanceSummary) {
-                if (caseInstanceSummary.isActive()) {
-                    return constants.Active();
-                } else {
-                    return "";
-                }
+            public String getValue(final CaseInstanceSummary cis) {
+                return translationService.format(cis.getStatusString());
             }
         };
         statusColumn.setSortable(true);
@@ -177,11 +207,11 @@ public class CaseInstanceListViewImpl extends AbstractListView<CaseInstanceSumma
     private Column initActionsColumn() {
         final List<HasCell<CaseInstanceSummary, ?>> cells = new LinkedList<>();
 
-        cells.add(new CancelActionHasCell(constants.Complete(), (CaseInstanceSummary caseInstanceSummary) ->
+        cells.add(new CancelActionHasCell(translationService.format(COMPLETE), (CaseInstanceSummary caseInstanceSummary) ->
                 presenter.cancelCaseInstance(caseInstanceSummary)
         ));
 
-        cells.add(new DestroyActionHasCell(constants.Close(), (CaseInstanceSummary caseInstanceSummary) ->
+        cells.add(new DestroyActionHasCell(translationService.format(CLOSE), (CaseInstanceSummary caseInstanceSummary) ->
                 presenter.destroyCaseInstance(caseInstanceSummary)
         ));
 

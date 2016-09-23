@@ -17,6 +17,7 @@
 package org.jbpm.console.ng.cm.backend.server;
 
 import java.util.List;
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jboss.errai.bus.server.annotations.Service;
@@ -28,7 +29,7 @@ import org.kie.server.api.model.cases.CaseDefinition;
 import org.kie.server.api.model.cases.CaseInstance;
 import org.kie.server.client.CaseServicesClient;
 
-import static java.util.Collections.emptyList;
+import static java.util.Collections.*;
 import static java.util.stream.Collectors.*;
 
 @Service
@@ -60,9 +61,7 @@ public class RemoteCaseManagementServiceImpl extends AbstractKieServerService im
 
         final List<CaseInstance> caseInstances = client.getCaseInstances(page, pageSize);
 
-        return caseInstances.stream()
-                .map(ci -> new CaseInstanceSummary(ci.getCaseId(), ci.getCaseDescription(), ci.getCaseStatus(), ci.getContainerId()))
-                .collect(toList());
+        return caseInstances.stream().map(new CaseInstanceMapper()).collect(toList());
     }
 
     @Override
@@ -96,6 +95,19 @@ public class RemoteCaseManagementServiceImpl extends AbstractKieServerService im
         final CaseServicesClient client = getClient(serverTemplateId, containerId, CaseServicesClient.class);
 
         client.destroyCaseInstance(containerId, caseId);
+    }
+
+    @Override
+    public CaseInstanceSummary getCaseInstance(final String serverTemplateId, final String containerId, final String caseId) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return null;
+        }
+
+        final CaseServicesClient client = getClient(serverTemplateId, CaseServicesClient.class);
+
+        return Optional.ofNullable(client.getCaseInstance(containerId, caseId, true, true, true, true))
+                .map(new CaseInstanceMapper())
+                .orElse(null);
     }
 
 }

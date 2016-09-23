@@ -16,7 +16,9 @@
 
 package org.jbpm.console.ng.cm.client.list;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -24,12 +26,14 @@ import javax.inject.Inject;
 
 import com.google.gwt.view.client.Range;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.console.ng.cm.client.newcase.NewCaseInstancePresenter;
-import org.jbpm.console.ng.cm.client.resources.i18n.Constants;
+import org.jbpm.console.ng.cm.client.overview.CaseOverviewPresenter;
+import org.jbpm.console.ng.cm.client.perspectives.CaseOverviewPerspective;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
-import org.jbpm.console.ng.cm.model.events.CaseCancelEvent;
-import org.jbpm.console.ng.cm.model.events.CaseCreatedEvent;
-import org.jbpm.console.ng.cm.model.events.CaseDestroyEvent;
+import org.jbpm.console.ng.cm.client.events.CaseCancelEvent;
+import org.jbpm.console.ng.cm.client.events.CaseCreatedEvent;
+import org.jbpm.console.ng.cm.client.events.CaseDestroyEvent;
 import org.jbpm.console.ng.cm.service.CaseManagementService;
 import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
@@ -39,12 +43,14 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.paging.PageResponse;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
+
+import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.*;
 
 @Dependent
 @WorkbenchScreen(identifier = CaseInstanceListPresenter.SCREEN_ID)
@@ -52,16 +58,17 @@ public class CaseInstanceListPresenter extends AbstractScreenListPresenter<CaseI
 
     public static final String SCREEN_ID = "Case List";
 
-    private Constants constants = Constants.INSTANCE;
-
     @Inject
     private CaseInstanceListView view;
 
-    private Caller<CaseManagementService> casesService;
+    private Caller<CaseManagementService> caseService;
 
     private Event<CaseCancelEvent> caseCancelEvent;
 
     private Event<CaseDestroyEvent> caseDestroyEvent;
+
+    @Inject
+    private TranslationService translationService;
 
     @Inject
     private NewCaseInstancePresenter newCaseInstancePresenter;
@@ -87,7 +94,7 @@ public class CaseInstanceListPresenter extends AbstractScreenListPresenter<CaseI
         currentFilter.setOffset(visibleRange.getStart());
         currentFilter.setCount(visibleRange.getLength());
 
-        casesService.call((List<CaseInstanceSummary> cases) -> {
+        caseService.call((List<CaseInstanceSummary> cases) -> {
             final PageResponse<CaseInstanceSummary> response = new PageResponse<CaseInstanceSummary>();
             response.setStartRowIndex(currentFilter.getOffset());
             response.setTotalRowSize(cases.size());
@@ -99,7 +106,7 @@ public class CaseInstanceListPresenter extends AbstractScreenListPresenter<CaseI
                 response.setLastPage(false);
             }
             updateDataOnCallback(response);
-        }, new DefaultErrorCallback()).getCaseInstances(
+        }).getCaseInstances(
                 selectedServerTemplate,
                 currentFilter.getOffset() / currentFilter.getCount(),
                 currentFilter.getCount()
@@ -108,7 +115,7 @@ public class CaseInstanceListPresenter extends AbstractScreenListPresenter<CaseI
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.CasesList();
+        return translationService.format(CASES_LIST);
     }
 
     @WorkbenchPartView
@@ -119,12 +126,12 @@ public class CaseInstanceListPresenter extends AbstractScreenListPresenter<CaseI
     @WorkbenchMenu
     public Menus buildMenu() {
         return MenuFactory
-                .newTopLevelMenu(constants.NewCaseInstance())
+                .newTopLevelMenu(translationService.format(NEW_CASE_INSTANCE))
                 .respondsWith(() -> {
                     if (selectedServerTemplate != null && !selectedServerTemplate.isEmpty()) {
                         newCaseInstancePresenter.show(selectedServerTemplate);
                     } else {
-                        view.displayNotification(constants.SelectServerTemplate());
+                        view.displayNotification(translationService.format(SELECT_SERVER_TEMPLATE));
                     }
                 })
                 .endMenu()
@@ -137,17 +144,24 @@ public class CaseInstanceListPresenter extends AbstractScreenListPresenter<CaseI
                 .build();
     }
 
+    protected void selectCaseInstance(final CaseInstanceSummary cis) {
+        final Map<String, String> parameters = new HashMap<>();
+        parameters.put(CaseOverviewPresenter.PARAMETER_SERVER_TEMPLATE_ID, selectedServerTemplate);
+        parameters.put(CaseOverviewPresenter.PARAMETER_CONTAINER_ID, cis.getContainerId());
+        parameters.put(CaseOverviewPresenter.PARAMETER_CASE_ID, cis.getCaseId());
+        final DefaultPlaceRequest overview = new DefaultPlaceRequest(CaseOverviewPerspective.PERSPECTIVE_ID, parameters);
+        placeManager.goTo(overview);
+    }
+
     protected void cancelCaseInstance(final CaseInstanceSummary caseInstanceSummary) {
-        casesService.call(
-                e -> caseCancelEvent.fire(new CaseCancelEvent(caseInstanceSummary.getCaseId())),
-                new DefaultErrorCallback()
+        caseService.call(
+                e -> caseCancelEvent.fire(new CaseCancelEvent(caseInstanceSummary.getCaseId()))
         ).cancelCaseInstance(selectedServerTemplate, caseInstanceSummary.getContainerId(), caseInstanceSummary.getCaseId());
     }
 
     protected void destroyCaseInstance(final CaseInstanceSummary caseInstanceSummary) {
-        casesService.call(
-                e -> caseDestroyEvent.fire(new CaseDestroyEvent(caseInstanceSummary.getCaseId())),
-                new DefaultErrorCallback()
+        caseService.call(
+                e -> caseDestroyEvent.fire(new CaseDestroyEvent(caseInstanceSummary.getCaseId()))
         ).destroyCaseInstance(selectedServerTemplate, caseInstanceSummary.getContainerId(), caseInstanceSummary.getCaseId());
     }
 
@@ -164,8 +178,8 @@ public class CaseInstanceListPresenter extends AbstractScreenListPresenter<CaseI
     }
 
     @Inject
-    public void setCasesService(final Caller<CaseManagementService> casesService) {
-        this.casesService = casesService;
+    public void setCaseService(final Caller<CaseManagementService> caseService) {
+        this.caseService = caseService;
     }
 
     @Inject

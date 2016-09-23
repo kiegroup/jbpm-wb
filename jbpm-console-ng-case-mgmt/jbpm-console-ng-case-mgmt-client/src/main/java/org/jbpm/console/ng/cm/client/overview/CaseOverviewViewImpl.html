@@ -1,0 +1,107 @@
+<div class="container-fluid full-height">
+    <div class="row full-height">
+        <div class="col-md-2 sidebar-pf sidebar-pf-left full-height sidebar-actions" data-field="side-bar-left"></div>
+        <div class="col-md-8 full-height">
+            <div class="container-fluid" style="padding-left: 0;padding-right: 0;">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h2>
+                            <span data-field="case-title"></span>
+                            <small>
+                                <span data-field="case-id"></span>
+                            </small>
+                        </h2>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="btn-group btn-block" data-toggle="buttons" style="margin-top: 15px;">
+                            <button type="button" class="col-md-6 btn btn-default" data-field="case-destroy" data-i18n-key="Close"></button>
+                            <button type="button" class="col-md-6 btn btn-default" data-field="case-cancel" data-i18n-key="Complete"></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button class="btn btn-link pull-right" type="button" id="backToList">
+                            <i class="fa fa-reply"></i>&nbsp;&nbsp;<span data-i18n-key="BackToList"></span>
+                        </button>
+                        <button class="btn btn-link pull-right" type="button" id="refresh">
+                            <i class="fa fa-refresh"></i>&nbsp;&nbsp;<span data-i18n-key="Refresh"></span>
+                        </button>
+                        <div class="tabbable uf-tabbar-panel">
+                            <ul class="nav nav-tabs uf-tabbar-panel-nav-tabs nav-tabs-pf">
+                                <li class="uf-dropdown-tab-list-item active" id="details-tab">
+                                    <a href="javascript:;" data-toggle="tab" data-target="#details-pane" data-i18n-key="CaseDetails"></a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="details-pane">
+                                    <div class="row" style="padding-top: 20px; ">
+                                        <div data-field="case-details-content"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div data-field="case-stages"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="tabbable uf-tabbar-panel">
+                            <ul class="nav nav-tabs uf-tabbar-panel-nav-tabs nav-tabs-pf">
+                                <li class="uf-dropdown-tab-list-item active" id="comments-tab">
+                                    <a href="javascript:;" data-toggle="tab" data-target="#comments-pane" data-i18n-key="Comments"></a>
+                                </li>
+                                <li class="uf-dropdown-tab-list-item" id="files-tab">
+                                    <a href="javascript:;" data-toggle="tab" data-target="#files-pane" data-i18n-key="Files"></a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="comments-pane">
+                                    <div class="row" style="padding-top: 20px; ">
+                                        <div class="col-md-12" data-field="case-comments"></div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="files-pane">
+                                    <div class="row" style="margin-top: 20px;">
+                                        <div class="col-md-12" id="case-files"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="tabbable uf-tabbar-panel">
+                            <ul class="nav nav-tabs uf-tabbar-panel-nav-tabs nav-tabs-pf">
+                                <li class="uf-dropdown-tab-list-item active" id="roles-tab">
+                                    <a href="javascript:;" data-toggle="tab" data-target="#roles-pane" data-i18n-key="Roles"></a>
+                                </li>
+                                <li class="uf-dropdown-tab-list-item" id="milestones-tab">
+                                    <a href="javascript:;" data-toggle="tab" data-target="#milestones-pane" data-i18n-key="Milestones"></a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="roles-pane">
+                                    <div class="row" style="padding-top: 20px; ">
+                                        <div class="col-md-12" data-field="case-roles"></div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="milestones-pane">
+                                    <div class="row" style="margin-top: 20px;">
+                                        <div class="col-md-12" id="case-milestones"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 sidebar-pf sidebar-pf-right full-height" data-field="side-bar-right"></div>
+    </div>
+</div>
