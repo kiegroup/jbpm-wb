@@ -101,6 +101,9 @@ public class DataSetProcessInstanceWithVariablesListViewTest {
 
         verify(filterPagedTable, times(3)).addTab((ExtendedPagedTable) any(), anyString(), (Command) any());
         verify(filterPagedTable, times(3)).saveNewTabSettings(anyString(), (HashMap) any());
+        verify(presenter).setAddingDefaultFilters(true);
+        verify(presenter).setAddingDefaultFilters(false);
+
     }
 
     @Test
