@@ -20,6 +20,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.Column;
@@ -185,6 +186,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                 Constants.INSTANCE.AreYouSureRestoreDefaultFilters(),
                 new Command() {
                     @Override public void execute() {
+                        showBusyIndicator(Constants.INSTANCE.Loading());
                         restoreTabs();
                     }
                 },
@@ -303,6 +305,17 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     public void initDefaultFilters( GridGlobalPreferences preferences,
             Button createTabButton ) {
+    }
+
+    public void selectFirstTabAndEnableQueries( final String firsTabKey ) {
+        presenter.setAddingDefaultFilters( false );
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                getMultiGridPreferencesStore().setSelectedGrid( firsTabKey );
+                filterPagedTable.setSelectedTab();
+            }
+        });
     }
 
     public void applyFilterOnPresenter( String key ) {

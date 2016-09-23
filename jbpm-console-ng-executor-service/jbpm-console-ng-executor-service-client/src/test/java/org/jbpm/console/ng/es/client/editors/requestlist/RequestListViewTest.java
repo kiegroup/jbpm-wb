@@ -19,7 +19,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.gwtbootstrap3.client.ui.Button;
+import org.jbpm.console.ng.df.client.list.base.DataSetEditorManager;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.junit.Test;
@@ -29,10 +32,12 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
+import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
+import org.uberfire.mvp.Command;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -51,6 +56,18 @@ public class RequestListViewTest {
 
     @Mock
     protected GridPreferencesStore gridPreferencesStoreMock;
+
+    @Mock
+    protected Button mockButton;
+
+    @Mock
+    protected RequestListPresenter presenter;
+
+    @Mock
+    private DataSetEditorManager dataSetEditorManager;
+
+    @Mock
+    private AsyncDataProvider dataProvider;
 
     @InjectMocks
     private RequestListViewImpl view;
@@ -109,5 +126,17 @@ public class RequestListViewTest {
 
         verify( currentListGrid ).addColumns(anyList());
     }
+
+    @Test
+    public void initDefaultFiltersOwnTaskFilter() {
+        when(presenter.getDataProvider()).thenReturn(dataProvider);
+        view.initDefaultFilters(new GridGlobalPreferences(), mockButton);
+
+        verify(filterPagedTableMock, times(7)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
+        verify(filterPagedTableMock).addAddTableButton(mockButton);
+        verify(presenter).setAddingDefaultFilters(true);
+        verify(presenter).setAddingDefaultFilters(false);
+    }
+
 
 }

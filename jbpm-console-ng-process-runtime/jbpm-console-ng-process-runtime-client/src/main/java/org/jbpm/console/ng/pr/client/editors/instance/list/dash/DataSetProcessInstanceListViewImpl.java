@@ -532,10 +532,7 @@ public class DataSetProcessInstanceListViewImpl extends AbstractMultiGridView<Pr
         initGenericTabFilter( preferences, PROCESS_INSTANCES_LIST_PREFIX + "_1", Constants.INSTANCE.Completed(), Constants.INSTANCE.FilterCompleted(), states, "", "" );
 
         filterPagedTable.addAddTableButton( createTabButton );
-        presenter.setAddingDefaultFilters( false );
-        getMultiGridPreferencesStore().setSelectedGrid( PROCESS_INSTANCES_LIST_PREFIX + "_0" );
-        filterPagedTable.setSelectedTab();
-        applyFilterOnPresenter( PROCESS_INSTANCES_LIST_PREFIX + "_0" );
+        selectFirstTabAndEnableQueries( PROCESS_INSTANCES_LIST_PREFIX + "_0" );
 
     }
 

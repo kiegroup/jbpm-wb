@@ -556,11 +556,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         initAdminTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_4", Constants.INSTANCE.Task_Admin(), Constants.INSTANCE.FilterTaskAdmin(), states, TASK_ROLE_ADMINISTRATOR );
 
         filterPagedTable.addAddTableButton( createTabButton );
-        presenter.setAddingDefaultFilters( false );
-
-        getMultiGridPreferencesStore().setSelectedGrid( DATASET_TASK_LIST_PREFIX + "_0" );
-        filterPagedTable.setSelectedTab();
-        applyFilterOnPresenter( DATASET_TASK_LIST_PREFIX + "_0" );
+        selectFirstTabAndEnableQueries( DATASET_TASK_LIST_PREFIX + "_0" );
 
     }
 

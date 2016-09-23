@@ -128,4 +128,13 @@ public class AbstractMultiGridViewTest {
 
     }
 
+    @Test
+    public void selectFirstTabAndEnableQueries() {
+        GridGlobalPreferences ggp = new GridGlobalPreferences(TEST_KEY, new ArrayList(), new ArrayList<String>());
+        testListView.init(presenter,ggp,mockButton);
+        testListView.selectFirstTabAndEnableQueries("defaultKey");
+
+        verify(presenter).setAddingDefaultFilters(false);
+
+    }
 }
