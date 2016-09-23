@@ -31,6 +31,9 @@ import org.jbpm.console.ng.bd.model.ProcessSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 
+import org.jbpm.console.ng.pr.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
+import org.jbpm.console.ng.pr.forms.client.display.views.PopupFormDisplayerView;
+import org.jbpm.console.ng.pr.forms.display.process.api.ProcessDisplayerConfig;
 import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
 import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;
@@ -68,6 +71,12 @@ public class ProcessDefinitionListPresenterTest {
 
     @Mock
     ProcessRuntimeDataService processRuntimeDataService;
+
+    @Mock
+    StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
+
+    @Mock
+    PopupFormDisplayerView formDisplayPopUp;
 
     @Mock
     HasData next;
@@ -113,6 +122,17 @@ public class ProcessDefinitionListPresenterTest {
         ArgumentCaptor<ProcessDefSelectionEvent> argument = ArgumentCaptor.forClass( ProcessDefSelectionEvent.class );
         verify( processDefSelectionEvent).fire(argument.capture());
         assertEquals( processDefName, argument.getValue().getProcessDefName() );
+    }
+
+    @Test
+    public void testProcessDefNameDefinitionOpenGenericForm(){
+        String processDefName = "testProcessDefName";
+
+        presenter.openGenericForm("processDefId","deploymentId", processDefName);
+
+        ArgumentCaptor< ProcessDisplayerConfig> argument = ArgumentCaptor.forClass(  ProcessDisplayerConfig.class );
+        verify( startProcessDisplayProvider).setup(argument.capture(),any());
+        assertEquals(processDefName,argument.getValue().getProcessName());
     }
 
     @Test

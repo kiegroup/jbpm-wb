@@ -101,7 +101,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                                  final String deploymentId,
                                  final String processDefName ) {
 
-        ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(selectedServerTemplate, deploymentId, processDefId), processDefName);
+        ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(selectedServerTemplate, deploymentId, processDefId, processDefName), processDefName);
 
         formDisplayPopUp.setTitle(processDefName);
 
