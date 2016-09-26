@@ -431,10 +431,8 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         initTabFilter( preferences, REQUEST_LIST_PREFIX + "_6", constants.Cancelled(), constants.FilterCancelled(), statuses );
 
         filterPagedTable.addAddTableButton( createTabButton );
-        presenter.setAddingDefaultFilters( false );
-        getMultiGridPreferencesStore().setSelectedGrid( REQUEST_LIST_PREFIX + "_0" );
-        filterPagedTable.setSelectedTab();
-        applyFilterOnPresenter( REQUEST_LIST_PREFIX + "_0" );
+
+        selectFirstTabAndEnableQueries(  REQUEST_LIST_PREFIX + "_0" );
 
     }
 

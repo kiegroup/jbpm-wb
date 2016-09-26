@@ -17,16 +17,20 @@ package org.jbpm.console.ng.pr.client.editors.instance.list.dash;
 
 import java.util.List;
 
+import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.gwtbootstrap3.client.ui.Button;
+import org.jbpm.console.ng.df.client.list.base.DataSetEditorManager;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
-import org.jbpm.console.ng.pr.client.editors.instance.list.ProcessInstanceListViewImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -36,6 +40,24 @@ public class DataSetProcessInstanceListViewTest {
 
     @Mock
     protected ExtendedPagedTable currentListGrid;
+
+    @Mock
+    protected DataSetProcessInstanceListPresenter presenter;
+
+    @Mock
+    protected GridGlobalPreferences gridGlobalPreferences;
+
+    @Mock
+    protected FilterPagedTable filterPagedTable;
+
+    @Mock
+    private DataSetEditorManager dataSetEditorManager;
+
+    @Mock
+    private AsyncDataProvider dataProvider;
+
+    @Mock
+    protected Button mockButton;
 
     @InjectMocks
     private DataSetProcessInstanceListViewImpl view;
@@ -58,4 +80,12 @@ public class DataSetProcessInstanceListViewTest {
         verify( currentListGrid ).addColumns( anyList() );
     }
 
+    @Test
+    public void testInitDefaultFilters() {
+        when(presenter.getDataProvider()).thenReturn(dataProvider);
+        view.initDefaultFilters(gridGlobalPreferences,mockButton);
+
+        verify( presenter ).setAddingDefaultFilters(true);
+        verify( presenter ).setAddingDefaultFilters(false);
+    }
 }

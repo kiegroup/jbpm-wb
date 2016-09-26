@@ -329,10 +329,7 @@ public class DataSetProcessInstanceListVariableViewImpl extends AbstractMultiGri
         initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), "Filter " + Constants.INSTANCE.Active(), states, "", "" );
 
         filterPagedTable.addAddTableButton( createTabButton );
-        presenter.setAddingDefaultFilters( false );
-        getMultiGridPreferencesStore().setSelectedGrid( PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_0" );
-        filterPagedTable.setSelectedTab();
-        applyFilterOnPresenter( PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_0" );
+        selectFirstTabAndEnableQueries( PROCESS_INSTANCES_WITH_VARIABLES_LIST_PREFIX + "_0" );
 
     }
 

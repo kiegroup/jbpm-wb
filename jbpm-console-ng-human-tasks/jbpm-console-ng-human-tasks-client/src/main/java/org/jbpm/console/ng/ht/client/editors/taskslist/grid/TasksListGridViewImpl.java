@@ -562,11 +562,7 @@ public class TasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, Ta
         initTabFilter( preferences, "TaskListGrid_4", Constants.INSTANCE.Task_Admin(), "Filter " + Constants.INSTANCE.Task_Admin(), states, TASK_ROLE_ADMINISTRATOR );
 
         filterPagedTable.addAddTableButton( createTabButton );
-
-        presenter.setAddingDefaultFilters( false );
-        getMultiGridPreferencesStore().setSelectedGrid( "TaskListGrid_0" );
-        filterPagedTable.setSelectedTab();
-        applyFilterOnPresenter( "TaskListGrid_0" );
+        selectFirstTabAndEnableQueries( "TaskListGrid_0" );
 
     }
 
