@@ -201,6 +201,8 @@ public class DataSetTasksListGridViewTest {
 
         verify(filterPagedTableMock, times(5)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
         verify(filterPagedTableMock).addAddTableButton(mockButton);
+        verify(presenter).setAddingDefaultFilters(true);
+        verify(presenter).setAddingDefaultFilters(false);
     }
 
     @Test
