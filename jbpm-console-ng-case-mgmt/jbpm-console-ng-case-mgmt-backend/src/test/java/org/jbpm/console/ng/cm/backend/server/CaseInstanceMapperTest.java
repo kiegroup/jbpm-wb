@@ -35,6 +35,7 @@ public class CaseInstanceMapperTest {
         assertEquals(ci.getCaseOwner(), cis.getOwner());
         assertEquals(ci.getStartedAt(), cis.getStartedAt());
         assertEquals(ci.getCompletedAt(), cis.getCompletedAt());
+        assertEquals(ci.getCaseDefinitionId(), cis.getCaseDefinitionId());
     }
 
     @Test
@@ -44,6 +45,7 @@ public class CaseInstanceMapperTest {
         ci.setCaseId("CASE-1");
         ci.setCaseStatus(1);
         ci.setContainerId("org.jbpm");
+        ci.setCaseDefinitionId("org.jbpm.case");
         ci.setCaseOwner("admin");
         ci.setStartedAt(new Date());
         ci.setCompletedAt(new Date());

@@ -16,50 +16,31 @@
 
 package org.jbpm.console.ng.cm.client.details;
 
-import java.util.Date;
-
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jbpm.console.ng.cm.client.AbstractCaseInstancePresenterTest;
 import org.jbpm.console.ng.cm.client.events.CaseRefreshEvent;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
-import org.jbpm.console.ng.cm.service.CaseManagementService;
 import org.jbpm.console.ng.gc.client.util.DateUtils;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.uberfire.mocks.CallerMock;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
-import static org.jbpm.console.ng.cm.client.AbstractCaseInstancePresenter.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class CaseDetailsPresenterTest {
+public class CaseDetailsPresenterTest extends AbstractCaseInstancePresenterTest {
 
     @Mock
     CaseDetailsPresenter.CaseDetailsView view;
 
-    @Mock
-    CaseManagementService caseManagementService;
-
-    Caller<CaseManagementService> caseService;
-
-    @Mock
-    TranslationService translationService;
-
     @InjectMocks
     CaseDetailsPresenter presenter;
 
-    @Before
-    public void init() {
-        caseService = new CallerMock<>(caseManagementService);
-        presenter.setCaseService(caseService);
-        doAnswer(im -> im.getArguments()[0]).when(translationService).format(anyString());
+    @Override
+    public CaseDetailsPresenter getPresenter() {
+        return presenter;
     }
 
     @Test
@@ -70,8 +51,8 @@ public class CaseDetailsPresenterTest {
     }
 
     @Test
-    public void testLoadCaseInstance() {
-        presenter.loadCaseInstance();
+    public void testFindCaseInstance() {
+        presenter.findCaseInstance();
 
         verify(view).setCaseId("");
         verify(view).setCaseStatus("");
@@ -125,22 +106,6 @@ public class CaseDetailsPresenterTest {
         verify(view, times(2)).setCaseOwner(cis.getOwner());
         verifyNoMoreInteractions(view);
         verify(caseManagementService, times(2)).getCaseInstance(serverTemplateId, cis.getContainerId(), cis.getCaseId());
-    }
-
-    private CaseInstanceSummary setupCaseInstance(final String serverTemplateId){
-        final CaseInstanceSummary cis = new CaseInstanceSummary("caseId", "description", 1, "containerId");
-        cis.setOwner("admin");
-        cis.setCompletedAt(new Date());
-        cis.setStartedAt(new Date());
-        final PlaceRequest placeRequest = new DefaultPlaceRequest();
-        placeRequest.addParameter(PARAMETER_SERVER_TEMPLATE_ID, serverTemplateId);
-        placeRequest.addParameter(PARAMETER_CONTAINER_ID, cis.getContainerId());
-        placeRequest.addParameter(PARAMETER_CASE_ID, cis.getCaseId());
-        when(caseManagementService.getCaseInstance(serverTemplateId, cis.getContainerId(), cis.getCaseId())).thenReturn(cis);
-
-        presenter.onStartup(placeRequest);
-
-        return cis;
     }
 
 }

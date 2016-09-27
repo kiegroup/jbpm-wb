@@ -16,13 +16,12 @@
 
 package org.jbpm.console.ng.cm.client.overview;
 
-import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.console.ng.cm.client.AbstractCaseInstancePresenterTest;
+import org.jbpm.console.ng.cm.client.events.CaseCancelEvent;
+import org.jbpm.console.ng.cm.client.events.CaseDestroyEvent;
 import org.jbpm.console.ng.cm.client.events.CaseRefreshEvent;
 import org.jbpm.console.ng.cm.client.perspectives.CaseInstanceListPerspective;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
-import org.jbpm.console.ng.cm.client.events.CaseCancelEvent;
-import org.jbpm.console.ng.cm.client.events.CaseDestroyEvent;
-import org.jbpm.console.ng.cm.service.CaseManagementService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,28 +30,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.jbpm.console.ng.cm.client.overview.CaseOverviewPresenter.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CaseOverviewPresenterTest {
+public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest {
 
     @Mock
     CaseOverviewPresenter.CaseOverviewView view;
 
     @Mock
     PlaceManager placeManager;
-
-    @Mock
-    CaseManagementService caseManagementService;
-
-    Caller<CaseManagementService> caseService;
 
     @Mock
     EventSourceMock<CaseCancelEvent> caseCancelEvent;
@@ -67,31 +57,34 @@ public class CaseOverviewPresenterTest {
     CaseOverviewPresenter presenter;
 
     @Before
-    public void init(){
-        caseService = new CallerMock<>(caseManagementService);
-        presenter.setCaseService(caseService);
+    public void setup() {
         presenter.setCaseCancelEvent(caseCancelEvent);
         presenter.setCaseDestroyEvent(caseDestroyEvent);
         presenter.setCaseRefreshEvent(caseRefreshEvent);
     }
 
+    @Override
+    public CaseOverviewPresenter getPresenter() {
+        return presenter;
+    }
+
     @Test
-    public void testInit(){
+    public void testInit() {
         presenter.init();
 
         verify(view).init(presenter);
     }
 
     @Test
-    public void testReturnToCaseList(){
+    public void testReturnToCaseList() {
         presenter.backToList();
 
         verify(placeManager).goTo(CaseInstanceListPerspective.PERSPECTIVE_ID);
     }
 
     @Test
-    public void testLoadCaseInstance(){
-        presenter.loadCaseInstance();
+    public void testFindCaseInstance() {
+        presenter.findCaseInstance();
 
         verify(view).setCaseId("");
         verify(view).setCaseTitle("");
@@ -100,7 +93,7 @@ public class CaseOverviewPresenterTest {
     }
 
     @Test
-    public void testRefreshCase(){
+    public void testRefreshCase() {
         final String serverTemplateId = "serverTemplateId";
         final CaseInstanceSummary cis = setupCaseInstance(serverTemplateId);
 
@@ -147,19 +140,6 @@ public class CaseOverviewPresenterTest {
         final ArgumentCaptor<CaseDestroyEvent> captor = ArgumentCaptor.forClass(CaseDestroyEvent.class);
         verify(caseDestroyEvent).fire(captor.capture());
         assertEquals(cis.getCaseId(), captor.getValue().getCaseId());
-    }
-
-    private CaseInstanceSummary setupCaseInstance(final String serverTemplateId){
-        final CaseInstanceSummary cis = new CaseInstanceSummary("caseId", "description", 0, "containerId");
-        final PlaceRequest placeRequest = new DefaultPlaceRequest();
-        placeRequest.addParameter(PARAMETER_SERVER_TEMPLATE_ID, serverTemplateId);
-        placeRequest.addParameter(PARAMETER_CONTAINER_ID, cis.getContainerId());
-        placeRequest.addParameter(PARAMETER_CASE_ID, cis.getCaseId());
-        when(caseManagementService.getCaseInstance(serverTemplateId, cis.getContainerId(), cis.getCaseId())).thenReturn(cis);
-
-        presenter.onStartup(placeRequest);
-
-        return cis;
     }
 
 }
