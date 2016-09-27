@@ -17,7 +17,6 @@
 package org.jbpm.console.ng.cm.backend.server;
 
 import java.util.List;
-import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jboss.errai.bus.server.annotations.Service;
@@ -29,8 +28,9 @@ import org.kie.server.api.model.cases.CaseDefinition;
 import org.kie.server.api.model.cases.CaseInstance;
 import org.kie.server.client.CaseServicesClient;
 
-import static java.util.Collections.*;
-import static java.util.stream.Collectors.*;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @ApplicationScoped
@@ -46,9 +46,18 @@ public class RemoteCaseManagementServiceImpl extends AbstractKieServerService im
 
         final List<CaseDefinition> caseDefinitions = client.getCaseDefinitions(page, pageSize);
 
-        return caseDefinitions.stream()
-                .map(cd -> new CaseDefinitionSummary(cd.getIdentifier(), cd.getName(), cd.getContainerId()))
-                .collect(toList());
+        return caseDefinitions.stream().map(new CaseDefinitionMapper()).collect(toList());
+    }
+
+    @Override
+    public CaseDefinitionSummary getCaseDefinition(final String serverTemplateId, final String containerId, final String caseDefinitionId) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return null;
+        }
+
+        final CaseServicesClient client = getClient(serverTemplateId, CaseServicesClient.class);
+
+        return ofNullable(client.getCaseDefinition(containerId, caseDefinitionId)).map(new CaseDefinitionMapper()).orElse(null);
     }
 
     @Override
@@ -105,9 +114,52 @@ public class RemoteCaseManagementServiceImpl extends AbstractKieServerService im
 
         final CaseServicesClient client = getClient(serverTemplateId, CaseServicesClient.class);
 
-        return Optional.ofNullable(client.getCaseInstance(containerId, caseId, true, true, true, true))
+        return ofNullable(client.getCaseInstance(containerId, caseId, true, true, true, true))
                 .map(new CaseInstanceMapper())
                 .orElse(null);
     }
 
+    @Override
+    public void assignUserToRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String user) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return;
+        }
+
+        final CaseServicesClient client = getClient(serverTemplateId, CaseServicesClient.class);
+
+        client.assignUserToRole(containerId, caseId, roleName, user);
+    }
+
+    @Override
+    public void assignGroupToRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String group) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return;
+        }
+
+        final CaseServicesClient client = getClient(serverTemplateId, CaseServicesClient.class);
+
+        client.assignGroupToRole(containerId, caseId, roleName, group);
+    }
+
+    @Override
+    public void removeUserFromRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String user) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return;
+        }
+
+        final CaseServicesClient client = getClient(serverTemplateId, CaseServicesClient.class);
+
+        client.removeUserFromRole(containerId, caseId, roleName, user);
+    }
+
+    @Override
+    public void removeGroupFromRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String group) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return;
+        }
+
+        final CaseServicesClient client = getClient(serverTemplateId, CaseServicesClient.class);
+
+        client.removeGroupFromRole(containerId, caseId, roleName, group);
+    }
 }

@@ -19,13 +19,18 @@ package org.jbpm.console.ng.cm.backend.server;
 import java.util.function.Function;
 
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
+import org.jbpm.console.ng.cm.model.CaseRoleAssignmentSummary;
 import org.kie.server.api.model.cases.CaseInstance;
+
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 
 public class CaseInstanceMapper implements Function<CaseInstance, CaseInstanceSummary> {
 
     @Override
     public CaseInstanceSummary apply(final CaseInstance ci) {
-        if(ci == null){
+        if (ci == null) {
             return null;
         }
         final CaseInstanceSummary cis = new CaseInstanceSummary();
@@ -36,6 +41,13 @@ public class CaseInstanceMapper implements Function<CaseInstance, CaseInstanceSu
         cis.setOwner(ci.getCaseOwner());
         cis.setStartedAt(ci.getStartedAt());
         cis.setCompletedAt(ci.getCompletedAt());
+        cis.setCaseDefinitionId(ci.getCaseDefinitionId());
+        cis.setRoleAssignments(
+                ofNullable(ci.getRoleAssignments()).orElse(emptyList())
+                        .stream()
+                        .map(ra -> new CaseRoleAssignmentSummary(ra.getName(), ofNullable(ra.getGroups()).orElse(emptyList()), ofNullable(ra.getUsers()).orElse(emptyList())))
+                        .collect(toList())
+        );
         return cis;
     }
 

@@ -54,6 +54,9 @@ public interface Constants {
     String NEW_CASE_INSTANCE = "NewCaseInstance";
 
     @TranslationKey(defaultValue = "")
+    String NEW_ROLE_ASSIGNMENT = "NewRoleAssignment";
+
+    @TranslationKey(defaultValue = "")
     String CASE_CREATED_WITH_ID = "CaseCreatedWithId";
 
     @TranslationKey(defaultValue = "")
@@ -75,9 +78,33 @@ public interface Constants {
     String PLEASE_SELECT_CASE_DEFINITION = "PleaseSelectCaseDefinition";
 
     @TranslationKey(defaultValue = "")
+    String PLEASE_SELECT_ROLE = "PleaseSelectRole";
+
+    @TranslationKey(defaultValue = "")
     String CASE_OVERVIEW = "CaseOverview";
 
     @TranslationKey(defaultValue = "")
     String CASE_DETAILS = "CaseDetails";
+
+    @TranslationKey(defaultValue = "")
+    String ROLES = "Roles";
+
+    @TranslationKey(defaultValue = "")
+    String REMOVE = "Remove";
+
+    @TranslationKey(defaultValue = "")
+    String USER = "User";
+
+    @TranslationKey(defaultValue = "")
+    String USER_REQUIRED = "UserRequired";
+
+    @TranslationKey(defaultValue = "")
+    String GROUP = "Group";
+
+    @TranslationKey(defaultValue = "")
+    String GROUP_REQUIRED = "GroupRequired";
+
+    @TranslationKey(defaultValue = "")
+    String ASSIGN = "Assign";
 
 }

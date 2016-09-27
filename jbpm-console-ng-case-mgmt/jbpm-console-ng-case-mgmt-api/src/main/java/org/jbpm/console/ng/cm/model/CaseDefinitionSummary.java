@@ -16,6 +16,8 @@
 
 package org.jbpm.console.ng.cm.model;
 
+import java.util.Map;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.console.ng.ga.model.GenericSummary;
 
@@ -23,6 +25,7 @@ import org.jbpm.console.ng.ga.model.GenericSummary;
 public class CaseDefinitionSummary extends GenericSummary {
 
     private String containerId;
+    private Map<String, Integer> roles;
 
     public CaseDefinitionSummary() {
     }
@@ -48,10 +51,19 @@ public class CaseDefinitionSummary extends GenericSummary {
         this.containerId = containerId;
     }
 
+    public Map<String, Integer> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(final Map<String, Integer> roles) {
+        this.roles = roles;
+    }
+
     @Override
     public String toString() {
         return "CaseDefinitionSummary{" +
                 "containerId='" + containerId + '\'' +
+                ", roles=" + roles +
                 "} " + super.toString();
     }
 }

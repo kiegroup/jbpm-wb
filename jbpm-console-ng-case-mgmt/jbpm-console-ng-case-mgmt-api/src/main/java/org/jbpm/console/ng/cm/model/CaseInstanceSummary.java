@@ -17,6 +17,7 @@
 package org.jbpm.console.ng.cm.model;
 
 import java.util.Date;
+import java.util.List;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.console.ng.ga.model.GenericSummary;
@@ -31,6 +32,8 @@ public class CaseInstanceSummary extends GenericSummary {
     private String owner;
     private Date startedAt;
     private Date completedAt;
+    private String caseDefinitionId;
+    private List<CaseRoleAssignmentSummary> roleAssignments;
 
     public CaseInstanceSummary() {
     }
@@ -74,11 +77,11 @@ public class CaseInstanceSummary extends GenericSummary {
         this.containerId = containerId;
     }
 
-    public String getStatusString(){
-        if(status == null){
+    public String getStatusString() {
+        if (status == null) {
             return "";
         }
-        switch (status){
+        switch (status) {
             case ProcessInstance.STATE_PENDING:
                 return "Pending";
             case ProcessInstance.STATE_ACTIVE:
@@ -122,6 +125,22 @@ public class CaseInstanceSummary extends GenericSummary {
         this.completedAt = completedAt;
     }
 
+    public List<CaseRoleAssignmentSummary> getRoleAssignments() {
+        return roleAssignments;
+    }
+
+    public void setRoleAssignments(final List<CaseRoleAssignmentSummary> roleAssignments) {
+        this.roleAssignments = roleAssignments;
+    }
+
+    public String getCaseDefinitionId() {
+        return caseDefinitionId;
+    }
+
+    public void setCaseDefinitionId(final String caseDefinitionId) {
+        this.caseDefinitionId = caseDefinitionId;
+    }
+
     @Override
     public String toString() {
         return "CaseInstanceSummary{" +
@@ -131,6 +150,8 @@ public class CaseInstanceSummary extends GenericSummary {
                 ", owner='" + owner + '\'' +
                 ", startedAt=" + startedAt +
                 ", completedAt=" + completedAt +
+                ", caseDefinitionId='" + caseDefinitionId + '\'' +
+                ", roleAssignments=" + roleAssignments +
                 "} " + super.toString();
     }
 

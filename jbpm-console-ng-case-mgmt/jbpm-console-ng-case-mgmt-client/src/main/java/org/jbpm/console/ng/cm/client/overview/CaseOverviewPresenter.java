@@ -28,6 +28,7 @@ import org.jbpm.console.ng.cm.client.events.CaseCancelEvent;
 import org.jbpm.console.ng.cm.client.events.CaseDestroyEvent;
 import org.jbpm.console.ng.cm.client.events.CaseRefreshEvent;
 import org.jbpm.console.ng.cm.client.perspectives.CaseInstanceListPerspective;
+import org.jbpm.console.ng.cm.client.roles.CaseRolesPresenter;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -77,6 +78,7 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter {
     @OnOpen
     public void onOpen() {
         view.addCaseDetails(CaseDetailsPresenter.SCREEN_ID, place.getParameters());
+        view.addCaseRoles(CaseRolesPresenter.SCREEN_ID, place.getParameters());
     }
 
     protected void refreshCase() {
@@ -84,16 +86,15 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter {
     }
 
     @Override
-    protected void loadCaseInstance() {
+    protected void clearCaseInstance() {
         view.setCaseTitle("");
         view.setCaseId("");
-        if (caseId == null) {
-            return;
-        }
-        caseService.call((CaseInstanceSummary cis) -> {
-            view.setCaseTitle(cis.getDescription());
-            view.setCaseId(cis.getCaseId());
-        }).getCaseInstance(serverTemplateId, containerId, caseId);
+    }
+
+    @Override
+    protected void loadCaseInstance(final CaseInstanceSummary cis) {
+        view.setCaseTitle(cis.getDescription());
+        view.setCaseId(cis.getCaseId());
     }
 
     protected void cancelCaseInstance() {

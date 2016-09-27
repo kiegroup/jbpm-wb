@@ -53,24 +53,23 @@ public class CaseDetailsPresenter extends AbstractCaseInstancePresenter {
     }
 
     @Override
-    protected void loadCaseInstance() {
+    protected void clearCaseInstance() {
         view.setCaseId("");
         view.setCaseStatus("");
         view.setCaseDescription("");
         view.setCaseStartedAt("");
         view.setCaseCompletedAt("");
         view.setCaseOwner("");
-        if (caseId == null) {
-            return;
-        }
-        caseService.call((CaseInstanceSummary cis) -> {
-            view.setCaseId(cis.getCaseId());
-            view.setCaseStatus(translationService.format(cis.getStatusString()));
-            view.setCaseDescription(cis.getDescription());
-            view.setCaseStartedAt(DateUtils.getDateTimeStr(cis.getStartedAt()));
-            view.setCaseCompletedAt(DateUtils.getDateTimeStr(cis.getCompletedAt()));
-            view.setCaseOwner(cis.getOwner());
-        }).getCaseInstance(serverTemplateId, containerId, caseId);
+    }
+
+    @Override
+    protected void loadCaseInstance(final CaseInstanceSummary cis) {
+        view.setCaseId(cis.getCaseId());
+        view.setCaseStatus(translationService.format(cis.getStatusString()));
+        view.setCaseDescription(cis.getDescription());
+        view.setCaseStartedAt(DateUtils.getDateTimeStr(cis.getStartedAt()));
+        view.setCaseCompletedAt(DateUtils.getDateTimeStr(cis.getCompletedAt()));
+        view.setCaseOwner(cis.getOwner());
     }
 
     public interface CaseDetailsView extends UberView<CaseDetailsPresenter> {

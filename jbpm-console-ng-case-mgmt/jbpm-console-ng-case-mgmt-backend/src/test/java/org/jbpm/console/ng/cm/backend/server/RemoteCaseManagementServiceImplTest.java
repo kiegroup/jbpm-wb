@@ -38,6 +38,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static java.lang.String.format;
 import static org.jbpm.console.ng.cm.backend.server.CaseInstanceMapperTest.*;
+import static org.jbpm.console.ng.cm.backend.server.CaseDefinitionMapperTest.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -96,15 +97,13 @@ public class RemoteCaseManagementServiceImplTest {
         definition.setIdentifier("org.jbpm.case");
         definition.setName("New case");
         definition.setContainerId("org.jbpm");
+        definition.setRoles(Collections.emptyMap());
         when(caseServicesClient.getCaseDefinitions(anyInt(), anyInt())).thenReturn(Collections.singletonList(definition));
 
         final List<CaseDefinitionSummary> definitions = service.getCaseDefinitions("id", 0, 0);
         assertNotNull(definitions);
         assertEquals(1, definitions.size());
-        final CaseDefinitionSummary caseDefinitionSummary = definitions.get(0);
-        assertEquals(definition.getName(), caseDefinitionSummary.getName());
-        assertEquals(definition.getIdentifier(), caseDefinitionSummary.getId());
-        assertEquals(definition.getContainerId(), caseDefinitionSummary.getContainerId());
+        assertCaseDefinition(definition, definitions.get(0));
     }
 
     @Test

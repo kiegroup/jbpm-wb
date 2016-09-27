@@ -25,6 +25,8 @@ import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 @Remote
 public interface CaseManagementService {
 
+    CaseDefinitionSummary getCaseDefinition(String serverTemplateId, String containerId, String caseDefinitionId);
+
     List<CaseDefinitionSummary> getCaseDefinitions(String serverTemplateId, Integer page, Integer pageSize);
 
     String startCaseInstance(String serverTemplateId, String containerId, String caseDefinitionId);
@@ -36,5 +38,13 @@ public interface CaseManagementService {
     void cancelCaseInstance(String serverTemplateId, String containerId, String caseId);
 
     void destroyCaseInstance(String serverTemplateId, String containerId, String caseId);
+
+    void assignUserToRole(String serverTemplateId, String containerId, String caseId, String roleName, String user);
+
+    void assignGroupToRole(String serverTemplateId, String containerId, String caseId, String roleName, String group);
+
+    void removeUserFromRole(String serverTemplateId, String containerId, String caseId, String roleName, String user);
+
+    void removeGroupFromRole(String serverTemplateId, String containerId, String caseId, String roleName, String group);
 
 }

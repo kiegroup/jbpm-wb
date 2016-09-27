@@ -22,9 +22,12 @@ import javax.inject.Inject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.console.ng.cm.client.events.CaseRefreshEvent;
+import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.jbpm.console.ng.cm.service.CaseManagementService;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
+
+import static com.google.common.base.Strings.*;
 
 public abstract class AbstractCaseInstancePresenter {
 
@@ -51,13 +54,28 @@ public abstract class AbstractCaseInstancePresenter {
         this.caseId = place.getParameter(PARAMETER_CASE_ID, null);
         this.serverTemplateId = place.getParameter(PARAMETER_SERVER_TEMPLATE_ID, null);
         this.containerId = place.getParameter(PARAMETER_CONTAINER_ID, null);
-        loadCaseInstance();
+        findCaseInstance();
     }
 
-    protected abstract void loadCaseInstance();
+    protected abstract void loadCaseInstance(CaseInstanceSummary cis);
 
-    public void onCaseRefreshEvent(@Observes CaseRefreshEvent caseRefreshEvent){
-        loadCaseInstance();
+    protected abstract void clearCaseInstance();
+
+    public void findCaseInstance() {
+        clearCaseInstance();
+        if (isCaseInstanceValid()) {
+            caseService.call((CaseInstanceSummary cis) -> loadCaseInstance(cis)).getCaseInstance(serverTemplateId, containerId, caseId);
+        }
+    }
+
+    protected boolean isCaseInstanceValid() {
+        return isNullOrEmpty(serverTemplateId) == false ||
+               isNullOrEmpty(containerId) == false ||
+               isNullOrEmpty(caseId)  == false;
+    }
+
+    public void onCaseRefreshEvent(@Observes CaseRefreshEvent caseRefreshEvent) {
+        findCaseInstance();
     }
 
     @Inject
