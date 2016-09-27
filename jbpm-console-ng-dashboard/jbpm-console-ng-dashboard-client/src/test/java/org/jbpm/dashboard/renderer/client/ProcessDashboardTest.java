@@ -129,7 +129,6 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void test_JBPM_4851_Fix() {
-        verify(presenter.getTotalMetric().getView()).setFilterActive(true);
         assertEquals(presenter.getTotalMetric().isFilterOn(), true);
     }
 
