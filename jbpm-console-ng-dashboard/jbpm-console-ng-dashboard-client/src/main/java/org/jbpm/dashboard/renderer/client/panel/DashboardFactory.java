@@ -17,12 +17,11 @@ package org.jbpm.dashboard.renderer.client.panel;
 
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
-import org.jbpm.dashboard.renderer.client.panel.widgets.MetricViewExt;
 
 public class DashboardFactory {
 
     public MetricDisplayer createMetricDisplayer() {
-        return new MetricDisplayer(new MetricViewExt());
+        return new MetricDisplayer();
     }
 
     public TableDisplayer createTableDisplayer() {
