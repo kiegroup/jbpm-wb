@@ -20,9 +20,8 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Composite;
-import org.gwtbootstrap3.client.ui.Label;
-import org.gwtbootstrap3.client.ui.constants.LabelType;
-import org.gwtbootstrap3.client.ui.html.Paragraph;
+import org.jboss.errai.common.client.dom.Paragraph;
+import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
@@ -40,7 +39,7 @@ public class CaseDetailsViewImpl extends Composite implements CaseDetailsPresent
 
     @Inject
     @DataField
-    Label caseStatusText;
+    Span caseStatusText;
 
     @Inject
     @DataField
@@ -60,32 +59,31 @@ public class CaseDetailsViewImpl extends Composite implements CaseDetailsPresent
 
     @Override
     public void setCaseDescription(final String text) {
-        caseDescriptionText.setText(text);
+        caseDescriptionText.setTextContent(text);
     }
 
     @Override
     public void setCaseStatus(final String status) {
-        caseStatusText.setType(LabelType.DEFAULT);
-        caseStatusText.setText(status);
+        caseStatusText.setTextContent(status);
     }
 
     @Override
     public void setCaseId(final String caseId) {
-        caseIdText.setText(caseId);
+        caseIdText.setTextContent(caseId);
     }
 
     @Override
     public void setCaseStartedAt(final String date) {
-        caseStartText.setText(date);
+        caseStartText.setTextContent(date);
     }
 
     @Override
     public void setCaseCompletedAt(final String date) {
-        caseCompleteText.setText(date);
+        caseCompleteText.setTextContent(date);
     }
 
     @Override
     public void setCaseOwner(final String owner) {
-        caseOwnerText.setText(owner);
+        caseOwnerText.setTextContent(owner);
     }
 }
