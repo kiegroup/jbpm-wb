@@ -25,12 +25,12 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
+import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -52,7 +52,7 @@ public class NewCaseInstanceViewImpl extends Composite implements NewCaseInstanc
 
     @Inject
     @DataField("definition-name-help")
-    HelpBlock definitionNameHelp;
+    Span definitionNameHelp;
 
     @DataField("definition-name-select")
     Select caseTemplatesList = GWT.create(Select.class);
@@ -129,7 +129,7 @@ public class NewCaseInstanceViewImpl extends Composite implements NewCaseInstanc
 
         if (isNullOrEmpty(caseTemplatesList.getValue())) {
             caseTemplatesList.setFocus(true);
-            definitionNameHelp.setText(translationService.format(PLEASE_SELECT_CASE_DEFINITION));
+            definitionNameHelp.setTextContent(translationService.format(PLEASE_SELECT_CASE_DEFINITION));
             setCaseDefinitionNameGroupStyle(ValidationState.ERROR);
             return false;
         } else {
@@ -147,7 +147,7 @@ public class NewCaseInstanceViewImpl extends Composite implements NewCaseInstanc
     }
 
     private void clearErrorMessages() {
-        definitionNameHelp.setText("");
+        definitionNameHelp.setTextContent("");
         setCaseDefinitionNameGroupStyle(ValidationState.NONE);
     }
 

@@ -26,13 +26,13 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.Input;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
+import org.jboss.errai.common.client.dom.Span;
+import org.jboss.errai.common.client.dom.TextInput;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -53,7 +53,7 @@ public class NewRoleAssignmentViewImpl extends Composite implements CaseRolesPre
 
     @Inject
     @DataField("role-name-help")
-    HelpBlock roleNameHelp;
+    Span roleNameHelp;
 
     @DataField("role-name-select")
     Select roleNameList = GWT.create(Select.class);
@@ -68,11 +68,11 @@ public class NewRoleAssignmentViewImpl extends Composite implements CaseRolesPre
 
     @Inject
     @DataField("user-name-input")
-    Input userNameInput;
+    TextInput userNameInput;
 
     @Inject
     @DataField("user-name-help")
-    HelpBlock userNameHelp;
+    Span userNameHelp;
 
     @DataField("user-name-group")
     Element userNameGroup = DOM.createDiv();
@@ -151,14 +151,14 @@ public class NewRoleAssignmentViewImpl extends Composite implements CaseRolesPre
         final boolean roleNameEmpty = isNullOrEmpty(roleNameList.getValue());
         if (roleNameEmpty) {
             roleNameList.setFocus(true);
-            roleNameHelp.setText(translationService.format(PLEASE_SELECT_ROLE));
+            roleNameHelp.setTextContent(translationService.format(PLEASE_SELECT_ROLE));
             setFormGroupStyle(roleNameGroup, ValidationState.ERROR);
         }
 
         final boolean userNameEmpty = isNullOrEmpty(userNameInput.getValue());
         if (userNameEmpty) {
-            userNameInput.setFocus(true);
-            userNameHelp.setText(translationService.format(forUser ? USER_REQUIRED : GROUP_REQUIRED));
+            userNameInput.focus();
+            userNameHelp.setTextContent(translationService.format(forUser ? USER_REQUIRED : GROUP_REQUIRED));
             setFormGroupStyle(userNameGroup, ValidationState.ERROR);
         }
 
@@ -180,8 +180,8 @@ public class NewRoleAssignmentViewImpl extends Composite implements CaseRolesPre
     }
 
     private void clearErrorMessages() {
-        roleNameHelp.setText("");
-        userNameHelp.setText("");
+        roleNameHelp.setTextContent("");
+        userNameHelp.setTextContent("");
         setFormGroupStyle(userNameGroup, ValidationState.NONE);
         setFormGroupStyle(roleNameGroup, ValidationState.NONE);
     }

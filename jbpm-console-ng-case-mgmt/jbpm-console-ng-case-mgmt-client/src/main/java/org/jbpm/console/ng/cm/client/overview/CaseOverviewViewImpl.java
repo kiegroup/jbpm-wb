@@ -16,19 +16,18 @@
 package org.jbpm.console.ng.cm.client.overview;
 
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.ButtonType;
-import org.gwtbootstrap3.client.ui.html.Span;
+import org.jboss.errai.common.client.dom.Button;
+import org.jboss.errai.common.client.dom.Event;
+import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -98,12 +97,6 @@ public class CaseOverviewViewImpl extends Composite implements CaseOverviewPrese
 
     private CaseOverviewPresenter presenter;
 
-    @PostConstruct
-    protected void init(){
-        backToList.setType(ButtonType.LINK);
-        refresh.setType(ButtonType.LINK);
-    }
-
     @Override
     public void init(final CaseOverviewPresenter presenter) {
         this.presenter = presenter;
@@ -155,35 +148,35 @@ public class CaseOverviewViewImpl extends Composite implements CaseOverviewPrese
 
     @Override
     public void setCaseTitle(final String title) {
-        caseTitle.setText(title);
+        caseTitle.setTextContent(title);
     }
 
     @Override
     public void setCaseId(final String description) {
-        caseId.setText(description);
+        caseId.setTextContent(description);
     }
 
     @EventHandler("case-destroy")
     @SuppressWarnings("unsued")
-    protected void onDestroyClick(final ClickEvent event) {
+    public void onDestroyClick(@ForEvent("click") final Event event) {
         presenter.destroyCaseInstance();
     }
 
     @EventHandler("case-cancel")
     @SuppressWarnings("unsued")
-    protected void onCancelClick(final ClickEvent event) {
+    public void onCancelClick(@ForEvent("click") final Event event) {
         presenter.cancelCaseInstance();
     }
 
     @EventHandler("backToList")
     @SuppressWarnings("unsued")
-    protected void onBackToListClick(final ClickEvent event) {
+    public void onBackToListClick(@ForEvent("click") final Event event) {
         presenter.backToList();
     }
 
     @EventHandler("refresh")
     @SuppressWarnings("unsued")
-    protected void onRefreshClick(final ClickEvent event) {
+    public void onRefreshClick(@ForEvent("click") final Event event) {
         presenter.refreshCase();
     }
 
