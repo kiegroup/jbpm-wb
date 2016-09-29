@@ -17,11 +17,15 @@ package org.jbpm.console.ng.pr.forms.client.display.process.api;
 
 import java.util.Map;
 
+import com.google.gwt.user.client.ui.IsWidget;
+import org.jbpm.console.ng.ga.forms.display.FormRenderingSettings;
 import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
 import org.jbpm.console.ng.bd.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.gc.forms.client.display.GenericFormDisplayer;
 
-public interface StartProcessFormDisplayer extends GenericFormDisplayer<ProcessDefinitionKey> {
+public interface StartProcessFormDisplayer<S extends FormRenderingSettings> extends GenericFormDisplayer<ProcessDefinitionKey, S> {
+
+    IsWidget getFormWidget();
 
     void startProcessFromDisplayer();
 

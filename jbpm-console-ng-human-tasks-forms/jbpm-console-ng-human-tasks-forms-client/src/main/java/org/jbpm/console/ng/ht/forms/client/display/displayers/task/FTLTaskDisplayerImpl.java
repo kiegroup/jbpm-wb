@@ -15,29 +15,31 @@
  */
 package org.jbpm.console.ng.ht.forms.client.display.displayers.task;
 
+import java.util.Map;
+import javax.enterprise.context.Dependent;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import javax.enterprise.context.Dependent;
-import java.util.Map;
+import org.jbpm.console.ng.ga.forms.display.impl.StaticHTMLFormRenderingSettings;
 
 @Dependent
-public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
+public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer<StaticHTMLFormRenderingSettings> {
 
     @Override
     protected void initDisplayer() {
         publish(this);
         jsniHelper.publishGetFormValues();
 
-        jsniHelper.injectFormValidationsScripts(formContent);
+        jsniHelper.injectFormValidationsScripts( renderingSettings.getFormContent() );
 
         formContainer.clear();
-        formContainer.add(new HTMLPanel(formContent));
+        formContainer.add( new HTMLPanel( renderingSettings.getFormContent() ) );
         if (resizeListener != null) resizeListener.resize(formContainer.getOffsetWidth(), formContainer.getOffsetHeight());
     }
 
     @Override
-    public boolean supportsContent(String content) {
-        return true;
+    public Class<StaticHTMLFormRenderingSettings> getSupportedRenderingSettings() {
+        return StaticHTMLFormRenderingSettings.class;
     }
 
     // Set up the JS-callable signature as a global JS function.
@@ -96,10 +98,5 @@ public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
     @Override
     protected void releaseFromDisplayer() {
         release();
-    }
-
-    @Override
-    public int getPriority() {
-        return 1000;
     }
 }

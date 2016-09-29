@@ -37,11 +37,12 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ga.forms.display.FormDisplayerConfig;
+import org.jbpm.console.ng.ga.forms.display.FormRenderingSettings;
 import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
 import org.jbpm.console.ng.gc.forms.client.display.displayers.util.ActionRequest;
 import org.jbpm.console.ng.gc.forms.client.display.displayers.util.JSNIHelper;
-import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
 import org.jbpm.console.ng.ht.forms.client.display.ht.api.HumanTaskFormDisplayer;
+import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
@@ -49,7 +50,7 @@ import org.jbpm.console.ng.ht.service.TaskService;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mvp.Command;
 
-public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDisplayer {
+public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSettings> implements HumanTaskFormDisplayer<S> {
     public static final String ACTION_CLAIM_TASK = "claimTask";
     public static final String ACTION_START_TASK = "startTask";
     public static final String ACTION_RELEASE_TASK = "releaseTask";
@@ -57,7 +58,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     public static final String ACTION_COMPLETE_TASK = "completeTask";
 
     protected long taskId = -1;
-    protected String formContent;
+    protected S renderingSettings;
     protected String opener;
     protected String taskName;
     protected String serverTemplateId;
@@ -105,25 +106,30 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     @PostConstruct
     protected void init() {
         container.getElement().setId("form-data");
+        container.add( formContainer );
     }
 
     @Override
-    public void init(FormDisplayerConfig<TaskKey> config, Command onCloseCommand, Command onRefreshCommand, FormContentResizeListener resizeListener) {
+    public void init(FormDisplayerConfig<TaskKey, S> config, Command onCloseCommand, Command onRefreshCommand, FormContentResizeListener resizeListener) {
+
+        if ( this.renderingSettings != null ) {
+            clearRenderingSettings();
+            clearStatus();
+        }
+
         this.serverTemplateId = config.getKey().getServerTemplateId();
         this.taskId = config.getKey().getTaskId();
         this.deploymentId = config.getKey().getDeploymentId();
-        this.formContent = config.getFormContent();
+        this.renderingSettings = config.getRenderingSettings();
         this.opener = config.getFormOpener();
         this.resizeListener = resizeListener;
         this.onClose = onCloseCommand;
         this.onRefresh = onRefreshCommand;
-        if ( formContainer.getParent() != container ) {
-            container.add(formContainer);
-        }
 
-        if (formContent == null || formContent.length() == 0) {
+        if ( renderingSettings == null ) {
             return;
         }
+
         taskService.call(new RemoteCallback<TaskSummary>() {
             @Override
             public void callback(final TaskSummary task) {
@@ -211,6 +217,10 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
         }, getUnexpectedErrorCallback()).getTask(serverTemplateId, deploymentId, taskId);
     }
 
+    protected void clearRenderingSettings() {
+        this.renderingSettings = null;
+    }
+
     @Override
     public void complete(Map<String, Object> params) {
         taskService.call(getCompleteTaskRemoteCallback(), getUnexpectedErrorCallback())
@@ -248,78 +258,51 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
     }
 
     protected RemoteCallback getStartTaskRemoteCallback() {
-        return new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void nothing) {
-                taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId, deploymentId, taskId));
-                jsniHelper.notifySuccessMessage(opener, constants.TaskStarted(taskId));
-                refresh();
-            }
+        return (RemoteCallback<Void>) nothing -> {
+            taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId, deploymentId, taskId));
+            jsniHelper.notifySuccessMessage(opener, constants.TaskStarted(taskId));
+            refresh();
         };
     }
 
     protected RemoteCallback getClaimTaskCallback() {
-        return new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void nothing) {
-                taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId, deploymentId, taskId));
-                jsniHelper.notifySuccessMessage(opener, constants.TaskClaimed(taskId));
-                refresh();
-            }
+        return (RemoteCallback<Void>) nothing -> {
+            taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId, deploymentId, taskId));
+            jsniHelper.notifySuccessMessage(opener, constants.TaskClaimed(taskId));
+            refresh();
         };
     }
 
     protected RemoteCallback getSaveTaskStateCallback() {
-        return new RemoteCallback<Long>() {
-            @Override
-            public void callback(Long contentId) {
-                taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId, deploymentId, taskId));
-                jsniHelper.notifySuccessMessage(opener, constants.TaskSaved(taskId));
-                refresh();
-            }
+        return (RemoteCallback<Long>) contentId -> {
+            taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId, deploymentId, taskId));
+            jsniHelper.notifySuccessMessage(opener, constants.TaskSaved(taskId));
+            refresh();
         };
     }
 
     protected RemoteCallback getReleaseTaskRemoteCallback() {
-        return new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void nothing) {
-                taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId, deploymentId, taskId));
-                jsniHelper.notifySuccessMessage(opener, constants.TaskReleased(taskId));
-                refresh();
-            }
+        return (RemoteCallback<Void>) nothing -> {
+            taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId, deploymentId, taskId));
+            jsniHelper.notifySuccessMessage(opener, constants.TaskReleased(taskId));
+            refresh();
         };
     }
 
     protected RemoteCallback<Void> getCompleteTaskRemoteCallback() {
-        return new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void nothing) {
-                taskService.call(new RemoteCallback<TaskSummary>() {
-                    @Override
-                    public void callback(TaskSummary task) {
-                        if (task == null) {
-                            close();
-                        }
-                    }
-                }, getUnexpectedErrorCallback()).getTask(serverTemplateId, deploymentId, taskId);
-                taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId, deploymentId, taskId));
-                jsniHelper.notifySuccessMessage(opener, constants.TaskCompleted(taskId));
-
-
-            }
+        return nothing -> {
+            taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId, deploymentId, taskId));
+            jsniHelper.notifySuccessMessage(opener, constants.TaskCompleted(taskId));
+            close();
         };
     }
 
     protected ErrorCallback<Message> getUnexpectedErrorCallback() {
-        return new ErrorCallback<Message>() {
-            @Override
-            public boolean error(Message message, Throwable throwable) {
-                String notification = constants.UnexpectedError(throwable.getMessage());
-                errorPopup.showMessage(notification);
-                jsniHelper.notifyErrorMessage(opener, notification);
-                return true;
-            }
+        return ( message, throwable ) -> {
+            String notification = constants.UnexpectedError(throwable.getMessage());
+            errorPopup.showMessage(notification);
+            jsniHelper.notifyErrorMessage(opener, notification);
+            return true;
         };
     }
 
@@ -350,7 +333,7 @@ public abstract class AbstractHumanTaskFormDisplayer implements HumanTaskFormDis
 
     protected void clearStatus() {
         taskId = -1;
-        formContent = null;
+        renderingSettings = null;
         opener = null;
         taskName = null;
         deploymentId = null;

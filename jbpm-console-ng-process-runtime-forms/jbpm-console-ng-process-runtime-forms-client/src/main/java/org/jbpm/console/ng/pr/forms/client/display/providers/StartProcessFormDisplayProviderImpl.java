@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,9 @@
 
 package org.jbpm.console.ng.pr.forms.client.display.providers;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -31,7 +29,8 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
-import org.jbpm.console.ng.ga.forms.service.FormServiceEntryPoint;
+import org.jbpm.console.ng.ga.forms.display.FormRenderingSettings;
+import org.jbpm.console.ng.ga.forms.service.shared.FormServiceEntryPoint;
 import org.jbpm.console.ng.gc.forms.client.display.views.FormDisplayerView;
 import org.jbpm.console.ng.gc.forms.client.display.views.GenericFormDisplayView;
 import org.jbpm.console.ng.pr.forms.client.display.process.api.StartProcessFormDisplayProvider;
@@ -54,30 +53,21 @@ public class StartProcessFormDisplayProviderImpl implements StartProcessFormDisp
     @Inject
     private Caller<FormServiceEntryPoint> formServices;
 
-    private List<StartProcessFormDisplayer> processDisplayers = new ArrayList<StartProcessFormDisplayer>();
+    private Map<Class<? extends FormRenderingSettings>, StartProcessFormDisplayer> processDisplayers = new HashMap<>();
 
     @PostConstruct
     public void init() {
         processDisplayers.clear();
+
         final Collection<SyncBeanDef<StartProcessFormDisplayer>> processDisplayersBeans = iocManager.lookupBeans(StartProcessFormDisplayer.class);
+
         if (processDisplayersBeans != null) {
             for (final SyncBeanDef displayerDef : processDisplayersBeans) {
-                processDisplayers.add((StartProcessFormDisplayer) displayerDef.getInstance());
+                StartProcessFormDisplayer displayer = (StartProcessFormDisplayer) displayerDef.getInstance();
+
+                processDisplayers.put( displayer.getSupportedRenderingSettings(), displayer );
             }
         }
-        Collections.sort(processDisplayers, new Comparator<StartProcessFormDisplayer>() {
-
-            @Override
-            public int compare(StartProcessFormDisplayer o1, StartProcessFormDisplayer o2) {
-                if (o1.getPriority() < o2.getPriority()) {
-                    return -1;
-                } else if (o1.getPriority() > o2.getPriority()) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-        });
     }
 
     @Override
@@ -87,22 +77,21 @@ public class StartProcessFormDisplayProviderImpl implements StartProcessFormDisp
 
     protected void display(final ProcessDisplayerConfig config, final FormDisplayerView view) {
         if (processDisplayers != null) {
-            formServices.call(new RemoteCallback<String>() {
+            formServices.call(new RemoteCallback<FormRenderingSettings>() {
                 @Override
-                public void callback(String form) {
+                public void callback(FormRenderingSettings settings) {
 
-                    for (final StartProcessFormDisplayer d : processDisplayers) {
-                        if (d.supportsContent(form)) {
-                            config.setFormContent(form);
-                            d.init(config, view.getOnCloseCommand(), new Command() {
-                                @Override
-                                public void execute() {
-                                    display(config, view);
-                                }
-                            }, view.getResizeListener());
-                            view.display(d);
-                            return;
-                        }
+                    StartProcessFormDisplayer displayer = processDisplayers.get( settings.getClass() );
+
+                    if ( displayer != null ) {
+                        config.setRenderingSettings( settings );
+                        displayer.init(config, view.getOnCloseCommand(), new Command() {
+                            @Override
+                            public void execute() {
+                                display(config, view);
+                            }
+                        }, view.getResizeListener());
+                        view.display(displayer);
                     }
                 }
             }).getFormDisplayProcess(config.getKey().getServerTemplateId(), config.getKey().getDeploymentId(), config.getKey().getProcessId());

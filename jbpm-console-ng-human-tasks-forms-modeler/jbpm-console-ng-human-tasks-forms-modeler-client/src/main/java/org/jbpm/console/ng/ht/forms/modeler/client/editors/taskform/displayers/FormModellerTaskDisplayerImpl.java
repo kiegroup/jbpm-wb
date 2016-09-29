@@ -22,13 +22,14 @@ import javax.inject.Inject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.ht.forms.client.display.displayers.task.AbstractHumanTaskFormDisplayer;
+import org.jbpm.console.ng.ht.forms.modeler.display.impl.FormModelerFormRenderingSettings;
 import org.jbpm.console.ng.ht.forms.modeler.service.FormModelerProcessStarterEntryPoint;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
 import org.jbpm.formModeler.api.events.ResizeFormcontainerEvent;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 
 @Dependent
-public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer {
+public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer<FormModelerFormRenderingSettings> {
 
     @Inject
     private FormRendererWidget formRenderer;
@@ -42,7 +43,7 @@ public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
 
     @Override
     protected void initDisplayer() {
-        formRenderer.loadContext(formContent);
+        formRenderer.loadContext( renderingSettings.getContextId() );
 
         formRenderer.setVisible(true);
 
@@ -50,8 +51,8 @@ public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
     }
 
     @Override
-    public boolean supportsContent(String content) {
-        return content.startsWith("formRenderCtx_");
+    public Class<FormModelerFormRenderingSettings> getSupportedRenderingSettings() {
+        return FormModelerFormRenderingSettings.class;
     }
 
     @Override
@@ -71,7 +72,7 @@ public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
             public void callback(Void response) {
                 start();
             }
-        }).clearContext(formContent);
+        }).clearContext(renderingSettings.getContextId());
     }
 
     @Override
@@ -81,7 +82,7 @@ public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
             public void callback(Void response) {
                 claim();
             }
-        }).clearContext(formContent);
+        }).clearContext(renderingSettings.getContextId());
     }
 
     @Override
@@ -91,7 +92,7 @@ public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
             public void callback(Void response) {
                 release();
             }
-        }).clearContext(formContent);
+        }).clearContext(renderingSettings.getContextId());
     }
 
     protected void submitForm(String action) {
@@ -99,25 +100,32 @@ public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
         formRenderer.submitFormAndPersist();
     }
 
-    public void onFormSubmitted(@Observes FormSubmittedEvent event) {
-        if (event.isMine(formContent) && event.getContext().getErrors() == 0) {
+    @Override
+    protected void clearRenderingSettings() {
+        renderContextServices.call().clearContext( renderingSettings.getContextId() );
+        super.clearRenderingSettings();
+    }
+
+    public void onFormSubmitted( @Observes FormSubmittedEvent event) {
+        if ( renderContextServices == null ) {
+            return;
+        }
+        if (event.isMine(renderingSettings.getContextId()) && event.getContext().getErrors() == 0) {
                 if (ACTION_SAVE_TASK.equals(action)) {
                     renderContextServices.call(getSaveTaskStateCallback(),
-                            getUnexpectedErrorCallback()).saveTaskStateFromRenderContext(formContent, serverTemplateId, deploymentId, taskId);
+                            getUnexpectedErrorCallback()).saveTaskStateFromRenderContext(renderingSettings.getContextId(), serverTemplateId, deploymentId, taskId);
                 } else if (ACTION_COMPLETE_TASK.equals(action)) {
                     renderContextServices.call(getCompleteTaskRemoteCallback(),
-                            getUnexpectedErrorCallback()).completeTaskFromContext(formContent, serverTemplateId, deploymentId, taskId);
+                            getUnexpectedErrorCallback()).completeTaskFromContext(renderingSettings.getContextId(), serverTemplateId, deploymentId, taskId);
                 }
         }
     }
 
-    @Override
-    public int getPriority() {
-        return 1;
-    }
-
     public void onFormResized(@Observes ResizeFormcontainerEvent event) {
-        if (event.isMine(formContent)) {
+        if ( renderContextServices == null ) {
+            return;
+        }
+        if (event.isMine(renderingSettings.getContextId())) {
             formRenderer.resize(event.getWidth(), event.getHeight());
             if (resizeListener != null) resizeListener.resize(event.getWidth(), event.getHeight());
         }

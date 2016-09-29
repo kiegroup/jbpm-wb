@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,14 @@
 package org.jbpm.console.ng.ht.forms.display.ht.api;
 
 import org.jbpm.console.ng.ga.forms.display.FormDisplayerConfig;
+import org.jbpm.console.ng.ga.forms.display.FormRenderingSettings;
 import org.jbpm.console.ng.ht.model.TaskKey;
 
-public class HumanTaskDisplayerConfig implements FormDisplayerConfig<TaskKey> {
+public class HumanTaskDisplayerConfig<S extends FormRenderingSettings> implements FormDisplayerConfig<TaskKey, S> {
     private TaskKey key;
     private String formContent;
     private String formOpener;
+    private S renderingSettings;
 
     public HumanTaskDisplayerConfig(TaskKey key) {
         this.key = key;
@@ -39,7 +41,16 @@ public class HumanTaskDisplayerConfig implements FormDisplayerConfig<TaskKey> {
         return formContent;
     }
 
-    public void setFormContent(String formContent) {
+    @Override
+    public S getRenderingSettings() {
+        return renderingSettings;
+    }
+
+    public void setRenderingSettings( S renderingSettings ) {
+        this.renderingSettings = renderingSettings;
+    }
+
+    public void setFormContent( String formContent) {
         this.formContent = formContent;
     }
 
