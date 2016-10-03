@@ -341,7 +341,7 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
     public void tableCellSelected(String columnId, int rowIndex) {
         final DataSet ds = tasksTable.getDataSetHandler().getLastDataSet();
         final String status = ds.getValueAt(rowIndex, COLUMN_TASK_STATUS).toString();
-        if ("Exited".equalsIgnoreCase(status)) {
+        if (TASK_STATUS_EXITED.equalsIgnoreCase(status) || TASK_STATUS_COMPLETED.equals(status)) {
             notificationEvent.fire(new NotificationEvent(i18n.taskDetailsNotAvailable(), NotificationEvent.NotificationType.WARNING));
             return;
         }
