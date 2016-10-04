@@ -138,4 +138,10 @@ public interface Constants extends Messages {
     String EnterValue();
 
     String EnterResolverType();
+
+    String CaseProject();
+
+    String ConfigureProjectSuccess(String projectName);
+
+    String ConfigureProjectFailure(String projectName);
 }
