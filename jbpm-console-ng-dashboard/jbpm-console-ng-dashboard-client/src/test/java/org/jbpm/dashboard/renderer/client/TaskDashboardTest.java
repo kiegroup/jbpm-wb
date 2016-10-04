@@ -411,12 +411,29 @@ public class TaskDashboardTest extends AbstractDashboardTest {
     }
 
     @Test
-    public void testTaskInstanceNoDetails() {
+    public void testTaskInstanceNoDetailsStatusExited() {
         when(processRuntimeDataService.getProcessInstance(anyString(), any(ProcessInstanceKey.class))).thenReturn(mock(ProcessInstanceSummary.class));
         when(placeManager.getStatus(TaskDashboard.TASK_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
         tableDisplayer.selectCell(COLUMN_TASK_ID, 3);
+        DataSet currentDataSet = presenter.getTasksTable().getDataSetHandler().getLastDataSet();
 
+        assertEquals(TASK_STATUS_EXITED, currentDataSet.getValueAt(3, COLUMN_TASK_STATUS));
+        verify(notificationEvent).fire(any(NotificationEvent.class));
+        verify(taskSelectionEvent, never()).fire(any(TaskSelectionEvent.class));
+        verify(taskDashboardFocusEvent, never()).fire(any(TaskDashboardFocusEvent.class));
+        verify(placeManager, never()).goTo(TaskDashboard.TASK_DETAILS_SCREEN_ID);
+    }
+
+    @Test
+    public void testTaskInstanceNoDetailsStatusComplete() {
+        when(processRuntimeDataService.getProcessInstance(anyString(), any(ProcessInstanceKey.class))).thenReturn(mock(ProcessInstanceSummary.class));
+        when(placeManager.getStatus(TaskDashboard.TASK_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
+        TableDisplayer tableDisplayer = presenter.getTasksTable();
+        tableDisplayer.selectCell(COLUMN_TASK_ID, 2);
+        DataSet currentDataSet = presenter.getTasksTable().getDataSetHandler().getLastDataSet();
+
+        assertEquals(TASK_STATUS_COMPLETED, currentDataSet.getValueAt(2, COLUMN_TASK_STATUS));
         verify(notificationEvent).fire(any(NotificationEvent.class));
         verify(taskSelectionEvent, never()).fire(any(TaskSelectionEvent.class));
         verify(taskDashboardFocusEvent, never()).fire(any(TaskDashboardFocusEvent.class));
