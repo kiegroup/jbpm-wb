@@ -299,11 +299,14 @@ public class KieServerIntegration {
     }
 
     protected CredentialsProvider getCredentialsProvider() {
+        CredentialsProvider credentialsProvider = null;
         try {
-            return new KeyCloakTokenCredentialsProvider();
+            credentialsProvider = new KeyCloakTokenCredentialsProvider();
         } catch (UnsupportedOperationException e) {
-            return new SubjectCredentialsProvider();
+            credentialsProvider = new SubjectCredentialsProvider();
         }
+        logger.debug("{} initialized for the client.", credentialsProvider.getClass().getName());
+        return credentialsProvider;
     }
 
     protected CredentialsProvider getAdminCredentialsProvider() {

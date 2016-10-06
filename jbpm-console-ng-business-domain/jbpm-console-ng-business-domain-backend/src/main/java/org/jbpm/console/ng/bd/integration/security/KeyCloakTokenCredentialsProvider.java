@@ -5,9 +5,13 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 
 import org.kie.server.client.CredentialsProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.ext.security.server.SecurityIntegrationFilter;
 
 public class KeyCloakTokenCredentialsProvider implements CredentialsProvider {
+    
+    private static final Logger logger = LoggerFactory.getLogger(KeyCloakTokenCredentialsProvider.class);
 
     private Class<?> keycloakPrincipal;
     private Class<?> keycloakSecurityContext;
@@ -21,6 +25,7 @@ public class KeyCloakTokenCredentialsProvider implements CredentialsProvider {
             tokenMethod = keycloakSecurityContext.getMethod("getTokenString", new Class[0]);
             securityContextMethod = keycloakPrincipal.getMethod("getKeycloakSecurityContext", new Class[0]);
         } catch (Exception e) {
+            logger.warn("KeyCloak not on classpath due to {}", e.toString());
             throw new UnsupportedOperationException("KeyCloak not on classpath");
         }
     }
