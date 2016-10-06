@@ -19,15 +19,18 @@ package org.jbpm.console.ng.cm.backend.server;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.jbpm.console.ng.bd.integration.KieServerIntegration;
+import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.jbpm.console.ng.cm.service.CaseManagementService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.api.model.cases.CaseComment;
 import org.kie.server.api.model.cases.CaseDefinition;
 import org.kie.server.api.model.cases.CaseInstance;
 import org.kie.server.client.CaseServicesClient;
@@ -58,6 +61,13 @@ public class RemoteCaseManagementServiceImplTest {
 
     @InjectMocks
     RemoteCaseManagementServiceImpl service;
+
+    final String caseId = "CASE-1";
+    final String containerId = "containerId";
+    final String serverTemplateId = "serverTemplateId";
+    final String author = "author";
+    final String text = "text";
+    final String commentId = "commentId";
 
     @Before
     public void setup() {
@@ -173,5 +183,50 @@ public class RemoteCaseManagementServiceImplTest {
 
         assertCaseInstance(ci, cis);
     }
+
+    @Test
+    public void testGetCaseComments() throws Exception {
+        final CaseComment caseComment = new CaseComment();
+        caseComment.setId(commentId);
+        caseComment.setAuthor(author);
+        caseComment.setText(text);
+        caseComment.setAddedAt(new Date());
+
+        when(caseServicesClient.getComments(containerId, caseId, 0, 0)).thenReturn(
+                Collections.singletonList(caseComment));
+
+        final List<CaseCommentSummary> comments = service.getComments(serverTemplateId, containerId, caseId, 0, 0);
+        assertNotNull(comments);
+        assertEquals(1, comments.size());
+        final CaseCommentSummary caseCommentSummary = comments.get(0);
+        assertEquals(caseComment.getId(), caseCommentSummary.getId());
+        assertEquals(caseComment.getAuthor(), caseCommentSummary.getAuthor());
+        assertEquals(caseComment.getText(), caseCommentSummary.getText());
+        assertEquals(caseComment.getAddedAt(), caseCommentSummary.getAddedAt());
+    }
+
+    @Test
+    public void testAddComment() throws Exception {
+
+        service.addComment(serverTemplateId, containerId, caseId, author, text);
+
+        verify(caseServicesClient).addComment(containerId, caseId, author, text);
+    }
+
+    @Test
+    public void testUpdateComment() throws Exception {
+
+        service.updateComment(serverTemplateId, containerId, caseId, commentId, author, text);
+
+        verify(caseServicesClient).updateComment(containerId, caseId, commentId, author, text);
+    }
+
+    @Test
+    public void testRemoveComment() throws Exception {
+        service.removeComment(serverTemplateId, containerId, caseId, commentId);
+
+        verify(caseServicesClient).removeComment(containerId, caseId, commentId);
+    }
+
 
 }

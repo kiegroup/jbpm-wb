@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.console.ng.cm.client.AbstractCaseInstancePresenter;
+import org.jbpm.console.ng.cm.client.comments.CaseCommentsPresenter;
 import org.jbpm.console.ng.cm.client.details.CaseDetailsPresenter;
 import org.jbpm.console.ng.cm.client.events.CaseCancelEvent;
 import org.jbpm.console.ng.cm.client.events.CaseDestroyEvent;
@@ -79,6 +80,7 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter {
     public void onOpen() {
         view.addCaseDetails(CaseDetailsPresenter.SCREEN_ID, place.getParameters());
         view.addCaseRoles(CaseRolesPresenter.SCREEN_ID, place.getParameters());
+        view.addCaseComments(CaseCommentsPresenter.SCREEN_ID,place.getParameters());
     }
 
     protected void refreshCase() {
