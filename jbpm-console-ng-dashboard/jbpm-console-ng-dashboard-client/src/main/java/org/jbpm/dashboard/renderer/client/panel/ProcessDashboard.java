@@ -91,14 +91,13 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
     protected AbstractDisplayer processesByVersion;
     protected TableDisplayer processesTable;
 
-    protected List<Displayer> metricsGroup = new ArrayList<Displayer>();
-    protected List<Displayer> chartsGroup = new ArrayList<Displayer>();
+    protected List<Displayer> metricsGroup = new ArrayList<>();
+    protected List<Displayer> chartsGroup = new ArrayList<>();
     protected String totalProcessesTitle;
 
     @Inject
     public ProcessDashboard(final View view,
                             final ProcessBreadCrumb processBreadCrumb,
-                            final DashboardFactory dashboardFactory,
                             final DataSetClientServices dataSetClientServices,
                             final DisplayerLocator displayerLocator,
                             final DisplayerCoordinator displayerCoordinator,
@@ -107,7 +106,7 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
                             final Event<ProcessDashboardFocusEvent> processDashboardFocusEvent,
                             final ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder) {
 
-        super(dashboardFactory, dataSetClientServices, placeManager, view.getI18nService(), processBreadCrumb, displayerLocator, displayerCoordinator, serverTemplateSelectorMenuBuilder);
+        super(dataSetClientServices, placeManager, view.getI18nService(), processBreadCrumb, displayerLocator, displayerCoordinator, serverTemplateSelectorMenuBuilder);
         this.view = view;
         this.instanceSelectionEvent = instanceSelectionEvent;
         this.processDashboardFocusEvent = processDashboardFocusEvent;
@@ -116,11 +115,7 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
     }
 
     protected void init() {
-        processBreadCrumb.setOnRootSelectedCommand(new Command() {
-            public void execute() {
-                resetProcessBreadcrumb();
-            }
-        });
+        processBreadCrumb.setOnRootSelectedCommand(this::resetProcessBreadcrumb);
 
         view.showLoading();
 
@@ -141,6 +136,9 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
                 processesByRunningTime = createDisplayer(DashboardKpis.processesByRunningTime(i18n)),
                 processesByVersion = createDisplayer(DashboardKpis.processesByVersion(i18n)),
                 processesTable = createTableDisplayer(DashboardKpis.processesTable(i18n), COLUMN_PROCESS_DURATION, new DurationFormatter(COLUMN_PROCESS_START_DATE, COLUMN_PROCESS_END_DATE)));
+
+        totalMetric.filterApply();
+        selectedMetric = totalMetric;
 
         metricsGroup.add(totalMetric);
         metricsGroup.add(activeMetric);
@@ -167,7 +165,6 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
                 new Command() {
                     public void execute() {
                         view.hideLoading();
-                        totalMetric.filterApply();
                     }
                 },
                 // On Failure
@@ -326,7 +323,7 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
         @Override
         public void onDraw(Displayer displayer) {
             if (totalMetric == displayer) {
-                // The dashboard can be considered empty if the total process count is 0;
+                // The dashboard can be considered empty if the total process count is 0
                 DataSet ds = displayer.getDataSetHandler().getLastDataSet();
                 if (ds.getRowCount() == 0) {
                     showBlankDashboard();

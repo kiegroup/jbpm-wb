@@ -17,6 +17,9 @@ package org.jbpm.dashboard.renderer.client;
 
 import java.util.Arrays;
 
+import org.dashbuilder.displayer.DisplayerSettings;
+import org.dashbuilder.displayer.DisplayerType;
+import org.dashbuilder.displayer.client.AbstractDisplayer;
 import org.dashbuilder.displayer.client.AbstractDisplayerTest;
 import org.dashbuilder.displayer.client.DisplayerCoordinator;
 import org.dashbuilder.displayer.client.DisplayerListener;
@@ -24,7 +27,6 @@ import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
 import org.jbpm.console.ng.gc.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.dashboard.renderer.client.panel.AbstractDashboard;
-import org.jbpm.dashboard.renderer.client.panel.DashboardFactory;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardI18n;
 import org.junit.Before;
 import org.mockito.Mock;
@@ -43,9 +45,6 @@ public abstract class AbstractDashboardTest extends AbstractDisplayerTest {
     DisplayerListener displayerListener;
 
     @Mock
-    DashboardFactory dashboardFactory;
-
-    @Mock
     PlaceManager placeManager;
 
     @Mock
@@ -53,24 +52,23 @@ public abstract class AbstractDashboardTest extends AbstractDisplayerTest {
 
     DisplayerCoordinator displayerCoordinator;
 
+    @Override
+    public AbstractDisplayer createNewDisplayer(DisplayerSettings settings) {
+        if (settings.getType().equals(DisplayerType.METRIC)) {
+            return initDisplayer(new MetricDisplayer(mock(MetricDisplayer.View.class)), settings);
+        }
+        if (settings.getType().equals(DisplayerType.TABLE)) {
+            return initDisplayer(new TableDisplayer(mock(TableDisplayer.View.class)), settings);
+        }
+        return super.createNewDisplayer(settings);
+    }
+
     @Before
     public void init() throws Exception {
         super.init();
 
         displayerCoordinator = new DisplayerCoordinator(rendererManager);
         displayerCoordinator.addListener(displayerListener);
-
-        doAnswer(new Answer() {
-            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                return initDisplayer(new MetricDisplayer(mock(MetricDisplayer.View.class)), null);
-            }
-        }).when(dashboardFactory).createMetricDisplayer();
-
-        doAnswer(new Answer() {
-            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                return initDisplayer(new TableDisplayer(mock(TableDisplayer.View.class)), null);
-            }
-        }).when(dashboardFactory).createTableDisplayer();
 
         i18n = mock(DashboardI18n.class, new Answer() {
             @Override

@@ -39,7 +39,6 @@ import static org.uberfire.commons.validation.PortablePreconditions.*;
 
 public abstract class AbstractDashboard {
 
-    protected DashboardFactory dashboardFactory;
     protected DataSetClientServices dataSetClientServices;
     protected PlaceManager placeManager;
     protected DashboardI18n i18n;
@@ -71,15 +70,13 @@ public abstract class AbstractDashboard {
         DashboardI18n getI18nService();
     }
 
-    public AbstractDashboard(final DashboardFactory dashboardFactory,
-                             final DataSetClientServices dataSetClientServices,
+    public AbstractDashboard(final DataSetClientServices dataSetClientServices,
                              final PlaceManager placeManager,
                              final DashboardI18n i18n,
                              final ProcessBreadCrumb processBreadCrumb,
                              final DisplayerLocator displayerLocator,
                              final DisplayerCoordinator displayerCoordinator,
                              final ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder) {
-        this.dashboardFactory = dashboardFactory;
         this.dataSetClientServices = dataSetClientServices;
         this.placeManager = placeManager;
         this.i18n = i18n;
@@ -91,7 +88,7 @@ public abstract class AbstractDashboard {
 
     public MetricDisplayer createMetricDisplayer(DisplayerSettings settings) {
         checkNotNull("displayerSettings", settings);
-        MetricDisplayer metricDisplayer = dashboardFactory.createMetricDisplayer();
+        MetricDisplayer metricDisplayer = (MetricDisplayer) displayerLocator.lookupDisplayer(settings);
         metricDisplayer.setDisplayerSettings(settings);
         metricDisplayer.setDataSetHandler(new DataSetHandlerImpl(dataSetClientServices, getDataSetLookup(settings)));
         return metricDisplayer;
@@ -103,7 +100,7 @@ public abstract class AbstractDashboard {
 
     public TableDisplayer createTableDisplayer(DisplayerSettings settings, final String columnId, final DurationFormatter durationFormatter) {
         checkNotNull("displayerSettings", settings);
-        final TableDisplayer tableDisplayer = dashboardFactory.createTableDisplayer();
+        final TableDisplayer tableDisplayer = (TableDisplayer) displayerLocator.lookupDisplayer(settings);
         tableDisplayer.setDisplayerSettings(settings);
         tableDisplayer.setDataSetHandler(new DataSetHandlerImpl(dataSetClientServices, getDataSetLookup(settings)));
         tableDisplayer.addFormatter(columnId, durationFormatter);
@@ -131,9 +128,11 @@ public abstract class AbstractDashboard {
     public void changeCurrentMetric(MetricDisplayer metric) {
         if (metric.isFilterOn()) {
 
-            // Reset existing metric selected as only a single metric can be filtered at the same time
+            // Reset existing metric selected since only a single metric can be filtered at the same time
             if (selectedMetric != null && selectedMetric != metric) {
-                selectedMetric.filterReset();
+                MetricDisplayer metricToReset = selectedMetric;
+                metricToReset.filterReset();
+                metricToReset.redraw();
             }
             // Set the selected metric as active
             selectedMetric = metric;

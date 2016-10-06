@@ -97,7 +97,6 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
         presenter = new TaskDashboard(view,
                 processBreadCrumb,
-                dashboardFactory,
                 clientServices,
                 displayerLocator,
                 displayerCoordinator,
@@ -395,10 +394,11 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         MetricDisplayer completedMetric = presenter.getCompletedMetric();
         inProgressMetric.filterApply();
 
-        reset(displayerListener, view);
+        reset(displayerListener, view, inProgressMetric.getView());
         completedMetric.filterApply();
 
         assertEquals(presenter.getSelectedMetric(), completedMetric);
+        verify(inProgressMetric.getView()).setHtml(anyString());
         verify(displayerListener).onFilterReset(eq(inProgressMetric), any(DataSetFilter.class));
         verify(displayerListener).onFilterEnabled(eq(completedMetric), any(DataSetFilter.class));
 
@@ -418,7 +418,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         tableDisplayer.selectCell(COLUMN_TASK_ID, 3);
         DataSet currentDataSet = presenter.getTasksTable().getDataSetHandler().getLastDataSet();
 
-        assertEquals(TASK_STATUS_EXITED, currentDataSet.getValueAt(3, COLUMN_TASK_STATUS));
+        assertEquals(TASK_STATUS_EXITED, currentDataSet.getValueAt(0, COLUMN_TASK_STATUS));
         verify(notificationEvent).fire(any(NotificationEvent.class));
         verify(taskSelectionEvent, never()).fire(any(TaskSelectionEvent.class));
         verify(taskDashboardFocusEvent, never()).fire(any(TaskDashboardFocusEvent.class));
@@ -433,7 +433,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         tableDisplayer.selectCell(COLUMN_TASK_ID, 2);
         DataSet currentDataSet = presenter.getTasksTable().getDataSetHandler().getLastDataSet();
 
-        assertEquals(TASK_STATUS_COMPLETED, currentDataSet.getValueAt(2, COLUMN_TASK_STATUS));
+        assertEquals(TASK_STATUS_COMPLETED, currentDataSet.getValueAt(0, COLUMN_TASK_STATUS));
         verify(notificationEvent).fire(any(NotificationEvent.class));
         verify(taskSelectionEvent, never()).fire(any(TaskSelectionEvent.class));
         verify(taskDashboardFocusEvent, never()).fire(any(TaskDashboardFocusEvent.class));
@@ -454,8 +454,6 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testHeaderText(){
-        verify(view).setHeaderText(i18n.allTasks());
-
         final String task = "Task Test";
 
         verifyMetricHeaderText(task, presenter.getTotalMetric(), i18n.selectedTaskStatusHeader("", task));

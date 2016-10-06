@@ -37,7 +37,7 @@ public class DashboardKpis {
         public static final int CHART_HEIGHT = 200;
         public static final String NO_DECIMALS = "#,##0";
         public static final String BG_COLOR = "FFFFFF";
-        public static final String METRIC_BG = "2491C8";
+        public static int metricJsCounter = 1;
 
         public static final String METRIC_HTML = "<div id=\"${this}\" class=\"card-pf card-pf-accented card-pf-aggregate-status\"" +
                 " style=\"background-color:${bgColor}; width:${width}px; height:${height}px;" +
@@ -46,20 +46,23 @@ public class DashboardKpis {
                 "  <p id=\"${thisTitle}\" style=\"font-weight:400\">${title}</p>\n" +
                 "</div>";
 
-        public static final String METRIC_JS = "if (${isFilterEnabled}) {  \n" +
-                "  var filterOn = false;\n" +
-                "  ${this}.style.cursor=\"pointer\";\n" +
-                "  ${this}.style.backgroundColor = ${isFilterOn} ? \"#2491C8\" : \"${bgColor}\";\n" +
-                "\n" +
-                "  ${this}.onclick = function() {\n" +
-                "    filterOn = !filterOn;\n" +
-                "    ${this}.style.backgroundColor = filterOn ? \"#2491C8\" : \"${bgColor}\";\n" +
-                "    ${thisValue}.style.color = filterOn ? \"white\" : \"black\";\n" +
-                "    ${thisTitle}.style.color = filterOn ? \"white\" : \"black\";\n" +
-                "    ${doFilter};\n" +
-                "  };\n" +
-                "}";
-
+        public static final String metricJs() {
+                String filterOn = "filterOn" + metricJsCounter++;
+                return "var " + filterOn + "= ${isFilterOn};\n" +
+                        "${this}.style.cursor=\"pointer\";\n" +
+                        "${this}.style.backgroundColor = " + filterOn + " ? \"#2491C8\" : \"${bgColor}\";\n" +
+                        "${thisValue}.style.color = " + filterOn + " ? \"white\" : \"black\";\n" +
+                        "${thisTitle}.style.color = " + filterOn + "  ? \"white\" : \"black\";\n" +
+                        "\n" +
+                        "${this}.onclick = function() {\n" +
+                        "  " + filterOn + " = !" + filterOn + ";\n" +
+                        "  ${this}.style.backgroundColor = " + filterOn + "  ? \"#2491C8\" : \"${bgColor}\";\n" +
+                        "  ${thisValue}.style.color = " + filterOn + "  ? \"white\" : \"black\";\n" +
+                        "  ${thisTitle}.style.color = " + filterOn + "  ? \"white\" : \"black\";\n" +
+                        "  ${doFilter};\n" +
+                        "};";
+        }
+        
         public static DisplayerSettings processesTable(DashboardI18n i18n) {
                 return DisplayerSettingsFactory.newTableSettings()
                         .uuid(i18n.processInstances())
@@ -103,9 +106,9 @@ public class DashboardKpis {
                         .format(COLUMN_PROCESS_INSTANCE_ID, i18n.processes(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
@@ -121,9 +124,9 @@ public class DashboardKpis {
                         .format(COLUMN_PROCESS_INSTANCE_ID, i18n.activeProcesses(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
@@ -139,9 +142,9 @@ public class DashboardKpis {
                         .format(COLUMN_PROCESS_INSTANCE_ID, i18n.pendingProcesses(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
@@ -157,9 +160,9 @@ public class DashboardKpis {
                         .format(COLUMN_PROCESS_INSTANCE_ID, i18n.suspendedProcesses(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
@@ -175,9 +178,9 @@ public class DashboardKpis {
                         .format(COLUMN_PROCESS_INSTANCE_ID, i18n.abortedProcesses(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
@@ -193,9 +196,9 @@ public class DashboardKpis {
                         .format(COLUMN_PROCESS_INSTANCE_ID, i18n.completedProcesses(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
@@ -351,9 +354,9 @@ public class DashboardKpis {
                         .format(COLUMN_TASK_ID, i18n.tasks(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
@@ -369,9 +372,9 @@ public class DashboardKpis {
                         .format(COLUMN_TASK_ID, i18n.tasksCreated(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
@@ -387,9 +390,9 @@ public class DashboardKpis {
                         .format(COLUMN_TASK_ID, i18n.tasksReady(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
@@ -405,9 +408,9 @@ public class DashboardKpis {
                         .format(COLUMN_TASK_ID, i18n.tasksReserved(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
@@ -423,9 +426,9 @@ public class DashboardKpis {
                         .format(COLUMN_TASK_ID, i18n.tasksInProgress(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
@@ -441,9 +444,9 @@ public class DashboardKpis {
                         .format(COLUMN_TASK_ID, i18n.tasksSuspended(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
@@ -459,9 +462,9 @@ public class DashboardKpis {
                         .format(COLUMN_TASK_ID, i18n.tasksCompleted(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
@@ -477,9 +480,9 @@ public class DashboardKpis {
                         .format(COLUMN_TASK_ID, i18n.tasksFailed(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
@@ -495,9 +498,9 @@ public class DashboardKpis {
                         .format(COLUMN_TASK_ID, i18n.tasksError(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
@@ -513,9 +516,9 @@ public class DashboardKpis {
                         .format(COLUMN_TASK_ID, i18n.tasksExited(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
@@ -531,9 +534,9 @@ public class DashboardKpis {
                         .format(COLUMN_TASK_ID, i18n.tasksObsolete(), NO_DECIMALS)
                         .width(METRIC_WIDTH).height(METRIC_HEIGHT)
                         .margins(0, 0, 0, 0)
-                        .backgroundColor(METRIC_BG)
+                        .backgroundColor(BG_COLOR)
                         .htmlTemplate(METRIC_HTML)
-                        .jsTemplate(METRIC_JS)
+                        .jsTemplate(metricJs())
                         .filterOn(false, true, true)
                         .refreshOn()
                         .buildSettings();
