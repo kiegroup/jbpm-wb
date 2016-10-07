@@ -19,6 +19,7 @@ package org.jbpm.console.ng.cm.service;
 import java.util.List;
 
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 
@@ -38,6 +39,14 @@ public interface CaseManagementService {
     void cancelCaseInstance(String serverTemplateId, String containerId, String caseId);
 
     void destroyCaseInstance(String serverTemplateId, String containerId, String caseId);
+
+    List<CaseCommentSummary> getComments(String serverTemplateId, String containerId, String caseId, Integer page, Integer pageSize);
+
+    void addComment(String serverTemplateId, String containerId, String caseId, String author, String text);
+
+    void updateComment(String serverTemplateId, String containerId, String caseId, String commentId, String author, String text);
+
+    void removeComment(String serverTemplateId, String containerId, String caseId, String commentId);
 
     void assignUserToRole(String serverTemplateId, String containerId, String caseId, String roleName, String user);
 

@@ -107,4 +107,21 @@ public interface Constants {
     @TranslationKey(defaultValue = "")
     String ASSIGN = "Assign";
 
+    @TranslationKey(defaultValue = "")
+    String CASE_COMMENTS = "Comments";
+
+    @TranslationKey(defaultValue = "")
+    String CASE_COMMENT_CANT_BE_EMPTY = "CommentCannotBeEmpty";
+
+    @TranslationKey(defaultValue = "")
+    String DELETE = "Delete";
+
+    @TranslationKey(defaultValue = "")
+    String EDIT = "Edit";
+
+    @TranslationKey(defaultValue = "")
+    String SAVE = "Save";
+
+    @TranslationKey(defaultValue = "")
+    String CANCEL = "Cancel";
 }

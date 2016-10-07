@@ -21,9 +21,11 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.bd.integration.AbstractKieServerService;
+import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.jbpm.console.ng.cm.service.CaseManagementService;
+import org.kie.server.api.model.cases.CaseComment;
 import org.kie.server.api.model.cases.CaseDefinition;
 import org.kie.server.api.model.cases.CaseInstance;
 import org.kie.server.client.CaseServicesClient;
@@ -162,4 +164,52 @@ public class RemoteCaseManagementServiceImpl extends AbstractKieServerService im
 
         client.removeGroupFromRole(containerId, caseId, roleName, group);
     }
+    @Override
+    public List<CaseCommentSummary> getComments(final String serverTemplateId, final String containerId,
+                                                final String caseId, final Integer page, final Integer pageSize) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return emptyList();
+        }
+        final CaseServicesClient client = getClient(serverTemplateId, CaseServicesClient.class);
+        final List<CaseComment> caseComments = client.getComments(containerId, caseId, page, pageSize);
+        return caseComments.stream()
+                .map(cd -> new CaseCommentSummary(caseId, cd.getId(), cd.getAuthor(), cd.getText(), cd.getAddedAt()))
+                .collect(toList());
+
+    }
+
+    @Override
+    public void addComment(final String serverTemplateId, final String containerId, final String caseId,
+                           final String author, final String text) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return;
+        }
+
+        final CaseServicesClient client = getClient(serverTemplateId, CaseServicesClient.class);
+        client.addComment(containerId, caseId, author, text);
+    }
+
+    @Override
+    public void updateComment(final String serverTemplateId, final String containerId, final String caseId,
+                              final String commentId, final String author, final String text) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return;
+        }
+
+        final CaseServicesClient client = getClient(serverTemplateId, CaseServicesClient.class);
+        client.updateComment(containerId, caseId, commentId, author, text);
+
+    }
+
+    @Override
+    public void removeComment(final String serverTemplateId, final String containerId, final String caseId,
+                              final String commentId) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return;
+        }
+
+        final CaseServicesClient client = getClient(serverTemplateId, CaseServicesClient.class);
+        client.removeComment(containerId, caseId, commentId);
+    }
+
 }
