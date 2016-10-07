@@ -158,4 +158,19 @@ public class QuickNewJobPopupTest {
         verify(jobTypeControlGroup).setValidationState(ValidationState.ERROR);
         verify(jobTypeHelpInline).setText(Constants.INSTANCE.The_Job_Must_Have_A_Type());
     }
+
+    @Test
+    public void InvalidClass_shouldCauseValidationError() {
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+                throw (new Exception("Invalid command type"));
+            }
+        }).when(executorServicesMock).scheduleRequest(anyString(),anyString(), any(Date.class), any(Map.class));
+
+        quickNewJobPopup.createJob(JOB_NAME, new Date(), JOB_TYPE, JOB_RETRIES, new ArrayList());
+
+        verify(quickNewJobPopup.jobTypeControlGroup).setValidationState(ValidationState.ERROR);
+        verify(quickNewJobPopup.jobTypeHelpInline).setText(Constants.INSTANCE.The_Job_Must_Have_A_Valid_Type());
+    }
 }

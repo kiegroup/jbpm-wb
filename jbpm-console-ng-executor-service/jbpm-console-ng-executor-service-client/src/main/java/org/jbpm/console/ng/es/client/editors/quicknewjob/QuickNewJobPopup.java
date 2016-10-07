@@ -52,8 +52,6 @@ import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
 import org.gwtbootstrap3.client.ui.gwt.DataGrid;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.es.client.i18n.Constants;
 
 import org.jbpm.console.ng.es.model.RequestDataSetConstants;
@@ -236,6 +234,7 @@ public class QuickNewJobPopup extends BaseModal {
         jobRetriesNumber.setText( "0" );
 
         dataProvider.getList().clear();
+        cleanErrorMessages();
     }
 
     private void cleanErrorMessages() {
@@ -400,31 +399,36 @@ public class QuickNewJobPopup extends BaseModal {
         ctx.put(RequestDataSetConstants.COLUMN_RETRIES, String.valueOf( numberOfTries ) ); // TODO make legacy keys hard to repeat by accident
         ctx.put(RequestDataSetConstants.COLUMN_BUSINESSKEY, jobName ); // TODO make legacy keys hard to repeat by accident
 
-        executorServices.call( new RemoteCallback<Long>() {
-            @Override
-            public void callback( Long requestId ) {
+        executorServices.call(
+            (Long requestId) -> {
                 cleanForm();
-                displayNotification( constants.RequestScheduled(requestId) );
-                requestCreatedEvent.fire( new RequestChangedEvent( requestId ) );
+                displayNotification( constants.RequestScheduled( requestId ));
+                requestCreatedEvent.fire( new RequestChangedEvent( requestId ));
                 closePopup();
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-
-                if ( throwable instanceof IllegalArgumentException ) {
+            },
+            (Message message,
+             Throwable throwable) -> {
+                cleanErrorMessages();
+                if (isInvalidCommandTypeError( throwable )) {
                     jobTypeControlGroup.setValidationState( ValidationState.ERROR );
                     jobTypeHelpInline.setText( Constants.INSTANCE.The_Job_Must_Have_A_Valid_Type() );
-                    return true;
+                } else {
+                    errorMessages.setText( throwable.getMessage() );
+                    errorMessagesGroup.setValidationState( ValidationState.ERROR );
                 }
-                errorMessages.setText( throwable.getMessage() );
-                errorMessagesGroup.setValidationState( ValidationState.ERROR );
                 basicTab.showTab();
-                return true;
-            }
-        } ).scheduleRequest( serverTemplateId, jobType, dueDate, ctx );
+                return false;
+            } ).scheduleRequest( serverTemplateId, jobType, dueDate, ctx );
+    }
 
+    private boolean isInvalidCommandTypeError(Throwable throwable) {
+        String message="";
+        if (throwable.getMessage() != null) {
+            message = throwable.getMessage();
+        } else  if (throwable.getCause() != null) {
+            message = throwable.getCause().getMessage();
+        }
+        return message.contains("Invalid command type");
     }
 
 }
