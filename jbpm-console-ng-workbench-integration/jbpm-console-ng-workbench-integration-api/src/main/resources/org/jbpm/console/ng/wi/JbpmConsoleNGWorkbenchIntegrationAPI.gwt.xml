@@ -30,5 +30,6 @@
   <source path="service"/>
   <source path="exception"/>
   <source path="dd"/>
+  <source path="cases"/>
 
 </module>
