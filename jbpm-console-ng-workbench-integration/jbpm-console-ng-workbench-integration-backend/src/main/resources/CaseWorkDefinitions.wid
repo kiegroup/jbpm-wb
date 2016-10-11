@@ -64,7 +64,7 @@ import org.drools.core.process.core.datatype.impl.type.ObjectDataType;
       "Condition" : new StringDataType()
     ],
     "displayName" : "Milestone",
-    "icon" : "defaultemailicon.gif"
+    "icon" : "defaultmilestoneicon.png"
   ]
 
 ]
