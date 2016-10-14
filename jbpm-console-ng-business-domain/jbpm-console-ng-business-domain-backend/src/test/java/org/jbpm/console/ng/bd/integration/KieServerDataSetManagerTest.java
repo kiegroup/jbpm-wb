@@ -27,7 +27,7 @@ import org.jbpm.console.ng.ga.events.KieServerDataSetRegistered;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.remote.common.rest.KieRemoteHttpRequestException;
+import org.kie.server.common.rest.KieServerHttpRequestException;
 import org.kie.server.api.model.definition.QueryDefinition;
 import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.KieServicesException;
@@ -101,7 +101,7 @@ public class KieServerDataSetManagerTest {
 
     @Test
     public void testRegisterQueriesWithRetryDueToKieRemoteHttpRequestException() throws Exception {
-        registerQueriesWithRetryException(new KieRemoteHttpRequestException("KieServer endpoint down"));
+        registerQueriesWithRetryException(new KieServerHttpRequestException("KieServer endpoint down"));
     }
 
     private void registerQueriesWithRetryException(Exception exception) throws Exception {

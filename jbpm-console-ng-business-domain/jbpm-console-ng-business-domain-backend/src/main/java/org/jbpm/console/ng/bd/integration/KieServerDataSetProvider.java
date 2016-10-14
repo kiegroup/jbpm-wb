@@ -46,7 +46,7 @@ import org.dashbuilder.dataset.sort.ColumnSort;
 import org.dashbuilder.dataset.sort.DataSetSort;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.console.ng.ga.model.dataset.ConsoleDataSetLookup;
-import org.kie.remote.common.rest.KieRemoteHttpRequestException;
+import org.kie.server.common.rest.KieServerHttpRequestException;
 import org.kie.server.api.model.definition.QueryFilterSpec;
 import org.kie.server.api.model.definition.QueryParam;
 import org.kie.server.client.QueryServicesClient;
@@ -168,7 +168,7 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
                     dataSetLookup.getNumberOfRows(),
                     List.class
             );
-        } catch (KieRemoteHttpRequestException e) {
+        } catch (KieServerHttpRequestException e) {
             // in case on any exception return empty data set and log error
             LOGGER.warn("Encountered {} while fetching query for {}", e.getMessage(), dataSetLookup.getDataSetUUID());
             instances = Collections.emptyList();

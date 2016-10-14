@@ -29,7 +29,7 @@ import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.dashbuilder.dataset.def.SQLDataSetDef;
 import org.jbpm.console.ng.ga.events.KieServerDataSetRegistered;
-import org.kie.remote.common.rest.KieRemoteHttpRequestException;
+import org.kie.server.common.rest.KieServerHttpRequestException;
 import org.kie.server.api.model.definition.QueryDefinition;
 import org.kie.server.client.KieServicesException;
 import org.kie.server.client.QueryServicesClient;
@@ -116,7 +116,7 @@ public class KieServerDataSetManager {
 
                 event.fire(new KieServerDataSetRegistered(serverInstanceId, serverTemplateId));
                 return;
-            } catch (KieServicesException | KieRemoteHttpRequestException e) {
+            } catch (KieServicesException | KieServerHttpRequestException e) {
                 // unable to register, might still be booting
                 Thread.sleep(500);
                 elapsed += 500;
