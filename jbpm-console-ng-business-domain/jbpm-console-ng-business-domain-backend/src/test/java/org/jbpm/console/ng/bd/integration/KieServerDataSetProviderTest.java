@@ -17,26 +17,61 @@ package org.jbpm.console.ng.bd.integration;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.dashbuilder.dataset.DataSetLookup;
+import org.dashbuilder.dataset.def.DataSetDef;
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionFilter;
+import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.group.ColumnGroup;
 import org.dashbuilder.dataset.group.DataSetGroup;
 import org.dashbuilder.dataset.group.GroupStrategy;
 import org.dashbuilder.dataset.group.Interval;
+import org.dashbuilder.dataset.impl.DataSetImpl;
+import org.jbpm.console.ng.ga.model.dataset.ConsoleDataSetLookup;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.api.model.definition.QueryFilterSpec;
 import org.kie.server.api.model.definition.QueryParam;
+import org.kie.server.client.KieServicesClient;
+import org.kie.server.client.QueryServicesClient;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KieServerDataSetProviderTest {
     public static String COLUMN_TEST = "columTest";
 
+    @InjectMocks
     KieServerDataSetProvider kieServerDataSetProvider;
+
+    @Mock
+    KieServerIntegration kieServerIntegration;
+
+    @Mock
+    KieServicesClient kieServicesClient;
+
+    @Mock
+    QueryServicesClient queryServicesClient;
+
+    @Mock
+    DataSetImpl dataSet;
+
+    @Mock
+    DataSetDef dataSetDef;
 
     @Before
     public void setUp() {
-        kieServerDataSetProvider = new KieServerDataSetProvider();
+        when(kieServerIntegration.getServerClient("servereTemplateId")).thenReturn(kieServicesClient);
+        when(kieServicesClient.getServicesClient(QueryServicesClient.class)).thenReturn(queryServicesClient);
     }
 
     @Test
@@ -82,6 +117,36 @@ public class KieServerDataSetProviderTest {
         assertEquals("BETWEEN",filterParams.get(0).getOperator());
         assertEquals(Double.valueOf(minValue),filterParams.get(0).getValue().get(0));
         assertEquals(Double.valueOf(maxValue),filterParams.get(0).getValue().get(1));
+    }
+
+    @Test
+    public void lookupDataSetLogicalExprTest() throws Exception {
+        DataSetLookup lookup = new DataSetLookup();
+        lookup.setDataSetUUID("");
+        when(dataSetDef.getUUID()).thenReturn("");
+
+        final ColumnFilter testFilter = OR( likeTo("column1","%value%"),likeTo("column2","%value%"));
+
+        DataSetFilter filter = new DataSetFilter();
+        filter.addFilterColumn(testFilter);
+        lookup.addOperation(filter);
+
+        kieServerDataSetProvider.lookupDataSet(dataSetDef ,ConsoleDataSetLookup.fromInstance(lookup,"servereTemplateId"));
+
+        final ArgumentCaptor<QueryFilterSpec> captorEdit = ArgumentCaptor.forClass(QueryFilterSpec.class);
+        verify(queryServicesClient).query( anyString(),anyString(), captorEdit.capture(), anyInt(),anyInt(), any());
+
+        assertNotNull(captorEdit.getValue());
+        QueryParam[] parameters =captorEdit.getValue().getParameters();
+        assertEquals(1,parameters.length);
+
+        List<CoreFunctionFilter> expr = (List<CoreFunctionFilter>)parameters[0].getValue();
+        assertEquals("OR",parameters[0].getOperator());
+
+        assertEquals("column1 like %value%, true",expr.get(0).toString());
+        assertEquals("column2 like %value%, true",expr.get(1).toString());
+
+
     }
 
 }
