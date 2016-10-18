@@ -255,7 +255,7 @@ public class QuickNewJobPopup extends BaseModal {
         cleanErrorMessages();
         if ( jobNameText.getText() == null || jobNameText.getText().trim().isEmpty() ) {
             jobNameControlGroup.setValidationState( ValidationState.ERROR );
-            jobNameHelpInline.setText( Constants.INSTANCE.The_Job_Must_Have_A_Name() );
+            jobNameHelpInline.setText( Constants.INSTANCE.The_Job_Must_Have_A_BusinessKey() );
             valid = false;
         } else {
             jobNameControlGroup.setValidationState( ValidationState.SUCCESS );
