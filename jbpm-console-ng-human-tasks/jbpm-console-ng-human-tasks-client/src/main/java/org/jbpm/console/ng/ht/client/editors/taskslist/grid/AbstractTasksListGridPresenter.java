@@ -148,19 +148,6 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
                             currentTableSettings.getDataSetLookup().addOperation(filter);
                         }
                     }
-                    boolean isAdminDataset = currentTableSettings.getDataSetLookup().getDataSetUUID().equals(HUMAN_TASKS_WITH_ADMIN_DATASET);
-
-                    if (isAdminDataset ||
-                            currentTableSettings.getDataSetLookup().getDataSetUUID().equals(HUMAN_TASKS_WITH_USER_DATASET)) {
-                        if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
-                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(getUserGroupFilters(isAdminDataset));
-                        } else {
-                            final DataSetFilter filter = new DataSetFilter();
-                            filter.addFilterColumn(getUserGroupFilters(isAdminDataset));
-                            currentTableSettings.getDataSetLookup().addOperation(filter);
-                        }
-
-                    }
                     dataSetQueryHelper.setDataSetHandler(currentTableSettings);
                     dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), createDataSetTaskCallback(visibleRange.getStart(), currentTableSettings));
                 } else {

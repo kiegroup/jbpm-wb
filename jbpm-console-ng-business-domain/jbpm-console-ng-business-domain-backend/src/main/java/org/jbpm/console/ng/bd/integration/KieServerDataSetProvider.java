@@ -36,6 +36,7 @@ import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.filter.FilterFactory;
+import org.dashbuilder.dataset.filter.LogicalExprFilter;
 import org.dashbuilder.dataset.group.ColumnGroup;
 import org.dashbuilder.dataset.group.DataSetGroup;
 import org.dashbuilder.dataset.group.GroupFunction;
@@ -105,6 +106,10 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
                         CoreFunctionFilter coreFunctionFilter = (CoreFunctionFilter) cFilter;
 
                         filterParams.add(new QueryParam(coreFunctionFilter.getColumnId(), coreFunctionFilter.getType().toString(), coreFunctionFilter.getParameters()));
+                    } else if (cFilter instanceof LogicalExprFilter) {
+                        LogicalExprFilter logicalExprFilter = (LogicalExprFilter) cFilter;
+                        filterParams.add(new QueryParam(logicalExprFilter.getColumnId(), logicalExprFilter.getLogicalOperator().toString(), logicalExprFilter.getLogicalTerms()));
+
                     }
                 }
             }
