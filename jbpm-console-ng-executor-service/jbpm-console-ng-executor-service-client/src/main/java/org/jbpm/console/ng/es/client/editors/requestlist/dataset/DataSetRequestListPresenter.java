@@ -389,7 +389,11 @@ public class DataSetRequestListPresenter extends AbstractScreenListPresenter<Req
                                 view.getMenuResetTabsButton().addClickHandler( new ClickHandler() {
                                     @Override
                                     public void onClick( ClickEvent clickEvent ) {
-                                        view.restoreTabs();
+                                        showRestoreDefaultFilterConfirmationPopup(new Command() {
+                                            @Override public void execute() {
+                                                view.restoreTabs();
+                                            }
+                                        });
                                     }
                                 } );
                                 return view.getMenuResetTabsButton();

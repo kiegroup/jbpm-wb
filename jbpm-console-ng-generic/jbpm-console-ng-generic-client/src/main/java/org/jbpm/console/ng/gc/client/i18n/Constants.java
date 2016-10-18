@@ -68,4 +68,6 @@ public interface Constants extends Messages {
     String RestoreDefaultFilters();
 
     String AutoRefresh();
+
+    String AreYouSureRestoreDefaultFilters();
 }
