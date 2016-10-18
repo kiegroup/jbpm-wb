@@ -123,6 +123,8 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
     @Inject
     private QuickNewProcessInstancePopup newProcessInstancePopup;
 
+    protected final List<ProcessInstanceSummary> myProcessInstancesFromDataSet = new ArrayList<ProcessInstanceSummary>();
+
     public DataSetProcessInstanceWithVariablesListPresenter() {
         super();
     }
@@ -260,8 +262,8 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
             public void callback( DataSet dataSet ) {
 
                 if ( dataSet != null ) {
-                    final List<ProcessInstanceSummary> myProcessInstancesFromDataSet = new ArrayList<ProcessInstanceSummary>();
 
+                    myProcessInstancesFromDataSet.clear();
                     for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
                         myProcessInstancesFromDataSet.add( createProcessInstanceSummaryFromDataSet( dataSet, i ) );
 
@@ -495,6 +497,10 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
     protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
         textSearchStr = searchEvent.getFilter();
         view.applyFilterOnPresenter( dataSetQueryHelper.getCurrentTableSettings().getKey() );
+    }
+
+    protected  List<ProcessInstanceSummary> getDisplayedProcessInstances(){
+        return  myProcessInstancesFromDataSet;
     }
 
 }

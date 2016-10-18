@@ -30,6 +30,7 @@ import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -179,23 +180,23 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
     public void initSelectionModel() {
 
         final ExtendedPagedTable extendedPagedTable = getListGrid();
-        extendedPagedTable.setEmptyTableCaption( constants.No_Process_Instances_Found() );
+        extendedPagedTable.setEmptyTableCaption(constants.No_Process_Instances_Found());
         extendedPagedTable.getRightActionsToolbar().clear();
-        initExtraButtons( extendedPagedTable );
-        initBulkActions( extendedPagedTable );
+        initExtraButtons(extendedPagedTable);
+        initBulkActions(extendedPagedTable);
         selectionModel = new NoSelectionModel<ProcessInstanceSummary>();
-        selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
+        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             @Override
-            public void onSelectionChange( SelectionChangeEvent event ) {
+            public void onSelectionChange(SelectionChangeEvent event) {
 
                 boolean close = false;
-                if ( selectedRow == -1 ) {
-                    extendedPagedTable.setRowStyles( selectedStyles );
+                if (selectedRow == -1) {
+                    extendedPagedTable.setRowStyles(selectedStyles);
                     selectedRow = extendedPagedTable.getKeyboardSelectedRow();
                     extendedPagedTable.redraw();
 
-                } else if ( extendedPagedTable.getKeyboardSelectedRow() != selectedRow ) {
-                    extendedPagedTable.setRowStyles( selectedStyles );
+                } else if (extendedPagedTable.getKeyboardSelectedRow() != selectedRow) {
+                    extendedPagedTable.setRowStyles(selectedStyles);
                     selectedRow = extendedPagedTable.getKeyboardSelectedRow();
                     extendedPagedTable.redraw();
                 } else {
@@ -204,23 +205,23 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
 
                 selectedItem = selectionModel.getLastSelectedObject();
 
-                PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( "Process Instance Details Multi" ) );
+                PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details Multi"));
 
-                if ( status == PlaceStatus.CLOSE ) {
-                    placeManager.goTo( "Process Instance Details Multi" );
-                    processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedItem.getDeploymentId(),
-                                                                                     selectedItem.getProcessInstanceId(), selectedItem.getProcessId(),
-                                                                                     selectedItem.getProcessName(), selectedItem.getState() ) );
-                } else if ( status == PlaceStatus.OPEN && !close ) {
-                    processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedItem.getDeploymentId(),
-                                                                                     selectedItem.getProcessInstanceId(), selectedItem.getProcessId(),
-                                                                                     selectedItem.getProcessName(), selectedItem.getState() ) );
-                } else if ( status == PlaceStatus.OPEN && close ) {
-                    placeManager.closePlace( "Process Instance Details Multi" );
+                if (status == PlaceStatus.CLOSE) {
+                    placeManager.goTo("Process Instance Details Multi");
+                    processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedItem.getDeploymentId(),
+                            selectedItem.getProcessInstanceId(), selectedItem.getProcessId(),
+                            selectedItem.getProcessName(), selectedItem.getState()));
+                } else if (status == PlaceStatus.OPEN && !close) {
+                    processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedItem.getDeploymentId(),
+                            selectedItem.getProcessInstanceId(), selectedItem.getProcessId(),
+                            selectedItem.getProcessName(), selectedItem.getState()));
+                } else if (status == PlaceStatus.OPEN && close) {
+                    placeManager.closePlace("Process Instance Details Multi");
                 }
 
             }
-        } );
+        });
 
         noActionColumnManager = DefaultSelectionEventManager
                 .createCustomManager( new DefaultSelectionEventManager.EventTranslator<ProcessInstanceSummary>() {
@@ -262,8 +263,8 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
 
                 } );
 
-        extendedPagedTable.setSelectionModel( selectionModel, noActionColumnManager );
-        extendedPagedTable.setRowStyles( selectedStyles );
+        extendedPagedTable.setSelectionModel(selectionModel, noActionColumnManager);
+        extendedPagedTable.setRowStyles(selectedStyles);
     }
 
     @Override
@@ -366,7 +367,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
             }
         };
         genericColumn.setSortable( true );
-        genericColumn.setDataStoreName( key );
+        genericColumn.setDataStoreName(key);
 
         return genericColumn;
     }
@@ -374,21 +375,56 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
     public void initExtraButtons( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
     }
 
-    private void initBulkActions( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
-        bulkAbortNavLink = new AnchorListItem( constants.Bulk_Abort() );
-        bulkSignalNavLink = new AnchorListItem( constants.Bulk_Signal() );
+    protected Button createSelectAllButton( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
+        final Button selectAllButton = GWT.create(Button.class);
+        selectAllButton.setText(constants.SelectAll());
+        selectAllButton.setIcon(IconType.SQUARE_O);
+        selectAllButton.setTitle(constants.SelectAllTooltip());
+
+        selectAllButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                selectedProcessInstances.clear();
+                if (IconType.SQUARE_O.equals(selectAllButton.getIcon())) {
+                    selectedProcessInstances.addAll(presenter.getDisplayedProcessInstances());
+                    selectAllButton.setIcon(IconType.CHECK_SQUARE_O);
+                    selectAllButton.setText(constants.UnselectAll());
+                    selectAllButton.setTitle(constants.UnselectAllTooltip());
+                } else {
+                    selectAllButton.setIcon(IconType.SQUARE_O);
+                    selectAllButton.setText(constants.SelectAll());
+                    selectAllButton.setTitle(constants.SelectAllTooltip());
+                }
+                presenter.refreshGrid();
+                controlBulkOperations();
+            }
+        });
+        return selectAllButton;
+    }
+
+    protected void initBulkActions( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
+        bulkAbortNavLink = GWT.create(AnchorListItem.class);
+        bulkAbortNavLink.setText( constants.Bulk_Abort() );
+        bulkSignalNavLink = GWT.create(AnchorListItem.class);
+        bulkSignalNavLink.setText( constants.Bulk_Signal() );
 
         final ButtonGroup bulkActions = new ButtonGroup() {{
-            add( new Button( constants.Bulk_Actions() ) {{
-                setDataToggle( Toggle.DROPDOWN );
-                getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-            }} );
-            add( new DropDownMenu() {{
-                addStyleName( Styles.DROPDOWN_MENU + "-right" );
-                getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                add( bulkAbortNavLink );
-                add( bulkSignalNavLink );
-            }} );
+            Button bulkActionsButton = GWT.create(Button.class);
+            bulkActionsButton.setText(constants.Bulk_Actions());
+            bulkActionsButton.setDataToggle(Toggle.DROPDOWN);
+            if(bulkActionsButton.getElement()!=null){
+                bulkActionsButton.getElement().getStyle().setMarginRight(5, Style.Unit.PX);
+            }
+            add(bulkActionsButton);
+
+            DropDownMenu dropDownMenu = GWT.create(DropDownMenu.class);
+            dropDownMenu.addStyleName(Styles.DROPDOWN_MENU + "-right");
+            if (dropDownMenu.getElement()!=null){
+                dropDownMenu.getElement().getStyle().setMarginRight(5, Style.Unit.PX);
+            }
+            dropDownMenu.add(bulkAbortNavLink);
+            dropDownMenu.add(bulkSignalNavLink);
+            add( dropDownMenu);
         }};
         bulkAbortNavLink.setIcon( IconType.BAN );
         bulkAbortNavLink.setIconFixedWidth( true );
@@ -414,6 +450,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
             }
         } );
 
+        extendedPagedTable.getRightActionsToolbar().add(createSelectAllButton(extendedPagedTable));
         extendedPagedTable.getRightActionsToolbar().add( bulkActions );
 
         controlBulkOperations();
