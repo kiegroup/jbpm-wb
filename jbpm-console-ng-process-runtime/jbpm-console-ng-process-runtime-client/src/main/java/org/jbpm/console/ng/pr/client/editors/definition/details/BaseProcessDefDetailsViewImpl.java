@@ -21,7 +21,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
-import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.FormLabel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -43,15 +43,15 @@ public abstract class BaseProcessDefDetailsViewImpl extends Composite implements
 
     @Inject
     @DataField
-    protected Label processNameLabel;
+    protected FormLabel processNameLabel;
 
     @Inject
     @DataField
-    protected Label processIdLabel;
+    protected FormLabel processIdLabel;
 
     @Inject
     @DataField
-    protected Label deploymentIdLabel;
+    protected FormLabel deploymentIdLabel;
 
     @Inject
     private Event<NotificationEvent> notification;

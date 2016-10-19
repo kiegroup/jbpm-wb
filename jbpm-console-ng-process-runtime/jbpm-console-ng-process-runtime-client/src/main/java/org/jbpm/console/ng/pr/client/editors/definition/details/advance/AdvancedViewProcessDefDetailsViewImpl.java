@@ -18,7 +18,7 @@ package org.jbpm.console.ng.pr.client.editors.definition.details.advance;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.FormLabel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.console.ng.pr.client.editors.definition.details.BaseProcessDefDetailsViewImpl;
@@ -60,27 +60,27 @@ public class AdvancedViewProcessDefDetailsViewImpl extends BaseProcessDefDetails
 
     @Inject
     @DataField
-    public Label nroOfHumanTasksLabel;
+    public FormLabel nroOfHumanTasksLabel;
 
     @Inject
     @DataField
-    public Label humanTasksListLabel;
+    public FormLabel humanTasksListLabel;
 
     @Inject
     @DataField
-    public Label usersGroupsListLabel;
+    public FormLabel usersGroupsListLabel;
 
     @Inject
     @DataField
-    public Label subprocessListLabel;
+    public FormLabel subprocessListLabel;
 
     @Inject
     @DataField
-    public Label processDataListLabel;
+    public FormLabel processDataListLabel;
 
     @Inject
     @DataField
-    public Label processServicesListLabel;
+    public FormLabel processServicesListLabel;
 
     @Override
     public void init() {
