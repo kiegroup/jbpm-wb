@@ -34,6 +34,7 @@ import org.dashbuilder.dataset.filter.LogicalExprFilter;
 import org.dashbuilder.dataset.filter.LogicalExprType;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.security.shared.api.Group;
+import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
@@ -323,6 +324,9 @@ public abstract class AbstractTasksListGridPresenterTest {
 
     @Test
     public void testGetUserGroupFilters() {
+        final String userRole = "role1";
+        final String userId = "userId";
+
         Group group1 = new Group() {
             @Override
             public String getName() {
@@ -335,11 +339,23 @@ public abstract class AbstractTasksListGridPresenterTest {
                 return "group2";
             }
         };
+        HashSet<Role> roles = new HashSet<Role>();
+        Role role1 = new Role() {
+            @Override
+            public String getName() {
+                return userRole;
+            }
+        };
+
+        roles.add(role1);
+
         HashSet<Group> groups = new HashSet<Group>();
         groups.add(group1);
         groups.add(group2);
+
+        when(identity.getRoles()).thenReturn(roles);
         when(identity.getGroups()).thenReturn(groups);
-        when(identity.getIdentifier()).thenReturn("userId");
+        when(identity.getIdentifier()).thenReturn(userId);
 
         final ColumnFilter userTaskFilter = presenter.getUserGroupFilters(false);
 
@@ -362,10 +378,12 @@ public abstract class AbstractTasksListGridPresenterTest {
         assertEquals(COLUMN_ACTUAL_OWNER, withoutActualOwnerFilter.get(1).getColumnId());
 
         assertEquals(((LogicalExprFilter) userGroupFilter.get(0)).getLogicalOperator(), LogicalExprType.OR);
-        assertEquals(groupFilter.size(), 3);
+        assertEquals(groupFilter.size(), 4);
         assertEquals(COLUMN_ORGANIZATIONAL_ENTITY, groupFilter.get(0).getColumnId());
         assertEquals(COLUMN_ORGANIZATIONAL_ENTITY, groupFilter.get(1).getColumnId());
         assertEquals(COLUMN_ORGANIZATIONAL_ENTITY, groupFilter.get(2).getColumnId());
+        assertEquals(COLUMN_ORGANIZATIONAL_ENTITY, groupFilter.get(3).getColumnId());
+        assertTrue(userTaskFilter.toString().contains(COLUMN_ORGANIZATIONAL_ENTITY+" = "+userRole));
 
         ColumnFilter userOwnerFilter = columnFilters.get(1);
         assertEquals(userOwnerFilter.getColumnId(), COLUMN_ACTUAL_OWNER);
@@ -373,51 +391,82 @@ public abstract class AbstractTasksListGridPresenterTest {
 
     @Test
     public void addDynamicUserRolesTest() {
+        final String userRole = "role1";
+        final String userGoup = "group1";
+        final String userId = "userId";
+
         Group group1 = new Group() {
             @Override
             public String getName() {
-                return "group1";
+                return userGoup;
             }
         };
-
         HashSet<Group> groups = new HashSet<Group>();
         groups.add(group1);
-        when(identity.getGroups()).thenReturn(groups);
-        when(identity.getIdentifier()).thenReturn("userId");
-        presenter.setAddingDefaultFilters(false);
-        filterSettings.getDataSetLookup().setDataSetUUID(HUMAN_TASKS_WITH_USER_DATASET);
 
+        Role role1 = new Role() {
+            @Override
+            public String getName() {
+                return userRole;
+            }
+        };
+        HashSet<Role> roles = new HashSet<Role>();
+        roles.add(role1);
+
+        when(identity.getGroups()).thenReturn(groups);
+        when(identity.getRoles()).thenReturn(roles);
+        when(identity.getIdentifier()).thenReturn(userId);
         when(dataSetMock.getRowCount()).thenReturn(1);//1 task
         when(dataSetQueryHelperMock.getColumnLongValue(dataSetMock, COLUMN_TASK_ID, 0)).thenReturn(Long.valueOf(1));
 
-
+        filterSettings.getDataSetLookup().setDataSetUUID(HUMAN_TASKS_WITH_USER_DATASET);
+        presenter.setAddingDefaultFilters(false);
         presenter.getData(new Range(0, 5));
 
         final ColumnFilter userTaskFilter = presenter.getUserGroupFilters(false); // false --> HUMAN_TASKS_WITH_USER_DATASET
+
         assertEquals(filterSettings.getDataSetLookup().getFirstFilterOp().getColumnFilterList().get(0).toString(),
                 userTaskFilter.toString());
+        assertTrue( userTaskFilter instanceof LogicalExprFilter);
+        assertEquals(LogicalExprType.OR,((LogicalExprFilter)userTaskFilter).getLogicalOperator());
+        assertTrue(userTaskFilter.toString().contains(COLUMN_ORGANIZATIONAL_ENTITY+" = "+userRole));
+        assertTrue(userTaskFilter.toString().contains(COLUMN_ORGANIZATIONAL_ENTITY+" = "+userGoup));
+        assertTrue(userTaskFilter.toString().contains(COLUMN_ORGANIZATIONAL_ENTITY+" = "+userId));
 
     }
 
     @Test
     public void addDynamicAdminRolesTest() {
+        final String userRole = "role1";
+        final String userGoup = "group1";
+        final String userId = "userId";
+
         Group group1 = new Group() {
             @Override
             public String getName() {
-                return "group1";
+                return userGoup;
             }
         };
-
         HashSet<Group> groups = new HashSet<Group>();
         groups.add(group1);
-        when(identity.getGroups()).thenReturn(groups);
-        when(identity.getIdentifier()).thenReturn("userId");
-        presenter.setAddingDefaultFilters(false);
-        filterSettings.getDataSetLookup().setDataSetUUID(HUMAN_TASKS_WITH_ADMIN_DATASET);
 
+        Role role1 = new Role() {
+            @Override
+            public String getName() {
+                return userRole;
+            }
+        };
+        HashSet<Role> roles = new HashSet<Role>();
+        roles.add(role1);
+
+        when(identity.getGroups()).thenReturn(groups);
+        when(identity.getRoles()).thenReturn(roles);
+        when(identity.getIdentifier()).thenReturn(userId);
         when(dataSetMock.getRowCount()).thenReturn(1);//1 task
         when(dataSetQueryHelperMock.getColumnLongValue(dataSetMock, COLUMN_TASK_ID, 0)).thenReturn(Long.valueOf(1));
 
+        presenter.setAddingDefaultFilters(false);
+        filterSettings.getDataSetLookup().setDataSetUUID(HUMAN_TASKS_WITH_ADMIN_DATASET);
 
         presenter.getData(new Range(0, 5));
 
@@ -425,7 +474,11 @@ public abstract class AbstractTasksListGridPresenterTest {
 
         assertEquals(filterSettings.getDataSetLookup().getFirstFilterOp().getColumnFilterList().get(0).toString(),
                 userTaskFilter.toString());
-
+        assertTrue( userTaskFilter instanceof LogicalExprFilter);
+        assertEquals(LogicalExprType.OR,((LogicalExprFilter)userTaskFilter).getLogicalOperator());
+        assertTrue(userTaskFilter.toString().contains(COLUMN_ORGANIZATIONAL_ENTITY+" = "+userRole));
+        assertTrue(userTaskFilter.toString().contains(COLUMN_ORGANIZATIONAL_ENTITY+" = "+userGoup));
+        assertTrue(userTaskFilter.toString().contains(COLUMN_ORGANIZATIONAL_ENTITY+" = "+userId));
     }
 
 }

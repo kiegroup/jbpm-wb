@@ -28,6 +28,7 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.Group;
+import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.ht.client.i18n.Constants;
 import org.jbpm.console.ng.ht.model.TaskSummary;
@@ -139,6 +140,9 @@ public class TaskAssignmentsPresenter {
             final Set<String> groups = new HashSet<String>();
             for( final Group group : identity.getGroups()){
                 groups.add( group.getName() );
+            }
+            for( final Role role : identity.getRoles()){
+                groups.add( role.getName() );
             }
 
             taskOperationsService.call(new RemoteCallback<Boolean>() {
