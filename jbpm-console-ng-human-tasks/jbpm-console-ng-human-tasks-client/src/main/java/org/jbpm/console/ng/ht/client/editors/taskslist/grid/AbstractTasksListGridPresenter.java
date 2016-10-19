@@ -43,6 +43,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.Group;
+import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
@@ -209,6 +210,11 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
         List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
         for (Group g : groups) {
             condList.add(FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, g.getName()));
+
+        }
+        Set<Role> roles = identity.getRoles();
+        for (Role r : roles) {
+            condList.add(FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, r.getName()));
 
         }
         condList.add(FilterFactory.equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier()));
