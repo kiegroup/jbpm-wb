@@ -80,7 +80,6 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
 
         presenter = new ProcessDashboard(view,
                 processBreadCrumb,
-                dashboardFactory,
                 clientServices,
                 displayerLocator,
                 displayerCoordinator,
@@ -284,6 +283,34 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
     }
 
     @Test
+    public void testRedrawSelectedMetric() {
+
+        MetricDisplayer activeMetric = presenter.getActiveMetric();
+        activeMetric.filterApply();
+
+        reset(view);
+        reset(displayerListener);
+        reset(presenter.getTotalMetric().getView());
+        reset(presenter.getActiveMetric().getView());
+        reset(presenter.getSuspendedMetric().getView());
+        reset(presenter.getCompletedMetric().getView());
+        reset(presenter.getPendingMetric().getView());
+        presenter.getProcessesByType().filterUpdate(COLUMN_PROCESS_NAME, 1);
+
+        verify(displayerListener).onRedraw(presenter.getTotalMetric());
+        verify(displayerListener).onRedraw(presenter.getActiveMetric());
+        verify(displayerListener).onRedraw(presenter.getSuspendedMetric());
+        verify(displayerListener).onRedraw(presenter.getCompletedMetric());
+        verify(displayerListener).onRedraw(presenter.getPendingMetric());
+
+        verify(presenter.getTotalMetric().getView()).setHtml(anyString());
+        verify(presenter.getActiveMetric().getView()).setHtml(anyString());
+        verify(presenter.getSuspendedMetric().getView()).setHtml(anyString());
+        verify(presenter.getCompletedMetric().getView()).setHtml(anyString());
+        verify(presenter.getPendingMetric().getView()).setHtml(anyString());
+    }
+
+    @Test
     public void testResetProcess() {
         reset(view);
         presenter.resetCurrentProcess();
@@ -345,10 +372,11 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         MetricDisplayer completedMetric = presenter.getCompletedMetric();
         activeMetric.filterApply();
 
-        reset(displayerListener, view);
+        reset(displayerListener, view, activeMetric.getView());
         completedMetric.filterApply();
 
         assertEquals(presenter.getSelectedMetric(), completedMetric);
+        verify(activeMetric.getView()).setHtml(anyString());
         verify(displayerListener).onFilterReset(eq(activeMetric), any(DataSetFilter.class));
         verify(displayerListener).onFilterEnabled(eq(completedMetric), any(DataSetFilter.class));
 
@@ -370,8 +398,6 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testHeaderText(){
-        verify(view).setHeaderText(i18n.allProcesses());
-
         final String process = "Process Test";
 
         verifyMetricHeaderText(process, presenter.getTotalMetric(), i18n.selectedProcessStatusHeader("", process));

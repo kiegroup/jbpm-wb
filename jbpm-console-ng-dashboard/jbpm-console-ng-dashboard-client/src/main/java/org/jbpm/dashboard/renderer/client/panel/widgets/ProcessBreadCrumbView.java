@@ -16,53 +16,47 @@
  */
 package org.jbpm.dashboard.renderer.client.panel.widgets;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.AnchorListItem;
-import org.gwtbootstrap3.client.ui.ListItem;
+import javax.inject.Inject;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.Composite;
+import org.gwtbootstrap3.client.ui.ListItem;
+import org.jboss.errai.common.client.dom.Anchor;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+
+@Templated
 public class ProcessBreadCrumbView extends Composite
         implements ProcessBreadCrumb.View {
 
-    interface Binder extends UiBinder<Widget,ProcessBreadCrumbView> {}
-    private static Binder uiBinder = GWT.create(Binder.class);
+    @Inject
+    @DataField
+    protected Anchor rootAnchor;
 
-    @UiField
-    protected Panel rootPanel;
+    @Inject
+    @DataField
+    protected ListItem processItem;
 
-    @UiField
-    protected AnchorListItem rootLink;
-
-    @UiField
-    protected ListItem processLabel;
-
-    public ProcessBreadCrumbView() {
-        initWidget(uiBinder.createAndBindUi(this));
-    }
+    ProcessBreadCrumb presenter;
 
     @Override
     public void init(final ProcessBreadCrumb presenter) {
-        rootLink.addClickHandler(new ClickHandler() {
-            @Override public void onClick(ClickEvent clickEvent) {
-                presenter.gotoRoot();
-            }
-        });
+        this.presenter = presenter;
     }
 
     @Override
     public void setRootTitle(String text) {
-        rootLink.setText(text);
+        rootAnchor.setTextContent(text);
     }
 
     @Override
     public void setProcess(String name) {
-        processLabel.clear();
-        processLabel.setText(name);
+        processItem.setText(name);
+    }
+
+    @EventHandler("rootAnchor")
+    public void onRootClick(ClickEvent e) {
+        presenter.gotoRoot();
     }
 }

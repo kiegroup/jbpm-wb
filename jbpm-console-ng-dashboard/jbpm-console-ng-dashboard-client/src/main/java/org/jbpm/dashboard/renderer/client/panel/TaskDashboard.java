@@ -104,9 +104,9 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
     protected AbstractDisplayer tasksByStatus;
     protected TableDisplayer tasksTable;
 
-    protected List<Displayer> metricsGroup = new ArrayList<Displayer>();
-    protected List<Displayer> metricsGroupOptional = new ArrayList<Displayer>();
-    protected List<Displayer> chartsGroup = new ArrayList<Displayer>();
+    protected List<Displayer> metricsGroup = new ArrayList<>();
+    protected List<Displayer> metricsGroupOptional = new ArrayList<>();
+    protected List<Displayer> chartsGroup = new ArrayList<>();
     protected String totalTasksTitle;
 
     private Caller<ProcessRuntimeDataService> processRuntimeDataService;
@@ -115,7 +115,6 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
     @Inject
     public TaskDashboard(final View view,
                          final ProcessBreadCrumb processBreadCrumb,
-                         final DashboardFactory dashboardFactory,
                          final DataSetClientServices dataSetClientServices,
                          final DisplayerLocator displayerLocator,
                          final DisplayerCoordinator displayerCoordinator,
@@ -125,7 +124,7 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
                          final ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder,
                          final Caller<ProcessRuntimeDataService> processRuntimeDataService,
                          final Event<NotificationEvent> notificationEvent) {
-        super(dashboardFactory, dataSetClientServices, placeManager, view.getI18nService(), processBreadCrumb, displayerLocator, displayerCoordinator, serverTemplateSelectorMenuBuilder);
+        super(dataSetClientServices, placeManager, view.getI18nService(), processBreadCrumb, displayerLocator, displayerCoordinator, serverTemplateSelectorMenuBuilder);
 
         this.view = view;
         this.taskSelectionEvent = taskSelectionEvent;
@@ -138,11 +137,7 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
 
     protected void init() {
 
-        processBreadCrumb.setOnRootSelectedCommand(new Command() {
-            public void execute() {
-                resetProcessBreadcrumb();
-            }
-        });
+        processBreadCrumb.setOnRootSelectedCommand(this::resetProcessBreadcrumb);
 
         view.showLoading();
 
@@ -168,6 +163,9 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
                 tasksByRunningTime = createDisplayer(DashboardKpis.tasksByRunningTime(i18n)),
                 tasksByStatus = createDisplayer(DashboardKpis.tasksByStatus(i18n)),
                 tasksTable = createTableDisplayer(DashboardKpis.tasksTable(i18n), COLUMN_TASK_DURATION, new DurationFormatter(COLUMN_TASK_CREATED_DATE, COLUMN_TASK_END_DATE)));
+
+        totalMetric.filterApply();
+        selectedMetric = totalMetric;
 
         metricsGroup.add(totalMetric);
         metricsGroup.add(readyMetric);
@@ -200,7 +198,6 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
                 new Command() {
                     public void execute() {
                         view.hideLoading();
-                        totalMetric.filterApply();
                     }
                 },
                 // On Failure
@@ -393,7 +390,7 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
         @Override
         public void onDraw(Displayer displayer) {
             if (totalMetric == displayer) {
-                // The dashboard can be considered empty if the total task count is 0;
+                // The dashboard can be considered empty if the total task count is 0
                 DataSet ds = displayer.getDataSetHandler().getLastDataSet();
                 if (ds.getRowCount() == 0) {
                     showBlankDashboard();
