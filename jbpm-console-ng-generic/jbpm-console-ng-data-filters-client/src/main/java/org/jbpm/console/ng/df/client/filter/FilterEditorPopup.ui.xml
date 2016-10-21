@@ -19,7 +19,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:df="urn:import:org.jbpm.console.ng.df.client.popup.filter"
+             xmlns:df="urn:import:org.dashbuilder.displayer.client.widgets.filter"
              xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
     <ui:with field="i18n" type="org.jbpm.console.ng.df.client.i18n.FiltersConstants"/>
@@ -62,7 +62,7 @@
                                 </b:FieldSet>
                             </b:Form>
                         </b:TabPane>
-                        <b:TabPane ui:field="filtertabPane">
+                        <b:TabPane ui:field="filtertabPane" addStyleNames="{style.tab}">
                             <b:FieldSet>
                                 <g:FlowPanel ui:field="filtersControlPanel" visible="true">
                                     <df:DataSetFilterEditor ui:field="filterEditor"/>

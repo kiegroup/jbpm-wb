@@ -57,12 +57,8 @@ public class DataSetEditorManager extends Composite  {
         clone.setKey( tableSettings.getKey() );
         clone.setDataSet( tableSettings.getDataSet());
         tableDisplayerEditorPopup.setTitle( popupTitle );
-        tableDisplayerEditorPopup.show(clone, new FilterEditorPopup.Listener() {
-
-            public void onClose( FilterEditorPopup editor ) {
-            }
-
-            public void onSave( FilterEditorPopup editor ) {
+        tableDisplayerEditorPopup.show(clone,
+                (FilterEditorPopup editor ) -> {
                 FilterSettings modifiedSettings = editor.getTableDisplayerSettings();
                 HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
 
@@ -73,8 +69,7 @@ public class DataSetEditorManager extends Composite  {
 
                 filterPagedTable.saveNewTabSettings( modifiedSettings.getKey(),tabSettingsValues );
                 drawCommand.execute();
-            }
-        } );
+            } );
     }
 
     public String getTableSettingsToStr(FilterSettings tableSettings){
@@ -84,7 +79,4 @@ public class DataSetEditorManager extends Composite  {
     public FilterSettings getStrToTableSettings(String json){
         return tableSettingsJSONMarshaller.fromJsonString( json );
     }
-
-
-
 }
