@@ -21,8 +21,6 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Widget;
@@ -35,6 +33,7 @@ import org.dashbuilder.dataset.client.DataSetClientServices;
 import org.dashbuilder.dataset.client.DataSetMetadataCallback;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.displayer.client.widgets.filter.DataSetFilterEditor;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.TabListItem;
@@ -43,15 +42,14 @@ import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
-import org.jboss.errai.common.client.api.RemoteCallback;
+
 import org.jbpm.console.ng.df.client.i18n.FiltersConstants;
-import org.jbpm.console.ng.df.client.popup.filter.DataSetFilterEditor;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
-import org.uberfire.mvp.Command;
+
 
 @Dependent
-public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.Listener {
+public class FilterEditorPopup extends BaseModal {
 
     interface Binder extends UiBinder<Widget, FilterEditorPopup> {
 
@@ -60,9 +58,6 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
     private static Binder uiBinder = GWT.create( Binder.class );
 
     public interface Listener {
-
-        void onClose( FilterEditorPopup editor );
-
         void onSave( FilterEditorPopup editor );
     }
 
@@ -102,7 +97,7 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
     @UiField
     public FormGroup errorMessagesGroup;
 
-    @UiField
+    @UiField(provided = true)
     DataSetFilterEditor filterEditor;
 
     protected FilterSettings tableDisplayerSettings = null;
@@ -113,42 +108,21 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
     DataSetClientServices dataSetClientServices;
 
     @Inject
-    public FilterEditorPopup(DataSetClientServices dataSetClientServices) {
+    public FilterEditorPopup(DataSetClientServices dataSetClientServices, DataSetFilterEditor filterEditor) {
+        this.filterEditor = filterEditor;
         this.dataSetClientServices = dataSetClientServices;
         setBody( uiBinder.createAndBindUi( FilterEditorPopup.this ) );
 
         basictab.setDataTargetWidget( basictabPane );
         filtertab.setDataTargetWidget( filtertabPane );
 
-        tableNameText.addChangeHandler( new ChangeHandler() {
-            @Override
-            public void onChange( ChangeEvent changeEvent ) {
-                validateForm();
-            }
-        } );
-        tableDescText.addChangeHandler( new ChangeHandler() {
-            @Override
-            public void onChange( ChangeEvent changeEvent ) {
-                validateForm();
-            }
-        } );
+        tableNameText.addChangeHandler( (Void) -> {validateForm();});
+
+        tableDescText.addChangeHandler( (Void) -> {validateForm();});
+
         final GenericModalFooter footer = new GenericModalFooter();
-        footer.addButton( FiltersConstants.INSTANCE.ok(),
-                          new Command() {
-                              @Override
-                              public void execute() {
-                                  ok();
-                              }
-                          }, IconType.PLUS,
-                          ButtonType.PRIMARY );
-        footer.addButton( FiltersConstants.INSTANCE.cancel(),
-                          new Command() {
-                              @Override
-                              public void execute() {
-                                  cancel();
-                              }
-                          }, IconType.ERASER,
-                          ButtonType.DEFAULT );
+        footer.addButton( FiltersConstants.INSTANCE.ok(), () -> {ok();}, IconType.PLUS, ButtonType.PRIMARY );
+        footer.addButton( FiltersConstants.INSTANCE.cancel(), () -> { hide();}, IconType.ERASER, ButtonType.DEFAULT );
 
         add( footer );
         setWidth( 500 + "px" );
@@ -163,7 +137,7 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
         filtertabPane.setActive( false );
         basictab.showTab();
 
-        this.editorListener = editorListener;
+        setEditorListener( editorListener);
         tableDisplayerSettings = settings;
         if ( settings.getDataSet() == null && settings.getDataSetLookup() != null ) {
             fetchDataSetLookup();
@@ -172,19 +146,14 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
         super.show();
     }
 
-    void cancel() {
-        hide();
-        editorListener.onClose( this );
-    }
-
-    void ok() {
+    protected void ok() {
         if ( validateForm() ) {
             hide();
             this.tableDisplayerSettings.setTableName( tableNameText.getValue() );
             this.tableDisplayerSettings.setTableDescription( tableDescText.getValue() );
+            filterChanged(getDatasetFilter());
             editorListener.onSave( this );
-
-        }
+       }
     }
 
     private void clean() {
@@ -193,7 +162,7 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
         clearErrorMessages();
     }
 
-    private boolean validateForm() {
+    protected boolean validateForm() {
         boolean valid = true;
         clearErrorMessages();
 
@@ -267,18 +236,14 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
         this.dataSetLookup = tableDisplayerSettings.getDataSetLookup();
         this.metadata = metadata;
 
-        dataSetClientServices.getPublicDataSetDefs( new RemoteCallback<List<DataSetDef>>() {
-            public void callback( List<DataSetDef> dataSetDefs ) {
-                updateFilterControls();
-            }
+        dataSetClientServices.getPublicDataSetDefs( (List<DataSetDef> dataset) -> {
+           updateFilterControls();
         } );
 
     }
 
     private void updateFilterControls() {
-        filterEditor.init( metadata,
-                           dataSetLookup.getFirstFilterOp(),
-                           this );
+        filterEditor.init( dataSetLookup.getFirstFilterOp(), metadata);
     }
 
     public void filterChanged( DataSetFilter filterOp ) {
@@ -297,8 +262,16 @@ public class FilterEditorPopup extends BaseModal implements DataSetFilterEditor.
         return tableDisplayerSettings;
     }
 
+    public DataSetFilter getDatasetFilter() {
+        return filterEditor.getFilter();
+    }
+
     public void setTableDisplayerSettings( FilterSettings tableDisplayerSettings ) {
         this.tableDisplayerSettings = tableDisplayerSettings;
+    }
+
+    protected void setEditorListener(FilterEditorPopup.Listener editorListener){
+        this.editorListener =editorListener;
     }
 }
 
