@@ -101,6 +101,11 @@
       <artifactId>kie-server-common</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+
     <!-- Test deps -->
     <dependency>
       <groupId>ch.qos.logback</groupId>

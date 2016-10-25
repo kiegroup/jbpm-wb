@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.Date;
 
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.console.ng.cm.client.AbstractCaseInstancePresenterTest;
+import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenterTest;
 
 import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
@@ -75,7 +75,7 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
     @Test
     public void testLoadCaseInstance() {
         final CaseInstanceSummary cis = newCaseInstanceSummary();
-        final CaseCommentSummary caseComment = new CaseCommentSummary(cis.getCaseId(), commentId, author,text, addedAt);
+        final CaseCommentSummary caseComment = CaseCommentSummary.builder().id(commentId).author(author).text(text).addedAt(addedAt).build();
 
         when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId(),0,10)).thenReturn(
                 Collections.singletonList(caseComment));
@@ -99,7 +99,7 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
     @Test
     public void testAddCaseComment(){
         final CaseInstanceSummary cis = newCaseInstanceSummary();
-        final CaseCommentSummary caseComment = new CaseCommentSummary(cis.getCaseId(), commentId, author, text, addedAt);
+        final CaseCommentSummary caseComment = CaseCommentSummary.builder().id(commentId).author(author).text(text).addedAt(addedAt).build();
 
         setupCaseInstance(cis, serverTemplateId);
         presenter.addCaseComment(caseComment);
@@ -129,7 +129,7 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
     @Test
     public void testDeleteComment() {
         final CaseInstanceSummary cis = newCaseInstanceSummary();
-        final CaseCommentSummary caseComment = new CaseCommentSummary(cis.getCaseId(), commentId, author,text, addedAt);
+        final CaseCommentSummary caseComment = CaseCommentSummary.builder().id(commentId).author(author).text(text).addedAt(addedAt).build();
 
         when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId(),0,10)).thenReturn(
                 Collections.singletonList(caseComment));

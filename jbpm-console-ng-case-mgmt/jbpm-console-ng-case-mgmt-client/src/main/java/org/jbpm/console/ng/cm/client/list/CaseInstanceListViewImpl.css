@@ -1,0 +1,17 @@
+.list-view-pf-view {
+    background: #ededed none repeat scroll 0 0;
+    border: medium none;
+    margin-top: 30px;
+}
+
+.toolbar-pf-actions {
+    margin-bottom: 10px;
+}
+
+.form-group.toolbar-pf-filter {
+    padding-right: 0px;
+}
+
+.toolbar-pf-filter label {
+    margin-top: 3px;
+}

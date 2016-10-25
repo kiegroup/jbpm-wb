@@ -1,0 +1,15 @@
+.list-view-pf .list-group-item-heading:hover {
+    cursor: hand;
+}
+
+.list-view-pf .list-group-item-text-status {
+    -ms-flex: 1 0 10em;
+    flex: 1 0 10em;
+    width: 10em;
+}
+
+.list-view-pf .list-group-item-text-case {
+    -ms-flex: 1 0 auto;
+    flex: 1 0 auto;
+    width: calc(70%);
+}

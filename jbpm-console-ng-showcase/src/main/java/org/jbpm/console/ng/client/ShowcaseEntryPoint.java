@@ -30,7 +30,6 @@ import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.client.i18n.Constants;
-import org.jbpm.console.ng.cm.client.perspectives.CaseInstanceListPerspective;
 import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
 import org.kie.workbench.common.screens.search.client.menu.SearchMenuBuilder;
 import org.kie.workbench.common.services.shared.service.PlaceManagerActivityService;
@@ -81,7 +80,6 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
                 .newTopLevelMenu( constants.Home() ).place( new DefaultPlaceRequest( defaultPerspective.getIdentifier() ) ).endMenu()
                 .newTopLevelMenu( constants.Authoring() ).withItems( getAuthoringViews() ).endMenu()
                 .newTopLevelMenu( constants.Deploy() ).withItems( getDeploymentViews() ).endMenu()
-                .newTopLevelMenu( constants.Case_Management() ).withItems( getCaseManagementViews() ).endMenu()
                 .newTopLevelMenu( constants.Process_Management() ).withItems( getProcessManagementViews() ).endMenu()
                 .newTopLevelMenu( constants.Work() ).withItems( getWorkViews() ).endMenu()
                 .newTopLevelMenu( constants.Dashboards() ).withItems( getDashboardsViews() ).endMenu()
@@ -102,14 +100,6 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
         final List<MenuItem> result = new ArrayList<>( 1 );
 
         result.add( MenuFactory.newSimpleItem( constants.Process_Authoring() ).perspective( constants.Authoring() ).endMenu().build().getItems().get( 0 ) );
-
-        return result;
-    }
-
-    protected List<? extends MenuItem> getCaseManagementViews() {
-        final List<MenuItem> result = new ArrayList<>( 1 );
-
-        result.add( MenuFactory.newSimpleItem( constants.Cases() ).perspective( CaseInstanceListPerspective.PERSPECTIVE_ID ).endMenu().build().getItems().get( 0 ) );
 
         return result;
     }
@@ -135,7 +125,7 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
     }
 
     protected List<? extends MenuItem> getDeploymentViews() {
-        final List<MenuItem> result = new ArrayList<>( 3 );
+        final List<MenuItem> result = new ArrayList<>( 2 );
 
         result.add( MenuFactory.newSimpleItem( constants.Execution_Servers() ).place( new DefaultPlaceRequest( "ServerManagementPerspective" ) ).endMenu().build().getItems().get( 0 ) );
         result.add( MenuFactory.newSimpleItem( constants.Jobs() ).perspective( "Jobs" ).endMenu().build().getItems().get( 0 ) );

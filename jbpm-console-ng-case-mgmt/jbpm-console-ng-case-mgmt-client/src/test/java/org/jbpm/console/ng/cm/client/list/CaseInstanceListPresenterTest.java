@@ -16,18 +16,15 @@
 
 package org.jbpm.console.ng.cm.client.list;
 
-import java.util.Arrays;
+import java.util.List;
 
-import com.google.gwt.view.client.Range;
+import com.google.common.collect.Lists;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.cm.client.overview.CaseOverviewPresenter;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
-import org.jbpm.console.ng.cm.client.events.CaseCancelEvent;
-import org.jbpm.console.ng.cm.client.events.CaseDestroyEvent;
 import org.jbpm.console.ng.cm.service.CaseManagementService;
-import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
-import org.jbpm.console.ng.gc.client.menu.ServerTemplateSelectorMenuBuilder;
+import org.jbpm.console.ng.cm.util.CaseInstanceSearchRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +33,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mocks.CallerMock;
-import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.junit.Assert.*;
@@ -51,19 +47,7 @@ public class CaseInstanceListPresenterTest {
     Caller<CaseManagementService> caseService;
 
     @Mock
-    ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
-
-    @Mock
     CaseInstanceListPresenter.CaseInstanceListView view;
-
-    @Mock
-    ExtendedPagedTable<CaseInstanceSummary> pagedTable;
-
-    @Mock
-    EventSourceMock<CaseCancelEvent> caseCancelEvent;
-
-    @Mock
-    EventSourceMock<CaseDestroyEvent> caseDestroyEvent;
 
     @Mock
     PlaceManager placeManager;
@@ -71,71 +55,64 @@ public class CaseInstanceListPresenterTest {
     @InjectMocks
     CaseInstanceListPresenter presenter;
 
+    List<CaseInstanceSummary> caseInstanceSummaryList = Lists.newArrayList(createCaseInstance());
+
+    private static CaseInstanceSummary createCaseInstance() {
+        return CaseInstanceSummary.builder()
+                .caseId("caseId")
+                .description("description")
+                .status(1)
+                .containerId("containerId")
+                .build();
+    }
+
     @Before
     public void init() {
         caseService = new CallerMock<>(caseManagementService);
+        when(caseManagementService.getCaseInstances(any(CaseInstanceSearchRequest.class))).thenReturn(caseInstanceSummaryList);
         presenter.setCaseService(caseService);
-        presenter.setCaseCancelEvent(caseCancelEvent);
-        presenter.setCaseDestroyEvent(caseDestroyEvent);
-        when(view.getListGrid()).thenReturn(pagedTable);
+        when(view.getCaseInstanceSearchRequest()).thenReturn(new CaseInstanceSearchRequest());
     }
 
     @Test
     public void testCancelCaseInstance() {
-        final String serverTemplateId = "serverTemplateId";
-        when(serverTemplateSelectorMenuBuilder.getSelectedServerTemplate()).thenReturn(serverTemplateId);
+        final CaseInstanceSummary cis = caseInstanceSummaryList.remove(0);
 
-        presenter.onOpen();
-        final CaseInstanceSummary cis = new CaseInstanceSummary("caseId", "description", 0, "containerId");
         presenter.cancelCaseInstance(cis);
 
-        verify(caseManagementService).cancelCaseInstance(serverTemplateId, cis.getContainerId(), cis.getCaseId());
-        final ArgumentCaptor<CaseCancelEvent> captor = ArgumentCaptor.forClass(CaseCancelEvent.class);
-        verify(caseCancelEvent).fire(captor.capture());
-        assertEquals(cis.getCaseId(), captor.getValue().getCaseId());
-        verify(pagedTable).setVisibleRangeAndClearData(any(Range.class), anyBoolean());
+        verify(caseManagementService).cancelCaseInstance(null, cis.getContainerId(), cis.getCaseId());
+        verify(caseManagementService).getCaseInstances(any(CaseInstanceSearchRequest.class));
+        final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        verify(view).setCaseInstanceList(captor.capture());
+        assertEquals(caseInstanceSummaryList.size(), captor.getValue().size());
     }
 
     @Test
     public void testDestroyCaseInstance() {
-        final String serverTemplateId = "serverTemplateId";
-        when(serverTemplateSelectorMenuBuilder.getSelectedServerTemplate()).thenReturn(serverTemplateId);
+        final CaseInstanceSummary cis = caseInstanceSummaryList.remove(0);
 
-        presenter.onOpen();
-        final CaseInstanceSummary cis = new CaseInstanceSummary("caseId", "description", 0, "containerId");
         presenter.destroyCaseInstance(cis);
 
-        verify(caseManagementService).destroyCaseInstance(serverTemplateId, cis.getContainerId(), cis.getCaseId());
-        final ArgumentCaptor<CaseDestroyEvent> captor = ArgumentCaptor.forClass(CaseDestroyEvent.class);
-        verify(caseDestroyEvent).fire(captor.capture());
-        assertEquals(cis.getCaseId(), captor.getValue().getCaseId());
-        verify(pagedTable).setVisibleRangeAndClearData(any(Range.class), anyBoolean());
+        verify(caseManagementService).destroyCaseInstance(null, cis.getContainerId(), cis.getCaseId());
+        verify(caseManagementService).getCaseInstances(any(CaseInstanceSearchRequest.class));
+        final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        verify(view).setCaseInstanceList(captor.capture());
+        assertEquals(caseInstanceSummaryList.size(), captor.getValue().size());
     }
 
     @Test
-    public void testGetData() {
-        final String serverTemplateId = "serverTemplateId";
-        when(serverTemplateSelectorMenuBuilder.getSelectedServerTemplate()).thenReturn(serverTemplateId);
+    public void testRefreshData() {
+        presenter.refreshData();
 
-        presenter.onOpen();
-
-        final CaseInstanceSummary cis = new CaseInstanceSummary("caseId", "description", 0, "containerId");
-        when(caseManagementService.getCaseInstances(serverTemplateId, 0, 10)).thenReturn(Arrays.asList(cis));
-        final Range range = new Range(0, 10);
-        presenter.getData(range);
-
-        verify(caseManagementService).getCaseInstances(serverTemplateId, 0, 10);
-        verify(view).hideBusyIndicator();
+        verify(caseManagementService).getCaseInstances(view.getCaseInstanceSearchRequest());
+        final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        verify(view).setCaseInstanceList(captor.capture());
+        assertEquals(caseInstanceSummaryList.size(), captor.getValue().size());
     }
 
     @Test
-    public void testSelectCaseInstance(){
-        final String serverTemplateId = "serverTemplateId";
-        when(serverTemplateSelectorMenuBuilder.getSelectedServerTemplate()).thenReturn(serverTemplateId);
-
-        presenter.onOpen();
-
-        final CaseInstanceSummary cis = new CaseInstanceSummary("caseId", "description", 0, "containerId");
+    public void testSelectCaseInstance() {
+        final CaseInstanceSummary cis = createCaseInstance();
         presenter.selectCaseInstance(cis);
 
         final ArgumentCaptor<DefaultPlaceRequest> captor = ArgumentCaptor.forClass(DefaultPlaceRequest.class);
@@ -143,7 +120,7 @@ public class CaseInstanceListPresenterTest {
 
         final DefaultPlaceRequest dpr = captor.getValue();
         assertNotNull(dpr);
-        assertEquals(serverTemplateId, dpr.getParameter(CaseOverviewPresenter.PARAMETER_SERVER_TEMPLATE_ID, null));
+        assertEquals("", dpr.getParameter(CaseOverviewPresenter.PARAMETER_SERVER_TEMPLATE_ID, null));
         assertEquals(cis.getContainerId(), dpr.getParameter(CaseOverviewPresenter.PARAMETER_CONTAINER_ID, null));
         assertEquals(cis.getCaseId(), dpr.getParameter(CaseOverviewPresenter.PARAMETER_CASE_ID, null));
     }

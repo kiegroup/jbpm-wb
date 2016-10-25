@@ -82,15 +82,14 @@ public class NewCaseInstancePresenterTest {
 
     @Test
     public void testCreateCaseInstance() {
-        final String serverTemplateId = "serverTemplateId";
-        final CaseDefinitionSummary cds = new CaseDefinitionSummary("id", "name", "containerId");
-        when(caseManagementService.getCaseDefinitions(serverTemplateId, 0, Integer.MAX_VALUE)).thenReturn(Arrays.asList(cds));
+        final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().id("id").name("name").containerId("containerId").build();
+        when(caseManagementService.getCaseDefinitions()).thenReturn(Arrays.asList(cds));
 
-        presenter.show(serverTemplateId);
+        presenter.show();
 
         verify(view).clearCaseDefinitions();
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
-        verify(view).addCaseDefinitions(captor.capture());
+        verify(view).setCaseDefinitions(captor.capture());
         final List list = captor.getValue();
         assertEquals(1, list.size());
         assertEquals(cds.getName(), list.get(0));
@@ -98,7 +97,7 @@ public class NewCaseInstancePresenterTest {
 
         presenter.createCaseInstance(cds.getName());
 
-        verify(caseManagementService).startCaseInstance(serverTemplateId, cds.getContainerId(), cds.getCaseDefinitionId());
+        verify(caseManagementService).startCaseInstance(null, cds.getContainerId(), cds.getId());
         verify(view).hide();
         verify(notificationEvent).fire(any(NotificationEvent.class));
         verify(caseCreatedEvent).fire(any(CaseCreatedEvent.class));

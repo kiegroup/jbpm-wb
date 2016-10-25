@@ -22,7 +22,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.ui.client.local.spi.TranslationService;
-import org.jbpm.console.ng.cm.client.AbstractCaseInstancePresenter;
+import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -96,6 +96,9 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter {
     protected Set<String> getRolesAvailableForAssignment(final CaseInstanceSummary cis, final CaseDefinitionSummary cds) {
         return cds.getRoles().keySet().stream().filter(
                 role -> {
+                    if("owner".equals(role)){
+                        return false;
+                    }
                     final Integer roleCardinality = cds.getRoles().get(role);
                     if (roleCardinality == -1) {
                         return true;

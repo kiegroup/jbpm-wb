@@ -33,6 +33,7 @@
     <module>jbpm-console-ng-case-mgmt-api</module>
     <module>jbpm-console-ng-case-mgmt-client</module>
     <module>jbpm-console-ng-case-mgmt-backend</module>
+    <module>jbpm-console-ng-case-mgmt-showcase</module>
   </modules>
 
 </project>

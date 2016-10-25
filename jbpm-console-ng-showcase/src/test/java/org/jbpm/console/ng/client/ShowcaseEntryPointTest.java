@@ -19,8 +19,6 @@ package org.jbpm.console.ng.client;
 import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.guvnor.common.services.shared.config.AppConfigService;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -127,14 +125,6 @@ public class ShowcaseEntryPointTest {
 
         assertEquals( 1, authoringMenuItems.size() );
         assertEquals( showcaseEntryPoint.constants.Process_Authoring(), authoringMenuItems.get( 0 ).getCaption() );
-    }
-
-    @Test
-    public void getCaseManagementViewsTest() {
-        List<? extends MenuItem> caseManagementMenuItems = showcaseEntryPoint.getCaseManagementViews();
-
-        assertEquals( 1, caseManagementMenuItems.size() );
-        assertEquals( showcaseEntryPoint.constants.Cases(), caseManagementMenuItems.get( 0 ).getCaption() );
     }
 
     @Test

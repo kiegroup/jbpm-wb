@@ -1,11 +1,29 @@
-<form class="horizontal">
-    <fieldset>
-        <div class="form-group" data-field="definition-name-group">
-            <label class="control-label col-md-3" data-field="definition-name-label" data-i18n-key="CaseDefinition"></label>
-            <div class="col-md-9">
-                <select data-field="definition-name-select"></select>
-                <span data-field="definition-name-help" class="help-block"></span>
+<div class="modal fade" data-field="modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-field="close" data-dismiss="modal" aria-hidden="true">
+                    <span class="pficon pficon-close"></span>
+                </button>
+                <h4 class="modal-title" data-i18n-key="NewCaseInstance"></h4>
+            </div>
+            <div class="modal-body">
+                <form class="horizontal">
+                    <fieldset>
+                        <div class="form-group" data-field="definition-name-group">
+                            <label class="control-label col-md-3" data-field="definition-name-label" data-i18n-key="CaseDefinition"></label>
+                            <div class="col-md-9">
+                                <select class="selectpicker form-control" data-field="definition-name-select"></select>
+                                <span data-field="definition-name-help" class="help-block"></span>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-field="cancel" data-i18n-key="Cancel" data-dismiss="modal"></button>
+                <button type="button" class="btn btn-primary" data-field="create" data-i18n-key="Create"></button>
             </div>
         </div>
-    </fieldset>
-</form>
+    </div>
+</div>

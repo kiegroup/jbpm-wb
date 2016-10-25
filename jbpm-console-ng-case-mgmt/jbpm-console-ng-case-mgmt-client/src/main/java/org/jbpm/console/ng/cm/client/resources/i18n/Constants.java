@@ -42,31 +42,16 @@ public interface Constants {
     String ACTIONS = "Actions";
 
     @TranslationKey(defaultValue = "")
-    String NO_CASES_FOUND = "NoCasesFound";
-
-    @TranslationKey(defaultValue = "")
     String CASES_LIST = "CasesList";
 
     @TranslationKey(defaultValue = "")
     String CREATE = "Create";
 
     @TranslationKey(defaultValue = "")
-    String NEW_CASE_INSTANCE = "NewCaseInstance";
-
-    @TranslationKey(defaultValue = "")
     String NEW_ROLE_ASSIGNMENT = "NewRoleAssignment";
 
     @TranslationKey(defaultValue = "")
     String CASE_CREATED_WITH_ID = "CaseCreatedWithId";
-
-    @TranslationKey(defaultValue = "")
-    String CLOSE = "Close";
-
-    @TranslationKey(defaultValue = "")
-    String SELECT_SERVER_TEMPLATE = "SelectServerTemplate";
-
-    @TranslationKey(defaultValue = "")
-    String COMPLETE = "Complete";
 
     @TranslationKey(defaultValue = "")
     String ACTIVE = "Active";
@@ -76,6 +61,9 @@ public interface Constants {
 
     @TranslationKey(defaultValue = "")
     String PLEASE_SELECT_CASE_DEFINITION = "PleaseSelectCaseDefinition";
+
+    @TranslationKey(defaultValue = "")
+    String NO_CASE_DEFINITION = "NoCaseDefinition";
 
     @TranslationKey(defaultValue = "")
     String PLEASE_SELECT_ROLE = "PleaseSelectRole";

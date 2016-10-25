@@ -17,129 +17,108 @@
 package org.jbpm.console.ng.cm.client.newcase;
 
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.Composite;
-import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.constants.ButtonType;
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.client.ui.constants.ValidationState;
-import org.gwtbootstrap3.extras.select.client.ui.Option;
-import org.gwtbootstrap3.extras.select.client.ui.Select;
+import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.MouseEvent;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.ext.widgets.common.client.common.StyleHelper;
-import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
-import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
+import org.jbpm.console.ng.cm.client.util.AbstractView;
+import org.jbpm.console.ng.cm.client.util.FormGroup;
+import org.jbpm.console.ng.cm.client.util.FormLabel;
+import org.jbpm.console.ng.cm.client.util.Modal;
+import org.jbpm.console.ng.cm.client.util.Select;
+import org.jbpm.console.ng.cm.client.util.ValidationState;
 
-import static com.google.common.base.Strings.*;
-import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.*;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.PLEASE_SELECT_CASE_DEFINITION;
 
 @Dependent
 @Templated
-public class NewCaseInstanceViewImpl extends Composite implements NewCaseInstancePresenter.NewCaseInstanceView {
+public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresenter> implements NewCaseInstancePresenter.NewCaseInstanceView {
 
-    private final BaseModal modal = GWT.create(BaseModal.class);
-
+    @Inject
     @DataField("definition-name-group")
-    Element caseDefinitionNameGroup = DOM.createDiv();
+    private FormGroup caseDefinitionNameGroup;
+
+    @Inject
+    @DataField("modal")
+    private Modal modal;
 
     @Inject
     @DataField("definition-name-help")
-    Span definitionNameHelp;
+    private Span definitionNameHelp;
 
+    @Inject
     @DataField("definition-name-select")
-    Select caseTemplatesList = GWT.create(Select.class);
+    private Select caseTemplatesList;
 
     @Inject
     @DataField("definition-name-label")
-    FormLabel caseDefinitionNameLabel;
+    private FormLabel caseDefinitionNameLabel;
 
     @Inject
     private TranslationService translationService;
 
-    private NewCaseInstancePresenter presenter;
-
-    @Override
-    public void init(final NewCaseInstancePresenter presenter) {
-        this.presenter = presenter;
-
-        this.modal.setTitle(translationService.format(NEW_CASE_INSTANCE));
-        this.modal.setBody(this);
-        final GenericModalFooter footer = GWT.create(GenericModalFooter.class);
-        footer.addButton(
-                translationService.format(CREATE),
-                () -> okButton(),
-                IconType.PLUS,
-                ButtonType.PRIMARY
-        );
-        this.modal.add(footer);
-
-        caseDefinitionNameLabel.setShowRequiredIndicator(true);
+    @PostConstruct
+    public void init() {
+        caseDefinitionNameLabel.addRequiredIndicator();
     }
 
     public void show() {
         cleanForm();
-        this.modal.show();
-    }
-
-    private void okButton() {
-        if (validateForm()) {
-            createCaseInstance();
-        }
-    }
-
-    @Override
-    public void clearCaseDefinitions() {
-        caseTemplatesList.clear();
-    }
-
-    @Override
-    public void addCaseDefinitions(final List<String> definitions) {
-        for (final String definition : definitions) {
-            final Option option = GWT.create(Option.class);
-            option.setText(definition);
-            option.setValue(definition);
-            caseTemplatesList.add(option);
-        }
-
-        caseTemplatesList.refresh();
-    }
-
-    public void cleanForm() {
-        caseTemplatesList.setValue("");
-        caseTemplatesList.setFocus(true);
-        clearErrorMessages();
+        modal.show();
     }
 
     @Override
     public void hide() {
         cleanForm();
-        this.modal.hide();
+        modal.hide();
+    }
+
+    @Override
+    public void clearCaseDefinitions() {
+        caseTemplatesList.removeAllOptions();
+    }
+
+    @Override
+    public void setCaseDefinitions(final List<String> definitions) {
+        for (final String definition : definitions) {
+            caseTemplatesList.addOption(definition);
+        }
+        caseTemplatesList.refresh();
+    }
+
+    public void cleanForm() {
+        caseTemplatesList.setValue("");
+        caseTemplatesList.getElement().focus();
+        caseTemplatesList.enable();
+        clearErrorMessages();
     }
 
     private boolean validateForm() {
         clearErrorMessages();
 
         if (isNullOrEmpty(caseTemplatesList.getValue())) {
-            caseTemplatesList.setFocus(true);
+            caseTemplatesList.getElement().focus();
             definitionNameHelp.setTextContent(translationService.format(PLEASE_SELECT_CASE_DEFINITION));
-            setCaseDefinitionNameGroupStyle(ValidationState.ERROR);
+            caseDefinitionNameGroup.setValidationState(ValidationState.ERROR);
             return false;
         } else {
-            setCaseDefinitionNameGroupStyle(ValidationState.SUCCESS);
+            caseDefinitionNameGroup.setValidationState(ValidationState.SUCCESS);
             return true;
         }
     }
 
-    private void setCaseDefinitionNameGroupStyle(final ValidationState error) {
-        StyleHelper.addUniqueEnumStyleName(caseDefinitionNameGroup, ValidationState.class, error);
+    @Override
+    public HTMLElement getElement() {
+        return modal.getElement();
     }
 
     private void createCaseInstance() {
@@ -148,7 +127,24 @@ public class NewCaseInstanceViewImpl extends Composite implements NewCaseInstanc
 
     private void clearErrorMessages() {
         definitionNameHelp.setTextContent("");
-        setCaseDefinitionNameGroupStyle(ValidationState.NONE);
+        caseDefinitionNameGroup.clearValidationState();
+    }
+
+    @EventHandler("create")
+    public void onCreateClick(final @ForEvent("click") MouseEvent event) {
+        if (validateForm()) {
+            createCaseInstance();
+        }
+    }
+
+    @EventHandler("cancel")
+    public void onCancelClick(final @ForEvent("click") MouseEvent event) {
+        hide();
+    }
+
+    @EventHandler("close")
+    public void onCloseClick(final @ForEvent("click") MouseEvent event) {
+        hide();
     }
 
 }

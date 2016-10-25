@@ -16,13 +16,13 @@
 
 package org.jbpm.console.ng.cm.client.roles;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jbpm.console.ng.cm.client.AbstractCaseInstancePresenterTest;
+import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenterTest;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.jbpm.console.ng.cm.model.CaseRoleAssignmentSummary;
@@ -74,14 +74,12 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
     @Test
     public void testLoadCaseInstance() {
         final String serverTemplateId = "serverTemplateId";
-        final CaseInstanceSummary cis = newCaseInstanceSummary();
         final String roleName = "role";
         final String groupName = "group";
         final String userName = "user";
-        final CaseRoleAssignmentSummary cras = new CaseRoleAssignmentSummary(roleName, singletonList(groupName), singletonList(userName));
-        cis.setRoleAssignments(singletonList(cras));
-        final CaseDefinitionSummary cds = new CaseDefinitionSummary();
-        cds.setRoles(singletonMap(roleName, 3));
+        final CaseRoleAssignmentSummary cras = CaseRoleAssignmentSummary.builder().name(roleName).groups(singletonList(groupName)).users(singletonList(userName)).build();
+        final CaseInstanceSummary cis = CaseInstanceSummary.builder().roleAssignments(singletonList(cras)).build();
+        final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().roles(singletonMap(roleName, 3)).build();
         when(caseManagementService.getCaseDefinition(serverTemplateId, cis.getContainerId(), cis.getCaseDefinitionId())).thenReturn(cds);
 
         setupCaseInstance(cis, serverTemplateId);
@@ -101,8 +99,8 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
     }
 
     @Test
-    public void testSetupRoleAssignmentsEmpty(){
-        presenter.setupRoleAssignments(new CaseInstanceSummary());
+    public void testSetupRoleAssignmentsEmpty() {
+        presenter.setupRoleAssignments(CaseInstanceSummary.builder().build());
 
         verify(caseRolesView, never()).addUser(anyString(), anyString());
         verify(caseRolesView, never()).addGroup(anyString(), anyString());
@@ -110,12 +108,11 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
     }
 
     @Test
-    public void testSetupRoleAssignmentsUser(){
+    public void testSetupRoleAssignmentsUser() {
         final String roleName = "role";
         final String userName = "user";
-        final CaseInstanceSummary cis = new CaseInstanceSummary();
-        final CaseRoleAssignmentSummary cras = new CaseRoleAssignmentSummary(roleName, emptyList(), singletonList(userName));
-        cis.setRoleAssignments(singletonList(cras));
+        final CaseRoleAssignmentSummary cras = CaseRoleAssignmentSummary.builder().name(roleName).groups(emptyList()).users(singletonList(userName)).build();
+        final CaseInstanceSummary cis = CaseInstanceSummary.builder().roleAssignments(singletonList(cras)).build();
 
         presenter.setupRoleAssignments(cis);
 
@@ -130,12 +127,12 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
     }
 
     @Test
-    public void testSetupRoleAssignmentsGroup(){
+    public void testSetupRoleAssignmentsGroup() {
         final String roleName = "role";
         final String groupName = "group";
-        final CaseInstanceSummary cis = new CaseInstanceSummary();
-        final CaseRoleAssignmentSummary cras = new CaseRoleAssignmentSummary(roleName, singletonList(groupName), emptyList());
-        cis.setRoleAssignments(singletonList(cras));
+
+        final CaseRoleAssignmentSummary cras = CaseRoleAssignmentSummary.builder().name(roleName).groups(singletonList(groupName)).users(emptyList()).build();
+        final CaseInstanceSummary cis = CaseInstanceSummary.builder().roleAssignments(singletonList(cras)).build();
 
         presenter.setupRoleAssignments(cis);
 
@@ -150,13 +147,10 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
     }
 
     @Test
-    public void testSetupNewRoleAssignmentsEmpty(){
+    public void testSetupNewRoleAssignmentsEmpty() {
         final String caseDefinitionId = "org.jbpm.case";
-        final CaseDefinitionSummary cds = new CaseDefinitionSummary();
-        cds.setRoles(emptyMap());
-        cds.setCaseDefinitionId(caseDefinitionId);
-        final CaseInstanceSummary cis = new CaseInstanceSummary();
-        cis.setCaseDefinitionId(cds.getCaseDefinitionId());
+        final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().id(caseDefinitionId).roles(emptyMap()).build();
+        final CaseInstanceSummary cis = CaseInstanceSummary.builder().caseDefinitionId(cds.getId()).build();
         when(caseManagementService.getCaseDefinition(anyString(), anyString(), eq(caseDefinitionId))).thenReturn(cds);
 
         presenter.setupNewRoleAssignments(cis);
@@ -166,15 +160,11 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
     }
 
     @Test
-    public void testSetupNewRoleAssignments(){
+    public void testSetupNewRoleAssignments() {
         final String caseDefinitionId = "org.jbpm.case";
         final String roleName = "role";
-        final CaseDefinitionSummary cds = new CaseDefinitionSummary();
-        cds.setCaseDefinitionId(caseDefinitionId);
-        cds.setRoles(singletonMap(roleName, 1));
-        final CaseInstanceSummary cis = new CaseInstanceSummary();
-        cis.setCaseDefinitionId(cds.getCaseDefinitionId());
-        cis.setRoleAssignments(emptyList());
+        final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().id(caseDefinitionId).roles(singletonMap(roleName, 1)).build();
+        final CaseInstanceSummary cis = CaseInstanceSummary.builder().caseDefinitionId(cds.getId()).roleAssignments(emptyList()).build();
         when(caseManagementService.getCaseDefinition(anyString(), anyString(), eq(caseDefinitionId))).thenReturn(cds);
 
         presenter.setupNewRoleAssignments(cis);
@@ -196,23 +186,22 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
     }
 
     @Test
-    public void testGetRolesAvailableForAssignment(){
+    public void testGetRolesAvailableForAssignment() {
+        final String caseDefinitionId = "org.jbpm.case";
         final String roleUnlimited = "roleUnlimited";
         final String roleFull = "roleFull";
         final String roleAvailable = "roleAvailable";
-        final CaseDefinitionSummary cds = new CaseDefinitionSummary();
         final Map<String, Integer> roles = new HashMap<>();
         roles.put(roleUnlimited, -1);
         roles.put(roleFull, 2);
         roles.put(roleAvailable, 2);
-        cds.setRoles(roles);
-        final CaseInstanceSummary cis = new CaseInstanceSummary();
-        cis.setCaseDefinitionId(cds.getCaseDefinitionId());
-        final List<CaseRoleAssignmentSummary> roleAssignments = new ArrayList<>();
-        roleAssignments.add(new CaseRoleAssignmentSummary(roleUnlimited, singletonList("group"), singletonList("user")));
-        roleAssignments.add(new CaseRoleAssignmentSummary(roleFull, singletonList("group"), singletonList("user")));
-        roleAssignments.add(new CaseRoleAssignmentSummary(roleAvailable, emptyList(), singletonList("user")));
-        cis.setRoleAssignments(roleAssignments);
+        final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().id(caseDefinitionId).roles(roles).build();
+        final List<CaseRoleAssignmentSummary> roleAssignments = Arrays.asList(
+                CaseRoleAssignmentSummary.builder().name(roleUnlimited).groups(singletonList("group")).users(singletonList("user")).build(),
+                CaseRoleAssignmentSummary.builder().name(roleFull).groups(singletonList("group")).users(singletonList("user")).build(),
+                CaseRoleAssignmentSummary.builder().name(roleAvailable).groups(emptyList()).users(singletonList("user")).build()
+        );
+        final CaseInstanceSummary cis = CaseInstanceSummary.builder().caseDefinitionId(cds.getId()).roleAssignments(roleAssignments).build();
 
         final Set<String> availableRoles = presenter.getRolesAvailableForAssignment(cis, cds);
 

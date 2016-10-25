@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.cm.client;
+package org.jbpm.console.ng.cm.client.util;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
