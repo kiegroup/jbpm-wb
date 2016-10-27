@@ -23,7 +23,7 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.bd.backend.server.VariableHelper;
+import org.jbpm.console.ng.pr.backend.server.model.VariableHelper;
 import org.jbpm.console.ng.bd.integration.AbstractKieServerService;
 import org.jbpm.console.ng.bd.model.ProcessVariableSummary;
 import org.jbpm.console.ng.ga.model.QueryFilter;

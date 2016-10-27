@@ -34,27 +34,7 @@
     <!-- dependencies added because of new illegal transitive dependency check -->
     <dependency>
       <groupId>org.drools</groupId>
-      <artifactId>drools-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.drools</groupId>
       <artifactId>drools-compiler</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-project-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-services-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-structure-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.errai</groupId>
-      <artifactId>errai-bus</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -67,14 +47,6 @@
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-internal</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.ocpsoft.prettytime</groupId>
-      <artifactId>prettytime</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -90,18 +62,6 @@
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-nio2-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-nio2-model</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.uberfire</groupId>
       <artifactId>uberfire-servlet-security</artifactId>
     </dependency>
 
@@ -113,36 +73,6 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-business-domain-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-process-runtime-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-designer-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-m2repo-editor-backend</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-structure-backend</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.kie.workbench.services</groupId>
-      <artifactId>kie-wb-common-services-api</artifactId>
-    </dependency>
-   
-    <dependency>
-      <groupId>org.kie.workbench.services</groupId>
-      <artifactId>kie-wb-common-services-backend</artifactId>
     </dependency>
 
     <!-- kie server dependencies -->
@@ -169,17 +99,6 @@
     <dependency>
       <groupId>org.kie.server</groupId>
       <artifactId>kie-server-common</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-io</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>log4j</artifactId>
-          <groupId>log4j</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <!-- Test deps -->
