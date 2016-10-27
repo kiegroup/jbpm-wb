@@ -23,12 +23,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
+import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.server.config.ConfigGroup;
 import org.guvnor.structure.server.config.ConfigType;
 import org.guvnor.structure.server.config.ConfigurationFactory;
 import org.guvnor.structure.server.config.ConfigurationService;
-import org.jbpm.console.ng.bd.service.AdministrationService;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.kie.workbench.screens.workbench.backend.BaseAppSetup;
 import org.uberfire.commons.services.cdi.ApplicationStarted;
@@ -43,8 +43,6 @@ public class AppSetup extends BaseAppSetup {
     private static final String JBPM_WB_PLAYGROUND_ALIAS = "jbpm-playground";
     private static final String JBPM_WB_PLAYGROUND_ORIGIN = "https://github.com/droolsjbpm/jbpm-playground.git";
 
-    private AdministrationService administrationService;
-
     private Event<ApplicationStarted> applicationStartedEvent;
 
     protected AppSetup() {
@@ -57,21 +55,26 @@ public class AppSetup extends BaseAppSetup {
                      final KieProjectService projectService,
                      final ConfigurationService configurationService,
                      final ConfigurationFactory configurationFactory,
-                     final AdministrationService administrationService,
                      final Event<ApplicationStarted> applicationStartedEvent ) {
         super( ioService, repositoryService, organizationalUnitService, projectService, configurationService, configurationFactory );
-        this.administrationService = administrationService;
         this.applicationStartedEvent = applicationStartedEvent;
     }
 
     @PostConstruct
     public void onStartup() {
         if ( !"false".equalsIgnoreCase( System.getProperty( "org.kie.demo" ) ) ) {
-            administrationService.bootstrapRepository( "demo", JBPM_WB_PLAYGROUND_ALIAS, JBPM_WB_PLAYGROUND_ORIGIN,
-                                                       "", "" );
+            createRepository("demo", JBPM_WB_PLAYGROUND_ALIAS, JBPM_WB_PLAYGROUND_ORIGIN, "", "");
         } else if ( "true".equalsIgnoreCase( System.getProperty( "org.kie.example" ) ) ) {
-            administrationService.bootstrapRepository( "example", "repository1", null, "", "" );
-            administrationService.bootstrapProject( "repository1", "org.kie.example", "project1", "1.0.0-SNAPSHOT" );
+            final Repository repository = createRepository( "repository1", GIT_SCHEME, null, "", "" );
+
+            createOU( repository,
+                    "example",
+                    "" );
+
+            createProject( repository,
+                    "org.kie.example",
+                    "project1",
+                    "1.0.0-SNAPSHOT" );
         }
         
         configurationService.addConfiguration( getGlobalConfiguration() );
