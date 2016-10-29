@@ -34,6 +34,13 @@ Independently from the method you choose, the url for the running Kie Server mus
   *org.kie.server.user*=kieserver
   *org.kie.server.pwd*=kieserver1!
 - Authenticate using the current logged in user
+  To forward the current authenticated user into Kie Server, a new login module should be added to the WildFly instance running the showcase app.
+  Please add this new login module in the security domain *other*.
+  ```
+  <login-module code="org.kie.security.jaas.KieLoginModule" flag="required" module="deployment.jbpm-console-ng-case-mgmt-showcase.war"/>
+  ```
+  When using this mode, users must co-exist in both servers where the showcase app and Kie Server are running in order for the authentication to suceed.
+  To enable this authentication mode, only the Kie Server location system property must be provided.
   Example:
   *org.kie.server.location*=http://localhost:8230/kie-server/services/rest/server
 - Authenticate using a Keyclock token
@@ -46,7 +53,7 @@ Independently from the method you choose, the url for the running Kie Server mus
 
 The development mode allows you to manage Case instances using an in memory database, whithout connecting to a running Kie Server.
 To start the showcase in development mode, please make sure the system property *org.kie.server.location* is not provided.
-In order to create case instances, a list of case definitions is set via JSON format [case_definitions.json](../jbpm-console-ng-case-mgmt-backend/src/main/resources/case_definitions.json).
+In order to create case instances, a list of case definitions is set via JSON format [case_definitions.json](./src/main/resources/case_definitions.json).
 
 ## Deploying to Wildfly 10
 
