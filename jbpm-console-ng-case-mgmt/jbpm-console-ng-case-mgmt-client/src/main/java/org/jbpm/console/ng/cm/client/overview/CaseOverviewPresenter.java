@@ -22,7 +22,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.jboss.errai.ui.client.local.spi.TranslationService;
-import org.jbpm.console.ng.cm.client.AbstractCaseInstancePresenter;
+import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter;
 import org.jbpm.console.ng.cm.client.comments.CaseCommentsPresenter;
 import org.jbpm.console.ng.cm.client.details.CaseDetailsPresenter;
 import org.jbpm.console.ng.cm.client.events.CaseCancelEvent;
@@ -101,13 +101,19 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter {
 
     protected void cancelCaseInstance() {
         caseService.call(
-                e -> caseCancelEvent.fire(new CaseCancelEvent(caseId))
+                e -> {
+                    caseCancelEvent.fire(new CaseCancelEvent(caseId));
+                    backToList();
+                }
         ).cancelCaseInstance(serverTemplateId, containerId, caseId);
     }
 
     protected void destroyCaseInstance() {
         caseService.call(
-                e -> caseDestroyEvent.fire(new CaseDestroyEvent(caseId))
+                e -> {
+                    caseDestroyEvent.fire(new CaseDestroyEvent(caseId));
+                    backToList();
+                }
         ).destroyCaseInstance(serverTemplateId, containerId, caseId);
     }
 

@@ -21,6 +21,7 @@ import java.util.List;
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
+import org.jbpm.console.ng.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 
 @Remote
@@ -28,11 +29,11 @@ public interface CaseManagementService {
 
     CaseDefinitionSummary getCaseDefinition(String serverTemplateId, String containerId, String caseDefinitionId);
 
-    List<CaseDefinitionSummary> getCaseDefinitions(String serverTemplateId, Integer page, Integer pageSize);
+    List<CaseDefinitionSummary> getCaseDefinitions();
 
     String startCaseInstance(String serverTemplateId, String containerId, String caseDefinitionId);
 
-    List<CaseInstanceSummary> getCaseInstances(String serverTemplateId, Integer page, Integer pageSize);
+    List<CaseInstanceSummary> getCaseInstances(CaseInstanceSearchRequest request);
 
     CaseInstanceSummary getCaseInstance(String serverTemplateId, String containerId, String caseId);
 

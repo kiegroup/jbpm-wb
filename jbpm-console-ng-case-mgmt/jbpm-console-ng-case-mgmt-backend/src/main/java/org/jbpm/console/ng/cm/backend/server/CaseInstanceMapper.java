@@ -33,22 +33,22 @@ public class CaseInstanceMapper implements Function<CaseInstance, CaseInstanceSu
         if (ci == null) {
             return null;
         }
-        final CaseInstanceSummary cis = new CaseInstanceSummary();
-        cis.setCaseId(ci.getCaseId());
-        cis.setDescription(ci.getCaseDescription());
-        cis.setStatus(ci.getCaseStatus());
-        cis.setContainerId(ci.getContainerId());
-        cis.setOwner(ci.getCaseOwner());
-        cis.setStartedAt(ci.getStartedAt());
-        cis.setCompletedAt(ci.getCompletedAt());
-        cis.setCaseDefinitionId(ci.getCaseDefinitionId());
-        cis.setRoleAssignments(
-                ofNullable(ci.getRoleAssignments()).orElse(emptyList())
-                        .stream()
-                        .map(ra -> new CaseRoleAssignmentSummary(ra.getName(), ofNullable(ra.getGroups()).orElse(emptyList()), ofNullable(ra.getUsers()).orElse(emptyList())))
-                        .collect(toList())
-        );
-        return cis;
+
+        return CaseInstanceSummary.builder().
+                caseId(ci.getCaseId()).
+                description(ci.getCaseDescription()).
+                status(ci.getCaseStatus()).
+                containerId(ci.getContainerId()).
+                owner(ci.getCaseOwner()).
+                startedAt(ci.getStartedAt()).
+                completedAt(ci.getCompletedAt()).
+                caseDefinitionId(ci.getCaseDefinitionId()).
+                roleAssignments(
+                        ofNullable(ci.getRoleAssignments()).orElse(emptyList())
+                                .stream()
+                                .map(ra -> CaseRoleAssignmentSummary.builder().name(ra.getName()).groups(ra.getGroups()).users(ra.getUsers()).build())
+                                .collect(toList())).
+                build();
     }
 
 }

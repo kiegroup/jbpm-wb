@@ -16,38 +16,52 @@
 
 package org.jbpm.console.ng.cm.model;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jbpm.console.ng.ga.model.GenericSummary;
+import org.jboss.errai.databinding.client.api.Bindable;
 
+import static java.util.Optional.ofNullable;
+
+@Bindable
 @Portable
-public class CaseDefinitionSummary extends GenericSummary {
+public class CaseDefinitionSummary implements Comparable<CaseDefinitionSummary> {
 
+    private String id;
+    private String name;
     private String containerId;
-    private Map<String, Integer> roles;
+    private Map<String, Integer> roles = new HashMap<>();
 
     public CaseDefinitionSummary() {
     }
 
-    public CaseDefinitionSummary(final Object id, final String name, final String containerId) {
-        super(id, name);
-        this.containerId = containerId;
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public String getCaseDefinitionId() {
-        return (String) getId();
+    public String getId() {
+        return id;
     }
 
-    public void setCaseDefinitionId(String caseDefinitionId) {
-        setId(caseDefinitionId);
+    public void setId(final String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public String getContainerId() {
         return containerId;
     }
 
-    public void setContainerId(String containerId) {
+    public void setContainerId(final String containerId) {
         this.containerId = containerId;
     }
 
@@ -56,14 +70,73 @@ public class CaseDefinitionSummary extends GenericSummary {
     }
 
     public void setRoles(final Map<String, Integer> roles) {
-        this.roles = roles;
+        this.roles = ofNullable(roles).orElse(new HashMap<>());
+    }
+
+    @Override
+    public int compareTo(final CaseDefinitionSummary caseDefinitionSummary) {
+        return getId().compareTo(caseDefinitionSummary.getId());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CaseDefinitionSummary that = (CaseDefinitionSummary) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(containerId, that.containerId);
+    }
+
+    @Override
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = ~~result;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = ~~result;
+        return result;
     }
 
     @Override
     public String toString() {
         return "CaseDefinitionSummary{" +
-                "containerId='" + containerId + '\'' +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", containerId='" + containerId + '\'' +
                 ", roles=" + roles +
-                "} " + super.toString();
+                '}';
     }
+
+    public static class Builder {
+
+        private CaseDefinitionSummary caseDefinition = new CaseDefinitionSummary();
+
+        public CaseDefinitionSummary build() {
+            return caseDefinition;
+        }
+
+        public Builder id(final String id) {
+            caseDefinition.setId(id);
+            return this;
+        }
+
+        public Builder name(final String name) {
+            caseDefinition.setName(name);
+            return this;
+        }
+
+        public Builder containerId(final String containerId) {
+            caseDefinition.setContainerId(containerId);
+            return this;
+        }
+
+        public Builder roles(final Map<String, Integer> roles) {
+            caseDefinition.setRoles(roles);
+            return this;
+        }
+
+    }
+
 }

@@ -1,0 +1,10 @@
+[
+  {
+    "id": "Example",
+    "name": "Example Case for Development",
+    "containerId": "example",
+    "roles": {
+      "participant" : -1
+    }
+  }
+]

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.cm.client;
+package org.jbpm.console.ng.cm.client.util;
 
 import java.util.Date;
 
@@ -28,9 +28,9 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
-import static org.jbpm.console.ng.cm.client.AbstractCaseInstancePresenter.PARAMETER_CASE_ID;
-import static org.jbpm.console.ng.cm.client.AbstractCaseInstancePresenter.PARAMETER_CONTAINER_ID;
-import static org.jbpm.console.ng.cm.client.AbstractCaseInstancePresenter.PARAMETER_SERVER_TEMPLATE_ID;
+import static org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter.PARAMETER_CASE_ID;
+import static org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter.PARAMETER_CONTAINER_ID;
+import static org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter.PARAMETER_SERVER_TEMPLATE_ID;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
@@ -53,11 +53,15 @@ public abstract class AbstractCaseInstancePresenterTest {
     }
 
     public static CaseInstanceSummary newCaseInstanceSummary(){
-        final CaseInstanceSummary cis = new CaseInstanceSummary("caseId", "description", 0, "containerId");
-        cis.setOwner("admin");
-        cis.setCompletedAt(new Date());
-        cis.setStartedAt(new Date());
-        return cis;
+        return CaseInstanceSummary.builder()
+                .caseId("caseId")
+                .description("description")
+                .status(1)
+                .containerId("containerId")
+                .owner("admin")
+                .completedAt(new Date())
+                .startedAt(new Date())
+                .build();
     }
 
     public CaseInstanceSummary setupCaseInstance(final String serverTemplateId){

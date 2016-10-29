@@ -23,7 +23,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
-import org.jbpm.console.ng.cm.client.AbstractCaseInstancePresenter;
+import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter;
 import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.uberfire.client.annotations.WorkbenchPartTitle;

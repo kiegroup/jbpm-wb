@@ -16,16 +16,21 @@
 
 package org.jbpm.console.ng.cm.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jbpm.console.ng.ga.model.GenericSummary;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.jboss.errai.databinding.client.api.Bindable;
 
+import static java.util.Optional.ofNullable;
+
+@Bindable
 @Portable
-public class CaseInstanceSummary extends GenericSummary {
+public class CaseInstanceSummary {
 
+    private String caseId;
     private String description;
     private Integer status;
     private String containerId;
@@ -33,31 +38,28 @@ public class CaseInstanceSummary extends GenericSummary {
     private Date startedAt;
     private Date completedAt;
     private String caseDefinitionId;
-    private List<CaseRoleAssignmentSummary> roleAssignments;
+    private List<CaseRoleAssignmentSummary> roleAssignments = new ArrayList<>();
 
     public CaseInstanceSummary() {
     }
 
-    public CaseInstanceSummary(final String caseId, final String description, final Integer status, final String containerId) {
-        super(caseId, null);
-        this.description = description;
-        this.status = status;
-        this.containerId = containerId;
+    public static Builder builder() {
+        return new Builder();
     }
 
     public String getCaseId() {
-        return (String) getId();
+        return caseId;
     }
 
-    public void setCaseId(String caseId) {
-        setId(caseId);
+    public void setCaseId(final String caseId) {
+        this.caseId = caseId;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -65,7 +67,7 @@ public class CaseInstanceSummary extends GenericSummary {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(final Integer status) {
         this.status = status;
     }
 
@@ -73,32 +75,8 @@ public class CaseInstanceSummary extends GenericSummary {
         return containerId;
     }
 
-    public void setContainerId(String containerId) {
+    public void setContainerId(final String containerId) {
         this.containerId = containerId;
-    }
-
-    public String getStatusString() {
-        if (status == null) {
-            return "";
-        }
-        switch (status) {
-            case ProcessInstance.STATE_PENDING:
-                return "Pending";
-            case ProcessInstance.STATE_ACTIVE:
-                return "Active";
-            case ProcessInstance.STATE_COMPLETED:
-                return "Completed";
-            case ProcessInstance.STATE_ABORTED:
-                return "Aborted";
-            case ProcessInstance.STATE_SUSPENDED:
-                return "Suspended";
-            default:
-                return "";
-        }
-    }
-
-    public Boolean isActive() {
-        return status == 1;
     }
 
     public String getOwner() {
@@ -130,7 +108,7 @@ public class CaseInstanceSummary extends GenericSummary {
     }
 
     public void setRoleAssignments(final List<CaseRoleAssignmentSummary> roleAssignments) {
-        this.roleAssignments = roleAssignments;
+        this.roleAssignments = ofNullable(roleAssignments).orElse(new ArrayList<>());
     }
 
     public String getCaseDefinitionId() {
@@ -142,9 +120,28 @@ public class CaseInstanceSummary extends GenericSummary {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CaseInstanceSummary that = (CaseInstanceSummary) o;
+        return Objects.equals(caseId, that.caseId);
+    }
+
+    @Override
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((caseId == null) ? 0 : caseId.hashCode());
+        result = ~~result;
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "CaseInstanceSummary{" +
-                "description='" + description + '\'' +
+                "caseId='" + caseId + '\'' +
+                ", description='" + description + '\'' +
                 ", status=" + status +
                 ", containerId='" + containerId + '\'' +
                 ", owner='" + owner + '\'' +
@@ -152,7 +149,62 @@ public class CaseInstanceSummary extends GenericSummary {
                 ", completedAt=" + completedAt +
                 ", caseDefinitionId='" + caseDefinitionId + '\'' +
                 ", roleAssignments=" + roleAssignments +
-                "} " + super.toString();
+                '}';
+    }
+
+    public static class Builder {
+
+        private CaseInstanceSummary caseInstance = new CaseInstanceSummary();
+
+        public CaseInstanceSummary build() {
+            return caseInstance;
+        }
+
+        public Builder caseId(final String caseId) {
+            caseInstance.setCaseId(caseId);
+            return this;
+        }
+
+        public Builder description(final String description) {
+            caseInstance.setDescription(description);
+            return this;
+        }
+
+        public Builder status(final Integer status) {
+            caseInstance.setStatus(status);
+            return this;
+        }
+
+        public Builder containerId(final String containerId) {
+            caseInstance.setContainerId(containerId);
+            return this;
+        }
+
+        public Builder owner(final String owner) {
+            caseInstance.setOwner(owner);
+            return this;
+        }
+
+        public Builder startedAt(final Date startedAt) {
+            caseInstance.setStartedAt(startedAt);
+            return this;
+        }
+
+        public Builder completedAt(final Date completedAt) {
+            caseInstance.setCompletedAt(completedAt);
+            return this;
+        }
+
+        public Builder caseDefinitionId(final String caseDefinitionId) {
+            caseInstance.setCaseDefinitionId(caseDefinitionId);
+            return this;
+        }
+
+        public Builder roleAssignments(final List<CaseRoleAssignmentSummary> roleAssignments) {
+            caseInstance.setRoleAssignments(roleAssignments);
+            return this;
+        }
+
     }
 
 }

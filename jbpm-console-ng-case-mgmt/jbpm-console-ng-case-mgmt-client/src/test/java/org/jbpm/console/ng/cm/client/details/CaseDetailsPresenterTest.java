@@ -17,7 +17,7 @@
 package org.jbpm.console.ng.cm.client.details;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jbpm.console.ng.cm.client.AbstractCaseInstancePresenterTest;
+import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenterTest;
 import org.jbpm.console.ng.cm.client.events.CaseRefreshEvent;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.jbpm.console.ng.gc.client.util.DateUtils;
@@ -76,7 +76,7 @@ public class CaseDetailsPresenterTest extends AbstractCaseInstancePresenterTest 
         verify(view).setCaseCompletedAt("");
         verify(view).setCaseOwner("");
         verify(view).setCaseId(cis.getCaseId());
-        verify(view).setCaseStatus(cis.getStatusString());
+        verify(view).setCaseStatus("Active");
         verify(view).setCaseDescription(cis.getDescription());
         verify(view).setCaseStartedAt(DateUtils.getDateTimeStr(cis.getStartedAt()));
         verify(view).setCaseCompletedAt(DateUtils.getDateTimeStr(cis.getCompletedAt()));
@@ -99,7 +99,7 @@ public class CaseDetailsPresenterTest extends AbstractCaseInstancePresenterTest 
         verify(view, times(2)).setCaseCompletedAt("");
         verify(view, times(2)).setCaseOwner("");
         verify(view, times(2)).setCaseId(cis.getCaseId());
-        verify(view, times(2)).setCaseStatus(cis.getStatusString());
+        verify(view, times(2)).setCaseStatus("Active");
         verify(view, times(2)).setCaseDescription(cis.getDescription());
         verify(view, times(2)).setCaseStartedAt(DateUtils.getDateTimeStr(cis.getStartedAt()));
         verify(view, times(2)).setCaseCompletedAt(DateUtils.getDateTimeStr(cis.getCompletedAt()));

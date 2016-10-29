@@ -417,21 +417,6 @@
             <artifactId>jbpm-form-modeler-document</artifactId>
         </dependency>
 
-        <!-- Case Management -->
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-case-mgmt-client</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-case-mgmt-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-case-mgmt-backend</artifactId>
-        </dependency>
-
         <!-- jBPM Designer -->
         <dependency>
             <groupId>org.jbpm</groupId>
@@ -1211,8 +1196,6 @@
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-workbench-integration-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-executor-service-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-executor-service-api</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-case-mgmt-client</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-case-mgmt-api</compileSourcesArtifact>
 
                         <!-- Dashbuilder -->
                         <compileSourcesArtifact>org.dashbuilder:dashbuilder-json</compileSourcesArtifact>

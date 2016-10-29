@@ -16,7 +16,7 @@
 
 package org.jbpm.console.ng.cm.client.overview;
 
-import org.jbpm.console.ng.cm.client.AbstractCaseInstancePresenterTest;
+import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenterTest;
 import org.jbpm.console.ng.cm.client.events.CaseCancelEvent;
 import org.jbpm.console.ng.cm.client.events.CaseDestroyEvent;
 import org.jbpm.console.ng.cm.client.events.CaseRefreshEvent;

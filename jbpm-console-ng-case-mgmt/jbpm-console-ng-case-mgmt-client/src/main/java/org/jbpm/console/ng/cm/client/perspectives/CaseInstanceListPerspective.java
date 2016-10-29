@@ -19,32 +19,26 @@ package org.jbpm.console.ng.cm.client.perspectives;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jbpm.console.ng.cm.client.list.CaseInstanceListPresenter;
-import org.jbpm.console.ng.gc.client.perspectives.AbstractPerspective;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
+import org.uberfire.client.workbench.panels.impl.StaticWorkbenchPanelPresenter;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 @ApplicationScoped
-@WorkbenchPerspective(identifier = CaseInstanceListPerspective.PERSPECTIVE_ID)
-public class CaseInstanceListPerspective extends AbstractPerspective {
+@WorkbenchPerspective(identifier = CaseInstanceListPerspective.PERSPECTIVE_ID, isDefault = true)
+public class CaseInstanceListPerspective {
 
     public static final String PERSPECTIVE_ID = "Case List Perspective";
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(SimpleWorkbenchPanelPresenter.class.getName());
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(StaticWorkbenchPanelPresenter.class.getName());
         p.setName(PERSPECTIVE_ID);
         p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(CaseInstanceListPresenter.SCREEN_ID)));
         return p;
-    }
-
-    @Override
-    public String getPerspectiveId() {
-        return PERSPECTIVE_ID;
     }
 
 }

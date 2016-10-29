@@ -21,28 +21,25 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jbpm.console.ng.cm.client.util.AbstractPresenter;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
 import org.jbpm.console.ng.cm.client.events.CaseCreatedEvent;
 import org.jbpm.console.ng.cm.service.CaseManagementService;
-import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.mvp.UberElement;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.*;
 
 @Dependent
-public class NewCaseInstancePresenter {
+public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstancePresenter.NewCaseInstanceView> {
 
     private final Map<String, CaseDefinitionSummary> caseDefinitions = new HashMap<>();
-
-    @Inject
-    private NewCaseInstanceView view;
 
     private Caller<CaseManagementService> caseService;
 
@@ -53,15 +50,7 @@ public class NewCaseInstancePresenter {
     @Inject
     private TranslationService translationService;
 
-    private String serverTemplateId;
-
-    @PostConstruct
-    public void init() {
-        view.init(this);
-    }
-
-    public void show(final String serverTemplateId) {
-        this.serverTemplateId = serverTemplateId;
+    public void show() {
         loadCaseDefinitions();
     }
 
@@ -70,16 +59,20 @@ public class NewCaseInstancePresenter {
         caseDefinitions.clear();
         caseService.call(
                 (List<CaseDefinitionSummary> definitions) -> {
+                    if(definitions.isEmpty()){
+                        notification.fire(new NotificationEvent(translationService.format(NO_CASE_DEFINITION), NotificationEvent.NotificationType.ERROR));
+                        return;
+                    }
                     final List<String> definitionNames = new ArrayList<>();
                     for (CaseDefinitionSummary summary : definitions) {
                         definitionNames.add(summary.getName());
                         caseDefinitions.put(summary.getName(), summary);
                     }
                     Collections.sort(definitionNames);
-                    view.addCaseDefinitions(definitionNames);
+                    view.setCaseDefinitions(definitionNames);
                     view.show();
                 }
-        ).getCaseDefinitions(serverTemplateId, 0, Integer.MAX_VALUE);
+        ).getCaseDefinitions();
     }
 
     protected void createCaseInstance(final String caseDefinitionName) {
@@ -94,7 +87,7 @@ public class NewCaseInstancePresenter {
                     notification.fire(new NotificationEvent(translationService.format(CASE_CREATED_WITH_ID, caseId), NotificationEvent.NotificationType.SUCCESS));
                     newCaseEvent.fire(new CaseCreatedEvent(caseId));
                 }
-        ).startCaseInstance(serverTemplateId, caseDefinition.getContainerId(), caseDefinition.getCaseDefinitionId());
+        ).startCaseInstance(null, caseDefinition.getContainerId(), caseDefinition.getId());
     }
 
     @Inject
@@ -112,7 +105,7 @@ public class NewCaseInstancePresenter {
         this.caseService = caseService;
     }
 
-    public interface NewCaseInstanceView extends UberView<NewCaseInstancePresenter> {
+    public interface NewCaseInstanceView extends UberElement<NewCaseInstancePresenter> {
 
         void show();
 
@@ -120,7 +113,7 @@ public class NewCaseInstancePresenter {
 
         void clearCaseDefinitions();
 
-        void addCaseDefinitions(List<String> definitions);
+        void setCaseDefinitions(List<String> definitions);
 
     }
 

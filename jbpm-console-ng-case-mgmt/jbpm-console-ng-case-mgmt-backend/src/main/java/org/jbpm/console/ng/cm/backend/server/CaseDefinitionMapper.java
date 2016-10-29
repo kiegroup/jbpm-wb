@@ -21,9 +21,6 @@ import java.util.function.Function;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
 import org.kie.server.api.model.cases.CaseDefinition;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Optional.ofNullable;
-
 public class CaseDefinitionMapper implements Function<CaseDefinition, CaseDefinitionSummary> {
 
     @Override
@@ -32,11 +29,11 @@ public class CaseDefinitionMapper implements Function<CaseDefinition, CaseDefini
             return null;
         }
 
-        final CaseDefinitionSummary cds = new CaseDefinitionSummary();
-        cds.setId(cd.getIdentifier());
-        cds.setName(cd.getName());
-        cds.setContainerId(cd.getContainerId());
-        cds.setRoles(ofNullable(cd.getRoles()).orElse(emptyMap()));
-        return cds;
+        return CaseDefinitionSummary.builder().
+                id(cd.getIdentifier()).
+                name(cd.getName()).
+                containerId(cd.getContainerId()).
+                roles(cd.getRoles()).
+                build();
     }
 }

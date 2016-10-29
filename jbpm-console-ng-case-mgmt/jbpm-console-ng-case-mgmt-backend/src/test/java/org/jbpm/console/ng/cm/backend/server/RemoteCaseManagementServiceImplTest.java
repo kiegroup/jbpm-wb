@@ -16,51 +16,35 @@
 
 package org.jbpm.console.ng.cm.backend.server;
 
-import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.jbpm.console.ng.bd.integration.KieServerIntegration;
 import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
-import org.jbpm.console.ng.cm.service.CaseManagementService;
-import org.junit.Before;
+import org.jbpm.console.ng.cm.util.CaseInstanceSearchRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.server.api.model.cases.CaseComment;
 import org.kie.server.api.model.cases.CaseDefinition;
 import org.kie.server.api.model.cases.CaseInstance;
 import org.kie.server.client.CaseServicesClient;
-import org.kie.server.client.KieServicesClient;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static java.lang.String.format;
-import static org.jbpm.console.ng.cm.backend.server.CaseInstanceMapperTest.*;
-import static org.jbpm.console.ng.cm.backend.server.CaseDefinitionMapperTest.*;
+import static java.util.Collections.singletonList;
+import static org.jbpm.console.ng.cm.backend.server.CaseDefinitionMapperTest.assertCaseDefinition;
+import static org.jbpm.console.ng.cm.backend.server.CaseInstanceMapperTest.assertCaseInstance;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RemoteCaseManagementServiceImplTest {
-
-    @Mock
-    KieServicesClient kieServicesClient;
-
-    @Mock
-    CaseServicesClient caseServicesClient;
-
-    @Mock
-    KieServerIntegration kieServerIntegration;
-
-    @InjectMocks
-    RemoteCaseManagementServiceImpl service;
 
     final String caseId = "CASE-1";
     final String containerId = "containerId";
@@ -69,37 +53,11 @@ public class RemoteCaseManagementServiceImplTest {
     final String text = "text";
     final String commentId = "commentId";
 
-    @Before
-    public void setup() {
-        when(kieServerIntegration.getServerClient(anyString())).thenReturn(kieServicesClient);
-        when(kieServerIntegration.getServerClient(anyString(), anyString())).thenReturn(kieServicesClient);
-        when(kieServicesClient.getServicesClient(CaseServicesClient.class)).thenReturn(caseServicesClient);
-    }
+    @Mock
+    CaseServicesClient caseServicesClient;
 
-    @Test
-    public void testInvalidServerTemplate() throws Exception {
-        final Method[] methods = CaseManagementService.class.getMethods();
-        for (Method method : methods) {
-            final Class<?> returnType = method.getReturnType();
-            final Object[] args = new Object[method.getParameterCount()];
-            Object result = method.invoke(service, args);
-
-            assertMethodResult(method, returnType, result);
-
-            args[0] = "";
-            result = method.invoke(service, args);
-            assertMethodResult(method, returnType, result);
-        }
-    }
-
-    private void assertMethodResult(final Method method, final Class<?> returnType, final Object result) {
-        if (Collection.class.isAssignableFrom(returnType)) {
-            assertNotNull(format("Returned collection for method %s should not be null", method.getName()), result);
-            assertTrue(format("Returned collection for method %s should be empty", method.getName()), ((Collection) result).isEmpty());
-        } else {
-            assertNull(format("Returned object for method %s should be null", method.getName()), result);
-        }
-    }
+    @InjectMocks
+    RemoteCaseManagementServiceImpl service;
 
     @Test
     public void testGetCaseDefinitions() throws Exception {
@@ -108,9 +66,9 @@ public class RemoteCaseManagementServiceImplTest {
         definition.setName("New case");
         definition.setContainerId("org.jbpm");
         definition.setRoles(Collections.emptyMap());
-        when(caseServicesClient.getCaseDefinitions(anyInt(), anyInt())).thenReturn(Collections.singletonList(definition));
+        when(caseServicesClient.getCaseDefinitions(anyInt(), anyInt())).thenReturn(singletonList(definition));
 
-        final List<CaseDefinitionSummary> definitions = service.getCaseDefinitions("id", 0, 0);
+        final List<CaseDefinitionSummary> definitions = service.getCaseDefinitions();
         assertNotNull(definitions);
         assertEquals(1, definitions.size());
         assertCaseDefinition(definition, definitions.get(0));
@@ -118,19 +76,19 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void testGetCaseInstances() throws Exception {
+        final CaseInstanceSearchRequest request = new CaseInstanceSearchRequest();
         final CaseInstance instance = new CaseInstance();
         instance.setCaseDescription("New case");
         instance.setCaseId("CASE-1");
         instance.setCaseStatus(1);
         instance.setContainerId("org.jbpm");
-        when(caseServicesClient.getCaseInstances(anyInt(), anyInt())).thenReturn(Collections.singletonList(instance));
+        when(caseServicesClient.getCaseInstances(eq(singletonList(request.getStatus())), anyInt(), anyInt())).thenReturn(singletonList(instance));
 
-        final List<CaseInstanceSummary> instances = service.getCaseInstances("id", 0, 0);
+        final List<CaseInstanceSummary> instances = service.getCaseInstances(request);
         assertNotNull(instances);
         assertEquals(1, instances.size());
         final CaseInstanceSummary caseInstanceSummary = instances.get(0);
         assertCaseInstance(instance, caseInstanceSummary);
-        assertTrue(caseInstanceSummary.isActive());
     }
 
     @Test
@@ -192,8 +150,7 @@ public class RemoteCaseManagementServiceImplTest {
         caseComment.setText(text);
         caseComment.setAddedAt(new Date());
 
-        when(caseServicesClient.getComments(containerId, caseId, 0, 0)).thenReturn(
-                Collections.singletonList(caseComment));
+        when(caseServicesClient.getComments(containerId, caseId, 0, 0)).thenReturn(singletonList(caseComment));
 
         final List<CaseCommentSummary> comments = service.getComments(serverTemplateId, containerId, caseId, 0, 0);
         assertNotNull(comments);
@@ -207,7 +164,6 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void testAddComment() throws Exception {
-
         service.addComment(serverTemplateId, containerId, caseId, author, text);
 
         verify(caseServicesClient).addComment(containerId, caseId, author, text);
@@ -215,7 +171,6 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void testUpdateComment() throws Exception {
-
         service.updateComment(serverTemplateId, containerId, caseId, commentId, author, text);
 
         verify(caseServicesClient).updateComment(containerId, caseId, commentId, author, text);
@@ -227,6 +182,5 @@ public class RemoteCaseManagementServiceImplTest {
 
         verify(caseServicesClient).removeComment(containerId, caseId, commentId);
     }
-
 
 }

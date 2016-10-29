@@ -17,6 +17,7 @@
 package org.jbpm.console.ng.bd.integration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -56,6 +57,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 @Startup
 @ApplicationScoped
 public class KieServerIntegration {
@@ -79,10 +83,7 @@ public class KieServerIntegration {
         Collection<ServerTemplate> serverTemplates = specManagementService.listServerTemplates();
         logger.debug("Found {} server templates, creating clients for them...", serverTemplates.size());
 
-        for (ServerTemplate serverTemplate : serverTemplates) {
-            buildClientsForServer(serverTemplate);
-
-        }
+        serverTemplates.forEach((serverTemplate) -> buildClientsForServer(serverTemplate));
     }
 
     public KieServicesClient getServerClient(String serverTemplateId) {
@@ -114,9 +115,9 @@ public class KieServerIntegration {
     }
 
     protected void removeServerInstancesFromIndex(String serverTemplateId) {
-        Iterator<Map.Entry<String,ServerInstanceKey>> iterator = serverInstancesById.entrySet().iterator();
+        Iterator<Map.Entry<String, ServerInstanceKey>> iterator = serverInstancesById.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<String,ServerInstanceKey> entry = iterator.next();
+            Map.Entry<String, ServerInstanceKey> entry = iterator.next();
             if (entry.getValue().getServerTemplateId().equals(serverTemplateId)) {
                 iterator.remove();
             }
@@ -129,9 +130,9 @@ public class KieServerIntegration {
 
     public void onServerTemplateDeleted(@Observes ServerTemplateDeleted serverTemplateDeleted) {
         // remove all clients for this server template and its containers
-        Iterator<Map.Entry<String,KieServicesClient>> iterator = serverTemplatesClients.entrySet().iterator();
+        Iterator<Map.Entry<String, KieServicesClient>> iterator = serverTemplatesClients.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<String,KieServicesClient> entry = iterator.next();
+            Map.Entry<String, KieServicesClient> entry = iterator.next();
             if (entry.getKey().startsWith(serverTemplateDeleted.getServerTemplateId())) {
                 //KieServicesClient client = entry.getValue();
                 //client.close();
@@ -150,9 +151,9 @@ public class KieServerIntegration {
         ServerInstanceKey serverInstanceKey = serverInstancesById.get(serverInstanceDisconnected.getServerInstanceId());
 
         if (serverInstanceKey != null) {
-            Iterator<Map.Entry<String,KieServicesClient>> iterator = serverTemplatesClients.entrySet().iterator();
+            Iterator<Map.Entry<String, KieServicesClient>> iterator = serverTemplatesClients.entrySet().iterator();
             while (iterator.hasNext()) {
-                Map.Entry<String,KieServicesClient> entry = iterator.next();
+                Map.Entry<String, KieServicesClient> entry = iterator.next();
                 if (entry.getKey().startsWith(serverInstanceKey.getServerTemplateId())) {
                     KieServicesClient client = entry.getValue();
                     if (client != null) {
@@ -183,9 +184,9 @@ public class KieServerIntegration {
 
         ServerInstance serverInstance = serverInstanceConnected.getServerInstance();
 
-        Iterator<Map.Entry<String,KieServicesClient>> iterator = serverTemplatesClients.entrySet().iterator();
+        Iterator<Map.Entry<String, KieServicesClient>> iterator = serverTemplatesClients.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<String,KieServicesClient> entry = iterator.next();
+            Map.Entry<String, KieServicesClient> entry = iterator.next();
             if (entry.getKey().startsWith(serverInstance.getServerTemplateId())) {
                 KieServicesClient client = entry.getValue();
                 // update regular clients
@@ -224,8 +225,8 @@ public class KieServerIntegration {
         if (serverTemplate.getContainersSpec() != null) {
             for (ContainerSpec containerSpec : serverTemplate.getContainersSpec()) {
                 try {
-                    String key = serverTemplate.getId()+"|" + containerSpec.getId();
-                    if (serverTemplatesClients.containsKey(key)){
+                    String key = serverTemplate.getId() + "|" + containerSpec.getId();
+                    if (serverTemplatesClients.containsKey(key)) {
                         logger.debug("KieServerClient for {} is already created", key);
                         continue;
                     }
@@ -260,10 +261,8 @@ public class KieServerIntegration {
             }
             endpoints.deleteCharAt(endpoints.length() - 1);
             logger.debug("Creating client that will use following list of endpoints {}", endpoints);
-            KieServicesConfiguration configuration = KieServicesFactory.newRestConfiguration(endpoints.toString(), credentialsProvider);
-            configuration.setTimeout(60000);
 
-            List<String> mappedCapabilities = new ArrayList<String>();
+            final List<String> mappedCapabilities = new ArrayList<>();
             if (serverTemplate.getCapabilities().contains(Capability.PROCESS.name())) {
                 mappedCapabilities.add(KieServerConstants.CAPABILITY_BPM);
                 mappedCapabilities.add(KieServerConstants.CAPABILITY_BPM_UI);
@@ -276,17 +275,8 @@ public class KieServerIntegration {
                 mappedCapabilities.add(KieServerConstants.CAPABILITY_BRP);
             }
 
-            configuration.setCapabilities(mappedCapabilities);
-            configuration.setMarshallingFormat(MarshallingFormat.XSTREAM);
-            configuration.setLoadBalancer(LoadBalancer.getDefault(endpoints.toString()));
+            final KieServicesClient kieServicesClient = createKieServicesClient(endpoints.toString(), classLoader, credentialsProvider, mappedCapabilities.toArray(new String[mappedCapabilities.size()]));
 
-            KieServicesClient kieServicesClient = null;
-
-            if (classLoader == null) {
-                kieServicesClient = KieServicesFactory.newKieServicesClient(configuration);
-            } else {
-                kieServicesClient = KieServicesFactory.newKieServicesClient(configuration, classLoader);
-            }
             logger.debug("KieServerClient created successfully for server template {}", serverTemplate);
 
             indexServerInstances(serverTemplate);
@@ -298,8 +288,49 @@ public class KieServerIntegration {
         }
     }
 
+    public KieServicesClient createKieServicesClient(final String... capabilities) {
+        final String kieServerEndpoint = System.getProperty(KieServerConstants.KIE_SERVER_LOCATION);
+        checkNotNull(kieServerEndpoint, "Missing Kie Server system property " + KieServerConstants.KIE_SERVER_LOCATION);
+        final String userName = System.getProperty(KieServerConstants.CFG_KIE_USER);
+        final String password = System.getProperty(KieServerConstants.CFG_KIE_PASSWORD);
+
+        if (isNullOrEmpty(userName)) {
+            return createKieServicesClient(kieServerEndpoint, null, getCredentialsProvider(), capabilities);
+        } else {
+            return createKieServicesClient(kieServerEndpoint, null, userName, password, capabilities);
+        }
+    }
+
+    protected KieServicesClient createKieServicesClient(final String endpoint, final ClassLoader classLoader, final String login, final String password, final String... capabilities) {
+        final KieServicesConfiguration configuration = KieServicesFactory.newRestConfiguration(endpoint, login, password);
+        return createKieServicesClient(endpoint, classLoader, configuration, capabilities);
+    }
+
+    protected KieServicesClient createKieServicesClient(final String endpoint, final ClassLoader classLoader, final CredentialsProvider credentialsProvider, final String... capabilities) {
+        final KieServicesConfiguration configuration = KieServicesFactory.newRestConfiguration(endpoint, credentialsProvider);
+        return createKieServicesClient(endpoint, classLoader, configuration, capabilities);
+    }
+
+    protected KieServicesClient createKieServicesClient(final String endpoint, final ClassLoader classLoader, final KieServicesConfiguration configuration, final String... capabilities) {
+        logger.debug("Creating client that will use following endpoint {}", endpoint);
+        configuration.setTimeout(60000);
+        configuration.setCapabilities(Arrays.asList(capabilities));
+        configuration.setMarshallingFormat(MarshallingFormat.XSTREAM);
+        configuration.setLoadBalancer(LoadBalancer.getDefault(endpoint));
+
+        KieServicesClient kieServicesClient;
+
+        if (classLoader == null) {
+            kieServicesClient = KieServicesFactory.newKieServicesClient(configuration);
+        } else {
+            kieServicesClient = KieServicesFactory.newKieServicesClient(configuration, classLoader);
+        }
+        logger.debug("KieServerClient created successfully for endpoint {}", endpoint);
+        return kieServicesClient;
+    }
+
     protected CredentialsProvider getCredentialsProvider() {
-        CredentialsProvider credentialsProvider = null;
+        CredentialsProvider credentialsProvider;
         try {
             credentialsProvider = new KeyCloakTokenCredentialsProvider();
         } catch (UnsupportedOperationException e) {
