@@ -19,11 +19,12 @@ import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import org.jboss.errai.common.client.dom.Button;
+import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.Event;
+import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -34,7 +35,11 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
 @Templated(stylesheet = "CaseOverviewViewImpl.css")
-public class CaseOverviewViewImpl extends Composite implements CaseOverviewPresenter.CaseOverviewView {
+public class CaseOverviewViewImpl implements CaseOverviewPresenter.CaseOverviewView {
+
+    @Inject
+    @DataField("container")
+    Div container;
 
     @Inject
     @DataField("case-details-content")
@@ -180,4 +185,8 @@ public class CaseOverviewViewImpl extends Composite implements CaseOverviewPrese
         presenter.refreshCase();
     }
 
+    @Override
+    public HTMLElement getElement() {
+        return container;
+    }
 }

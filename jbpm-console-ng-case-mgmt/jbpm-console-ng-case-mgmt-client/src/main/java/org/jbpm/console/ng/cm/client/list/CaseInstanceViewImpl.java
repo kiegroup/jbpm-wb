@@ -94,7 +94,7 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
     @DataField("started")
     @Bound(converter = DateConverter.class)
     @SuppressWarnings("unused")
-    private Div startedAt;
+    private Span startedAt;
 
     @Inject
     @DataField("complete")

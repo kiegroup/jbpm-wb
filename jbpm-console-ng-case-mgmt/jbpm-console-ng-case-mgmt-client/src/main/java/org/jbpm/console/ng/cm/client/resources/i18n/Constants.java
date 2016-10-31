@@ -48,9 +48,6 @@ public interface Constants {
     String CREATE = "Create";
 
     @TranslationKey(defaultValue = "")
-    String NEW_ROLE_ASSIGNMENT = "NewRoleAssignment";
-
-    @TranslationKey(defaultValue = "")
     String CASE_CREATED_WITH_ID = "CaseCreatedWithId";
 
     @TranslationKey(defaultValue = "")
@@ -91,9 +88,6 @@ public interface Constants {
 
     @TranslationKey(defaultValue = "")
     String GROUP_REQUIRED = "GroupRequired";
-
-    @TranslationKey(defaultValue = "")
-    String ASSIGN = "Assign";
 
     @TranslationKey(defaultValue = "")
     String CASE_COMMENTS = "Comments";

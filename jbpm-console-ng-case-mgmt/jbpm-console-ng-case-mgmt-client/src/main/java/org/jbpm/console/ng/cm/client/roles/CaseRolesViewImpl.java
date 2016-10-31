@@ -19,9 +19,9 @@ package org.jbpm.console.ng.cm.client.roles;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.Event;
+import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -33,19 +33,23 @@ import static org.jboss.errai.common.client.dom.DOMUtil.*;
 
 @Dependent
 @Templated
-public class CaseRolesViewImpl extends Composite implements CaseRolesPresenter.CaseRolesView {
+public class CaseRolesViewImpl implements CaseRolesPresenter.CaseRolesView {
+
+    @Inject
+    @DataField("roles")
+    private Div rolesContainer;
 
     @Inject
     @DataField("role-list")
-    Div roles;
+    private Div roles;
 
     @Inject
     @DataField("footer")
-    Div footer;
+    private Div footer;
 
-    Command userAddCommand;
+    private Command userAddCommand;
 
-    Command groupAddCommand;
+    private Command groupAddCommand;
 
     @Inject
     private ManagedInstance<CaseRoleItemView> provider;
@@ -114,4 +118,8 @@ public class CaseRolesViewImpl extends Composite implements CaseRolesPresenter.C
         }
     }
 
+    @Override
+    public HTMLElement getElement() {
+        return rolesContainer;
+    }
 }

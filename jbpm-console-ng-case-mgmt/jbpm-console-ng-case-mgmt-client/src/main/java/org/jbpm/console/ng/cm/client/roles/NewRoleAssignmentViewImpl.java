@@ -21,24 +21,20 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.Composite;
-import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.constants.ButtonType;
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.client.ui.constants.ValidationState;
-import org.gwtbootstrap3.extras.select.client.ui.Option;
-import org.gwtbootstrap3.extras.select.client.ui.Select;
+import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.MouseEvent;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.common.client.dom.TextInput;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.ext.widgets.common.client.common.StyleHelper;
-import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
-import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
+import org.jbpm.console.ng.cm.client.util.FormGroup;
+import org.jbpm.console.ng.cm.client.util.FormLabel;
+import org.jbpm.console.ng.cm.client.util.Modal;
+import org.jbpm.console.ng.cm.client.util.Select;
+import org.jbpm.console.ng.cm.client.util.ValidationState;
 import org.uberfire.mvp.Command;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -46,17 +42,19 @@ import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.*;
 
 @Dependent
 @Templated
-public class NewRoleAssignmentViewImpl extends Composite implements CaseRolesPresenter.NewRoleAssignmentView {
+public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssignmentView {
 
+    @Inject
     @DataField("role-name-group")
-    Element roleNameGroup = DOM.createDiv();
+    FormGroup roleNameGroup;
 
     @Inject
     @DataField("role-name-help")
     Span roleNameHelp;
 
+    @Inject
     @DataField("role-name-select")
-    Select roleNameList = GWT.create(Select.class);
+    Select roleNameList;
 
     @Inject
     @DataField("role-name-label")
@@ -74,10 +72,13 @@ public class NewRoleAssignmentViewImpl extends Composite implements CaseRolesPre
     @DataField("user-name-help")
     Span userNameHelp;
 
+    @Inject
     @DataField("user-name-group")
-    Element userNameGroup = DOM.createDiv();
+    FormGroup userNameGroup;
 
-    private BaseModal modal = GWT.create(BaseModal.class);
+    @Inject
+    @DataField("modal")
+    private Modal modal;
 
     private Boolean forUser;
 
@@ -88,18 +89,7 @@ public class NewRoleAssignmentViewImpl extends Composite implements CaseRolesPre
 
     @PostConstruct
     public void init() {
-        this.modal.setTitle(translationService.format(NEW_ROLE_ASSIGNMENT));
-        this.modal.setBody(this);
-        final GenericModalFooter footer = GWT.create(GenericModalFooter.class);
-        footer.addButton(
-                translationService.format(ASSIGN),
-                () -> okButton(),
-                IconType.PLUS,
-                ButtonType.PRIMARY
-        );
-        this.modal.add(footer);
-        this.roleNameLabel.setShowRequiredIndicator(true);
-        this.userNameLabel.setShowRequiredIndicator(true);
+        this.roleNameLabel.addRequiredIndicator();
     }
 
     @Override
@@ -113,14 +103,10 @@ public class NewRoleAssignmentViewImpl extends Composite implements CaseRolesPre
 
         this.forUser = forUser;
 
-        userNameLabel.setText(translationService.format(forUser ? USER : GROUP));
+        userNameLabel.getElement().setTextContent(translationService.format(forUser ? USER : GROUP));
+        userNameLabel.addRequiredIndicator();
 
-        for (final String role : roles) {
-            final Option option = GWT.create(Option.class);
-            option.setValue(role);
-            option.setText(role);
-            roleNameList.add(option);
-        }
+        roles.forEach(r -> roleNameList.addOption(r));
         roleNameList.refresh();
 
         this.okCommand = okCommand;
@@ -133,48 +119,36 @@ public class NewRoleAssignmentViewImpl extends Composite implements CaseRolesPre
         modal.hide();
     }
 
-    private void okButton() {
-        if (validateForm() == false) {
-            return;
-        }
-
-        if (okCommand != null) {
-            okCommand.execute();
-        }
-
-        hide();
-    }
-
     private boolean validateForm() {
         clearErrorMessages();
 
         final boolean roleNameEmpty = isNullOrEmpty(roleNameList.getValue());
         if (roleNameEmpty) {
-            roleNameList.setFocus(true);
+            roleNameList.getElement().focus();
             roleNameHelp.setTextContent(translationService.format(PLEASE_SELECT_ROLE));
-            setFormGroupStyle(roleNameGroup, ValidationState.ERROR);
+            roleNameGroup.setValidationState(ValidationState.ERROR);
         }
 
         final boolean userNameEmpty = isNullOrEmpty(userNameInput.getValue());
         if (userNameEmpty) {
             userNameInput.focus();
             userNameHelp.setTextContent(translationService.format(forUser ? USER_REQUIRED : GROUP_REQUIRED));
-            setFormGroupStyle(userNameGroup, ValidationState.ERROR);
+            userNameGroup.setValidationState(ValidationState.ERROR);
         }
 
         if (roleNameEmpty || userNameEmpty) {
             return false;
         }
 
-        setFormGroupStyle(roleNameGroup, ValidationState.SUCCESS);
-        setFormGroupStyle(userNameGroup, ValidationState.SUCCESS);
+        roleNameGroup.setValidationState(ValidationState.SUCCESS);
+        userNameGroup.setValidationState(ValidationState.SUCCESS);
 
         return true;
     }
 
     private void clearValues() {
         roleNameList.setValue("");
-        roleNameList.clear();
+        roleNameList.removeAllOptions();
         roleNameList.refresh();
         userNameInput.setValue("");
     }
@@ -182,12 +156,8 @@ public class NewRoleAssignmentViewImpl extends Composite implements CaseRolesPre
     private void clearErrorMessages() {
         roleNameHelp.setTextContent("");
         userNameHelp.setTextContent("");
-        setFormGroupStyle(userNameGroup, ValidationState.NONE);
-        setFormGroupStyle(roleNameGroup, ValidationState.NONE);
-    }
-
-    private void setFormGroupStyle(final Element element, final ValidationState validationState) {
-        StyleHelper.addUniqueEnumStyleName(element, ValidationState.class, validationState);
+        userNameGroup.clearValidationState();
+        roleNameGroup.clearValidationState();
     }
 
     @Override
@@ -199,4 +169,33 @@ public class NewRoleAssignmentViewImpl extends Composite implements CaseRolesPre
     public String getUserName() {
         return userNameInput.getValue();
     }
+
+    @Override
+    public HTMLElement getElement() {
+        return modal.getElement();
+    }
+
+    @EventHandler("assign")
+    public void onAssignClick(final @ForEvent("click") MouseEvent event) {
+        if (validateForm() == false) {
+            return;
+        }
+
+        if (okCommand != null) {
+            okCommand.execute();
+        }
+
+        hide();
+    }
+
+    @EventHandler("cancel")
+    public void onCancelClick(final @ForEvent("click") MouseEvent event) {
+        hide();
+    }
+
+    @EventHandler("close")
+    public void onCloseClick(final @ForEvent("click") MouseEvent event) {
+        hide();
+    }
+
 }

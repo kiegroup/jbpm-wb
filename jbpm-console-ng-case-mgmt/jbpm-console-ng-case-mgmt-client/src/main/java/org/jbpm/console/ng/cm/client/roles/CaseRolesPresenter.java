@@ -28,7 +28,7 @@ import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.mvp.UberElement;
 import org.uberfire.mvp.Command;
 
 import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.*;
@@ -49,7 +49,7 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter {
     private TranslationService translationService;
 
     @WorkbenchPartView
-    public UberView<CaseRolesPresenter> getView() {
+    public UberElement<CaseRolesPresenter> getView() {
         return caseRolesView;
     }
 
@@ -168,7 +168,7 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter {
         ).removeGroupFromRole(serverTemplateId, containerId, caseId, roleName, groupName);
     }
 
-    public interface CaseRolesView extends UberView<CaseRolesPresenter> {
+    public interface CaseRolesView extends UberElement<CaseRolesPresenter> {
 
         void removeAllRoles();
 
@@ -185,7 +185,7 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter {
         void disableNewRoleAssignments();
     }
 
-    public interface NewRoleAssignmentView extends UberView<CaseRolesPresenter> {
+    public interface NewRoleAssignmentView extends UberElement<CaseRolesPresenter> {
 
         void show(Boolean forUser, Set<String> roles, Command okCommand);
 

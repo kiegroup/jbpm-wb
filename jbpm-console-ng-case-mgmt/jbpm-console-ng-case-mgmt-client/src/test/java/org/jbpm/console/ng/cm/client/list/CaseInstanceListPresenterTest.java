@@ -19,7 +19,6 @@ package org.jbpm.console.ng.cm.client.list;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.cm.client.overview.CaseOverviewPresenter;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
@@ -31,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -38,7 +38,7 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-@RunWith(GwtMockitoTestRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class CaseInstanceListPresenterTest {
 
     @Mock

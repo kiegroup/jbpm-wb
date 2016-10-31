@@ -35,7 +35,7 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.mvp.UberElement;
 import org.uberfire.lifecycle.OnOpen;
 
 import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.*;
@@ -67,7 +67,7 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter {
     }
 
     @WorkbenchPartView
-    public UberView<CaseOverviewPresenter> getView() {
+    public UberElement<CaseOverviewPresenter> getView() {
         return view;
     }
 
@@ -136,7 +136,7 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter {
         this.caseRefreshEvent = caseRefreshEvent;
     }
 
-    public interface CaseOverviewView extends UberView<CaseOverviewPresenter> {
+    public interface CaseOverviewView extends UberElement<CaseOverviewPresenter> {
 
         void setCaseTitle(String title);
 
