@@ -3,15 +3,16 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.jbpm.console.ng.documents.backend.server;
 
@@ -23,7 +24,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
@@ -54,263 +54,252 @@ import org.jbpm.console.ng.dm.model.FolderSummary;
 @ApplicationScoped
 public class DocumentServiceCMISImpl implements DocumentService {
 
-	private Map<String, String> parameters;
+    private Map<String, String> parameters;
 
-	private Session session;
-	
-	@Override
-	@PostConstruct
-	public void init() {
-		parameters = new HashMap<String, String>();
-		String webServicesACLServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/ACLService?wsdl";
-		String webServicesDiscoveryServices = "http://localhost:8080/cmis/services/DiscoveryService?wsdl";
-		String webServicesMultifilingServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/MultiFilingService?wsdl";
-		String webServicesNavigationServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/NavigationService?wsdl";
-		String webServicesObjectServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/ObjectService?wsdl";
-		String webServicesPolicyServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/PolicyService?wsdl";
-		String webServicesRelationshipServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/RelationshipService?wsdl";
-		String webServicesRepositoryServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/RepositoryService?wsdl";
-		String webServicesVersioningServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/VersioningService?wsdl";
-		String repositoryID = "dms";
+    private Session session;
+
+    @Override
+    @PostConstruct
+    public void init() {
+        parameters = new HashMap<String, String>();
+        String webServicesACLServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/ACLService?wsdl";
+        String webServicesDiscoveryServices = "http://localhost:8080/cmis/services/DiscoveryService?wsdl";
+        String webServicesMultifilingServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/MultiFilingService?wsdl";
+        String webServicesNavigationServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/NavigationService?wsdl";
+        String webServicesObjectServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/ObjectService?wsdl";
+        String webServicesPolicyServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/PolicyService?wsdl";
+        String webServicesRelationshipServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/RelationshipService?wsdl";
+        String webServicesRepositoryServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/RepositoryService?wsdl";
+        String webServicesVersioningServices = "http://localhost:8080/magnoliaAuthor/.magnolia/cmisws/VersioningService?wsdl";
+        String repositoryID = "dms";
 
 
-		// user credentials
-		parameters.put(SessionParameter.USER, "superuser");
-		parameters.put(SessionParameter.PASSWORD, "superuser");
+        // user credentials
+        parameters.put(SessionParameter.USER, "superuser");
+        parameters.put(SessionParameter.PASSWORD, "superuser");
 
-		// connection settings
-		parameters.put(SessionParameter.BINDING_TYPE,
-				BindingType.WEBSERVICES.value());
-		parameters.put(SessionParameter.WEBSERVICES_ACL_SERVICE,
-				webServicesACLServices);
-		parameters.put(SessionParameter.WEBSERVICES_DISCOVERY_SERVICE,
-				webServicesDiscoveryServices);
-		parameters.put(SessionParameter.WEBSERVICES_MULTIFILING_SERVICE,
-				webServicesMultifilingServices);
-		parameters.put(SessionParameter.WEBSERVICES_NAVIGATION_SERVICE,
-				webServicesNavigationServices);
-		parameters.put(SessionParameter.WEBSERVICES_OBJECT_SERVICE,
-				webServicesObjectServices);
-		parameters.put(SessionParameter.WEBSERVICES_POLICY_SERVICE,
-				webServicesPolicyServices);
-		parameters.put(SessionParameter.WEBSERVICES_RELATIONSHIP_SERVICE,
-				webServicesRelationshipServices);
-		parameters.put(SessionParameter.WEBSERVICES_REPOSITORY_SERVICE,
-				webServicesRepositoryServices);
-		parameters.put(SessionParameter.WEBSERVICES_VERSIONING_SERVICE,
-				webServicesVersioningServices);
-		parameters.put(SessionParameter.REPOSITORY_ID, repositoryID);
-		parameters.put(SessionParameter.WEBSERVICES_PORT_PROVIDER_CLASS,
-				SunRIPortProvider.class.getName());
-		
-	}
-	
-//	private String getPortProvider(){
-//		if (provider instanceof com.sun.xml.ws.spi.ProviderImpl){
-//			return SunRIPortProvider.class.getName();
-//		} else if (provider instanceof org.apache.cxf.jaxws.spi.ProviderImpl){
-//			return CXFPortProvider.class.getName();
-//		}		
-//		
-//		return SunRIPortProvider.class.getName();
-//	}
+        // connection settings
+        parameters.put(SessionParameter.BINDING_TYPE,
+                BindingType.WEBSERVICES.value());
+        parameters.put(SessionParameter.WEBSERVICES_ACL_SERVICE,
+                webServicesACLServices);
+        parameters.put(SessionParameter.WEBSERVICES_DISCOVERY_SERVICE,
+                webServicesDiscoveryServices);
+        parameters.put(SessionParameter.WEBSERVICES_MULTIFILING_SERVICE,
+                webServicesMultifilingServices);
+        parameters.put(SessionParameter.WEBSERVICES_NAVIGATION_SERVICE,
+                webServicesNavigationServices);
+        parameters.put(SessionParameter.WEBSERVICES_OBJECT_SERVICE,
+                webServicesObjectServices);
+        parameters.put(SessionParameter.WEBSERVICES_POLICY_SERVICE,
+                webServicesPolicyServices);
+        parameters.put(SessionParameter.WEBSERVICES_RELATIONSHIP_SERVICE,
+                webServicesRelationshipServices);
+        parameters.put(SessionParameter.WEBSERVICES_REPOSITORY_SERVICE,
+                webServicesRepositoryServices);
+        parameters.put(SessionParameter.WEBSERVICES_VERSIONING_SERVICE,
+                webServicesVersioningServices);
+        parameters.put(SessionParameter.REPOSITORY_ID, repositoryID);
+        parameters.put(SessionParameter.WEBSERVICES_PORT_PROVIDER_CLASS,
+                SunRIPortProvider.class.getName());
 
-	@Override
-	public Map<String, String> getConfigurationParameters() {
-		return parameters;
-	}
+    }
 
-	@Override
-	public void setConfigurationParameters(Map<String, String> parameters) {
-		parameters.put(SessionParameter.BINDING_TYPE,
-				BindingType.WEBSERVICES.value());
-		parameters.put(SessionParameter.WEBSERVICES_PORT_PROVIDER_CLASS,
-				SunRIPortProvider.class.getName());
-		this.parameters = parameters;
-		createSession();
-		if (session == null){
-			parameters.put(SessionParameter.BINDING_TYPE,
-					BindingType.WEBSERVICES.value());
-			parameters.put(SessionParameter.WEBSERVICES_PORT_PROVIDER_CLASS,
-					CXFPortProvider.class.getName());
-			this.parameters = parameters;
-			createSession();
-		}
+    @Override
+    public Map<String, String> getConfigurationParameters() {
+        return parameters;
+    }
 
-	}
+    @Override
+    public void setConfigurationParameters(Map<String, String> parameters) {
+        parameters.put(SessionParameter.BINDING_TYPE,
+                BindingType.WEBSERVICES.value());
+        parameters.put(SessionParameter.WEBSERVICES_PORT_PROVIDER_CLASS,
+                SunRIPortProvider.class.getName());
+        this.parameters = parameters;
+        createSession();
+        if (session == null) {
+            parameters.put(SessionParameter.BINDING_TYPE,
+                    BindingType.WEBSERVICES.value());
+            parameters.put(SessionParameter.WEBSERVICES_PORT_PROVIDER_CLASS,
+                    CXFPortProvider.class.getName());
+            this.parameters = parameters;
+            createSession();
+        }
 
-	private Session getSession() {
-		if (session == null) {
-			setConfigurationParameters(parameters);
-			session = createSession();
-		}
-		return session;
-	}
+    }
 
-	private Session createSession() {
-		try {
-			SessionFactory factory = SessionFactoryImpl.newInstance();
+    private Session getSession() {
+        if (session == null) {
+            setConfigurationParameters(parameters);
+            session = createSession();
+        }
+        return session;
+    }
 
-			// create session
-			session = factory.createSession(parameters);
-		} catch (Exception e) {
-			session = null;
-		}
-		return session;
-	}
+    private Session createSession() {
+        try {
+            SessionFactory factory = SessionFactoryImpl.newInstance();
 
-	@Override
-	public List<CMSContentSummary> getChildren(String id) {
-		Session session = getSession();
-		if (session != null) {
-			Folder folder = null;
-			if (id == null || id.isEmpty()) {
-				folder = session.getRootFolder();
-			} else {
-				folder = (Folder) session.getObject(id);
-			}
-			ItemIterable<CmisObject> children = folder.getChildren();
-			Iterator<CmisObject> childrenItems = children.iterator();
-			List<CmisObject> documents = new ArrayList<CmisObject>();
-			while (childrenItems.hasNext()) {
-				CmisObject item = childrenItems.next();
-				documents.add(item);
-			}
-			return this.transform(documents, folder);
-		}
-		return new ArrayList<CMSContentSummary>();
-	}
+            // create session
+            session = factory.createSession(parameters);
+        } catch (Exception e) {
+            session = null;
+        }
+        return session;
+    }
 
-	@Override
-	public InputStream getDocumentContent(String id) {
-		Session session = getSession();
-		if (session != null) {
-			if (id == null || id.isEmpty()) {
-				throw new IllegalArgumentException("No id provided");
-			}
-			Document document = (Document) session.getObject(id);
-			if (document == null) {
-				throw new IllegalArgumentException(
-						"Document with this id does not exist");
-			}
-			return document.getContentStream().getStream();
-		}
-		return null;
-	}
+    @Override
+    public List<CMSContentSummary> getChildren(String id) {
+        Session session = getSession();
+        if (session != null) {
+            Folder folder = null;
+            if (id == null || id.isEmpty()) {
+                folder = session.getRootFolder();
+            } else {
+                folder = (Folder) session.getObject(id);
+            }
+            ItemIterable<CmisObject> children = folder.getChildren();
+            Iterator<CmisObject> childrenItems = children.iterator();
+            List<CmisObject> documents = new ArrayList<CmisObject>();
+            while (childrenItems.hasNext()) {
+                CmisObject item = childrenItems.next();
+                documents.add(item);
+            }
+            return this.transform(documents, folder);
+        }
+        return new ArrayList<CMSContentSummary>();
+    }
 
-	@Override
-	public void removeDocument(final String id) {
-		Session session = getSession();
-		if (session != null) {
-			session.delete(new ObjectId() {
-				@Override
-				public String getId() {
-					return id;
-				}
-			});
-		}
-	}
+    @Override
+    public InputStream getDocumentContent(String id) {
+        Session session = getSession();
+        if (session != null) {
+            if (id == null || id.isEmpty()) {
+                throw new IllegalArgumentException("No id provided");
+            }
+            Document document = (Document) session.getObject(id);
+            if (document == null) {
+                throw new IllegalArgumentException(
+                        "Document with this id does not exist");
+            }
+            return document.getContentStream().getStream();
+        }
+        return null;
+    }
 
-	public List<CMSContentSummary> transform(List<CmisObject> children,
-			Folder folder) {
-		List<CMSContentSummary> documents = new ArrayList<CMSContentSummary>();
-		for (CmisObject item : children) {
-			documents.add(transform(item, folder));
-		}
-		return documents;
-	}
+    @Override
+    public void removeDocument(final String id) {
+        Session session = getSession();
+        if (session != null) {
+            session.delete(new ObjectId() {
+                @Override
+                public String getId() {
+                    return id;
+                }
+            });
+        }
+    }
 
-	public CMSContentSummary transform(CmisObject object, Folder parentFolder) {
-		CMSContentSummary doc = null;
-		if (((ObjectType) object.getType()).getId().equals("cmis:folder")) {
-			Folder folder = (Folder) object;
-			doc = new FolderSummary(object.getName(), object.getId(),
-					folder.getPath());
-			Folder parent = ((Folder) object).getParents().get(0); // for now,
-																	// assume it
-																	// only has
-																	// one
-																	// parent.
-			FolderSummary parentFolderSummary = new FolderSummary(
-					parent.getName(), parent.getId(), parent.getPath());
-			if (parentFolder != null && parentFolder.getParents().size() > 0) {
-				Folder grandParent = parentFolder.getParents().get(0);
-				parentFolderSummary
-						.setParent(new FolderSummary(grandParent.getName(),
-								grandParent.getId(), grandParent.getPath()));
-			}
-			doc.setParent(parentFolderSummary);
-		} else {
-			doc = new DocumentSummary(object.getName(), object.getId(), null);
-			Folder parent = ((Document) object).getParents().get(0); // for now,
-																		// assume
-																		// it
-																		// only
-																		// has
-																		// one
-																		// parent.
-			FolderSummary parentFolderSummary = new FolderSummary(
-					parent.getName(), parent.getId(), parent.getPath());
-			if (parentFolder != null && parentFolder.getParents().size() > 0) {
-				Folder grandParent = parentFolder.getParents().get(0);
-				parentFolderSummary
-						.setParent(new FolderSummary(grandParent.getName(),
-								grandParent.getId(), grandParent.getPath()));
-			}
-			doc.setParent(parentFolderSummary);
-		}
-		return doc;
-	}
+    public List<CMSContentSummary> transform(List<CmisObject> children,
+                                             Folder folder) {
+        List<CMSContentSummary> documents = new ArrayList<CMSContentSummary>();
+        for (CmisObject item : children) {
+            documents.add(transform(item, folder));
+        }
+        return documents;
+    }
 
-	@Override
-	public CMSContentSummary getDocument(String id) {
-		Session session = getSession();
+    public CMSContentSummary transform(CmisObject object, Folder parentFolder) {
+        CMSContentSummary doc = null;
+        if (((ObjectType) object.getType()).getId().equals("cmis:folder")) {
+            Folder folder = (Folder) object;
+            doc = new FolderSummary(object.getName(), object.getId(),
+                    folder.getPath());
+            Folder parent = ((Folder) object).getParents().get(0); // for now,
+            // assume it
+            // only has
+            // one
+            // parent.
+            FolderSummary parentFolderSummary = new FolderSummary(
+                    parent.getName(), parent.getId(), parent.getPath());
+            if (parentFolder != null && parentFolder.getParents().size() > 0) {
+                Folder grandParent = parentFolder.getParents().get(0);
+                parentFolderSummary
+                        .setParent(new FolderSummary(grandParent.getName(),
+                                grandParent.getId(), grandParent.getPath()));
+            }
+            doc.setParent(parentFolderSummary);
+        } else {
+            doc = new DocumentSummary(object.getName(), object.getId(), null);
+            Folder parent = ((Document) object).getParents().get(0); // for now,
+            // assume
+            // it
+            // only
+            // has
+            // one
+            // parent.
+            FolderSummary parentFolderSummary = new FolderSummary(
+                    parent.getName(), parent.getId(), parent.getPath());
+            if (parentFolder != null && parentFolder.getParents().size() > 0) {
+                Folder grandParent = parentFolder.getParents().get(0);
+                parentFolderSummary
+                        .setParent(new FolderSummary(grandParent.getName(),
+                                grandParent.getId(), grandParent.getPath()));
+            }
+            doc.setParent(parentFolderSummary);
+        }
+        return doc;
+    }
 
-		if (session != null) {
-			Document document = null;
-			if (id != null && !id.isEmpty()) {
-				document = (Document) session.getObject(id);
-			}
+    @Override
+    public CMSContentSummary getDocument(String id) {
+        Session session = getSession();
 
-			if (document.getParents() != null
-					&& document.getParents().size() > 0) {
-				return this.transform(document, document.getParents().get(0));
-			} else {
-				return this.transform(document, null);
-			}
-		}
+        if (session != null) {
+            Document document = null;
+            if (id != null && !id.isEmpty()) {
+                document = (Document) session.getObject(id);
+            }
 
-		return new DocumentSummary();
-	}
+            if (document.getParents() != null
+                    && document.getParents().size() > 0) {
+                return this.transform(document, document.getParents().get(0));
+            } else {
+                return this.transform(document, null);
+            }
+        }
 
-	@Override
-	public void createDocument(DocumentSummary doc) {
-		Session session = getSession();
-		if (session != null) {
-			Map<String, Object> properties = new HashMap<String, Object>();
-			properties.put(PropertyIds.OBJECT_TYPE_ID, "cmis:document");
-			properties.put(PropertyIds.NAME, doc.getName());
-			InputStream stream = new ByteArrayInputStream(doc.getContent());
-			ContentStream contentStream = new ContentStreamImpl(doc.getName(),
-					BigInteger.valueOf(doc.getContent().length),
-					MimeTypes.getMIMEType(doc.getName()), stream);
-			Document createdDoc = ((Folder) session.getObjectByPath(doc.getPath())).createDocument(
-					properties, contentStream, VersioningState.NONE);
-			doc.setId(createdDoc.getId());
-		}
-		else {
-			throw new IllegalStateException("Could not get CMIS session");
-		}
-	}
+        return new DocumentSummary();
+    }
 
-	@Override
-	public Boolean testConnection() {
-		Session session = getSession();
+    @Override
+    public void createDocument(DocumentSummary doc) {
+        Session session = getSession();
+        if (session != null) {
+            Map<String, Object> properties = new HashMap<String, Object>();
+            properties.put(PropertyIds.OBJECT_TYPE_ID, "cmis:document");
+            properties.put(PropertyIds.NAME, doc.getName());
+            InputStream stream = new ByteArrayInputStream(doc.getContent());
+            ContentStream contentStream = new ContentStreamImpl(doc.getName(),
+                    BigInteger.valueOf(doc.getContent().length),
+                    MimeTypes.getMIMEType(doc.getName()), stream);
+            Document createdDoc = ((Folder) session.getObjectByPath(doc.getPath())).createDocument(
+                    properties, contentStream, VersioningState.NONE);
+            doc.setId(createdDoc.getId());
+        } else {
+            throw new IllegalStateException("Could not get CMIS session");
+        }
+    }
 
-		if (session != null && session.getRootFolder() != null) {
-				return true;
-		}
+    @Override
+    public Boolean testConnection() {
+        Session session = getSession();
 
-		return false;
-	}
+        if (session != null && session.getRootFolder() != null) {
+            return true;
+        }
+
+        return false;
+    }
 }

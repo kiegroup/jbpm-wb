@@ -3,15 +3,16 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.jbpm.console.ng.documents.backend.server;
 
@@ -38,95 +39,95 @@ import org.slf4j.LoggerFactory;
 
 public class DocumentViewServlet extends HttpServlet {
 
-	private static final long serialVersionUID = -3950781302033089580L;
-	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentViewServlet.class);
+    private static final long serialVersionUID = -3950781302033089580L;
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentViewServlet.class);
 
-	@Inject
-	private DocumentService documentService;
+    @Inject
+    private DocumentService documentService;
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse response)
-			throws ServletException, IOException {
-		OutputStream out = response.getOutputStream();
-		InputStream in = this.documentService.getDocumentContent(req
-				.getParameter("documentId"));
-		byte[] buffer = new byte[4096];
-		int length;
-		while ((length = in.read(buffer)) > 0) {
-			out.write(buffer, 0, length);
-		}
-		String documentName = req.getParameter("documentId");
-		response.setHeader("Content-disposition", "attachment; filename="
-				+ documentName);
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse response)
+            throws ServletException, IOException {
+        OutputStream out = response.getOutputStream();
+        InputStream in = this.documentService.getDocumentContent(req
+                .getParameter("documentId"));
+        byte[] buffer = new byte[4096];
+        int length;
+        while ((length = in.read(buffer)) > 0) {
+            out.write(buffer, 0, length);
+        }
+        String documentName = req.getParameter("documentId");
+        response.setHeader("Content-disposition", "attachment; filename="
+                + documentName);
 
-		in.close();
-		out.flush();
-	}
+        in.close();
+        out.flush();
+    }
 
-	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		try {
-			
-			FileItem file = null;
-			FileItemFactory factory = new DiskFileItemFactory();
-			ServletFileUpload upload = new ServletFileUpload(factory);
-			upload.setHeaderEncoding("UTF-8");
-			List items = upload.parseRequest(request);
-			Iterator it = items.iterator();
-			String folder = "/";
-			while (it.hasNext()) {
-				FileItem item = (FileItem) it.next();
-				if (!item.isFormField()) {
-					file = item;
-				} else {
-					if ("documentFolder".equals(item.getFieldName())) {
-						folder = item.getString();
-					}
-				}
+    @Override
+    protected void doPost(HttpServletRequest request,
+                          HttpServletResponse response) throws ServletException, IOException {
+        try {
 
-			}
+            FileItem file = null;
+            FileItemFactory factory = new DiskFileItemFactory();
+            ServletFileUpload upload = new ServletFileUpload(factory);
+            upload.setHeaderEncoding("UTF-8");
+            List items = upload.parseRequest(request);
+            Iterator it = items.iterator();
+            String folder = "/";
+            while (it.hasNext()) {
+                FileItem item = (FileItem) it.next();
+                if (!item.isFormField()) {
+                    file = item;
+                } else {
+                    if ("documentFolder".equals(item.getFieldName())) {
+                        folder = item.getString();
+                    }
+                }
 
-			response.getWriter().write(processUpload(file, folder));
-			response.setContentType("text/html");
-		} catch (Exception e) {
-			LOGGER.error("Exception while uploading file", e);
-		}
-	}
+            }
 
-	private String processUpload(final FileItem uploadItem, String folder)
-			throws IOException {
+            response.getWriter().write(processUpload(file, folder));
+            response.setContentType("text/html");
+        } catch (Exception e) {
+            LOGGER.error("Exception while uploading file", e);
+        }
+    }
 
-		// If the file it doesn't exist.
-		if ("".equals(uploadItem.getName())) {
-			throw new IOException("No file selected.");
-		}
+    private String processUpload(final FileItem uploadItem, String folder)
+            throws IOException {
 
-		uploadFile(uploadItem, folder);
-		uploadItem.getInputStream().close();
+        // If the file it doesn't exist.
+        if ("".equals(uploadItem.getName())) {
+            throw new IOException("No file selected.");
+        }
 
-		return "OK";
-	}
+        uploadFile(uploadItem, folder);
+        uploadItem.getInputStream().close();
 
-	private void uploadFile(final FileItem uploadItem, String folder)
-			throws IOException {
-		InputStream fileData = uploadItem.getInputStream();
+        return "OK";
+    }
 
-		try {
-			if (!fileData.markSupported()) {
-				fileData = new BufferedInputStream(fileData);
-			}
+    private void uploadFile(final FileItem uploadItem, String folder)
+            throws IOException {
+        InputStream fileData = uploadItem.getInputStream();
 
-			// is available() safe?
-			fileData.mark(fileData.available());
+        try {
+            if (!fileData.markSupported()) {
+                fileData = new BufferedInputStream(fileData);
+            }
 
-			byte[] bytes = IOUtils.toByteArray(fileData);
-			DocumentSummary documentSummary = new DocumentSummary(
-					uploadItem.getName(), "", folder);
-			documentSummary.setContent(bytes);
-			this.documentService.createDocument(documentSummary);
-		} catch (Exception e) {
-			LOGGER.error("Exception while uploading file", e);
-		}
-	}
+            // is available() safe?
+            fileData.mark(fileData.available());
+
+            byte[] bytes = IOUtils.toByteArray(fileData);
+            DocumentSummary documentSummary = new DocumentSummary(
+                    uploadItem.getName(), "", folder);
+            documentSummary.setContent(bytes);
+            this.documentService.createDocument(documentSummary);
+        } catch (Exception e) {
+            LOGGER.error("Exception while uploading file", e);
+        }
+    }
 }

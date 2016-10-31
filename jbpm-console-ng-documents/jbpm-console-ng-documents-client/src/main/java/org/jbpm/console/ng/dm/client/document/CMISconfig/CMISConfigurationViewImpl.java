@@ -34,14 +34,9 @@ import org.uberfire.workbench.events.NotificationEvent.NotificationType;
 @Dependent
 @Templated(value = "CMISConfigurationViewImpl.html")
 public class CMISConfigurationViewImpl extends Composite implements
-		CMISConfigurationPresenter.CMISConfigurationView {
+        CMISConfigurationPresenter.CMISConfigurationView {
 
-	private CMISConfigurationPresenter presenter;
-
-	@Inject
-	private Event<NotificationEvent> notification;
-
-	@Inject
+    @Inject
     @DataField
     public Label accordionLabel;
 
@@ -149,9 +144,14 @@ public class CMISConfigurationViewImpl extends Composite implements
     @DataField
     public Button testButton;
 
-	@Override
-	public void init(final CMISConfigurationPresenter presenter) {
-		this.presenter = presenter;
+    private CMISConfigurationPresenter presenter;
+
+    @Inject
+    private Event<NotificationEvent> notification;
+
+    @Override
+    public void init(final CMISConfigurationPresenter presenter) {
+        this.presenter = presenter;
         accordionLabel.setText("CMIS Configuration");
 
         webServicesACLLabel.setText("Webservices ACL");
@@ -170,96 +170,96 @@ public class CMISConfigurationViewImpl extends Composite implements
 
         configureButton.setText("Save");
         testButton.setText("Test Connection");
-	}
+    }
 
-	@Override
-	public void displayNotification(String text) {
-		displayNotification(text, NotificationType.INFO);
-	}
+    @Override
+    public void displayNotification(String text) {
+        displayNotification(text, NotificationType.INFO);
+    }
 
-	@Override
-	public void displayNotification(String text, NotificationType type) {
-		notification.fire(new NotificationEvent(text,type));
-	}
+    @Override
+    public void displayNotification(String text, NotificationType type) {
+        notification.fire(new NotificationEvent(text, type));
+    }
 
-	@EventHandler("configureButton")
-    public void configureButton( ClickEvent e ) {
+    @EventHandler("configureButton")
+    public void configureButton(ClickEvent e) {
         presenter.configureParameters();
     }
 
-	@EventHandler("testButton")
-    public void testButton( ClickEvent e ) {
+    @EventHandler("testButton")
+    public void testButton(ClickEvent e) {
         presenter.testConnection();
     }
 
-	@Override
-	public TextBox getWSACLTextBox() {
-		return webServicesACLBox;
-	}
+    @Override
+    public TextBox getWSACLTextBox() {
+        return webServicesACLBox;
+    }
 
-	@Override
-	public TextBox getWSDiscoveryTextBox() {
-		return webServicesDiscoveryBox;
-	}
+    @Override
+    public TextBox getWSDiscoveryTextBox() {
+        return webServicesDiscoveryBox;
+    }
 
-	@Override
-	public TextBox getWSMultifilingTextBox() {
-		return webServicesMultifilingBox;
-	}
+    @Override
+    public TextBox getWSMultifilingTextBox() {
+        return webServicesMultifilingBox;
+    }
 
-	@Override
-	public TextBox getWSNavigationTextBox() {
-		return webServicesNavigationBox;
-	}
+    @Override
+    public TextBox getWSNavigationTextBox() {
+        return webServicesNavigationBox;
+    }
 
-	@Override
-	public TextBox getWSObjectTextBox() {
-		return webServicesObjectBox;
-	}
+    @Override
+    public TextBox getWSObjectTextBox() {
+        return webServicesObjectBox;
+    }
 
-	@Override
-	public TextBox getWSPolicyTextBox() {
-		return webServicesPolicyBox;
-	}
+    @Override
+    public TextBox getWSPolicyTextBox() {
+        return webServicesPolicyBox;
+    }
 
-	@Override
-	public TextBox getWSRelationshipTextBox() {
-		return webServicesRelationshipBox;
-	}
+    @Override
+    public TextBox getWSRelationshipTextBox() {
+        return webServicesRelationshipBox;
+    }
 
-	@Override
-	public TextBox getWSRepositoryTextBox() {
-		return webServicesRepositoryBox;
-	}
+    @Override
+    public TextBox getWSRepositoryTextBox() {
+        return webServicesRepositoryBox;
+    }
 
-	@Override
-	public TextBox getWSVersioningTextBox() {
-		return webServicesVersioningBox;
-	}
+    @Override
+    public TextBox getWSVersioningTextBox() {
+        return webServicesVersioningBox;
+    }
 
-	@Override
-	public TextBox getUserTextBox() {
-		return userBox;
-	}
+    @Override
+    public TextBox getUserTextBox() {
+        return userBox;
+    }
 
-	@Override
-	public TextBox getPasswordTextBox() {
-		return passwordBox;
-	}
+    @Override
+    public TextBox getPasswordTextBox() {
+        return passwordBox;
+    }
 
-	@Override
-	public TextBox getRepositoryIDTextBox() {
-		return repositoryIDBox;
-	}
+    @Override
+    public TextBox getRepositoryIDTextBox() {
+        return repositoryIDBox;
+    }
 
-	@Override
-	public Button getConfigureButton() {
-		return configureButton;
-	}
+    @Override
+    public Button getConfigureButton() {
+        return configureButton;
+    }
 
-	@Override
-	public Button getTestButton() {
-		return testButton;
-	}
+    @Override
+    public Button getTestButton() {
+        return testButton;
+    }
 
 }

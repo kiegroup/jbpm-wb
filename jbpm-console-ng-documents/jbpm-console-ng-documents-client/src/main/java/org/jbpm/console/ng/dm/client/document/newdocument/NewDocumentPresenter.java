@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 JBoss by Red Hat.
+ * Copyright 2013 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,23 +40,20 @@ import org.uberfire.mvp.PlaceRequest;
 @WorkbenchPopup(identifier = "New Document")
 public class NewDocumentPresenter {
 
-    public interface NewDocumentView extends UberView<NewDocumentPresenter> {
-
-    	void setFolder(String folder);
-
-        void displayNotification( String notification );
-    }
+    @Inject
+    NewDocumentView view;
 
     @Inject
     private PlaceManager placeManager;
 
     private String folder;
-    @Inject
-    NewDocumentView view;
+
     @Inject
     private Event<NewDocumentEvent> documentAddedEvent;
+
     @Inject
     private Caller<DocumentServiceEntryPoint> documentServices;
+
     private PlaceRequest place;
 
     public NewDocumentPresenter() {
@@ -77,7 +74,7 @@ public class NewDocumentPresenter {
     }
 
     @OnStartup
-    public void onStartup( final PlaceRequest place ) {
+    public void onStartup(final PlaceRequest place) {
         this.place = place;
         Map<String, String> params = place.getParameters();
         this.folder = params.get("folder");
@@ -90,17 +87,24 @@ public class NewDocumentPresenter {
     }
 
     public void close() {
-        placeManager.closePlace( place );
+        placeManager.closePlace(place);
     }
 
     public void createDocument(DocumentSummary doc) {
-    	this.documentServices.call(new RemoteCallback<Void>() {
-    		@Override
-    		public void callback(Void response) {
-    			close();
-    			documentAddedEvent.fire(new NewDocumentEvent());
-    			System.out.println("Hello");
-    		}
-		}).addDocument(doc);
+        this.documentServices.call(new RemoteCallback<Void>() {
+            @Override
+            public void callback(Void response) {
+                close();
+                documentAddedEvent.fire(new NewDocumentEvent());
+                System.out.println("Hello");
+            }
+        }).addDocument(doc);
+    }
+
+    public interface NewDocumentView extends UberView<NewDocumentPresenter> {
+
+        void setFolder(String folder);
+
+        void displayNotification(String notification);
     }
 }

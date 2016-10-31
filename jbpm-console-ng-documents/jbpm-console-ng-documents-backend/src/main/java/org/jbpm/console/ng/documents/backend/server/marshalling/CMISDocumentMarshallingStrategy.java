@@ -3,15 +3,16 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package org.jbpm.console.ng.documents.backend.server.marshalling;
 
@@ -33,34 +34,35 @@ import org.jbpm.document.Document;
 import org.kie.api.marshalling.ObjectMarshallingStrategy;
 
 public class CMISDocumentMarshallingStrategy implements
-		ObjectMarshallingStrategy {
+        ObjectMarshallingStrategy {
 
-//	@Inject TODO cannot do injection, it just does not fill it.
-	private DocumentService documentService;
+    //@Inject TODO cannot do injection, it just does not fill it.
+    private DocumentService documentService;
 
-	public CMISDocumentMarshallingStrategy() {
-		documentService = new DocumentServiceCMISImpl();
-		documentService.init();
-	}
-	@Override
-	public boolean accept(Object o) {
-		return o instanceof Document;
-	}
+    public CMISDocumentMarshallingStrategy() {
+        documentService = new DocumentServiceCMISImpl();
+        documentService.init();
+    }
 
-	@Override
-	public void write(ObjectOutputStream os, Object object) throws IOException {
-		Document document = (Document) object;
-		documentService.createDocument(new DocumentSummary(document.getName(), "", "/"));
-	}
+    @Override
+    public boolean accept(Object o) {
+        return o instanceof Document;
+    }
 
-	@Override
-	public Object read(ObjectInputStream os) throws IOException,
-			ClassNotFoundException {
+    @Override
+    public void write(ObjectOutputStream os, Object object) throws IOException {
+        Document document = (Document) object;
+        documentService.createDocument(new DocumentSummary(document.getName(), "", "/"));
+    }
+
+    @Override
+    public Object read(ObjectInputStream os) throws IOException,
+            ClassNotFoundException {
         String objectId = os.readUTF();
         String canonicalName = os.readUTF();
         String link = os.readUTF();
         try {
-        	DocumentSummary doc = (DocumentSummary)this.documentService.getDocument(objectId);
+            DocumentSummary doc = (DocumentSummary) this.documentService.getDocument(objectId);
             Document document = (Document) Class.forName(canonicalName).newInstance();
             document.setIdentifier(objectId);
             document.setLink(link);
@@ -70,65 +72,65 @@ public class CMISDocumentMarshallingStrategy implements
             document.setAttributes(new HashMap<String, String>());
             document.setContent(doc.getContent());
             return document;
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Cannot read document", e);
         }
-	}
+    }
 
-	@Override
-	public byte[] marshal(Context context, ObjectOutputStream os, Object object)
-			throws IOException {
-		String path = "/";
-		Document document = (Document) object;
-		DocumentSummary summary = new DocumentSummary(document.getName(), "", path);
-		summary.setContent(document.getContent());
-		documentService.createDocument(summary);
-		ByteArrayOutputStream buff = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream(buff);
-		oos.writeUTF(summary.getId());
-		oos.writeUTF(document.getClass().getCanonicalName());
-		String link = "http://localhost:8080/magnoliaAuthor/dms" + path + document.getName();
-		oos.writeUTF(link);
-		oos.close();
-		return buff.toByteArray();
-	}
+    @Override
+    public byte[] marshal(Context context, ObjectOutputStream os, Object object)
+            throws IOException {
+        String path = "/";
+        Document document = (Document) object;
+        DocumentSummary summary = new DocumentSummary(document.getName(), "", path);
+        summary.setContent(document.getContent());
+        documentService.createDocument(summary);
+        ByteArrayOutputStream buff = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(buff);
+        oos.writeUTF(summary.getId());
+        oos.writeUTF(document.getClass().getCanonicalName());
+        String link = "http://localhost:8080/magnoliaAuthor/dms" + path + document.getName();
+        oos.writeUTF(link);
+        oos.close();
+        return buff.toByteArray();
+    }
 
-	@Override
-	public Object unmarshal(Context context,
-			ObjectInputStream objectInputStream, byte[] object,
-			ClassLoader classLoader) throws IOException, ClassNotFoundException {
+    @Override
+    public Object unmarshal(Context context,
+                            ObjectInputStream objectInputStream, byte[] object,
+                            ClassLoader classLoader) throws IOException, ClassNotFoundException {
 
-		DroolsObjectInputStream is = new DroolsObjectInputStream(
-				new ByteArrayInputStream(object), classLoader);
-		// first we read out the object id and class name we stored during
-		// marshaling
-		String objectId = is.readUTF();
-		String canonicalName = is.readUTF();
-		String link = is.readUTF();
-		Document document = null;
-		try {
-			document = (Document) Class.forName(canonicalName).newInstance();
-			DocumentSummary storedDoc = (DocumentSummary)this.documentService.getDocument(objectId);
-			document.setIdentifier(storedDoc.getId());
-			document.setName(storedDoc.getName());
-			document.setLink(link);
-			document.setLastModified(new Date());
-			document.setSize(10);
-			document.setAttributes(new HashMap<String, String>());
-			InputStream stream = this.documentService.getDocumentContent(objectId);
-			byte[] content = IOUtils.toByteArray(stream);
-			document.setContent(content);
-		} catch (Exception e) {
-			throw new RuntimeException(
-					"Cannot read document from storage service", e);
-		}
-		return document;
-	}
+        DroolsObjectInputStream is = new DroolsObjectInputStream(
+                new ByteArrayInputStream(object), classLoader);
+        // first we read out the object id and class name we stored during
+        // marshaling
+        String objectId = is.readUTF();
+        String canonicalName = is.readUTF();
+        String link = is.readUTF();
+        Document document = null;
+        try {
+            document = (Document) Class.forName(canonicalName).newInstance();
+            DocumentSummary storedDoc = (DocumentSummary) this.documentService.getDocument(objectId);
+            document.setIdentifier(storedDoc.getId());
+            document.setName(storedDoc.getName());
+            document.setLink(link);
+            document.setLastModified(new Date());
+            document.setSize(10);
+            document.setAttributes(new HashMap<String, String>());
+            InputStream stream = this.documentService.getDocumentContent(objectId);
+            byte[] content = IOUtils.toByteArray(stream);
+            document.setContent(content);
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Cannot read document from storage service", e);
+        }
+        return document;
+    }
 
-	@Override
-	public Context createContext() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Context createContext() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }
