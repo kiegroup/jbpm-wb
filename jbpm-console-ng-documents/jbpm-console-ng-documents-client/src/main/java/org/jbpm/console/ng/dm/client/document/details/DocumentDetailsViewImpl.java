@@ -33,69 +33,69 @@ import org.jbpm.console.ng.dm.client.i18n.Constants;
 @Dependent
 @Templated(value = "DocumentDetailsViewImpl.html")
 public class DocumentDetailsViewImpl extends Composite implements
-		DocumentDetailsPresenter.DocumentDetailsView {
+        DocumentDetailsPresenter.DocumentDetailsView {
 
-	private DocumentDetailsPresenter presenter;
-	
-	private Constants constants = GWT.create(Constants.class);
+    @Inject
+    @DataField
+    public HTML documentIdText;
 
-	@Inject
-	@DataField
-	public HTML documentIdText;
+    @Inject
+    @DataField
+    public HTML documentNameText;
 
-	@Inject
-	@DataField
-	public HTML documentNameText;
+    @Inject
+    @DataField
+    public Label documentNameLabel;
 
-	@Inject
-	@DataField
-	public Label documentNameLabel;
+    @Inject
+    @DataField
+    public Label documentIdLabel;
 
-	@Inject
-	@DataField
-	public Label documentIdLabel;
+    @Inject
+    @DataField
+    public Label documentPathLabel;
 
-	@Inject
-	@DataField
-	public Label documentPathLabel;
-	
-	@Inject
+    @Inject
     @DataField
     public Button openDocumentButton;
 
-	@Override
-	public void init(final DocumentDetailsPresenter presenter) {
-		this.presenter = presenter;
+    private DocumentDetailsPresenter presenter;
 
-		documentIdLabel.setText(constants.DocumentID());
-		documentNameLabel.setText(constants.DocumentName());
-		openDocumentButton.setText(constants.DownloadButton());
-		documentPathLabel.setText(constants.DownloadButtonLabel());
-	}
+    private Constants constants = GWT.create(Constants.class);
 
-	@Override
-	public void displayNotification(String text) {
-		// TODO Auto-generated method stub
+    @Override
+    public void init(final DocumentDetailsPresenter presenter) {
+        this.presenter = presenter;
 
-	}
+        documentIdLabel.setText(constants.DocumentID());
+        documentNameLabel.setText(constants.DocumentName());
+        openDocumentButton.setText(constants.DownloadButton());
+        documentPathLabel.setText(constants.DownloadButtonLabel());
+    }
 
-	@Override
-	public HTML getDocumentNameText() {
-		return documentNameText;
-	}
+    @Override
+    public void displayNotification(String text) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public HTML getDocumentIdText() {
-		return documentIdText;
-	}
+    }
 
-	@Override
-	public Button getOpenDocumentButton() {
-		return openDocumentButton;
-	}
-	
-	@EventHandler("openDocumentButton")
-    public void openDocumentButton( ClickEvent e ) {
+    @Override
+    public HTML getDocumentNameText() {
+        return documentNameText;
+    }
+
+    @Override
+    public HTML getDocumentIdText() {
+        return documentIdText;
+    }
+
+    @Override
+    public Button getOpenDocumentButton() {
+        return openDocumentButton;
+    }
+
+    @EventHandler("openDocumentButton")
+    public void openDocumentButton(ClickEvent e) {
         presenter.downloadDocument();
     }
 

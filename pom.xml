@@ -31,6 +31,10 @@
   <name>jBPM Console NG</name>
   <description>jBPM Console NG Modules</description>
 
+  <properties>
+    <checkstyle.header.file>src/main/resources/LICENSE.txt</checkstyle.header.file>
+  </properties>
+
   <modules>
     <module>jbpm-console-ng-human-tasks-admin</module>
     <module>jbpm-console-ng-human-tasks-forms</module>
@@ -87,6 +91,40 @@
           </configuration>
           <executions>
             <execution>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>validate</id>
+              <phase>validate</phase>
+              <configuration>
+                <checkstyleRules>
+                  <module name="Checker">
+                    <module name="FileTabCharacter">
+                      <property name="eachLine" value="true" />
+                    </module>
+                    <module name="RegexpHeader">
+                      <property name="headerFile" value="${checkstyle.header.file}"/>
+                      <property name="fileExtensions" value="java"/>
+                    </module>
+                    <module name="TreeWalker">
+                      <module name="RegexpSinglelineJava">
+                        <property name="format" value="@author"/>
+                        <property name="message" value="No @author tag allowed"/>
+                      </module>
+                    </module>
+                  </module>
+                </checkstyleRules>
+                <consoleOutput>true</consoleOutput>
+                <failsOnError>true</failsOnError>
+              </configuration>
               <goals>
                 <goal>check</goal>
               </goals>
