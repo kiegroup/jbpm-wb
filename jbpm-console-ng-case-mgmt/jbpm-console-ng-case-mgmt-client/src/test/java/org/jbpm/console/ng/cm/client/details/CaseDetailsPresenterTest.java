@@ -16,20 +16,19 @@
 
 package org.jbpm.console.ng.cm.client.details;
 
-import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenterTest;
 import org.jbpm.console.ng.cm.client.events.CaseRefreshEvent;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
-import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
-@RunWith(GwtMockitoTestRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class CaseDetailsPresenterTest extends AbstractCaseInstancePresenterTest {
 
     @Mock
@@ -54,12 +53,7 @@ public class CaseDetailsPresenterTest extends AbstractCaseInstancePresenterTest 
     public void testFindCaseInstance() {
         presenter.findCaseInstance();
 
-        verify(view).setCaseId("");
-        verify(view).setCaseStatus("");
-        verify(view).setCaseDescription("");
-        verify(view).setCaseStartedAt("");
-        verify(view).setCaseCompletedAt("");
-        verify(view).setCaseOwner("");
+        verify(view).setValue(new CaseInstanceSummary());
         verifyNoMoreInteractions(view);
         verify(caseManagementService, never()).getCaseInstance(anyString(), anyString(), anyString());
     }
@@ -69,18 +63,8 @@ public class CaseDetailsPresenterTest extends AbstractCaseInstancePresenterTest 
         final String serverTemplateId = "serverTemplateId";
         final CaseInstanceSummary cis = setupCaseInstance(serverTemplateId);
 
-        verify(view).setCaseId("");
-        verify(view).setCaseStatus("");
-        verify(view).setCaseDescription("");
-        verify(view).setCaseStartedAt("");
-        verify(view).setCaseCompletedAt("");
-        verify(view).setCaseOwner("");
-        verify(view).setCaseId(cis.getCaseId());
-        verify(view).setCaseStatus("Active");
-        verify(view).setCaseDescription(cis.getDescription());
-        verify(view).setCaseStartedAt(DateUtils.getDateTimeStr(cis.getStartedAt()));
-        verify(view).setCaseCompletedAt(DateUtils.getDateTimeStr(cis.getCompletedAt()));
-        verify(view).setCaseOwner(cis.getOwner());
+        verify(view).setValue(new CaseInstanceSummary());
+        verify(view).setValue(cis);
         verifyNoMoreInteractions(view);
         verify(caseManagementService).getCaseInstance(serverTemplateId, cis.getContainerId(), cis.getCaseId());
     }
@@ -92,18 +76,9 @@ public class CaseDetailsPresenterTest extends AbstractCaseInstancePresenterTest 
 
         presenter.onCaseRefreshEvent(new CaseRefreshEvent(cis.getCaseId()));
 
-        verify(view, times(2)).setCaseId("");
-        verify(view, times(2)).setCaseStatus("");
-        verify(view, times(2)).setCaseDescription("");
-        verify(view, times(2)).setCaseStartedAt("");
-        verify(view, times(2)).setCaseCompletedAt("");
-        verify(view, times(2)).setCaseOwner("");
-        verify(view, times(2)).setCaseId(cis.getCaseId());
-        verify(view, times(2)).setCaseStatus("Active");
-        verify(view, times(2)).setCaseDescription(cis.getDescription());
-        verify(view, times(2)).setCaseStartedAt(DateUtils.getDateTimeStr(cis.getStartedAt()));
-        verify(view, times(2)).setCaseCompletedAt(DateUtils.getDateTimeStr(cis.getCompletedAt()));
-        verify(view, times(2)).setCaseOwner(cis.getOwner());
+        verify(view, times(2)).setValue(new CaseInstanceSummary());
+        verify(view, times(2)).setValue(cis);
+
         verifyNoMoreInteractions(view);
         verify(caseManagementService, times(2)).getCaseInstance(serverTemplateId, cis.getContainerId(), cis.getCaseId());
     }

@@ -19,15 +19,14 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.TakesValue;
 import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter;
 import org.jbpm.console.ng.cm.client.resources.i18n.Constants;
-import org.jbpm.console.ng.cm.client.util.CaseStatusEnum;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
-import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.mvp.UberElement;
 
 @Dependent
 @WorkbenchScreen(identifier = CaseDetailsPresenter.SCREEN_ID)
@@ -49,43 +48,21 @@ public class CaseDetailsPresenter extends AbstractCaseInstancePresenter {
     }
 
     @WorkbenchPartView
-    public UberView<CaseDetailsPresenter> getView() {
+    public UberElement<CaseDetailsPresenter> getView() {
         return view;
     }
 
     @Override
     protected void clearCaseInstance() {
-        view.setCaseId("");
-        view.setCaseStatus("");
-        view.setCaseDescription("");
-        view.setCaseStartedAt("");
-        view.setCaseCompletedAt("");
-        view.setCaseOwner("");
+        view.setValue(new CaseInstanceSummary());
     }
 
     @Override
     protected void loadCaseInstance(final CaseInstanceSummary cis) {
-        view.setCaseId(cis.getCaseId());
-        view.setCaseStatus(translationService.format(CaseStatusEnum.fromStatus(cis.getStatus()).getLabel()));
-        view.setCaseDescription(cis.getDescription());
-        view.setCaseStartedAt(DateUtils.getDateTimeStr(cis.getStartedAt()));
-        view.setCaseCompletedAt(DateUtils.getDateTimeStr(cis.getCompletedAt()));
-        view.setCaseOwner(cis.getOwner());
+        view.setValue(cis);
     }
 
-    public interface CaseDetailsView extends UberView<CaseDetailsPresenter> {
-
-        void setCaseDescription(String text);
-
-        void setCaseStatus(String status);
-
-        void setCaseId(String caseId);
-
-        void setCaseStartedAt(String date);
-
-        void setCaseCompletedAt(String date);
-
-        void setCaseOwner(String owner);
+    public interface CaseDetailsView extends UberElement<CaseDetailsPresenter>, TakesValue<CaseInstanceSummary> {
 
     }
 

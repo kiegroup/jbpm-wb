@@ -19,9 +19,6 @@ package org.jbpm.console.ng.cm.client.comments;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.DOM;
-import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
@@ -35,7 +32,8 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.ext.widgets.common.client.common.StyleHelper;
+import org.jbpm.console.ng.cm.client.util.FormGroup;
+import org.jbpm.console.ng.cm.client.util.ValidationState;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
@@ -87,8 +85,9 @@ public class CaseCommentItemView implements IsElement {
     @DataField("comment-update-help")
     Span updateCommentTextHelp;
 
+    @Inject
     @DataField("comment-update-group")
-    Element updateCommentTextGroup = DOM.createDiv();
+    FormGroup updateCommentTextGroup;
 
     @Inject
     @DataField("comment-show")
@@ -158,7 +157,7 @@ public class CaseCommentItemView implements IsElement {
 
     public void clearErrorMessages() {
         updateCommentTextHelp.setTextContent("");
-        setFormGroupStyle(updateCommentTextGroup, ValidationState.NONE);
+        updateCommentTextGroup.clearValidationState();
     }
 
     public boolean validateForm() {
@@ -167,20 +166,17 @@ public class CaseCommentItemView implements IsElement {
         if (newCommentEmpty) {
             updateCommentText.focus();
             updateCommentTextHelp.setTextContent(translationService.format(CASE_COMMENT_CANT_BE_EMPTY));
-            setFormGroupStyle(updateCommentTextGroup, ValidationState.ERROR);
+            updateCommentTextGroup.setValidationState(ValidationState.ERROR);
             return false;
         }
         return true;
     }
 
-    private void setFormGroupStyle(final Element element, final ValidationState validationState) {
-        StyleHelper.addUniqueEnumStyleName(element, ValidationState.class, validationState);
-    }
-
     @EventHandler("comment-update-input")
     @SuppressWarnings("unsued")
     public void updateCommentPressingEnter(@ForEvent("keyup") final KeyboardEvent e) {
-        if ("Enter".equals(e.getKey())) {
+        //Chrome bug, key is not set
+        if ("Enter".equals(e.getKey()) || "Enter".equals(e.getCode()) || "NumpadEnter".equals(e.getCode())) {
             updateCommandAction.execute();
         }
     }

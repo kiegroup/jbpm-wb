@@ -29,7 +29,7 @@ import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.mvp.UberElement;
 import org.uberfire.mvp.Command;
 
 import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.*;
@@ -52,7 +52,7 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter {
     private String currentUpdatedCommentId = "";
 
     @WorkbenchPartView
-    public UberView<CaseCommentsPresenter> getView() {
+    public UberElement<CaseCommentsPresenter> getView() {
         return caseCommentView;
     }
 
@@ -139,7 +139,7 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter {
         currentUpdatedCommentId = commentId;
     }
 
-    public interface CaseCommentsView extends UberView<CaseCommentsPresenter> {
+    public interface CaseCommentsView extends UberElement<CaseCommentsPresenter> {
 
         void clearCommentInputForm();
 

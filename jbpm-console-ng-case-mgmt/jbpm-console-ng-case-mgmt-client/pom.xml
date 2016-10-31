@@ -32,15 +32,6 @@
   <dependencies>
 
     <dependency>
-      <groupId>org.gwtbootstrap3</groupId>
-      <artifactId>gwtbootstrap3</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.gwtbootstrap3</groupId>
-      <artifactId>gwtbootstrap3-extras</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-console-ng-case-mgmt-api</artifactId>
     </dependency>
@@ -127,12 +118,6 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>com.google.gwt.gwtmockito</groupId>
-      <artifactId>gwtmockito</artifactId>
       <scope>test</scope>
     </dependency>
 

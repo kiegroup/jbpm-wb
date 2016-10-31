@@ -19,71 +19,83 @@ package org.jbpm.console.ng.cm.client.details;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.Composite;
+import org.jboss.errai.common.client.dom.Div;
+import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.Paragraph;
 import org.jboss.errai.common.client.dom.Span;
+import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.ui.shared.api.annotations.AutoBound;
+import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.console.ng.cm.client.util.CaseStatusConverter;
+import org.jbpm.console.ng.cm.client.util.DateConverter;
+import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 
 @Dependent
 @Templated
-public class CaseDetailsViewImpl extends Composite implements CaseDetailsPresenter.CaseDetailsView {
+public class CaseDetailsViewImpl implements CaseDetailsPresenter.CaseDetailsView {
 
     @Inject
     @DataField
-    Paragraph caseIdText;
+    private Div container;
 
     @Inject
-    @DataField
-    Paragraph caseDescriptionText;
+    @Bound
+    @DataField("case-id")
+    @SuppressWarnings("unused")
+    private Paragraph caseId;
 
     @Inject
-    @DataField
-    Span caseStatusText;
+    @Bound
+    @DataField("case-description")
+    @SuppressWarnings("unused")
+    private Paragraph description;
 
     @Inject
-    @DataField
-    Paragraph caseStartText;
+    @Bound(converter = CaseStatusConverter.class)
+    @DataField("case-status")
+    @SuppressWarnings("unused")
+    private Span status;
 
     @Inject
-    @DataField
-    Paragraph caseCompleteText;
+    @Bound(converter = DateConverter.class)
+    @DataField("case-start")
+    @SuppressWarnings("unused")
+    private Paragraph startedAt;
 
     @Inject
-    @DataField
-    Paragraph caseOwnerText;
+    @Bound(converter = DateConverter.class)
+    @DataField("case-complete")
+    @SuppressWarnings("unused")
+    private Paragraph completedAt;
+
+    @Inject
+    @Bound
+    @DataField("case-owner")
+    @SuppressWarnings("unused")
+    private Paragraph owner;
+
+    @Inject
+    @AutoBound
+    private DataBinder<CaseInstanceSummary> binder;
+
+    @Override
+    public void setValue(final CaseInstanceSummary caseInstanceSummary) {
+        binder.setModel(caseInstanceSummary);
+    }
+
+    @Override
+    public CaseInstanceSummary getValue() {
+        return binder.getModel();
+    }
 
     @Override
     public void init(final CaseDetailsPresenter presenter) {
     }
 
     @Override
-    public void setCaseDescription(final String text) {
-        caseDescriptionText.setTextContent(text);
-    }
-
-    @Override
-    public void setCaseStatus(final String status) {
-        caseStatusText.setTextContent(status);
-    }
-
-    @Override
-    public void setCaseId(final String caseId) {
-        caseIdText.setTextContent(caseId);
-    }
-
-    @Override
-    public void setCaseStartedAt(final String date) {
-        caseStartText.setTextContent(date);
-    }
-
-    @Override
-    public void setCaseCompletedAt(final String date) {
-        caseCompleteText.setTextContent(date);
-    }
-
-    @Override
-    public void setCaseOwner(final String owner) {
-        caseOwnerText.setTextContent(owner);
+    public HTMLElement getElement() {
+        return container;
     }
 }
