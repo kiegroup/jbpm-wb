@@ -15,9 +15,12 @@
  */
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
+import java.util.List;
+
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
@@ -36,6 +39,7 @@ import org.uberfire.mocks.EventSourceMock;
 
 import static org.dashbuilder.dataset.sort.SortOrder.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.jbpm.console.ng.es.model.RequestDataSetConstants.*;
 
@@ -107,26 +111,6 @@ public class RequestListPresenterTest {
         verify(executorServiceMock).requeueRequest(anyString(), eq(REQUESTID_ID));
     }
 
-    public FilterSettings createTableSettingsPrototype() {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset( REQUEST_LIST_DATASET );
-        builder.setColumn( COLUMN_ID, "id" );
-        builder.setColumn( COLUMN_TIMESTAMP, "time" , DateUtils.getDateTimeFormatMask());
-        builder.setColumn( COLUMN_STATUS,"status" );
-        builder.setColumn( COLUMN_COMMANDNAME , "commandName" );
-        builder.setColumn( COLUMN_MESSAGE, "status" );
-        builder.setColumn( COLUMN_BUSINESSKEY, "key" );
-
-        builder.filterOn( true, true, true);
-        builder.tableOrderEnabled(true);
-        builder.tableOrderDefault( COLUMN_TIMESTAMP, DESCENDING );
-        builder.tableWidth(1000);
-
-        return  builder.buildSettings();
-    }
-
     @Test
     public void testEmptySearchString() {
         final SearchEvent searchEvent = new SearchEvent("");
@@ -145,6 +129,54 @@ public class RequestListPresenterTest {
 
         verify(viewMock).applyFilterOnPresenter(anyString());
         assertEquals(searchEvent.getFilter(), presenter.getTextSearchStr());
+    }
+
+    @Test
+    public void testSearchFilterNull() {
+        final List<ColumnFilter> filters = presenter.getColumnFilters(null);
+
+        assertTrue(filters.isEmpty());
+    }
+
+    @Test
+    public void testSearchFilterEmpty() {
+        List<ColumnFilter> filters;
+
+        filters= presenter.getColumnFilters("");
+        assertTrue(filters.isEmpty());
+
+        filters = presenter.getColumnFilters("     ");
+        assertTrue(filters.isEmpty());
+    }
+
+    @Test
+    public void testSearchFilterString() {
+        final List<ColumnFilter> filters = presenter.getColumnFilters("jobReference");
+
+        assertEquals(3, filters.size());
+        assertEquals(COLUMN_COMMANDNAME, filters.get(0).getColumnId());
+        assertEquals(COLUMN_MESSAGE, filters.get(1).getColumnId());
+        assertEquals(COLUMN_BUSINESSKEY, filters.get(2).getColumnId());
+    }
+
+    private FilterSettings createTableSettingsPrototype() {
+        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
+        builder.initBuilder();
+
+        builder.dataset( REQUEST_LIST_DATASET );
+        builder.setColumn( COLUMN_ID, "id" );
+        builder.setColumn( COLUMN_TIMESTAMP, "time" , DateUtils.getDateTimeFormatMask());
+        builder.setColumn( COLUMN_STATUS,"status" );
+        builder.setColumn( COLUMN_COMMANDNAME , "commandName" );
+        builder.setColumn( COLUMN_MESSAGE, "status" );
+        builder.setColumn( COLUMN_BUSINESSKEY, "key" );
+
+        builder.filterOn( true, true, true);
+        builder.tableOrderEnabled(true);
+        builder.tableOrderDefault( COLUMN_TIMESTAMP, DESCENDING );
+        builder.tableWidth(1000);
+
+        return  builder.buildSettings();
     }
 
 }
