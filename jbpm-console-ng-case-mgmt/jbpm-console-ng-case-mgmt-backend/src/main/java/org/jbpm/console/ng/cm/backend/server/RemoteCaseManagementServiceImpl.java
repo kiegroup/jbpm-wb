@@ -117,10 +117,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     public List<CaseCommentSummary> getComments(final String serverTemplateId, final String containerId,
                                                 final String caseId, final Integer page, final Integer pageSize) {
         final List<CaseComment> caseComments = client.getComments(containerId, caseId, page, pageSize);
-        return caseComments.stream()
-                .map(cd -> CaseCommentSummary.builder().id(cd.getId()).author(cd.getAuthor()).text(cd.getText()).addedAt(cd.getAddedAt()).build())
-                .collect(toList());
-
+        return caseComments.stream().map(new CaseCommentsMapper()).collect(toList());
     }
 
     @Override
@@ -140,5 +137,4 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                               final String commentId) {
         client.removeComment(containerId, caseId, commentId);
     }
-
 }

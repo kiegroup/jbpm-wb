@@ -19,7 +19,6 @@ package org.jbpm.console.ng.cm.backend.server;
 import java.util.function.Function;
 
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
-import org.jbpm.console.ng.cm.model.CaseRoleAssignmentSummary;
 import org.kie.server.api.model.cases.CaseInstance;
 
 import static java.util.Collections.emptyList;
@@ -46,7 +45,7 @@ public class CaseInstanceMapper implements Function<CaseInstance, CaseInstanceSu
                 roleAssignments(
                         ofNullable(ci.getRoleAssignments()).orElse(emptyList())
                                 .stream()
-                                .map(ra -> CaseRoleAssignmentSummary.builder().name(ra.getName()).groups(ra.getGroups()).users(ra.getUsers()).build())
+                                .map(new RoleAssignmentsMapper())
                                 .collect(toList())).
                 build();
     }

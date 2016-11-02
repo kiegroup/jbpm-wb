@@ -16,6 +16,7 @@
 
 package org.jbpm.console.ng.cm.backend.server;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.jbpm.console.ng.cm.util.CaseInstanceSearchRequest;
+import org.jbpm.console.ng.cm.util.CaseInstanceSortBy;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.server.api.model.cases.CaseComment;
@@ -39,52 +41,68 @@ import static org.jbpm.console.ng.cm.backend.server.CaseDefinitionMapperTest.ass
 import static org.jbpm.console.ng.cm.backend.server.CaseInstanceMapperTest.assertCaseInstance;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RemoteCaseManagementServiceImplTest {
 
-    final String caseId = "CASE-1";
-    final String containerId = "containerId";
     final String serverTemplateId = "serverTemplateId";
+    final String containerId = "containerId";
+    final String caseDefinitionId = "caseDefinitionId";
+    final String caseId = "CASE-1";
+    final String caseName = "case name";
+    final String caseDescription = "case description";
     final String author = "author";
     final String text = "text";
     final String commentId = "commentId";
 
     @Mock
-    CaseServicesClient caseServicesClient;
+    CaseServicesClient clientMock;
 
     @InjectMocks
-    RemoteCaseManagementServiceImpl service;
+    RemoteCaseManagementServiceImpl testedService;
 
     @Test
-    public void testGetCaseDefinitions() throws Exception {
-        final CaseDefinition definition = new CaseDefinition();
-        definition.setIdentifier("org.jbpm.case");
-        definition.setName("New case");
-        definition.setContainerId("org.jbpm");
-        definition.setRoles(Collections.emptyMap());
-        when(caseServicesClient.getCaseDefinitions(anyInt(), anyInt())).thenReturn(singletonList(definition));
+    public void testGetCaseDefinitions() {
+        final CaseDefinition definition = createTestDefinition();
+        when(clientMock.getCaseDefinitions(anyInt(), anyInt()))
+                .thenReturn(singletonList(definition));
 
-        final List<CaseDefinitionSummary> definitions = service.getCaseDefinitions();
+        List<CaseDefinitionSummary> definitions = testedService.getCaseDefinitions();
         assertNotNull(definitions);
         assertEquals(1, definitions.size());
         assertCaseDefinition(definition, definitions.get(0));
     }
 
     @Test
-    public void testGetCaseInstances() throws Exception {
-        final CaseInstanceSearchRequest request = new CaseInstanceSearchRequest();
-        final CaseInstance instance = new CaseInstance();
-        instance.setCaseDescription("New case");
-        instance.setCaseId("CASE-1");
-        instance.setCaseStatus(1);
-        instance.setContainerId("org.jbpm");
-        when(caseServicesClient.getCaseInstances(eq(singletonList(request.getStatus())), anyInt(), anyInt())).thenReturn(singletonList(instance));
+    public void getCaseDefinition_whenClientReturnsCaseDefinition() {
+        final CaseDefinition definition = createTestDefinition();
+        when(clientMock.getCaseDefinition(anyString(), anyString()))
+                .thenReturn(definition);
 
-        final List<CaseInstanceSummary> instances = service.getCaseInstances(request);
+        CaseDefinitionSummary actualDef = testedService.getCaseDefinition(serverTemplateId, containerId, caseDefinitionId);
+        assertCaseDefinition(definition, actualDef);
+    }
+
+    @Test
+    public void getCaseDefinition_whenClientReturnsNull() {
+        when(clientMock.getCaseDefinition(anyString(), anyString()))
+                .thenReturn(null);
+
+        CaseDefinitionSummary shouldBeNull = testedService.getCaseDefinition(serverTemplateId, containerId, caseDefinitionId);
+        assertNull(shouldBeNull);
+    }
+
+    @Test
+    public void getCaseInstances() {
+        final CaseInstanceSearchRequest request = new CaseInstanceSearchRequest();
+        final CaseInstance instance = createTestInstance(caseId);
+        when(clientMock.getCaseInstances(eq(singletonList(request.getStatus())), anyInt(), anyInt())).thenReturn(singletonList(instance));
+
+        final List<CaseInstanceSummary> instances = testedService.getCaseInstances(request);
         assertNotNull(instances);
         assertEquals(1, instances.size());
         final CaseInstanceSummary caseInstanceSummary = instances.get(0);
@@ -92,67 +110,92 @@ public class RemoteCaseManagementServiceImplTest {
     }
 
     @Test
-    public void testStartCaseInstance() throws Exception {
-        final String caseDefinitionId = "org.jbpm";
-        final String container = "container";
+    public void getCaseInstances_sorting() {
+        CaseInstance c1 = createTestInstance("id1");
+        c1.setStartedAt(new Date(10000));
 
-        service.startCaseInstance("server", container, caseDefinitionId);
+        CaseInstance c2 = createTestInstance("id2");
+        c2.setStartedAt(new Date(10));
 
-        verify(caseServicesClient).startCase(container, caseDefinitionId);
+        when(clientMock.getCaseInstances(anyList(), anyInt(), anyInt()))
+                .thenReturn(Arrays.asList(c1, c2));
+
+        CaseInstanceSearchRequest defaultSortRequest = new CaseInstanceSearchRequest(); //Default sort is by CASE_ID
+        List<CaseInstanceSummary> sortedInstances = testedService.getCaseInstances(defaultSortRequest);
+        assertEquals("id1", sortedInstances.get(0).getCaseId());
+        assertEquals("id2", sortedInstances.get(1).getCaseId());
+
+        CaseInstanceSearchRequest sortByIdRequest = new CaseInstanceSearchRequest();
+        sortByIdRequest.setSortBy(CaseInstanceSortBy.CASE_ID);
+        sortedInstances = testedService.getCaseInstances(sortByIdRequest);
+        assertEquals("id1", sortedInstances.get(0).getCaseId());
+        assertEquals("id2", sortedInstances.get(1).getCaseId());
+
+        CaseInstanceSearchRequest sortByStarted = new CaseInstanceSearchRequest();
+        sortByStarted.setSortBy(CaseInstanceSortBy.STARTED);
+        sortedInstances = testedService.getCaseInstances(sortByStarted);
+        assertEquals("id2", sortedInstances.get(0).getCaseId());
+        assertEquals("id1", sortedInstances.get(1).getCaseId());
     }
 
     @Test
-    public void testCancelCaseInstance() throws Exception {
-        final String caseId = "CASE-1";
-        final String container = "container";
+    public void testStartCaseInstance() {
+        testedService.startCaseInstance(serverTemplateId, containerId, caseDefinitionId);
 
-        service.cancelCaseInstance("server", container, caseId);
-
-        verify(caseServicesClient).cancelCaseInstance(container, caseId);
+        verify(clientMock).startCase(containerId, caseDefinitionId);
     }
 
     @Test
-    public void testDestroyCaseInstance() throws Exception {
-        final String caseId = "CASE-1";
-        final String container = "container";
+    public void testCancelCaseInstance() {
+        testedService.cancelCaseInstance(serverTemplateId, containerId, caseId);
 
-        service.destroyCaseInstance("server", container, caseId);
-
-        verify(caseServicesClient).destroyCaseInstance(container, caseId);
+        verify(clientMock).cancelCaseInstance(containerId, caseId);
     }
 
     @Test
-    public void testGetCaseInstanceNull() throws Exception {
-        final CaseInstanceSummary cis = service.getCaseInstance("server", "container", "CASE-1");
+    public void testDestroyCaseInstance() {
+        testedService.destroyCaseInstance(serverTemplateId, containerId, caseId);
+
+        verify(clientMock).destroyCaseInstance(containerId, caseId);
+    }
+
+    @Test
+    public void testGetCaseInstanceNull() {
+        final CaseInstanceSummary cis = testedService.getCaseInstance(serverTemplateId, containerId, caseId);
 
         assertNull(cis);
     }
 
     @Test
-    public void testGetCaseInstance() throws Exception {
-        final CaseInstance ci = new CaseInstance();
-        ci.setCaseDescription("New case");
-        ci.setCaseId("CASE-1");
-        ci.setCaseStatus(1);
-        ci.setContainerId("org.jbpm");
-        when(caseServicesClient.getCaseInstance(ci.getContainerId(), ci.getCaseId(), true, true, true, true)).thenReturn(ci);
+    public void getCaseInstance_whenClientReturnsInstance() {
+        final CaseInstance ci = createTestInstance(caseId);
+        when(clientMock.getCaseInstance(ci.getContainerId(), ci.getCaseId(), true, true, true, true))
+                .thenReturn(ci);
 
-        final CaseInstanceSummary cis = service.getCaseInstance("server", ci.getContainerId(), ci.getCaseId());
-
+        final CaseInstanceSummary cis = testedService.getCaseInstance(serverTemplateId, ci.getContainerId(), ci.getCaseId());
         assertCaseInstance(ci, cis);
     }
 
     @Test
-    public void testGetCaseComments() throws Exception {
+    public void getCaseInstance_whenClientReturnsNull() {
+        when(clientMock.getCaseInstance(containerId, caseId, true, true, true, true))
+                .thenReturn(null);
+
+        final CaseInstanceSummary cis = testedService.getCaseInstance(serverTemplateId, containerId, caseId);
+        assertNull(cis);
+    }
+
+    @Test
+    public void testGetCaseComments() {
         final CaseComment caseComment = new CaseComment();
         caseComment.setId(commentId);
         caseComment.setAuthor(author);
         caseComment.setText(text);
         caseComment.setAddedAt(new Date());
 
-        when(caseServicesClient.getComments(containerId, caseId, 0, 0)).thenReturn(singletonList(caseComment));
+        when(clientMock.getComments(containerId, caseId, 0, 0)).thenReturn(singletonList(caseComment));
 
-        final List<CaseCommentSummary> comments = service.getComments(serverTemplateId, containerId, caseId, 0, 0);
+        final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId, containerId, caseId, 0, 0);
         assertNotNull(comments);
         assertEquals(1, comments.size());
         final CaseCommentSummary caseCommentSummary = comments.get(0);
@@ -163,24 +206,41 @@ public class RemoteCaseManagementServiceImplTest {
     }
 
     @Test
-    public void testAddComment() throws Exception {
-        service.addComment(serverTemplateId, containerId, caseId, author, text);
+    public void testAddComment() {
+        testedService.addComment(serverTemplateId, containerId, caseId, author, text);
 
-        verify(caseServicesClient).addComment(containerId, caseId, author, text);
+        verify(clientMock).addComment(containerId, caseId, author, text);
     }
 
     @Test
-    public void testUpdateComment() throws Exception {
-        service.updateComment(serverTemplateId, containerId, caseId, commentId, author, text);
+    public void testUpdateComment() {
+        testedService.updateComment(serverTemplateId, containerId, caseId, commentId, author, text);
 
-        verify(caseServicesClient).updateComment(containerId, caseId, commentId, author, text);
+        verify(clientMock).updateComment(containerId, caseId, commentId, author, text);
     }
 
     @Test
-    public void testRemoveComment() throws Exception {
-        service.removeComment(serverTemplateId, containerId, caseId, commentId);
+    public void testRemoveComment() {
+        testedService.removeComment(serverTemplateId, containerId, caseId, commentId);
 
-        verify(caseServicesClient).removeComment(containerId, caseId, commentId);
+        verify(clientMock).removeComment(containerId, caseId, commentId);
     }
 
+    private CaseDefinition createTestDefinition() {
+        CaseDefinition definition = new CaseDefinition();
+        definition.setIdentifier(caseDefinitionId);
+        definition.setName(caseName);
+        definition.setContainerId(containerId);
+        definition.setRoles(Collections.emptyMap());
+        return definition;
+    }
+
+    private CaseInstance createTestInstance(String caseId) {
+        CaseInstance instance = new CaseInstance();
+        instance.setCaseDescription(caseDescription);
+        instance.setCaseId(caseId);
+        instance.setCaseStatus(1);
+        instance.setContainerId(containerId);
+        return instance;
+    }
 }
