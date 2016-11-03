@@ -18,10 +18,25 @@ package org.jbpm.console.ng.cm.client.util;
 
 import java.util.Date;
 
-import com.google.gwt.core.client.JsDate;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import org.jboss.errai.databinding.client.api.Converter;
 
 public class DateConverter implements Converter<Date, String> {
+
+    public static String DEFAULT_DATE_FORMAT_MASK = "dd/MM/yyyy";
+
+    public static String getDateStr(final Date date) {
+        if (date != null) {
+            final DateTimeFormat format = DateTimeFormat.getFormat(DEFAULT_DATE_FORMAT_MASK);
+            return format.format(date);
+        }
+        return "";
+    }
+
+    public static Date createDate(final String dateString) {
+        final DateTimeFormat fmt = DateTimeFormat.getFormat(DEFAULT_DATE_FORMAT_MASK);
+        return fmt.parse(dateString);
+    }
 
     @Override
     public Date toModelValue(final String widgetValue) {
@@ -29,18 +44,12 @@ public class DateConverter implements Converter<Date, String> {
             return null;
         }
 
-        final JsDate jsDate = JsDate.create(widgetValue);
-        return new Date((long) jsDate.getTime());
+        return createDate(widgetValue);
     }
 
     @Override
     public String toWidgetValue(final Date modelValue) {
-        if (modelValue == null) {
-            return "";
-        } else {
-            final JsDate jsDate = JsDate.create(((Long) modelValue.getTime()).doubleValue());
-            return toISODate(jsDate);
-        }
+        return getDateStr(modelValue);
     }
 
     @Override
@@ -52,9 +61,5 @@ public class DateConverter implements Converter<Date, String> {
     public Class<String> getComponentType() {
         return String.class;
     }
-
-    private static native String toISODate(final JsDate date) /*-{
-        return date.toISOString().substring(0, 10);
-    }-*/;
 
 }

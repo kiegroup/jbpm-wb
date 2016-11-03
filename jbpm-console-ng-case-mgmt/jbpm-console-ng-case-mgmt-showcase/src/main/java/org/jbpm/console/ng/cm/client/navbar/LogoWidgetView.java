@@ -28,8 +28,8 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
-import org.gwtbootstrap3.client.ui.Label;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.console.ng.cm.client.resources.i18n.ShowcaseConstants;
 

@@ -19,22 +19,28 @@ package org.jbpm.console.ng.cm.client;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.animation.client.Animation;
 import com.google.gwt.core.client.GWT;
-import org.guvnor.common.services.shared.config.AppConfigService;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.ui.RootPanel;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
+import org.jboss.errai.ioc.client.api.UncaughtExceptionHandler;
 import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
-import org.kie.workbench.common.services.shared.service.PlaceManagerActivityService;
-import org.kie.workbench.common.workbench.client.entrypoint.DefaultWorkbenchEntryPoint;
-import org.uberfire.client.mvp.ActivityBeansCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.views.pfly.menu.UserMenu;
+import org.uberfire.client.workbench.events.ApplicationReadyEvent;
 import org.uberfire.client.workbench.widgets.menu.UtilityMenuBar;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuFactory;
@@ -45,7 +51,9 @@ import static org.jbpm.console.ng.cm.client.resources.i18n.ShowcaseConstants.ROL
 
 @Bundle( "resources/i18n/ShowcaseConstants.properties" )
 @EntryPoint
-public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
+public class ShowcaseEntryPoint {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShowcaseEntryPoint.class);
 
     @Inject
     protected UtilityMenuBar utilityMenuBar;
@@ -65,19 +73,12 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
     @Inject
     protected Caller<AuthenticationService> authService;
 
-    @Inject
-    public ShowcaseEntryPoint(final Caller<AppConfigService> appConfigService,
-                              final Caller<PlaceManagerActivityService> pmas,
-                              final ActivityBeansCache activityBeansCache) {
-        super(appConfigService, pmas, activityBeansCache);
+    @AfterInitialization
+    public void startDefaultWorkbench() {
+        hideLoadingPopup();
     }
 
-    public static native void redirect(String url)/*-{
-        $wnd.location = url;
-    }-*/;
-
-    @Override
-    protected void setupMenu() {
+    public void setupMenu( @Observes final ApplicationReadyEvent event ) {
         final Menus utilityMenus =
                 MenuFactory.newTopLevelCustomMenu(userMenu)
                         .endMenu()
@@ -108,6 +109,28 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
         return result;
     }
 
+    public void hideLoadingPopup() {
+        @SuppressWarnings("GwtToHtmlReferences")
+        final Element e = RootPanel.get( "loading" ).getElement();
+
+        new Animation() {
+            @Override
+            protected void onUpdate( double progress ) {
+                e.getStyle().setOpacity( 1.0 - progress );
+            }
+
+            @Override
+            protected void onComplete() {
+                e.getStyle().setVisibility( Style.Visibility.HIDDEN );
+            }
+        }.run( 500 );
+    }
+
+    @UncaughtExceptionHandler
+    public void handleUncaughtException( final Throwable t ) {
+        LOGGER.error( "Uncaught exception encountered", t );
+    }
+
     protected class LogoutCommand implements Command {
 
         @Override
@@ -135,5 +158,9 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
         }
 
     }
+
+    public static native void redirect(String url)/*-{
+        $wnd.location = url;
+    }-*/;
 
 }

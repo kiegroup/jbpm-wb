@@ -31,8 +31,8 @@
 
   <inherits name="org.jbpm.console.ng.cm.JbpmConsoleNGCaseMgmtAPI"/>
 
-  <inherits name="org.kie.workbench.common.widgets.KieWorkbenchWidgetsCommon"/>
-
   <source path='client'/>
+
+  <public path="public"/>
 
 </module>

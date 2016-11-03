@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.bd.integration.security;
+package org.jbpm.console.ng.bd.security;
 
 import java.lang.reflect.Method;
 import java.security.Principal;
