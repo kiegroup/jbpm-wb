@@ -41,7 +41,6 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
 
@@ -73,12 +72,15 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
 
     @Test
     public void testLoadCaseInstance() {
-        final String serverTemplateId = "serverTemplateId";
-        final String roleName = "role";
-        final String groupName = "group";
-        final String userName = "user";
+        final String serverTemplateId = "serverTemplateId",
+                containerId = "containerId",
+                caseId = "caseId",
+                roleName = "role",
+                groupName = "group",
+                userName = "user";
+
         final CaseRoleAssignmentSummary cras = CaseRoleAssignmentSummary.builder().name(roleName).groups(singletonList(groupName)).users(singletonList(userName)).build();
-        final CaseInstanceSummary cis = CaseInstanceSummary.builder().roleAssignments(singletonList(cras)).build();
+        final CaseInstanceSummary cis = CaseInstanceSummary.builder().containerId(containerId).caseId(caseId).roleAssignments(singletonList(cras)).build();
         final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().roles(singletonMap(roleName, 3)).build();
         when(caseManagementService.getCaseDefinition(serverTemplateId, cis.getContainerId(), cis.getCaseDefinitionId())).thenReturn(cds);
 

@@ -16,11 +16,11 @@
 
 package org.jbpm.console.ng.cm.client.overview;
 
-import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenterTest;
 import org.jbpm.console.ng.cm.client.events.CaseCancelEvent;
 import org.jbpm.console.ng.cm.client.events.CaseDestroyEvent;
 import org.jbpm.console.ng.cm.client.events.CaseRefreshEvent;
 import org.jbpm.console.ng.cm.client.perspectives.CaseInstanceListPerspective;
+import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenterTest;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +37,8 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest {
+
+    private final String serverTemplateId = "serverTemplateId";
 
     @Mock
     CaseOverviewPresenter.CaseOverviewView view;
@@ -94,7 +96,6 @@ public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest
 
     @Test
     public void testRefreshCase() {
-        final String serverTemplateId = "serverTemplateId";
         final CaseInstanceSummary cis = setupCaseInstance(serverTemplateId);
 
         presenter.refreshCase();
@@ -106,7 +107,6 @@ public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest
 
     @Test
     public void testOnCaseRefreshEvent() {
-        final String serverTemplateId = "serverTemplateId";
         final CaseInstanceSummary cis = setupCaseInstance(serverTemplateId);
 
         presenter.onCaseRefreshEvent(new CaseRefreshEvent(cis.getCaseId()));
@@ -118,7 +118,6 @@ public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest
 
     @Test
     public void testCancelCaseInstance() {
-        final String serverTemplateId = "serverTemplateId";
         final CaseInstanceSummary cis = setupCaseInstance(serverTemplateId);
 
         presenter.cancelCaseInstance();
@@ -131,7 +130,6 @@ public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest
 
     @Test
     public void testDestroyCaseInstance() {
-        final String serverTemplateId = "serverTemplateId";
         final CaseInstanceSummary cis = setupCaseInstance(serverTemplateId);
 
         presenter.destroyCaseInstance();
@@ -141,5 +139,4 @@ public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest
         verify(caseDestroyEvent).fire(captor.capture());
         assertEquals(cis.getCaseId(), captor.getValue().getCaseId());
     }
-
 }
