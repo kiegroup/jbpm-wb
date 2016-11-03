@@ -21,8 +21,15 @@
              xmlns:b='urn:import:org.gwtbootstrap3.client.ui'
              xmlns:uf='urn:import:org.uberfire.ext.widgets.table.client'>
 
-    <ui:with field="i18n"
-             type="org.jbpm.console.ng.es.client.i18n.Constants"/>
+    <ui:with field="i18n" type="org.jbpm.console.ng.es.client.i18n.Constants"/>
+
+    <ui:style>
+
+        .textBreakWord {
+            word-wrap: break-word;
+        }
+
+    </ui:style>
 
     <b:Container fluid="true">
         <b:Row>
@@ -53,7 +60,7 @@
                                 <ui:text from="{i18n.Exceptions_Occurred}"/>
                             </b:FormLabel>
                             <b:Column size="MD_8">
-                                <g:VerticalPanel ui:field="errorsOccurredList"/>
+                                <g:HTML ui:field="errorsOccurredList" addStyleNames="{style.textBreakWord}"/>
                             </b:Column>
                         </b:FormGroup>
 
