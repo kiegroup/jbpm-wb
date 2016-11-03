@@ -166,22 +166,17 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                         dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                     }
 
-                    if ( textSearchStr != null && textSearchStr.trim().length() > 0 ) {
-
-                        DataSetFilter filter = new DataSetFilter();
-                        List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-                        filters.add( likeTo( COLUMN_COMMANDNAME, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( COLUMN_MESSAGE, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filters.add( likeTo( COLUMN_BUSINESSKEY, "%" + textSearchStr.toLowerCase() + "%", false ) );
-                        filter.addFilterColumn( OR( filters ) );
-
-                        if ( currentTableSettings.getDataSetLookup().getFirstFilterOp() != null ) {
-                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn( OR( filters ) );
+                    final List<ColumnFilter> filters = getColumnFilters(textSearchStr);
+                    if (filters.isEmpty() == false) {
+                        if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
+                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(OR(filters));
                         } else {
-                            currentTableSettings.getDataSetLookup().addOperation( filter );
+                            final DataSetFilter filter = new DataSetFilter();
+                            filter.addFilterColumn(OR(filters));
+                            currentTableSettings.getDataSetLookup().addOperation(filter);
                         }
-                        textSearchStr = "";
                     }
+
                     dataSetQueryHelper.setDataSetHandler(currentTableSettings);
                     dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), new AbstractDataSetReadyCallback( errorPopup, view, currentTableSettings.getDataSet() ) {
                         @Override
@@ -217,6 +212,16 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
             GWT.log( "Error looking up dataset with UUID [ " + REQUEST_LIST_DATASET + " ]" );
         }
 
+    }
+
+    protected List<ColumnFilter> getColumnFilters(final String searchString) {
+        final List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
+        if (searchString != null && searchString.trim().length() > 0) {
+            filters.add( likeTo( COLUMN_COMMANDNAME, "%" + searchString.toLowerCase() + "%", false ) );
+            filters.add( likeTo( COLUMN_MESSAGE, "%" + searchString.toLowerCase() + "%", false ) );
+            filters.add( likeTo( COLUMN_BUSINESSKEY, "%" + searchString.toLowerCase() + "%", false ) );
+        }
+        return filters;
     }
 
     public AsyncDataProvider<RequestSummary> getDataProvider() {
