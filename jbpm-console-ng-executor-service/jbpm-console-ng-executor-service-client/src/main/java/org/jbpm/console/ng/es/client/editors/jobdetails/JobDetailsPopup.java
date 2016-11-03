@@ -27,7 +27,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import org.gwtbootstrap3.client.shared.event.ModalShownEvent;
@@ -68,7 +67,7 @@ public class JobDetailsPopup extends BaseModal {
     public DataGrid<RequestParameterSummary> executionParametersGrid;
 
     @UiField
-    public VerticalPanel errorsOccurredList;
+    public HTML errorsOccurredList;
 
     @UiField
     public FormGroup errorControlGroup;
@@ -154,12 +153,12 @@ public class JobDetailsPopup extends BaseModal {
                             List<RequestParameterSummary> params ) {
         this.jobRetries.setText( String.valueOf( r.getExecutions() ) );
         if ( errors != null && errors.size() > 0 ) {
-            errorsOccurredList.clear();
             errorControlGroup.setVisible( true );
+            String html ="";
             for ( ErrorSummary error : errors ) {
-                String html = "<strong>" + error.getMessage() + "</strong><br/>" + error.getStacktrace();
-                this.errorsOccurredList.add( new HTML( SafeHtmlUtils.fromTrustedString( html ) ) );
+                html += "<strong>" + error.getMessage() + "</strong><br/>" + error.getStacktrace() +"<br><br>";
             }
+            this.errorsOccurredList.setHTML( SafeHtmlUtils.fromTrustedString( html ) ) ;
         } else {
             errorControlGroup.setVisible( false );
         }
