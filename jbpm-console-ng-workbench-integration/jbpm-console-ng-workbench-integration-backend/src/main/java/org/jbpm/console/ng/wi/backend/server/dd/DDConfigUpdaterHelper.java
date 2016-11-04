@@ -22,7 +22,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.jbpm.console.ng.bd.backend.server.dd.DeploymentDescriptorImpl;
 import org.kie.internal.runtime.conf.DeploymentDescriptor;
 import org.kie.internal.runtime.conf.ObjectModel;
 import org.kie.workbench.common.screens.datamodeller.model.persistence.PersistenceDescriptorModel;
