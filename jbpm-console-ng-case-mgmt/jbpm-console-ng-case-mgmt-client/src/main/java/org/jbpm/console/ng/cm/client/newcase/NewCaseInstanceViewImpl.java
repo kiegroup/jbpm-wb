@@ -130,7 +130,7 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
         caseDefinitionNameGroup.clearValidationState();
     }
 
-    @EventHandler("create")
+    @EventHandler("start")
     public void onCreateClick(final @ForEvent("click") MouseEvent event) {
         if (validateForm()) {
             createCaseInstance();

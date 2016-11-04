@@ -23,7 +23,6 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.TakesValue;
 import org.jboss.errai.common.client.api.IsElement;
-import org.jboss.errai.common.client.dom.Anchor;
 import org.jboss.errai.common.client.dom.Button;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
@@ -57,13 +56,7 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
     @DataField("name")
     @Bound(property = "caseId")
     @SuppressWarnings("unused")
-    private Anchor caseIdLink;
-
-    @Inject
-    @DataField("name-read-only")
-    @Bound(property = "caseId")
-    @SuppressWarnings("unused")
-    private Span caseIdReadOnly;
+    private Span caseId;
 
     @Inject
     @DataField("description")
@@ -83,14 +76,6 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
     private Span status;
 
     @Inject
-    @DataField("owner-item")
-    private Div ownerItem;
-
-    @Inject
-    @DataField("started-item")
-    private Div startedItem;
-
-    @Inject
     @DataField("started")
     @Bound(converter = DateConverter.class)
     @SuppressWarnings("unused")
@@ -101,8 +86,12 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
     private Button complete;
 
     @Inject
-    @DataField("close")
-    private Button close;
+    @DataField("kebab")
+    private Div kebab;
+
+    @Inject
+    @DataField("case-details")
+    private Div details;
 
     @Inject
     @AutoBound
@@ -110,8 +99,6 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
 
     @PostConstruct
     public void init() {
-        tooltip(ownerItem);
-        tooltip(startedItem);
         tooltip(status);
     }
 
@@ -124,12 +111,11 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
     public void setValue(final CaseInstanceSummary model) {
         this.caseInstanceSummary.setModel(model);
         executeOnlyIfActive((c) -> {
-            removeCSSClass(this.caseIdLink, "hidden");
-            addCSSClass(this.caseIdReadOnly, "hidden");
+            addCSSClass(this.details, "active");
             addCSSClass(this.status, "label-success");
             removeCSSClass(this.status, "label-default");
             removeCSSClass(this.complete, "hidden");
-            removeCSSClass(this.close, "hidden");
+            removeCSSClass(this.kebab, "hidden");
         });
     }
 
@@ -148,8 +134,8 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
         executeOnlyIfActive((c) -> presenter.destroyCaseInstance(c));
     }
 
-    @EventHandler("name")
-    public void onNameClick(final @ForEvent("click") MouseEvent event) {
+    @EventHandler("case-details")
+    public void onCaseInstanceClick(final @ForEvent("click") MouseEvent event) {
         executeOnlyIfActive((c) -> presenter.selectCaseInstance(c));
     }
 

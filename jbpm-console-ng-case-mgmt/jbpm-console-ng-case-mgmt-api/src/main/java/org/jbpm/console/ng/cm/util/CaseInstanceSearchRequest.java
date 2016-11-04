@@ -27,6 +27,8 @@ public class CaseInstanceSearchRequest {
 
     private CaseInstanceSortBy sortBy = CaseInstanceSortBy.CASE_ID;
 
+    private Boolean sortByAsc = true;
+
     public CaseInstanceSearchRequest() {
     }
 
@@ -46,11 +48,20 @@ public class CaseInstanceSearchRequest {
         this.sortBy = sortBy;
     }
 
+    public Boolean getSortByAsc() {
+        return sortByAsc;
+    }
+
+    public void setSortByAsc(Boolean sortByAsc) {
+        this.sortByAsc = sortByAsc;
+    }
+
     @Override
     public String toString() {
         return "CaseInstanceSearchRequest{" +
                 "status=" + status +
                 ", sortBy=" + sortBy +
+                ", sortByAsc=" + sortByAsc +
                 '}';
     }
 }

@@ -36,6 +36,7 @@ import org.kie.server.client.CaseServicesClient;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
+import static java.util.Comparator.comparing;
 
 @Service
 @ApplicationScoped
@@ -58,17 +59,21 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     @Override
     public List<CaseInstanceSummary> getCaseInstances(final CaseInstanceSearchRequest request) {
         final List<CaseInstance> caseInstances = client.getCaseInstances(singletonList(request.getStatus()), 0, Integer.MAX_VALUE);
-        return caseInstances.stream().map(new CaseInstanceMapper()).sorted(getCaseInstanceSummaryComparator(request.getSortBy())).collect(toList());
+        final Comparator<CaseInstanceSummary> comparator = getCaseInstanceSummaryComparator(request);
+        return caseInstances.stream().map(new CaseInstanceMapper()).sorted(comparator).collect(toList());
     }
 
-    protected Comparator<CaseInstanceSummary> getCaseInstanceSummaryComparator(final CaseInstanceSortBy sortBy) {
-        switch (ofNullable(sortBy).orElse(CaseInstanceSortBy.CASE_ID)) {
-            case STARTED:
-                return (CaseInstanceSummary cis1, CaseInstanceSummary cis2) -> cis1.getStartedAt().compareTo(cis2.getStartedAt());
+    protected Comparator<CaseInstanceSummary> getCaseInstanceSummaryComparator(final CaseInstanceSearchRequest request) {
+        Comparator<CaseInstanceSummary> comparator;
+        switch (ofNullable(request.getSortBy()).orElse(CaseInstanceSortBy.CASE_ID)) {
+            case START_TIME:
+                comparator = comparing(CaseInstanceSummary::getStartedAt);
+                break;
             case CASE_ID:
             default:
-                return (CaseInstanceSummary cis1, CaseInstanceSummary cis2) -> cis1.getCaseId().compareTo(cis2.getCaseId());
+                comparator = comparing(CaseInstanceSummary::getCaseId);
         }
+        return request.getSortByAsc() ? comparator : comparator.reversed();
     }
 
     @Override

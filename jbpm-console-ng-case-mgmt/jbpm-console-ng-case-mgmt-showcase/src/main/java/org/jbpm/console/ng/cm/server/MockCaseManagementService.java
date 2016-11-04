@@ -99,7 +99,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     public List<CaseInstanceSummary> getCaseInstances(final CaseInstanceSearchRequest request) {
         return caseInstanceList.stream()
                 .filter(c -> c.getStatus().equals(request.getStatus()))
-                .sorted(getCaseInstanceSummaryComparator(request.getSortBy()))
+                .sorted(getCaseInstanceSummaryComparator(request))
                 .collect(toList());
     }
 

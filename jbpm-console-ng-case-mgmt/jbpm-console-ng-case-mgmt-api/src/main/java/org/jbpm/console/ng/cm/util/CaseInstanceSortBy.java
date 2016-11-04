@@ -19,6 +19,6 @@ package org.jbpm.console.ng.cm.util;
 public enum CaseInstanceSortBy {
 
     CASE_ID,
-    STARTED
+    START_TIME
 
 }

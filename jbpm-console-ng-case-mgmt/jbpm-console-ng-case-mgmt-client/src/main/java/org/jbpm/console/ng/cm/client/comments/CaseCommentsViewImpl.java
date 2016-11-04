@@ -26,6 +26,7 @@ import org.jboss.errai.common.client.dom.Event;
 
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.KeyboardEvent;
+import org.jboss.errai.common.client.dom.Label;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.common.client.dom.TextInput;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
@@ -66,7 +67,7 @@ public class CaseCommentsViewImpl implements CaseCommentsPresenter.CaseCommentsV
 
     @Inject
     @DataField("comment-creation-label")
-    Span newCommentLabel;
+    Label newCommentLabel;
 
     @Inject
     @DataField("comment-creation-help")
