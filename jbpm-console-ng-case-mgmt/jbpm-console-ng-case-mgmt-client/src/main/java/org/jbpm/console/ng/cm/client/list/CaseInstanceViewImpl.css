@@ -13,3 +13,23 @@
     flex: 1 0 auto;
     width: calc(70%);
 }
+
+.list-view-pf-additional-info-item {
+    margin-right: 50px;
+}
+
+.list-view-pf-additional-info-item strong {
+    margin-right: 0px;
+}
+
+.toolbar-pf .form-group:first-child {
+    padding-left: 0px;
+}
+
+.toolbar-pf .form-group label.control-label {
+    padding-right: 5px;
+}
+
+.list-view-pf-main-info.active:hover {
+    cursor: pointer;
+}

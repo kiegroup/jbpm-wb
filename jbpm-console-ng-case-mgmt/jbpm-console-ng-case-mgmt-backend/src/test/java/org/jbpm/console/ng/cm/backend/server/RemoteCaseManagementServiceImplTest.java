@@ -117,8 +117,7 @@ public class RemoteCaseManagementServiceImplTest {
         CaseInstance c2 = createTestInstance("id2");
         c2.setStartedAt(new Date(10));
 
-        when(clientMock.getCaseInstances(anyList(), anyInt(), anyInt()))
-                .thenReturn(Arrays.asList(c1, c2));
+        when(clientMock.getCaseInstances(anyList(), anyInt(), anyInt())).thenReturn(Arrays.asList(c1, c2));
 
         CaseInstanceSearchRequest defaultSortRequest = new CaseInstanceSearchRequest(); //Default sort is by CASE_ID
         List<CaseInstanceSummary> sortedInstances = testedService.getCaseInstances(defaultSortRequest);
@@ -127,15 +126,25 @@ public class RemoteCaseManagementServiceImplTest {
 
         CaseInstanceSearchRequest sortByIdRequest = new CaseInstanceSearchRequest();
         sortByIdRequest.setSortBy(CaseInstanceSortBy.CASE_ID);
+        sortByIdRequest.setSortByAsc(true);
         sortedInstances = testedService.getCaseInstances(sortByIdRequest);
         assertEquals("id1", sortedInstances.get(0).getCaseId());
         assertEquals("id2", sortedInstances.get(1).getCaseId());
+        sortByIdRequest.setSortByAsc(false);
+        sortedInstances = testedService.getCaseInstances(sortByIdRequest);
+        assertEquals("id2", sortedInstances.get(0).getCaseId());
+        assertEquals("id1", sortedInstances.get(1).getCaseId());
 
         CaseInstanceSearchRequest sortByStarted = new CaseInstanceSearchRequest();
-        sortByStarted.setSortBy(CaseInstanceSortBy.STARTED);
+        sortByStarted.setSortBy(CaseInstanceSortBy.START_TIME);
+        sortByStarted.setSortByAsc(true);
         sortedInstances = testedService.getCaseInstances(sortByStarted);
         assertEquals("id2", sortedInstances.get(0).getCaseId());
         assertEquals("id1", sortedInstances.get(1).getCaseId());
+        sortByStarted.setSortByAsc(false);
+        sortedInstances = testedService.getCaseInstances(sortByStarted);
+        assertEquals("id1", sortedInstances.get(0).getCaseId());
+        assertEquals("id2", sortedInstances.get(1).getCaseId());
     }
 
     @Test
