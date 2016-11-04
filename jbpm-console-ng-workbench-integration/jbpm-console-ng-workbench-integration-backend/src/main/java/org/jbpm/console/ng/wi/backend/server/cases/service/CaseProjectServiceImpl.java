@@ -91,6 +91,10 @@ public class CaseProjectServiceImpl implements CaseProjectService {
         Path ddVFSPath = ioService.get( URI.create(deploymentDescriptorPath) );
 
         org.uberfire.backend.vfs.Path convertedDDVFSPath = Paths.convert(ddVFSPath);
+        if (!ioService.exists(ddVFSPath)) {
+            ddEditorService.createIfNotExists(convertedDDVFSPath);
+            logger.debug("Created deployment descriptor in {}", convertedDDVFSPath);
+        }
         logger.debug("Loading deployment descriptor from {}", convertedDDVFSPath);
         DeploymentDescriptorModel descriptorModel = ddEditorService.load(convertedDDVFSPath);
         descriptorModel.setRuntimeStrategy("PER_CASE");

@@ -183,4 +183,34 @@ public class CaseProjectServiceImplTest {
 
         verify(ioService, times(1)).write(any(), any(byte[].class));
     }
+
+    @Test
+    public void testConfigureNewCaseProjectNoDeploymentDescriptor() {
+        final ArgumentCaptor<DeploymentDescriptorModel> ddArgumentCaptor = ArgumentCaptor.forClass(DeploymentDescriptorModel.class);
+
+        DirectoryStream directoryStream = Mockito.mock(DirectoryStream.class);
+        when(ioService.newDirectoryStream(any(), any())).thenReturn((DirectoryStream<Path>) directoryStream);
+        when(directoryStream.iterator()).thenReturn(new ArrayList().iterator());
+        when(ioService.exists(ddPath)).thenReturn(false);
+
+        caseProjectService.configureNewCaseProject(kieProject);
+        verify(ddEditorService, times(1)).save(any(), ddArgumentCaptor.capture(), any(), eq("Updated with case project configuration"));
+        verify(ddEditorService, times(1)).createIfNotExists(any());
+
+        DeploymentDescriptorModel updatedDD = ddArgumentCaptor.getValue();
+        assertNotNull(updatedDD);
+        assertEquals("PER_CASE", updatedDD.getRuntimeStrategy());
+
+        List<ItemObjectModel> marshallingStrategies = updatedDD.getMarshallingStrategies();
+        assertEquals(2, marshallingStrategies.size());
+
+        Map<String, String> mappedStrategies = marshallingStrategies.stream().collect(Collectors.toMap(ItemObjectModel::getValue, ItemObjectModel::getResolver));
+        assertTrue(mappedStrategies.containsKey(CaseProjectServiceImpl.CASE_FILE_MARSHALLER));
+        assertTrue(mappedStrategies.containsKey(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
+
+        assertEquals("mvel", mappedStrategies.get(CaseProjectServiceImpl.CASE_FILE_MARSHALLER));
+        assertEquals("mvel", mappedStrategies.get(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
+
+        verify(ioService, times(1)).write(any(), any(byte[].class));
+    }
 }

@@ -41,7 +41,7 @@ public class KeyCloakTokenCredentialsProvider implements CredentialsProvider {
             tokenMethod = keycloakSecurityContext.getMethod("getTokenString", new Class[0]);
             securityContextMethod = keycloakPrincipal.getMethod("getKeycloakSecurityContext", new Class[0]);
         } catch (Exception e) {
-            logger.warn("KeyCloak not on classpath due to {}", e.toString());
+            logger.debug("KeyCloak not on classpath due to {}", e.toString());
             throw new UnsupportedOperationException("KeyCloak not on classpath");
         }
     }
