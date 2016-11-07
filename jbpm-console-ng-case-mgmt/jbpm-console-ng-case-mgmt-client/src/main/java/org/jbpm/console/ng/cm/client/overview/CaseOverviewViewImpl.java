@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
+import org.jboss.errai.common.client.dom.Anchor;
 import org.jboss.errai.common.client.dom.Button;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.Event;
@@ -62,7 +63,7 @@ public class CaseOverviewViewImpl implements CaseOverviewPresenter.CaseOverviewV
     FlowPanel caseComments;
 
     @Inject
-    @DataField("case-files")
+//    @DataField("case-files")
     FlowPanel caseFiles;
 
     @Inject
@@ -70,7 +71,7 @@ public class CaseOverviewViewImpl implements CaseOverviewPresenter.CaseOverviewV
     FlowPanel caseRoles;
 
     @Inject
-    @DataField("case-milestones")
+//    @DataField("case-milestones")
     FlowPanel caseMilestones;
 
     @Inject
@@ -83,7 +84,7 @@ public class CaseOverviewViewImpl implements CaseOverviewPresenter.CaseOverviewV
 
     @Inject
     @DataField("case-destroy")
-    Button destroyCase;
+    Anchor destroyCase;
 
     @Inject
     @DataField("case-cancel")

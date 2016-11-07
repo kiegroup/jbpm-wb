@@ -18,8 +18,12 @@
     margin-right: 50px;
 }
 
-.list-view-pf-additional-info-item strong {
-    margin-right: 0px;
+.list-view-pf-additional-info-item span.text {
+    margin-right: 5px;
+}
+
+.list-view-pf-additional-info-item span.data {
+    font-weight: 600;
 }
 
 .toolbar-pf .form-group:first-child {

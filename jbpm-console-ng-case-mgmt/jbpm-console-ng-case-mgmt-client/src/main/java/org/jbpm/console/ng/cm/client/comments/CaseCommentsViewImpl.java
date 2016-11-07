@@ -20,7 +20,7 @@ import java.util.Date;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.jboss.errai.common.client.dom.Button;
+import org.jboss.errai.common.client.dom.Anchor;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.Event;
 
@@ -79,7 +79,7 @@ public class CaseCommentsViewImpl implements CaseCommentsPresenter.CaseCommentsV
 
     @Inject
     @DataField
-    Button addCommentButton;
+    Anchor addCommentButton;
 
     @Inject
     private ManagedInstance<CaseCommentItemView> provider;
@@ -114,18 +114,11 @@ public class CaseCommentsViewImpl implements CaseCommentsPresenter.CaseCommentsV
     @Override
     public void addComment(boolean editing, String editActionLabel, final String commentId, final String author,
                            final String commentText, final Date commentAddedAt, final CaseCommentsPresenter.CaseCommentAction... actions) {
-        addCommentView(editing, editActionLabel, commentId, author, commentText, commentAddedAt, "fa-comment-o", actions);
-    }
-
-    private void addCommentView(boolean editing, String editActionLabel, final String commentId, final String author,
-                                final String commentText, final Date commentAddedAt, final String iconType,
-                                final CaseCommentsPresenter.CaseCommentAction... actions) {
         final CaseCommentItemView commentItemView = provider.get();
         commentItemView.setCommentAuthor(author);
         commentItemView.setCommentText(commentText);
         commentItemView.setCommentAddedAt(DateUtils.getDateStr(commentAddedAt));
 
-        commentItemView.setIconType(iconType);
         commentItemView.setEditMode(editing);
 
         if (editActionLabel != null) {
