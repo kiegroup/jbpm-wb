@@ -62,10 +62,6 @@ public class CaseCommentItemView implements IsElement {
     Div userActions;
 
     @Inject
-    @DataField("icon-type")
-    Span iconType;
-
-    @Inject
     @DataField("list-group-item")
     Div listGroupItem;
 
@@ -118,10 +114,6 @@ public class CaseCommentItemView implements IsElement {
 
     public void setCommentAddedAt(final String commentAddedAt) {
         this.commentAddedAt.setInnerHTML(commentAddedAt);
-    }
-
-    public void setIconType(final String iconTypeClass) {
-        addCSSClass(this.iconType, iconTypeClass);
     }
 
     public void addAction(final CaseCommentsPresenter.CaseCommentAction action) {
