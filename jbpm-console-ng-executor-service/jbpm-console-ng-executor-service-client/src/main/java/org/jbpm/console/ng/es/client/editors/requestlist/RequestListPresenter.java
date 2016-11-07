@@ -134,14 +134,14 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
 
     public void createRequest() {
         Map<String, String> ctx = new HashMap<String, String>();
-        ctx.put( "businessKey", "1234" );
+        ctx.put("businessKey", "1234");
         executorServices.call( new RemoteCallback<Long>() {
             @Override
             public void callback( Long requestId ) {
                 view.displayNotification( constants.RequestScheduled(requestId) );
 
             }
-        } ).scheduleRequest( selectedServerTemplate, "PrintOutCmd", ctx );
+        } ).scheduleRequest(selectedServerTemplate, "PrintOutCmd", ctx);
     }
 
     @Override
@@ -186,6 +186,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                                 List<RequestSummary> myRequestSumaryFromDataSet = new ArrayList<RequestSummary>();
 
                                 for (int i = 0; i < dataSet.getRowCount(); i++) {
+
                                     myRequestSumaryFromDataSet.add(getRequestSummary(dataSet, i));
                                 }
                                 boolean lastPageExactCount=false;
@@ -215,7 +216,8 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                 dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_COMMANDNAME, index),
                 dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_MESSAGE, index),
                 dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_BUSINESSKEY, index),
-                dataSetQueryHelper.getColumnIntValue(dataSet, COLUMN_RETRIES, index)
+                dataSetQueryHelper.getColumnIntValue(dataSet, COLUMN_RETRIES, index),
+                dataSetQueryHelper.getColumnIntValue(dataSet, COLUMN_EXECUTIONS, index)
         );
     }
 

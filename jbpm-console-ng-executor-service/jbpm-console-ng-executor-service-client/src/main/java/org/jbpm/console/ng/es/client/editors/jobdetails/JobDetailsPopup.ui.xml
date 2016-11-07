@@ -39,7 +39,7 @@
 
                         <b:FormGroup>
                             <b:FormLabel addStyleNames="col-md-4">
-                                <ui:text from="{i18n.Number_Of_Attempted_Retries}"/>
+                                <ui:text from="{i18n.Number_Of_Attempted_Executions}"/>
                             </b:FormLabel>
                             <b:Column size="MD_8">
                                 <b:FormControlStatic ui:field="jobRetries"/>

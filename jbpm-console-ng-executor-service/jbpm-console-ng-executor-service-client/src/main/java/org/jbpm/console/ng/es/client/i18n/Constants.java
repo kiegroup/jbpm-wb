@@ -95,6 +95,8 @@ public interface Constants extends Messages {
 
     String Retries();
 
+    String Executions();
+
     String Status();
 
     String RequestsListTitle();
@@ -117,7 +119,7 @@ public interface Constants extends Messages {
 
     String The_Job_Must_Have_A_Valid_Type();
 
-    String Number_Of_Attempted_Retries();
+    String Number_Of_Attempted_Executions();
 
     String Execution_Parameters();
 
