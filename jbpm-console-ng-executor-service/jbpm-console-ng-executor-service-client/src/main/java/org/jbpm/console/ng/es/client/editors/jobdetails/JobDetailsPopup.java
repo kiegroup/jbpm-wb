@@ -31,8 +31,8 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import org.gwtbootstrap3.client.shared.event.ModalShownEvent;
 import org.gwtbootstrap3.client.shared.event.ModalShownHandler;
+import org.gwtbootstrap3.client.ui.FormControlStatic;
 import org.gwtbootstrap3.client.ui.FormGroup;
-import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.gwt.DataGrid;
 import org.jboss.errai.common.client.api.Caller;
@@ -61,7 +61,7 @@ public class JobDetailsPopup extends BaseModal {
     final Constants constants = Constants.INSTANCE;
 
     @UiField
-    public Label jobRetries;
+    public FormControlStatic jobRetries;
 
     @UiField
     public DataGrid<RequestParameterSummary> executionParametersGrid;

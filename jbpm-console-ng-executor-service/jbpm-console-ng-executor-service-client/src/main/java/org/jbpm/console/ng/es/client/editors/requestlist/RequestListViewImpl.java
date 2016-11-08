@@ -430,6 +430,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         builder.setColumn( COLUMN_COMMANDNAME, constants.CommandName() );
         builder.setColumn( COLUMN_MESSAGE, constants.Message() );
         builder.setColumn( COLUMN_BUSINESSKEY, constants.Key() );
+        builder.setColumn( COLUMN_RETRIES, constants.Retries() );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
@@ -486,6 +487,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         builder.setColumn( COLUMN_COMMANDNAME, constants.CommandName(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn( COLUMN_MESSAGE, constants.Message() );
         builder.setColumn( COLUMN_BUSINESSKEY, constants.Key() );
+        builder.setColumn( COLUMN_RETRIES, constants.Retries() );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );

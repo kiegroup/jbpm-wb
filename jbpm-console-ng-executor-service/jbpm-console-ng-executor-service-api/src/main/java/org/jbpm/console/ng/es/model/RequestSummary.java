@@ -32,14 +32,14 @@ public class RequestSummary extends GenericSummary {
     // Business Key for callback
     private String key;
     // Number of times that this request must be retried
-    private int retries = 0;
+    private Integer retries = 0;
     // Number of times that this request has been executed
-    private int executions = 0;
+    private Integer executions = 0;
 
     public RequestSummary() {
     }
 
-    public RequestSummary(Long jobId, Date time, String status, String commandName, String message, String key) {
+    public RequestSummary(Long jobId, Date time, String status, String commandName, String message, String key, Integer retries) {
         this.id = jobId;
         this.jobId = jobId;
         this.time = time;
@@ -47,6 +47,7 @@ public class RequestSummary extends GenericSummary {
         this.commandName = commandName;
         this.message = message;
         this.key = key;
+        this.retries = retries;
     }
 
     public Long getJobId() {
@@ -57,8 +58,6 @@ public class RequestSummary extends GenericSummary {
         this.jobId = jobId;
     }
 
-
-    
     public Date getTime() {
         return time;
     }
@@ -99,7 +98,7 @@ public class RequestSummary extends GenericSummary {
         this.key = key;
     }
 
-    public int getRetries() {
+    public Integer getRetries() {
         return retries;
     }
 
@@ -107,11 +106,11 @@ public class RequestSummary extends GenericSummary {
         this.retries = retries;
     }
 
-    public int getExecutions() {
+    public Integer getExecutions() {
         return executions;
     }
 
-    public void setExecutions(int executions) {
+    public void setExecutions(Integer executions) {
         this.executions = executions;
     }
 
