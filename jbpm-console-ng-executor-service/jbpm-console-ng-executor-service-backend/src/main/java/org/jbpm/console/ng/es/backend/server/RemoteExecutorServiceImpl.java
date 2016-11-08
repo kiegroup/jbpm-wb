@@ -18,24 +18,19 @@ package org.jbpm.console.ng.es.backend.server;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.bd.integration.AbstractKieServerService;
-import org.jbpm.console.ng.es.model.ErrorSummary;
 import org.jbpm.console.ng.es.model.RequestDetails;
-import org.jbpm.console.ng.es.model.RequestParameterSummary;
-import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.service.ExecutorService;
 import org.kie.server.api.model.instance.JobRequestInstance;
 import org.kie.server.api.model.instance.RequestInfoInstance;
 import org.kie.server.client.JobServicesClient;
 
-import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
 
 @Service
 @ApplicationScoped
@@ -45,14 +40,9 @@ public class RemoteExecutorServiceImpl extends AbstractKieServerService implemen
     public RequestDetails getRequestDetails(String serverTemplateId, Long requestId) {
         JobServicesClient jobClient = getClient(serverTemplateId, JobServicesClient.class);
 
-        RequestInfoInstance request = jobClient.getRequestById(requestId, true, true);
+        Optional<RequestInfoInstance> request = ofNullable(jobClient.getRequestById(requestId, true, true));
 
-        RequestSummary summary = ofNullable(request).map(new RequestSummaryMapper()).get();
-        List<ErrorSummary> errors = ofNullable(request.getErrors().getItems()).orElse(emptyList()).stream().map(new ErrorSummaryMapper()).collect(toList());
-        List<RequestParameterSummary> params = request.getData().entrySet().stream()
-                .map(e -> new RequestParameterSummary(e.getKey(), String.valueOf(e.getValue())))
-                .collect(toList());
-        return new RequestDetails(summary, errors, params);
+        return request.map(new RequestDetailsMapper()).orElse(null);
     }
 
     @Override
