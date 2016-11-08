@@ -24,6 +24,7 @@ import javax.enterprise.inject.Instance;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import org.apache.commons.io.IOUtils;
 import org.jbpm.console.ng.ga.forms.service.providing.RenderingSettings;
 import org.jbpm.console.ng.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
@@ -143,25 +144,27 @@ public abstract class AbstractFormProvidingEngineTest<R extends RenderingSetting
         try {
             JsonArray formsArray = new JsonArray();
 
+            JsonParser parser = new JsonParser();
+
             String content = IOUtils.toString( this.getClass().getResourceAsStream( "/forms/Client.frm" ) );
 
-            formsArray.add( content );
+            formsArray.add( parser.parse( content ) );
 
             content = IOUtils.toString( this.getClass().getResourceAsStream( "/forms/InvoiceLine.frm" ) );
 
-            formsArray.add( content );
+            formsArray.add( parser.parse( content ) );
 
             content = IOUtils.toString( this.getClass().getResourceAsStream( "/forms/Invoice.frm" ) );
 
-            formsArray.add( content );
+            formsArray.add( parser.parse( content ) );
 
             content = IOUtils.toString( this.getClass().getResourceAsStream( "/forms/invoices-taskform.frm" ) );
 
-            formsArray.add( content );
+            formsArray.add( parser.parse( content ) );
 
             content = IOUtils.toString( this.getClass().getResourceAsStream( "/forms/modify-taskform.frm" ) );
 
-            formsArray.add( content );
+            formsArray.add( parser.parse( content ) );
 
             Gson gson = new Gson();
 
