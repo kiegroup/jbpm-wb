@@ -16,8 +16,6 @@
 
 package org.jbpm.console.ng.es.backend.server;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,22 +26,20 @@ import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.bd.integration.AbstractKieServerService;
 import org.jbpm.console.ng.es.model.ErrorSummary;
 import org.jbpm.console.ng.es.model.RequestDetails;
-import org.jbpm.console.ng.es.model.RequestKey;
 import org.jbpm.console.ng.es.model.RequestParameterSummary;
 import org.jbpm.console.ng.es.model.RequestSummary;
 import org.jbpm.console.ng.es.service.ExecutorService;
-import org.jbpm.console.ng.ga.model.QueryFilter;
-import org.jbpm.console.ng.ga.service.GenericServiceEntryPoint;
-import org.kie.api.executor.RequestInfo;
-import org.kie.api.executor.STATUS;
 import org.kie.server.api.model.instance.JobRequestInstance;
 import org.kie.server.api.model.instance.RequestInfoInstance;
 import org.kie.server.client.JobServicesClient;
-import org.uberfire.paging.PageResponse;
+
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @ApplicationScoped
-public class RemoteExecutorServiceImpl extends AbstractKieServerService implements ExecutorService,GenericServiceEntryPoint<RequestKey, RequestSummary> {
+public class RemoteExecutorServiceImpl extends AbstractKieServerService implements ExecutorService {
 
     @Override
     public RequestDetails getRequestDetails(String serverTemplateId, Long requestId) {
@@ -51,9 +47,11 @@ public class RemoteExecutorServiceImpl extends AbstractKieServerService implemen
 
         RequestInfoInstance request = jobClient.getRequestById(requestId, true, true);
 
-        RequestSummary summary = RequestSummaryHelper.adaptRequest(request);
-        List<ErrorSummary> errors = RequestSummaryHelper.adaptErrorInstanceList(request.getErrors().getItems());
-        List<RequestParameterSummary> params = RequestSummaryHelper.adaptInternalMap(request);
+        RequestSummary summary = ofNullable(request).map(new RequestSummaryMapper()).get();
+        List<ErrorSummary> errors = ofNullable(request.getErrors().getItems()).orElse(emptyList()).stream().map(new ErrorSummaryMapper()).collect(toList());
+        List<RequestParameterSummary> params = request.getData().entrySet().stream()
+                .map(e -> new RequestParameterSummary(e.getKey(), String.valueOf(e.getValue())))
+                .collect(toList());
         return new RequestDetails(summary, errors, params);
     }
 
@@ -97,63 +95,6 @@ public class RemoteExecutorServiceImpl extends AbstractKieServerService implemen
     public void requeueRequest(String serverTemplateId, Long requestId) {
         JobServicesClient jobClient = getClient(serverTemplateId, JobServicesClient.class);
         jobClient.requeueRequest(requestId);
-    }
-
-    @Override
-    public PageResponse<RequestSummary> getData(QueryFilter filter) {
-        PageResponse<RequestSummary> response = new PageResponse<RequestSummary>();
-        List<RequestSummary> requestSummarys = getRequests(filter);
-        response.setStartRowIndex(filter.getOffset());
-        response.setTotalRowSize(requestSummarys.size()-1);
-        if(requestSummarys.size() > filter.getCount()){
-            response.setTotalRowSizeExact(false);
-        } else{
-            response.setTotalRowSizeExact(true);
-        }
-
-        if (!requestSummarys.isEmpty() && requestSummarys.size() > (filter.getCount() + filter.getOffset())) {
-            response.setPageRowList(new ArrayList<RequestSummary>(requestSummarys.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
-            response.setLastPage(false);
-
-        } else {
-            response.setPageRowList(new ArrayList<RequestSummary>(requestSummarys));
-            response.setLastPage(true);
-
-        }
-        return response;
-    }
-
-    private List<RequestSummary> getRequests(QueryFilter filter) {
-        List<String> states = null;
-        if (filter.getParams() != null) {
-            states = (List<String>) filter.getParams().get("states");
-        }
-
-        Collection<RequestInfo> requestInfoList = null;
-        if (states == null || states.isEmpty()) {
-            states = new ArrayList<String>();
-            states.add(STATUS.QUEUED.toString());
-            states.add(STATUS.RUNNING.toString());
-            states.add(STATUS.RETRYING.toString());
-            states.add(STATUS.ERROR.toString());
-            states.add(STATUS.DONE.toString());
-            states.add(STATUS.CANCELLED.toString());
-        }
-
-        JobServicesClient jobClient = getClient((String)filter.getParams().get("serverTemplateId"), JobServicesClient.class);
-        List<RequestInfoInstance> jobs = jobClient.getRequestsByStatus(states, 0, 100);
-
-
-        List<RequestSummary> requestSummarys = new ArrayList<RequestSummary>(requestInfoList.size());
-        for(RequestInfoInstance requestInfo : jobs){
-            if (filter.getParams().get("textSearch") == null || ((String) filter.getParams().get("textSearch")).isEmpty()) {
-                requestSummarys.add( RequestSummaryHelper.adaptRequest( requestInfo ) );
-            }else if(requestInfo.getCommandName().toLowerCase().contains((String) filter.getParams().get("textSearch"))){
-                requestSummarys.add( RequestSummaryHelper.adaptRequest( requestInfo ) );
-            }
-            
-        }
-        return requestSummarys;
     }
 
 }

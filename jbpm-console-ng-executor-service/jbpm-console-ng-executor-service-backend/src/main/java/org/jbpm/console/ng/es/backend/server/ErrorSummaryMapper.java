@@ -13,17 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.es.model;
 
-public interface RequestDataSetConstants {
+package org.jbpm.console.ng.es.backend.server;
 
-    String REQUEST_LIST_DATASET = "jbpmRequestList";
+import java.util.function.Function;
 
-    String COLUMN_ID = "id";
-    String COLUMN_TIMESTAMP = "timestamp";
-    String COLUMN_STATUS = "status";
-    String COLUMN_COMMANDNAME = "commandName";
-    String COLUMN_MESSAGE = "message";
-    String COLUMN_BUSINESSKEY = "businessKey";
-    String COLUMN_RETRIES = "retries";
+import org.jbpm.console.ng.es.model.ErrorSummary;
+import org.kie.server.api.model.instance.ErrorInfoInstance;
+
+public class ErrorSummaryMapper implements Function<ErrorInfoInstance, ErrorSummary> {
+
+    @Override
+    public ErrorSummary apply(final ErrorInfoInstance error) {
+        if (error == null) {
+            return null;
+        }
+        return new ErrorSummary(error.getId(), error.getErrorDate(), error.getMessage(), error.getStacktrace(),
+                error.getRequestInfoId());
+    }
 }

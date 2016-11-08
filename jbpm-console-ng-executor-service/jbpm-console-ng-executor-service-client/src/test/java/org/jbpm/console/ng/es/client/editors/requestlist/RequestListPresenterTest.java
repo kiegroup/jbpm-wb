@@ -15,12 +15,15 @@
  */
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
+import java.util.Date;
 import java.util.List;
 
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.impl.DataSetImpl;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.console.ng.df.client.list.base.DataSetQueryHelper;
@@ -37,11 +40,11 @@ import org.mockito.Mock;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 
-import static org.dashbuilder.dataset.sort.SortOrder.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
+import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
 import static org.jbpm.console.ng.es.model.RequestDataSetConstants.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class RequestListPresenterTest {
@@ -74,7 +77,7 @@ public class RequestListPresenterTest {
         //Mock that actually calls the callbacks
         callerMockExecutorService = new CallerMock<ExecutorService>(executorServiceMock);
 
-        filterSettings= createTableSettingsPrototype();
+        filterSettings = createTableSettingsPrototype();
 
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getPageSize()).thenReturn(10);
@@ -83,7 +86,7 @@ public class RequestListPresenterTest {
 
 
         presenter = new RequestListPresenter(viewMock,
-                callerMockExecutorService,dataSetQueryHelper,requestChangedEvent);
+                callerMockExecutorService, dataSetQueryHelper, requestChangedEvent);
     }
 
     @Test
@@ -142,7 +145,7 @@ public class RequestListPresenterTest {
     public void testSearchFilterEmpty() {
         List<ColumnFilter> filters;
 
-        filters= presenter.getColumnFilters("");
+        filters = presenter.getColumnFilters("");
         assertTrue(filters.isEmpty());
 
         filters = presenter.getColumnFilters("     ");
@@ -159,24 +162,54 @@ public class RequestListPresenterTest {
         assertEquals(COLUMN_BUSINESSKEY, filters.get(2).getColumnId());
     }
 
+    @Test
+    public void testGetRequestSummary() {
+        final Long id = 1l;
+        final String message = "message";
+        final String status = "status";
+        final String commandName = "commandName";
+        final String businessKey = "businessKey";
+        final Integer retries = 2;
+        final Date time = new Date();
+
+        when(dataSetQueryHelper.getColumnLongValue(any(DataSet.class), eq(COLUMN_ID), eq(0))).thenReturn(id);
+        when(dataSetQueryHelper.getColumnDateValue(any(DataSet.class), eq(COLUMN_TIMESTAMP), eq(0))).thenReturn(time);
+        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class), eq(COLUMN_STATUS), eq(0))).thenReturn(status);
+        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class), eq(COLUMN_COMMANDNAME), eq(0))).thenReturn(commandName);
+        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class), eq(COLUMN_MESSAGE), eq(0))).thenReturn(message);
+        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class), eq(COLUMN_BUSINESSKEY), eq(0))).thenReturn(businessKey);
+        when(dataSetQueryHelper.getColumnIntValue(any(DataSet.class), eq(COLUMN_RETRIES), eq(0))).thenReturn(retries);
+
+        final RequestSummary rs = presenter.getRequestSummary(mock(DataSet.class), 0);
+
+        assertEquals(id, rs.getId());
+        assertEquals(time, rs.getTime());
+        assertEquals(status, rs.getStatus());
+        assertEquals(commandName, rs.getCommandName());
+        assertEquals(message, rs.getMessage());
+        assertEquals(businessKey, rs.getKey());
+        assertEquals(retries, rs.getRetries());
+    }
+
     private FilterSettings createTableSettingsPrototype() {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset( REQUEST_LIST_DATASET );
-        builder.setColumn( COLUMN_ID, "id" );
-        builder.setColumn( COLUMN_TIMESTAMP, "time" , DateUtils.getDateTimeFormatMask());
-        builder.setColumn( COLUMN_STATUS,"status" );
-        builder.setColumn( COLUMN_COMMANDNAME , "commandName" );
-        builder.setColumn( COLUMN_MESSAGE, "status" );
-        builder.setColumn( COLUMN_BUSINESSKEY, "key" );
+        builder.dataset(REQUEST_LIST_DATASET);
+        builder.setColumn(COLUMN_ID, "id");
+        builder.setColumn(COLUMN_TIMESTAMP, "time", DateUtils.getDateTimeFormatMask());
+        builder.setColumn(COLUMN_STATUS, "status");
+        builder.setColumn(COLUMN_COMMANDNAME, "commandName");
+        builder.setColumn(COLUMN_MESSAGE, "status");
+        builder.setColumn(COLUMN_BUSINESSKEY, "key");
+        builder.setColumn(COLUMN_RETRIES, "retries");
 
-        builder.filterOn( true, true, true);
+        builder.filterOn(true, true, true);
         builder.tableOrderEnabled(true);
-        builder.tableOrderDefault( COLUMN_TIMESTAMP, DESCENDING );
+        builder.tableOrderDefault(COLUMN_TIMESTAMP, DESCENDING);
         builder.tableWidth(1000);
 
-        return  builder.buildSettings();
+        return builder.buildSettings();
     }
 
 }

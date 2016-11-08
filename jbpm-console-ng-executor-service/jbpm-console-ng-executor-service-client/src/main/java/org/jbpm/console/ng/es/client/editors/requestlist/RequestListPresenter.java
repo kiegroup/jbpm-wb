@@ -47,8 +47,6 @@ import org.jbpm.console.ng.gc.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView.ListView;
 import org.jbpm.console.ng.gc.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
-import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
-import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.jbpm.console.ng.gc.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -56,11 +54,14 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
+import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
+import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.dashbuilder.dataset.filter.FilterFactory.OR;
+import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
 import static org.jbpm.console.ng.es.model.RequestDataSetConstants.*;
 
 @Dependent
@@ -185,15 +186,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                                 List<RequestSummary> myRequestSumaryFromDataSet = new ArrayList<RequestSummary>();
 
                                 for (int i = 0; i < dataSet.getRowCount(); i++) {
-
-                                    myRequestSumaryFromDataSet.add(new RequestSummary(
-                                            dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_ID, i),
-                                            dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_TIMESTAMP, i),
-                                            dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_STATUS, i),
-                                            dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_COMMANDNAME, i),
-                                            dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_MESSAGE, i),
-                                            dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_BUSINESSKEY, i)));
-
+                                    myRequestSumaryFromDataSet.add(getRequestSummary(dataSet, i));
                                 }
                                 boolean lastPageExactCount=false;
                                 if( dataSet.getRowCount() < view.getListGrid().getPageSize()) {
@@ -212,6 +205,18 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
             GWT.log( "Error looking up dataset with UUID [ " + REQUEST_LIST_DATASET + " ]" );
         }
 
+    }
+
+    protected RequestSummary getRequestSummary(final DataSet dataSet, final Integer index) {
+        return new RequestSummary(
+                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_ID, index),
+                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_TIMESTAMP, index),
+                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_STATUS, index),
+                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_COMMANDNAME, index),
+                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_MESSAGE, index),
+                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_BUSINESSKEY, index),
+                dataSetQueryHelper.getColumnIntValue(dataSet, COLUMN_RETRIES, index)
+        );
     }
 
     protected List<ColumnFilter> getColumnFilters(final String searchString) {

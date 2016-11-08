@@ -46,13 +46,14 @@ public class DataSetDefsBootstrap {
                 .uuid(REQUEST_LIST_DATASET)
                 .name("Request List")
                 .dataSource(JBPM_DATA_SOURCE)
-                .dbSQL("select id, timestamp, status, commandName, message, businessKey from RequestInfo", false)
+                .dbSQL("select id, timestamp, status, commandName, message, businessKey, retries from RequestInfo", false)
                 .number(COLUMN_ID)
                 .date(COLUMN_TIMESTAMP)
                 .label(COLUMN_STATUS)
                 .label(COLUMN_COMMANDNAME)
                 .label(COLUMN_MESSAGE)
                 .label(COLUMN_BUSINESSKEY)
+                .number(COLUMN_RETRIES)
                 .buildDef();
 
         // Hide all these internal data set from end user view
