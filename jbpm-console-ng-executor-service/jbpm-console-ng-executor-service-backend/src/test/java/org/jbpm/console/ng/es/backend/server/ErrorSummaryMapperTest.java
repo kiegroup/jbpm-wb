@@ -36,18 +36,28 @@ public class ErrorSummaryMapperTest {
         assertEquals(error.getStacktrace(), es.getStacktrace());
     }
 
+    public static ErrorInfoInstance newErrorInfoInstance() {
+        return ErrorInfoInstance.builder()
+                .id(1l)
+                .errorDate(new Date())
+                .requestId(2l)
+                .stacktrace("stacktrace")
+                .message("message")
+                .build();
+    }
+
     @Test
     public void testErrorSummaryMapper() {
-        final ErrorInfoInstance error = new ErrorInfoInstance();
-        error.setId(1l);
-        error.setErrorDate(new Date());
-        error.setRequestInfoId(2l);
-        error.setStacktrace("stacktrace");
-        error.setMessage("message");
+        final ErrorInfoInstance error = newErrorInfoInstance();
 
         final ErrorSummary es = new ErrorSummaryMapper().apply(error);
 
         assertErrorSummary(error, es);
+    }
+
+    @Test
+    public void testErrorSummaryMapperNull() {
+        assertNull(new ErrorSummaryMapper().apply(null));
     }
 
 }

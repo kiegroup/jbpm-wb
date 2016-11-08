@@ -18,9 +18,11 @@ package org.jbpm.console.ng.es.model;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Vector;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
+
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 
 @Portable
 public class RequestDetails implements Serializable {
@@ -35,8 +37,8 @@ public class RequestDetails implements Serializable {
     public RequestDetails(RequestSummary request, List<ErrorSummary> errors, List<RequestParameterSummary> params) {
         this();
         this.request = request;
-        this.errors = new Vector<ErrorSummary>(errors);
-        this.params = new Vector<RequestParameterSummary>(params);
+        setErrors(errors);
+        setParams(params);
     }
 
     public RequestSummary getRequest() {
@@ -52,7 +54,7 @@ public class RequestDetails implements Serializable {
     }
 
     public void setErrors(List<ErrorSummary> errors) {
-        this.errors = new Vector<ErrorSummary>(errors);
+        this.errors = ofNullable(errors).orElse(emptyList());
     }
 
     public List<RequestParameterSummary> getParams() {
@@ -60,7 +62,7 @@ public class RequestDetails implements Serializable {
     }
 
     public void setParams(List<RequestParameterSummary> params) {
-        this.params = new Vector<RequestParameterSummary>(params);
+        this.params = ofNullable(params).orElse(emptyList());
     }
 
 }

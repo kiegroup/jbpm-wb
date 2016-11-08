@@ -16,7 +16,6 @@
 
 package org.jbpm.console.ng.es.backend.server;
 
-import java.util.Collections;
 import java.util.Date;
 
 import org.jbpm.console.ng.es.model.RequestSummary;
@@ -24,6 +23,9 @@ import org.junit.Test;
 import org.kie.server.api.model.instance.ErrorInfoInstanceList;
 import org.kie.server.api.model.instance.RequestInfoInstance;
 
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
+import static org.jbpm.console.ng.es.backend.server.ErrorSummaryMapperTest.newErrorInfoInstance;
 import static org.junit.Assert.*;
 
 public class RequestSummaryMapperTest {
@@ -41,24 +43,34 @@ public class RequestSummaryMapperTest {
         assertEquals(request.getMessage(), rs.getMessage());
     }
 
+    public static RequestInfoInstance newRequestInfoInstance() {
+        return RequestInfoInstance.builder()
+                .id(1l)
+                .businessKey("businessKey")
+                .command("commandName")
+                .data(singletonMap("key", "data"))
+                .errors(new ErrorInfoInstanceList(singletonList(newErrorInfoInstance())))
+                .executions(10)
+                .message("message")
+                .retries(2)
+                .scheduledDate(new Date())
+                .status("status")
+                .responseData(singletonMap("responseKey", "responseData"))
+                .build();
+    }
+
     @Test
     public void testRequestSummaryMapper() {
-        final RequestInfoInstance request = new RequestInfoInstance();
-        request.setId(1l);
-        request.setBusinessKey("businessKey");
-        request.setCommandName("commandName");
-        request.setData(Collections.singletonMap("key", "data"));
-        request.setErrors(new ErrorInfoInstanceList());
-        request.setExecutions(10);
-        request.setMessage("message");
-        request.setRetries(2);
-        request.setScheduledDate(new Date());
-        request.setStatus("status");
-        request.setResponseData(Collections.singletonMap("responseKey", "responseData"));
+        final RequestInfoInstance request = newRequestInfoInstance();
 
         final RequestSummary rs = new RequestSummaryMapper().apply(request);
 
         assertRequestSummary(request, rs);
+    }
+
+    @Test
+    public void testRequestSummaryMapperNull() {
+        assertNull(new RequestSummaryMapper().apply(null));
     }
 
 }
