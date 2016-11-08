@@ -24,20 +24,32 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Panel;
+import org.gwtbootstrap3.client.shared.event.HideEvent;
+import org.gwtbootstrap3.client.shared.event.HideHandler;
+import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Heading;
+import org.gwtbootstrap3.client.ui.PanelBody;
+import org.gwtbootstrap3.client.ui.PanelCollapse;
+import org.gwtbootstrap3.client.ui.PanelGroup;
+import org.gwtbootstrap3.client.ui.PanelHeader;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.HeadingSize;
+import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.bd.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.ga.forms.display.FormDisplayerConfig;
+import org.jbpm.console.ng.ga.forms.display.FormRenderingSettings;
 import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
 import org.jbpm.console.ng.gc.forms.client.display.displayers.util.ActionRequest;
 import org.jbpm.console.ng.gc.forms.client.display.displayers.util.JSNIHelper;
@@ -49,7 +61,7 @@ import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
-public abstract class AbstractStartProcessFormDisplayer implements StartProcessFormDisplayer {
+public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingSettings> implements StartProcessFormDisplayer<S> {
 
     public static final String ACTION_START_PROCESS = "startProcess";
 
@@ -61,7 +73,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
 
     protected TextBox correlationKey = GWT.create( TextBox.class );
 
-    protected String formContent;
+    protected S renderingSettings;
 
     protected String serverTemplateId;
     protected String deploymentId;
@@ -95,11 +107,11 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     }
 
     @Override
-    public void init(FormDisplayerConfig<ProcessDefinitionKey> config, Command onClose, Command onRefreshCommand, FormContentResizeListener resizeContentListener) {
+    public void init(FormDisplayerConfig<ProcessDefinitionKey, S> config, Command onClose, Command onRefreshCommand, FormContentResizeListener resizeContentListener) {
         this.serverTemplateId = config.getKey().getServerTemplateId();
         this.deploymentId = config.getKey().getDeploymentId();
         this.processDefId = config.getKey().getProcessId();
-        this.formContent = config.getFormContent();
+        this.renderingSettings = config.getRenderingSettings();
         this.opener = config.getFormOpener();
         this.onClose = onClose;
         this.onRefresh = onRefreshCommand;
@@ -131,6 +143,63 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
         }
 
         initDisplayer();
+
+        final PanelGroup accordion = new PanelGroup();
+        accordion.setId( DOM.createUniqueId() );
+
+        accordion.add( new org.gwtbootstrap3.client.ui.Panel() {{
+            final PanelCollapse collapse = new PanelCollapse() {{
+                setIn( false );
+                addHideHandler( new HideHandler() {
+                    @Override
+                    public void onHide( final HideEvent hideEvent ) {
+                        hideEvent.stopPropagation();
+                    }
+                } );
+                add( new PanelBody() {{
+                    add( correlationKey );
+                }} );
+            }};
+            add( new PanelHeader() {{
+                add( new Heading( HeadingSize.H4 ) {{
+                    add( new Anchor() {{
+                        setText( constants.Correlation_Key() );
+                        setDataToggle( Toggle.COLLAPSE );
+                        setDataParent( accordion.getId() );
+                        setDataTargetWidget( collapse );
+                    }} );
+                }} );
+            }} );
+            add( collapse );
+        }} );
+
+        accordion.add( new org.gwtbootstrap3.client.ui.Panel() {{
+            final PanelCollapse collapse = new PanelCollapse() {{
+                setIn( true );
+                addHideHandler( new HideHandler() {
+                    @Override
+                    public void onHide( final HideEvent hideEvent ) {
+                        hideEvent.stopPropagation();
+                    }
+                } );
+                add( new PanelBody() {{
+                    add( getFormWidget() );
+                }} );
+            }};
+            add( new PanelHeader() {{
+                add( new Heading( HeadingSize.H4 ) {{
+                    add( new Anchor() {{
+                        setText( constants.Form() );
+                        setDataToggle( Toggle.COLLAPSE );
+                        setDataParent( accordion.getId() );
+                        setDataTargetWidget( collapse );
+                    }} );
+                }} );
+            }} );
+            add( collapse );
+        }} );
+
+        formContainer.add( accordion );
 
         doResize();
 
@@ -214,7 +283,7 @@ public abstract class AbstractStartProcessFormDisplayer implements StartProcessF
     }
 
     protected void clearStatus() {
-        formContent = null;
+        renderingSettings = null;
         opener = null;
         deploymentId = null;
         processDefId = null;

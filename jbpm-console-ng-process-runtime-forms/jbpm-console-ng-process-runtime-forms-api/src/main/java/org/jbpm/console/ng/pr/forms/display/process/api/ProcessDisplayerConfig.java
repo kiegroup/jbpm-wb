@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.pr.forms.display.process.api;
 
 import org.jbpm.console.ng.ga.forms.display.FormDisplayerConfig;
 import org.jbpm.console.ng.bd.model.ProcessDefinitionKey;
+import org.jbpm.console.ng.ga.forms.display.FormRenderingSettings;
 
-public class ProcessDisplayerConfig implements FormDisplayerConfig<ProcessDefinitionKey> {
+public class ProcessDisplayerConfig<S extends FormRenderingSettings> implements FormDisplayerConfig<ProcessDefinitionKey, S> {
 
     private ProcessDefinitionKey key;
     private String processName;
     private String formContent;
     private String formOpener;
+    private S renderingSettings;
 
     public ProcessDisplayerConfig(ProcessDefinitionKey key, String processName) {
         this.key = key;
@@ -45,8 +46,18 @@ public class ProcessDisplayerConfig implements FormDisplayerConfig<ProcessDefini
         return formContent;
     }
 
+    @Override
+    public S getRenderingSettings() {
+        return renderingSettings;
+    }
+
     public void setFormContent(String formContent) {
         this.formContent = formContent;
+    }
+
+
+    public void setRenderingSettings( S renderingSettings ) {
+        this.renderingSettings = renderingSettings;
     }
 
     @Override

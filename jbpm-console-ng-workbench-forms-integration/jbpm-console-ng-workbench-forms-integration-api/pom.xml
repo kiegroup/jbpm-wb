@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>jbpm-console-ng-workbench-forms-integration</artifactId>
+    <groupId>org.jbpm</groupId>
+    <version>7.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>jbpm-console-ng-workbench-forms-integration-api</artifactId>
+
+  <name>jBPM Console NG - Workbench Forms Integration API</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-common</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-bus</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-generic-forms-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-human-tasks-forms-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-generic-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-dynamic-forms-api</artifactId>
+    </dependency>
+
+  </dependencies>
+
+</project>

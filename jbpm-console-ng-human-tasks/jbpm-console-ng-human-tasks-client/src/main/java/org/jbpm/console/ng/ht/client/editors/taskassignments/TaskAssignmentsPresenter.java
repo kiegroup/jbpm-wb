@@ -119,7 +119,7 @@ public class TaskAssignmentsPresenter {
             taskService.call(new RemoteCallback<TaskAssignmentSummary>() {
                 @Override
                 public void callback(final TaskAssignmentSummary response) {
-                    if (response.getPotOwnersString() == null || response.getPotOwnersString().isEmpty()) {
+                    if (response == null || response.getPotOwnersString() == null || response.getPotOwnersString().isEmpty()) {
                         view.setPotentialOwnersInfo(constants.No_Potential_Owners());
                     } else {
                         view.setPotentialOwnersInfo(response.getPotOwnersString().toString());

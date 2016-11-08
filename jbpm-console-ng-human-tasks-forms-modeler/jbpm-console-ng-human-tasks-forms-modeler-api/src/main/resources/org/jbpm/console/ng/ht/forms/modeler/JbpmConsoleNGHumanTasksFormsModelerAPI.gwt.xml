@@ -22,10 +22,7 @@
 
   <inherits name='org.jboss.errai.bus.ErraiBus'/>
 
-  <source path="model"/>
+  <source path="display"/>
   <source path="service"/>
-  <source path="api"/>
-  <source path="ht"/>
-  <source path="process"/>
 
 </module>

@@ -18,10 +18,11 @@ package org.jbpm.console.ng.ht.forms.client.display.ht.api;
 
 import java.util.Map;
 
+import org.jbpm.console.ng.ga.forms.display.FormRenderingSettings;
 import org.jbpm.console.ng.gc.forms.client.display.GenericFormDisplayer;
 import org.jbpm.console.ng.ht.model.TaskKey;
 
-public interface HumanTaskFormDisplayer extends GenericFormDisplayer<TaskKey> {
+public interface HumanTaskFormDisplayer<S extends FormRenderingSettings> extends GenericFormDisplayer<TaskKey, S> {
 
     void start();
 

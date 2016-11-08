@@ -387,6 +387,21 @@
 
         <dependency>
             <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-workbench-forms-integration-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-workbench-forms-integration-backend</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-console-ng-workbench-forms-integration-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-documents-client</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -832,11 +847,6 @@
             <artifactId>jbpm-form-modeler-editor-backend</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-form-modeler-form-provider</artifactId>
-        </dependency>
-
         <!--Dashbuilder -->
 
         <dependency>
@@ -895,6 +905,111 @@
             <artifactId>dashbuilder-renderer-google</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Start Forms Engine -->
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-forms-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-dynamic-forms-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-dynamic-forms-backend</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-dynamic-forms-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-forms-editor-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-forms-editor-backend</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-forms-editor-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-forms-layout-generator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-forms-serialization</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-forms-common-rendering-shared</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-forms-common-rendering-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-forms-crud-component</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-forms-processing-engine</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-forms-data-modeller-integration-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-forms-data-modeller-integration-backend</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-forms-data-modeller-integration-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-forms-jbpm-integration-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-forms-jbpm-integration-backend</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.forms</groupId>
+            <artifactId>kie-wb-common-forms-jbpm-integration-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- End Forms Engine -->
 
         <!-- Data Modeller -->
         <dependency>
@@ -1077,7 +1192,7 @@
                     <server>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</server>
                     <disableCastChecking>true</disableCastChecking>
                     <runTarget>jbpm-console.html</runTarget>
-                    <hostedWebapp>src/main/webapp</hostedWebapp>                    
+                    <hostedWebapp>src/main/webapp</hostedWebapp>
                     <compileSourcesArtifacts>
                         <!-- Kie Server needed by Exec Server UI -->
                         <compileSourcesArtifact>org.kie:kie-api</compileSourcesArtifact>
@@ -1192,10 +1307,27 @@
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-forms-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-documents-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-documents-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-workbench-forms-integration-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-workbench-forms-integration-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-workbench-integration-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-workbench-integration-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-executor-service-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-executor-service-api</compileSourcesArtifact>
+
+                        <!-- Forms Engine -->
+                        <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-processing-engine</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-common-rendering-shared</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-common-rendering-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-crud-component</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-dynamic-forms-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-dynamic-forms-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-editor-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-editor-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-data-modeller-integration-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-data-modeller-integration-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-jbpm-integration-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-jbpm-integration-client</compileSourcesArtifact>
 
                         <!-- Dashbuilder -->
                         <compileSourcesArtifact>org.dashbuilder:dashbuilder-json</compileSourcesArtifact>
