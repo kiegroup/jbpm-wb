@@ -170,6 +170,7 @@ public class RequestListPresenterTest {
         final String commandName = "commandName";
         final String businessKey = "businessKey";
         final Integer retries = 2;
+        final Integer executions = 1;
         final Date time = new Date();
 
         when(dataSetQueryHelper.getColumnLongValue(any(DataSet.class), eq(COLUMN_ID), eq(0))).thenReturn(id);
@@ -179,6 +180,7 @@ public class RequestListPresenterTest {
         when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class), eq(COLUMN_MESSAGE), eq(0))).thenReturn(message);
         when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class), eq(COLUMN_BUSINESSKEY), eq(0))).thenReturn(businessKey);
         when(dataSetQueryHelper.getColumnIntValue(any(DataSet.class), eq(COLUMN_RETRIES), eq(0))).thenReturn(retries);
+        when(dataSetQueryHelper.getColumnIntValue(any(DataSet.class), eq(COLUMN_EXECUTIONS), eq(0))).thenReturn(executions);
 
         final RequestSummary rs = presenter.getRequestSummary(mock(DataSet.class), 0);
 
@@ -189,6 +191,7 @@ public class RequestListPresenterTest {
         assertEquals(message, rs.getMessage());
         assertEquals(businessKey, rs.getKey());
         assertEquals(retries, rs.getRetries());
+        assertEquals(executions, rs.getExecutions());
     }
 
     private FilterSettings createTableSettingsPrototype() {
@@ -203,6 +206,7 @@ public class RequestListPresenterTest {
         builder.setColumn(COLUMN_MESSAGE, "status");
         builder.setColumn(COLUMN_BUSINESSKEY, "key");
         builder.setColumn(COLUMN_RETRIES, "retries");
+        builder.setColumn( COLUMN_EXECUTIONS, "executions" );
 
         builder.filterOn(true, true, true);
         builder.tableOrderEnabled(true);

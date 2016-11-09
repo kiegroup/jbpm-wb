@@ -29,7 +29,7 @@ public class RequestSummaryMapper implements Function<RequestInfoInstance, Reque
             return null;
         }
         return new RequestSummary(request.getId(), request.getScheduledDate(), request.getStatus(), request.getCommandName(),
-                request.getMessage(), request.getBusinessKey(), request.getRetries());
+                request.getMessage(), request.getBusinessKey(), request.getRetries(), request.getExecutions());
     }
 
 }

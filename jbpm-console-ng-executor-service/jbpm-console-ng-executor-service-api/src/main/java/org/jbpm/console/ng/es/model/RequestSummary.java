@@ -39,7 +39,7 @@ public class RequestSummary extends GenericSummary {
     public RequestSummary() {
     }
 
-    public RequestSummary(Long jobId, Date time, String status, String commandName, String message, String key, Integer retries) {
+    public RequestSummary(Long jobId, Date time, String status, String commandName, String message, String key, Integer retries, Integer executions) {
         this.id = jobId;
         this.jobId = jobId;
         this.time = time;
@@ -48,6 +48,7 @@ public class RequestSummary extends GenericSummary {
         this.message = message;
         this.key = key;
         this.retries = retries;
+        this.executions = executions;
     }
 
     public Long getJobId() {
