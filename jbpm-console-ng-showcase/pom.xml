@@ -81,6 +81,10 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.errai</groupId>
+            <artifactId>errai-bus</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.errai</groupId>
             <artifactId>errai-security-server</artifactId>
             <exclusions>
                 <exclusion>
@@ -266,33 +270,6 @@
                     <groupId>org.jboss.spec.javax.transaction</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-process-runtime-admin-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-process-runtime-admin-client</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-process-runtime-admin-backend</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-human-tasks-admin-client</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-human-tasks-admin-backend</artifactId>
         </dependency>
 
         <dependency>
@@ -1149,6 +1126,11 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+
         <!-- login module -->
         <dependency>
             <groupId>org.kie</groupId>
@@ -1287,8 +1269,6 @@
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-bpm-home-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-client</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-admin-api</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-admin-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-forms-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-forms-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-forms-modeler-api</compileSourcesArtifact>
@@ -1296,8 +1276,6 @@
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-forms-modeler-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-client</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-admin-api</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-admin-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-data-filters-client</compileSourcesArtifact>
