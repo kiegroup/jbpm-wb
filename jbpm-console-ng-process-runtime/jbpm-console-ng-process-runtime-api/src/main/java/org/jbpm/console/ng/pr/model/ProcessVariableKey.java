@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,36 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.jbpm.console.ng.pr.model.events;
+package org.jbpm.console.ng.pr.model;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jbpm.console.ng.ga.service.ItemKey;
 
 @Portable
-public class ProcessInstancesUpdateEvent {
+public class ProcessVariableKey implements ItemKey {
 
-    private Long processInstanceId;
+    private String processVariableId;
 
-    public ProcessInstancesUpdateEvent() {
+    public ProcessVariableKey() {
     }
 
-    public ProcessInstancesUpdateEvent(Long processInstanceId) {
-        this.processInstanceId = processInstanceId;
+    public ProcessVariableKey(String processVariableId) {
+        this.processVariableId = processVariableId;
     }
 
-    public Long getProcessInstanceId() {
-        return processInstanceId;
-    }
-
-    public void setProcessInstanceId(Long processInstanceId) {
-        this.processInstanceId = processInstanceId;
+    public String getProcessVariableId() {
+        return processVariableId;
     }
 
     @Override
     @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
-        int hash = 7;
-        hash = 53 * hash + (this.processInstanceId != null ? this.processInstanceId.hashCode() : 0);
+        int hash = 3;
+        hash = 13 * hash + (this.processVariableId != null ? this.processVariableId.hashCode() : 0);
         hash = ~~hash;
         return hash;
     }
@@ -55,11 +51,16 @@ public class ProcessInstancesUpdateEvent {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final ProcessInstancesUpdateEvent other = (ProcessInstancesUpdateEvent) obj;
-        if (this.processInstanceId != other.processInstanceId && (this.processInstanceId == null || !this.processInstanceId.equals(other.processInstanceId))) {
+        final ProcessVariableKey other = (ProcessVariableKey) obj;
+        if (this.processVariableId == null ? other.processVariableId != null : !this.processVariableId.equals(other.processVariableId)) {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ProcessVariableKey{" + "processVariableId=" + processVariableId + '}';
     }
 
 }

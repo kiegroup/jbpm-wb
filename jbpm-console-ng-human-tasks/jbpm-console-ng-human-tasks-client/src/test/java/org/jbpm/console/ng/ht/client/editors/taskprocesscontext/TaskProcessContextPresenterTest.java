@@ -19,13 +19,13 @@ import java.util.Collections;
 import javax.enterprise.event.Event;
 
 import com.google.common.collect.Sets;
-import org.jbpm.console.ng.bd.model.ProcessInstanceKey;
-import org.jbpm.console.ng.bd.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.pr.model.ProcessInstanceKey;
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.jbpm.console.ng.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter.TaskProcessContextView;
 import org.jbpm.console.ng.ht.model.TaskSummary;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.jbpm.console.ng.ht.service.TaskService;
-import org.jbpm.console.ng.pr.model.events.ProcessInstancesWithDetailsRequestEvent;
+import org.jbpm.console.ng.pr.events.ProcessInstancesWithDetailsRequestEvent;
 import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;
 import org.junit.Test;

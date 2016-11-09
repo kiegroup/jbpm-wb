@@ -29,8 +29,8 @@ import org.jbpm.console.ng.pr.client.perspectives.DataSetProcessInstancesWithVar
 import org.jbpm.console.ng.pr.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.console.ng.pr.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.console.ng.pr.forms.display.process.api.ProcessDisplayerConfig;
-import org.jbpm.console.ng.bd.model.ProcessDefinitionKey;
-import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
+import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
+import org.jbpm.console.ng.pr.events.ProcessDefSelectionEvent;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;

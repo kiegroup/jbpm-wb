@@ -18,8 +18,8 @@ package org.jbpm.console.ng.pr.service;
 
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.ga.service.GenericServiceEntryPoint;
-import org.jbpm.console.ng.bd.model.DocumentKey;
-import org.jbpm.console.ng.bd.model.DocumentSummary;
+import org.jbpm.console.ng.pr.model.DocumentKey;
+import org.jbpm.console.ng.pr.model.DocumentSummary;
 
 @Remote
 public interface ProcessDocumentsService extends GenericServiceEntryPoint<DocumentKey, DocumentSummary>{

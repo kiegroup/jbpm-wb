@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.bd.model;
+
+package org.jbpm.console.ng.pr.model;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.console.ng.ga.service.ItemKey;
 
 @Portable
-public class ProcessVariableKey implements ItemKey {
+public class DocumentKey implements ItemKey {
 
-    private String processVariableId;
+    private String documentId;
 
-    public ProcessVariableKey() {
+    public DocumentKey(String documentId) {
+        this.documentId = documentId;
     }
 
-    public ProcessVariableKey(String processVariableId) {
-        this.processVariableId = processVariableId;
+    public DocumentKey() {
     }
 
-    public String getProcessVariableId() {
-        return processVariableId;
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    @Override
+    public String toString() {
+        return "DocumentKey{" + "documentId=" + documentId + '}';
     }
 
     @Override
     @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
         int hash = 3;
-        hash = 13 * hash + (this.processVariableId != null ? this.processVariableId.hashCode() : 0);
+        hash = 31 * hash + (this.documentId != null ? this.documentId.hashCode() : 0);
         hash = ~~hash;
         return hash;
     }
@@ -51,16 +57,11 @@ public class ProcessVariableKey implements ItemKey {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final ProcessVariableKey other = (ProcessVariableKey) obj;
-        if (this.processVariableId == null ? other.processVariableId != null : !this.processVariableId.equals(other.processVariableId)) {
+        final DocumentKey other = (DocumentKey) obj;
+        if (this.documentId == null ? other.documentId != null : !this.documentId.equals(other.documentId)) {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ProcessVariableKey{" + "processVariableId=" + processVariableId + '}';
     }
 
 }

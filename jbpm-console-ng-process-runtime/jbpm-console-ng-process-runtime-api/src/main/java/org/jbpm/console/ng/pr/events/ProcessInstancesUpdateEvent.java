@@ -14,37 +14,35 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.bd.model;
+package org.jbpm.console.ng.pr.events;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jbpm.console.ng.ga.service.ItemKey;
 
 @Portable
-public class DocumentKey implements ItemKey {
+public class ProcessInstancesUpdateEvent {
 
-    private String documentId;
+    private Long processInstanceId;
 
-    public DocumentKey(String documentId) {
-        this.documentId = documentId;
+    public ProcessInstancesUpdateEvent() {
     }
 
-    public DocumentKey() {
+    public ProcessInstancesUpdateEvent(Long processInstanceId) {
+        this.processInstanceId = processInstanceId;
     }
 
-    public String getDocumentId() {
-        return documentId;
+    public Long getProcessInstanceId() {
+        return processInstanceId;
     }
 
-    @Override
-    public String toString() {
-        return "DocumentKey{" + "documentId=" + documentId + '}';
+    public void setProcessInstanceId(Long processInstanceId) {
+        this.processInstanceId = processInstanceId;
     }
 
     @Override
     @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
-        int hash = 3;
-        hash = 31 * hash + (this.documentId != null ? this.documentId.hashCode() : 0);
+        int hash = 7;
+        hash = 53 * hash + (this.processInstanceId != null ? this.processInstanceId.hashCode() : 0);
         hash = ~~hash;
         return hash;
     }
@@ -57,8 +55,8 @@ public class DocumentKey implements ItemKey {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final DocumentKey other = (DocumentKey) obj;
-        if (this.documentId == null ? other.documentId != null : !this.documentId.equals(other.documentId)) {
+        final ProcessInstancesUpdateEvent other = (ProcessInstancesUpdateEvent) obj;
+        if (this.processInstanceId != other.processInstanceId && (this.processInstanceId == null || !this.processInstanceId.equals(other.processInstanceId))) {
             return false;
         }
         return true;

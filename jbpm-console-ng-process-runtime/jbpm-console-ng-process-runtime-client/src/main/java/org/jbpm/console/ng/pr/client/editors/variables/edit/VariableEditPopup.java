@@ -35,7 +35,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
+import org.jbpm.console.ng.pr.events.ProcessInstancesUpdateEvent;
 import org.jbpm.console.ng.pr.service.ProcessService;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;

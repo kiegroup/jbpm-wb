@@ -22,7 +22,7 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
-import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
+import org.jbpm.console.ng.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.dashboard.renderer.client.panel.AbstractDashboard;
 import org.jbpm.dashboard.renderer.client.panel.ProcessDashboard;
 import org.jbpm.dashboard.renderer.client.panel.events.ProcessDashboardFocusEvent;

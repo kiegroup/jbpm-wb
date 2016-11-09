@@ -61,7 +61,7 @@ import org.jbpm.console.ng.gc.client.list.base.AbstractMultiGridView;
 import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.jbpm.console.ng.pr.client.editors.instance.list.ProcessInstanceSummaryActionCell;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.bd.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
@@ -71,7 +71,7 @@ import org.uberfire.mvp.Command;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.dashbuilder.dataset.sort.SortOrder.*;
-import static org.jbpm.console.ng.bd.model.ProcessInstanceDataSetConstants.*;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
 public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMultiGridView<ProcessInstanceSummary, DataSetProcessInstanceWithVariablesListPresenter>

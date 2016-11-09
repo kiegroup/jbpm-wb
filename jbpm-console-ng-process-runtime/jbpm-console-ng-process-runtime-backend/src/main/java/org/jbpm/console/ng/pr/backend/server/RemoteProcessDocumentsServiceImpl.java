@@ -26,8 +26,8 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.bd.integration.AbstractKieServerService;
-import org.jbpm.console.ng.bd.model.DocumentSummary;
-import org.jbpm.console.ng.bd.model.ProcessVariableSummary;
+import org.jbpm.console.ng.pr.model.DocumentSummary;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.jbpm.console.ng.ga.model.QueryFilter;
 import org.jbpm.console.ng.pr.service.ProcessDocumentsService;
 import org.jbpm.console.ng.pr.service.ProcessVariablesService;

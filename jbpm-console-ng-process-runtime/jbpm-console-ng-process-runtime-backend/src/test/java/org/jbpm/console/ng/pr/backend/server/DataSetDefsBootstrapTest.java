@@ -36,7 +36,7 @@ import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.jbpm.console.ng.bd.model.ProcessInstanceDataSetConstants.*;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 

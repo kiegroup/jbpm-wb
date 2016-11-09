@@ -26,10 +26,10 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.bd.model.RuntimeLogSummary;
+import org.jbpm.console.ng.pr.model.RuntimeLogSummary;
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogOrder;
 import org.jbpm.console.ng.pr.client.util.LogUtils.LogType;
-import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
+import org.jbpm.console.ng.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
 
 

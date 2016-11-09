@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.jbpm.console.ng.bd.model.ProcessVariableSummary;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.kie.server.api.model.instance.VariableInstance;
 
 public class VariableHelper {

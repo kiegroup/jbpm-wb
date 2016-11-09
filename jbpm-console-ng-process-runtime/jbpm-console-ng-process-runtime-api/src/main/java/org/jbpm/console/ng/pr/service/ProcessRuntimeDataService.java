@@ -19,13 +19,13 @@ package org.jbpm.console.ng.pr.service;
 import java.util.List;
 
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.jbpm.console.ng.bd.model.NodeInstanceSummary;
-import org.jbpm.console.ng.bd.model.ProcessDefinitionKey;
-import org.jbpm.console.ng.bd.model.ProcessInstanceKey;
-import org.jbpm.console.ng.bd.model.ProcessInstanceSummary;
-import org.jbpm.console.ng.bd.model.ProcessSummary;
-import org.jbpm.console.ng.bd.model.RuntimeLogSummary;
-import org.jbpm.console.ng.bd.model.TaskDefSummary;
+import org.jbpm.console.ng.pr.model.NodeInstanceSummary;
+import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
+import org.jbpm.console.ng.pr.model.ProcessInstanceKey;
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.pr.model.ProcessSummary;
+import org.jbpm.console.ng.pr.model.RuntimeLogSummary;
+import org.jbpm.console.ng.pr.model.TaskDefSummary;
 
 @Remote
 public interface ProcessRuntimeDataService {

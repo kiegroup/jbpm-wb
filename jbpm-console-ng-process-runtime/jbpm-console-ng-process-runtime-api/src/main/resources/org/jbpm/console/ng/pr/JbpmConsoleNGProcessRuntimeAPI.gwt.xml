@@ -23,6 +23,7 @@
   <inherits name='org.uberfire.UberfireAPI' />
 
   <source path="model" />
+  <source path="events" />
   <source path="service" />
 
 </module>

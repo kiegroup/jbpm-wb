@@ -42,7 +42,7 @@ import org.gwtbootstrap3.client.ui.gwt.DataGrid;
 import org.jbpm.console.ng.gc.client.util.DateUtils;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.util.DataGridUtils;
-import org.jbpm.console.ng.bd.model.ProcessVariableSummary;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.ext.widgets.common.client.tables.PopoverTextCell;

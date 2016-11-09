@@ -18,7 +18,7 @@ package org.jbpm.console.ng.pr.client.editors.instance.details.multi;
 import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
+import org.jbpm.console.ng.pr.events.ProcessInstanceSelectionEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

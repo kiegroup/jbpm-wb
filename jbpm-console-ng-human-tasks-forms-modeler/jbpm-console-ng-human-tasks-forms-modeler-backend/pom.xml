@@ -164,9 +164,5 @@
       <artifactId>arquillian-container-test-api</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-business-domain-api</artifactId>
-    </dependency>
   </dependencies>
 </project>

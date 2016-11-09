@@ -20,8 +20,8 @@ import java.util.List;
 
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.ga.service.GenericServiceEntryPoint;
-import org.jbpm.console.ng.bd.model.ProcessVariableKey;
-import org.jbpm.console.ng.bd.model.ProcessVariableSummary;
+import org.jbpm.console.ng.pr.model.ProcessVariableKey;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 
 @Remote
 public interface ProcessVariablesService extends GenericServiceEntryPoint<ProcessVariableKey, ProcessVariableSummary>{

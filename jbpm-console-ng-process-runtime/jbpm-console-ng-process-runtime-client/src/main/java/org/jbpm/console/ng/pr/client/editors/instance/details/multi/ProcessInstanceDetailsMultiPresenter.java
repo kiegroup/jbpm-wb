@@ -31,8 +31,8 @@ import org.jbpm.console.ng.pr.client.editors.instance.details.ProcessInstanceDet
 import org.jbpm.console.ng.pr.client.editors.instance.log.RuntimeLogPresenter;
 import org.jbpm.console.ng.pr.client.editors.variables.list.ProcessVariableListPresenter;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
-import org.jbpm.console.ng.pr.model.events.ProcessInstancesUpdateEvent;
+import org.jbpm.console.ng.pr.events.ProcessInstanceSelectionEvent;
+import org.jbpm.console.ng.pr.events.ProcessInstancesUpdateEvent;
 import org.jbpm.console.ng.pr.service.ProcessService;
 import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchMenu;
