@@ -42,6 +42,8 @@ public class AppSetup extends BaseAppSetup {
     // default repository section - start
     private static final String JBPM_WB_PLAYGROUND_ALIAS = "jbpm-playground";
     private static final String JBPM_WB_PLAYGROUND_ORIGIN = "https://github.com/droolsjbpm/jbpm-playground.git";
+    private static final String OU_NAME = "demo";
+    private static final String OU_OWNER = "demo@demo.org";
 
     private Event<ApplicationStarted> applicationStartedEvent;
 
@@ -63,7 +65,8 @@ public class AppSetup extends BaseAppSetup {
     @PostConstruct
     public void onStartup() {
         if ( !"false".equalsIgnoreCase( System.getProperty( "org.kie.demo" ) ) ) {
-            createRepository("demo", JBPM_WB_PLAYGROUND_ALIAS, JBPM_WB_PLAYGROUND_ORIGIN, "", "");
+            final Repository repository = createRepository(JBPM_WB_PLAYGROUND_ALIAS, GIT_SCHEME, JBPM_WB_PLAYGROUND_ORIGIN, "", "");
+            createOU(repository, OU_NAME, OU_OWNER);
         } else if ( "true".equalsIgnoreCase( System.getProperty( "org.kie.example" ) ) ) {
             final Repository repository = createRepository( "repository1", GIT_SCHEME, null, "", "" );
 
