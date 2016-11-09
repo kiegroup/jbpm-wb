@@ -20,7 +20,7 @@ import java.util.function.Function;
 import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 import org.kie.server.api.model.cases.CaseComment;
 
-public class CaseCommentsMapper implements Function<CaseComment, CaseCommentSummary> {
+public class CaseCommentMapper implements Function<CaseComment, CaseCommentSummary> {
 
     @Override
     public CaseCommentSummary apply(CaseComment c) {

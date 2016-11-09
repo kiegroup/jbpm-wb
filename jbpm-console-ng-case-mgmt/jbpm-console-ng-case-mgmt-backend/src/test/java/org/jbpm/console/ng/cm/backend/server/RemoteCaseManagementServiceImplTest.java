@@ -37,8 +37,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static java.util.Collections.singletonList;
+import static java.util.Collections.emptyList;
 import static org.jbpm.console.ng.cm.backend.server.CaseDefinitionMapperTest.assertCaseDefinition;
 import static org.jbpm.console.ng.cm.backend.server.CaseInstanceMapperTest.assertCaseInstance;
+import static org.jbpm.console.ng.cm.backend.server.CaseCommentMapperTest.assertCaseComment;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyList;
@@ -66,7 +68,7 @@ public class RemoteCaseManagementServiceImplTest {
     RemoteCaseManagementServiceImpl testedService;
 
     @Test
-    public void testGetCaseDefinitions() {
+    public void testGetCaseDefinitions_singleCaseDefinition() {
         final CaseDefinition definition = createTestDefinition();
         when(clientMock.getCaseDefinitions(anyInt(), anyInt()))
                 .thenReturn(singletonList(definition));
@@ -75,6 +77,16 @@ public class RemoteCaseManagementServiceImplTest {
         assertNotNull(definitions);
         assertEquals(1, definitions.size());
         assertCaseDefinition(definition, definitions.get(0));
+    }
+
+    @Test
+    public void testGetCaseDefinitions_emptyList() {
+        when(clientMock.getCaseDefinitions(anyInt(), anyInt()))
+                .thenReturn(emptyList());
+
+        List<CaseDefinitionSummary> definitions = testedService.getCaseDefinitions();
+        assertNotNull(definitions);
+        assertTrue(definitions.isEmpty());
     }
 
     @Test
@@ -97,7 +109,7 @@ public class RemoteCaseManagementServiceImplTest {
     }
 
     @Test
-    public void getCaseInstances() {
+    public void getCaseInstances_singleCaseInstance() {
         final CaseInstanceSearchRequest request = new CaseInstanceSearchRequest();
         final CaseInstance instance = createTestInstance(caseId);
         when(clientMock.getCaseInstances(eq(singletonList(request.getStatus())), anyInt(), anyInt())).thenReturn(singletonList(instance));
@@ -105,12 +117,21 @@ public class RemoteCaseManagementServiceImplTest {
         final List<CaseInstanceSummary> instances = testedService.getCaseInstances(request);
         assertNotNull(instances);
         assertEquals(1, instances.size());
-        final CaseInstanceSummary caseInstanceSummary = instances.get(0);
-        assertCaseInstance(instance, caseInstanceSummary);
+        assertCaseInstance(instance, instances.get(0));
     }
 
     @Test
-    public void getCaseInstances_sorting() {
+    public void getCaseInstances_emptyList() {
+        final CaseInstanceSearchRequest request = new CaseInstanceSearchRequest();
+        when(clientMock.getCaseInstances(eq(singletonList(request.getStatus())), anyInt(), anyInt())).thenReturn(emptyList());
+
+        final List<CaseInstanceSummary> instances = testedService.getCaseInstances(request);
+        assertNotNull(instances);
+        assertTrue(instances.isEmpty());
+    }
+
+    @Test
+    public void getCaseInstances_sortCaseInstanceList() {
         CaseInstance c1 = createTestInstance("id1");
         c1.setStartedAt(new Date(10000));
 
@@ -169,13 +190,6 @@ public class RemoteCaseManagementServiceImplTest {
     }
 
     @Test
-    public void testGetCaseInstanceNull() {
-        final CaseInstanceSummary cis = testedService.getCaseInstance(serverTemplateId, containerId, caseId);
-
-        assertNull(cis);
-    }
-
-    @Test
     public void getCaseInstance_whenClientReturnsInstance() {
         final CaseInstance ci = createTestInstance(caseId);
         when(clientMock.getCaseInstance(ci.getContainerId(), ci.getCaseId(), true, true, true, true))
@@ -195,23 +209,23 @@ public class RemoteCaseManagementServiceImplTest {
     }
 
     @Test
-    public void testGetCaseComments() {
-        final CaseComment caseComment = new CaseComment();
-        caseComment.setId(commentId);
-        caseComment.setAuthor(author);
-        caseComment.setText(text);
-        caseComment.setAddedAt(new Date());
-
+    public void testGetComments_singleComment() {
+        final CaseComment caseComment = createTestComment();
         when(clientMock.getComments(containerId, caseId, 0, 0)).thenReturn(singletonList(caseComment));
 
         final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId, containerId, caseId, 0, 0);
         assertNotNull(comments);
         assertEquals(1, comments.size());
-        final CaseCommentSummary caseCommentSummary = comments.get(0);
-        assertEquals(caseComment.getId(), caseCommentSummary.getId());
-        assertEquals(caseComment.getAuthor(), caseCommentSummary.getAuthor());
-        assertEquals(caseComment.getText(), caseCommentSummary.getText());
-        assertEquals(caseComment.getAddedAt(), caseCommentSummary.getAddedAt());
+        assertCaseComment(caseComment, comments.get(0));
+    }
+
+    @Test
+    public void testGetComments_emptyList() {
+        when(clientMock.getComments(containerId, caseId, 0, 0)).thenReturn(emptyList());
+
+        final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId, containerId, caseId, 0, 0);
+        assertNotNull(comments);
+        assertTrue(comments.isEmpty());
     }
 
     @Test
@@ -236,20 +250,35 @@ public class RemoteCaseManagementServiceImplTest {
     }
 
     private CaseDefinition createTestDefinition() {
-        CaseDefinition definition = new CaseDefinition();
-        definition.setIdentifier(caseDefinitionId);
-        definition.setName(caseName);
-        definition.setContainerId(containerId);
-        definition.setRoles(Collections.emptyMap());
+        CaseDefinition definition = CaseDefinition.builder()
+                .id(caseDefinitionId)
+                .name(caseName)
+                .containerId(containerId)
+                .roles(Collections.emptyMap())
+                .build();
+
         return definition;
     }
 
     private CaseInstance createTestInstance(String caseId) {
-        CaseInstance instance = new CaseInstance();
-        instance.setCaseDescription(caseDescription);
-        instance.setCaseId(caseId);
-        instance.setCaseStatus(1);
-        instance.setContainerId(containerId);
+        CaseInstance instance = CaseInstance.builder()
+                .caseDescription(caseDescription)
+                .caseId(caseId)
+                .caseStatus(1)
+                .containerId(containerId)
+                .build();
+
         return instance;
+    }
+
+    private CaseComment createTestComment() {
+        CaseComment comment = CaseComment.builder()
+                .id(commentId)
+                .author(author)
+                .text(text)
+                .addedAt(new Date())
+                .build();
+
+        return comment;
     }
 }

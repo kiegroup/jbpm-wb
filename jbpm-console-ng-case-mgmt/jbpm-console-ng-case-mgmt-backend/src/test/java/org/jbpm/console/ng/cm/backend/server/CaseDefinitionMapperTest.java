@@ -36,7 +36,7 @@ public class CaseDefinitionMapperTest {
     }
 
     @Test
-    public void testCaseDefinitionMapper() {
+    public void testCaseDefinitionMapper_mapCaseDefinition() {
         final CaseDefinition cd = new CaseDefinition();
         cd.setIdentifier("org.jbpm.case");
         cd.setName("New case");
@@ -46,6 +46,13 @@ public class CaseDefinitionMapperTest {
         final CaseDefinitionSummary cds = new CaseDefinitionMapper().apply(cd);
 
         assertCaseDefinition(cd, cds);
+    }
+
+    @Test
+    public void testCaseDefinitionMapper_mapNull() {
+        final CaseDefinition cd = null;
+        final CaseDefinitionSummary cds = new CaseDefinitionMapper().apply(cd);
+        assertNull(cds);
     }
 
 }

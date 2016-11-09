@@ -39,7 +39,7 @@ public class CaseInstanceMapperTest {
     }
 
     @Test
-    public void testCaseInstanceMapper() {
+    public void testCaseInstanceMapper_mapCaseInstance() {
         final CaseInstance ci = new CaseInstance();
         ci.setCaseDescription("New case");
         ci.setCaseId("CASE-1");
@@ -53,6 +53,13 @@ public class CaseInstanceMapperTest {
         final CaseInstanceSummary cis = new CaseInstanceMapper().apply(ci);
 
         assertCaseInstance(ci, cis);
+    }
+
+    @Test
+    public void testCaseInstanceMapper_mapNull() {
+        final CaseInstance ci = null;
+        final CaseInstanceSummary cis = new CaseInstanceMapper().apply(ci);
+        assertNull(cis);
     }
 
 }
