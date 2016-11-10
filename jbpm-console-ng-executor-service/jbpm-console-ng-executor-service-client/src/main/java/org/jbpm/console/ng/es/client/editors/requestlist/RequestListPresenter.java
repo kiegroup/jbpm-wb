@@ -17,9 +17,7 @@
 package org.jbpm.console.ng.es.client.editors.requestlist;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -130,18 +128,6 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     public void filterGrid( FilterSettings tableSettings ) {
         dataSetQueryHelper.setCurrentTableSettings( tableSettings );
         refreshGrid();
-    }
-
-    public void createRequest() {
-        Map<String, String> ctx = new HashMap<String, String>();
-        ctx.put("businessKey", "1234");
-        executorServices.call( new RemoteCallback<Long>() {
-            @Override
-            public void callback( Long requestId ) {
-                view.displayNotification( constants.RequestScheduled(requestId) );
-
-            }
-        } ).scheduleRequest(selectedServerTemplate, "PrintOutCmd", ctx);
     }
 
     @Override
