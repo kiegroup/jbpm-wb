@@ -46,21 +46,6 @@ public class RemoteExecutorServiceImpl extends AbstractKieServerService implemen
     }
 
     @Override
-    public Long scheduleRequest(String serverTemplateId, String commandName, Map<String, String> ctx) {
-        JobServicesClient jobClient = getClient(serverTemplateId, JobServicesClient.class);
-        HashMap<String, Object> data = new HashMap<>();
-        if (ctx != null && !ctx.isEmpty()) {
-            data = new HashMap<String, Object>(ctx);
-        }
-        JobRequestInstance jobRequest = JobRequestInstance.builder()
-                .command(commandName)
-                .data(data)
-                .build();
-
-        return jobClient.scheduleRequest(jobRequest);
-    }
-
-    @Override
     public Long scheduleRequest(String serverTemplateId, String commandName, Date date, Map<String, String> ctx) {
         JobServicesClient jobClient = getClient(serverTemplateId, JobServicesClient.class);
         HashMap<String, Object> data = new HashMap<>();

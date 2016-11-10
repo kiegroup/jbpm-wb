@@ -27,8 +27,6 @@ public interface ExecutorService {
 
     RequestDetails getRequestDetails(String serverTemplateId, Long requestId);
 
-    Long scheduleRequest(String serverTemplateId, String commandName, Map<String, String> ctx);
-
     Long scheduleRequest(String serverTemplateId, String commandId, Date date, Map<String, String> ctx);
 
     void cancelRequest(String serverTemplateId, Long requestId);
