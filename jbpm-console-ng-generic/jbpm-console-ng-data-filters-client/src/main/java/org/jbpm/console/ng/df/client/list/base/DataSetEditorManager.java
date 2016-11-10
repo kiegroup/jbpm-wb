@@ -16,19 +16,15 @@
 package org.jbpm.console.ng.df.client.list.base;
 
 import com.google.gwt.user.client.ui.Composite;
-import org.jboss.errai.security.shared.api.identity.User;
 
 import org.jbpm.console.ng.df.client.filter.FilterEditorPopup;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
 import org.jbpm.console.ng.df.client.filter.FilterSettingsJSONMarshaller;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.mvp.Command;
-import org.uberfire.workbench.events.NotificationEvent;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import java.util.HashMap;
 
@@ -38,19 +34,10 @@ public class DataSetEditorManager extends Composite  {
     public static String FILTER_TABLE_SETTINGS = "tableSettings";
 
     @Inject
-    public User identity;
+    private FilterEditorPopup tableDisplayerEditorPopup;
 
     @Inject
-    protected Event<NotificationEvent> notification;
-
-    @Inject
-    protected PlaceManager placeManager;
-
-    @Inject
-    FilterEditorPopup tableDisplayerEditorPopup;
-
-    @Inject
-    FilterSettingsJSONMarshaller tableSettingsJSONMarshaller;
+    private FilterSettingsJSONMarshaller tableSettingsJSONMarshaller;
 
     public void showTableSettingsEditor(final FilterPagedTable filterPagedTable ,String popupTitle, final FilterSettings tableSettings,final Command drawCommand) {
         FilterSettings clone = tableSettings.cloneInstance();
