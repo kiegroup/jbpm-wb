@@ -19,9 +19,11 @@ package org.jbpm.console.ng.ga.forms.display.backend.provider;
 import java.io.InputStream;
 import javax.enterprise.context.Dependent;
 
+import org.jbpm.console.ng.ga.forms.service.providing.DefaultFormProvider;
 import org.jbpm.console.ng.ga.forms.service.providing.ProcessRenderingSettings;
 import org.jbpm.console.ng.ga.forms.service.providing.TaskRenderingSettings;
 
+@DefaultFormProvider
 @Dependent
 public class ClasspathFormProvider extends FreemakerFormProvider {
     @Override

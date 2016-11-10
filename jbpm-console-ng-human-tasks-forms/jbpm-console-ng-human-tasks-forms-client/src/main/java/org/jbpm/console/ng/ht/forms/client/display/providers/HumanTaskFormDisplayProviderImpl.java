@@ -23,6 +23,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
@@ -32,11 +33,15 @@ import org.jbpm.console.ng.ga.forms.service.shared.FormServiceEntryPoint;
 import org.jbpm.console.ng.gc.forms.client.display.views.FormDisplayerView;
 import org.jbpm.console.ng.ht.forms.client.display.ht.api.HumanTaskFormDisplayProvider;
 import org.jbpm.console.ng.ht.forms.client.display.ht.api.HumanTaskFormDisplayer;
+import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskDisplayerConfig;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.mvp.Command;
 
 @ApplicationScoped
 public class HumanTaskFormDisplayProviderImpl implements HumanTaskFormDisplayProvider {
+
+    protected Constants constants = GWT.create( Constants.class);
 
     @Inject
     private Caller<FormServiceEntryPoint> formServices;
@@ -74,17 +79,23 @@ public class HumanTaskFormDisplayProviderImpl implements HumanTaskFormDisplayPro
                 @Override
                 public void callback( FormRenderingSettings settings ) {
 
-                    HumanTaskFormDisplayer displayer = taskDisplayers.get( settings.getClass() );
+                    if ( settings == null ) {
+                        ErrorPopup.showMessage( constants.UnableToFindFormForTask( config.getKey().getTaskId() ) );
 
-                    if ( displayer != null ) {
-                        config.setRenderingSettings( settings );
-                        displayer.init( config, view.getOnCloseCommand(), new Command() {
-                            @Override
-                            public void execute() {
-                                display( config, view );
-                            }
-                        }, view.getResizeListener() );
-                        view.display( displayer );
+
+                    } else {
+                        HumanTaskFormDisplayer displayer = taskDisplayers.get( settings.getClass() );
+
+                        if ( displayer != null ) {
+                            config.setRenderingSettings( settings );
+                            displayer.init( config, view.getOnCloseCommand(), new Command() {
+                                @Override
+                                public void execute() {
+                                    display( config, view );
+                                }
+                            }, view.getResizeListener() );
+                            view.display( displayer );
+                        }
                     }
                 }
             } ).getFormDisplayTask( config.getKey().getServerTemplateId(),

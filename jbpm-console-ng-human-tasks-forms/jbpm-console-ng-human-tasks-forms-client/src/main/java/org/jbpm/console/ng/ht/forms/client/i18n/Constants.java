@@ -66,4 +66,6 @@ public interface Constants extends Messages {
     String TaskSaved(Long id);
 
     String TaskReleased(Long id);
+
+    String UnableToFindFormForTask(Long id);
 }
