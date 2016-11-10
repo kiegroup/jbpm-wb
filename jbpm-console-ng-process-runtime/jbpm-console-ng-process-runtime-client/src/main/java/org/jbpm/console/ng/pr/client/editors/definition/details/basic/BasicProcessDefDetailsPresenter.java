@@ -22,8 +22,8 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.bd.model.ProcessDefinitionKey;
-import org.jbpm.console.ng.bd.model.ProcessSummary;
+import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
+import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.client.editors.definition.details.BaseProcessDefDetailsPresenter;
 import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
 

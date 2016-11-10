@@ -18,7 +18,7 @@ package org.jbpm.console.ng.pr.forms.client.display.displayers.process;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
+import org.jbpm.console.ng.pr.events.NewProcessInstanceEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;

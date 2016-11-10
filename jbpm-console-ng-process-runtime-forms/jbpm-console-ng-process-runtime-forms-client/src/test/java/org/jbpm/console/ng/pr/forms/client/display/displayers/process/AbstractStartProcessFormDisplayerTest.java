@@ -20,7 +20,7 @@ import java.util.HashMap;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.gc.forms.client.display.displayers.util.JSNIHelper;
-import org.jbpm.console.ng.pr.model.events.NewProcessInstanceEvent;
+import org.jbpm.console.ng.pr.events.NewProcessInstanceEvent;
 import org.jbpm.console.ng.pr.service.ProcessService;
 import org.junit.Before;
 import org.junit.Test;

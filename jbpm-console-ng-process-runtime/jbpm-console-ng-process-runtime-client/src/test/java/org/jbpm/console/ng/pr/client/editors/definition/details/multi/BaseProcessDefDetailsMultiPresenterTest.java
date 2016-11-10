@@ -19,7 +19,7 @@ package org.jbpm.console.ng.pr.client.editors.definition.details.multi;
 import javax.enterprise.event.Event;
 
 import org.jbpm.console.ng.pr.client.perspectives.DataSetProcessInstancesWithVariablesPerspective;
-import org.jbpm.console.ng.pr.model.events.ProcessDefSelectionEvent;
+import org.jbpm.console.ng.pr.events.ProcessDefSelectionEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;

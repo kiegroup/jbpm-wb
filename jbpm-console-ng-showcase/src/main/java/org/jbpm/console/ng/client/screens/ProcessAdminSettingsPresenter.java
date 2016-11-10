@@ -27,7 +27,7 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Maps;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.console.ng.api.ProcessAdminService;
-import org.jbpm.console.ng.bd.model.ProcessSummary;
+import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.client.i18n.ProcessAdminConstants;
 import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
 import org.kie.server.controller.api.model.spec.ServerTemplate;

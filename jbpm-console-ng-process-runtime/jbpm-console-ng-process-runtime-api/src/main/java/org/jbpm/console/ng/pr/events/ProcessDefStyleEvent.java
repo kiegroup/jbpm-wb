@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.pr.model.events;
+package org.jbpm.console.ng.pr.events;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 

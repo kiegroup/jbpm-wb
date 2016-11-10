@@ -23,9 +23,9 @@ import com.google.gwt.user.cellview.client.AbstractCellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.view.client.Range;
 import org.gwtbootstrap3.client.ui.gwt.DataGrid;
-import org.jbpm.console.ng.bd.model.ProcessInstanceSummary;
-import org.jbpm.console.ng.bd.model.ProcessSummary;
-import org.jbpm.console.ng.bd.model.ProcessVariableSummary;
+import org.jbpm.console.ng.pr.model.ProcessInstanceSummary;
+import org.jbpm.console.ng.pr.model.ProcessSummary;
+import org.jbpm.console.ng.pr.model.ProcessVariableSummary;
 
 public class DataGridUtils {
 

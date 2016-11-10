@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.console.ng.pr.model.events;
+package org.jbpm.console.ng.pr.events;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class ProcessDefinitionsSearchEvent {
+public class ProcessInstancesSearchEvent {
     private String filter;
 
-    public ProcessDefinitionsSearchEvent() {
+    public ProcessInstancesSearchEvent() {
     }
 
-    public ProcessDefinitionsSearchEvent(String filter) {
+    public ProcessInstancesSearchEvent(String filter) {
         this.filter = filter;
     }
 

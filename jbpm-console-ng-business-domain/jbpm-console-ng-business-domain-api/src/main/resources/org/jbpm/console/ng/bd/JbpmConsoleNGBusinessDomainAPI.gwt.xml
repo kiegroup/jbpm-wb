@@ -20,10 +20,9 @@
     "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
 <module>
 
-  <inherits name='org.jboss.errai.bus.ErraiBus' />
-  <inherits name="org.jbpm.console.ng.ga.JbpmConsoleNGGenericAPI" />
+  <inherits name="org.jboss.errai.common.ErraiCommon" />
+  <inherits name="org.dashbuilder.DatasetAPI"/>
 
-  <source path="model" />
   <source path="integration" />
 
 </module>

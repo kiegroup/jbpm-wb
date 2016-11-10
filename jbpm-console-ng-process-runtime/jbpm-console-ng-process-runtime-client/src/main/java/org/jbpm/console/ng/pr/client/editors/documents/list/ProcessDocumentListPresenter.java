@@ -33,8 +33,8 @@ import org.jbpm.console.ng.ga.model.PortableQueryFilter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListPresenter;
 import org.jbpm.console.ng.gc.client.list.base.AbstractListView;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
-import org.jbpm.console.ng.bd.model.DocumentSummary;
-import org.jbpm.console.ng.pr.model.events.ProcessInstanceSelectionEvent;
+import org.jbpm.console.ng.pr.model.DocumentSummary;
+import org.jbpm.console.ng.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.service.ProcessDocumentsService;
 import org.uberfire.paging.PageResponse;
 
