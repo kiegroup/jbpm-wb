@@ -25,8 +25,8 @@ import org.dashbuilder.dataset.sort.SortOrder;
 
 import org.dashbuilder.displayer.client.DataSetHandler;
 import org.dashbuilder.displayer.client.DataSetHandlerImpl;
+import org.jbpm.console.ng.bd.integration.ConsoleDataSetLookup;
 import org.jbpm.console.ng.df.client.filter.FilterSettings;
-import org.jbpm.console.ng.ga.model.dataset.ConsoleDataSetLookup;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;

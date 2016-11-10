@@ -46,7 +46,6 @@ import org.dashbuilder.dataset.impl.DataSetMetadataImpl;
 import org.dashbuilder.dataset.sort.ColumnSort;
 import org.dashbuilder.dataset.sort.DataSetSort;
 import org.dashbuilder.dataset.sort.SortOrder;
-import org.jbpm.console.ng.ga.model.dataset.ConsoleDataSetLookup;
 import org.kie.server.common.rest.KieServerHttpRequestException;
 import org.kie.server.api.model.definition.QueryFilterSpec;
 import org.kie.server.api.model.definition.QueryParam;

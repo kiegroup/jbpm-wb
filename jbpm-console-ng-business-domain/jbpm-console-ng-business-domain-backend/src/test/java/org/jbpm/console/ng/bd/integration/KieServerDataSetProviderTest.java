@@ -28,7 +28,6 @@ import org.dashbuilder.dataset.group.DataSetGroup;
 import org.dashbuilder.dataset.group.GroupStrategy;
 import org.dashbuilder.dataset.group.Interval;
 import org.dashbuilder.dataset.impl.DataSetImpl;
-import org.jbpm.console.ng.ga.model.dataset.ConsoleDataSetLookup;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
