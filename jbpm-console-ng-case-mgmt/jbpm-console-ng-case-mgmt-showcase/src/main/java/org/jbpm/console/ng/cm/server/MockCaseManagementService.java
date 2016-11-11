@@ -119,7 +119,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     }
 
     @Override
-    public List<CaseCommentSummary> getComments(final String serverTemplateId, final String containerId, final String caseId, final Integer page, final Integer pageSize) {
+    public List<CaseCommentSummary> getComments(final String serverTemplateId, final String containerId, final String caseId) {
         return ofNullable(caseCommentMap.get(caseId)).orElse(emptyList());
     }
 
