@@ -211,9 +211,9 @@ public class RemoteCaseManagementServiceImplTest {
     @Test
     public void testGetComments_singleComment() {
         final CaseComment caseComment = createTestComment();
-        when(clientMock.getComments(containerId, caseId, 0, 0)).thenReturn(singletonList(caseComment));
+        when(clientMock.getComments(containerId, caseId, 0, -1)).thenReturn(singletonList(caseComment));
 
-        final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId, containerId, caseId, 0, 0);
+        final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId, containerId, caseId);
         assertNotNull(comments);
         assertEquals(1, comments.size());
         assertCaseComment(caseComment, comments.get(0));
@@ -223,7 +223,7 @@ public class RemoteCaseManagementServiceImplTest {
     public void testGetComments_emptyList() {
         when(clientMock.getComments(containerId, caseId, 0, 0)).thenReturn(emptyList());
 
-        final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId, containerId, caseId, 0, 0);
+        final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId, containerId, caseId);
         assertNotNull(comments);
         assertTrue(comments.isEmpty());
     }

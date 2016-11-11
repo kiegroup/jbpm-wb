@@ -42,12 +42,14 @@ import static java.util.Comparator.comparing;
 @ApplicationScoped
 public class RemoteCaseManagementServiceImpl implements CaseManagementService {
 
+    private static final int PAGE_SIZE_UNLIMITED = -1;
+
     @Inject
     private CaseServicesClient client;
 
     @Override
     public List<CaseDefinitionSummary> getCaseDefinitions() {
-        final List<CaseDefinition> caseDefinitions = client.getCaseDefinitions(0, Integer.MAX_VALUE);
+        final List<CaseDefinition> caseDefinitions = client.getCaseDefinitions(0, PAGE_SIZE_UNLIMITED);
         return caseDefinitions.stream().map(new CaseDefinitionMapper()).collect(toList());
     }
 
@@ -58,7 +60,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
 
     @Override
     public List<CaseInstanceSummary> getCaseInstances(final CaseInstanceSearchRequest request) {
-        final List<CaseInstance> caseInstances = client.getCaseInstances(singletonList(request.getStatus()), 0, Integer.MAX_VALUE);
+        final List<CaseInstance> caseInstances = client.getCaseInstances(singletonList(request.getStatus()), 0, PAGE_SIZE_UNLIMITED);
         final Comparator<CaseInstanceSummary> comparator = getCaseInstanceSummaryComparator(request);
         return caseInstances.stream().map(new CaseInstanceMapper()).sorted(comparator).collect(toList());
     }
@@ -119,9 +121,8 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public List<CaseCommentSummary> getComments(final String serverTemplateId, final String containerId,
-                                                final String caseId, final Integer page, final Integer pageSize) {
-        final List<CaseComment> caseComments = client.getComments(containerId, caseId, page, pageSize);
+    public List<CaseCommentSummary> getComments(final String serverTemplateId, final String containerId, final String caseId) {
+        final List<CaseComment> caseComments = client.getComments(containerId, caseId, 0, PAGE_SIZE_UNLIMITED);
         return caseComments.stream().map(new CaseCommentMapper()).collect(toList());
     }
 

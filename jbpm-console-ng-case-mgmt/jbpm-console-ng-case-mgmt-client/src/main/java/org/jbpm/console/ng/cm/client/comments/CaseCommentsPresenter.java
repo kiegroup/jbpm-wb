@@ -105,7 +105,7 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter {
                                 caseCommentSummary.getText(), caseCommentSummary.getAddedAt(), deleteCommentAction);
                     }
                 }
-        ).getComments(serverTemplateId, containerId, caseId, 0, 10);
+        ).getComments(serverTemplateId, containerId, caseId);
     }
 
     protected void addCaseComment(String caseCommentText) {

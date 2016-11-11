@@ -77,7 +77,7 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
         final CaseInstanceSummary cis = newCaseInstanceSummary();
         final CaseCommentSummary caseComment = CaseCommentSummary.builder().id(commentId).author(author).text(text).addedAt(addedAt).build();
 
-        when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId(),0,10)).thenReturn(
+        when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId())).thenReturn(
                 Collections.singletonList(caseComment));
         when(identity.getIdentifier()).thenReturn(author);
 
@@ -131,7 +131,7 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
         final CaseInstanceSummary cis = newCaseInstanceSummary();
         final CaseCommentSummary caseComment = CaseCommentSummary.builder().id(commentId).author(author).text(text).addedAt(addedAt).build();
 
-        when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId(),0,10)).thenReturn(
+        when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId())).thenReturn(
                 Collections.singletonList(caseComment));
         when(identity.getIdentifier()).thenReturn(author);
 
