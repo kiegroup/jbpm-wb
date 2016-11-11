@@ -16,13 +16,12 @@
 
 package org.jbpm.console.ng.ga.forms.service.providing;
 
-import org.jbpm.console.ng.ga.forms.display.FormRenderingSettings;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.RetentionPolicy;
+import javax.inject.Qualifier;
 
-public interface FormProvider<C extends FormRenderingSettings> {
-
-    int getPriority();
-
-    C render( ProcessRenderingSettings settings );
-
-    C render( TaskRenderingSettings settings );
+@Qualifier
+@java.lang.annotation.Retention( RetentionPolicy.RUNTIME )
+@java.lang.annotation.Target( {ElementType.TYPE, ElementType.PARAMETER} )
+public @interface DefaultFormProvider {
 }

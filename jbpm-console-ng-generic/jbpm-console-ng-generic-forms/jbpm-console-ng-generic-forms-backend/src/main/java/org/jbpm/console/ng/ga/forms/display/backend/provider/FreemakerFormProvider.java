@@ -73,6 +73,9 @@ public abstract class FreemakerFormProvider implements FormProvider<StaticHTMLFo
     protected StaticHTMLFormRenderingSettings renderForm( String name,
                                                           InputStream src,
                                                           Map<String, Object> renderContext ) {
+        if ( src == null ) {
+            return null;
+        }
         String htmlTemplate = "";
         StringWriter writer = null;
         InputStreamReader source = null;

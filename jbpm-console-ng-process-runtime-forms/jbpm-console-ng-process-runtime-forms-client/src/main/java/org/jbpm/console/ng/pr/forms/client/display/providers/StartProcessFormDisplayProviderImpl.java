@@ -37,6 +37,7 @@ import org.jbpm.console.ng.pr.forms.client.display.process.api.StartProcessFormD
 import org.jbpm.console.ng.pr.forms.client.display.process.api.StartProcessFormDisplayer;
 import org.jbpm.console.ng.pr.forms.client.i18n.Constants;
 import org.jbpm.console.ng.pr.forms.display.process.api.ProcessDisplayerConfig;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.mvp.Command;
 
 @ApplicationScoped
@@ -80,18 +81,21 @@ public class StartProcessFormDisplayProviderImpl implements StartProcessFormDisp
             formServices.call(new RemoteCallback<FormRenderingSettings>() {
                 @Override
                 public void callback(FormRenderingSettings settings) {
+                    if ( settings == null ) {
+                        ErrorPopup.showMessage( constants.UnableToFindFormForProcess( config.getProcessName() ) );
+                    } else {
+                        StartProcessFormDisplayer displayer = processDisplayers.get( settings.getClass() );
 
-                    StartProcessFormDisplayer displayer = processDisplayers.get( settings.getClass() );
-
-                    if ( displayer != null ) {
-                        config.setRenderingSettings( settings );
-                        displayer.init(config, view.getOnCloseCommand(), new Command() {
-                            @Override
-                            public void execute() {
-                                display(config, view);
-                            }
-                        }, view.getResizeListener());
-                        view.display(displayer);
+                        if ( displayer != null ) {
+                            config.setRenderingSettings( settings );
+                            displayer.init( config, view.getOnCloseCommand(), new Command() {
+                                @Override
+                                public void execute() {
+                                    display( config, view );
+                                }
+                            }, view.getResizeListener() );
+                            view.display( displayer );
+                        }
                     }
                 }
             }).getFormDisplayProcess(config.getKey().getServerTemplateId(), config.getKey().getDeploymentId(), config.getKey().getProcessId());

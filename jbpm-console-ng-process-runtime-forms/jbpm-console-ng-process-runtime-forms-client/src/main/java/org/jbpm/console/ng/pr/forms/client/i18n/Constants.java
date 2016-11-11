@@ -66,4 +66,6 @@ public interface Constants extends Messages {
     String UnexpectedError( String errorMessage );
 
     String ProcessStarted( Long processInstanceId );
+
+    String UnableToFindFormForProcess( String processName );
 }

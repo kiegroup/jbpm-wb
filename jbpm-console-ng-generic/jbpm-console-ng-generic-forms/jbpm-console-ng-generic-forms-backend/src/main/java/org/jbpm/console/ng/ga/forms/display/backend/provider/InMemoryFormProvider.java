@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import javax.enterprise.context.Dependent;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jbpm.console.ng.ga.forms.service.providing.ProcessRenderingSettings;
 import org.jbpm.console.ng.ga.forms.service.providing.TaskRenderingSettings;
 
@@ -28,11 +29,17 @@ public class InMemoryFormProvider extends FreemakerFormProvider {
 
     @Override
     protected InputStream getProcessTemplateInputStream( ProcessRenderingSettings settings ) {
-        return  new ByteArrayInputStream( settings.getFormContent().getBytes() );
+        if ( StringUtils.isEmpty( settings.getFormContent() ) ) {
+            return null;
+        }
+        return new ByteArrayInputStream( settings.getFormContent().getBytes() );
     }
 
     @Override
     protected InputStream getTaskTemplateInputStream( TaskRenderingSettings settings ) {
+        if ( StringUtils.isEmpty( settings.getFormContent() ) ) {
+            return null;
+        }
         return new ByteArrayInputStream( settings.getFormContent().getBytes() );
     }
 
