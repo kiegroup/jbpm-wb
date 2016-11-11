@@ -36,9 +36,9 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+import org.jbpm.console.ng.cm.client.util.DateConverter;
 import org.jbpm.console.ng.cm.client.util.FormGroup;
 import org.jbpm.console.ng.cm.client.util.ValidationState;
-import org.jbpm.console.ng.gc.client.util.DateUtils;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
@@ -117,7 +117,7 @@ public class CaseCommentsViewImpl implements CaseCommentsPresenter.CaseCommentsV
         final CaseCommentItemView commentItemView = provider.get();
         commentItemView.setCommentAuthor(author);
         commentItemView.setCommentText(commentText);
-        commentItemView.setCommentAddedAt(DateUtils.getDateStr(commentAddedAt));
+        commentItemView.setCommentAddedAt(DateConverter.getDateStr(commentAddedAt));
 
         commentItemView.setEditMode(editing);
 

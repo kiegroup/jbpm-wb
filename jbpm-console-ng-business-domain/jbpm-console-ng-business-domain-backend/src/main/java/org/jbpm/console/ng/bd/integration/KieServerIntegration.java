@@ -17,7 +17,6 @@
 package org.jbpm.console.ng.bd.integration;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -29,19 +28,14 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.jbpm.console.ng.bd.integration.security.KeyCloakTokenCredentialsProvider;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.server.api.KieServerConstants;
-import org.kie.server.api.marshalling.MarshallingFormat;
 import org.kie.server.client.CredentialsProvider;
 import org.kie.server.client.KieServicesClient;
-import org.kie.server.client.KieServicesConfiguration;
-import org.kie.server.client.KieServicesFactory;
 import org.kie.server.client.balancer.LoadBalancer;
 import org.kie.server.client.credentials.EnteredCredentialsProvider;
 import org.kie.server.client.credentials.EnteredTokenCredentialsProvider;
-import org.kie.server.client.credentials.SubjectCredentialsProvider;
 import org.kie.server.client.impl.AbstractKieServicesClientImpl;
 import org.kie.server.controller.api.model.events.ServerInstanceConnected;
 import org.kie.server.controller.api.model.events.ServerInstanceDisconnected;
@@ -57,8 +51,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Strings.isNullOrEmpty;
+import static org.jbpm.console.ng.bd.utils.KieServerUtils.createKieServicesClient;
+import static org.jbpm.console.ng.bd.utils.KieServerUtils.getCredentialsProvider;
 
 @Startup
 @ApplicationScoped
@@ -70,7 +64,6 @@ public class KieServerIntegration {
 
     private ConcurrentMap<String, KieServicesClient> serverTemplatesClients = new ConcurrentHashMap<String, KieServicesClient>();
     private ConcurrentMap<String, KieServicesClient> adminClients = new ConcurrentHashMap<String, KieServicesClient>();
-
     private ConcurrentMap<String, ServerInstanceKey> serverInstancesById = new ConcurrentHashMap<String, ServerInstanceKey>();
 
     @Inject
@@ -286,58 +279,6 @@ public class KieServerIntegration {
             logger.error("Unable to create kie server client for server template {} due to {}", serverTemplate, e.getMessage(), e);
             return null;
         }
-    }
-
-    public KieServicesClient createKieServicesClient(final String... capabilities) {
-        final String kieServerEndpoint = System.getProperty(KieServerConstants.KIE_SERVER_LOCATION);
-        checkNotNull(kieServerEndpoint, "Missing Kie Server system property " + KieServerConstants.KIE_SERVER_LOCATION);
-        final String userName = System.getProperty(KieServerConstants.CFG_KIE_USER);
-        final String password = System.getProperty(KieServerConstants.CFG_KIE_PASSWORD);
-
-        if (isNullOrEmpty(userName)) {
-            return createKieServicesClient(kieServerEndpoint, null, getCredentialsProvider(), capabilities);
-        } else {
-            return createKieServicesClient(kieServerEndpoint, null, userName, password, capabilities);
-        }
-    }
-
-    protected KieServicesClient createKieServicesClient(final String endpoint, final ClassLoader classLoader, final String login, final String password, final String... capabilities) {
-        final KieServicesConfiguration configuration = KieServicesFactory.newRestConfiguration(endpoint, login, password);
-        return createKieServicesClient(endpoint, classLoader, configuration, capabilities);
-    }
-
-    protected KieServicesClient createKieServicesClient(final String endpoint, final ClassLoader classLoader, final CredentialsProvider credentialsProvider, final String... capabilities) {
-        final KieServicesConfiguration configuration = KieServicesFactory.newRestConfiguration(endpoint, credentialsProvider);
-        return createKieServicesClient(endpoint, classLoader, configuration, capabilities);
-    }
-
-    protected KieServicesClient createKieServicesClient(final String endpoint, final ClassLoader classLoader, final KieServicesConfiguration configuration, final String... capabilities) {
-        logger.debug("Creating client that will use following endpoint {}", endpoint);
-        configuration.setTimeout(60000);
-        configuration.setCapabilities(Arrays.asList(capabilities));
-        configuration.setMarshallingFormat(MarshallingFormat.XSTREAM);
-        configuration.setLoadBalancer(LoadBalancer.getDefault(endpoint));
-
-        KieServicesClient kieServicesClient;
-
-        if (classLoader == null) {
-            kieServicesClient = KieServicesFactory.newKieServicesClient(configuration);
-        } else {
-            kieServicesClient = KieServicesFactory.newKieServicesClient(configuration, classLoader);
-        }
-        logger.debug("KieServerClient created successfully for endpoint {}", endpoint);
-        return kieServicesClient;
-    }
-
-    protected CredentialsProvider getCredentialsProvider() {
-        CredentialsProvider credentialsProvider;
-        try {
-            credentialsProvider = new KeyCloakTokenCredentialsProvider();
-        } catch (UnsupportedOperationException e) {
-            credentialsProvider = new SubjectCredentialsProvider();
-        }
-        logger.debug("{} initialized for the client.", credentialsProvider.getClass().getName());
-        return credentialsProvider;
     }
 
     protected CredentialsProvider getAdminCredentialsProvider() {

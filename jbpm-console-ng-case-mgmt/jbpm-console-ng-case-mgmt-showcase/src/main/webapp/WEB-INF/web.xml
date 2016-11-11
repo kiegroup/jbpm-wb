@@ -126,6 +126,7 @@ minutes. it is now 24 hours. -->
       <url-pattern>/org.jbpm.console.ng.cm.jBPMCaseManagement/css/*</url-pattern>
       <url-pattern>/org.jbpm.console.ng.cm.jBPMCaseManagement/img/*</url-pattern>
       <url-pattern>/org.jbpm.console.ng.cm.jBPMCaseManagement/fonts/*</url-pattern>
+      <url-pattern>/org.jbpm.console.ng.cm.jBPMCaseManagement/js/*</url-pattern>
     </web-resource-collection>
   </security-constraint>
 

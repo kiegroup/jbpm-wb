@@ -32,7 +32,7 @@
                     <div class="form-group">
                         <label for="j_username" class="col-sm-2 col-md-2 control-label">Username</label>
                         <div class="col-sm-10 col-md-10">
-                            <input type="text" class="form-control" id="j_username" name="j_username" placeholder="" tabindex="1">
+                            <input type="text" class="form-control" id="j_username" name="j_username" placeholder="" tabindex="1" autofocus>
                         </div>
                     </div>
                     <div class="form-group">
