@@ -85,12 +85,12 @@ public class CaseRolesViewImpl implements CaseRolesPresenter.CaseRolesView {
 
     @Override
     public void addUser(final String userName, final String roleName, final CaseRolesPresenter.CaseRoleAction... actions) {
-        addRoleVIew(userName, roleName, "fa-user", actions);
+        addRoleVIew(userName, roleName, "pficon-user", actions);
     }
 
     @Override
     public void addGroup(final String groupName, final String roleName, final CaseRolesPresenter.CaseRoleAction... actions) {
-        addRoleVIew(groupName, roleName, "fa-group", actions);
+        addRoleVIew(groupName, roleName, "pficon-users", actions);
     }
 
     private void addRoleVIew(final String name, final String roleName, final String iconType, final CaseRolesPresenter.CaseRoleAction... actions) {
