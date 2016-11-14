@@ -69,9 +69,8 @@ public abstract class AbstractCaseInstancePresenter {
     }
 
     protected boolean isCaseInstanceValid() {
-        return isNullOrEmpty(serverTemplateId) == false ||
-               isNullOrEmpty(containerId) == false ||
-               isNullOrEmpty(caseId)  == false;
+        return  /* !isNullOrEmpty(serverTemplateId) //TODO: include this check when serverTemplateId starts to be used*/
+                !isNullOrEmpty(containerId) && !isNullOrEmpty(caseId);
     }
 
     public void onCaseRefreshEvent(@Observes CaseRefreshEvent caseRefreshEvent) {

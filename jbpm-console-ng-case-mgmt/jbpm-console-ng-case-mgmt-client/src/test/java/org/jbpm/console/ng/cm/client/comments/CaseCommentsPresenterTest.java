@@ -16,27 +16,31 @@
 
 package org.jbpm.console.ng.cm.client.comments;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.jboss.errai.security.shared.api.identity.User;
+import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter;
 import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenterTest;
-
 import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.*;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest {
@@ -58,18 +62,18 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
     private final String commentId = "commentId";
     private final String author = "author";
     private final String text = "text";
-    private final Date addedAt= new Date();
+    private final Date addedAt = new Date();
 
     private final String serverTemplateId = "serverTemplateId";
 
     @Test
     public void testClearCaseInstance() {
         presenter.clearCaseInstance();
-         verifyClearCaseInstance(1);
+        verifyClearCaseInstance(1);
     }
 
     private void verifyClearCaseInstance(int times) {
-        verify(caseCommentsView,times(times)).removeAllComments();
+        verify(caseCommentsView, times(times)).removeAllComments();
     }
 
     @Test
@@ -84,20 +88,20 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
         setupCaseInstance(cis, serverTemplateId);
 
         final ArgumentCaptor<CaseCommentsPresenter.CaseCommentAction> captorEdit = ArgumentCaptor.forClass(CaseCommentsPresenter.CaseCommentAction.class);
-        verify(caseCommentsView).addComment(eq(false), eq("Edit"),eq(commentId),eq(author), eq(text),eq(addedAt),  captorEdit.capture());
+        verify(caseCommentsView).addComment(eq(false), eq("Edit"), eq(commentId), eq(author), eq(text), eq(addedAt), captorEdit.capture());
         assertEquals("Delete", captorEdit.getValue().label());
 
         verifyClearCaseInstance(2);
-   }
-
-    @Test
-    public void testAddCommentEmpty(){
-        presenter.addCaseComment("");
-        verify(caseCommentsView, never()).addComment(anyBoolean(),anyString(),anyString(),anyString(), anyString(),any(Date.class));
     }
 
     @Test
-    public void testAddCaseComment(){
+    public void testAddCommentEmpty() {
+        presenter.addCaseComment("");
+        verify(caseCommentsView, never()).addComment(anyBoolean(), anyString(), anyString(), anyString(), anyString(), any(Date.class));
+    }
+
+    @Test
+    public void testAddCaseComment() {
         final CaseInstanceSummary cis = newCaseInstanceSummary();
         final CaseCommentSummary caseComment = CaseCommentSummary.builder().id(commentId).author(author).text(text).addedAt(addedAt).build();
 
@@ -109,20 +113,20 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
     }
 
     @Test
-    public void testUpdateCommentEmpty(){
+    public void testUpdateCommentEmpty() {
         presenter.updateCaseComment("", commentId);
-        verify(caseCommentsView, never()).addComment(anyBoolean(),anyString(),anyString(),anyString(), anyString(),any(Date.class));
+        verify(caseCommentsView, never()).addComment(anyBoolean(), anyString(), anyString(), anyString(), anyString(), any(Date.class));
     }
 
     @Test
-    public void testUpdateCaseComment(){
+    public void testUpdateCaseComment() {
         when(identity.getIdentifier()).thenReturn(author);
 
         final CaseInstanceSummary cis = newCaseInstanceSummary();
         setupCaseInstance(cis, serverTemplateId);
-        presenter.updateCaseComment(text,commentId);
+        presenter.updateCaseComment(text, commentId);
 
-        verify(caseManagementService).updateComment(eq(serverTemplateId), eq(cis.getContainerId()), eq(cis.getCaseId()),eq(commentId), eq(author), eq(text));
+        verify(caseManagementService).updateComment(eq(serverTemplateId), eq(cis.getContainerId()), eq(cis.getCaseId()), eq(commentId), eq(author), eq(text));
         verifyClearCaseInstance(3);
     }
 
@@ -138,14 +142,46 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
         setupCaseInstance(cis, serverTemplateId);
 
         final ArgumentCaptor<CaseCommentsPresenter.CaseCommentAction> captorEdit = ArgumentCaptor.forClass(CaseCommentsPresenter.CaseCommentAction.class);
-        verify(caseCommentsView).addComment(anyBoolean(),anyString(),eq(commentId), eq(author), eq(text),eq(addedAt),  captorEdit.capture());
+        verify(caseCommentsView).addComment(anyBoolean(), anyString(), eq(commentId), eq(author), eq(text), eq(addedAt), captorEdit.capture());
         assertEquals("Delete", captorEdit.getValue().label());
 
         captorEdit.getValue().execute();
-        verify(caseManagementService).removeComment(eq(serverTemplateId),eq(cis.getContainerId()), eq(cis.getCaseId()),eq(commentId));
+        verify(caseManagementService).removeComment(eq(serverTemplateId), eq(cis.getContainerId()), eq(cis.getCaseId()), eq(commentId));
 
         verifyClearCaseInstance(3);
     }
 
+    @Test
+    public void onStartupShouldNotCallCaseService_whenAnyParameterNull() {
+        String[][] invalidPlaceRequestParams = new String[][]{
+                {null, null, null},
+                {null, null, "caseId"},
+                {null, "containerId", null},
+                //TODO uncomment once empty check for serverTempalteId added to AbstractCaseInstancePresenter#isCaseInstanceValid
+                // {null, "containerId", "caseId"},
+                {"serverTemplateId", null, null},
+                {"serverTemplateId", null, "caseId"},
+                {"serverTemplateId", "containerId", null},
+        };
 
+        Arrays.stream(invalidPlaceRequestParams).forEach(invalidParams ->
+                verifyGetCaseInstanceCalled(invalidParams, 0)
+        );
+
+        // Only all non empty values constitute valid place request params
+        String[] validPlaceRequestParams = {"serverTemplateId", "containerId", "caseId"};
+        verifyGetCaseInstanceCalled(validPlaceRequestParams, 1);
+    }
+
+    private void verifyGetCaseInstanceCalled(String[] placeRequestParams, int timesCalled) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put(AbstractCaseInstancePresenter.PARAMETER_SERVER_TEMPLATE_ID, placeRequestParams[0]);
+        params.put(AbstractCaseInstancePresenter.PARAMETER_CONTAINER_ID, placeRequestParams[1]);
+        params.put(AbstractCaseInstancePresenter.PARAMETER_CASE_ID, placeRequestParams[2]);
+        PlaceRequest placeRequest = new DefaultPlaceRequest(CaseCommentsPresenter.SCREEN_ID, params, false);
+
+        presenter.onStartup(placeRequest);
+
+        verify(caseManagementService, times(timesCalled)).getCaseInstance(anyString(), anyString(), anyString());
+    }
 }
