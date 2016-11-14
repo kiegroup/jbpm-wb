@@ -32,7 +32,7 @@
   <properties>
     <gwt.memory.settings>-Xmx3g -Xms1g -Xss1M</gwt.memory.settings>
     <!-- Add the absolute path for $JBOSS_HOME below to manage another instance -->
-    <errai.jboss.home>${project.build.directory}/wildfly-${version.org.wildfly.gwt.sdm}</errai.jboss.home>
+    <jboss.home>${project.build.directory}/wildfly-${version.org.wildfly.gwt.sdm}</jboss.home>
   </properties>
 
   <dependencies>
@@ -380,6 +380,18 @@
       <artifactId>guava</artifactId>
     </dependency>
 
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.wildfly.arquillian</groupId>
+      <artifactId>wildfly-arquillian-container-managed</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.junit</groupId>
+      <artifactId>arquillian-junit-container</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -393,7 +405,7 @@
           <configuration>
             <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
             <localWorkers>${gwt.compiler.localWorkers}</localWorkers>
-            <extraJvmArgs>${gwt.memory.settings} -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home}</extraJvmArgs>
+            <extraJvmArgs>${gwt.memory.settings} -XX:CompileThreshold=7000 -Derrai.jboss.home=${jboss.home}</extraJvmArgs>
             <strict>true</strict>
             <logLevel>INFO</logLevel>
             <noServer>false</noServer>
@@ -507,6 +519,26 @@
                   <outputDirectory>${project.build.directory}</outputDirectory>
                 </artifactItem>
               </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <systemPropertyVariables>
+                <arquillian.launch>wildfly-managed</arquillian.launch>
+                <jboss.home>${jboss.home}</jboss.home>
+                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+              </systemPropertyVariables>
+              <redirectTestOutputToFile>false</redirectTestOutputToFile>
             </configuration>
           </execution>
         </executions>
