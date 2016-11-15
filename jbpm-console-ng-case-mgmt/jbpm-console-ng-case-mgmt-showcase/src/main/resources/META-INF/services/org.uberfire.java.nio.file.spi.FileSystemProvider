@@ -1,2 +1,2 @@
-org.uberfire.java.nio.fs.jgit.JGitFileSystemProvider  # file system provider, also default (1st)
+org.jbpm.console.ng.cm.server.JGitFileSystemProvider  # file system provider, also default (1st)
 org.uberfire.java.nio.fs.file.SimpleFileSystemProvider
