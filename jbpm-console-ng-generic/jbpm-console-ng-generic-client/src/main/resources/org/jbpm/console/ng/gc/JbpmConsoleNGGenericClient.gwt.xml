@@ -35,7 +35,7 @@
 
   <inherits name="org.gwtbootstrap3.extras.datepicker.DatePicker" />
 
-
+  <inherits name="org.kie.server.api.KieServerAPI"/>
   
   <source path="client"/>
   <source path="shared"/>

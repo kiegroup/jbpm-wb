@@ -27,7 +27,7 @@ import javax.inject.Inject;
 import com.google.common.collect.FluentIterable;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.console.ng.ga.events.KieServerDataSetRegistered;
+import org.jbpm.console.ng.ks.events.KieServerDataSetRegistered;
 import org.jbpm.console.ng.ga.events.ServerTemplateSelected;
 import org.kie.server.controller.api.model.events.ServerTemplateDeleted;
 import org.kie.server.controller.api.model.events.ServerTemplateUpdated;

@@ -101,11 +101,11 @@
 
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-business-domain-api</artifactId>
+      <artifactId>jbpm-console-ng-kie-server-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-business-domain-backend</artifactId>
+      <artifactId>jbpm-console-ng-kie-server-backend</artifactId>
     </dependency>
 
     <!-- kie server dependencies -->

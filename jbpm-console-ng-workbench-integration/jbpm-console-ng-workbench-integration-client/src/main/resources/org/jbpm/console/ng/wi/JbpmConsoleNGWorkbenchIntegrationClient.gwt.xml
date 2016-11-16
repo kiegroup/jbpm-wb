@@ -30,7 +30,7 @@
 
   <inherits name="org.uberfire.ext.editor.commons.UberfireCommonsEditorClient"/>
 
-  <inherits name="org.jbpm.console.ng.bd.JbpmConsoleNGBusinessDomainAPI"/>
+  <inherits name="org.jbpm.console.ng.ks.JbpmConsoleNGKieServerAPI"/>
   <inherits name="org.jbpm.console.ng.wi.JbpmConsoleNGWorkbenchIntegrationAPI"/>
   <inherits name="org.jbpm.console.ng.ga.JbpmConsoleNGGenericAPI"/>
   <inherits name="org.guvnor.structure.GuvnorStructureClient"/>

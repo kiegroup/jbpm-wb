@@ -292,20 +292,15 @@
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-process-runtime-forms-backend</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-business-domain-client</artifactId>
-            <scope>provided</scope>
+            <artifactId>jbpm-console-ng-kie-server-api</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-business-domain-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-business-domain-backend</artifactId>
+            <artifactId>jbpm-console-ng-kie-server-backend</artifactId>
         </dependency>
 
         <dependency>
@@ -1291,8 +1286,7 @@
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-forms-modeler-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-client</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-api</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-kie-server-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-data-filters-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-client</compileSourcesArtifact>

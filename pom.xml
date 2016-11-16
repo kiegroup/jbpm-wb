@@ -60,7 +60,7 @@
     <module>jbpm-console-ng-workbench-integration</module>
     <module>jbpm-console-ng-human-tasks</module>
     <module>jbpm-console-ng-process-runtime</module>
-    <module>jbpm-console-ng-business-domain</module>
+    <module>jbpm-console-ng-kie-server</module>
     <module>jbpm-console-ng-executor-service</module>
     <module>jbpm-console-ng-bpm-home</module>
     <module>jbpm-console-ng-dashboard</module>

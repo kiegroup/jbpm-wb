@@ -31,7 +31,10 @@
 
 
   <dependencies>
-
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-console-ng-kie-server-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.gwtbootstrap3</groupId>
       <artifactId>gwtbootstrap3</artifactId>

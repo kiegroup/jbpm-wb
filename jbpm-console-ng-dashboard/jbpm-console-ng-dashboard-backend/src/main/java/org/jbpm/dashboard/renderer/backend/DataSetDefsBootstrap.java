@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefFactory;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
-import org.jbpm.console.ng.bd.integration.KieServerDataSetProvider;
+import org.jbpm.console.ng.ks.integration.KieServerDataSetProvider;
 import org.kie.server.api.KieServerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
