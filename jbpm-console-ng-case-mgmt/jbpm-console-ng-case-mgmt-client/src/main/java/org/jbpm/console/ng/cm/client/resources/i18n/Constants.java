@@ -106,4 +106,8 @@ public interface Constants {
 
     @TranslationKey(defaultValue = "")
     String CANCEL = "Cancel";
+
+    @TranslationKey(defaultValue = "")
+    String MILESTONES = "Milestones";
+
 }

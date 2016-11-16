@@ -71,7 +71,7 @@ public class CaseOverviewViewImpl implements CaseOverviewPresenter.CaseOverviewV
     FlowPanel caseRoles;
 
     @Inject
-//    @DataField("case-milestones")
+    @DataField("case-milestones")
     FlowPanel caseMilestones;
 
     @Inject

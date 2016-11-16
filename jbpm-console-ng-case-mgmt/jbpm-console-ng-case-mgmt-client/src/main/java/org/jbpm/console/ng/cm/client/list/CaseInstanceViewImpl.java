@@ -147,7 +147,4 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
         }
     }
 
-    private native void tooltip(final HTMLElement e) /*-{
-        $wnd.jQuery(e).tooltip();
-    }-*/;
 }

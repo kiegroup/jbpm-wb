@@ -21,6 +21,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.jbpm.console.ng.cm.client.comments.CaseCommentsPresenter;
+import org.jbpm.console.ng.cm.client.milestones.CaseMilestoneListPresenter;
 import org.jbpm.console.ng.cm.client.details.CaseDetailsPresenter;
 import org.jbpm.console.ng.cm.client.events.CaseCancelEvent;
 import org.jbpm.console.ng.cm.client.events.CaseDestroyEvent;
@@ -62,6 +63,7 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
         view.addCaseDetails(CaseDetailsPresenter.SCREEN_ID, place.getParameters());
         view.addCaseRoles(CaseRolesPresenter.SCREEN_ID, place.getParameters());
         view.addCaseComments(CaseCommentsPresenter.SCREEN_ID, place.getParameters());
+        view.addCaseMilestones(CaseMilestoneListPresenter.SCREEN_ID,place.getParameters());
     }
 
     protected void refreshCase() {

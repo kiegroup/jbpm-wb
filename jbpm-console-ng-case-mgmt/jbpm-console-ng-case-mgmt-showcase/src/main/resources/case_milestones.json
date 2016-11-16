@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Milestone 1 name",
+    "identifier": "Milestone1",
+    "achieved": "false",
+    "achievedAt": "",
+    "status": "Available"
+  },
+  {
+    "name": "Milestone 2 name",
+    "identifier": "Milestone2",
+    "achieved": "false",
+    "achievedAt": "",
+    "status": "Available"
+  },
+  {
+    "name": "Milestone 3 name",
+    "identifier": "Milestone3",
+    "achieved": "true",
+    "achievedAt": "",
+    "status": "Completed"
+  },
+  {
+    "name": "Milestone 4 name",
+    "identifier": "Milestone4",
+    "achieved": "true",
+    "achievedAt": "",
+    "status": "Completed"
+  },
+  {
+    "name": "Milestone 5 name",
+    "identifier": "Milestone5",
+    "achieved": "false",
+    "achievedAt": "",
+    "status": "Terminated"
+  },
+  {
+    "name": "Milestone 6 name",
+    "identifier": "Milestone6",
+    "achieved": "false",
+    "achievedAt": "",
+    "status": "Terminated"
+  }
+]

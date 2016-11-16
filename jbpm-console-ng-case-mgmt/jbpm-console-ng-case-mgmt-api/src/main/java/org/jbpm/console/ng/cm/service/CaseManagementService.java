@@ -21,8 +21,10 @@ import java.util.List;
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
+import org.jbpm.console.ng.cm.model.CaseMilestoneSummary;
 import org.jbpm.console.ng.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
+import org.jbpm.console.ng.cm.util.CaseMilestoneSearchRequest;
 
 @Remote
 public interface CaseManagementService {
@@ -56,5 +58,7 @@ public interface CaseManagementService {
     void removeUserFromRole(String serverTemplateId, String containerId, String caseId, String roleName, String user);
 
     void removeGroupFromRole(String serverTemplateId, String containerId, String caseId, String roleName, String group);
+
+    List<CaseMilestoneSummary> getCaseMilestones(final String containerId, final String caseId , final CaseMilestoneSearchRequest request);
 
 }
