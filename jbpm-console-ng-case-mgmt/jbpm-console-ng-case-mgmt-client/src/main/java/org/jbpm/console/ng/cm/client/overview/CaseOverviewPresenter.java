@@ -16,13 +16,10 @@
 package org.jbpm.console.ng.cm.client.overview;
 
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.jboss.errai.ui.client.local.spi.TranslationService;
-import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter;
 import org.jbpm.console.ng.cm.client.comments.CaseCommentsPresenter;
 import org.jbpm.console.ng.cm.client.details.CaseDetailsPresenter;
 import org.jbpm.console.ng.cm.client.events.CaseCancelEvent;
@@ -30,9 +27,9 @@ import org.jbpm.console.ng.cm.client.events.CaseDestroyEvent;
 import org.jbpm.console.ng.cm.client.events.CaseRefreshEvent;
 import org.jbpm.console.ng.cm.client.perspectives.CaseInstanceListPerspective;
 import org.jbpm.console.ng.cm.client.roles.CaseRolesPresenter;
+import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
-import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberElement;
@@ -42,34 +39,18 @@ import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.*;
 
 @Dependent
 @WorkbenchScreen(identifier = CaseOverviewPresenter.SCREEN_ID)
-public class CaseOverviewPresenter extends AbstractCaseInstancePresenter {
+public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOverviewPresenter.CaseOverviewView> {
 
     public static final String SCREEN_ID = "Case Overview";
 
     @Inject
     PlaceManager placeManager;
 
-    @Inject
-    private CaseOverviewView view;
-
-    @Inject
-    private TranslationService translationService;
-
     private Event<CaseCancelEvent> caseCancelEvent;
 
     private Event<CaseDestroyEvent> caseDestroyEvent;
 
     private Event<CaseRefreshEvent> caseRefreshEvent;
-
-    @PostConstruct
-    public void init() {
-        view.init(this);
-    }
-
-    @WorkbenchPartView
-    public UberElement<CaseOverviewPresenter> getView() {
-        return view;
-    }
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -80,7 +61,7 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter {
     public void onOpen() {
         view.addCaseDetails(CaseDetailsPresenter.SCREEN_ID, place.getParameters());
         view.addCaseRoles(CaseRolesPresenter.SCREEN_ID, place.getParameters());
-        view.addCaseComments(CaseCommentsPresenter.SCREEN_ID,place.getParameters());
+        view.addCaseComments(CaseCommentsPresenter.SCREEN_ID, place.getParameters());
     }
 
     protected void refreshCase() {

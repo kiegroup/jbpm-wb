@@ -45,7 +45,7 @@ import static org.mockito.Mockito.*;
 public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
 
     @Mock
-    CaseRolesPresenter.CaseRolesView caseRolesView;
+    CaseRolesPresenter.CaseRolesView view;
 
     @Mock
     CaseRolesPresenter.NewRoleAssignmentView assignmentView;
@@ -66,8 +66,8 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
     }
 
     private void verifyClearCaseInstance() {
-        verify(caseRolesView).removeAllRoles();
-        verify(caseRolesView).disableNewRoleAssignments();
+        verify(view).removeAllRoles();
+        verify(view).disableNewRoleAssignments();
     }
 
     @Test
@@ -87,26 +87,26 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
         setupCaseInstance(cis, serverTemplateId);
 
         verifyClearCaseInstance();
-        verify(caseRolesView).addUser(cis.getOwner(), "Owner");
+        verify(view).addUser(cis.getOwner(), "Owner");
 
         final ArgumentCaptor<CaseRolesPresenter.CaseRoleAction> captor = ArgumentCaptor.forClass(CaseRolesPresenter.CaseRoleAction.class);
-        verify(caseRolesView).addUser(eq(userName), eq(roleName), captor.capture());
+        verify(view).addUser(eq(userName), eq(roleName), captor.capture());
         assertEquals("Remove", captor.getValue().label());
-        verify(caseRolesView).addGroup(eq(groupName), eq(roleName), captor.capture());
+        verify(view).addGroup(eq(groupName), eq(roleName), captor.capture());
         assertEquals("Remove", captor.getValue().label());
 
-        verify(caseRolesView).enableNewRoleAssignments();
-        verify(caseRolesView).setUserAddCommand(any(Command.class));
-        verify(caseRolesView).setGroupAddCommand(any(Command.class));
+        verify(view).enableNewRoleAssignments();
+        verify(view).setUserAddCommand(any(Command.class));
+        verify(view).setGroupAddCommand(any(Command.class));
     }
 
     @Test
     public void testSetupRoleAssignmentsEmpty() {
         presenter.setupRoleAssignments(CaseInstanceSummary.builder().build());
 
-        verify(caseRolesView, never()).addUser(anyString(), anyString());
-        verify(caseRolesView, never()).addGroup(anyString(), anyString());
-        verifyNoMoreInteractions(caseRolesView);
+        verify(view, never()).addUser(anyString(), anyString());
+        verify(view, never()).addGroup(anyString(), anyString());
+        verifyNoMoreInteractions(view);
     }
 
     @Test
@@ -119,10 +119,10 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
         presenter.setupRoleAssignments(cis);
 
         final ArgumentCaptor<CaseRolesPresenter.CaseRoleAction> captor = ArgumentCaptor.forClass(CaseRolesPresenter.CaseRoleAction.class);
-        verify(caseRolesView).addUser(eq(userName), eq(roleName), captor.capture());
+        verify(view).addUser(eq(userName), eq(roleName), captor.capture());
         assertEquals("Remove", captor.getValue().label());
-        verify(caseRolesView, never()).addGroup(anyString(), anyString());
-        verifyNoMoreInteractions(caseRolesView);
+        verify(view, never()).addGroup(anyString(), anyString());
+        verifyNoMoreInteractions(view);
 
         captor.getValue().execute();
         verify(caseManagementService).removeUserFromRole(anyString(), anyString(), anyString(), eq(roleName), eq(userName));
@@ -139,10 +139,10 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
         presenter.setupRoleAssignments(cis);
 
         final ArgumentCaptor<CaseRolesPresenter.CaseRoleAction> captor = ArgumentCaptor.forClass(CaseRolesPresenter.CaseRoleAction.class);
-        verify(caseRolesView).addGroup(eq(groupName), eq(roleName), captor.capture());
+        verify(view).addGroup(eq(groupName), eq(roleName), captor.capture());
         assertEquals("Remove", captor.getValue().label());
-        verify(caseRolesView, never()).addUser(anyString(), anyString());
-        verifyNoMoreInteractions(caseRolesView);
+        verify(view, never()).addUser(anyString(), anyString());
+        verifyNoMoreInteractions(view);
 
         captor.getValue().execute();
         verify(caseManagementService).removeGroupFromRole(anyString(), anyString(), anyString(), eq(roleName), eq(groupName));
@@ -157,8 +157,8 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
 
         presenter.setupNewRoleAssignments(cis);
 
-        verify(caseRolesView, never()).enableNewRoleAssignments();
-        verifyNoMoreInteractions(caseRolesView);
+        verify(view, never()).enableNewRoleAssignments();
+        verifyNoMoreInteractions(view);
     }
 
     @Test
@@ -171,16 +171,16 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
 
         presenter.setupNewRoleAssignments(cis);
 
-        verify(caseRolesView).enableNewRoleAssignments();
+        verify(view).enableNewRoleAssignments();
         final ArgumentCaptor<Command> captor = ArgumentCaptor.forClass(Command.class);
-        verify(caseRolesView).setUserAddCommand(captor.capture());
+        verify(view).setUserAddCommand(captor.capture());
         captor.getValue().execute();
         final ArgumentCaptor<Command> okCommandCaptor = ArgumentCaptor.forClass(Command.class);
         verify(assignmentView).show(eq(true), eq(singleton(roleName)), okCommandCaptor.capture());
         okCommandCaptor.getValue().execute();
         verify(caseManagementService).assignUserToRole(anyString(), anyString(), anyString(), anyString(), anyString());
 
-        verify(caseRolesView).setGroupAddCommand(captor.capture());
+        verify(view).setGroupAddCommand(captor.capture());
         captor.getValue().execute();
         verify(assignmentView).show(eq(false), eq(singleton(roleName)), okCommandCaptor.capture());
         okCommandCaptor.getValue().execute();
