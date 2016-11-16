@@ -24,12 +24,13 @@ import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.console.ng.cm.client.events.CaseRefreshEvent;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.jbpm.console.ng.cm.service.CaseManagementService;
+import org.uberfire.client.mvp.UberElement;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 
 import static com.google.common.base.Strings.*;
 
-public abstract class AbstractCaseInstancePresenter {
+public abstract class AbstractCaseInstancePresenter<V extends UberElement> extends AbstractPresenter<V> {
 
     public static final String PARAMETER_CASE_ID = "caseId";
     public static final String PARAMETER_SERVER_TEMPLATE_ID = "serverTemplateId";

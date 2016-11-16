@@ -22,12 +22,10 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter;
 import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
-import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.mvp.Command;
@@ -36,25 +34,14 @@ import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.*;
 
 @Dependent
 @WorkbenchScreen(identifier = CaseCommentsPresenter.SCREEN_ID)
-public class CaseCommentsPresenter extends AbstractCaseInstancePresenter {
+public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCommentsPresenter.CaseCommentsView> {
 
     public static final String SCREEN_ID = "Case Comments";
-
-    @Inject
-    private CaseCommentsView caseCommentView;
-
-    @Inject
-    private TranslationService translationService;
 
     @Inject
     User identity;
 
     private String currentUpdatedCommentId = "";
-
-    @WorkbenchPartView
-    public UberElement<CaseCommentsPresenter> getView() {
-        return caseCommentView;
-    }
 
     @WorkbenchPartTitle
     public String getTittle() {
@@ -63,7 +50,7 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter {
 
     @Override
     protected void clearCaseInstance() {
-        caseCommentView.removeAllComments();
+        view.removeAllComments();
     }
 
     @Override
@@ -97,11 +84,11 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter {
 
                                 @Override
                                 public void execute() {
-                                    deleteCaseComment((String) caseCommentSummary.getId());
+                                    deleteCaseComment(caseCommentSummary.getId());
                                 }
                             };
                         }
-                        caseCommentView.addComment(editing, updateActionLabel, (String) caseCommentSummary.getId(), caseCommentSummary.getAuthor(),
+                        view.addComment(editing, updateActionLabel, caseCommentSummary.getId(), caseCommentSummary.getAuthor(),
                                 caseCommentSummary.getText(), caseCommentSummary.getAddedAt(), deleteCommentAction);
                     }
                 }

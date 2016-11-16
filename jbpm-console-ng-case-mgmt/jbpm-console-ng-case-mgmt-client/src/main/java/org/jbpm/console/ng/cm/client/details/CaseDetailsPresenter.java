@@ -15,41 +15,25 @@
  */
 package org.jbpm.console.ng.cm.client.details;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 
 import com.google.gwt.user.client.TakesValue;
-import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter;
 import org.jbpm.console.ng.cm.client.resources.i18n.Constants;
+import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
-import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberElement;
 
 @Dependent
 @WorkbenchScreen(identifier = CaseDetailsPresenter.SCREEN_ID)
-public class CaseDetailsPresenter extends AbstractCaseInstancePresenter {
+public class CaseDetailsPresenter extends AbstractCaseInstancePresenter<CaseDetailsPresenter.CaseDetailsView> {
 
     public static final String SCREEN_ID = "Case Details Screen";
-
-    @Inject
-    private CaseDetailsView view;
-
-    @PostConstruct
-    public void init() {
-        view.init(this);
-    }
 
     @WorkbenchPartTitle
     public String getTitle() {
         return translationService.format(Constants.CASE_DETAILS);
-    }
-
-    @WorkbenchPartView
-    public UberElement<CaseDetailsPresenter> getView() {
-        return view;
     }
 
     @Override
@@ -65,5 +49,4 @@ public class CaseDetailsPresenter extends AbstractCaseInstancePresenter {
     public interface CaseDetailsView extends UberElement<CaseDetailsPresenter>, TakesValue<CaseInstanceSummary> {
 
     }
-
 }

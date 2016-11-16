@@ -21,12 +21,10 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
-import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.mvp.Command;
@@ -35,23 +33,12 @@ import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.*;
 
 @Dependent
 @WorkbenchScreen(identifier = CaseRolesPresenter.SCREEN_ID)
-public class CaseRolesPresenter extends AbstractCaseInstancePresenter {
+public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesPresenter.CaseRolesView> {
 
     public static final String SCREEN_ID = "Case Roles";
 
     @Inject
-    private CaseRolesView caseRolesView;
-
-    @Inject
     private NewRoleAssignmentView newRoleAssignmentView;
-
-    @Inject
-    private TranslationService translationService;
-
-    @WorkbenchPartView
-    public UberElement<CaseRolesPresenter> getView() {
-        return caseRolesView;
-    }
 
     @WorkbenchPartTitle
     public String getTittle() {
@@ -60,13 +47,13 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter {
 
     @Override
     protected void clearCaseInstance() {
-        caseRolesView.disableNewRoleAssignments();
-        caseRolesView.removeAllRoles();
+        view.disableNewRoleAssignments();
+        view.removeAllRoles();
     }
 
     @Override
     protected void loadCaseInstance(final CaseInstanceSummary cis) {
-        caseRolesView.addUser(cis.getOwner(), translationService.format(OWNER));
+        view.addUser(cis.getOwner(), translationService.format(OWNER));
 
         setupRoleAssignments(cis);
 
@@ -85,10 +72,10 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter {
                         return;
                     }
 
-                    caseRolesView.enableNewRoleAssignments();
+                    view.enableNewRoleAssignments();
 
-                    caseRolesView.setUserAddCommand(() -> newRoleAssignmentView.show(true, roles, () -> addUserToRole(newRoleAssignmentView.getUserName(), newRoleAssignmentView.getRoleName())));
-                    caseRolesView.setGroupAddCommand(() -> newRoleAssignmentView.show(false, roles, () -> addGroupToRole(newRoleAssignmentView.getUserName(), newRoleAssignmentView.getRoleName())));
+                    view.setUserAddCommand(() -> newRoleAssignmentView.show(true, roles, () -> addUserToRole(newRoleAssignmentView.getUserName(), newRoleAssignmentView.getRoleName())));
+                    view.setGroupAddCommand(() -> newRoleAssignmentView.show(false, roles, () -> addGroupToRole(newRoleAssignmentView.getUserName(), newRoleAssignmentView.getRoleName())));
                 }
         ).getCaseDefinition(serverTemplateId, containerId, cis.getCaseDefinitionId());
     }
@@ -96,7 +83,7 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter {
     protected Set<String> getRolesAvailableForAssignment(final CaseInstanceSummary cis, final CaseDefinitionSummary cds) {
         return cds.getRoles().keySet().stream().filter(
                 role -> {
-                    if("owner".equals(role)){
+                    if ("owner".equals(role)) {
                         return false;
                     }
                     final Integer roleCardinality = cds.getRoles().get(role);
@@ -116,7 +103,7 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter {
 
         cis.getRoleAssignments().forEach(
                 crs -> {
-                    crs.getUsers().forEach(user -> caseRolesView.addUser(user, crs.getName(), new CaseRoleAction() {
+                    crs.getUsers().forEach(user -> view.addUser(user, crs.getName(), new CaseRoleAction() {
 
                         @Override
                         public String label() {
@@ -128,7 +115,7 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter {
                             removeUserFromRole(user, crs.getName());
                         }
                     }));
-                    crs.getGroups().forEach(group -> caseRolesView.addGroup(group, crs.getName(), new CaseRoleAction() {
+                    crs.getGroups().forEach(group -> view.addGroup(group, crs.getName(), new CaseRoleAction() {
 
                         @Override
                         public String label() {
