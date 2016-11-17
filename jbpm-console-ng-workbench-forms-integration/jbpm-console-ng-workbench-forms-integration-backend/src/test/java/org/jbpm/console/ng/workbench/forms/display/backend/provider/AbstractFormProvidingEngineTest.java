@@ -31,38 +31,45 @@ import org.jbpm.console.ng.workbench.forms.display.api.KieWorkbenchFormRendering
 import org.junit.Before;
 import org.junit.Test;
 import org.kie.internal.task.api.ContentMarshallerContext;
+import org.kie.workbench.common.forms.commons.layout.impl.DynamicFormLayoutTemplateGenerator;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.BackendFormRenderingContextManagerImpl;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.FormValuesProcessorImpl;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.fieldProcessors.MultipleSubFormFieldValueProcessor;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.fieldProcessors.SubFormFieldValueProcessor;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.validation.impl.ContextModelConstraintsExtractorImpl;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.FieldValueProcessor;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.FormValuesProcessor;
+import org.kie.workbench.common.forms.jbpm.server.service.impl.DynamicBPMNFormGeneratorImpl;
+import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
 import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
 import org.kie.workbench.common.forms.serialization.impl.FieldSerializer;
 import org.kie.workbench.common.forms.serialization.impl.FormDefinitionSerializerImpl;
 import org.kie.workbench.common.forms.serialization.impl.FormModelSerializer;
+import org.kie.workbench.common.forms.service.mock.TestFieldManager;
 import org.mockito.Mock;
 
 import static junit.framework.TestCase.*;
 import static org.mockito.Mockito.*;
 
-public abstract class AbstractFormProvidingEngineTest<R extends RenderingSettings, T extends KieWorkbenchFormsValuesProcessor<R>> {
+public abstract class AbstractFormProvidingEngineTest<SETTINGS extends RenderingSettings, PROCESSOR extends KieWorkbenchFormsValuesProcessor<SETTINGS>, PROVIDER extends AbstractKieWorkbenchFormsProvider> {
 
     @Mock
     protected ContentMarshallerContext marshallerContext;
 
     protected FormDefinitionSerializer formSerializer;
 
-    protected BackendFormRenderingContextManager contextManager;
+    protected BackendFormRenderingContextManagerImpl contextManager;
 
     protected FormValuesProcessor formValuesProcessor;
 
-    protected T processor;
+    protected DynamicBPMNFormGenerator dynamicBPMNFormGenerator;
 
-    protected R settings;
+    protected PROCESSOR processor;
 
-    protected KieWorkbenchFormsProvider workbenchFormsProvider;
+    protected SETTINGS settings;
+
+    protected PROVIDER workbenchFormsProvider;
 
     @Before
     public void initTest() {
@@ -70,8 +77,6 @@ public abstract class AbstractFormProvidingEngineTest<R extends RenderingSetting
         when( marshallerContext.getClassloader() ).thenReturn( AbstractFormProvidingEngineTest.class.getClassLoader() );
 
         formSerializer = new FormDefinitionSerializerImpl( new FieldSerializer(), new FormModelSerializer() );
-
-        contextManager = new BackendFormRenderingContextManagerImpl();
 
         List<FieldValueProcessor> processors = Arrays.asList( new SubFormFieldValueProcessor(),
                                                               new MultipleSubFormFieldValueProcessor() );
@@ -81,20 +86,24 @@ public abstract class AbstractFormProvidingEngineTest<R extends RenderingSetting
 
         formValuesProcessor = new FormValuesProcessorImpl( fieldValueProcessors );
 
+        dynamicBPMNFormGenerator = new DynamicBPMNFormGeneratorImpl( new TestFieldManager(), new DynamicFormLayoutTemplateGenerator() );
+
+        contextManager = new BackendFormRenderingContextManagerImpl( formValuesProcessor, new ContextModelConstraintsExtractorImpl() );
+
         settings = generateSettigns();
 
-        processor = getProcessorInstance( formSerializer, contextManager, formValuesProcessor );
+        processor = getProcessorInstance( formSerializer, contextManager, dynamicBPMNFormGenerator );
 
         initFormsProvider();
     }
 
     protected abstract void initFormsProvider();
 
-    protected abstract R generateSettigns();
+    protected abstract SETTINGS generateSettigns();
 
-    protected abstract T getProcessorInstance( FormDefinitionSerializer formSerializer,
-                                               BackendFormRenderingContextManager contextManager,
-                                               FormValuesProcessor formValuesProcessor );
+    protected abstract PROCESSOR getProcessorInstance( FormDefinitionSerializer formSerializer,
+                                                       BackendFormRenderingContextManager contextManager,
+                                                       DynamicBPMNFormGenerator dynamicBPMNFormGenerator );
 
     protected abstract Map<String, Object> getFormValues();
 
@@ -132,8 +141,6 @@ public abstract class AbstractFormProvidingEngineTest<R extends RenderingSetting
         assertNotNull( "Result values cannot be null", result );
 
         assertFalse( "Result cannot be empty", result.isEmpty() );
-
-        assertNull( "Backend context should be removed", contextManager.getContext( settings.getTimestamp() ) );
 
         checkRuntimeValues( result );
 

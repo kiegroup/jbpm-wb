@@ -21,9 +21,9 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.console.ng.pr.forms.client.display.displayers.process.AbstractStartProcessFormDisplayer;
 import org.jbpm.console.ng.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
 import org.jbpm.console.ng.workbench.forms.display.service.KieWorkbenchFormsEntryPoint;
-import org.jbpm.console.ng.pr.forms.client.display.displayers.process.AbstractStartProcessFormDisplayer;
 import org.kie.workbench.common.forms.dynamic.client.DynamicFormRenderer;
 
 @Dependent
@@ -57,12 +57,14 @@ public class KieWorkbenchFormsStartProcessDisplayer extends AbstractStartProcess
 
     @Override
     public void startProcessFromDisplayer() {
-        service.call( getStartProcessRemoteCallback(), getUnexpectedErrorCallback() ).startProcessFromRenderContext(
-                renderingSettings.getTimestamp(),
-                renderingSettings.getRenderingContext().getModel(),
-                serverTemplateId,
-                deploymentId,
-                processDefId,
-                getCorrelationKey() );
+        if ( formRenderer.isValid() ) {
+            service.call( getStartProcessRemoteCallback(), getUnexpectedErrorCallback() ).startProcessFromRenderContext(
+                    renderingSettings.getTimestamp(),
+                    renderingSettings.getRenderingContext().getModel(),
+                    serverTemplateId,
+                    deploymentId,
+                    processDefId,
+                    getCorrelationKey() );
+        }
     }
 }

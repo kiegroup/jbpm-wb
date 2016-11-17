@@ -16,6 +16,8 @@
 
 package org.jbpm.console.ng.ga.forms.service.providing.model;
 
+import java.util.Map;
+
 public class TaskDefinition {
 
     private Long id;
@@ -26,6 +28,8 @@ public class TaskDefinition {
     private String status;
     private String formName;
     private boolean outputIncluded;
+    private Map<String, String> taskInputDefinitions;
+    private Map<String, String> taskOutputDefinitions;
 
     public Long getId() {
         return id;
@@ -89,5 +93,21 @@ public class TaskDefinition {
 
     public void setOutputIncluded(boolean outputIncluded) {
         this.outputIncluded = outputIncluded;
+    }
+
+    public void setTaskInputDefinitions( Map<String, String> taskInstanceDefinitions ) {
+        this.taskInputDefinitions = taskInstanceDefinitions;
+    }
+
+    public Map<String, String> getTaskInputDefinitions() {
+        return taskInputDefinitions;
+    }
+
+    public void setTaskOutputDefinitions( Map<String, String> taskOutputDefinitions ) {
+        this.taskOutputDefinitions = taskOutputDefinitions;
+    }
+
+    public Map<String, String> getTaskOutputDefinitions() {
+        return taskOutputDefinitions;
     }
 }
