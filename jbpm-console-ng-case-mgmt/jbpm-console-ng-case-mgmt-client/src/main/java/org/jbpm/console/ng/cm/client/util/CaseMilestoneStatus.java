@@ -16,19 +16,30 @@
 
 package org.jbpm.console.ng.cm.client.util;
 
-import org.jboss.errai.common.client.dom.HTMLElement;
-import org.uberfire.client.mvp.UberElement;
+import java.util.Arrays;
 
-public abstract class AbstractView<T> implements UberElement<T> {
+public enum CaseMilestoneStatus {
 
-    protected T presenter;
+    AVAILABLE("Available"),
 
-    public void init(T presenter) {
-        this.presenter = presenter;
+    COMPLETED("Completed"),
+
+    TERMINATED("Terminated");
+
+    private String status;
+
+
+    CaseMilestoneStatus(final String status) {
+        this.status = status;
+
     }
 
-    protected native void tooltip(final HTMLElement e) /*-{
-        $wnd.jQuery(e).tooltip();
-    }-*/;
+    public static CaseMilestoneStatus fromStatus(final String status) {
+        return Arrays.stream(CaseMilestoneStatus.values()).filter(e -> e.getStatus().equals(status)).findFirst().get();
+    }
+
+    public String getStatus() {
+        return status;
+    }
 
 }

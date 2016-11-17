@@ -14,21 +14,32 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.cm.client.util;
+package org.jbpm.console.ng.cm.util;
 
-import org.jboss.errai.common.client.dom.HTMLElement;
-import org.uberfire.client.mvp.UberElement;
+import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jboss.errai.databinding.client.api.Bindable;
 
-public abstract class AbstractView<T> implements UberElement<T> {
+@Portable
+@Bindable
+public class CaseMilestoneSearchRequest {
 
-    protected T presenter;
+    private Boolean sortByAsc = true;
 
-    public void init(T presenter) {
-        this.presenter = presenter;
+    public CaseMilestoneSearchRequest() {
     }
 
-    protected native void tooltip(final HTMLElement e) /*-{
-        $wnd.jQuery(e).tooltip();
-    }-*/;
+    public Boolean getSortByAsc() {
+        return sortByAsc;
+    }
 
+    public void setSortByAsc(Boolean sortByAsc) {
+        this.sortByAsc = sortByAsc;
+    }
+
+    @Override
+    public String toString() {
+        return "CaseMilestoneSearchRequest{" +
+                ", sortByAsc=" + sortByAsc +
+                '}';
+    }
 }

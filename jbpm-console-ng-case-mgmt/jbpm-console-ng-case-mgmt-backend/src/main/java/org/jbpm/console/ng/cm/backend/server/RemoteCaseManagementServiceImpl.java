@@ -25,12 +25,15 @@ import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
+import org.jbpm.console.ng.cm.model.CaseMilestoneSummary;
 import org.jbpm.console.ng.cm.service.CaseManagementService;
 import org.jbpm.console.ng.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.console.ng.cm.util.CaseInstanceSortBy;
+import org.jbpm.console.ng.cm.util.CaseMilestoneSearchRequest;
 import org.kie.server.api.model.cases.CaseComment;
 import org.kie.server.api.model.cases.CaseDefinition;
 import org.kie.server.api.model.cases.CaseInstance;
+import org.kie.server.api.model.cases.CaseMilestone;
 import org.kie.server.client.CaseServicesClient;
 
 import static java.util.Collections.singletonList;
@@ -143,4 +146,18 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                               final String commentId) {
         client.removeComment(containerId, caseId, commentId);
     }
+
+    @Override
+    public List<CaseMilestoneSummary> getCaseMilestones(final String containerId, final String caseId , final CaseMilestoneSearchRequest request) {
+        final List<CaseMilestone> caseMilestones = client.getMilestones(containerId,caseId, false, 0, PAGE_SIZE_UNLIMITED);
+        final Comparator<CaseMilestoneSummary> comparator = getCaseMilestoneSummaryComparator(request);
+        return caseMilestones.stream().map(new CaseMilestoneMapper()).sorted(comparator).collect(toList());
+    }
+
+    protected Comparator<CaseMilestoneSummary> getCaseMilestoneSummaryComparator(final CaseMilestoneSearchRequest request) {
+        Comparator<CaseMilestoneSummary> comparatorByName =comparing(CaseMilestoneSummary::getName);
+        return comparing(CaseMilestoneSummary::getStatus).thenComparing(request.getSortByAsc() ? comparatorByName: comparatorByName.reversed());
+    }
+
+
 }
