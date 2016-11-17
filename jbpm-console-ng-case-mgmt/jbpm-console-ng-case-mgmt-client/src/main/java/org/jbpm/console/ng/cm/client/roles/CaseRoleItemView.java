@@ -32,7 +32,7 @@ import static org.jboss.errai.common.client.dom.DOMUtil.removeCSSClass;
 import static org.jboss.errai.common.client.dom.Window.getDocument;
 
 @Dependent
-@Templated
+@Templated(stylesheet = "CaseRoleItemView.css")
 public class CaseRoleItemView implements IsElement {
 
     @Inject
