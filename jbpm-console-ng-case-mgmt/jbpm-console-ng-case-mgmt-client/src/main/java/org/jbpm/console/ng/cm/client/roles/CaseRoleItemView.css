@@ -1,0 +1,8 @@
+.kie-roles-description {
+    display: block;
+}
+
+.kie-roles-description .list-group-item-heading,
+.kie-roles-description .list-group-item-text {
+    width: inherit;
+}
