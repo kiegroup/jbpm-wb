@@ -39,16 +39,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static java.util.Collections.singletonList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static org.jbpm.console.ng.cm.backend.server.CaseCommentMapperTest.assertCaseComment;
 import static org.jbpm.console.ng.cm.backend.server.CaseDefinitionMapperTest.assertCaseDefinition;
 import static org.jbpm.console.ng.cm.backend.server.CaseInstanceMapperTest.assertCaseInstance;
-import static org.jbpm.console.ng.cm.backend.server.CaseCommentMapperTest.assertCaseComment;
+import static org.jbpm.console.ng.cm.backend.server.RemoteCaseManagementServiceImpl.PAGE_SIZE_UNLIMITED;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -214,7 +216,7 @@ public class RemoteCaseManagementServiceImplTest {
     @Test
     public void testGetComments_singleComment() {
         final CaseComment caseComment = createTestComment();
-        when(clientMock.getComments(containerId, caseId, 0, -1)).thenReturn(singletonList(caseComment));
+        when(clientMock.getComments(containerId, caseId, 0, PAGE_SIZE_UNLIMITED)).thenReturn(singletonList(caseComment));
 
         final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId, containerId, caseId);
         assertNotNull(comments);
@@ -254,28 +256,28 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void getCaseMilestones_sorting() {
-        CaseMilestone c1 = createTestMilestone("id1","milestone1", "Available");
-        CaseMilestone c2 = createTestMilestone("id2","milestone2", "Available");
-        CaseMilestone c3 = createTestMilestone("id3","milestone3", "Completed");
+        CaseMilestone c1 = createTestMilestone("id1", "milestone1", "Available");
+        CaseMilestone c2 = createTestMilestone("id2", "milestone2", "Available");
+        CaseMilestone c3 = createTestMilestone("id3", "milestone3", "Completed");
 
-        when(clientMock.getMilestones(anyString(),anyString(),anyBoolean(), anyInt(), anyInt())).thenReturn(Arrays.asList(c1, c2, c3));
+        when(clientMock.getMilestones(anyString(), anyString(), anyBoolean(), anyInt(), anyInt())).thenReturn(Arrays.asList(c1, c2, c3));
 
         CaseMilestoneSearchRequest defaultSortRequest = new CaseMilestoneSearchRequest(); //Default sort is by MILESTONE_NAME
-        List<CaseMilestoneSummary> sortedMilestones = testedService.getCaseMilestones("containerId","caseId", defaultSortRequest);
+        List<CaseMilestoneSummary> sortedMilestones = testedService.getCaseMilestones("containerId", "caseId", defaultSortRequest);
         assertEquals("id1", sortedMilestones.get(0).getIdentifier());
         assertEquals("id2", sortedMilestones.get(1).getIdentifier());
         assertEquals("id3", sortedMilestones.get(2).getIdentifier());
 
         CaseMilestoneSearchRequest sortByNameAscRequest = new CaseMilestoneSearchRequest(); //Default sort is by MILESTONE_NAME
         sortByNameAscRequest.setSortByAsc(true);
-        sortedMilestones = testedService.getCaseMilestones("containerId","caseId", sortByNameAscRequest);
+        sortedMilestones = testedService.getCaseMilestones("containerId", "caseId", sortByNameAscRequest);
         assertEquals("id1", sortedMilestones.get(0).getIdentifier());
         assertEquals("id2", sortedMilestones.get(1).getIdentifier());
         assertEquals("id3", sortedMilestones.get(2).getIdentifier());
 
         CaseMilestoneSearchRequest sortByNameDescRequest = new CaseMilestoneSearchRequest(); //Default sort is by MILESTONE_NAME
         sortByNameDescRequest.setSortByAsc(false);
-        sortedMilestones = testedService.getCaseMilestones("containerId","caseId", sortByNameDescRequest);
+        sortedMilestones = testedService.getCaseMilestones("containerId", "caseId", sortByNameDescRequest);
         assertEquals("id2", sortedMilestones.get(0).getIdentifier());
         assertEquals("id1", sortedMilestones.get(1).getIdentifier());
         assertEquals("id3", sortedMilestones.get(2).getIdentifier());
@@ -316,11 +318,11 @@ public class RemoteCaseManagementServiceImplTest {
 
     private CaseMilestone createTestMilestone(String caseMilestoneId, String caseMilestoneName, String status) {
         CaseMilestone milestone = CaseMilestone.builder()
-        .name(caseMilestoneName)
-        .status(status)
-        .id(caseMilestoneId)
-        .achieved(false)
-        .build();
+                .name(caseMilestoneName)
+                .status(status)
+                .id(caseMilestoneId)
+                .achieved(false)
+                .build();
 
         return milestone;
     }

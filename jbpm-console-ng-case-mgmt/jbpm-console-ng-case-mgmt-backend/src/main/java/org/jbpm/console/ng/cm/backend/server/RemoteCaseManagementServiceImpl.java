@@ -45,7 +45,7 @@ import static java.util.Comparator.comparing;
 @ApplicationScoped
 public class RemoteCaseManagementServiceImpl implements CaseManagementService {
 
-    private static final int PAGE_SIZE_UNLIMITED = Integer.MAX_VALUE;
+    public static final int PAGE_SIZE_UNLIMITED = Integer.MAX_VALUE;
 
     @Inject
     private CaseServicesClient client;
