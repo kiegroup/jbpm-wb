@@ -32,8 +32,7 @@ import static org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter.P
 import static org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter.PARAMETER_CONTAINER_ID;
 import static org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter.PARAMETER_SERVER_TEMPLATE_ID;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public abstract class AbstractCaseInstancePresenterTest {
 
@@ -52,7 +51,7 @@ public abstract class AbstractCaseInstancePresenterTest {
         doAnswer(im -> im.getArguments()[0]).when(translationService).format(anyString());
     }
 
-    public static CaseInstanceSummary newCaseInstanceSummary(){
+    protected static CaseInstanceSummary newCaseInstanceSummary(){
         return CaseInstanceSummary.builder()
                 .caseId("caseId")
                 .description("description")
@@ -64,13 +63,13 @@ public abstract class AbstractCaseInstancePresenterTest {
                 .build();
     }
 
-    public CaseInstanceSummary setupCaseInstance(final String serverTemplateId){
+    protected CaseInstanceSummary setupCaseInstance(final String serverTemplateId){
         final CaseInstanceSummary cis = newCaseInstanceSummary();
         setupCaseInstance(cis, serverTemplateId);
         return cis;
     }
 
-    public void setupCaseInstance(final CaseInstanceSummary cis, final String serverTemplateId){
+    protected void setupCaseInstance(final CaseInstanceSummary cis, final String serverTemplateId){
         final PlaceRequest placeRequest = new DefaultPlaceRequest();
         placeRequest.addParameter(PARAMETER_SERVER_TEMPLATE_ID, serverTemplateId);
         placeRequest.addParameter(PARAMETER_CONTAINER_ID, cis.getContainerId());
