@@ -36,6 +36,7 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+import org.jbpm.console.ng.cm.client.util.AbstractView;
 import org.jbpm.console.ng.cm.client.util.DateConverter;
 import org.jbpm.console.ng.cm.client.util.FormGroup;
 import org.jbpm.console.ng.cm.client.util.ValidationState;
@@ -47,7 +48,7 @@ import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.*;
 
 @Dependent
 @Templated
-public class CaseCommentsViewImpl implements CaseCommentsPresenter.CaseCommentsView {
+public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> implements CaseCommentsPresenter.CaseCommentsView {
 
     @Inject
     @DataField("comments")
@@ -87,11 +88,9 @@ public class CaseCommentsViewImpl implements CaseCommentsPresenter.CaseCommentsV
     @Inject
     private TranslationService translationService;
 
-    private CaseCommentsPresenter presenter;
-
     @Override
-    public void init(final CaseCommentsPresenter presenter) {
-        this.presenter = presenter;
+    public HTMLElement getElement() {
+        return commentsContainer;
     }
 
     @Override
@@ -136,7 +135,7 @@ public class CaseCommentsViewImpl implements CaseCommentsPresenter.CaseCommentsV
                     public void execute() {
                         if (commentItemView.validateForm()) {
                             presenter.updateCaseComment(commentItemView.getUpdatedComment(), commentId);
-                            commentItemView.setEditMode(false);
+                            commentItemView.setEditMode(!editing);
                         }
                     }
                 });
@@ -197,11 +196,6 @@ public class CaseCommentsViewImpl implements CaseCommentsPresenter.CaseCommentsV
             return false;
         }
         return true;
-    }
-
-    @Override
-    public HTMLElement getElement() {
-        return commentsContainer;
     }
 
 }
