@@ -39,6 +39,7 @@ public class CaseInstanceSummary {
     private Date completedAt;
     private String caseDefinitionId;
     private List<CaseRoleAssignmentSummary> roleAssignments = new ArrayList<>();
+    private List<CaseStageSummary> stages = new ArrayList<>();
 
     public CaseInstanceSummary() {
     }
@@ -111,6 +112,14 @@ public class CaseInstanceSummary {
         this.roleAssignments = ofNullable(roleAssignments).orElse(new ArrayList<>());
     }
 
+    public List<CaseStageSummary> getStages() {
+        return stages;
+    }
+
+    public void setStages(final List<CaseStageSummary> stages) {
+        this.stages = ofNullable(stages).orElse(new ArrayList<>());
+    }
+
     public String getCaseDefinitionId() {
         return caseDefinitionId;
     }
@@ -148,7 +157,8 @@ public class CaseInstanceSummary {
                 ", startedAt=" + startedAt +
                 ", completedAt=" + completedAt +
                 ", caseDefinitionId='" + caseDefinitionId + '\'' +
-                ", roleAssignments=" + roleAssignments +
+                ", roleAssignments=" + roleAssignments + '\'' +
+                ", stages=" + stages +
                 '}';
     }
 
@@ -202,6 +212,11 @@ public class CaseInstanceSummary {
 
         public Builder roleAssignments(final List<CaseRoleAssignmentSummary> roleAssignments) {
             caseInstance.setRoleAssignments(roleAssignments);
+            return this;
+        }
+
+        public Builder stages(final List<CaseStageSummary> stages) {
+            caseInstance.setStages(stages);
             return this;
         }
 

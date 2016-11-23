@@ -16,11 +16,15 @@
 
 package org.jbpm.console.ng.cm.backend.server;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
+import org.jbpm.console.ng.cm.model.CaseStageSummary;
 import org.junit.Test;
 import org.kie.server.api.model.cases.CaseInstance;
+import org.kie.server.api.model.cases.CaseStage;
 
 import static org.junit.Assert.*;
 
@@ -36,19 +40,35 @@ public class CaseInstanceMapperTest {
         assertEquals(ci.getStartedAt(), cis.getStartedAt());
         assertEquals(ci.getCompletedAt(), cis.getCompletedAt());
         assertEquals(ci.getCaseDefinitionId(), cis.getCaseDefinitionId());
+        assertCaseStages(ci.getStages(), cis.getStages());
+    }
+
+    public static void assertCaseStages(final List<CaseStage> csl, final List<CaseStageSummary> cssl) {
+        assertNotNull(cssl);
+        if(csl==null) {
+            assertEquals(0, cssl.size());
+        } else {
+            assertEquals(cssl.size(), csl.size());
+
+            CaseStage caseStage;
+            CaseStageSummary caseStageSummary;
+            for (int i = 0; i < csl.size(); i++) {
+                caseStage = csl.get(i);
+                caseStageSummary = cssl.get(i);
+                assertEquals(caseStageSummary.getName(), caseStage.getName());
+                assertEquals(caseStageSummary.getIdentifier(), caseStage.getIdentifier());
+                assertEquals(caseStageSummary.getStatus(), caseStage.getStatus());
+            }
+        }
     }
 
     @Test
     public void testCaseInstanceMapper_mapCaseInstance() {
-        final CaseInstance ci = new CaseInstance();
-        ci.setCaseDescription("New case");
-        ci.setCaseId("CASE-1");
-        ci.setCaseStatus(1);
-        ci.setContainerId("org.jbpm");
-        ci.setCaseDefinitionId("org.jbpm.case");
-        ci.setCaseOwner("admin");
-        ci.setStartedAt(new Date());
-        ci.setCompletedAt(new Date());
+        final CaseInstance ci = createCaseInstance();
+        List<CaseStage> stagesList = new ArrayList();
+        stagesList.add(CaseStage.builder().name("stage1").status("Available").id("stage1").build());
+        stagesList.add(CaseStage.builder().name("stage2").status("Completed").id("stage2").build());
+        ci.setStages(stagesList);
 
         final CaseInstanceSummary cis = new CaseInstanceMapper().apply(ci);
 
@@ -60,6 +80,19 @@ public class CaseInstanceMapperTest {
         final CaseInstance ci = null;
         final CaseInstanceSummary cis = new CaseInstanceMapper().apply(ci);
         assertNull(cis);
+    }
+
+    private CaseInstance createCaseInstance() {
+        return CaseInstance.builder()
+                .caseDescription("New case")
+                .caseId("CASE-1")
+                .caseStatus(1)
+                .containerId("org.jbpm")
+                .caseDefinitionId("org.jbpm.case")
+                .caseOwner("admin")
+                .startedAt(new Date())
+                .completedAt(new Date())
+                .build();
     }
 
 }

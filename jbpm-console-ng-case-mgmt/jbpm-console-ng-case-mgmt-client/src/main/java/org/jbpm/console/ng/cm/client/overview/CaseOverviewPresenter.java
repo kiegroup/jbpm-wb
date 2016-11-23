@@ -28,6 +28,7 @@ import org.jbpm.console.ng.cm.client.events.CaseDestroyEvent;
 import org.jbpm.console.ng.cm.client.events.CaseRefreshEvent;
 import org.jbpm.console.ng.cm.client.perspectives.CaseInstanceListPerspective;
 import org.jbpm.console.ng.cm.client.roles.CaseRolesPresenter;
+import org.jbpm.console.ng.cm.client.stages.CaseStagesPresenter;
 import org.jbpm.console.ng.cm.client.util.AbstractCaseInstancePresenter;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -64,6 +65,7 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
         view.addCaseRoles(CaseRolesPresenter.SCREEN_ID, place.getParameters());
         view.addCaseComments(CaseCommentsPresenter.SCREEN_ID, place.getParameters());
         view.addCaseMilestones(CaseMilestoneListPresenter.SCREEN_ID,place.getParameters());
+        view.addCaseStages(CaseStagesPresenter.SCREEN_ID, place.getParameters());
     }
 
     protected void refreshCase() {
