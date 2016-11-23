@@ -24,7 +24,7 @@
   <inherits name="org.uberfire.ext.editor.commons.UberfireCommonsEditorAPI"/>
 
   <inherits name="org.jbpm.console.ng.ga.JbpmConsoleNGGenericAPI"/>
-  <inherits name="org.jbpm.console.ng.bd.JbpmConsoleNGBusinessDomainAPI"/>
+  <inherits name="org.jbpm.console.ng.ks.JbpmConsoleNGKieServerAPI"/>
 
   <source path="model"/>
   <source path="service"/>

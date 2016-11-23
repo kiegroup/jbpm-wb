@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.ApplicationStarted;
 import org.uberfire.commons.services.cdi.Startup;
 
-import static org.jbpm.console.ng.bd.utils.KieServerUtils.createKieServicesClient;
+import static org.jbpm.console.ng.ks.utils.KieServerUtils.createKieServicesClient;
 
 @ApplicationScoped
 @Startup

@@ -16,7 +16,7 @@
 
 package org.jbpm.console.ng.es.backend.server;
 
-import org.jbpm.console.ng.bd.integration.KieServerIntegration;
+import org.jbpm.console.ng.ks.integration.KieServerIntegration;
 import org.jbpm.console.ng.es.model.RequestDetails;
 import org.junit.Before;
 import org.junit.Test;
