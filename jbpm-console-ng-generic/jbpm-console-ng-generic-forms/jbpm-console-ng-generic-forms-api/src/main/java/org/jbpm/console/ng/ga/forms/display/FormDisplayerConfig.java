@@ -22,6 +22,8 @@ public interface FormDisplayerConfig<T extends ItemKey, S extends FormRenderingS
 
     T getKey();
 
+    String getFormContent();
+
     S getRenderingSettings();
 
     String getFormOpener();

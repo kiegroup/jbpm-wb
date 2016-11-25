@@ -101,9 +101,6 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
     @Inject
     private Event<NotificationEvent> notificationEvent;
 
-    protected FormDisplayerConfig<ProcessDefinitionKey, S> config;
-
-
     @PostConstruct
     protected void init() {
         container.getElement().setId("form-data");
@@ -111,7 +108,6 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
 
     @Override
     public void init(FormDisplayerConfig<ProcessDefinitionKey, S> config, Command onClose, Command onRefreshCommand, FormContentResizeListener resizeContentListener) {
-        this.config = config;
         this.serverTemplateId = config.getKey().getServerTemplateId();
         this.deploymentId = config.getKey().getDeploymentId();
         this.processDefId = config.getKey().getProcessId();

@@ -36,8 +36,6 @@ import org.jbpm.console.ng.ga.forms.service.shared.FormServiceEntryPoint;
 import org.jbpm.document.Document;
 import org.kie.internal.task.api.ContentMarshallerContext;
 import org.kie.server.api.model.definition.ProcessDefinition;
-import org.kie.server.api.model.definition.TaskInputsDefinition;
-import org.kie.server.api.model.definition.TaskOutputsDefinition;
 import org.kie.server.api.model.instance.TaskInstance;
 import org.kie.server.client.DocumentServicesClient;
 import org.kie.server.client.KieServicesClient;
@@ -84,8 +82,6 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
             throw new RuntimeException( "No task found for id " + taskId );
         }
 
-        ProcessServicesClient processService = getClient( serverTemplateId, domainId, ProcessServicesClient.class );
-
         TaskDefinition taskInstance = new TaskDefinition();
         taskInstance.setId( task.getId() );
         taskInstance.setName( task.getName() );
@@ -95,14 +91,6 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
         taskInstance.setProcessId( task.getProcessId() );
 
         taskInstance.setStatus( task.getStatus() );
-
-        TaskInputsDefinition inputDefinitions = processService.getUserTaskInputDefinitions( domainId, task.getProcessId(), task.getName() );
-
-        taskInstance.setTaskInputDefinitions( inputDefinitions.getTaskInputs() );
-
-        TaskOutputsDefinition outputDefinitions = processService.getUserTaskOutputDefinitions( domainId, task.getProcessId(), task.getName() );
-
-        taskInstance.setTaskOutputDefinitions( outputDefinitions.getTaskOutputs() );
 
         // prepare render context
         Map<String, Object> inputs = processData( documentClient, task.getInputData() );

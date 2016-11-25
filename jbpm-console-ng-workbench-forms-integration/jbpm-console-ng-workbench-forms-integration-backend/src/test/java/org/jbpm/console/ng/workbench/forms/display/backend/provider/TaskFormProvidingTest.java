@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.workbench.forms.display.backend.provider.task;
+package org.jbpm.console.ng.workbench.forms.display.backend.provider;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,24 +25,24 @@ import java.util.Map;
 import org.jbpm.console.ng.ga.forms.service.providing.TaskRenderingSettings;
 import org.jbpm.console.ng.ga.forms.service.providing.model.TaskDefinition;
 import org.jbpm.console.ng.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
-import org.jbpm.console.ng.workbench.forms.display.backend.provider.AbstractFormProvidingEngineTest;
-import org.jbpm.console.ng.workbench.forms.display.backend.provider.AbstractKieWorkbenchFormsProvider;
-import org.jbpm.console.ng.workbench.forms.display.backend.provider.TaskFormValuesProcessor;
 import org.jbpm.console.ng.workbench.forms.display.backend.provider.model.Client;
 import org.jbpm.console.ng.workbench.forms.display.backend.provider.model.Invoice;
 import org.jbpm.console.ng.workbench.forms.display.backend.provider.model.InvoiceLine;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
-import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
+import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.FormValuesProcessor;
 import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
 import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
-public abstract class AbstractTaskFormProvidingTest<PROVIDER extends AbstractKieWorkbenchFormsProvider> extends AbstractFormProvidingEngineTest<TaskRenderingSettings, TaskFormValuesProcessor, PROVIDER> {
+@RunWith( MockitoJUnitRunner.class )
+public class TaskFormProvidingTest extends AbstractFormProvidingEngineTest<TaskRenderingSettings, TaskFormValuesProcessor> {
 
     @Mock
     protected TaskDefinition task;
@@ -52,6 +52,11 @@ public abstract class AbstractTaskFormProvidingTest<PROVIDER extends AbstractKie
         KieWorkbenchFormRenderingSettings result = workbenchFormsProvider.render( generateSettigns() );
 
         checkRenderingSettings( result );
+    }
+
+    @Override
+    protected void initFormsProvider() {
+        this.workbenchFormsProvider = new KieWorkbenchFormsProvider( null, processor );
     }
 
     @Override
@@ -81,8 +86,8 @@ public abstract class AbstractTaskFormProvidingTest<PROVIDER extends AbstractKie
     @Override
     protected TaskFormValuesProcessor getProcessorInstance( FormDefinitionSerializer formSerializer,
                                                             BackendFormRenderingContextManager contextManager,
-                                                            DynamicBPMNFormGenerator dynamicBPMNFormGenerator ) {
-        return new TaskFormValuesProcessor( formSerializer, contextManager, dynamicBPMNFormGenerator );
+                                                            FormValuesProcessor formValuesProcessor ) {
+        return new TaskFormValuesProcessor( formSerializer, contextManager, formValuesProcessor );
     }
 
     @Override
@@ -119,11 +124,11 @@ public abstract class AbstractTaskFormProvidingTest<PROVIDER extends AbstractKie
 
     @Override
     protected void checkRuntimeValues( Map<String, Object> result ) {
-        assertNotNull( "There should be an invoice on the result Map", result.get( "invoice" ) );
+        assertNotNull( "There should be an invoice on the result Map", result.get( "out_invoice" ) );
 
-        assertTrue( "There should be an invoice on the result Map", result.get( "invoice" ) instanceof Invoice );
+        assertTrue( "There should be an invoice on the result Map", result.get( "out_invoice" ) instanceof Invoice );
 
-        Invoice invoice = (Invoice) result.get( "invoice" );
+        Invoice invoice = (Invoice) result.get( "out_invoice" );
 
         assertNotNull( "Invoice should have a client", invoice.getClient() );
 
@@ -144,5 +149,6 @@ public abstract class AbstractTaskFormProvidingTest<PROVIDER extends AbstractKie
         assertEquals( new Integer( 1 ), line.getQuantity() );
         assertEquals( new Double( 1000.5 ), line.getPrice() );
         assertEquals( new Double( 1000.5 ), line.getTotal() );
+
     }
 }

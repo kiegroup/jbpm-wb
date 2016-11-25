@@ -64,7 +64,6 @@ public class KieWorkbenchFormEntryPointImpl implements KieWorkbenchFormsEntryPoi
                                                String correlationKey ) {
 
         Map<String, Object> data = processRenderingSettingsInterpreter.generateRuntimeValuesMap( timestamp, formData );
-        clearContext( timestamp );
         return processService.startProcess( serverTemplateId, containerId, processId, correlationKey, data );
     }
 
@@ -75,7 +74,6 @@ public class KieWorkbenchFormEntryPointImpl implements KieWorkbenchFormsEntryPoi
                                                 String containerId,
                                                 Long taskId ) {
         Map<String, Object> data = taskRenderingSettingsInterpreter.generateRuntimeValuesMap( timestamp, formData );
-        clearContext( timestamp );
         taskService.saveTaskContent( serverTemplateId, containerId, taskId, data );
     }
 
@@ -87,7 +85,6 @@ public class KieWorkbenchFormEntryPointImpl implements KieWorkbenchFormsEntryPoi
                                          String containerId,
                                          Long taskId ) {
         Map<String, Object> data = taskRenderingSettingsInterpreter.generateRuntimeValuesMap( timestamp, formData );
-        clearContext( timestamp );
         taskService.completeTask( serverTemplateId, containerId, taskId, data );
     }
 

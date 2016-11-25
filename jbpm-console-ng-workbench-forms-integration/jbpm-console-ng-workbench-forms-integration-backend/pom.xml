@@ -99,26 +99,7 @@
 
     <dependency>
       <groupId>org.kie.workbench.forms</groupId>
-      <artifactId>kie-wb-common-forms-api</artifactId>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.kie.workbench.forms</groupId>
       <artifactId>kie-wb-common-dynamic-forms-backend</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.kie.workbench.forms</groupId>
-      <artifactId>kie-wb-common-forms-jbpm-integration-backend</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.kie.workbench.forms</groupId>
-      <artifactId>kie-wb-common-forms-data-modeller-integration-api</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
