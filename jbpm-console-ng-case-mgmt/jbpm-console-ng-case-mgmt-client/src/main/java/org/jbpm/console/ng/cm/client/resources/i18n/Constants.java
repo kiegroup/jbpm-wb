@@ -110,4 +110,7 @@ public interface Constants {
     @TranslationKey(defaultValue = "")
     String MILESTONES = "Milestones";
 
+    @TranslationKey(defaultValue = "")
+    String CASE_STAGES = "CaseStages";
+
 }

@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Stage1",
+    "identifier": "Stage1",
+    "status": "Completed"
+  },
+  {
+    "name": "Stage2",
+    "identifier": "Stage2",
+    "status": "Canceled"
+  },
+  {
+    "name": "Stage3",
+    "identifier": "Stage3",
+    "status": "Completed"
+  },
+  {
+    "name": "Stage4",
+    "identifier": "Stage4",
+    "status": "Available"
+  },
+  {
+    "name": "Stage5",
+    "identifier": "Stage5",
+    "status": "Available"
+  },
+  {
+    "name": "Stage6",
+    "identifier": "Stage6",
+    "status": "Available"
+  }
+]

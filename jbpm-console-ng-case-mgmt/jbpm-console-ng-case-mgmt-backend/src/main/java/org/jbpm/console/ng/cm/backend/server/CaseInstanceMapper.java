@@ -47,6 +47,11 @@ public class CaseInstanceMapper implements Function<CaseInstance, CaseInstanceSu
                                 .stream()
                                 .map(new RoleAssignmentsMapper())
                                 .collect(toList())).
+                stages(
+                        ofNullable(ci.getStages()).orElse(emptyList())
+                                .stream()
+                                .map(new CaseStageMapper())
+                                .collect(toList())).
                 build();
     }
 

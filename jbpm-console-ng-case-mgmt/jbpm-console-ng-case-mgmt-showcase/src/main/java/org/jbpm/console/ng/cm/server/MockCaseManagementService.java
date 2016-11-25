@@ -37,6 +37,7 @@ import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.jbpm.console.ng.cm.model.CaseMilestoneSummary;
 import org.jbpm.console.ng.cm.model.CaseRoleAssignmentSummary;
+import org.jbpm.console.ng.cm.model.CaseStageSummary;
 import org.jbpm.console.ng.cm.util.CaseInstanceSearchRequest;
 
 import org.jbpm.console.ng.cm.util.CaseMilestoneSearchRequest;
@@ -53,12 +54,14 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     private static final Logger LOGGER = LoggerFactory.getLogger(MockCaseManagementService.class);
     private static final String CASE_DEFINITIONS_JSON = "case_definitions.json";
     private static final String CASE_MILESTONES_JSON = "case_milestones.json";
+    private static final String CASE_STAGES_JSON = "case_stages.json";
 
     @Inject
     protected User identity;
 
     private List<CaseDefinitionSummary> caseDefinitionList = emptyList();
     private List<CaseInstanceSummary> caseInstanceList = new ArrayList<>();
+    private List<CaseStageSummary> caseStageList = new ArrayList<>();
     private Map<String, List<CaseCommentSummary>> caseCommentMap = new HashMap<>();
     private List<CaseMilestoneSummary> caseMilestoneList = new ArrayList<>();
 
@@ -69,6 +72,8 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
             final InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(CASE_DEFINITIONS_JSON);
             caseDefinitionList = Arrays.asList(mapper.readValue(inputStream, CaseDefinitionSummary[].class));
             caseMilestoneList = Arrays.asList(mapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(CASE_MILESTONES_JSON), CaseMilestoneSummary[].class));
+            caseStageList = Arrays.asList(mapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(CASE_STAGES_JSON), CaseStageSummary[].class));
+
             LOGGER.info("Loaded {} case definitions", caseDefinitionList.size());
         } catch (Exception e) {
             LOGGER.error("Failed to load json data file", e);
@@ -96,6 +101,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
                 .status(1)
                 .description("New case instance for development")
                 .containerId(containerId)
+                .stages(caseStageList)
                 .build();
         caseInstanceList.add(ci);
         return ci.getCaseId();
@@ -193,4 +199,5 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
                     .sorted(getCaseMilestoneSummaryComparator(request))
                     .collect(toList());
     }
+
 }
