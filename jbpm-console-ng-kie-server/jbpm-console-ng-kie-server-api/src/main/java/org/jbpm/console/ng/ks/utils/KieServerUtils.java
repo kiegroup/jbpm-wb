@@ -26,6 +26,8 @@ import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.KieServicesConfiguration;
 import org.kie.server.client.KieServicesFactory;
 import org.kie.server.client.balancer.LoadBalancer;
+import org.kie.server.client.credentials.EnteredCredentialsProvider;
+import org.kie.server.client.credentials.EnteredTokenCredentialsProvider;
 import org.kie.server.client.credentials.SubjectCredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +50,12 @@ public class KieServerUtils {
         } else {
             return createKieServicesClient(kieServerEndpoint, null, userName, password, capabilities);
         }
+    }
+
+    public static KieServicesClient createAdminKieServicesClient(final String... capabilities) {
+        final String kieServerEndpoint = System.getProperty(KieServerConstants.KIE_SERVER_LOCATION);
+        checkNotNull(kieServerEndpoint, "Missing Kie Server system property " + KieServerConstants.KIE_SERVER_LOCATION);
+        return createKieServicesClient(kieServerEndpoint, null, getAdminCredentialsProvider(), capabilities);
     }
 
     public static KieServicesClient createKieServicesClient(final String endpoint, final ClassLoader classLoader, final String login, final String password, final String... capabilities) {
@@ -87,6 +95,14 @@ public class KieServerUtils {
         }
         LOGGER.debug("{} initialized for the client.", credentialsProvider.getClass().getName());
         return credentialsProvider;
+    }
+
+    public static CredentialsProvider getAdminCredentialsProvider() {
+        if (System.getProperty(KieServerConstants.CFG_KIE_TOKEN) != null) {
+            return new EnteredTokenCredentialsProvider(System.getProperty(KieServerConstants.CFG_KIE_TOKEN));
+        } else {
+            return new EnteredCredentialsProvider(System.getProperty(KieServerConstants.CFG_KIE_USER, "kieserver"), System.getProperty(KieServerConstants.CFG_KIE_PASSWORD, "kieserver1!"));
+        }
     }
 
 }

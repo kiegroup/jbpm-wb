@@ -34,8 +34,6 @@ import org.kie.server.api.KieServerConstants;
 import org.kie.server.client.CredentialsProvider;
 import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.balancer.LoadBalancer;
-import org.kie.server.client.credentials.EnteredCredentialsProvider;
-import org.kie.server.client.credentials.EnteredTokenCredentialsProvider;
 import org.kie.server.client.impl.AbstractKieServicesClientImpl;
 import org.kie.server.controller.api.model.events.ServerInstanceConnected;
 import org.kie.server.controller.api.model.events.ServerInstanceDisconnected;
@@ -53,6 +51,7 @@ import org.uberfire.commons.services.cdi.Startup;
 
 import static org.jbpm.console.ng.ks.utils.KieServerUtils.createKieServicesClient;
 import static org.jbpm.console.ng.ks.utils.KieServerUtils.getCredentialsProvider;
+import static org.jbpm.console.ng.ks.utils.KieServerUtils.getAdminCredentialsProvider;
 
 @Startup
 @ApplicationScoped
@@ -281,11 +280,4 @@ public class KieServerIntegration {
         }
     }
 
-    protected CredentialsProvider getAdminCredentialsProvider() {
-        if (System.getProperty(KieServerConstants.CFG_KIE_TOKEN) != null) {
-            return new EnteredTokenCredentialsProvider(System.getProperty(KieServerConstants.CFG_KIE_TOKEN));
-        } else {
-            return new EnteredCredentialsProvider(System.getProperty(KieServerConstants.CFG_KIE_USER, "kieserver"), System.getProperty(KieServerConstants.CFG_KIE_PASSWORD, "kieserver1!"));
-        }
-    }
 }
