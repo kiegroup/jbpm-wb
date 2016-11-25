@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ga.forms.display;
+package org.jbpm.console.ng.workbench.forms.display.backend.provider.task;
 
-import org.jbpm.console.ng.ga.service.ItemKey;
+import org.jbpm.console.ng.workbench.forms.display.backend.provider.DefaultKieWorkbenchFormsProvider;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
-public interface FormDisplayerConfig<T extends ItemKey, S extends FormRenderingSettings> {
+@RunWith( MockitoJUnitRunner.class )
+public class TaskFormProvidingTest extends AbstractTaskFormProvidingTest<DefaultKieWorkbenchFormsProvider> {
 
-    T getKey();
-
-    S getRenderingSettings();
-
-    String getFormOpener();
-
+    @Override
+    protected void initFormsProvider() {
+        this.workbenchFormsProvider = new DefaultKieWorkbenchFormsProvider( null, processor );
+    }
 }

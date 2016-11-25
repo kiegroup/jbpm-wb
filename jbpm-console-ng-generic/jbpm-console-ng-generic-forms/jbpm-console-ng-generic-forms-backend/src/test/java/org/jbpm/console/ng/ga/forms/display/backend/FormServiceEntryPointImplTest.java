@@ -30,6 +30,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.server.api.model.definition.ProcessDefinition;
+import org.kie.server.api.model.definition.TaskInputsDefinition;
+import org.kie.server.api.model.definition.TaskOutputsDefinition;
 import org.kie.server.api.model.instance.TaskInstance;
 import org.kie.server.client.DocumentServicesClient;
 import org.kie.server.client.KieServicesClient;
@@ -111,6 +113,9 @@ public class FormServiceEntryPointImplTest {
         processDefinition.setPackageName( "org.jbpm.test" );
 
         when( processServicesClient.getProcessDefinition( anyString(), anyString() ) ).thenReturn( processDefinition );
+
+        when( processServicesClient.getUserTaskInputDefinitions( anyString(), anyString(), anyString() ) ).thenReturn(  new TaskInputsDefinition() );
+        when( processServicesClient.getUserTaskOutputDefinitions( anyString(), anyString(), anyString() ) ).thenReturn(  new TaskOutputsDefinition() );
 
         TaskInstance taskInstance = new TaskInstance();
         taskInstance.setId( new Long(12) );
