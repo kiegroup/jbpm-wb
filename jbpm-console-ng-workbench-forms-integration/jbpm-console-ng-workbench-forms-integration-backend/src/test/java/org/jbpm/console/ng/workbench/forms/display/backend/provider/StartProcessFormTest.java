@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.workbench.forms.display.backend.provider.process;
+package org.jbpm.console.ng.workbench.forms.display.backend.provider;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,23 +25,23 @@ import java.util.Map;
 import org.jbpm.console.ng.ga.forms.service.providing.ProcessRenderingSettings;
 import org.jbpm.console.ng.ga.forms.service.providing.model.ProcessDefinition;
 import org.jbpm.console.ng.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
-import org.jbpm.console.ng.workbench.forms.display.backend.provider.AbstractFormProvidingEngineTest;
-import org.jbpm.console.ng.workbench.forms.display.backend.provider.AbstractKieWorkbenchFormsProvider;
-import org.jbpm.console.ng.workbench.forms.display.backend.provider.ProcessFormsValuesProcessor;
 import org.jbpm.console.ng.workbench.forms.display.backend.provider.model.Invoice;
 import org.jbpm.console.ng.workbench.forms.display.backend.provider.model.InvoiceLine;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
-import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
+import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.FormValuesProcessor;
 import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
 import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
-public abstract class AbstractStartProcessFormTest<PROVIDER extends AbstractKieWorkbenchFormsProvider> extends AbstractFormProvidingEngineTest<ProcessRenderingSettings, ProcessFormsValuesProcessor, PROVIDER> {
+@RunWith( MockitoJUnitRunner.class )
+public class StartProcessFormTest extends AbstractFormProvidingEngineTest<ProcessRenderingSettings, ProcessFormsValuesProcessor> {
 
     @Mock
     protected ProcessDefinition process;
@@ -54,16 +54,17 @@ public abstract class AbstractStartProcessFormTest<PROVIDER extends AbstractKieW
     }
 
     @Override
+    protected void initFormsProvider() {
+        this.workbenchFormsProvider = new KieWorkbenchFormsProvider( processor, null );
+    }
+
+    @Override
     protected ProcessRenderingSettings generateSettigns() {
 
         when( process.getId() ).thenReturn( "invoices" );
 
-        Map<String, String> formData = new HashMap<>();
-
-        formData.put( "invoice", Invoice.class.getName() );
-
         return new ProcessRenderingSettings( process,
-                                             formData,
+                                             new HashMap<String, String>(),
                                              getFormContent(),
                                              marshallerContext );
     }
@@ -71,8 +72,8 @@ public abstract class AbstractStartProcessFormTest<PROVIDER extends AbstractKieW
     @Override
     protected ProcessFormsValuesProcessor getProcessorInstance( FormDefinitionSerializer formSerializer,
                                                                 BackendFormRenderingContextManager contextManager,
-                                                                DynamicBPMNFormGenerator dynamicBPMNFormGenerator ) {
-        return new ProcessFormsValuesProcessor( formSerializer, contextManager, dynamicBPMNFormGenerator );
+                                                                FormValuesProcessor formValuesProcessor ) {
+        return new ProcessFormsValuesProcessor( formSerializer, contextManager, formValuesProcessor );
     }
 
     @Override

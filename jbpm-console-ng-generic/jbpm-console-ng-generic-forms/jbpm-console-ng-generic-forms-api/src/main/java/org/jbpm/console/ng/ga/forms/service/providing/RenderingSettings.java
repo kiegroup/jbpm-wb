@@ -16,14 +16,12 @@
 
 package org.jbpm.console.ng.ga.forms.service.providing;
 
-import java.io.Serializable;
-
 import org.kie.internal.task.api.ContentMarshallerContext;
 
 /**
  * Defines basic settings to render a form
  */
-public interface RenderingSettings extends Serializable {
+public interface RenderingSettings {
 
     /**
      * Retrieves the actual content of the form to be rendered

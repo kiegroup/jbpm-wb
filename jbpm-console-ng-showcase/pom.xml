@@ -1174,7 +1174,7 @@
                 <artifactId>gwt-maven-plugin</artifactId>
                 <configuration>
                     <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
-                    <extraJvmArgs>-Xms1g -Xmx3g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.dynamic_validation.enabled=true -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true -Dorg.uberfire.async.executor.safemode=true</extraJvmArgs>
+                    <extraJvmArgs>-Xms1g -Xmx3g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true -Dorg.uberfire.async.executor.safemode=true</extraJvmArgs>
                     <module>org.jbpm.console.ng.jBPMShowcase</module>
                     <logLevel>INFO</logLevel>
                     <noServer>false</noServer>
@@ -1397,7 +1397,7 @@
                                 <include>src/main/webapp/WEB-INF/deploy/</include>
                                 <include>src/main/webapp/WEB-INF/classes/</include>
                                 <include>src/main/webapp/WEB-INF/lib/</include>
-                                <include>src/main/webapp/WEB-INF/tlds/</include>
+                                <include>src/main/webapp/WEB-INF/tlds/</include>                                
                                 <include>.errai/</include>
                                 <include>.niogit/**</include>
                                 <include>.index/**</include>

@@ -59,26 +59,22 @@ public class KieWorkbenchFormsHumanTaskDisplayer extends AbstractHumanTaskFormDi
 
     @Override
     protected void completeFromDisplayer() {
-        if ( formRenderer.isValid() ) {
-            service.call( getCompleteTaskRemoteCallback(), getUnexpectedErrorCallback() ).completeTaskFromContext(
-                    renderingSettings.getTimestamp(),
-                    renderingSettings.getRenderingContext().getModel(),
-                    serverTemplateId,
-                    deploymentId,
-                    taskId );
-        }
+        service.call( getCompleteTaskRemoteCallback(), getUnexpectedErrorCallback() ).completeTaskFromContext(
+                renderingSettings.getTimestamp(),
+                renderingSettings.getRenderingContext().getModel(),
+                serverTemplateId,
+                deploymentId,
+                taskId );
     }
 
     @Override
     protected void saveStateFromDisplayer() {
-        if ( formRenderer.isValid() ) {
-            service.call( getSaveTaskStateCallback(), getUnexpectedErrorCallback() ).saveTaskStateFromRenderContext(
-                    renderingSettings.getTimestamp(),
-                    renderingSettings.getRenderingContext().getModel(),
-                    serverTemplateId,
-                    deploymentId,
-                    taskId );
-        }
+        service.call( getSaveTaskStateCallback(), getUnexpectedErrorCallback() ).saveTaskStateFromRenderContext(
+                renderingSettings.getTimestamp(),
+                renderingSettings.getRenderingContext().getModel(),
+                serverTemplateId,
+                deploymentId,
+                taskId );
     }
 
     @Override

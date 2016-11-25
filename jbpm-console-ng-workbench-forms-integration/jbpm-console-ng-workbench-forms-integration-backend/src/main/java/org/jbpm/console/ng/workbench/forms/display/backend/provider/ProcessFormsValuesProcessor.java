@@ -16,19 +16,16 @@
 
 package org.jbpm.console.ng.workbench.forms.display.backend.provider;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jbpm.console.ng.ga.forms.service.providing.ProcessRenderingSettings;
-import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContext;
+import org.kie.workbench.common.forms.dynamic.service.shared.impl.MapModelRenderingContext;
+import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.FormValuesProcessor;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
-import org.kie.workbench.common.forms.jbpm.model.authoring.JBPMVariable;
 import org.kie.workbench.common.forms.jbpm.model.authoring.process.BusinessProcessFormModel;
-import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
 import org.kie.workbench.common.forms.model.FormDefinition;
 import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
 import org.slf4j.Logger;
@@ -42,8 +39,8 @@ public class ProcessFormsValuesProcessor extends KieWorkbenchFormsValuesProcesso
     @Inject
     public ProcessFormsValuesProcessor( FormDefinitionSerializer formSerializer,
                                         BackendFormRenderingContextManager contextManager,
-                                        DynamicBPMNFormGenerator dynamicBPMNFormGenerator ) {
-        super( formSerializer, contextManager, dynamicBPMNFormGenerator );
+                                        FormValuesProcessor formValuesProcessor ) {
+        super( formSerializer, contextManager, formValuesProcessor );
     }
 
     @Override
@@ -52,42 +49,25 @@ public class ProcessFormsValuesProcessor extends KieWorkbenchFormsValuesProcesso
     }
 
     @Override
-    protected Map<String, Object> getOutputValues( Map<String, Object> values,
-                                                   FormDefinition form,
-                                                   ProcessRenderingSettings context ) {
+    protected Map<String, Object> getOutputValues( Map<String, Object> values, FormDefinition form ) {
+        Map<String, Object> result = new HashMap<>();
 
         if ( isValid( form ) ) {
             BusinessProcessFormModel model = (BusinessProcessFormModel) form.getModel();
 
-            values.entrySet().stream().allMatch( entry -> model.getVariables().stream().filter( variable -> variable.getName().equals(
-                    entry.getKey() ) ).findFirst().isPresent() );
-            return values;
+            model.getVariables().forEach( var -> result.put( var.getName(), values.get( var.getName() ) ) );
         }
-        throw new IllegalArgumentException( "Form not valid to start process" );
+        return result;
     }
 
     @Override
-    protected void prepareContext( ProcessRenderingSettings settings, BackendFormRenderingContext context ) {
+    protected void prepareContext( ProcessRenderingSettings settings, MapModelRenderingContext context ) {
         // Nothing to do for processes
     }
 
     @Override
     protected boolean isValid( FormDefinition rootForm ) {
         return rootForm != null && rootForm.getModel() instanceof BusinessProcessFormModel;
-    }
-
-    @Override
-    protected Collection<FormDefinition> generateDefaultFormsForContext( ProcessRenderingSettings settings ) {
-        List<JBPMVariable> variables = new ArrayList<>();
-        settings.getProcessData().forEach( ( name, type ) -> {
-            variables.add( new JBPMVariable( name, type ) );
-        } );
-        BusinessProcessFormModel formModel = new BusinessProcessFormModel( settings.getProcess().getId(),
-                                                                           settings.getProcess().getName(),
-                                                                           variables );
-
-        return dynamicBPMNFormGenerator.generateProcessForms( formModel,
-                                                              settings.getMarshallerContext().getClassloader() );
     }
 
     @Override
