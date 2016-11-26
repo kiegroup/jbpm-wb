@@ -53,6 +53,8 @@ public class DDConfigUpdater {
 
     private static final String REFLECTION_PREFIX = "reflection:";
 
+    private static final String DEFAULT_RESOLVER = "reflection";
+
     public DDConfigUpdater() {
     }
     
@@ -126,7 +128,11 @@ public class DDConfigUpdater {
         } else if(value.trim().toLowerCase().startsWith(REFLECTION_PREFIX)) {
             return REFLECTION_PREFIX.substring(0,REFLECTION_PREFIX.length()-1);
         } else {
-            return defaultResolver;
+            if(defaultResolver == null || defaultResolver.trim().isEmpty()) {
+                return DEFAULT_RESOLVER;
+            } else {
+                return defaultResolver;
+            }
         }
     }
 

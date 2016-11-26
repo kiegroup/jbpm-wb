@@ -203,6 +203,10 @@ public class DDConfigUpdaterTest {
         assertEquals("mvel", ddConfigUpdater.getWorkitemResolver("mvel:new com.myhandlers.MyHandler()", "reflection"));
         assertEquals("reflection", ddConfigUpdater.getWorkitemResolver("reflection:new com.myhandlers.MyHandler()", "mvel"));
         assertEquals("reflection", ddConfigUpdater.getWorkitemResolver("reflection:new com.myhandlers.MyHandler()", ""));
+
+        // test use of default when no resolver is specified
+        assertEquals("reflection", ddConfigUpdater.getWorkitemResolver("new com.myhandlers.MyHandler()", ""));
+        assertEquals("reflection", ddConfigUpdater.getWorkitemResolver("new com.myhandlers.MyHandler()", null));
     }
 
 }
