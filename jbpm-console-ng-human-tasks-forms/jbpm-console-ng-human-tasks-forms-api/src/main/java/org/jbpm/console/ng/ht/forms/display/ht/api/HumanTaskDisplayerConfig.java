@@ -22,7 +22,6 @@ import org.jbpm.console.ng.ht.model.TaskKey;
 
 public class HumanTaskDisplayerConfig<S extends FormRenderingSettings> implements FormDisplayerConfig<TaskKey, S> {
     private TaskKey key;
-    private String formContent;
     private String formOpener;
     private S renderingSettings;
 
@@ -35,12 +34,6 @@ public class HumanTaskDisplayerConfig<S extends FormRenderingSettings> implement
         return key;
     }
 
-
-    @Override
-    public String getFormContent() {
-        return formContent;
-    }
-
     @Override
     public S getRenderingSettings() {
         return renderingSettings;
@@ -48,10 +41,6 @@ public class HumanTaskDisplayerConfig<S extends FormRenderingSettings> implement
 
     public void setRenderingSettings( S renderingSettings ) {
         this.renderingSettings = renderingSettings;
-    }
-
-    public void setFormContent( String formContent) {
-        this.formContent = formContent;
     }
 
     @Override
