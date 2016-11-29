@@ -17,7 +17,11 @@
 package org.jbpm.console.ng.cm.client.comments;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+
+import com.google.gwt.user.client.TakesValue;
 
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.Div;
@@ -26,40 +30,48 @@ import org.jboss.errai.common.client.dom.KeyboardEvent;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.common.client.dom.TextInput;
 import org.jboss.errai.common.client.dom.UnorderedList;
+import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jboss.errai.ui.shared.api.annotations.AutoBound;
+import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+
+import org.jbpm.console.ng.cm.client.events.CaseCommentEditEvent;
+import org.jbpm.console.ng.cm.client.util.AbstractView;
+import org.jbpm.console.ng.cm.client.util.DateConverter;
 import org.jbpm.console.ng.cm.client.util.FormGroup;
 import org.jbpm.console.ng.cm.client.util.ValidationState;
+import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
 import static org.jboss.errai.common.client.dom.Window.*;
-import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.CASE_COMMENT_CANT_BE_EMPTY;
+import static org.jbpm.console.ng.cm.client.resources.i18n.Constants.*;
 
 
 @Dependent
 @Templated
-public class CaseCommentItemView implements IsElement {
+public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> implements TakesValue<CaseCommentSummary>, IsElement {
 
     @Inject
     @DataField("comment-author")
-    Span commentAuthor;
+    @Bound
+    Span author;
 
     @Inject
     @DataField("comment-text")
-    Span commentText;
+    @Bound(property = "text")
+    Span text;
 
     @Inject
     @DataField("comment-addedat")
-    Span commentAddedAt;
-
-    @Inject
-    @DataField("user-actions")
-    Div userActions;
+    @Bound(converter = DateConverter.class)
+    Span addedAt;
 
     @Inject
     @DataField("list-group-item")
@@ -94,26 +106,29 @@ public class CaseCommentItemView implements IsElement {
     Div commentUpdate;
 
     @Inject
+    @AutoBound
+    private DataBinder<CaseCommentSummary> caseCommentSummary;
+
+    @Inject
     private TranslationService translationService;
 
+    @Inject
+    User identity;
+
+    private Event<CaseCommentEditEvent> commentEditEvent;
+
     CaseCommentsPresenter.CaseCommentAction updateCommandAction;
+
+    boolean editMode = false;
+
+    @Inject
+    public void setCommentEditEvent(final Event<CaseCommentEditEvent> commentEditEvent) {
+        this.commentEditEvent = commentEditEvent;
+    }
 
     @Override
     public HTMLElement getElement() {
         return listGroupItem;
-    }
-
-    public void setCommentAuthor(final String commentAutor) {
-        this.commentAuthor.setInnerHTML(commentAutor);
-    }
-
-    public void setCommentText(final String commentText) {
-        this.commentText.setTextContent(commentText);
-        this.updateCommentText.setValue(commentText);
-    }
-
-    public void setCommentAddedAt(final String commentAddedAt) {
-        this.commentAddedAt.setInnerHTML(commentAddedAt);
     }
 
     public void addAction(final CaseCommentsPresenter.CaseCommentAction action) {
@@ -133,14 +148,14 @@ public class CaseCommentItemView implements IsElement {
         addAction(action);
     }
 
-    public String getUpdatedComment() {
-        return updateCommentText.getValue();
-    }
-
     public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
+        updateActions(editMode);
         if (editMode) {
             addCSSClass(commentShowGroup, "hidden");
             removeCSSClass(commentUpdate, "hidden");
+            updateCommentText.setValue(getValue().getText());
+            updateCommentText.focus();
         } else {
             addCSSClass(commentUpdate, "hidden");
             removeCSSClass(commentShowGroup, "hidden");
@@ -170,6 +185,82 @@ public class CaseCommentItemView implements IsElement {
         //Chrome bug, key is not set
         if ("Enter".equals(e.getKey()) || "Enter".equals(e.getCode()) || "NumpadEnter".equals(e.getCode())) {
             updateCommandAction.execute();
+        }
+    }
+
+    @Override
+    public CaseCommentSummary getValue() {
+        return caseCommentSummary.getModel();
+    }
+
+    @Override
+    public void setValue(final CaseCommentSummary model) {
+        this.caseCommentSummary.setModel(model);
+        setEditMode(false);
+    }
+
+    protected void updateActions(final boolean editItem) {
+        actionsItems.setInnerHTML("");
+        if (identity.getIdentifier().equals(getValue().getAuthor())) {
+            addAction(new CaseCommentsPresenter.CaseCommentAction() {
+                @Override
+                public String label() {
+                    return translationService.format(DELETE);
+                }
+
+                @Override
+                public void execute() {
+                    presenter.deleteCaseComment(getValue());
+                }
+            });
+            if (editItem) {
+                addUpdateCommentAction(new CaseCommentsPresenter.CaseCommentAction() {
+                    @Override
+                    public String label() {
+                        return translationService.format(SAVE);
+                    }
+
+                    @Override
+                    public void execute() {
+                        if (validateForm()) {
+                            presenter.updateCaseComment(getValue(), updateCommentText.getValue());
+                        }
+                    }
+                });
+                addAction(new CaseCommentsPresenter.CaseCommentAction() {
+                    @Override
+                    public String label() {
+                        return translationService.format(CANCEL);
+                    }
+
+                    @Override
+                    public void execute() {
+                        setEditMode(false);
+                    }
+                });
+            } else {
+                addAction(new CaseCommentsPresenter.CaseCommentAction() {
+                    @Override
+                    public String label() {
+                        return translationService.format(EDIT);
+                    }
+
+                    @Override
+                    public void execute() {
+                        commentEditEvent.fire(new CaseCommentEditEvent(getValue().getId()));
+                    }
+                });
+            }
+        }
+    }
+
+    public void onCaseCommentEditEvent(@Observes CaseCommentEditEvent event) {
+        if (event.getCommentId().equals(getValue().getId())) {
+            setEditMode(true);
+        } else {
+            if (editMode) {
+                setEditMode(false);
+            }
         }
     }
 
