@@ -105,4 +105,28 @@ public interface Constants extends Messages {
 
     String Extensions();
 
+    String Business_Processes();
+
+    String The_jBPM_Cycle();
+
+    String Discover_Text();
+
+    String Discover();
+
+    String Design();
+
+    String Design_Text();
+
+    String Deploy_Text();
+
+    String Work_Text();
+
+    String Dashboards_Text();
+
+    String Improve();
+
+    String Improve_Text();
+
+    String ActionNotImplementedYet();
+
 }

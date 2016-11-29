@@ -226,12 +226,6 @@
         <!-- jBPM Console Panels -->
         <dependency>
             <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-console-ng-bpm-home-client</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
             <artifactId>jbpm-console-ng-generic-api</artifactId>
         </dependency>
         <dependency>
@@ -1296,7 +1290,6 @@
                         <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-patternfly</compileSourcesArtifact>
 
                         <!-- jBPM Console -->
-                        <compileSourcesArtifact>org.jbpm:jbpm-console-ng-bpm-home-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-forms-api</compileSourcesArtifact>

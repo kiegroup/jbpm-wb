@@ -36,8 +36,10 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "Authoring")
+@WorkbenchPerspective(identifier = ProjectAuthoringPerspective.PERSPECTIVE_ID)
 public class ProjectAuthoringPerspective {
+
+    public static final String PERSPECTIVE_ID = "Authoring";
 
     @Inject
     private PlaceManager placeManager;

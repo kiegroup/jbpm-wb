@@ -17,6 +17,7 @@ package org.jbpm.console.ng.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.jbpm.console.ng.client.screens.HomePresenter;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.StaticWorkbenchPanelPresenter;
@@ -38,7 +39,7 @@ public class HomePerspective {
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(StaticWorkbenchPanelPresenter.class.getName());
         p.setName(PERSPECTIVE_ID);
-        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("Home Screen")));
+        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(HomePresenter.SCREEN_ID)));
         return p;
     }
 
