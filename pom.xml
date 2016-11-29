@@ -53,10 +53,7 @@
   </properties>
 
   <modules>
-    <module>jbpm-console-ng-human-tasks-forms</module>
-    <module>jbpm-console-ng-process-runtime-forms</module>
-    <module>jbpm-console-ng-human-tasks-forms-modeler</module>
-    <module>jbpm-console-ng-workbench-forms-integration</module>
+    <module>jbpm-console-ng-forms</module>
     <module>jbpm-console-ng-workbench-integration</module>
     <module>jbpm-console-ng-human-tasks</module>
     <module>jbpm-console-ng-process-runtime</module>
