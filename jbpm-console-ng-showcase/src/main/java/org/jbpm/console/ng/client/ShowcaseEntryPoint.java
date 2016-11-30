@@ -121,7 +121,6 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
 
         result.add( MenuFactory.newSimpleItem( constants.Grid_Base_Test() ).perspective( "Grid Base Test" ).endMenu().build().getItems().get( 0 ) );
         result.add( MenuFactory.newSimpleItem( constants.Logs() ).perspective( "Logs" ).endMenu().build().getItems().get( 0 ) );
-        result.add( MenuFactory.newSimpleItem( constants.Documents() ).perspective( "Documents Perspective" ).endMenu().build().getItems().get( 0 ) );
 
         return result;
     }
