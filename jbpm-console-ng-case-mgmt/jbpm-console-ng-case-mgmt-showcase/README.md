@@ -80,3 +80,34 @@ Start the server by running:
 Verify the application is running. Go to http://SERVER:PORT/jbpm-cm/ and type the specified username and password. You should see simple XML message with basic information about the server.
 
 For more details, please check the [Getting Started Guide](https://docs.jboss.org/author/display/WFLY10/Getting+Started+Guide).
+
+## Demo Docker image
+
+To allow you to quickly get started with the jBPM Case Management Showcase fully integrated with a running Kie Server, a Docker image can be generated as part of the build.
+This image contains both applications deployed to a single WildFly 10 instance. It also provides the settings necessary for showcase to retrieve the necessary data from the running Kie Server instance.
+By default, a few demo containers are deployed to allow you to interact with the Case Management concepts as well as pre-defined users with the following credentials: admin/admin and user/user. 
+Please note, that you need [Docker](https://www.docker.io/) installed in your system to successfully build the demo image.
+
+To build the image, please execute the following command:
+```
+mvn clean package -Dfull -Ddocker
+```
+Once the build is complete you can check your local Docker repository for a new image with name: jboss/jbpm-case-mgmt-showcase-demo
+```
+docker images
+```
+
+To build and start the image, please execute the following command or simply use the Docker CLI
+```
+mvn clean package -Dfull -Ddocker docker:start
+```
+The newly created container image will be started and a random port will be assigned to in your localhost to the WildFly instance running on the container.
+You can check the actual value by executing:
+```
+docker ps
+```
+
+For checking the WildFly instance logs via Maven, please execute the following command:  
+```
+mvn docker:logs -Ddocker.follow
+```
