@@ -57,7 +57,7 @@ public class CaseMilestoneItemView extends AbstractView<CaseMilestoneListPresent
     @Inject
     @DataField("list-group-item")
     Div listGroupItem;
-    
+
     @Inject
     @AutoBound
     private DataBinder<CaseMilestoneSummary> caseMilestoneSummary;
@@ -69,6 +69,7 @@ public class CaseMilestoneItemView extends AbstractView<CaseMilestoneListPresent
     public void init() {
         tooltip(status);
     }
+
     @Override
     public HTMLElement getElement() {
         return listGroupItem;
@@ -85,35 +86,35 @@ public class CaseMilestoneItemView extends AbstractView<CaseMilestoneListPresent
         final CaseMilestoneStatus milestoneStatus = CaseMilestoneStatus.fromStatus(model.getStatus());
 
         String statusStr = convertStatusToStr(model.getStatus());
-        switch(milestoneStatus){
+        switch (milestoneStatus) {
             case AVAILABLE: {
-                showMilestoneStatus( statusStr, "", "label", "label-info");
+                showMilestoneStatus(statusStr, "", "label", "label-info");
                 break;
             }
-            case COMPLETED:{
-                String achievedAtStr  = DateConverter.getDateStr(model.getAchievedAt());
-                showMilestoneStatus( "", statusStr + (achievedAtStr.isEmpty() ? "" : "("+ achievedAtStr +")"),
+            case COMPLETED: {
+                String achievedAtStr = DateConverter.getDateStr(model.getAchievedAt());
+                showMilestoneStatus("", statusStr + (achievedAtStr.isEmpty() ? "" : "(" + achievedAtStr + ")"),
                         "pficon", "pficon-ok");
                 break;
             }
-            case TERMINATED:{
-                String achievedAtStr  = DateConverter.getDateStr(model.getAchievedAt());
-                showMilestoneStatus( "", statusStr +  (achievedAtStr.isEmpty() ? "" : "("+ achievedAtStr +")"),
+            case TERMINATED: {
+                String achievedAtStr = DateConverter.getDateStr(model.getAchievedAt());
+                showMilestoneStatus("", statusStr + (achievedAtStr.isEmpty() ? "" : "(" + achievedAtStr + ")"),
                         "pficon", "pficon-error-circle-o");
                 break;
             }
         }
     }
 
-    public void showMilestoneStatus(final String statusText, final String tooltipTitle,final String ... stylesClass) {
+    public void showMilestoneStatus(final String statusText, final String tooltipTitle, final String... stylesClass) {
         status.setTextContent(statusText);
         status.setAttribute("data-original-title", tooltipTitle);
-        for(String styleClass :stylesClass){
+        for (String styleClass : stylesClass) {
             addCSSClass(this.status, styleClass);
         }
     }
 
-    public String convertStatusToStr(final String modelValue){
+    public String convertStatusToStr(final String modelValue) {
         if (modelValue == null) {
             return "";
         } else {

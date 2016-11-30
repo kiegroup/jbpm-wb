@@ -16,7 +16,7 @@
 
 package org.jbpm.console.ng.cm.client.comments;
 
-import java.util.Date;
+
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -41,8 +41,6 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
     @Inject
     User identity;
 
-    private String currentUpdatedCommentId = "";
-
     @WorkbenchPartTitle
     public String getTittle() {
         return translationService.format(CASE_COMMENTS);
@@ -50,7 +48,6 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
 
     @Override
     protected void clearCaseInstance() {
-        view.removeAllComments();
     }
 
     @Override
@@ -59,38 +56,10 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
     }
 
     public void refreshComments() {
-        clearCaseInstance();
+        view.clearCommentInputForm();
         caseService.call(
                 (List<CaseCommentSummary> comments) -> {
-                    boolean editing = false;
-                    String updateActionLabel;
-                    for (CaseCommentSummary caseCommentSummary : comments) {
-                        CaseCommentAction deleteCommentAction = null;
-                        updateActionLabel = null;
-                        if (identity.getIdentifier().equals(caseCommentSummary.getAuthor())) {
-                            if (caseCommentSummary.getId().equals(currentUpdatedCommentId)) {
-                                editing = true;
-                                updateActionLabel = translationService.format(SAVE);
-                            } else {
-                                editing = false;
-                                updateActionLabel = translationService.format(EDIT);
-                            }
-                            deleteCommentAction = new CaseCommentAction() {
-
-                                @Override
-                                public String label() {
-                                    return translationService.format(DELETE);
-                                }
-
-                                @Override
-                                public void execute() {
-                                    deleteCaseComment(caseCommentSummary.getId());
-                                }
-                            };
-                        }
-                        view.addComment(editing, updateActionLabel, caseCommentSummary.getId(), caseCommentSummary.getAuthor(),
-                                caseCommentSummary.getText(), caseCommentSummary.getAddedAt(), deleteCommentAction);
-                    }
+                    view.setCaseCommentList(comments);
                 }
         ).getComments(serverTemplateId, containerId, caseId);
     }
@@ -108,33 +77,24 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
                 caseCommentSummary.getText());
     }
 
-    protected void updateCaseComment(String caseCommentText, String caseCommentId) {
-        setCurrentUpdatedCommentId("");
+    protected void updateCaseComment(final CaseCommentSummary caseCommentSummary, String caseCommentNewText) {
         caseService.call(
                 (Void) -> refreshComments()
-        ).updateComment(serverTemplateId, containerId, caseId, caseCommentId, identity.getIdentifier(), caseCommentText);
+        ).updateComment(serverTemplateId, containerId, caseId, caseCommentSummary.getId(), identity.getIdentifier(), caseCommentNewText);
     }
 
-    protected void deleteCaseComment(final String caseCommentId) {
-        setCurrentUpdatedCommentId("");
+    protected void deleteCaseComment(final CaseCommentSummary caseCommentSummary) {
         caseService.call(
                 (Void) -> refreshComments()
-        ).removeComment(serverTemplateId, containerId, caseId, caseCommentId);
+        ).removeComment(serverTemplateId, containerId, caseId, caseCommentSummary.getId());
     }
 
-    public void setCurrentUpdatedCommentId(String commentId) {
-        currentUpdatedCommentId = commentId;
-    }
 
     public interface CaseCommentsView extends UberElement<CaseCommentsPresenter> {
 
         void clearCommentInputForm();
 
-        void removeAllComments();
-
-        void addComment(boolean editing, String editActionLabel, String commentId, final String author,
-                        final String commentText, final Date commentAddedAt,
-                        final CaseCommentsPresenter.CaseCommentAction... actions);
+        void setCaseCommentList(List<CaseCommentSummary> caseCommentList);
 
     }
 

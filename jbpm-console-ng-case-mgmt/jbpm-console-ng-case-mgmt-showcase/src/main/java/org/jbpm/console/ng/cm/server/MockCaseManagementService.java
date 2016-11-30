@@ -56,6 +56,8 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     private static final String CASE_MILESTONES_JSON = "case_milestones.json";
     private static final String CASE_STAGES_JSON = "case_stages.json";
 
+    private static int commentIdGenerator = 0;
+
     @Inject
     protected User identity;
 
@@ -138,8 +140,10 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     @Override
     public void addComment(final String serverTemplateId, final String containerId, final String caseId, final String author, final String text) {
         final List<CaseCommentSummary> commentSummaryList = caseCommentMap.getOrDefault(caseId, new ArrayList<>());
-        final String id = String.valueOf(commentSummaryList.size() + 1);
-        final CaseCommentSummary caseCommentSummary = CaseCommentSummary.builder().id(id).author(author).text(text).addedAt(new Date()).build();
+
+        final String newId = String.valueOf(commentIdGenerator++);
+
+        final CaseCommentSummary caseCommentSummary = CaseCommentSummary.builder().id(newId).author(author).text(text).addedAt(new Date()).build();
         commentSummaryList.add(caseCommentSummary);
         caseCommentMap.putIfAbsent(caseId, commentSummaryList);
     }

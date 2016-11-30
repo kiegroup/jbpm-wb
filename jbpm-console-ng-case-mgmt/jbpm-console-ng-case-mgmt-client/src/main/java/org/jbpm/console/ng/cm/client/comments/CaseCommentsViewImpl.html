@@ -7,10 +7,15 @@
             </h2>
         </div>
         <div class="card-pf-body" style="margin-bottom: 0px;">
-            <div class="list-group list-view-pf list-view-pf-view" data-field="comments-list"></div>
-            <div class="form" data-field="comment-creation">
+            <div class="list-group list-view-pf list-view-pf-view" data-field="comments-list">
+            </div>
+            <div class="alert alert-info" data-field="empty-list-item">
+                <span class="pficon pficon-info"></span>
+                  <strong><span data-i18n-key="NoCommentsFound"></span></strong>
+            </div>
+            <div class="form">
                 <div data-field="comment-creation-group">
-                    <label class="control-label" data-field="comment-creation-label" data-i18n-key="NewComment"></label>
+                    <label class="control-label" data-i18n-key="NewComment"></label>
                     <input type="text" data-field="comment-creation-input" class="form-control"/>
                     <span data-field="comment-creation-help" class="help-block"></span>
                 </div>

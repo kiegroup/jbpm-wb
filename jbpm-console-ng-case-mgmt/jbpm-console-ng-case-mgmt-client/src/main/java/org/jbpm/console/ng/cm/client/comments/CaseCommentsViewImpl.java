@@ -16,7 +16,7 @@
 
 package org.jbpm.console.ng.cm.client.comments;
 
-import java.util.Date;
+import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -26,20 +26,22 @@ import org.jboss.errai.common.client.dom.Event;
 
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.KeyboardEvent;
-import org.jboss.errai.common.client.dom.Label;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.common.client.dom.TextInput;
-import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jboss.errai.ui.shared.api.annotations.AutoBound;
+import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import org.jbpm.console.ng.cm.client.util.AbstractView;
-import org.jbpm.console.ng.cm.client.util.DateConverter;
 import org.jbpm.console.ng.cm.client.util.FormGroup;
 import org.jbpm.console.ng.cm.client.util.ValidationState;
+import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
@@ -55,20 +57,21 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
     Div commentsContainer;
 
     @Inject
+    @Bound
     @DataField("comments-list")
-    Div comments;
+    private ListComponent<CaseCommentSummary, CaseCommentItemView> comments;
 
     @Inject
-    @DataField("comment-creation")
-    Div commentCreation;
+    @AutoBound
+    private DataBinder<List<CaseCommentSummary>> caseCommentList;
+
+    @Inject
+    @DataField("empty-list-item")
+    private Div emptyContainer;
 
     @Inject
     @DataField("comment-creation-input")
     TextInput newCommentTextArea;
-
-    @Inject
-    @DataField("comment-creation-label")
-    Label newCommentLabel;
 
     @Inject
     @DataField("comment-creation-help")
@@ -83,9 +86,6 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
     Anchor addCommentButton;
 
     @Inject
-    private ManagedInstance<CaseCommentItemView> provider;
-
-    @Inject
     private TranslationService translationService;
 
     @Override
@@ -94,9 +94,9 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
     }
 
     @Override
-    public void removeAllComments() {
-        clearCommentInputForm();
-        removeAllChildren(comments);
+    public void init(final CaseCommentsPresenter presenter) {
+        this.presenter = presenter;
+        comments.addComponentCreationHandler(v -> v.init(presenter));
     }
 
     @Override
@@ -111,57 +111,13 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
     }
 
     @Override
-    public void addComment(boolean editing, String editActionLabel, final String commentId, final String author,
-                           final String commentText, final Date commentAddedAt, final CaseCommentsPresenter.CaseCommentAction... actions) {
-        final CaseCommentItemView commentItemView = provider.get();
-        commentItemView.setCommentAuthor(author);
-        commentItemView.setCommentText(commentText);
-        commentItemView.setCommentAddedAt(DateConverter.getDateStr(commentAddedAt));
-
-        commentItemView.setEditMode(editing);
-
-        if (editActionLabel != null) {
-            for (CaseCommentsPresenter.CaseCommentAction action : actions) {
-                commentItemView.addAction(action);
-            }
-            if(editing) {
-                commentItemView.addUpdateCommentAction(new CaseCommentsPresenter.CaseCommentAction() {
-                    @Override
-                    public String label() {
-                        return translationService.format(SAVE);
-                    }
-
-                    @Override
-                    public void execute() {
-                        if (commentItemView.validateForm()) {
-                            presenter.updateCaseComment(commentItemView.getUpdatedComment(), commentId);
-                            commentItemView.setEditMode(!editing);
-                        }
-                    }
-                });
-            }
-            commentItemView.addAction(new CaseCommentsPresenter.CaseCommentAction() {
-                @Override
-                public String label() {
-                    if(editing) {
-                        return translationService.format(CANCEL);
-                    }
-                    return translationService.format(EDIT);
-                }
-
-                @Override
-                public void execute() {
-                    String cmmntId="";
-                    if(!editing){
-                        cmmntId = commentId ;
-                    }
-                    presenter.setCurrentUpdatedCommentId(cmmntId);
-                    commentItemView.setEditMode(!editing);
-                    presenter.refreshComments();
-                }
-            });
+    public void setCaseCommentList(final List<CaseCommentSummary> caseCommentList) {
+        this.caseCommentList.setModel(caseCommentList);
+        if (caseCommentList.isEmpty()) {
+            removeCSSClass(emptyContainer, "hidden");
+        } else {
+            addCSSClass(emptyContainer, "hidden");
         }
-        comments.appendChild(commentItemView.getElement());
     }
 
     @EventHandler("addCommentButton")
