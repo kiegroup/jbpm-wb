@@ -31,27 +31,23 @@ import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 @Dependent
 public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer<FormModelerFormRenderingSettings> {
 
+    @Inject
     private FormRendererWidget formRenderer;
 
+    @Inject
     private Caller<FormModelerProcessStarterEntryPoint> renderContextServices;
 
     private static final String ACTION_SAVE_TASK = "saveTask";
     private static final String ACTION_COMPLETE_TASK = "completeTask";
     private String action;
 
-    @Inject
-    public FormModellerTaskDisplayerImpl( FormRendererWidget formRenderer, Caller<FormModelerProcessStarterEntryPoint> renderContextServices ) {
-        this.formRenderer = formRenderer;
-        this.renderContextServices = renderContextServices;
-    }
-
     @Override
     protected void initDisplayer() {
         formRenderer.loadContext( renderingSettings.getContextId() );
 
-        formRenderer.setVisible( true );
+        formRenderer.setVisible(true);
 
-        formContainer.add( formRenderer.asWidget() );
+        formContainer.add(formRenderer.asWidget());
     }
 
     @Override
@@ -61,45 +57,45 @@ public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
 
     @Override
     protected void completeFromDisplayer() {
-        submitForm( ACTION_COMPLETE_TASK );
+        submitForm(ACTION_COMPLETE_TASK);
     }
 
     @Override
     protected void saveStateFromDisplayer() {
-        submitForm( ACTION_SAVE_TASK );
+        submitForm(ACTION_SAVE_TASK);
     }
 
     @Override
     protected void startFromDisplayer() {
-        renderContextServices.call( new RemoteCallback<Void>() {
+        renderContextServices.call(new RemoteCallback<Void>() {
             @Override
-            public void callback( Void response ) {
+            public void callback(Void response) {
                 start();
             }
-        } ).clearContext( renderingSettings.getContextId() );
+        }).clearContext(renderingSettings.getContextId());
     }
 
     @Override
     protected void claimFromDisplayer() {
-        renderContextServices.call( new RemoteCallback<Void>() {
+        renderContextServices.call(new RemoteCallback<Void>() {
             @Override
-            public void callback( Void response ) {
+            public void callback(Void response) {
                 claim();
             }
-        } ).clearContext( renderingSettings.getContextId() );
+        }).clearContext(renderingSettings.getContextId());
     }
 
     @Override
     protected void releaseFromDisplayer() {
-        renderContextServices.call( new RemoteCallback<Void>() {
+        renderContextServices.call(new RemoteCallback<Void>() {
             @Override
-            public void callback( Void response ) {
+            public void callback(Void response) {
                 release();
             }
-        } ).clearContext( renderingSettings.getContextId() );
+        }).clearContext(renderingSettings.getContextId());
     }
 
-    protected void submitForm( String action ) {
+    protected void submitForm(String action) {
         this.action = action;
         formRenderer.submitFormAndPersist();
     }
@@ -110,30 +106,29 @@ public class FormModellerTaskDisplayerImpl extends AbstractHumanTaskFormDisplaye
         super.clearRenderingSettings();
     }
 
-    public void onFormSubmitted( @Observes FormSubmittedEvent event ) {
-        if ( renderingSettings == null ) {
+    public void onFormSubmitted( @Observes FormSubmittedEvent event) {
+        if ( renderContextServices == null ) {
             return;
         }
-        if ( event.isMine( renderingSettings.getContextId() ) && event.getContext().getErrors() == 0 ) {
-            if ( ACTION_SAVE_TASK.equals( action ) ) {
-                renderContextServices.call( getSaveTaskStateCallback(),
-                        getUnexpectedErrorCallback() ).saveTaskStateFromRenderContext( renderingSettings.getContextId(), serverTemplateId, deploymentId, taskId );
-            } else if ( ACTION_COMPLETE_TASK.equals( action ) ) {
-                renderContextServices.call( getCompleteTaskRemoteCallback(),
-                        getUnexpectedErrorCallback() ).completeTaskFromContext( renderingSettings.getContextId(), serverTemplateId, deploymentId, taskId );
-            }
+        if (event.isMine(renderingSettings.getContextId()) && event.getContext().getErrors() == 0) {
+                if (ACTION_SAVE_TASK.equals(action)) {
+                    renderContextServices.call(getSaveTaskStateCallback(),
+                            getUnexpectedErrorCallback()).saveTaskStateFromRenderContext(renderingSettings.getContextId(), serverTemplateId, deploymentId, taskId);
+                } else if (ACTION_COMPLETE_TASK.equals(action)) {
+                    renderContextServices.call(getCompleteTaskRemoteCallback(),
+                            getUnexpectedErrorCallback()).completeTaskFromContext(renderingSettings.getContextId(), serverTemplateId, deploymentId, taskId);
+                }
         }
     }
 
-    public void onFormResized( @Observes ResizeFormcontainerEvent event ) {
-        if ( renderingSettings == null ) {
+    public void onFormResized(@Observes ResizeFormcontainerEvent event) {
+        if ( renderContextServices == null ) {
             return;
         }
-        if ( event.isMine( renderingSettings.getContextId() ) ) {
-            formRenderer.resize( event.getWidth(), event.getHeight() );
-            if ( resizeListener != null ) {
-                resizeListener.resize( event.getWidth(), event.getHeight() );
-            }
+        if (event.isMine(renderingSettings.getContextId())) {
+            formRenderer.resize(event.getWidth(), event.getHeight());
+            if (resizeListener != null) resizeListener.resize(event.getWidth(), event.getHeight());
         }
     }
+
 }

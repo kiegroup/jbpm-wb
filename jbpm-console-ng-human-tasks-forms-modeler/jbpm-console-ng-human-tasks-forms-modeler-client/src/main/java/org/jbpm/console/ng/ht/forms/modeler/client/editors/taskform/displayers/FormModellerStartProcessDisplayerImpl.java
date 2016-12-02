@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.console.ng.ht.forms.modeler.client.editors.taskform.displayers;
 
 import javax.enterprise.context.Dependent;
@@ -35,17 +34,13 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
 
     private static final String ACTION_START_PROCESS = "startProcess";
 
+    @Inject
     private FormRendererWidget formRenderer;
 
+    @Inject
     private Caller<FormModelerProcessStarterEntryPoint> renderContextServices;
 
     protected String action;
-
-    @Inject
-    public FormModellerStartProcessDisplayerImpl( FormRendererWidget formRenderer, Caller<FormModelerProcessStarterEntryPoint> renderContextServices ) {
-        this.formRenderer = formRenderer;
-        this.renderContextServices = renderContextServices;
-    }
 
     @Override
     public Class<FormModelerFormRenderingSettings> getSupportedRenderingSettings() {
@@ -84,19 +79,19 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
     }
 
     public void onFormSubmitted( @Observes FormSubmittedEvent event ) {
-        if ( renderingSettings == null ) {
+        if ( renderContextServices == null ) {
             return;
         }
         if ( event.isMine( renderingSettings.getContextId() ) &&
-                event.getContext().getErrors() == 0 &&
-                ACTION_START_PROCESS.equals( action ) ) {
-            renderContextServices.call( getStartProcessRemoteCallback(), getUnexpectedErrorCallback() )
-                    .startProcessFromRenderContext( renderingSettings.getContextId(), serverTemplateId, deploymentId, processDefId, getCorrelationKey(), parentProcessInstanceId );
+             event.getContext().getErrors() == 0 &&
+             ACTION_START_PROCESS.equals( action ) ) {
+                renderContextServices.call( getStartProcessRemoteCallback(), getUnexpectedErrorCallback() )
+                        .startProcessFromRenderContext( renderingSettings.getContextId(), serverTemplateId, deploymentId, processDefId, getCorrelationKey(), parentProcessInstanceId );
         }
     }
 
     public void onFormResized( @Observes ResizeFormcontainerEvent event ) {
-        if ( renderingSettings == null ) {
+        if ( renderContextServices == null ) {
             return;
         }
         if ( event.isMine( renderingSettings.getContextId() ) ) {

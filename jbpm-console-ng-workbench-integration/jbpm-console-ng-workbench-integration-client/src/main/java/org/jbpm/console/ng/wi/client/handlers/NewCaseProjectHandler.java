@@ -213,8 +213,4 @@ public class NewCaseProjectHandler
         };
     }
 
-    @Override
-    public ProjectContext getProjectContext() {
-        return context;
-    }
 }
