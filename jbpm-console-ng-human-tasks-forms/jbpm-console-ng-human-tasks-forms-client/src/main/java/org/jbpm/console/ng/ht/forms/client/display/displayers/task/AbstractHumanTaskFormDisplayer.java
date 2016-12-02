@@ -64,9 +64,9 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
     protected String serverTemplateId;
     protected String deploymentId;
 
-    final protected FormPanel container = new FormPanel();
-    final protected ButtonGroup buttonsContainer = new ButtonGroup();
-    final protected FlowPanel formContainer = new FlowPanel();
+    protected FormPanel container = GWT.create( FormPanel.class );
+    protected ButtonGroup buttonsContainer = GWT.create( ButtonGroup.class );
+    protected FlowPanel formContainer = GWT.create( FlowPanel.class );
 
     private Command onClose;
 
