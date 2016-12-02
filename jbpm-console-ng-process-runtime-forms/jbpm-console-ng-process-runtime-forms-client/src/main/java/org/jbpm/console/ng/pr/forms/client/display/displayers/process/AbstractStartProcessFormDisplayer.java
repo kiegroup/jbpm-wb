@@ -99,7 +99,7 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
     protected JSNIHelper jsniHelper;
 
     @Inject
-    private Event<NotificationEvent> notificationEvent;
+    protected Event<NotificationEvent> notificationEvent;
 
     protected FormDisplayerConfig<ProcessDefinitionKey, S> config;
 
