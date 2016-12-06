@@ -16,6 +16,7 @@
 
 package org.jbpm.console.ng.cm.client.util;
 
+import java.util.Collections;
 import java.util.Date;
 
 import org.jboss.errai.common.client.api.Caller;
@@ -60,6 +61,7 @@ public abstract class AbstractCaseInstancePresenterTest {
                 .owner("admin")
                 .completedAt(new Date())
                 .startedAt(new Date())
+                .roleAssignments(Collections.emptyList())
                 .build();
     }
 
