@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.bh.client.editors.home;
+package org.jbpm.console.ng.client.screens;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.i18n.client.LocaleInfo;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 import org.gwtbootstrap3.client.ui.Anchor;
@@ -32,12 +28,13 @@ import org.gwtbootstrap3.client.ui.Label;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.bh.client.i18n.Constants;
-import org.jbpm.dashboard.renderer.service.DashboardURLBuilder;
+import org.jbpm.console.ng.client.i18n.Constants;
+import org.jbpm.console.ng.client.perspectives.ProjectAuthoringPerspective;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.events.NotificationEvent;
+
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.*;
 
 @Dependent
 @Templated(value = "HomeViewImpl.html")
@@ -98,10 +95,6 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
     @Inject
     @DataField
     public Anchor processDashboardsAnchor;
-
-    @Inject
-    @DataField
-    public Anchor businessDashboardsAnchor;
 
     @Inject
     @DataField
@@ -189,7 +182,6 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
         workProcessInstancesAnchor.setText( constants.Process_Instances() );
         dashboardsLabel.setText( constants.Dashboards() );
         processDashboardsAnchor.setText( constants.Process_Dashboard() );
-        businessDashboardsAnchor.setText( constants.Business_Dashboard() );
         thejBPMCycle.setText( constants.The_jBPM_Cycle() );
         thejBPMCycle.setStyleName( "" );
 
@@ -218,53 +210,15 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
         improveTextLabel.setText( constants.Improve_Text() );
         improveTextLabel.setStyleName( "" );
 
-        modelProcessAnchor.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Authoring" );
-                placeManager.goTo( placeRequestImpl );
-            }
-        } );
+        modelProcessAnchor.addClickHandler(e -> placeManager.goTo(new DefaultPlaceRequest(ProjectAuthoringPerspective.PERSPECTIVE_ID)));
 
-        workTaskListAnchor.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Tasks List" );
-                placeManager.goTo( placeRequestImpl );
-            }
-        } );
+        workTaskListAnchor.addClickHandler(e -> placeManager.goTo(new DefaultPlaceRequest(DATASET_TASKS)));
 
-        workProcessDefinitionsAnchor.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Definition List" );
-                placeManager.goTo( placeRequestImpl );
-            }
-        } );
+        workProcessDefinitionsAnchor.addClickHandler(e -> placeManager.goTo(new DefaultPlaceRequest(PROCESS_DEFINITIONS)));
 
-        workProcessInstancesAnchor.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Process Instances" );
-                placeManager.goTo( placeRequestImpl );
-            }
-        } );
+        workProcessInstancesAnchor.addClickHandler(e -> placeManager.goTo(new DefaultPlaceRequest(DATASET_PROC_INST_VARS)));
 
-        processDashboardsAnchor.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "DashboardPerspective" );
-                placeManager.goTo( placeRequestImpl );
-            }
-        } );
-
-        final String dashbuilderURL = DashboardURLBuilder.getDashboardURL( "/dashbuilder/workspace", null, LocaleInfo.getCurrentLocale().getLocaleName() );
-        businessDashboardsAnchor.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                Window.open( dashbuilderURL, "_blank", "" );
-            }
-        } );
+        processDashboardsAnchor.addClickHandler(e -> placeManager.goTo(new DefaultPlaceRequest(PROCESS_DASHBOARD)));
 
     }
 

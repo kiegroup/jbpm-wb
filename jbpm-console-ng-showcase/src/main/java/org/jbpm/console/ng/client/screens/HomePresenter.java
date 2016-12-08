@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.bh.client.editors.home;
+package org.jbpm.console.ng.client.screens;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import org.jbpm.console.ng.bh.client.i18n.Constants;
-import org.uberfire.lifecycle.OnOpen;
+import org.jbpm.console.ng.client.i18n.Constants;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -34,8 +32,10 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
-@WorkbenchScreen(identifier = "Home Screen")
+@WorkbenchScreen(identifier = HomePresenter.SCREEN_ID)
 public class HomePresenter {
+
+    public static final String SCREEN_ID = "Home Screen";
 
     public interface HomeView extends UberView<HomePresenter> {
 
@@ -52,10 +52,6 @@ public class HomePresenter {
     HomeView view;
     // Retrieve the actions from a service
     Map<String, String> actions = new HashMap<String, String>();
-
-    @PostConstruct
-    public void init() {
-    }
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -76,11 +72,6 @@ public class HomePresenter {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest( locatedAction );
 
         placeManager.goTo( placeRequestImpl );
-    }
-
-    @OnOpen
-    public void onOpen() {
-
     }
 
 }
