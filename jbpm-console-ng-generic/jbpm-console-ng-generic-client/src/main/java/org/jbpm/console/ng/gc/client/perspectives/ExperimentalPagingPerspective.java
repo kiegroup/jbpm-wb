@@ -16,39 +16,34 @@
 package org.jbpm.console.ng.gc.client.perspectives;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Widget;
+import org.jboss.errai.common.client.dom.Div;
+import org.jboss.errai.ui.client.local.api.IsElement;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.client.annotations.WorkbenchPanel;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.client.util.Layouts;
+
 
 /**
  * A Perspective to show File Explorer
  */
-@Dependent
+@Templated
 @WorkbenchPerspective(identifier = ExperimentalPagingPerspective.PERSPECTIVE_ID)
-public class ExperimentalPagingPerspective extends AbstractPerspective implements IsWidget {
+public class ExperimentalPagingPerspective extends AbstractPerspective implements IsElement {
 
     public static final String PERSPECTIVE_ID = "Experimental Paging";
 
-    private final FlowPanel view = new FlowPanel();
 
+    @Inject
+    @DataField
     @WorkbenchPanel(parts = "Pagination For Tables")
-    FlowPanel paginationTables = new FlowPanel();
+    Div paginationTables;
 
     @PostConstruct
     protected void init() {
         super.init();
-        Layouts.setToFillParent(paginationTables);
-        view.add(paginationTables);
-    }
-
-    @Override
-    public Widget asWidget() {
-        return view;
     }
 
     public String getPerspectiveId() {
