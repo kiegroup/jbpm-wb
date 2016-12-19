@@ -20,7 +20,7 @@
       "validateOnChange": true,
       "binding": "price",
       "standaloneClassName": "java.lang.Double",
-      "serializedFieldClassName": "org.kie.workbench.common.forms.model.impl.basic.textBox.TextBoxFieldDefinition"
+      "serializedFieldClassName": "org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.definition.TextBoxFieldDefinition"
     },
     {
       "maxLength": 100,
@@ -35,7 +35,7 @@
       "validateOnChange": true,
       "binding": "quantity",
       "standaloneClassName": "java.lang.Integer",
-      "serializedFieldClassName": "org.kie.workbench.common.forms.model.impl.basic.textBox.TextBoxFieldDefinition"
+      "serializedFieldClassName": "org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.definition.TextBoxFieldDefinition"
     },
     {
       "maxLength": 100,
@@ -50,7 +50,7 @@
       "validateOnChange": true,
       "binding": "total",
       "standaloneClassName": "java.lang.Double",
-      "serializedFieldClassName": "org.kie.workbench.common.forms.model.impl.basic.textBox.TextBoxFieldDefinition"
+      "serializedFieldClassName": "org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.definition.TextBoxFieldDefinition"
     },
     {
       "maxLength": 100,
@@ -65,7 +65,7 @@
       "validateOnChange": true,
       "binding": "product",
       "standaloneClassName": "java.lang.String",
-      "serializedFieldClassName": "org.kie.workbench.common.forms.model.impl.basic.textBox.TextBoxFieldDefinition"
+      "serializedFieldClassName": "org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.definition.TextBoxFieldDefinition"
     }
   ],
   "layoutTemplate": {

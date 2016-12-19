@@ -25,7 +25,7 @@
       "validateOnChange": true,
       "binding": "invoice",
       "standaloneClassName": "org.jbpm.workbench.forms.display.backend.provider.model.Invoice",
-      "serializedFieldClassName": "org.kie.workbench.common.forms.model.impl.relations.SubFormFieldDefinition"
+      "serializedFieldClassName": "org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.subForm.definition.SubFormFieldDefinition"
     }
   ],
   "layoutTemplate": {
