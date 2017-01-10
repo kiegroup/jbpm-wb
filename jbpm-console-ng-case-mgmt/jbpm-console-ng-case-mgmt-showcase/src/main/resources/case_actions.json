@@ -1,0 +1,78 @@
+[
+  {
+    "id": "1",
+    "name": "Task1",
+    "subject": "subject",
+    "description": "description",
+    "status": "Ready",
+    "actualOwner": "",
+    "createdBy": "createdBy",
+    "processInstanceId": 1,
+    "processId": "processId"
+  },
+  {
+    "id": "2",
+    "name": "Task2",
+    "subject": "subject",
+    "description": "description",
+    "status": "InProgress",
+    "actualOwner": "Gran",
+    "createdBy": "createdBy",
+    "processInstanceId": 2,
+    "processId": "processId"
+  },
+  {
+    "id": "3",
+    "name": "Task3",
+    "subject": "subject",
+    "description": "description",
+    "status": "Exited",
+    "actualOwner": "Tom",
+    "createdBy": "createdBy",
+    "processInstanceId": 3,
+    "processId": "processId"
+  },
+  {
+    "id": "4",
+    "name": "Task4",
+    "subject": "subject",
+    "description": "description",
+    "status": "Completed",
+    "actualOwner": "Joe",
+    "createdBy": "createdBy",
+    "processInstanceId": 4,
+    "processId": "processId"
+  },
+  {
+    "id": "5",
+    "name": "Task5",
+    "subject": "subject",
+    "description": "description",
+    "status": "AdhocFragment",
+    "actualOwner": "",
+    "createdBy": "createdBy",
+    "processInstanceId": 5,
+    "processId": "processId"
+  },
+  {
+    "id": "6",
+    "name": "Task6",
+    "subject": "subject",
+    "description": "description",
+    "status": "Reserved",
+    "actualOwner": "Joan",
+    "createdBy": "Joan",
+    "processInstanceId": 6,
+    "processId": "processId"
+  },
+  {
+    "id": "7",
+    "name": "Task7",
+    "subject": "subject",
+    "description": "description",
+    "status": "AdhocFragment",
+    "actualOwner": "",
+    "createdBy": "createdBy",
+    "processId": "processId"
+  }
+]

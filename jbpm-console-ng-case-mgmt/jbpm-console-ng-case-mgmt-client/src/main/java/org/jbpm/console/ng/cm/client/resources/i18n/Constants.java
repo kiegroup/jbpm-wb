@@ -113,4 +113,14 @@ public interface Constants {
     @TranslationKey(defaultValue = "")
     String CASE_STAGES = "CaseStages";
 
+    @TranslationKey(defaultValue = "")
+    String CASE_ACTIONS = "CaseActions";
+
+    @TranslationKey(defaultValue = "")
+    String ACTION_START = "ActionStart";
+
+    @TranslationKey(defaultValue = "")
+    String UNASSIGNED = "Unassigned";
+
+
 }
