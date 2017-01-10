@@ -108,6 +108,7 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
         when(viewMock.getVariablesTableSettings("testProc")).thenReturn(filterSettings);
+        when(filterSettings.getKey()).thenReturn("key");
 
         doAnswer(new Answer() {
 

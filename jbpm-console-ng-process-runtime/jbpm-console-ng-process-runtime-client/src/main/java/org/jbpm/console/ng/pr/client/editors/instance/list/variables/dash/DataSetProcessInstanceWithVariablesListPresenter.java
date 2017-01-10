@@ -243,7 +243,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
             @Override
             public void callback( DataSet dataSet ) {
 
-                if ( dataSet != null ) {
+                if ( dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(tableSettings.getKey())) {
 
                     myProcessInstancesFromDataSet.clear();
                     for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
