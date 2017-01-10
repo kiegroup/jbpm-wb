@@ -161,7 +161,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     public void getData( final Range visibleRange ) {
         try {
             if(!isAddingDefaultFilters()) {
-                FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
+                final FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
                 if ( currentTableSettings != null ) {
                     currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
                     ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
@@ -193,7 +193,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                     dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), new AbstractDataSetReadyCallback( errorPopup, view, currentTableSettings.getDataSet() ) {
                         @Override
                         public void callback(DataSet dataSet) {
-                            if (dataSet != null) {
+                            if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(currentTableSettings.getKey())) {
                                 List<RequestSummary> myRequestSumaryFromDataSet = new ArrayList<RequestSummary>();
 
                                 for (int i = 0; i < dataSet.getRowCount(); i++) {

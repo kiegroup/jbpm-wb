@@ -109,6 +109,7 @@ public abstract class AbstractTasksListGridPresenterTest {
         when(viewMock.getVariablesTableSettings(anyString())).thenReturn(new DataSetTasksListGridViewImpl().getVariablesTableSettings("taskName"));
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(dataSetQueryHelperMock.getCurrentTableSettings()).thenReturn(filterSettings);
+        when(filterSettings.getKey()).thenReturn("key");
 
 
         //Mock that actually calls the callbacks

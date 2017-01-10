@@ -233,7 +233,7 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
 
             @Override
             public void callback(DataSet dataSet) {
-                if (dataSet != null) {
+                if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(tableSettings.getKey())) {
                     final List<TaskSummary> myTasksFromDataSet = new ArrayList<TaskSummary>();
 
                     for (int i = 0; i < dataSet.getRowCount(); i++) {
