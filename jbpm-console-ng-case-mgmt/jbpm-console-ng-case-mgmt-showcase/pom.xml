@@ -460,7 +460,7 @@
             <logLevel>INFO</logLevel>
             <noServer>false</noServer>
             <server>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</server>
-            <module>org.jbpm.console.ng.cm.FastCompiledjBPMCaseManagement</module>
+            <module>org.jbpm.workbench.cm.FastCompiledjBPMCaseManagement</module>
             <disableCastChecking>true</disableCastChecking>
             <runTarget>jbpm-cm.html</runTarget>
             <hostedWebapp>src/main/webapp</hostedWebapp>
@@ -602,8 +602,8 @@
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <packagingExcludes>
-            WEB-INF/classes/org/jbpm/console/ng/cm/client/**,
-            WEB-INF/classes/org/jbpm/console/ng/cm/public/**,
+            WEB-INF/classes/org/jbpm/workbench/cm/client/**,
+            WEB-INF/classes/org/jbpm/workbench/cm/public/**,
             WEB-INF/classes/logback.xml,
             **/*.gwt.xml,
             **/*.symbolMap
@@ -620,7 +620,7 @@
             <fileset>
               <directory>${basedir}</directory>
               <includes>
-                <include>src/main/webapp/org.jbpm.console.ng.cm.jBPMCaseManagement/</include>
+                <include>src/main/webapp/org.jbpm.workbench.cm.jBPMCaseManagement/</include>
                 <include>src/main/webapp/WEB-INF/deploy/</include>
                 <include>src/main/webapp/WEB-INF/classes/</include>
                 <include>src/main/webapp/WEB-INF/lib/</include>
@@ -733,7 +733,7 @@
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>gwt-maven-plugin</artifactId>
               <configuration>
-                <module>org.jbpm.console.ng.cm.jBPMCaseManagement</module>
+                <module>org.jbpm.workbench.cm.jBPMCaseManagement</module>
                 <draftCompile>false</draftCompile>
               </configuration>
             </plugin>

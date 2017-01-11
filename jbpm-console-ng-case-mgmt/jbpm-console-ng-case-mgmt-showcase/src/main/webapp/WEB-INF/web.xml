@@ -123,10 +123,10 @@ minutes. it is now 24 hours. -->
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>public</web-resource-name>
-      <url-pattern>/org.jbpm.console.ng.cm.jBPMCaseManagement/css/*</url-pattern>
-      <url-pattern>/org.jbpm.console.ng.cm.jBPMCaseManagement/img/*</url-pattern>
-      <url-pattern>/org.jbpm.console.ng.cm.jBPMCaseManagement/fonts/*</url-pattern>
-      <url-pattern>/org.jbpm.console.ng.cm.jBPMCaseManagement/js/*</url-pattern>
+      <url-pattern>/org.jbpm.workbench.cm.jBPMCaseManagement/css/*</url-pattern>
+      <url-pattern>/org.jbpm.workbench.cm.jBPMCaseManagement/img/*</url-pattern>
+      <url-pattern>/org.jbpm.workbench.cm.jBPMCaseManagement/fonts/*</url-pattern>
+      <url-pattern>/org.jbpm.workbench.cm.jBPMCaseManagement/js/*</url-pattern>
     </web-resource-collection>
   </security-constraint>
 
@@ -134,7 +134,7 @@ minutes. it is now 24 hours. -->
     <web-resource-collection>
       <web-resource-name>console</web-resource-name>
       <url-pattern>/jbpm-cm.html</url-pattern>
-      <url-pattern>/org.jbpm.console.ng.cm.jBPMCaseManagement/*</url-pattern>
+      <url-pattern>/org.jbpm.workbench.cm.jBPMCaseManagement/*</url-pattern>
       <url-pattern>*.erraiBus</url-pattern>
     </web-resource-collection>
     <auth-constraint>

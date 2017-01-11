@@ -4,8 +4,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" class="login-pf">
 <head>
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/org.jbpm.console.ng.cm.jBPMCaseManagement/css/patternfly.min.css">
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/org.jbpm.console.ng.cm.jBPMCaseManagement/css/patternfly-additions.min.css">
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/org.jbpm.workbench.cm.jBPMCaseManagement/css/patternfly.min.css">
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/org.jbpm.workbench.cm.jBPMCaseManagement/css/patternfly-additions.min.css">
 
     <link rel="shortcut icon" href="favicon.ico"/>
     <title>jBPM Case Management</title>
@@ -13,7 +13,7 @@
 
 <body>
     <span id="badge">
-        <img src="<%=request.getContextPath()%>/org.jbpm.console.ng.cm.jBPMCaseManagement/img/kie-ide.png" alt="KIE IDE Logo" title="Powered By Drools/jBPM"/>
+        <img src="<%=request.getContextPath()%>/org.jbpm.workbench.cm.jBPMCaseManagement/img/kie-ide.png" alt="KIE IDE Logo" title="Powered By Drools/jBPM"/>
     </span>
 
     <div class="container">

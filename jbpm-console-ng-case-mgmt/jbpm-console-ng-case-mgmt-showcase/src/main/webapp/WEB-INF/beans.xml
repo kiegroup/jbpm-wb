@@ -5,9 +5,9 @@
     <!-- End of Errai exclusions -->
 
     <exclude name="org.jbpm.console.ng.bd.integration.**"/>
-    <exclude name="org.jbpm.console.ng.cm.server.MockCaseManagementService">
+    <exclude name="org.jbpm.workbench.cm.server.MockCaseManagementService">
       <if-system-property name="org.kie.server.location"/>
     </exclude>
-    <exclude name="org.jbpm.console.ng.cm.client.**"/>
+    <exclude name="org.jbpm.workbench.cm.client.**"/>
   </scan>
 </beans>
