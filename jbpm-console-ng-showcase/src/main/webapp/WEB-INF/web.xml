@@ -29,7 +29,7 @@
 
   <filter-mapping>
     <filter-name>Host Page Patch</filter-name>
-    <url-pattern>/jbpm-console.html</url-pattern>
+    <url-pattern>/jbpm-wb.html</url-pattern>
   </filter-mapping>
 
   <filter>
@@ -59,7 +59,7 @@
     <servlet-class>org.uberfire.ext.security.server.LoginRedirectServlet</servlet-class>
     <init-param>
       <param-name>display-after-login</param-name>
-      <param-value>/jbpm-console.html</param-value>
+      <param-value>/jbpm-wb.html</param-value>
     </init-param>
   </servlet>
 
@@ -116,7 +116,7 @@ profile in pom.xml to use that. -->
     <filter-class>org.jbpm.designer.filter.DesignerResourcesRedirectFilter</filter-class>
     <init-param>
       <param-name>redirectTo</param-name>
-      <param-value>/org.jbpm.console.ng.jBPMShowcase</param-value>
+      <param-value>/org.jbpm.workbench.jBPMShowcase</param-value>
     </init-param>
   </filter>
   <filter-mapping>
@@ -390,7 +390,7 @@ profile in pom.xml to use that. -->
 
   <servlet-mapping>
     <servlet-name>Controller</servlet-name>
-    <url-pattern>/org.jbpm.console.ng.jBPMShowcase/Controller</url-pattern>
+    <url-pattern>/org.jbpm.workbench.jBPMShowcase/Controller</url-pattern>
   </servlet-mapping>
   <!-- end form-modeler component -->
 
@@ -434,10 +434,10 @@ profile in pom.xml to use that. -->
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>console</web-resource-name>
-      <url-pattern>/jbpm-console.html</url-pattern>
+      <url-pattern>/jbpm-wb.html</url-pattern>
       <url-pattern>/uf_security_check</url-pattern>
       <url-pattern>*.erraiBus</url-pattern>
-      <url-pattern>/org.jbpm.console.ng.jBPMShowcase/*</url-pattern>
+      <url-pattern>/org.jbpm.workbench.jBPMShowcase/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>admin</role-name>

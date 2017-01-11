@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>jBPM Console NG</title>
+  <title>jBPM Workbench</title>
 
   <style type="text/css">
     * {
@@ -126,7 +126,7 @@
 
 <div id="login-wrapper" class="png_bg">
   <div id="login-top">
-    <img src="images/jbpm-console-ng.png" alt="jBPM Console NG Logo" title="Powered By jBPM"/>
+    <img src="images/jbpm-console-ng.png" alt="jBPM Workbench Logo" title="Powered By jBPM"/>
   </div>
 
   <div id="login-content">

@@ -1189,13 +1189,13 @@
                 <configuration>
                     <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
                     <extraJvmArgs>-Xms1g -Xmx3g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.dynamic_validation.enabled=true -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true -Dorg.uberfire.async.executor.safemode=true</extraJvmArgs>
-                    <module>org.jbpm.console.ng.jBPMShowcase</module>
+                    <module>org.jbpm.workbench.jBPMShowcase</module>
                     <logLevel>INFO</logLevel>
                     <noServer>false</noServer>
                     <draftCompile>true</draftCompile>
                     <server>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</server>
                     <disableCastChecking>true</disableCastChecking>
-                    <runTarget>jbpm-console.html</runTarget>
+                    <runTarget>jbpm-wb.html</runTarget>
                     <hostedWebapp>src/main/webapp</hostedWebapp>
                     <compileSourcesArtifacts>
                         <!-- Kie Server needed by Exec Server UI -->
@@ -1403,7 +1403,7 @@
                         <fileset>
                             <directory>${basedir}</directory>
                             <includes>
-                                <include>src/main/webapp/org.jbpm.console.ng.jBPMShowcase/</include>
+                                <include>src/main/webapp/org.jbpm.workbench.jBPMShowcase/</include>
                                 <include>src/main/webapp/formModeler/</include>
                                 <include>src/main/webapp/WEB-INF/deploy/</include>
                                 <include>src/main/webapp/WEB-INF/classes/</include>
