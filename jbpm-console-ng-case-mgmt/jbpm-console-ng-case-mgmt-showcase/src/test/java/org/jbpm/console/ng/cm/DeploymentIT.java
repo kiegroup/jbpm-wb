@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
 @RunWith(Arquillian.class)
 public class DeploymentIT {
 
-    public static final String ARCHIVE_NAME = "jbpm-console-ng-case-mgmt-showcase.war";
+    public static final String ARCHIVE_NAME = "jbpm-wb-case-mgmt-showcase.war";
     public static final String URL = "http://127.0.0.1:8080/jbpm-cm";
 
     @Deployment(testable = false)

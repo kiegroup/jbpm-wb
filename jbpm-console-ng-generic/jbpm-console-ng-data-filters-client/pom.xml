@@ -20,14 +20,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jbpm</groupId>
-    <artifactId>jbpm-console-ng-generic</artifactId>
+    <artifactId>jbpm-wb-generic</artifactId>
     <version>7.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>jbpm-console-ng-data-filters-client</artifactId>
+  <artifactId>jbpm-wb-data-filters-client</artifactId>
   <packaging>jar</packaging>
 
-  <name>jBPM Console NG - Data Filters Client</name>
+  <name>jBPM Workbench - Data Filters Client</name>
 
 
   <dependencies>
@@ -53,7 +53,7 @@
 
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-kie-server-api</artifactId>
+      <artifactId>jbpm-wb-kie-server-api</artifactId>
     </dependency>
 
     <!-- Dashbuilder -->

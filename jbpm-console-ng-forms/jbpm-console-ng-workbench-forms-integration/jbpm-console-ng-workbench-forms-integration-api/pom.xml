@@ -3,15 +3,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>jbpm-console-ng-workbench-forms-integration</artifactId>
+    <artifactId>jbpm-wb-workbench-forms-integration</artifactId>
     <groupId>org.jbpm</groupId>
     <version>7.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>jbpm-console-ng-workbench-forms-integration-api</artifactId>
+  <artifactId>jbpm-wb-workbench-forms-integration-api</artifactId>
 
-  <name>jBPM Console NG - Workbench Forms Integration API</name>
+  <name>jBPM Workbench - Workbench Forms Integration API</name>
 
   <dependencies>
     <dependency>
@@ -26,17 +26,17 @@
 
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-generic-forms-api</artifactId>
+      <artifactId>jbpm-wb-generic-forms-api</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-human-tasks-forms-api</artifactId>
+      <artifactId>jbpm-wb-human-tasks-forms-api</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-generic-api</artifactId>
+      <artifactId>jbpm-wb-generic-api</artifactId>
     </dependency>
 
     <dependency>

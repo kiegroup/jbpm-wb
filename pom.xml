@@ -25,11 +25,11 @@
   </parent>
 
   <groupId>org.jbpm</groupId>
-  <artifactId>jbpm-console-ng</artifactId>
+  <artifactId>jbpm-wb</artifactId>
 
   <packaging>pom</packaging>
-  <name>jBPM Console NG</name>
-  <description>jBPM Console NG Modules</description>
+  <name>jBPM Workbench</name>
+  <description>jBPM Workbench Modules</description>
 
   <properties>
     <checkstyle.header.template><![CDATA[

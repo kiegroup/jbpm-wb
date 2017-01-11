@@ -20,14 +20,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jbpm</groupId>
-    <artifactId>jbpm-console-ng-case-mgmt</artifactId>
+    <artifactId>jbpm-wb-case-mgmt</artifactId>
     <version>7.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>jbpm-console-ng-case-mgmt-showcase</artifactId>
+  <artifactId>jbpm-wb-case-mgmt-showcase</artifactId>
   <packaging>war</packaging>
 
-  <name>jBPM Console NG - Case Management Showcase</name>
+  <name>jBPM Workbench - Case Management Showcase</name>
 
   <properties>
     <gwt.memory.settings>-Xmx3g -Xms1g -Xss1M</gwt.memory.settings>
@@ -324,21 +324,21 @@
     <!-- Case Management -->
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-case-mgmt-client</artifactId>
+      <artifactId>jbpm-wb-case-mgmt-client</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-case-mgmt-api</artifactId>
+      <artifactId>jbpm-wb-case-mgmt-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-case-mgmt-backend</artifactId>
+      <artifactId>jbpm-wb-case-mgmt-backend</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-kie-server-api</artifactId>
+      <artifactId>jbpm-wb-kie-server-api</artifactId>
     </dependency>
 
     <!-- GWT -->
@@ -485,8 +485,8 @@
               <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-api</compileSourcesArtifact>
 
               <!-- jBPM Case Management -->
-              <compileSourcesArtifact>org.jbpm:jbpm-console-ng-case-mgmt-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.jbpm:jbpm-console-ng-case-mgmt-client</compileSourcesArtifact>
+              <compileSourcesArtifact>org.jbpm:jbpm-wb-case-mgmt-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.jbpm:jbpm-wb-case-mgmt-client</compileSourcesArtifact>
             </compileSourcesArtifacts>
           </configuration>
         </plugin>
@@ -518,7 +518,7 @@
                     <run>/opt/jboss/wildfly/bin/add-user.sh -u admin -p admin -g kie-server,user -a -s</run>
                     <run>/opt/jboss/wildfly/bin/add-user.sh -u user -p user -g kie-server,user -a -s</run>
                     <run>/opt/jboss/wildfly/bin/add-user.sh -u kieserver -p kieserver1! -g kie-server -a -s</run>
-                    <run>ln -s /maven/jbpm-console-ng-case-mgmt-showcase.war /opt/jboss/wildfly/standalone/deployments/jbpm-console-ng-case-mgmt-showcase.war</run>
+                    <run>ln -s /maven/jbpm-wb-case-mgmt-showcase.war /opt/jboss/wildfly/standalone/deployments/jbpm-wb-case-mgmt-showcase.war</run>
                     <run>ln -s /maven/kie-server.war /opt/jboss/wildfly/standalone/deployments/kie-server.war</run>
                     <run>mkdir $HOME/.m2</run>
                     <run>ln -s /maven/settings.xml $HOME/.m2/settings.xml</run>
@@ -529,9 +529,9 @@
                       <dependencySets>
                         <dependencySet>
                           <includes>
-                            <include>org.jbpm:jbpm-console-ng-case-mgmt-showcase:war</include>
+                            <include>org.jbpm:jbpm-wb-case-mgmt-showcase:war</include>
                           </includes>
-                          <outputFileNameMapping>jbpm-console-ng-case-mgmt-showcase.war</outputFileNameMapping>
+                          <outputFileNameMapping>jbpm-wb-case-mgmt-showcase.war</outputFileNameMapping>
                         </dependencySet>
                         <dependencySet>
                           <scope>provided</scope>

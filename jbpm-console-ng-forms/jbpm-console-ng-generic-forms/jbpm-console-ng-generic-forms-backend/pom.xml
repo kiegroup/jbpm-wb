@@ -3,14 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>jbpm-console-ng-generic-forms</artifactId>
+    <artifactId>jbpm-wb-generic-forms</artifactId>
     <groupId>org.jbpm</groupId>
     <version>7.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>jbpm-console-ng-generic-forms-backend</artifactId>
-  <name>jBPM Console NG - Generic Forms Backend</name>
+  <artifactId>jbpm-wb-generic-forms-backend</artifactId>
+  <name>jBPM Workbench - Generic Forms Backend</name>
 
   <dependencies>
     <dependency>
@@ -65,12 +65,12 @@
 
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-kie-server-backend</artifactId>
+      <artifactId>jbpm-wb-kie-server-backend</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-generic-forms-api</artifactId>
+      <artifactId>jbpm-wb-generic-forms-api</artifactId>
     </dependency>
 
     <!-- test -->

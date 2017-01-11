@@ -20,14 +20,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jbpm</groupId>
-    <artifactId>jbpm-console-ng-process-runtime</artifactId>
+    <artifactId>jbpm-wb-process-runtime</artifactId>
     <version>7.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>jbpm-console-ng-process-runtime-client</artifactId>
+  <artifactId>jbpm-wb-process-runtime-client</artifactId>
   <packaging>jar</packaging>
 
-  <name>jBPM Console NG - Process Runtime Client</name>
+  <name>jBPM Workbench - Process Runtime Client</name>
 
   <dependencies>
     <!-- dependencies added because of new illegal transitive dependency check -->
@@ -49,11 +49,11 @@
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-generic-api</artifactId>
+      <artifactId>jbpm-wb-generic-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-human-tasks-api</artifactId>
+      <artifactId>jbpm-wb-human-tasks-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
@@ -81,37 +81,37 @@
     </dependency>  
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-process-runtime-api</artifactId>
+      <artifactId>jbpm-wb-process-runtime-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-process-runtime-forms-api</artifactId>
+      <artifactId>jbpm-wb-process-runtime-forms-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-process-runtime-forms-client</artifactId>
+      <artifactId>jbpm-wb-process-runtime-forms-client</artifactId>
       <scope>provided</scope>
     </dependency>
 
      <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-generic-client</artifactId>
+      <artifactId>jbpm-wb-generic-client</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-generic-forms-api</artifactId>
+      <artifactId>jbpm-wb-generic-forms-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-generic-forms-client</artifactId>
+      <artifactId>jbpm-wb-generic-forms-client</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <!-- jBPM Console Panels -->
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-data-filters-client</artifactId>
+      <artifactId>jbpm-wb-data-filters-client</artifactId>
       <scope>provided</scope>
     </dependency>
 
