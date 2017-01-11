@@ -23,8 +23,8 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
-import org.gwtbootstrap3.client.ui.Anchor;
-import org.gwtbootstrap3.client.ui.Label;
+import org.jboss.errai.common.client.dom.Anchor;
+import org.jboss.errai.common.client.dom.Label;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -174,51 +174,38 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
         carouselImg1.setUrl( url + "images/mountain.jpg" );
         carouselImg0.setUrl( url + "images/mountain.jpg" );
 
-        authoringLabel.setText( constants.Authoring() );
-        modelProcessAnchor.setText( constants.Business_Processes() );
-        workLabel.setText( constants.Work() );
-        workTaskListAnchor.setText( constants.Tasks_List() );
-        workProcessDefinitionsAnchor.setText( constants.Process_Definitions() );
-        workProcessInstancesAnchor.setText( constants.Process_Instances() );
-        dashboardsLabel.setText( constants.Dashboards() );
-        processDashboardsAnchor.setText( constants.Process_Dashboard() );
-        thejBPMCycle.setText( constants.The_jBPM_Cycle() );
-        thejBPMCycle.setStyleName( "" );
+        authoringLabel.setTextContent( constants.Authoring() );
+        modelProcessAnchor.setTextContent( constants.Business_Processes() );
+        workLabel.setTextContent( constants.Work() );
+        workTaskListAnchor.setTextContent( constants.Tasks_List() );
+        workProcessDefinitionsAnchor.setTextContent( constants.Process_Definitions() );
+        workProcessInstancesAnchor.setTextContent( constants.Process_Instances() );
+        dashboardsLabel.setTextContent( constants.Dashboards() );
+        processDashboardsAnchor.setTextContent( constants.Process_Dashboard() );
+        thejBPMCycle.setTextContent( constants.The_jBPM_Cycle() );
 
-        discoverLabel.setText( constants.Discover() );
-        discoverLabel.setStyleName( "" );
-        discoverTextLabel.setText( constants.Discover_Text() );
-        discoverTextLabel.setStyleName( "" );
-        designLabel.setText( constants.Design() );
-        designLabel.setStyleName( "" );
-        designTextLabel.setText( constants.Design_Text() );
-        designTextLabel.setStyleName( "" );
-        deployLabel.setText( constants.Deploy() );
-        deployLabel.setStyleName( "" );
-        deployTextLabel.setText( constants.Deploy_Text() );
-        deployTextLabel.setStyleName( "" );
-        workTasksLabel.setText( constants.Work() );
-        workTasksLabel.setStyleName( "" );
-        workTasksTextLabel.setText( constants.Work_Text() );
-        workTasksTextLabel.setStyleName( "" );
-        dashboardsCarrouselLabel.setText( constants.Dashboards() );
-        dashboardsCarrouselLabel.setStyleName( "" );
-        dashboardsCarrouselTextLabel.setText( constants.Dashboards_Text() );
-        dashboardsCarrouselTextLabel.setStyleName( "" );
-        improveLabel.setText( constants.Improve() );
-        improveLabel.setStyleName( "" );
-        improveTextLabel.setText( constants.Improve_Text() );
-        improveTextLabel.setStyleName( "" );
+        discoverLabel.setTextContent( constants.Discover() );
+        discoverTextLabel.setTextContent( constants.Discover_Text() );
+        designLabel.setTextContent( constants.Design() );
+        designTextLabel.setTextContent( constants.Design_Text() );
+        deployLabel.setTextContent( constants.Deploy() );
+        deployTextLabel.setTextContent( constants.Deploy_Text() );
+        workTasksLabel.setTextContent( constants.Work() );
+        workTasksTextLabel.setTextContent( constants.Work_Text() );
+        dashboardsCarrouselLabel.setTextContent( constants.Dashboards() );
+        dashboardsCarrouselTextLabel.setTextContent( constants.Dashboards_Text() );
+        improveLabel.setTextContent( constants.Improve() );
+        improveTextLabel.setTextContent( constants.Improve_Text() );
 
-        modelProcessAnchor.addClickHandler(e -> placeManager.goTo(new DefaultPlaceRequest(ProjectAuthoringPerspective.PERSPECTIVE_ID)));
+        modelProcessAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(ProjectAuthoringPerspective.PERSPECTIVE_ID)));
 
-        workTaskListAnchor.addClickHandler(e -> placeManager.goTo(new DefaultPlaceRequest(DATASET_TASKS)));
+        workTaskListAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(DATASET_TASKS)));
 
-        workProcessDefinitionsAnchor.addClickHandler(e -> placeManager.goTo(new DefaultPlaceRequest(PROCESS_DEFINITIONS)));
+        workProcessDefinitionsAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(PROCESS_DEFINITIONS)));
 
-        workProcessInstancesAnchor.addClickHandler(e -> placeManager.goTo(new DefaultPlaceRequest(DATASET_PROC_INST_VARS)));
+        workProcessInstancesAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(DATASET_PROC_INST_VARS)));
 
-        processDashboardsAnchor.addClickHandler(e -> placeManager.goTo(new DefaultPlaceRequest(PROCESS_DASHBOARD)));
+        processDashboardsAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(PROCESS_DASHBOARD)));
 
     }
 
