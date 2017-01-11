@@ -16,12 +16,17 @@
 
 package org.jbpm.console.ng.cm.service;
 
+
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
 import org.jbpm.console.ng.cm.model.CaseMilestoneSummary;
+import org.jbpm.console.ng.cm.model.CaseActionSummary;
+import org.jbpm.console.ng.cm.util.CaseActionSearchRequest;
+import org.jbpm.console.ng.cm.util.CaseActionsLists;
 import org.jbpm.console.ng.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.jbpm.console.ng.cm.util.CaseMilestoneSearchRequest;
@@ -60,5 +65,15 @@ public interface CaseManagementService {
     void removeGroupFromRole(String serverTemplateId, String containerId, String caseId, String roleName, String group);
 
     List<CaseMilestoneSummary> getCaseMilestones(final String containerId, final String caseId , final CaseMilestoneSearchRequest request);
+
+    List<CaseActionSummary> getCaseActions(final String containerId, final String caseId ,
+                                                final CaseActionSearchRequest request, String userId);
+
+    CaseActionsLists getCaseActionsLists(final String containerId, final String caseId, String userId);
+
+    void addDynamicUserTask(String containerId, String caseId, String name, String description, String actors, String groups, Map<String, Object> data);
+
+    void triggerAdHocFragmentInStage(String containerId, String caseId, String stageId, String adHocName, Map<String, Object> data);
+
 
 }

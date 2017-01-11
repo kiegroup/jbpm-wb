@@ -20,6 +20,9 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.jbpm.console.ng.cm.client.actions.CaseActionsPresenter;
+
+import org.jbpm.console.ng.cm.client.actions.CaseAllActionListPresenter;
 import org.jbpm.console.ng.cm.client.comments.CaseCommentsPresenter;
 import org.jbpm.console.ng.cm.client.milestones.CaseMilestoneListPresenter;
 import org.jbpm.console.ng.cm.client.details.CaseDetailsPresenter;
@@ -66,6 +69,8 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
         view.addCaseComments(CaseCommentsPresenter.SCREEN_ID, place.getParameters());
         view.addCaseMilestones(CaseMilestoneListPresenter.SCREEN_ID,place.getParameters());
         view.addCaseStages(CaseStagesPresenter.SCREEN_ID, place.getParameters());
+        view.addCaseActions(CaseActionsPresenter.SCREEN_ID, place.getParameters());
+        view.addAllCaseActions(CaseAllActionListPresenter.SCREEN_ID, place.getParameters());
     }
 
     protected void refreshCase() {
@@ -132,6 +137,8 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
         void addCaseStages(String placeId, Map<String, String> properties);
 
         void addCaseActions(String placeId, Map<String, String> properties);
+
+        void addAllCaseActions(String placeId, Map<String, String> properties);
 
         void addCaseComments(String placeId, Map<String, String> properties);
 

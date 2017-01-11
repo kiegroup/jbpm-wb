@@ -16,17 +16,22 @@
 
 package org.jbpm.console.ng.cm.backend.server;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.console.ng.cm.model.CaseActionSummary;
 import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.jbpm.console.ng.cm.model.CaseMilestoneSummary;
 import org.jbpm.console.ng.cm.service.CaseManagementService;
+import org.jbpm.console.ng.cm.util.CaseActionSearchRequest;
+import org.jbpm.console.ng.cm.util.CaseActionsLists;
 import org.jbpm.console.ng.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.console.ng.cm.util.CaseInstanceSortBy;
 import org.jbpm.console.ng.cm.util.CaseMilestoneSearchRequest;
@@ -34,6 +39,7 @@ import org.kie.server.api.model.cases.CaseComment;
 import org.kie.server.api.model.cases.CaseDefinition;
 import org.kie.server.api.model.cases.CaseInstance;
 import org.kie.server.api.model.cases.CaseMilestone;
+import org.kie.server.api.model.instance.TaskSummary;
 import org.kie.server.client.CaseServicesClient;
 
 import static java.util.Collections.singletonList;
@@ -159,5 +165,69 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
         return comparing(CaseMilestoneSummary::getStatus).thenComparing(request.getSortByAsc() ? comparatorByName: comparatorByName.reversed());
     }
 
+    @Override
+    public CaseActionsLists getCaseActionsLists(String containerId, String caseId, String userId) {
+        CaseActionSearchRequest request = new CaseActionSearchRequest();
+
+        List<CaseActionSummary> availableActions =getCaseActionsByStatus(caseId,request, userId, "Ready" );
+        availableActions.addAll(client.getAdHocFragments(containerId,caseId)
+                .stream()
+                .map(new CaseActionAdhocFragmentMapper())
+                .sorted(comparing(CaseActionSummary::getName)).collect(toList()));
+
+        CaseActionsLists caseActionsLists = new CaseActionsLists();
+        caseActionsLists.setAvailableActionList(availableActions);
+        caseActionsLists.setInprogressActionList(getCaseActionsByStatus(caseId,request, userId, "InProgress","Reserved" ));
+        caseActionsLists.setCompleteActionList(getCaseActionsByStatus(caseId,request, userId, "Completed","Suspended","Failed",
+                "Error","Exited","Obsolete"));
+        return caseActionsLists;
+    }
+
+    @Override
+    public List<CaseActionSummary> getCaseActions(final String containerId, final String caseId,
+                                                       final CaseActionSearchRequest request, String userId) {
+        switch(request.getFilterBy()){
+        case AVAILABLE:{
+                List<CaseActionSummary> actions =getCaseActionsByStatus(caseId,request, userId, "Ready" );
+                actions.addAll(client.getAdHocFragments(containerId,caseId)
+                                .stream()
+                                .map(new CaseActionAdhocFragmentMapper())
+                                .sorted(getCaseActionsSummaryComparator(request)).collect(toList()));
+                return actions;
+            }
+            case IN_PROGRESS:{
+                return getCaseActionsByStatus(caseId,request, userId, "InProgress","Reserved" );
+            }
+            case COMPLETED:{
+                return getCaseActionsByStatus(caseId,request, userId, "Completed","Suspended","Failed",
+                        "Error","Exited","Obsolete");
+            }
+        }
+        return new ArrayList();
+    }
+
+    protected List<CaseActionSummary> getCaseActionsByStatus(final String caseId,final CaseActionSearchRequest request, String userId, String ... statuses ){
+        List<String> statusList = new ArrayList<>();
+        for(String status : statuses){
+             statusList.add(status);
+        }
+        List<TaskSummary> actionSummaries = client.findCaseTasksAssignedAsBusinessAdministrator(caseId, userId,
+                statusList,0, PAGE_SIZE_UNLIMITED,request.getSort(),request.isSortOrder());
+        return actionSummaries.stream().map(new CaseActionMapper()).sorted(getCaseActionsSummaryComparator(request)).collect(toList());
+    }
+
+    protected Comparator<CaseActionSummary> getCaseActionsSummaryComparator(final CaseActionSearchRequest request) {
+        Comparator<CaseActionSummary> comparatorByName =comparing(CaseActionSummary::getName);
+        return comparing(CaseActionSummary::getStatus).thenComparing(request.isSortOrder() ? comparatorByName: comparatorByName.reversed());
+    }
+
+    public void addDynamicUserTask(String containerId, String caseId, String name, String description, String actors, String groups, Map<String, Object> data){
+        client.addDynamicUserTask(containerId,caseId,name,description,actors,groups,data);
+    }
+
+    @Override
+    public void triggerAdHocFragmentInStage(String containerId, String caseId, String stageId, String adHocName, Map<String, Object> data) {
+        client.triggerAdHocFragmentInStage(containerId,caseId,stageId,adHocName,data);
+    }
 
 }

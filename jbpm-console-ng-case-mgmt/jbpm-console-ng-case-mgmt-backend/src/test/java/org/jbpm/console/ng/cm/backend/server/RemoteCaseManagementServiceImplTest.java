@@ -21,20 +21,26 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.jbpm.console.ng.cm.model.CaseActionSummary;
 import org.jbpm.console.ng.cm.model.CaseCommentSummary;
 import org.jbpm.console.ng.cm.model.CaseDefinitionSummary;
 import org.jbpm.console.ng.cm.model.CaseInstanceSummary;
 import org.jbpm.console.ng.cm.model.CaseMilestoneSummary;
+import org.jbpm.console.ng.cm.util.CaseActionSearchRequest;
+import org.jbpm.console.ng.cm.util.CaseActionsFilterBy;
 import org.jbpm.console.ng.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.console.ng.cm.util.CaseInstanceSortBy;
 import org.jbpm.console.ng.cm.util.CaseMilestoneSearchRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.api.model.cases.CaseAdHocFragment;
 import org.kie.server.api.model.cases.CaseComment;
 import org.kie.server.api.model.cases.CaseDefinition;
 import org.kie.server.api.model.cases.CaseInstance;
 import org.kie.server.api.model.cases.CaseMilestone;
+import org.kie.server.api.model.instance.TaskSummary;
 import org.kie.server.client.CaseServicesClient;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -325,5 +331,194 @@ public class RemoteCaseManagementServiceImplTest {
                 .build();
 
         return milestone;
+    }
+
+    private TaskSummary createTaskSummary(Long taskId, String name, String status) {
+        TaskSummary taskSummary = TaskSummary.builder()
+                .id(taskId)
+                .name(name)
+                .status(status)
+                .build();
+
+        return taskSummary;
+    }
+
+    private CaseAdHocFragment createCaseAdhocFragment(String name, String type) {
+        CaseAdHocFragment caseAdHocFragment = CaseAdHocFragment.builder()
+                .name(name)
+                .type(type)
+                .build();
+
+        return caseAdHocFragment;
+    }
+
+    @Test
+    public void getCaseActionsByStatusTest() {
+        String sortStr="CreatedOn";
+        boolean sortAsc=true;
+        String userId = "userId";
+
+        Long ts1_id = Long.valueOf(1);
+        String ts1_name = "task1";
+        String ts1_status = "Completed";
+        Long ts2_id = Long.valueOf(2);
+        String ts2_name = "task2";
+        String ts2_status = "Suspended";
+
+
+        TaskSummary ts1 = createTaskSummary(ts1_id, ts1_name, ts1_status);
+        TaskSummary ts2 = createTaskSummary(ts2_id, ts2_name, ts2_status);
+
+        when(clientMock.findCaseTasksAssignedAsBusinessAdministrator(eq(caseId), anyString(),
+                anyList(),anyInt(), anyInt(),anyString(),anyBoolean())).thenReturn(Arrays.asList(ts1, ts2));
+
+
+        CaseActionSearchRequest defaultSearchRequest = new CaseActionSearchRequest();
+        defaultSearchRequest.setSort(sortStr);
+        defaultSearchRequest.setSortOrder(sortAsc);
+
+        List<CaseActionSummary> actionSummaries = testedService.getCaseActionsByStatus(caseId,defaultSearchRequest,userId,"Completed","Suspended","Failed",
+                "Error","Exited","Obsolete");
+
+        assertEquals(2,actionSummaries.size());
+
+        assertEquals(ts1_id,actionSummaries.get(0).getId());
+        assertEquals(ts1_name,actionSummaries.get(0).getName());
+        assertEquals(ts1_status,actionSummaries.get(0).getStatus());
+        assertEquals(ts2_id,actionSummaries.get(1).getId());
+        assertEquals(ts2_name,actionSummaries.get(1).getName());
+        assertEquals(ts2_status,actionSummaries.get(1).getStatus());
+
+
+        final ArgumentCaptor<List> captor2 = ArgumentCaptor.forClass(List.class);
+
+        verify(clientMock).findCaseTasksAssignedAsBusinessAdministrator(eq(caseId),eq(userId),captor2.capture(),anyInt(),anyInt(),eq(sortStr),eq(sortAsc));
+        assertEquals("Completed", captor2.getValue().get(0));
+        assertEquals("Suspended", captor2.getValue().get(1));
+        assertEquals("Failed", captor2.getValue().get(2));
+        assertEquals("Error", captor2.getValue().get(3));
+        assertEquals("Exited", captor2.getValue().get(4));
+        assertEquals("Obsolete", captor2.getValue().get(5));
+
+    }
+
+    @Test
+    public void getCaseActionsListTest() {
+        String userId = "userId";
+
+        testedService.getCaseActionsLists(containerId,caseId,userId);
+
+        verify(clientMock).getAdHocFragments(containerId,caseId);
+
+        final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        verify(clientMock,times(3)).findCaseTasksAssignedAsBusinessAdministrator(eq(caseId),eq(userId),captor.capture() ,anyInt(),anyInt(),anyString(),anyBoolean());
+        List capturedStatusLists = captor.getAllValues();
+
+        List<String> statuses1 = (List<String>) capturedStatusLists.get(0);
+        assertEquals("Ready",statuses1.get(0));
+
+        List<String> statuses2 = (List<String>) capturedStatusLists.get(1);
+        assertEquals("InProgress",statuses2.get(0));
+        assertEquals("Reserved",statuses2.get(1));
+
+        List<String> statuses3 = (List<String>) capturedStatusLists.get(2);
+        assertEquals("Completed", statuses3.get(0));
+        assertEquals("Suspended", statuses3.get(1));
+        assertEquals("Failed", statuses3.get(2));
+        assertEquals("Error", statuses3.get(3));
+        assertEquals("Exited", statuses3.get(4));
+        assertEquals("Obsolete", statuses3.get(5));
+    }
+
+    @Test
+    public void getCaseAvailableActionsTest() {
+        String sortStr="CreatedOn";
+        boolean sortAsc=true;
+        String userId = "userId";
+        String ahf_1_name = "adhoc-1-name";
+        String ahf_1_type = "adhoc-1-type";
+
+        String ahf_2_name = "adhoc-2-name";
+        String ahf_2_type = "adhoc-2-type";
+
+        CaseAdHocFragment adHocFragment1 = createCaseAdhocFragment(ahf_1_name,ahf_1_type);
+        CaseAdHocFragment adHocFragment2 = createCaseAdhocFragment(ahf_2_name,ahf_2_type);
+
+        Long ts1_id = Long.valueOf(1);
+        String ts1_name = "task1";
+        String ts1_status = "Ready";
+        Long ts2_id = Long.valueOf(2);
+        String ts2_name = "task2";
+        String ts2_status = "Ready";
+
+
+        TaskSummary ts1 = createTaskSummary(ts1_id, ts1_name, ts1_status);
+        TaskSummary ts2 = createTaskSummary(ts2_id, ts2_name, ts2_status);
+
+        when(clientMock.findCaseTasksAssignedAsBusinessAdministrator(eq(caseId), anyString(),
+                anyList(),anyInt(), anyInt(),anyString(),anyBoolean())).thenReturn(Arrays.asList(ts1, ts2));
+        when(clientMock.getAdHocFragments(containerId,caseId)).thenReturn(Arrays.asList(adHocFragment1,adHocFragment2));
+
+        CaseActionSearchRequest defaultSearchRequest = new CaseActionSearchRequest();
+        defaultSearchRequest.setSort(sortStr);
+        defaultSearchRequest.setSortOrder(sortAsc);
+        defaultSearchRequest.setFilterBy(CaseActionsFilterBy.AVAILABLE);
+
+        List<CaseActionSummary> availableActions= testedService.getCaseActions(containerId,caseId,defaultSearchRequest,userId);
+
+        final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        verify(clientMock).getAdHocFragments(containerId,caseId);
+        verify(clientMock).findCaseTasksAssignedAsBusinessAdministrator(eq(caseId),eq(userId),captor.capture(),anyInt(),anyInt(),eq(sortStr),eq(sortAsc));
+        assertEquals("Ready", captor.getValue().get(0));
+
+        assertEquals(4,availableActions.size());
+        assertEquals(ts1_name,availableActions.get(0).getName());
+        assertEquals(ts2_name,availableActions.get(1).getName());
+        assertEquals(ahf_1_name,availableActions.get(2).getName());
+        assertEquals(ahf_2_name,availableActions.get(3).getName());
+    }
+
+    @Test
+    public void getCaseInProgressActionsTest() {
+        String sortStr="CreatedOn";
+        boolean sortAsc=true;
+        String userId = "userId";
+
+        CaseActionSearchRequest defaultSearchRequest = new CaseActionSearchRequest();
+        defaultSearchRequest.setSort(sortStr);
+        defaultSearchRequest.setSortOrder(sortAsc);
+        defaultSearchRequest.setFilterBy(CaseActionsFilterBy.IN_PROGRESS);
+
+        testedService.getCaseActions(containerId,caseId,defaultSearchRequest,userId);
+
+        final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        verify(clientMock,never()).getAdHocFragments(containerId,caseId);
+        verify(clientMock).findCaseTasksAssignedAsBusinessAdministrator(eq(caseId),eq(userId),captor.capture(),anyInt(),anyInt(),eq(sortStr),eq(sortAsc));
+        assertEquals("InProgress",captor.getValue().get(0));
+        assertEquals("Reserved",captor.getValue().get(1));
+    }
+
+    @Test
+    public void getCaseCompletedActionsTest() {
+        String sortStr="CreatedOn";
+        boolean sortAsc=true;
+        String userId = "userId";
+
+        CaseActionSearchRequest defaultSearchRequest = new CaseActionSearchRequest();
+        defaultSearchRequest.setSort(sortStr);
+        defaultSearchRequest.setSortOrder(sortAsc);
+        defaultSearchRequest.setFilterBy(CaseActionsFilterBy.COMPLETED);
+
+        testedService.getCaseActions(containerId,caseId,defaultSearchRequest,userId);
+
+        final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        verify(clientMock,never()).getAdHocFragments(containerId,caseId);
+        verify(clientMock).findCaseTasksAssignedAsBusinessAdministrator(eq(caseId),eq(userId),captor.capture(),anyInt(),anyInt(),eq(sortStr),eq(sortAsc));
+        assertEquals("Completed", captor.getValue().get(0));
+        assertEquals("Suspended", captor.getValue().get(1));
+        assertEquals("Failed", captor.getValue().get(2));
+        assertEquals("Error", captor.getValue().get(3));
+        assertEquals("Exited", captor.getValue().get(4));
+        assertEquals("Obsolete", captor.getValue().get(5));
     }
 }
