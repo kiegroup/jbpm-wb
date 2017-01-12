@@ -19,15 +19,15 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jbpm</groupId>
-    <artifactId>jbpm-console-ng</artifactId>
+    <artifactId>jbpm-wb</artifactId>
     <version>7.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>jbpm-console-ng-executor-service</artifactId>
+  <artifactId>jbpm-wb-executor-service</artifactId>
 
   <packaging>pom</packaging>
 
-  <name>jBPM Console NG - Executor Service Panels</name>
+  <name>jBPM Workbench - Executor Service Panels</name>
 
   <modules>
     <module>jbpm-console-ng-executor-service-api</module>

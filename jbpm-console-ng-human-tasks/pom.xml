@@ -20,14 +20,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jbpm</groupId>
-    <artifactId>jbpm-console-ng</artifactId>
+    <artifactId>jbpm-wb</artifactId>
     <version>7.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>jbpm-console-ng-human-tasks</artifactId>
+  <artifactId>jbpm-wb-human-tasks</artifactId>
   <packaging>pom</packaging>
 
-  <name>jBPM Console NG - Human Tasks Panels</name>
+  <name>jBPM Workbench - Human Tasks Panels</name>
 
   <modules>
     <module>jbpm-console-ng-human-tasks-api</module>
