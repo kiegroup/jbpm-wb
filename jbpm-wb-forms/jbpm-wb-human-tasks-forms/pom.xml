@@ -30,8 +30,8 @@
   <name>jBPM Workbench - Human Tasks Forms Integration</name>
 
   <modules>
-    <module>jbpm-console-ng-human-tasks-forms-api</module>
-    <module>jbpm-console-ng-human-tasks-forms-client</module>
-    <module>jbpm-console-ng-human-tasks-forms-backend</module>
+    <module>jbpm-wb-human-tasks-forms-api</module>
+    <module>jbpm-wb-human-tasks-forms-client</module>
+    <module>jbpm-wb-human-tasks-forms-backend</module>
   </modules>
 </project>

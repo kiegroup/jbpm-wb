@@ -14,10 +14,10 @@
   <name>jBPM Workbench - Forms</name>
 
   <modules>
-    <module>jbpm-console-ng-generic-forms</module>
-    <module>jbpm-console-ng-human-tasks-forms-modeler</module>
-    <module>jbpm-console-ng-human-tasks-forms</module>
-    <module>jbpm-console-ng-workbench-forms-integration</module>
-    <module>jbpm-console-ng-process-runtime-forms</module>
+    <module>jbpm-wb-generic-forms</module>
+    <module>jbpm-wb-human-tasks-forms-modeler</module>
+    <module>jbpm-wb-human-tasks-forms</module>
+    <module>jbpm-wb-workbench-forms-integration</module>
+    <module>jbpm-wb-process-runtime-forms</module>
   </modules>
 </project>
