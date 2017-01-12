@@ -57,12 +57,12 @@
     <module>jbpm-wb-integration</module>
     <module>jbpm-wb-human-tasks</module>
     <module>jbpm-wb-process-runtime</module>
-    <module>jbpm-console-ng-kie-server</module>
+    <module>jbpm-wb-kie-server</module>
     <module>jbpm-wb-executor-service</module>
     <module>jbpm-wb-dashboard</module>
-    <module>jbpm-console-ng-generic</module>
+    <module>jbpm-wb-generic</module>
     <module>jbpm-wb-case-mgmt</module>
-    <module>jbpm-console-ng-showcase</module>
+    <module>jbpm-wb-showcase</module>
   </modules>
 
   <dependencyManagement>

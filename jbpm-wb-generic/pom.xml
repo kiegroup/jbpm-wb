@@ -30,8 +30,8 @@
   <name>jBPM Workbench - Generic</name>
 
   <modules>
-    <module>jbpm-console-ng-generic-api</module>
-    <module>jbpm-console-ng-generic-client</module>
-    <module>jbpm-console-ng-data-filters-client</module>
+    <module>jbpm-wb-generic-api</module>
+    <module>jbpm-wb-generic-client</module>
+    <module>jbpm-wb-data-filters-client</module>
   </modules>
 </project>
