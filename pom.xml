@@ -54,12 +54,12 @@
 
   <modules>
     <module>jbpm-wb-forms</module>
-    <module>jbpm-console-ng-workbench-integration</module>
-    <module>jbpm-console-ng-human-tasks</module>
-    <module>jbpm-console-ng-process-runtime</module>
+    <module>jbpm-wb-workbench-integration</module>
+    <module>jbpm-wb-human-tasks</module>
+    <module>jbpm-wb-process-runtime</module>
     <module>jbpm-console-ng-kie-server</module>
-    <module>jbpm-console-ng-executor-service</module>
-    <module>jbpm-console-ng-dashboard</module>
+    <module>jbpm-wb-executor-service</module>
+    <module>jbpm-wb-dashboard</module>
     <module>jbpm-console-ng-generic</module>
     <module>jbpm-console-ng-case-mgmt</module>
     <module>jbpm-console-ng-showcase</module>

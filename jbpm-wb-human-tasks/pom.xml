@@ -30,8 +30,8 @@
   <name>jBPM Workbench - Human Tasks Panels</name>
 
   <modules>
-    <module>jbpm-console-ng-human-tasks-api</module>
-    <module>jbpm-console-ng-human-tasks-client</module>
-    <module>jbpm-console-ng-human-tasks-backend</module>
+    <module>jbpm-wb-human-tasks-api</module>
+    <module>jbpm-wb-human-tasks-client</module>
+    <module>jbpm-wb-human-tasks-backend</module>
   </modules>
 </project>
