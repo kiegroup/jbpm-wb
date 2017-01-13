@@ -30,8 +30,8 @@
   <name>jBPM Workbench - Workbench Integration Panels</name>
 
   <modules>
-    <module>jbpm-console-ng-workbench-integration-api</module>
-    <module>jbpm-console-ng-workbench-integration-client</module>
-    <module>jbpm-console-ng-workbench-integration-backend</module>
+    <module>jbpm-wb-workbench-integration-api</module>
+    <module>jbpm-wb-workbench-integration-client</module>
+    <module>jbpm-wb-workbench-integration-backend</module>
   </modules>
 </project>

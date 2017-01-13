@@ -18,8 +18,8 @@
   <name>jBPM Workbench - Dashboard</name>
 
   <modules>
-    <module>jbpm-console-ng-dashboard-api</module>
-    <module>jbpm-console-ng-dashboard-backend</module>
-    <module>jbpm-console-ng-dashboard-client</module>
+    <module>jbpm-wb-dashboard-api</module>
+    <module>jbpm-wb-dashboard-backend</module>
+    <module>jbpm-wb-dashboard-client</module>
   </modules>
 </project>

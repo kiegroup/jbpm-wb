@@ -14,7 +14,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -24,14 +23,15 @@
     <version>7.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>jbpm-wb-process-runtime</artifactId>
+  <artifactId>jbpm-wb-executor-service</artifactId>
+
   <packaging>pom</packaging>
 
-  <name>jBPM Workbench - Process Runtime Panels</name>
+  <name>jBPM Workbench - Executor Service Panels</name>
 
   <modules>
-    <module>jbpm-console-ng-process-runtime-api</module>
-    <module>jbpm-console-ng-process-runtime-client</module>
-    <module>jbpm-console-ng-process-runtime-backend</module>
+    <module>jbpm-wb-executor-service-api</module>
+    <module>jbpm-wb-executor-service-client</module>
+    <module>jbpm-wb-executor-service-backend</module>
   </modules>
 </project>
