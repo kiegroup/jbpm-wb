@@ -9,17 +9,14 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>jbpm-wb-workbench-forms-integration</artifactId>
+  <artifactId>jbpm-wb-generic-forms</artifactId>
+  <name>jBPM Workbench - Generic Forms</name>
 
   <packaging>pom</packaging>
 
-  <name>jBPM Workbench - Workbench Forms Integration</name>
-
   <modules>
-    <module>jbpm-console-ng-workbench-forms-integration-api</module>
-    <module>jbpm-console-ng-workbench-forms-integration-backend</module>
-    <module>jbpm-console-ng-workbench-forms-integration-client</module>
+    <module>jbpm-wb-generic-forms-api</module>
+    <module>jbpm-wb-generic-forms-backend</module>
+    <module>jbpm-wb-generic-forms-client</module>
   </modules>
-
-
 </project>

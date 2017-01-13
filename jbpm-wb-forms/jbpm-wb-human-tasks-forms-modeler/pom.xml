@@ -24,14 +24,14 @@
     <version>7.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>jbpm-wb-process-runtime-forms</artifactId>
+  <artifactId>jbpm-wb-human-tasks-forms-modeler</artifactId>
   <packaging>pom</packaging>
 
-  <name>jBPM Workbench - Process Runtime Forms Integration</name>
+  <name>jBPM Workbench - Human Tasks Forms Modeler Integration</name>
 
   <modules>
-    <module>jbpm-console-ng-process-runtime-forms-api</module>
-    <module>jbpm-console-ng-process-runtime-forms-client</module>
-    <module>jbpm-console-ng-process-runtime-forms-backend</module>
+    <module>jbpm-wb-human-tasks-forms-modeler-api</module>
+    <module>jbpm-wb-human-tasks-forms-modeler-client</module>
+    <module>jbpm-wb-human-tasks-forms-modeler-backend</module>
   </modules>
 </project>
