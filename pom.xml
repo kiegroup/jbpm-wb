@@ -54,7 +54,7 @@
 
   <modules>
     <module>jbpm-wb-forms</module>
-    <module>jbpm-wb-workbench-integration</module>
+    <module>jbpm-wb-integration</module>
     <module>jbpm-wb-human-tasks</module>
     <module>jbpm-wb-process-runtime</module>
     <module>jbpm-console-ng-kie-server</module>

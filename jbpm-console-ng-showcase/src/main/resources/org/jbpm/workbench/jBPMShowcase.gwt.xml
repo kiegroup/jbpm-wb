@@ -63,7 +63,7 @@
   <inherits name="org.jbpm.console.ng.ks.JbpmConsoleNGKieServerAPI"/>
   <inherits name="org.jbpm.console.ng.es.JbpmConsoleNGExecutorServiceClient"/>
   <inherits name="org.jbpm.console.ng.gc.JbpmConsoleNGGenericClient"/>
-  <inherits name="org.jbpm.console.ng.wi.JbpmConsoleNGWorkbenchIntegrationClient"/>
+  <inherits name="org.jbpm.workbench.wi.JbpmWorkbenchIntegrationClient"/>
   <inherits name="org.jbpm.console.ng.df.JbpmConsoleNGDataFiltersClient"/>
 
   <!-- Forms Engine -->
