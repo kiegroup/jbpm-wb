@@ -22,7 +22,7 @@
     <exclude name="org.jbpm.console.ng.gc.forms.client.**"/>
     <exclude name="org.jbpm.console.ng.pr.forms.client.**"/>
     <exclude name="org.jbpm.console.ng.pr.admin.client.**"/>
-    <exclude name="org.jbpm.console.ng.wi.client.**"/>
+    <exclude name="org.jbpm.workbench.wi.client.**"/>
 
     <!-- Dashbuilder -->
     <exclude name="org.hibernate.validator.**"/>
