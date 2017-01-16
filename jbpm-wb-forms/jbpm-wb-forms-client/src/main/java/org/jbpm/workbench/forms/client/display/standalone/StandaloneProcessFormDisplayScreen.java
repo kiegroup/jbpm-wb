@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.workbench.forms.client.display.api.StartProcessFormDisplayProvider;
 import org.jbpm.workbench.forms.client.display.views.EmbeddedFormDisplayView;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
-import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
+import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;

@@ -17,9 +17,8 @@
     <exclude name="org.jbpm.console.ng.df.client.**"/>
     <exclude name="org.jbpm.console.ng.ht.admin.client.**"/>
     <exclude name="org.jbpm.workbench.forms.modeler.client.**"/>
-    <exclude name="org.jbpm.console.ng.pr.client.**"/>
+    <exclude name="org.jbpm.workbench.pr.client.**"/>
     <exclude name="org.jbpm.workbench.forms.client.**"/>
-    <exclude name="org.jbpm.console.ng.pr.admin.client.**"/>
     <exclude name="org.jbpm.workbench.wi.client.**"/>
 
     <!-- Dashbuilder -->

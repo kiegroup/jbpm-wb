@@ -26,7 +26,7 @@ import org.jbpm.console.ng.ht.service.TaskService;
 import org.jbpm.workbench.forms.display.backend.provider.ProcessFormsValuesProcessor;
 import org.jbpm.workbench.forms.display.backend.provider.TaskFormValuesProcessor;
 import org.jbpm.workbench.forms.display.service.KieWorkbenchFormsEntryPoint;
-import org.jbpm.console.ng.pr.service.ProcessService;
+import org.jbpm.workbench.pr.service.ProcessService;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
 
 @Service

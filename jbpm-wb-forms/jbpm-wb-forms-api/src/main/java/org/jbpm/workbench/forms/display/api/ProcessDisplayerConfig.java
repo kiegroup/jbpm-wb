@@ -17,7 +17,7 @@
 package org.jbpm.workbench.forms.display.api;
 
 import org.jbpm.workbench.forms.display.FormDisplayerConfig;
-import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
+import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.forms.display.FormRenderingSettings;
 
 public class ProcessDisplayerConfig<S extends FormRenderingSettings> implements FormDisplayerConfig<ProcessDefinitionKey, S> {
