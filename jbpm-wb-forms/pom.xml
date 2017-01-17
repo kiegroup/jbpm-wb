@@ -15,7 +15,7 @@
 
   <modules>
     <module>jbpm-wb-generic-forms</module>
-    <module>jbpm-wb-human-tasks-forms-modeler</module>
+    <module>jbpm-wb-forms-modeler</module>
     <module>jbpm-wb-human-tasks-forms</module>
     <module>jbpm-wb-workbench-forms-integration</module>
     <module>jbpm-wb-process-runtime-forms</module>
