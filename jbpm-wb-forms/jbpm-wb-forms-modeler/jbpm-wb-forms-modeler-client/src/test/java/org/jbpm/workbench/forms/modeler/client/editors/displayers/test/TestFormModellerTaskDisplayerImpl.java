@@ -20,8 +20,8 @@ import javax.enterprise.event.Event;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
-import org.jbpm.console.ng.gc.forms.client.display.displayers.util.JSNIHelper;
+import org.jbpm.workbench.forms.display.view.FormContentResizeListener;
+import org.jbpm.workbench.forms.client.display.util.JSNIHelper;
 import org.jbpm.workbench.forms.modeler.client.editors.displayers.FormModellerTaskDisplayerImpl;
 import org.jbpm.workbench.forms.modeler.display.impl.FormModelerFormRenderingSettings;
 import org.jbpm.workbench.forms.modeler.service.FormModelerProcessStarterEntryPoint;

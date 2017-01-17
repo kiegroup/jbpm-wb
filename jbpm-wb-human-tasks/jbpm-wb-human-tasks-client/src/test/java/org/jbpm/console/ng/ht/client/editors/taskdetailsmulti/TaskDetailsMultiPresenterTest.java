@@ -18,10 +18,10 @@ package org.jbpm.console.ng.ht.client.editors.taskdetailsmulti;
 import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jbpm.console.ng.gc.forms.client.display.views.FormDisplayerView;
+import org.jbpm.workbench.forms.client.display.views.FormDisplayerView;
 import org.jbpm.console.ng.ht.client.editors.taskdetails.TaskDetailsPresenter;
 import org.jbpm.console.ng.ht.client.editors.taskform.TaskFormPresenter;
-import org.jbpm.console.ng.ht.forms.client.display.ht.api.HumanTaskFormDisplayProvider;
+import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayProvider;
 import org.jbpm.console.ng.ht.model.events.TaskSelectionEvent;
 import org.junit.Before;
 import org.junit.Test;

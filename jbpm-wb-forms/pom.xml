@@ -14,10 +14,9 @@
   <name>jBPM Workbench - Forms</name>
 
   <modules>
-    <module>jbpm-wb-generic-forms</module>
+    <module>jbpm-wb-forms-api</module>
+    <module>jbpm-wb-forms-backend</module>
+    <module>jbpm-wb-forms-client</module>
     <module>jbpm-wb-forms-modeler</module>
-    <module>jbpm-wb-human-tasks-forms</module>
-    <module>jbpm-wb-workbench-forms-integration</module>
-    <module>jbpm-wb-process-runtime-forms</module>
   </modules>
 </project>

@@ -83,12 +83,12 @@
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-wb-generic-forms-api</artifactId>
+      <artifactId>jbpm-wb-forms-api</artifactId>
 
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-wb-generic-forms-client</artifactId>
+      <artifactId>jbpm-wb-forms-client</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -105,16 +105,6 @@
     <dependency>
       <groupId>org.kie.workbench.widgets</groupId>
       <artifactId>kie-wb-common-ui</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-wb-human-tasks-forms-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-wb-human-tasks-forms-client</artifactId>
     </dependency>
 
     <!-- jBPM Console Panels -->

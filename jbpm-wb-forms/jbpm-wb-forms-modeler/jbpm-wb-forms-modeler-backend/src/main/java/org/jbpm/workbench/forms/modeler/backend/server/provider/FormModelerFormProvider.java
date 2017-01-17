@@ -22,10 +22,10 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jbpm.console.ng.ga.forms.service.providing.FormProvider;
-import org.jbpm.console.ng.ga.forms.service.providing.ProcessRenderingSettings;
-import org.jbpm.console.ng.ga.forms.service.providing.TaskRenderingSettings;
-import org.jbpm.console.ng.ga.forms.service.providing.model.TaskDefinition;
+import org.jbpm.workbench.forms.service.providing.FormProvider;
+import org.jbpm.workbench.forms.service.providing.ProcessRenderingSettings;
+import org.jbpm.workbench.forms.service.providing.TaskRenderingSettings;
+import org.jbpm.workbench.forms.service.providing.model.TaskDefinition;
 import org.jbpm.workbench.forms.modeler.display.impl.FormModelerFormRenderingSettings;
 import org.jbpm.formModeler.api.client.FormRenderContext;
 import org.jbpm.formModeler.api.client.FormRenderContextManager;

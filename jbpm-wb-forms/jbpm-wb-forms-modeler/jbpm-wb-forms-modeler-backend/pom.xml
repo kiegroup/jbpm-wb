@@ -29,7 +29,7 @@
     <!-- Internal dependencies -->
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-wb-generic-forms-api</artifactId>
+      <artifactId>jbpm-wb-forms-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>

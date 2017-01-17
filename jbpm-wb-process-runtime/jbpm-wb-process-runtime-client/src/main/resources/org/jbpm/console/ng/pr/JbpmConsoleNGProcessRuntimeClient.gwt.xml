@@ -28,8 +28,8 @@
   <inherits name="org.jboss.errai.ui.UI" />
 
   <inherits name="org.uberfire.UberfireClientAPI"/>
-  <inherits name="org.jbpm.console.ng.pr.forms.JbpmConsoleNGProcessRuntimeFormsAPI"/>
-  <inherits name="org.jbpm.console.ng.pr.forms.JbpmConsoleNGProcessRuntimeFormsClient"/>
+  <inherits name="org.jbpm.workbench.forms.JbpmWorkbenchFormsAPI"/>
+  <inherits name="org.jbpm.workbench.forms.JbpmWorkbenchFormsClient"/>
   <inherits name="org.jbpm.console.ng.pr.JbpmConsoleNGProcessRuntimeAPI"/>
   <inherits name="org.jbpm.console.ng.ks.JbpmConsoleNGKieServerAPI"/>
   <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksAPI"/>

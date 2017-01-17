@@ -31,9 +31,9 @@ import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
 
-import org.jbpm.console.ng.pr.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
-import org.jbpm.console.ng.pr.forms.client.display.views.PopupFormDisplayerView;
-import org.jbpm.console.ng.pr.forms.display.process.api.ProcessDisplayerConfig;
+import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
+import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
+import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
 import org.jbpm.console.ng.pr.events.ProcessDefSelectionEvent;
 import org.jbpm.console.ng.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;

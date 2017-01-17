@@ -18,8 +18,8 @@ package org.jbpm.workbench.forms.modeler.client.editors.displayers;
 
 import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
-import org.jbpm.console.ng.gc.forms.client.display.displayers.util.JSNIHelper;
+import org.jbpm.workbench.forms.display.view.FormContentResizeListener;
+import org.jbpm.workbench.forms.client.display.util.JSNIHelper;
 import org.jbpm.workbench.forms.modeler.client.editors.displayers.test.TestFormModellerStartProcessDisplayerImpl;
 import org.jbpm.workbench.forms.modeler.display.impl.FormModelerFormRenderingSettings;
 import org.jbpm.workbench.forms.modeler.service.FormModelerProcessStarterEntryPoint;

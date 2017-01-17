@@ -17,7 +17,7 @@ package org.jbpm.workbench.forms.modeler.display.impl;
 
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jbpm.console.ng.ga.forms.display.FormRenderingSettings;
+import org.jbpm.workbench.forms.display.FormRenderingSettings;
 
 @Portable
 public class FormModelerFormRenderingSettings implements FormRenderingSettings {

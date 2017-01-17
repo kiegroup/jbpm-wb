@@ -83,15 +83,6 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-wb-process-runtime-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-wb-process-runtime-forms-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-wb-process-runtime-forms-client</artifactId>
-      <scope>provided</scope>
-    </dependency>
 
      <dependency>
       <groupId>org.jbpm</groupId>
@@ -100,11 +91,11 @@
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-wb-generic-forms-api</artifactId>
+      <artifactId>jbpm-wb-forms-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-wb-generic-forms-client</artifactId>
+      <artifactId>jbpm-wb-forms-client</artifactId>
       <scope>provided</scope>
     </dependency>
 
