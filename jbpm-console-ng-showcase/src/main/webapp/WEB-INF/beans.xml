@@ -11,7 +11,7 @@
     <exclude name="org.jbpm.console.ng.bd.client.**"/>
     <exclude name="org.jbpm.dashboard.renderer.client.**"/>
     <exclude name="org.jbpm.console.ng.dm.client.**"/>
-    <exclude name="org.jbpm.console.ng.es.client.**"/>
+    <exclude name="org.jbpm.workbench.es.client.**"/>
     <exclude name="org.jbpm.console.ng.gc.client.**"/>
     <exclude name="org.jbpm.console.ng.di.client.**"/>
     <exclude name="org.jbpm.console.ng.df.client.**"/>

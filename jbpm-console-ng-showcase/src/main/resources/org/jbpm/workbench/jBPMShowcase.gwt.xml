@@ -61,7 +61,7 @@
   <inherits name="org.jbpm.workbench.forms.modeler.JbpmWorkbenchFormsModelerClient"/>
   <inherits name="org.jbpm.console.ng.pr.JbpmConsoleNGProcessRuntimeClient"/>
   <inherits name="org.jbpm.console.ng.ks.JbpmConsoleNGKieServerAPI"/>
-  <inherits name="org.jbpm.console.ng.es.JbpmConsoleNGExecutorServiceClient"/>
+  <inherits name="org.jbpm.workbench.es.JbpmWorkbenchExecutorServiceClient"/>
   <inherits name="org.jbpm.console.ng.gc.JbpmConsoleNGGenericClient"/>
   <inherits name="org.jbpm.workbench.wi.JbpmWorkbenchIntegrationClient"/>
   <inherits name="org.jbpm.console.ng.df.JbpmConsoleNGDataFiltersClient"/>
