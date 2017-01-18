@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.jbpm.workbench.forms.display.FormRenderingSettings;
 import org.jbpm.workbench.forms.client.display.GenericFormDisplayer;
-import org.jbpm.console.ng.ht.model.TaskKey;
+import org.jbpm.workbench.ht.model.TaskKey;
 
 public interface HumanTaskFormDisplayer<S extends FormRenderingSettings> extends GenericFormDisplayer<TaskKey, S> {
 

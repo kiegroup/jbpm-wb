@@ -22,7 +22,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.ht.service.TaskService;
+import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.forms.display.backend.provider.ProcessFormsValuesProcessor;
 import org.jbpm.workbench.forms.display.backend.provider.TaskFormValuesProcessor;
 import org.jbpm.workbench.forms.display.service.KieWorkbenchFormsEntryPoint;

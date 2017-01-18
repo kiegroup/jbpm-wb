@@ -23,7 +23,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.forms.display.FormDisplayerConfig;
 import org.jbpm.workbench.forms.display.view.FormContentResizeListener;
 import org.jbpm.workbench.forms.client.display.task.AbstractHumanTaskFormDisplayer;
-import org.jbpm.console.ng.ht.model.TaskKey;
+import org.jbpm.workbench.ht.model.TaskKey;
 import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
 import org.jbpm.workbench.forms.display.service.KieWorkbenchFormsEntryPoint;
 import org.kie.workbench.common.forms.dynamic.client.DynamicFormRenderer;

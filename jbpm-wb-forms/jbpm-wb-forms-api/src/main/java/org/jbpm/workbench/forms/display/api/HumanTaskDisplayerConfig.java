@@ -18,7 +18,7 @@ package org.jbpm.workbench.forms.display.api;
 
 import org.jbpm.workbench.forms.display.FormDisplayerConfig;
 import org.jbpm.workbench.forms.display.FormRenderingSettings;
-import org.jbpm.console.ng.ht.model.TaskKey;
+import org.jbpm.workbench.ht.model.TaskKey;
 
 public class HumanTaskDisplayerConfig<S extends FormRenderingSettings> implements FormDisplayerConfig<TaskKey, S> {
     private TaskKey key;

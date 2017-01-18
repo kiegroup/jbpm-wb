@@ -56,7 +56,7 @@
   <inherits name='org.kie.workbench.common.services.datamodel.KieWorkbenchCommonDataModelAPI'/>
 
   <!-- jbpm-wb -->
-  <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksClient"/>
+  <inherits name="org.jbpm.workbench.ht.JbpmWorkbenchHumanTasksClient"/>
   <inherits name="org.jbpm.workbench.pr.JbpmWorkbenchProcessRuntimeClient"/>
   <inherits name="org.jbpm.console.ng.ks.JbpmConsoleNGKieServerAPI"/>
   <inherits name="org.jbpm.workbench.es.JbpmWorkbenchExecutorServiceClient"/>
