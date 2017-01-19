@@ -22,7 +22,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.ht.forms.client.display.displayers.task.AbstractHumanTaskFormDisplayer;
+import org.jbpm.workbench.forms.client.display.task.AbstractHumanTaskFormDisplayer;
 import org.jbpm.workbench.forms.modeler.display.impl.FormModelerFormRenderingSettings;
 import org.jbpm.workbench.forms.modeler.service.FormModelerProcessStarterEntryPoint;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;

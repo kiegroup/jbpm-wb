@@ -26,8 +26,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.jbpm.console.ng.gc.forms.client.display.views.FormDisplayerView;
-import org.jbpm.console.ng.gc.forms.client.display.views.EmbeddedFormDisplayView;
+import org.jbpm.workbench.forms.client.display.views.FormDisplayerView;
+import org.jbpm.workbench.forms.client.display.views.EmbeddedFormDisplayView;
 
 @Dependent
 public class TaskFormViewImpl extends Composite implements TaskFormPresenter.TaskFormView {

@@ -28,7 +28,7 @@
   <inherits name="org.jboss.errai.ui.UI" />
   <inherits name="org.uberfire.UberfireClientAPI" />
   <inherits name="org.jbpm.formModeler.FormModelerApi"/>  
-  <inherits name="org.jbpm.console.ng.ht.forms.JbpmConsoleNGHumanTasksFormsAPI" />
+  <inherits name="org.jbpm.workbench.forms.JbpmWorkbenchFormsAPI" />
   <inherits name="org.jbpm.workbench.forms.modeler.JbpmWorkbenchFormsModelerAPI" />
 
   <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksAPI" />

@@ -49,7 +49,7 @@ import org.jbpm.console.ng.gc.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.console.ng.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
 import org.jbpm.console.ng.pr.client.i18n.Constants;
 import org.jbpm.console.ng.pr.client.perspectives.DataSetProcessInstancesWithVariablesPerspective;
-import org.jbpm.console.ng.pr.forms.client.editors.quicknewinstance.QuickNewProcessInstancePopup;
+import org.jbpm.workbench.forms.client.display.process.QuickNewProcessInstancePopup;
 import org.jbpm.console.ng.pr.events.NewProcessInstanceEvent;
 import org.jbpm.console.ng.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.console.ng.pr.events.ProcessInstancesUpdateEvent;

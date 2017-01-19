@@ -25,7 +25,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.forms.modeler.display.impl.FormModelerFormRenderingSettings;
 import org.jbpm.workbench.forms.modeler.service.FormModelerProcessStarterEntryPoint;
-import org.jbpm.console.ng.pr.forms.client.display.displayers.process.AbstractStartProcessFormDisplayer;
+import org.jbpm.workbench.forms.client.display.process.AbstractStartProcessFormDisplayer;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
 import org.jbpm.formModeler.api.events.ResizeFormcontainerEvent;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;

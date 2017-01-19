@@ -20,7 +20,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import org.jbpm.console.ng.gc.forms.client.display.views.FormDisplayerView;
+import org.jbpm.workbench.forms.client.display.views.FormDisplayerView;
 
 @Dependent
 public class TaskFormPresenter {
