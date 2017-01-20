@@ -19,6 +19,7 @@
   <inherits name="org.uberfire.ext.plugin.RuntimePluginClient"/>
   <inherits name="org.uberfire.ext.apps.UberfireAppsClient"/>
   <inherits name="org.uberfire.ext.preferences.UberfirePreferences"/>
+  <inherits name="org.ext.uberfire.social.activities.SocialActivitiesClient"/>
 
   <!-- Drools dependencies -->
   <inherits name="org.drools.workbench.models.datamodel.DroolsWorkbenchDataModelAPI"/>
@@ -54,7 +55,6 @@
   <inherits name='org.kie.workbench.common.services.KieWorkbenchCommonServicesAPI'/>
   <inherits name='org.kie.workbench.common.services.datamodel.KieWorkbenchCommonDataModelAPI'/>
 
-
   <!-- jbpm-wb -->
   <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksClient"/>
   <inherits name="org.jbpm.console.ng.pr.JbpmConsoleNGProcessRuntimeClient"/>
@@ -71,8 +71,6 @@
   <inherits name="org.kie.workbench.common.forms.jbpm.FormJBPMIntegrationClient"/>
   <inherits name="org.jbpm.workbench.forms.JbpmWorkbenchFormsClient"/>
   <inherits name="org.jbpm.workbench.forms.modeler.JbpmWorkbenchFormsModelerClient"/>
-
-  <!-- asset mgmt -->
 
   <!-- kie server -->
   <inherits name="org.kie.workbench.common.screens.server.management.ServerManagementAPI"/>
