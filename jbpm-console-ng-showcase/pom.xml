@@ -447,6 +447,18 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-social-activities-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.uberfire</groupId>
+            <artifactId>uberfire-social-activities-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Errai AS -->
         <dependency>
             <groupId>org.jboss.errai</groupId>
@@ -1213,11 +1225,9 @@
                         <compileSourcesArtifact>org.drools:drools-wb-drl-text-editor-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.drools:drools-wb-drl-text-editor-client</compileSourcesArtifact>
 
-
-                        <!-- KIE UberFire extensions -->
-                        <compileSourcesArtifact>org.kie.uberfire:kie-uberfire-social-activities-api</compileSourcesArtifact>
-
                         <!-- UberFire Extensions -->
+                        <compileSourcesArtifact>org.uberfire:uberfire-social-activities-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.uberfire:uberfire-social-activities-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-commons-editor-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-commons-editor-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-preferences-api</compileSourcesArtifact>
