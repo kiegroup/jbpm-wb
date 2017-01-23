@@ -25,8 +25,8 @@ import org.jbpm.workbench.forms.client.display.util.JSNIHelper;
 import org.jbpm.workbench.forms.modeler.client.editors.displayers.FormModellerTaskDisplayerImpl;
 import org.jbpm.workbench.forms.modeler.display.impl.FormModelerFormRenderingSettings;
 import org.jbpm.workbench.forms.modeler.service.FormModelerProcessStarterEntryPoint;
-import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
-import org.jbpm.console.ng.ht.service.TaskService;
+import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
+import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 
 public class TestFormModellerTaskDisplayerImpl extends FormModellerTaskDisplayerImpl {

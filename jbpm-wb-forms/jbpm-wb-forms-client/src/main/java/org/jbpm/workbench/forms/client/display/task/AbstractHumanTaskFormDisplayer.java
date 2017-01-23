@@ -43,10 +43,10 @@ import org.jbpm.workbench.forms.client.display.util.ActionRequest;
 import org.jbpm.workbench.forms.client.display.util.JSNIHelper;
 import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayer;
 import org.jbpm.workbench.forms.client.i18n.Constants;
-import org.jbpm.console.ng.ht.model.TaskKey;
-import org.jbpm.console.ng.ht.model.TaskSummary;
-import org.jbpm.console.ng.ht.model.events.TaskRefreshedEvent;
-import org.jbpm.console.ng.ht.service.TaskService;
+import org.jbpm.workbench.ht.model.TaskKey;
+import org.jbpm.workbench.ht.model.TaskSummary;
+import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
+import org.jbpm.workbench.ht.service.TaskService;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mvp.Command;
 

@@ -6,7 +6,7 @@
     <!-- End of Errai exclusions -->
 
     <exclude name="org.jbpm.workbench.client.**"/>
-    <exclude name="org.jbpm.console.ng.ht.client.**"/>
+    <exclude name="org.jbpm.workbench.ht.client.**"/>
     <exclude name="org.jbpm.console.ng.bh.client.**"/>
     <exclude name="org.jbpm.console.ng.bd.client.**"/>
     <exclude name="org.jbpm.dashboard.renderer.client.**"/>

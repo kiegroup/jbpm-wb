@@ -23,7 +23,7 @@ import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayProvider;
 import org.jbpm.workbench.forms.client.display.views.EmbeddedFormDisplayView;
 import org.jbpm.workbench.forms.client.i18n.Constants;
 import org.jbpm.workbench.forms.display.api.HumanTaskDisplayerConfig;
-import org.jbpm.console.ng.ht.model.TaskKey;
+import org.jbpm.workbench.ht.model.TaskKey;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;

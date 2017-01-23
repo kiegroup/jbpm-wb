@@ -21,7 +21,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.workbench.forms.modeler.service.FormModelerProcessStarterEntryPoint;
-import org.jbpm.console.ng.ht.service.TaskService;
+import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.jbpm.formModeler.api.client.FormRenderContextManager;
 
