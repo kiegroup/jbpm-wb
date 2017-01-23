@@ -23,7 +23,7 @@ import org.jbpm.workbench.forms.client.display.util.JSNIHelper;
 import org.jbpm.workbench.forms.modeler.client.editors.displayers.test.TestFormModellerStartProcessDisplayerImpl;
 import org.jbpm.workbench.forms.modeler.display.impl.FormModelerFormRenderingSettings;
 import org.jbpm.workbench.forms.modeler.service.FormModelerProcessStarterEntryPoint;
-import org.jbpm.console.ng.pr.events.NewProcessInstanceEvent;
+import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
 import org.jbpm.formModeler.api.client.FormRenderContextTO;
 import org.jbpm.formModeler.api.events.FormSubmittedEvent;
 import org.jbpm.formModeler.api.events.ResizeFormcontainerEvent;

@@ -24,7 +24,7 @@ import org.jbpm.workbench.forms.client.display.util.JSNIHelper;
 import org.jbpm.workbench.forms.modeler.client.editors.displayers.FormModellerStartProcessDisplayerImpl;
 import org.jbpm.workbench.forms.modeler.display.impl.FormModelerFormRenderingSettings;
 import org.jbpm.workbench.forms.modeler.service.FormModelerProcessStarterEntryPoint;
-import org.jbpm.console.ng.pr.events.NewProcessInstanceEvent;
+import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
 import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 import org.uberfire.workbench.events.NotificationEvent;
 

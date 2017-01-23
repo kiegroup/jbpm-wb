@@ -21,7 +21,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.pr.service.ProcessService;
+import org.jbpm.workbench.pr.service.ProcessService;
 import org.jbpm.workbench.api.ProcessAdminService;
 
 @Service

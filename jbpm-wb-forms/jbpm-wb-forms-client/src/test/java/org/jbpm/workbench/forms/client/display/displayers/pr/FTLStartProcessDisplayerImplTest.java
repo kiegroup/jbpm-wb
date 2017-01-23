@@ -18,7 +18,7 @@ package org.jbpm.workbench.forms.client.display.displayers.pr;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jbpm.console.ng.pr.events.NewProcessInstanceEvent;
+import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
 import org.jbpm.workbench.forms.client.display.process.AbstractStartProcessFormDisplayer;
 import org.jbpm.workbench.forms.client.display.process.FTLStartProcessDisplayerImpl;
 import org.junit.Test;
