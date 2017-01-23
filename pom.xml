@@ -61,7 +61,7 @@
     <module>jbpm-wb-executor-service</module>
     <module>jbpm-wb-dashboard</module>
     <module>jbpm-console-ng-generic</module>
-    <module>jbpm-console-ng-case-mgmt</module>
+    <module>jbpm-wb-case-mgmt</module>
     <module>jbpm-console-ng-showcase</module>
   </modules>
 
