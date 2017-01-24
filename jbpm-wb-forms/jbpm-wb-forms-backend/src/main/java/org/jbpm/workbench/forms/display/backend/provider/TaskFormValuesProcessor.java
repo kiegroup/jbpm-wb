@@ -134,7 +134,7 @@ public class TaskFormValuesProcessor extends KieWorkbenchFormsValuesProcessor<Ta
 
             if ( form.getName() .equals( getFormName( settings ) + BPMNVariableUtils.TASK_FORM_SUFFIX ) ) {
                 form.getFields().forEach( field -> {
-                    field.setReadonly( taskData.containsKey( field.getBinding() ) );
+                    field.setReadOnly( taskData.containsKey( field.getBinding() ) );
                 } );
                 done = true;
             }

@@ -20,7 +20,7 @@
       "validateOnChange": true,
       "binding": "id",
       "standaloneClassName": "java.lang.Long",
-      "serializedFieldClassName": "org.kie.workbench.common.forms.model.impl.basic.textBox.TextBoxFieldDefinition"
+      "serializedFieldClassName": "org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.definition.TextBoxFieldDefinition"
     },
     {
       "maxLength": 100,
@@ -35,7 +35,7 @@
       "validateOnChange": true,
       "binding": "name",
       "standaloneClassName": "java.lang.String",
-      "serializedFieldClassName": "org.kie.workbench.common.forms.model.impl.basic.textBox.TextBoxFieldDefinition"
+      "serializedFieldClassName": "org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.definition.TextBoxFieldDefinition"
     },
     {
       "placeHolder": "Address",
@@ -50,7 +50,7 @@
       "validateOnChange": true,
       "binding": "address",
       "standaloneClassName": "java.lang.String",
-      "serializedFieldClassName": "org.kie.workbench.common.forms.model.impl.basic.textArea.TextAreaFieldDefinition"
+      "serializedFieldClassName": "org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textArea.definition.TextAreaFieldDefinition"
     }
   ],
   "layoutTemplate": {

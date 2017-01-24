@@ -20,7 +20,7 @@
       "validateOnChange": true,
       "binding": "comments",
       "standaloneClassName": "java.lang.String",
-      "serializedFieldClassName": "org.kie.workbench.common.forms.model.impl.basic.textArea.TextAreaFieldDefinition"
+      "serializedFieldClassName": "org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textArea.definition.TextAreaFieldDefinition"
     },
     {
       "nestedForm": "bfc2a2bb-9262-4545-b651-28b48de86b9c",
@@ -34,7 +34,7 @@
       "validateOnChange": true,
       "binding": "client",
       "standaloneClassName": "org.jbpm.workbench.forms.display.backend.provider.model.Client",
-      "serializedFieldClassName": "org.kie.workbench.common.forms.model.impl.relations.SubFormFieldDefinition"
+      "serializedFieldClassName": "org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.subForm.definition.SubFormFieldDefinition"
     },
     {
       "placeHolder": "Date",
@@ -49,7 +49,7 @@
       "validateOnChange": true,
       "binding": "date",
       "standaloneClassName": "java.util.Date",
-      "serializedFieldClassName": "org.kie.workbench.common.forms.model.impl.basic.datePicker.DatePickerFieldDefinition"
+      "serializedFieldClassName": "org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.datePicker.definition.DatePickerFieldDefinition"
     },
     {
       "creationForm": "d64e531d-8068-4767-9e7c-5e5b38a2a617",
@@ -82,7 +82,7 @@
       "validateOnChange": true,
       "binding": "lines",
       "standaloneClassName": "org.jbpm.workbench.forms.display.backend.provider.model.InvoiceLine",
-      "serializedFieldClassName": "org.kie.workbench.common.forms.model.impl.relations.MultipleSubFormFieldDefinition"
+      "serializedFieldClassName": "org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.multipleSubform.definition.MultipleSubFormFieldDefinition"
     },
     {
       "maxLength": 100,
@@ -97,7 +97,7 @@
       "validateOnChange": true,
       "binding": "total",
       "standaloneClassName": "java.lang.Double",
-      "serializedFieldClassName": "org.kie.workbench.common.forms.model.impl.basic.textBox.TextBoxFieldDefinition"
+      "serializedFieldClassName": "org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.definition.TextBoxFieldDefinition"
     }
   ],
   "layoutTemplate": {
