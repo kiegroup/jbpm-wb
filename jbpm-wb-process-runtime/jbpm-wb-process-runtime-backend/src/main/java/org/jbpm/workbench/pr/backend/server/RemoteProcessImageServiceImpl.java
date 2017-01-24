@@ -19,7 +19,7 @@ package org.jbpm.workbench.pr.backend.server;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.ks.integration.AbstractKieServerService;
+import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.jbpm.workbench.pr.service.ProcessImageService;
 import org.kie.server.client.UIServicesClient;
 

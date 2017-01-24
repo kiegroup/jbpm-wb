@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2017 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ks.integration;
+package org.jbpm.workbench.ks.integration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,9 +49,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
 
-import static org.jbpm.console.ng.ks.utils.KieServerUtils.createKieServicesClient;
-import static org.jbpm.console.ng.ks.utils.KieServerUtils.getCredentialsProvider;
-import static org.jbpm.console.ng.ks.utils.KieServerUtils.getAdminCredentialsProvider;
+import static org.jbpm.workbench.ks.utils.KieServerUtils.createKieServicesClient;
+import static org.jbpm.workbench.ks.utils.KieServerUtils.getCredentialsProvider;
+import static org.jbpm.workbench.ks.utils.KieServerUtils.getAdminCredentialsProvider;
 
 @Startup
 @ApplicationScoped
