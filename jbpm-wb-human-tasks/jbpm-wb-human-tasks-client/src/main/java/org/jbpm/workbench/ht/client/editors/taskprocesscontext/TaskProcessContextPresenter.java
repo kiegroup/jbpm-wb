@@ -115,7 +115,7 @@ public class TaskProcessContextPresenter {
                                   );
                               }
                           }
-        ).getProcessInstance(serverTemplateId, new ProcessInstanceKey(serverTemplateId, currentProcessInstanceId));
+        ).getProcessInstance(serverTemplateId, new ProcessInstanceKey(serverTemplateId, containerId, currentProcessInstanceId));
     }
 
     public void refreshProcessContextOfTask() {

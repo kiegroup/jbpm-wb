@@ -37,16 +37,17 @@ import org.dashbuilder.displayer.client.DisplayerListener;
 import org.dashbuilder.displayer.client.DisplayerLocator;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
+
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.workbench.pr.model.ProcessInstanceKey;
-import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
-import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
-import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
-import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.jbpm.dashboard.renderer.client.panel.events.ProcessDashboardFocusEvent;
 import org.jbpm.dashboard.renderer.client.panel.events.TaskDashboardFocusEvent;
 import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
+import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
+import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
+import org.jbpm.workbench.pr.model.ProcessInstanceKey;
+import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
+import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mvp.Command;
@@ -345,13 +346,14 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
 
         final Long taskId = Double.valueOf(ds.getValueAt(rowIndex, COLUMN_TASK_ID).toString()).longValue();
         final String taskName = ds.getValueAt(rowIndex, COLUMN_TASK_NAME).toString();
+        final String deploymentId = ds.getValueAt(rowIndex, COLUMN_PROCESS_EXTERNAL_ID).toString();
         final Long processInstanceId = Double.valueOf(ds.getValueAt(rowIndex, COLUMN_PROCESS_INSTANCE_ID).toString()).longValue();
         final String serverTemplateId = serverTemplateSelectorMenuBuilder.getSelectedServerTemplate();
 
         processRuntimeDataService.call( (ProcessInstanceSummary p) -> {
                     openTaskDetailsScreen();
                     taskSelectionEvent.fire(new TaskSelectionEvent(serverTemplateId, p.getDeploymentId(), taskId, taskName, false, true));
-                }).getProcessInstance(serverTemplateId, new ProcessInstanceKey(serverTemplateId, processInstanceId));
+                }).getProcessInstance(serverTemplateId, new ProcessInstanceKey(serverTemplateId, deploymentId, processInstanceId));
     }
 
     public void showDashboard() {

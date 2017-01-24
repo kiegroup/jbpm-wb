@@ -34,11 +34,11 @@ public interface ProcessRuntimeDataService {
 
     ProcessInstanceSummary getProcessInstance(String serverTemplateId, ProcessInstanceKey processInstanceKey);
 
-    List<NodeInstanceSummary> getProcessInstanceActiveNodes(String serverTemplateId, Long processInstanceId);
+    List<NodeInstanceSummary> getProcessInstanceActiveNodes(String serverTemplateId, String deploymentId, Long processInstanceId);
 
-    List<RuntimeLogSummary> getRuntimeLogs(String serverTemplateId, Long processInstanceId);
+    List<RuntimeLogSummary> getRuntimeLogs(String serverTemplateId, String deploymentId, Long processInstanceId);
 
-    List<RuntimeLogSummary> getBusinessLogs(String serverTemplateId, String processName, Long processInstanceId);
+    List<RuntimeLogSummary> getBusinessLogs(String serverTemplateId, String deploymentId, String processName, Long processInstanceId);
 
     List<ProcessSummary> getProcesses(String serverTemplateId, Integer page, Integer pageSize, String sort, Boolean sortOrder);
 
