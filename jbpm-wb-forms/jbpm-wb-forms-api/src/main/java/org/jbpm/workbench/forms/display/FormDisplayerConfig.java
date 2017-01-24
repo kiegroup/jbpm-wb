@@ -16,7 +16,7 @@
 
 package org.jbpm.workbench.forms.display;
 
-import org.jbpm.console.ng.ga.service.ItemKey;
+import org.jbpm.workbench.common.service.ItemKey;
 
 public interface FormDisplayerConfig<T extends ItemKey, S extends FormRenderingSettings> {
 

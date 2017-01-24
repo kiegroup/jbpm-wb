@@ -40,7 +40,7 @@ import org.dashbuilder.renderer.client.table.TableDisplayer;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
-import org.jbpm.console.ng.gc.client.menu.ServerTemplateSelectorMenuBuilder;
+import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.jbpm.dashboard.renderer.client.panel.events.ProcessDashboardFocusEvent;

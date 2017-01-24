@@ -16,7 +16,7 @@
 
 package org.jbpm.workbench.es.model;
 
-import org.jbpm.console.ng.ga.service.ItemKey;
+import org.jbpm.workbench.common.service.ItemKey;
 
 public class RequestKey implements ItemKey {
     private Long id;

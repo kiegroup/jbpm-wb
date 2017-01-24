@@ -21,8 +21,8 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import org.jbpm.console.ng.ga.events.ServerTemplateSelected;
-import org.jbpm.console.ng.gc.client.menu.ServerTemplateSelectorMenuBuilder;
+import org.jbpm.workbench.common.events.ServerTemplateSelected;
+import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;

@@ -15,7 +15,7 @@
  */
 package org.jbpm.workbench.pr.client.editors.diagram;
 
-import org.jbpm.console.ng.ga.model.process.DummyProcessPath;
+import org.jbpm.workbench.common.model.process.DummyProcessPath;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.PathPlaceRequest;
 

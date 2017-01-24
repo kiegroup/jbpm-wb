@@ -32,8 +32,8 @@ import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.console.ng.gc.client.util.UTCDateBox;
-import org.jbpm.console.ng.gc.client.util.UTCTimeBox;
+import org.jbpm.workbench.common.client.util.UTCDateBox;
+import org.jbpm.workbench.common.client.util.UTCTimeBox;
 import org.jbpm.workbench.ht.client.i18n.Constants;
 import org.uberfire.workbench.events.NotificationEvent;
 

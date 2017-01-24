@@ -19,7 +19,7 @@ package org.jbpm.workbench.pr.client.editors.instance.list;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import org.jbpm.console.ng.gc.client.util.ButtonActionCell;
+import org.jbpm.workbench.common.client.util.ButtonActionCell;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.kie.api.runtime.process.ProcessInstance;
 

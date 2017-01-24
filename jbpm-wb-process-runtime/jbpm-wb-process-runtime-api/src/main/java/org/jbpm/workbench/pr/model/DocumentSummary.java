@@ -17,7 +17,7 @@ package org.jbpm.workbench.pr.model;
 
 import java.util.Date;
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jbpm.console.ng.ga.model.GenericSummary;
+import org.jbpm.workbench.common.model.GenericSummary;
 
 @Portable
 public class DocumentSummary extends GenericSummary {

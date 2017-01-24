@@ -16,8 +16,8 @@
 
 package org.jbpm.workbench.pr.client.editors.instance.list.variables.dash;
 
-import org.jbpm.console.ng.df.client.list.base.DataSetEditorManager;
-import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
+import org.jbpm.workbench.common.client.experimental.grid.base.ExtendedPagedTable;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 

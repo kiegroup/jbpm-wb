@@ -19,7 +19,7 @@ import org.dashbuilder.dataset.group.DateIntervalType;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.DisplayerSettingsFactory;
 import org.dashbuilder.renderer.client.DefaultRenderer;
-import org.jbpm.console.ng.gc.client.util.DateUtils;
+import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardI18n;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;

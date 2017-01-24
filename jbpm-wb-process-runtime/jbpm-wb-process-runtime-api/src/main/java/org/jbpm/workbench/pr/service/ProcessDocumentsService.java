@@ -17,7 +17,7 @@
 package org.jbpm.workbench.pr.service;
 
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.jbpm.console.ng.ga.service.GenericServiceEntryPoint;
+import org.jbpm.workbench.common.service.GenericServiceEntryPoint;
 import org.jbpm.workbench.pr.model.DocumentKey;
 import org.jbpm.workbench.pr.model.DocumentSummary;
 

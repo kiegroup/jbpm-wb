@@ -19,7 +19,7 @@ package org.jbpm.workbench.forms.client.display.views;
 import org.jbpm.workbench.forms.client.display.GenericFormDisplayer;
 import org.jbpm.workbench.forms.display.FormRenderingSettings;
 import org.jbpm.workbench.forms.display.view.FormContentResizeListener;
-import org.jbpm.console.ng.ga.service.ItemKey;
+import org.jbpm.workbench.common.service.ItemKey;
 import org.uberfire.mvp.Command;
 
 public interface FormDisplayerView {

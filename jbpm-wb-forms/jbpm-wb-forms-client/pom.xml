@@ -134,7 +134,7 @@
 
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-wb-generic-api</artifactId>
+      <artifactId>jbpm-wb-common-api</artifactId>
     </dependency>
 
     <!-- hack to disable sisu annotation processing (that scans client side types) -->

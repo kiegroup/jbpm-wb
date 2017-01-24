@@ -32,7 +32,7 @@
 
   <inherits name="org.jbpm.console.ng.ks.JbpmConsoleNGKieServerAPI"/>
   <inherits name="org.jbpm.workbench.wi.JbpmWorkbenchIntegrationAPI"/>
-  <inherits name="org.jbpm.console.ng.ga.JbpmConsoleNGGenericAPI"/>
+  <inherits name="org.jbpm.workbench.common.JbpmWorkbenchCommonAPI"/>
   <inherits name="org.guvnor.structure.GuvnorStructureClient"/>
 
 </module>

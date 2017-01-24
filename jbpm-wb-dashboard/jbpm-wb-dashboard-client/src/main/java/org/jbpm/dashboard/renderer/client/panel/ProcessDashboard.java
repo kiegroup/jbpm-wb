@@ -37,7 +37,7 @@ import org.dashbuilder.displayer.client.DisplayerListener;
 import org.dashbuilder.displayer.client.DisplayerLocator;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
-import org.jbpm.console.ng.gc.client.menu.ServerTemplateSelectorMenuBuilder;
+import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.dashboard.renderer.client.panel.events.ProcessDashboardFocusEvent;
 import org.jbpm.dashboard.renderer.client.panel.events.TaskDashboardFocusEvent;
