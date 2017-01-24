@@ -65,21 +65,10 @@ public class AppSetup extends BaseAppSetup {
     @PostConstruct
     public void onStartup() {
         if ( !"false".equalsIgnoreCase( System.getProperty( "org.kie.demo" ) ) ) {
-            final Repository repository = createRepository(JBPM_WB_PLAYGROUND_ALIAS, GIT_SCHEME, JBPM_WB_PLAYGROUND_ORIGIN, "", "");
-            createOU(repository, OU_NAME, OU_OWNER);
-        } else if ( "true".equalsIgnoreCase( System.getProperty( "org.kie.example" ) ) ) {
-            final Repository repository = createRepository( "repository1", GIT_SCHEME, null, "", "" );
-
-            createOU( repository,
-                    "example",
-                    "" );
-
-            createProject( repository,
-                    "org.kie.example",
-                    "project1",
-                    "1.0.0-SNAPSHOT" );
+            final Repository repository = createRepository( JBPM_WB_PLAYGROUND_ALIAS, GIT_SCHEME, JBPM_WB_PLAYGROUND_ORIGIN, "", "" );
+            createOU( repository, OU_NAME, OU_OWNER );
         }
-        
+
         configurationService.addConfiguration( getGlobalConfiguration() );
 
         // notify cluster service that bootstrap is completed to start synchronization

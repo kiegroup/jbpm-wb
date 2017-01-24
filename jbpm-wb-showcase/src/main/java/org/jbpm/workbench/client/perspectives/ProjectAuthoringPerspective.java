@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.client.perspectives;
 
+import org.kie.workbench.common.screens.examples.client.wizard.ExamplesWizard;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcesMenu;
 import org.kie.workbench.common.widgets.client.menu.RepositoryMenu;
 import org.kie.workbench.common.workbench.client.docks.AuthoringWorkbenchDocks;
@@ -53,6 +54,9 @@ public class ProjectAuthoringPerspective {
     @Inject
     private AuthoringWorkbenchDocks docks;
 
+    @Inject
+    private ExamplesWizard wizard;
+
     @PostConstruct
     public void setup() {
         docks.setup("Authoring", new DefaultPlaceRequest("org.kie.guvnor.explorer"));
@@ -69,6 +73,15 @@ public class ProjectAuthoringPerspective {
     @WorkbenchMenu
     public Menus getMenus() {
         return MenuFactory
+                .newTopLevelMenu( "Examples" )
+                .respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        wizard.start();
+                    }
+                } )
+                .endMenu()
+
                 .newTopLevelMenu("Projects")
                 .respondsWith(new Command() {
                     @Override

@@ -699,6 +699,26 @@
             <artifactId>kie-wb-common-library-backend</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-examples-screen-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-examples-screen-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.workbench.screens</groupId>
+            <artifactId>kie-wb-common-examples-screen-backend</artifactId>
+        </dependency>
+
+        <!-- KIE Workbench Playground Repository -->
+        <dependency>
+            <groupId>org.kie.workbench.playground</groupId>
+            <artifactId>playground-parent</artifactId>
+        </dependency>
+
         <!-- Needed for the Deployment Descriptor Editor -->
         <dependency>
             <groupId>org.drools</groupId>
@@ -1248,6 +1268,8 @@
                         <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-workbench-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-library-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-library-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-examples-screen-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-examples-screen-client</compileSourcesArtifact>
 
                         <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-client</compileSourcesArtifact>
