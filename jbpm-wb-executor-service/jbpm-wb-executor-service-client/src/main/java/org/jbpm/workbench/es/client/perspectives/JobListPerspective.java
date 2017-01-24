@@ -17,7 +17,7 @@ package org.jbpm.workbench.es.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.jbpm.console.ng.gc.client.perspectives.AbstractPerspective;
+import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;

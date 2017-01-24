@@ -36,7 +36,7 @@
 
     <dependency>
       <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-wb-generic-api</artifactId>
+      <artifactId>jbpm-wb-common-api</artifactId>
     </dependency>
 
     <dependency>

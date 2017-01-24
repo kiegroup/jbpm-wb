@@ -28,8 +28,8 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
 
 import org.jbpm.workbench.pr.model.ProcessSummary;
-import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
-import org.jbpm.console.ng.gc.client.list.base.events.SearchEvent;
+import org.jbpm.workbench.common.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.base.events.SearchEvent;
 
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;

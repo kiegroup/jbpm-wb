@@ -19,7 +19,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.jbpm.console.ng.gc.client.perspectives.AbstractPerspective;
+import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
 import org.jbpm.workbench.pr.client.editors.instance.list.variables.dash.DataSetProcessInstanceWithVariablesListPresenter;
 import org.kie.workbench.common.widgets.client.search.SetSearchTextEvent;
 import org.uberfire.client.annotations.Perspective;

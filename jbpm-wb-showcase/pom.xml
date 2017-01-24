@@ -227,11 +227,11 @@
         <!-- jBPM Console Panels -->
         <dependency>
             <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-wb-generic-api</artifactId>
+            <artifactId>jbpm-wb-common-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-wb-generic-client</artifactId>
+            <artifactId>jbpm-wb-common-client</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -1274,8 +1274,8 @@
                         <compileSourcesArtifact>org.jbpm:jbpm-wb-process-runtime-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-wb-kie-server-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-wb-data-filters-client</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.jbpm:jbpm-wb-generic-api</compileSourcesArtifact>
-                        <compileSourcesArtifact>org.jbpm:jbpm-wb-generic-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.jbpm:jbpm-wb-common-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.jbpm:jbpm-wb-common-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-wb-forms-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-wb-forms-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-wb-integration-api</compileSourcesArtifact>

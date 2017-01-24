@@ -28,7 +28,7 @@ import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ks.integration.AbstractKieServerService;
 import org.jbpm.workbench.pr.model.DocumentSummary;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
-import org.jbpm.console.ng.ga.model.QueryFilter;
+import org.jbpm.workbench.common.model.QueryFilter;
 import org.jbpm.workbench.pr.service.ProcessDocumentsService;
 import org.jbpm.workbench.pr.service.ProcessVariablesService;
 import org.jbpm.document.Document;

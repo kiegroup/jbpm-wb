@@ -19,7 +19,7 @@ import java.util.List;
 
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jbpm.console.ng.gc.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.experimental.grid.base.ExtendedPagedTable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

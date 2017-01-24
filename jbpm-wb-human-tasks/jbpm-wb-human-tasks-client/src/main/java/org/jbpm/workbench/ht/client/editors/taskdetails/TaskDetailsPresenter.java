@@ -26,7 +26,7 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.console.ng.gc.client.util.UTCDateBox;
+import org.jbpm.workbench.common.client.util.UTCDateBox;
 import org.jbpm.workbench.ht.client.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskCalendarEvent;

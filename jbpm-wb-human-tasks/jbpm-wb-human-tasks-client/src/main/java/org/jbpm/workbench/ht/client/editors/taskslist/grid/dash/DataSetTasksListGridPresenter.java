@@ -17,7 +17,7 @@ package org.jbpm.workbench.ht.client.editors.taskslist.grid.dash;
 
 import javax.enterprise.context.Dependent;
 
-import org.jbpm.console.ng.gc.client.menu.RestoreDefaultFiltersMenuBuilder;
+import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.ht.client.editors.taskslist.grid.AbstractTasksListGridPresenter;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchScreen;

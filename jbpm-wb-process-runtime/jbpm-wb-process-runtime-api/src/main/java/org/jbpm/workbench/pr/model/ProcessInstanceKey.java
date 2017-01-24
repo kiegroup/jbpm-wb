@@ -17,7 +17,7 @@
 package org.jbpm.workbench.pr.model;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jbpm.console.ng.ga.service.ItemKey;
+import org.jbpm.workbench.common.service.ItemKey;
 
 @Portable
 public class ProcessInstanceKey implements ItemKey {

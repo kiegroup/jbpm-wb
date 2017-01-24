@@ -26,7 +26,7 @@ import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.workbench.pr.backend.server.model.VariableHelper;
 import org.jbpm.console.ng.ks.integration.AbstractKieServerService;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
-import org.jbpm.console.ng.ga.model.QueryFilter;
+import org.jbpm.workbench.common.model.QueryFilter;
 import org.jbpm.workbench.pr.service.ProcessVariablesService;
 import org.kie.server.api.model.definition.VariablesDefinition;
 import org.kie.server.api.model.instance.VariableInstance;
