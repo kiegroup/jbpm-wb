@@ -30,7 +30,7 @@
   <name>jBPM Workbench - KIE Server</name>
 
   <modules>
-    <module>jbpm-console-ng-kie-server-api</module>
-    <module>jbpm-console-ng-kie-server-backend</module>
+    <module>jbpm-wb-kie-server-api</module>
+    <module>jbpm-wb-kie-server-backend</module>
   </modules>
 </project>
