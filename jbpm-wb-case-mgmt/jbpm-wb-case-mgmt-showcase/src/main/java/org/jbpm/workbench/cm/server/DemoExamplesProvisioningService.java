@@ -46,7 +46,7 @@ import org.guvnor.ala.registry.local.InMemoryBuildRegistry;
 import org.guvnor.ala.registry.local.InMemorySourceRegistry;
 import org.guvnor.ala.source.git.config.impl.GitConfigImpl;
 import org.guvnor.ala.source.git.executor.GitConfigExecutor;
-import org.jbpm.console.ng.ks.utils.KieServerUtils;
+import org.jbpm.workbench.ks.utils.KieServerUtils;
 import org.kie.server.api.KieServerConstants;
 import org.kie.server.api.model.KieContainerResource;
 import org.kie.server.api.model.ReleaseId;

@@ -27,7 +27,7 @@ import org.dashbuilder.displayer.client.DisplayerCoordinator;
 import org.dashbuilder.displayer.client.DisplayerLocator;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
-import org.jbpm.console.ng.ks.integration.ConsoleDataSetLookup;
+import org.jbpm.workbench.ks.integration.ConsoleDataSetLookup;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardI18n;

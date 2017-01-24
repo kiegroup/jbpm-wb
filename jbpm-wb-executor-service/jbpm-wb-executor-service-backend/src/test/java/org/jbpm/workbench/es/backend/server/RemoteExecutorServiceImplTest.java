@@ -16,7 +16,7 @@
 
 package org.jbpm.workbench.es.backend.server;
 
-import org.jbpm.console.ng.ks.integration.KieServerIntegration;
+import org.jbpm.workbench.ks.integration.KieServerIntegration;
 import org.jbpm.workbench.es.model.RequestDetails;
 import org.junit.Before;
 import org.junit.Test;

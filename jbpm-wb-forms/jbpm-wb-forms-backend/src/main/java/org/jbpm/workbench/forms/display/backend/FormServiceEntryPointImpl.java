@@ -25,7 +25,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.ks.integration.AbstractKieServerService;
+import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.jbpm.workbench.forms.display.FormRenderingSettings;
 import org.jbpm.workbench.forms.service.providing.DefaultFormProvider;
 import org.jbpm.workbench.forms.service.providing.FormProvider;

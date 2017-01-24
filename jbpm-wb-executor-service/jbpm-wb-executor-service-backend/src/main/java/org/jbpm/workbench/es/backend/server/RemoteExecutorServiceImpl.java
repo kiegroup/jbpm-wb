@@ -23,7 +23,7 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.ks.integration.AbstractKieServerService;
+import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.jbpm.workbench.es.model.RequestDetails;
 import org.jbpm.workbench.es.service.ExecutorService;
 import org.kie.server.api.model.instance.JobRequestInstance;

@@ -31,7 +31,7 @@
   <inherits name="org.jbpm.workbench.forms.JbpmWorkbenchFormsAPI"/>
   <inherits name="org.jbpm.workbench.forms.JbpmWorkbenchFormsClient"/>
   <inherits name="org.jbpm.workbench.pr.JbpmWorkbenchProcessRuntimeAPI"/>
-  <inherits name="org.jbpm.console.ng.ks.JbpmConsoleNGKieServerAPI"/>
+  <inherits name="org.jbpm.workbench.ks.JbpmWorkbenchKieServerAPI"/>
   <inherits name="org.jbpm.workbench.ht.JbpmWorkbenchHumanTasksAPI"/>
   <inherits name="org.kie.workbench.common.widgets.KieWorkbenchWidgetsCommon"/>
   <inherits name="org.dashbuilder.CommonClient"/>

@@ -30,7 +30,7 @@
 
   <inherits name="org.dashbuilder.DisplayerClient"/>
 
-  <inherits name="org.jbpm.console.ng.ks.JbpmConsoleNGKieServerAPI"/>
+  <inherits name="org.jbpm.workbench.ks.JbpmWorkbenchKieServerAPI"/>
 
   <source path="client"/>
 

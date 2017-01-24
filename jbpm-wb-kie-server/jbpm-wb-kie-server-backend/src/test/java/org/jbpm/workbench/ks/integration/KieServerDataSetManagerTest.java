@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2017 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ks.integration;
+package org.jbpm.workbench.ks.integration;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,7 +23,7 @@ import java.util.Set;
 import javax.enterprise.event.Event;
 
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
-import org.jbpm.console.ng.ks.events.KieServerDataSetRegistered;
+import org.jbpm.workbench.ks.events.KieServerDataSetRegistered;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

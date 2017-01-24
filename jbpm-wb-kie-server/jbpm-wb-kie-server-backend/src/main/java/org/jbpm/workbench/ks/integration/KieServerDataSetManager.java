@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2017 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ks.integration;
+package org.jbpm.workbench.ks.integration;
 
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +28,7 @@ import javax.inject.Inject;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.dashbuilder.dataset.def.SQLDataSetDef;
-import org.jbpm.console.ng.ks.events.KieServerDataSetRegistered;
+import org.jbpm.workbench.ks.events.KieServerDataSetRegistered;
 import org.kie.server.common.rest.KieServerHttpRequestException;
 import org.kie.server.api.model.definition.QueryDefinition;
 import org.kie.server.client.KieServicesException;

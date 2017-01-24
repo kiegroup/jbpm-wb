@@ -22,7 +22,7 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.console.ng.ks.integration.AbstractKieServerService;
+import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.jbpm.workbench.pr.backend.server.model.RemoteCorrelationKey;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.kie.internal.process.CorrelationKey;

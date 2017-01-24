@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2017 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.jbpm.console.ng.ks.utils;
+package org.jbpm.workbench.ks.utils;
 
 import java.util.Arrays;
 
-import org.jbpm.console.ng.ks.security.KeyCloakTokenCredentialsProvider;
+import org.jbpm.workbench.ks.security.KeyCloakTokenCredentialsProvider;
 import org.kie.server.api.KieServerConstants;
 import org.kie.server.api.marshalling.MarshallingFormat;
 import org.kie.server.client.CredentialsProvider;
