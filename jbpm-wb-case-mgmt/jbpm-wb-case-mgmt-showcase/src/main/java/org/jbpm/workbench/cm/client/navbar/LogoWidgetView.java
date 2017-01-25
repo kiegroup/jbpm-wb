@@ -37,7 +37,7 @@ import org.jbpm.workbench.cm.client.resources.i18n.ShowcaseConstants;
  * The Logo banner for the application
  */
 @Dependent
-public class LogoWidgetView extends Composite implements LogoWidgetPresenter.View {
+public class LogoWidgetView extends Composite {
 
     private SimplePanel container = GWT.create(SimplePanel.class);
 
