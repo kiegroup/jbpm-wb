@@ -8,9 +8,9 @@ You can clone the repository and build all the projects using: mvn clean install
 
 In order to start the showcase for development you should execute the following Maven commands:
 ```
-cd jbpm-console-ng-case-mgmt/
+cd jbpm-wb-case-mgmt/
 mvn clean install
-cd jbpm-console-ng-case-mgmt-showcase/
+cd jbpm-wb-case-mgmt-showcase/
 mvn clean gwt:run
 ```
 The default login for the showcase app is admin/admin
@@ -37,7 +37,7 @@ Independently from the method you choose, the url for the running Kie Server mus
   To forward the current authenticated user into Kie Server, a new login module should be added to the WildFly instance running the showcase app.
   Please add this new login module in the security domain *other*.
   ```
-  <login-module code="org.kie.security.jaas.KieLoginModule" flag="required" module="deployment.jbpm-console-ng-case-mgmt-showcase.war"/>
+  <login-module code="org.kie.security.jaas.KieLoginModule" flag="required" module="deployment.jbpm-wb-case-mgmt-showcase.war"/>
   ```
   When using this mode, users must co-exist in both servers where the showcase app and Kie Server are running in order for the authentication to suceed.
   To enable this authentication mode, only the Kie Server location system property must be provided.
@@ -59,12 +59,12 @@ In order to create case instances, a list of case definitions is set via JSON fo
 
 Download and unzip the WildFly 10 distribution. Let's call the root of the distribution WILDFLY_HOME. This directory is named after the WildFly version, so for example wildfly-10.0.0.Final.
 
-Build the jbpm-console-ng-case-mgmt-showcase project using the following Maven command
+Build the jbpm-wb-case-mgmt-showcase project using the following Maven command
 ```
-cd jbpm-console-ng-case-mgmt/
+cd jbpm-wb-case-mgmt/
 mvn clean install -Dfull
 ```
-Copy the newly create war file (jbpm-console-ng-case-mgmt-showcase/jbpm-console-ng-case-mgmt-showcase.war) into WILDFLY_HOME/standalone/deployments.
+Copy the newly create war file (jbpm-wb-case-mgmt-showcase/jbpm-console-ng-case-mgmt-showcase.war) into WILDFLY_HOME/standalone/deployments.
 
 Configure user(s) and role(s). Execute the following command:
 ```

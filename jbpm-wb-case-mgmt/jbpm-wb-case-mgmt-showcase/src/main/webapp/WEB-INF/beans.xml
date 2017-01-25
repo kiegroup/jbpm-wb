@@ -4,7 +4,6 @@
     <!-- These exclusions were added by Errai to avoid deploying client-side classes to the server -->
     <!-- End of Errai exclusions -->
 
-    <exclude name="org.jbpm.console.ng.bd.integration.**"/>
     <exclude name="org.jbpm.workbench.cm.server.MockCaseManagementService">
       <if-system-property name="org.kie.server.location"/>
     </exclude>
