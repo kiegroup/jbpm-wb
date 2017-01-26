@@ -170,7 +170,7 @@
               <id>validate</id>
               <phase>validate</phase>
               <configuration>
-                <checkstyleRules>
+                <checkstyleRules combine.self="override">
                   <module name="Checker">
                     <module name="FileTabCharacter">
                       <property name="eachLine" value="true" />
