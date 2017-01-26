@@ -23,13 +23,15 @@ import org.jbpm.workbench.common.service.ItemKey;
 public class ProcessInstanceKey implements ItemKey {
 
     private String serverTemplateId;
+    private String deploymentId;
     private Long processInstanceId;
 
     public ProcessInstanceKey() {
     }
 
-    public ProcessInstanceKey(String serverTemplateId, Long processInstanceId) {
+    public ProcessInstanceKey(String serverTemplateId, String deploymentId, Long processInstanceId) {
         this.serverTemplateId = serverTemplateId;
+        this.deploymentId = deploymentId;
         this.processInstanceId = processInstanceId;
     }
 
@@ -41,11 +43,17 @@ public class ProcessInstanceKey implements ItemKey {
         return serverTemplateId;
     }
 
+    public String getDeploymentId() {
+        return deploymentId;
+    }
+
     @Override
     @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
         int hash = 7;
         hash = 13 * hash + (this.serverTemplateId != null ? this.serverTemplateId.hashCode() : 0);
+        hash = ~~hash;
+        hash = 13 * hash + (this.deploymentId != null ? this.deploymentId.hashCode() : 0);
         hash = ~~hash;
         hash = 13 * hash + (this.processInstanceId != null ? this.processInstanceId.hashCode() : 0);
         hash = ~~hash;
@@ -62,6 +70,9 @@ public class ProcessInstanceKey implements ItemKey {
         }
         final ProcessInstanceKey other = (ProcessInstanceKey) obj;
         if (this.serverTemplateId != other.serverTemplateId && (this.serverTemplateId == null || !this.serverTemplateId.equals(other.serverTemplateId))) {
+            return false;
+        }
+        if (this.deploymentId != other.deploymentId && (this.deploymentId == null || !this.deploymentId.equals(other.deploymentId))) {
             return false;
         }
         if (this.processInstanceId != other.processInstanceId && (this.processInstanceId == null || !this.processInstanceId.equals(other.processInstanceId))) {

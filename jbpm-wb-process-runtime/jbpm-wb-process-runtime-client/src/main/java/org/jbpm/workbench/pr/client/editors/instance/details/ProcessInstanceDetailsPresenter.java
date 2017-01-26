@@ -162,7 +162,7 @@ public class ProcessInstanceDetailsPresenter {
                         processSelected.getStartTime() );
 
             }
-        } ).getProcessInstance(serverTemplateId, new ProcessInstanceKey(serverTemplateId, Long.parseLong(processId)));
+        } ).getProcessInstance(serverTemplateId, new ProcessInstanceKey(serverTemplateId, deploymentId, Long.parseLong(processId)));
 
 
         processRuntimeDataService.call(new RemoteCallback<List<NodeInstanceSummary>>() {
@@ -175,7 +175,7 @@ public class ProcessInstanceDetailsPresenter {
                 }
                 view.getCurrentActivitiesListBox().setHTML( safeHtmlBuilder.toSafeHtml() );
             }
-        } ).getProcessInstanceActiveNodes( serverTemplateId, Long.parseLong( processId ) );
+        } ).getProcessInstanceActiveNodes( serverTemplateId, deploymentId, Long.parseLong( processId ) );
     }
 
 }

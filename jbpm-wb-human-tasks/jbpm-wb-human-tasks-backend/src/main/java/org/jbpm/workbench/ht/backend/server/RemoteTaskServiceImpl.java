@@ -187,7 +187,7 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
 
         UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
 
-        List<TaskEventInstance> events = client.findTaskEvents(taskId, 0, 1000);
+        List<TaskEventInstance> events = client.findTaskEvents(containerId, taskId, 0, 1000);
 
         return events.stream().map(e -> build(e)).collect(toList());
     }

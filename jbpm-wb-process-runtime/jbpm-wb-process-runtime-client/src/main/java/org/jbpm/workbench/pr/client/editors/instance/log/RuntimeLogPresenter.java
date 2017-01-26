@@ -39,6 +39,7 @@ public class RuntimeLogPresenter {
     private Long currentProcessInstanceId;
     private String currentProcessName;
     private String currentServerTemplateId;
+    private String currentDeploymentId;
 
     public interface RuntimeLogView extends IsWidget {
 
@@ -81,7 +82,7 @@ public class RuntimeLogPresenter {
 
                     view.setLogs( logsLine );
                 }
-            } ).getRuntimeLogs(currentServerTemplateId, currentProcessInstanceId);
+            } ).getRuntimeLogs(currentServerTemplateId, currentDeploymentId, currentProcessInstanceId);
         } else {
             processRuntimeDataService.call(new RemoteCallback<List<RuntimeLogSummary>>() {
                 @Override
@@ -97,7 +98,7 @@ public class RuntimeLogPresenter {
 
                     view.setLogs( logsLine );
                 }
-            } ).getBusinessLogs(currentServerTemplateId, currentProcessName, currentProcessInstanceId );
+            } ).getBusinessLogs(currentServerTemplateId, currentDeploymentId, currentProcessName, currentProcessInstanceId );
         }
     }
 
@@ -105,6 +106,7 @@ public class RuntimeLogPresenter {
         this.currentProcessInstanceId = event.getProcessInstanceId();
         this.currentProcessName = event.getProcessDefName();
         this.currentServerTemplateId = event.getServerTemplateId();
+        this.currentDeploymentId = event.getDeploymentId();
 
         refreshProcessInstanceData( LogOrder.ASC, LogType.BUSINESS );
     }

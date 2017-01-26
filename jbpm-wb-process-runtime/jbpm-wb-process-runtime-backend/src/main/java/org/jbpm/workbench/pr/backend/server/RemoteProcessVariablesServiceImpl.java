@@ -31,7 +31,6 @@ import org.jbpm.workbench.pr.service.ProcessVariablesService;
 import org.kie.server.api.model.definition.VariablesDefinition;
 import org.kie.server.api.model.instance.VariableInstance;
 import org.kie.server.client.ProcessServicesClient;
-import org.kie.server.client.QueryServicesClient;
 import org.uberfire.paging.PageResponse;
 
 @Service
@@ -83,13 +82,12 @@ public class RemoteProcessVariablesServiceImpl extends AbstractKieServerService 
 
         Map<String, String> properties = new HashMap<String, String>();
 
-        QueryServicesClient queryClient = getClient(serverTemplateId, QueryServicesClient.class);
         ProcessServicesClient processClient = getClient(serverTemplateId, ProcessServicesClient.class);
 
         VariablesDefinition vars = processClient.getProcessVariableDefinitions(deploymentId, processId);
         properties.putAll(vars.getVariables());
 
-        List<VariableInstance> variables = queryClient.findVariablesCurrentState(processInstanceId);
+        List<VariableInstance> variables = processClient.findVariablesCurrentState(deploymentId, processInstanceId);
 
         Collection<ProcessVariableSummary> processVariables = VariableHelper.adaptCollection(variables, properties, processInstanceId, deploymentId, serverTemplateId);
 
@@ -107,9 +105,8 @@ public class RemoteProcessVariablesServiceImpl extends AbstractKieServerService 
 
     @Override
     public List<ProcessVariableSummary> getVariableHistory(String serverTemplateId, String deploymentId, Long processInstanceId, String variableName) {
-        QueryServicesClient queryClient = getClient(serverTemplateId, QueryServicesClient.class);
-
-        List<VariableInstance> variables = queryClient.findVariableHistory(processInstanceId, variableName, 0, 100);
+        ProcessServicesClient processClient = getClient(serverTemplateId, ProcessServicesClient.class);
+        List<VariableInstance> variables = processClient.findVariableHistory(deploymentId, processInstanceId, variableName, 0, 100);
 
         return VariableHelper.adaptCollection(variables, new HashMap<String, String>(), processInstanceId, deploymentId, serverTemplateId);
     }

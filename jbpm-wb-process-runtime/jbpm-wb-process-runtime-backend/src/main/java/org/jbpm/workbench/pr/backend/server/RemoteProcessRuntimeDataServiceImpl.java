@@ -69,23 +69,23 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
             return null;
         }
 
-        QueryServicesClient queryServicesClient = getClient(serverTemplateId, QueryServicesClient.class);
+        ProcessServicesClient queryServicesClient = getClient(serverTemplateId, ProcessServicesClient.class);
 
-        ProcessInstance processInstance = queryServicesClient.findProcessInstanceById(processInstanceKey.getProcessInstanceId());
+        ProcessInstance processInstance = queryServicesClient.getProcessInstance(processInstanceKey.getDeploymentId(), processInstanceKey.getProcessInstanceId());
 
         return build(processInstance);
     }
 
     @Override
-    public List<NodeInstanceSummary> getProcessInstanceActiveNodes(String serverTemplateId, Long processInstanceId) {
+    public List<NodeInstanceSummary> getProcessInstanceActiveNodes(String serverTemplateId, String deploymentId, Long processInstanceId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return emptyList();
         }
 
         List<NodeInstanceSummary> instances = new ArrayList<NodeInstanceSummary>();
-        QueryServicesClient queryServicesClient = getClient(serverTemplateId, QueryServicesClient.class);
+        ProcessServicesClient processServicesClient = getClient(serverTemplateId, ProcessServicesClient.class);
 
-        List<NodeInstance> nodeInstances = queryServicesClient.findActiveNodeInstances(processInstanceId, 0, 100);
+        List<NodeInstance> nodeInstances = processServicesClient.findActiveNodeInstances(deploymentId, processInstanceId, 0, 100);
 
         for (NodeInstance instance : nodeInstances) {
             NodeInstanceSummary summary = new NodeInstanceSummary(instance.getId(),
@@ -104,12 +104,12 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
     }
 
     @Override
-    public List<RuntimeLogSummary> getBusinessLogs(String serverTemplateId, String processName, Long processInstanceId) {
+    public List<RuntimeLogSummary> getBusinessLogs(String serverTemplateId, String deploymentId, String processName, Long processInstanceId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return emptyList();
         }
 
-        List<NodeInstance> processInstanceHistory = getProcessInstanceHistory(serverTemplateId, processInstanceId);
+        List<NodeInstance> processInstanceHistory = getProcessInstanceHistory(serverTemplateId, deploymentId, processInstanceId);
         List<TaskEventInstance> allTaskEventsByProcessInstanceId = new ArrayList<TaskEventInstance>();//taskAuditService.getAllTaskEventsByProcessInstanceId(processInstanceId, "");
         List<RuntimeLogSummary> logs = new ArrayList<RuntimeLogSummary>(processInstanceHistory.size() + allTaskEventsByProcessInstanceId.size());
         PrettyTime prettyDateFormatter = new PrettyTime();
@@ -251,12 +251,12 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
     }
 
     @Override
-    public List<RuntimeLogSummary> getRuntimeLogs(final String serverTemplateId, final Long processInstanceId) {
+    public List<RuntimeLogSummary> getRuntimeLogs(final String serverTemplateId, String deploymentId, final Long processInstanceId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return emptyList();
         }
 
-        List<NodeInstance> processInstanceHistory = getProcessInstanceHistory(serverTemplateId, processInstanceId);
+        List<NodeInstance> processInstanceHistory = getProcessInstanceHistory(serverTemplateId, deploymentId, processInstanceId);
         List<TaskEventInstance> allTaskEventsByProcessInstanceId = new ArrayList<TaskEventInstance>();//taskAuditService.getAllTaskEventsByProcessInstanceId(processInstanceId, "");
         List<RuntimeLogSummary> logs = new ArrayList<RuntimeLogSummary>(processInstanceHistory.size() + allTaskEventsByProcessInstanceId.size());
         PrettyTime prettyDateFormatter = new PrettyTime();
@@ -285,14 +285,14 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
         return logs;
     }
 
-    protected List<NodeInstance> getProcessInstanceHistory(final String serverTemplateId, final Long processInstanceId) {
+    protected List<NodeInstance> getProcessInstanceHistory(final String serverTemplateId, String deploymentId, final Long processInstanceId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return emptyList();
         }
 
-        QueryServicesClient queryServicesClient = getClient(serverTemplateId, QueryServicesClient.class);
+        ProcessServicesClient processServicesClient = getClient(serverTemplateId, ProcessServicesClient.class);
 
-        return queryServicesClient.findNodeInstances(processInstanceId, 0, 100);
+        return processServicesClient.findNodeInstances(deploymentId, processInstanceId, 0, 100);
 
     }
 

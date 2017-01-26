@@ -333,6 +333,7 @@ public class DashboardKpis {
                         .column(COLUMN_TASK_CREATED_DATE).format(i18n.taskTableStartDate(), DateUtils.getDateTimeFormatMask())
                         .column(COLUMN_TASK_END_DATE).format(i18n.taskTableEndDate(), DateUtils.getDateTimeFormatMask())
                         .column(COLUMN_TASK_DURATION).format(i18n.taskTableDuration())
+                        .column(COLUMN_PROCESS_EXTERNAL_ID).format(i18n.processTableDeploymentId())
                         .tablePageSize(10)
                         .tableOrderEnabled(true)
                         .tableOrderDefault(COLUMN_TASK_CREATED_DATE, DESCENDING)
