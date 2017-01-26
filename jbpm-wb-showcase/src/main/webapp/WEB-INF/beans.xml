@@ -7,15 +7,10 @@
 
     <exclude name="org.jbpm.workbench.client.**"/>
     <exclude name="org.jbpm.workbench.ht.client.**"/>
-    <exclude name="org.jbpm.console.ng.bh.client.**"/>
-    <exclude name="org.jbpm.console.ng.bd.client.**"/>
     <exclude name="org.jbpm.dashboard.renderer.client.**"/>
-    <exclude name="org.jbpm.console.ng.dm.client.**"/>
     <exclude name="org.jbpm.workbench.es.client.**"/>
     <exclude name="org.jbpm.workbench.common.client.**"/>
-    <exclude name="org.jbpm.console.ng.di.client.**"/>
     <exclude name="org.jbpm.workbench.df.client.**"/>
-    <exclude name="org.jbpm.console.ng.ht.admin.client.**"/>
     <exclude name="org.jbpm.workbench.forms.modeler.client.**"/>
     <exclude name="org.jbpm.workbench.pr.client.**"/>
     <exclude name="org.jbpm.workbench.forms.client.**"/>
