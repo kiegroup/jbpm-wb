@@ -99,7 +99,7 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- jBPM Console Panels -->
+    <!-- jBPM WB Panels -->
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-wb-data-filters-client</artifactId>

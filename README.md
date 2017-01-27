@@ -11,7 +11,7 @@ It also describes all guidelines, tips and tricks.
 If you want your pull requests (or patches) to be merged into master, please respect those guidelines.
 
 ### Code style ###
-Following are the basic code style rules used in jBPM Console NG, full guidelines are described in [droolsjbpm README file](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/README.md).
+Following are the basic code style rules used in jBPM WB, full guidelines are described in [droolsjbpm README file](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/README.md).
 Please make sure your code conforms to these rules, before submitting pull requests.
  * Java source files indentation is 4 spaces (no tabs!)
  * HTML and XML files indentation is 2 spaces (again no tabs)

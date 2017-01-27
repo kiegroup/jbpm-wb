@@ -64,7 +64,7 @@ Build the jbpm-wb-case-mgmt-showcase project using the following Maven command
 cd jbpm-wb-case-mgmt/
 mvn clean install -Dfull
 ```
-Copy the newly create war file (jbpm-wb-case-mgmt-showcase/jbpm-console-ng-case-mgmt-showcase.war) into WILDFLY_HOME/standalone/deployments.
+Copy the newly create war file (jbpm-wb-case-mgmt-showcase/jbpm-wb-case-mgmt-showcase.war) into WILDFLY_HOME/standalone/deployments.
 
 Configure user(s) and role(s). Execute the following command:
 ```
