@@ -132,7 +132,7 @@ minutes. it is now 24 hours. -->
 
   <security-constraint>
     <web-resource-collection>
-      <web-resource-name>console</web-resource-name>
+      <web-resource-name>wb</web-resource-name>
       <url-pattern>/jbpm-cm.html</url-pattern>
       <url-pattern>/org.jbpm.workbench.cm.jBPMCaseManagement/*</url-pattern>
       <url-pattern>*.erraiBus</url-pattern>
