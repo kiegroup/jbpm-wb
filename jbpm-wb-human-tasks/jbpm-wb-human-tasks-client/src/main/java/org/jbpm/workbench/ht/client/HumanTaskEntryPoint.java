@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.resources;
+package org.jbpm.workbench.ht.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.resources.client.ClientBundle;
+import javax.annotation.PostConstruct;
 
-public interface WorkbenchIntegrationImages extends ClientBundle {
+import org.jboss.errai.ioc.client.api.EntryPoint;
+import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
 
-    WorkbenchIntegrationImages INSTANCE = GWT.create(WorkbenchIntegrationImages.class);
+@EntryPoint
+public class HumanTaskEntryPoint {
+
+    @PostConstruct
+    public void init() {
+        HumanTaskResources.INSTANCE.css().ensureInjected();
+    }
 
 }

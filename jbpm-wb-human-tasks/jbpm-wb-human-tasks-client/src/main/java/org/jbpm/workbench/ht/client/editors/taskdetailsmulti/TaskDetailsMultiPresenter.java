@@ -29,7 +29,7 @@ import org.jbpm.workbench.ht.client.editors.taskdetails.TaskDetailsPresenter;
 import org.jbpm.workbench.ht.client.editors.taskform.TaskFormPresenter;
 import org.jbpm.workbench.ht.client.editors.tasklogs.TaskLogsPresenter;
 import org.jbpm.workbench.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter;
-import org.jbpm.workbench.ht.client.i18n.Constants;
+import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.forms.display.api.HumanTaskDisplayerConfig;
 import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayProvider;
 import org.jbpm.workbench.ht.model.TaskKey;

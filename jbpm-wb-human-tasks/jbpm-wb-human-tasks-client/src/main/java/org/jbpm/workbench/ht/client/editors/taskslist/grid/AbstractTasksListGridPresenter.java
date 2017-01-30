@@ -48,7 +48,7 @@ import org.jbpm.workbench.common.client.list.base.AbstractListView;
 import org.jbpm.workbench.common.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.workbench.common.client.list.base.events.SearchEvent;
 import org.jbpm.workbench.ht.client.editors.taskslist.grid.dash.DataSetTasksListGridPresenter;
-import org.jbpm.workbench.ht.client.i18n.Constants;
+import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.NewTaskEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;

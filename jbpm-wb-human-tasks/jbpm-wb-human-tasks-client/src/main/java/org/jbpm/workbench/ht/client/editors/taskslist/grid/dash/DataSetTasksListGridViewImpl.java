@@ -44,6 +44,7 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.jbpm.workbench.common.client.resources.CommonResources;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
@@ -52,8 +53,9 @@ import org.jbpm.workbench.common.client.list.base.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.util.ButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.common.client.util.TaskUtils;
+import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
 import org.jbpm.workbench.ht.client.editors.taskslist.grid.AbstractTasksListGridPresenter;
-import org.jbpm.workbench.ht.client.i18n.Constants;
+import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
@@ -131,22 +133,25 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             public String getStyleNames( TaskSummary row,
                                          int rowIndex ) {
                 if ( rowIndex == selectedRow ) {
-                    return "selected";
+                    return CommonResources.INSTANCE.css().selected();
                 } else {
                     if ( row.getStatus().equals( "InProgress" ) || row.getStatus().equals( "Ready" ) ) {
-                        if ( row.getPriority() == 5 ) {
-                            return "five";
-                        } else if ( row.getPriority() == 4 ) {
-                            return "four";
-                        } else if ( row.getPriority() == 3 ) {
-                            return "three";
-                        } else if ( row.getPriority() == 2 ) {
-                            return "two";
-                        } else if ( row.getPriority() == 1 ) {
-                            return "one";
+                        switch (row.getPriority()) {
+                            case 5:
+                                return HumanTaskResources.INSTANCE.css().taskPriorityFive();
+                            case 4:
+                                return HumanTaskResources.INSTANCE.css().taskPriorityFour();
+                            case 3:
+                                return HumanTaskResources.INSTANCE.css().taskPriorityThree();
+                            case 2:
+                                return HumanTaskResources.INSTANCE.css().taskPriorityTwo();
+                            case 1:
+                                return HumanTaskResources.INSTANCE.css().taskPriorityOne();
+                            default:
+                                return "";
                         }
                     } else if ( row.getStatus().equals( "Completed" ) ) {
-                        return "completed";
+                        return HumanTaskResources.INSTANCE.css().taskCompleted();
                     }
 
                 }

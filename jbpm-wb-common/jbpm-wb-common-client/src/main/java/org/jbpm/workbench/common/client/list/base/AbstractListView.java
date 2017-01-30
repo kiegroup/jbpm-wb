@@ -26,6 +26,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.resources.CommonResources;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
@@ -69,7 +70,7 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
         public String getStyleNames( T row,
                                      int rowIndex ) {
             if ( rowIndex == selectedRow ) {
-                return "selected";
+                return CommonResources.INSTANCE.css().selected();
             }
             return null;
         }

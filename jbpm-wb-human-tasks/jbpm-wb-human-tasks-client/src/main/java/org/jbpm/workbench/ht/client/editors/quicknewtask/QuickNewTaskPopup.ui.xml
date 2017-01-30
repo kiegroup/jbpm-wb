@@ -23,7 +23,7 @@
              xmlns:c="urn:import:org.jbpm.workbench.common.client.util"
              xmlns:p="urn:import:org.uberfire.client.views.pfly.widgets">
 
-  <ui:with field="i18n" type="org.jbpm.workbench.ht.client.i18n.Constants"/>
+  <ui:with field="i18n" type="org.jbpm.workbench.ht.client.resources.i18n.Constants"/>
 
   <ui:style>
     .spacer {
