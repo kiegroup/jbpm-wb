@@ -39,7 +39,7 @@ import org.gwtbootstrap3.client.ui.constants.IconSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
-import org.jbpm.workbench.common.client.i18n.Constants;
+import org.jbpm.workbench.common.client.resources.i18n.Constants;
 
 /**
  * Encapsulates set of components which are able to select day/week/month. Contains also buttons for going to previous or next

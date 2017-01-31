@@ -14,17 +14,29 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.resources;
+/*
+ *  TASK CSS
+ */
+.task-completed td {
+    background-color: #6ec664;
+}
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.resources.client.ClientBundle;
+.task-priority-five td {
+    background-color: #fbdebf;
+}
 
-public interface WorkbenchIntegrationResources extends ClientBundle {
+.task-priority-four td {
+    background-color: #f7bd7f;
+}
 
-    WorkbenchIntegrationResources INSTANCE = GWT.create(WorkbenchIntegrationResources.class);
+.task-priority-three td {
+    background-color: #f39d3c;
+}
 
-    
+.task-priority-two td {
+    background-color: #ec7a08;
+}
 
-    WorkbenchIntegrationImages showcaseImages();
-
+.task-priority-one td {
+    background-color: #b35c00;
 }

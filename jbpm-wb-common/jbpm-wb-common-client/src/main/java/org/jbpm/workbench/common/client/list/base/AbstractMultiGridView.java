@@ -35,7 +35,8 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.experimental.grid.base.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.i18n.Constants;
+import org.jbpm.workbench.common.client.resources.CommonResources;
+import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
@@ -87,7 +88,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         public String getStyleNames( T row,
                 int rowIndex ) {
             if ( rowIndex == selectedRow ) {
-                return "selected";
+                return CommonResources.INSTANCE.css().selected();
             }
             return null;
         }

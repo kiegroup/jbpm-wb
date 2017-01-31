@@ -26,7 +26,7 @@ import com.google.gwt.user.client.ui.HTML;
 import org.gwtbootstrap3.client.ui.Label;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.workbench.ht.client.i18n.Constants;
+import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent

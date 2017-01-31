@@ -52,7 +52,7 @@ import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.util.UTCDateBox;
 import org.jbpm.workbench.common.client.util.UTCTimeBox;
-import org.jbpm.workbench.ht.client.i18n.Constants;
+import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.mvp.Command;

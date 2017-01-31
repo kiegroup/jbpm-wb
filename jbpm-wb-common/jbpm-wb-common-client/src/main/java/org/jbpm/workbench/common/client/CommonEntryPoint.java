@@ -14,28 +14,19 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.es.client.resources;
+package org.jbpm.workbench.common.client;
 
-import com.google.gwt.resources.client.CssResource;
+import javax.annotation.PostConstruct;
 
-/**
- * General CSS for Guvnor. Use of standalone CSS files should be migrated to here
- */
-public interface ShowcaseCss extends CssResource {
+import org.jboss.errai.ioc.client.api.EntryPoint;
+import org.jbpm.workbench.common.client.resources.CommonResources;
 
-    @ClassName("header")
-    String mainClass();
+@EntryPoint
+public class CommonEntryPoint {
 
-    @ClassName("userInfo")
-    String userInfoClass();
-
-    @ClassName("perspectives")
-    String perspectivesClass();
-
-    @ClassName("controls")
-    String controlsClass();
-
-    @ClassName("logo")
-    String logoClass();
+    @PostConstruct
+    public void init() {
+        CommonResources.INSTANCE.css().ensureInjected();
+    }
 
 }

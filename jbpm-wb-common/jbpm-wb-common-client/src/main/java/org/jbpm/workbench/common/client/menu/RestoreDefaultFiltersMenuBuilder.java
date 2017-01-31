@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.jbpm.workbench.common.client.i18n.Constants;
+import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;

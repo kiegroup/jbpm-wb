@@ -26,7 +26,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
-import org.jbpm.workbench.common.client.i18n.Constants;
+import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.client.list.base.events.SearchEvent;
 import org.jbpm.workbench.common.model.QueryFilter;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;

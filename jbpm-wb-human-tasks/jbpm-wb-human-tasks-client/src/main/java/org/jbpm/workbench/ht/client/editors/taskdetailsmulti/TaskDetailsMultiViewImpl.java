@@ -30,7 +30,7 @@ import org.gwtbootstrap3.client.ui.NavTabs;
 import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.gwtbootstrap3.client.ui.TabPane;
-import org.jbpm.workbench.ht.client.i18n.Constants;
+import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 
 @Dependent
 public class TaskDetailsMultiViewImpl extends Composite

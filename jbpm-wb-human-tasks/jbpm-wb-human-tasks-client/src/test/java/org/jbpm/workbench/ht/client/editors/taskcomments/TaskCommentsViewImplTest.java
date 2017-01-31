@@ -18,7 +18,7 @@ package org.jbpm.workbench.ht.client.editors.taskcomments;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
-import org.jbpm.workbench.ht.client.i18n.Constants;
+import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.CommentSummary;
 import org.junit.Before;
 import org.junit.Test;

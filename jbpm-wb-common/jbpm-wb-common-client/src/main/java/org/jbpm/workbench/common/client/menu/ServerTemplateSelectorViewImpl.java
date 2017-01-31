@@ -31,7 +31,7 @@ import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
-import org.jbpm.workbench.common.client.i18n.Constants;
+import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.uberfire.mvp.ParameterizedCommand;
 
 @Dependent
