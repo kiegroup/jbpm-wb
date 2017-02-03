@@ -52,7 +52,8 @@ public class CaseStagesPresenter extends AbstractCaseInstancePresenter<CaseStage
 
         void removeAllStages();
 
-        void setCaseStagesList(List<CaseStageSummary> caseMilestoneList);
+        void setCaseStagesList(List<CaseStageSummary> caseStagesList);
+
     }
 
 }

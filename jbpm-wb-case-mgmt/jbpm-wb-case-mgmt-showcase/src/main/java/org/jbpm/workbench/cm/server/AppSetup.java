@@ -28,6 +28,7 @@ import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.kie.server.api.KieServerConstants;
 import org.kie.server.client.CaseServicesClient;
 import org.kie.server.client.KieServicesClient;
+import org.kie.server.client.UserTaskServicesClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.ApplicationStarted;
@@ -64,6 +65,13 @@ public class AppSetup {
     public CaseServicesClient produceCaseServicesClient(final KieServicesClient kieServicesClient) {
         LOGGER.info("Creating CaseServicesClient...");
         return kieServicesClient.getServicesClient(CaseServicesClient.class);
+    }
+
+    @Produces
+    @ApplicationScoped
+    public UserTaskServicesClient produceUserTaskServicesClient(final KieServicesClient kieServicesClient) {
+        LOGGER.info("Creating UserTaskServicesClient...");
+        return kieServicesClient.getServicesClient(UserTaskServicesClient.class);
     }
 
     @Produces

@@ -2,31 +2,63 @@
   {
     "name": "Stage1",
     "identifier": "Stage1",
-    "status": "Completed"
+    "status": "Completed",
+    "adHocActions": [
+      {
+        "id": "100",
+        "name": "adhoc_stage1_1",
+        "actionType": "AD_HOC",
+        "stageId": "Stage1"
+      },
+      {
+        "id": "101",
+        "name": "adhoc_stage1_2",
+        "actionType": "AD_HOC",
+        "stageId": "Stage1"
+      }
+    ]
   },
   {
     "name": "Stage2",
     "identifier": "Stage2",
-    "status": "Canceled"
+    "status": "Canceled",
+    "adHocActions": []
   },
   {
     "name": "Stage3",
     "identifier": "Stage3",
-    "status": "Completed"
+    "status": "Active",
+    "adHocActions": [
+      {
+        "id": "300",
+        "name": "adhoc_stage3_1",
+        "actionType": "AD_HOC",
+        "stageId": "Stage3"
+      },
+      {
+        "id": "301",
+        "name": "adhoc_stage3_2",
+        "actionType": "AD_HOC",
+        "stageId": "Stage3"
+      }
+    ]
   },
   {
     "name": "Stage4",
     "identifier": "Stage4",
-    "status": "Available"
+    "status": "Available",
+    "adHocActions": []
   },
   {
     "name": "Stage5",
     "identifier": "Stage5",
-    "status": "Available"
+    "status": "Available",
+    "adHocActions": []
   },
   {
     "name": "Stage6",
     "identifier": "Stage6",
-    "status": "Available"
+    "status": "Available",
+    "adHocActions": []
   }
 ]

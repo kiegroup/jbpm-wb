@@ -21,24 +21,34 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.jbpm.workbench.cm.model.CaseActionSummary;
 import org.jbpm.workbench.cm.model.CaseCommentSummary;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
+import org.jbpm.workbench.cm.util.Actions;
+import org.jbpm.workbench.cm.util.CaseActionType;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.workbench.cm.util.CaseInstanceSortBy;
 import org.jbpm.workbench.cm.util.CaseMilestoneSearchRequest;
+import org.jbpm.workbench.cm.util.CaseStageStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.api.model.cases.CaseAdHocFragment;
 import org.kie.server.api.model.cases.CaseComment;
 import org.kie.server.api.model.cases.CaseDefinition;
 import org.kie.server.api.model.cases.CaseInstance;
 import org.kie.server.api.model.cases.CaseMilestone;
+import org.kie.server.api.model.cases.CaseStage;
+import org.kie.server.api.model.instance.NodeInstance;
+import org.kie.server.api.model.instance.TaskInstance;
 import org.kie.server.client.CaseServicesClient;
+import org.kie.server.client.UserTaskServicesClient;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.jbpm.workbench.cm.backend.server.CaseCommentMapperTest.assertCaseComment;
@@ -65,9 +75,13 @@ public class RemoteCaseManagementServiceImplTest {
     final String author = "author";
     final String text = "text";
     final String commentId = "commentId";
+    final String userId = "userId";
 
     @Mock
     CaseServicesClient clientMock;
+
+    @Mock
+    UserTaskServicesClient userTaskServicesClient;
 
     @InjectMocks
     RemoteCaseManagementServiceImpl testedService;
@@ -326,4 +340,150 @@ public class RemoteCaseManagementServiceImplTest {
 
         return milestone;
     }
+
+    private CaseAdHocFragment createTestCaseAdHocFragment(String name, String type) {
+        CaseAdHocFragment caseAdHocFragment = CaseAdHocFragment.builder()
+                .name(name)
+                .type(type)
+                .build();
+
+        return caseAdHocFragment;
+    }
+
+    private NodeInstance createTestNodeInstace(String name, String nodeType, Long workItemId) {
+        NodeInstance nodeInstance = NodeInstance.builder()
+                .name(name)
+                .nodeType(nodeType)
+                .workItemId(workItemId)
+                .date(new Date())
+                .build();
+
+        return nodeInstance;
+    }
+
+    private CaseStage createTestCaseStage(String stageId, String stageName, String stageStatus) {
+        CaseStage stage = CaseStage.builder()
+                .id(stageId)
+                .name(stageName)
+                .status(stageStatus)
+                .build();
+        return stage;
+    }
+
+    @Test
+    public void getCaseActionsTest() {
+        final CaseInstance ci = createTestInstance(caseId);
+        CaseStage stage1 = createTestCaseStage("stage1", "stage1-name", CaseStageStatus.ACTIVE.getStatus());
+        CaseAdHocFragment cAHF1_stage1 = createTestCaseAdHocFragment("stage1-adHoc-1", "adHocFragment-type-1");
+        CaseAdHocFragment cAHF2_stage1 = createTestCaseAdHocFragment("stage1-adHoc-2", "adHocFragment-type-2");
+
+        CaseStage stage2 = createTestCaseStage("stage2", "stage2-name", CaseStageStatus.COMPLETED.getStatus());
+        CaseAdHocFragment cAHF1_stage2 = createTestCaseAdHocFragment("stage2-adHoc-1", "adHocFragment-type-1");
+        CaseAdHocFragment cAHF2_stage2 = createTestCaseAdHocFragment("stage2-adHoc-2", "adHocFragment-type-2");
+
+        stage1.setAdHocFragments(Arrays.asList(cAHF1_stage1, cAHF2_stage1));
+        stage2.setAdHocFragments(Arrays.asList(cAHF1_stage2, cAHF2_stage2));
+        ci.setStages(Arrays.asList(stage1, stage2));
+
+        when(clientMock.getCaseInstance(ci.getContainerId(), ci.getCaseId(), true, true, true, true))
+                .thenReturn(ci);
+
+        CaseAdHocFragment cAHF1 = createTestCaseAdHocFragment("adHocFragment-name-1", "adHocFragment-type-1");
+        CaseAdHocFragment cAHF2 = createTestCaseAdHocFragment("adHocFragment-name-2", "adHocFragment-type-2");
+        when(clientMock.getAdHocFragments(containerId, caseId)).thenReturn(Arrays.asList(cAHF1, cAHF2));
+
+        Long node1WorkItemId = 1L;
+        Long node2WorkItemId = 2L;
+        NodeInstance node1 = createTestNodeInstace("active1", "Human Task", node1WorkItemId);
+        NodeInstance node2 = createTestNodeInstace("active2", "Service Task", node2WorkItemId);
+        when(clientMock.getActiveNodes(eq(containerId), eq(caseId), anyInt(), anyInt())).thenReturn(Arrays.asList(node1, node2));
+
+        TaskInstance t1 = TaskInstance.builder()
+                .actualOwner("Koe")
+                .build();
+        when(userTaskServicesClient.findTaskByWorkItemId(node1WorkItemId)).thenReturn(t1);
+
+
+        Actions actions = testedService.getCaseActions(serverTemplateId, containerId, caseId, userId);
+
+        assertEquals(4, actions.getAvailableActions().size());
+        CaseActionMapperTest.assertCaseActionAdHocFragment(cAHF1, actions.getAvailableActions().get(0));
+        CaseActionMapperTest.assertCaseActionAdHocFragment(cAHF2, actions.getAvailableActions().get(1));
+        CaseActionMapperTest.assertCaseActionAdHocFragment(cAHF1_stage1, actions.getAvailableActions().get(2));
+        CaseActionMapperTest.assertCaseActionAdHocFragment(cAHF2_stage1, actions.getAvailableActions().get(3));
+
+        assertEquals(2, actions.getInProgressAction().size());
+        CaseActionMapperTest.assertCaseActionNodeInstance(node1, actions.getInProgressAction().get(0));
+        CaseActionMapperTest.assertCaseActionNodeInstance(node2, actions.getInProgressAction().get(1));
+
+        assertEquals(0, actions.getCompleteActions().size());
+
+        verify(clientMock).getAdHocFragments(containerId, caseId);
+        verify(clientMock).getActiveNodes(eq(containerId), eq(caseId), eq(0), anyInt());
+        verify(userTaskServicesClient).findTaskByWorkItemId(node1WorkItemId);
+        verify(userTaskServicesClient, never()).findTaskByWorkItemId(node2WorkItemId);
+    }
+
+    @Test
+    public void getInProgressActionsTest() {
+        Long node1WorkItemId = 1L;
+        Long node2WorkItemId = 2L;
+        String taskActualOwner = "Owner";
+
+        NodeInstance node1 = createTestNodeInstace("active1", "Human Task", node1WorkItemId);
+        NodeInstance node2 = createTestNodeInstace("active2", "Service Task", node2WorkItemId);
+        TaskInstance t1 = TaskInstance.builder()
+                .actualOwner(taskActualOwner)
+                .build();
+
+        when(clientMock.getActiveNodes(eq(containerId), eq(caseId), anyInt(), anyInt())).thenReturn(Arrays.asList(node1, node2));
+        when(userTaskServicesClient.findTaskByWorkItemId(node1WorkItemId)).thenReturn(t1);
+
+        List<CaseActionSummary> actionsSummaries = testedService.getInProgressActions(containerId, caseId);
+
+        assertEquals(2, actionsSummaries.size());
+        assertEquals(CaseActionType.INPROGRESS, actionsSummaries.get(0).getActionType());
+        assertEquals(CaseActionType.INPROGRESS, actionsSummaries.get(1).getActionType());
+        assertEquals(taskActualOwner, actionsSummaries.get(0).getActualOwner());
+        assertTrue(isNullOrEmpty(actionsSummaries.get(1).getActualOwner()));
+
+        CaseActionMapperTest.assertCaseActionNodeInstance(node1, actionsSummaries.get(0));
+        CaseActionMapperTest.assertCaseActionNodeInstance(node2, actionsSummaries.get(1));
+        verify(userTaskServicesClient).findTaskByWorkItemId(node1WorkItemId);
+        verify(userTaskServicesClient, never()).findTaskByWorkItemId(node2WorkItemId);
+    }
+
+    @Test
+    public void getAdHocActionsTest() {
+        final CaseInstance ci = createTestInstance(caseId);
+        CaseStage stage1 = createTestCaseStage("stage1", "stage1-name", CaseStageStatus.ACTIVE.getStatus());
+        CaseAdHocFragment cAHF1_stage1 = createTestCaseAdHocFragment("stage1-adHoc-1", "adHocFragment-type-1");
+        CaseAdHocFragment cAHF2_stage1 = createTestCaseAdHocFragment("stage1-adHoc-2", "adHocFragment-type-2");
+
+        CaseStage stage2 = createTestCaseStage("stage2", "stage2-name", CaseStageStatus.COMPLETED.getStatus());
+        CaseAdHocFragment cAHF1_stage2 = createTestCaseAdHocFragment("stage2-adHoc-1", "adHocFragment-type-1");
+        CaseAdHocFragment cAHF2_stage2 = createTestCaseAdHocFragment("stage2-adHoc-2", "adHocFragment-type-2");
+
+        stage1.setAdHocFragments(Arrays.asList(cAHF1_stage1, cAHF2_stage1));
+        stage2.setAdHocFragments(Arrays.asList(cAHF1_stage2, cAHF2_stage2));
+        ci.setStages(Arrays.asList(stage1, stage2));
+
+        when(clientMock.getCaseInstance(ci.getContainerId(), ci.getCaseId(), true, true, true, true))
+                .thenReturn(ci);
+
+        CaseAdHocFragment cAHF1 = createTestCaseAdHocFragment("adHocFragment-name-1", "adHocFragment-type-1");
+        CaseAdHocFragment cAHF2 = createTestCaseAdHocFragment("adHocFragment-name-2", "adHocFragment-type-2");
+        when(clientMock.getAdHocFragments(containerId, caseId)).thenReturn(Arrays.asList(cAHF1, cAHF2));
+
+        List<CaseActionSummary> ahdocActions = testedService.getAdHocActions(serverTemplateId, containerId, caseId);
+
+        assertEquals(4, ahdocActions.size());
+        CaseActionMapperTest.assertCaseActionAdHocFragment(cAHF1, ahdocActions.get(0));
+        CaseActionMapperTest.assertCaseActionAdHocFragment(cAHF2, ahdocActions.get(1));
+        CaseActionMapperTest.assertCaseActionAdHocFragment(cAHF1_stage1, ahdocActions.get(2));
+        CaseActionMapperTest.assertCaseActionAdHocFragment(cAHF2_stage1, ahdocActions.get(3));
+
+        verify(clientMock).getAdHocFragments(containerId, caseId);
+    }
+
 }

@@ -113,4 +113,19 @@ public interface Constants {
     @TranslationKey(defaultValue = "")
     String CASE_STAGES = "CaseStages";
 
+    @TranslationKey(defaultValue = "")
+    String CASE_ACTIONS = "CaseActions";
+
+    @TranslationKey(defaultValue = "")
+    String ACTION_START = "ActionStart";
+
+    @TranslationKey(defaultValue = "")
+    String ADD_DYNAMIC_USER_TASK = "AddNewDynamicUserTask";
+
+    @TranslationKey(defaultValue = "")
+    String PLEASE_INTRO_ACTION_NAME = "PleaseIntroActionName";
+
+    @TranslationKey(defaultValue = "")
+    String PLEASE_INTRO_USER_OR_GROUP_TO_ASSIGN_NEW_ACTION = "PleaseIntroUserOrGroupToAssignTheNewAction";
+
 }

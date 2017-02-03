@@ -59,6 +59,10 @@ public class CaseOverviewViewImpl implements CaseOverviewPresenter.CaseOverviewV
     FlowPanel caseStages;
 
     @Inject
+    @DataField("case-actions")
+    FlowPanel caseActions;
+
+    @Inject
     @DataField("case-comments")
     FlowPanel caseComments;
 
@@ -115,7 +119,7 @@ public class CaseOverviewViewImpl implements CaseOverviewPresenter.CaseOverviewV
 
     @Override
     public void addCaseActions(final String placeId, final Map<String, String> properties) {
-        addWidget(placeId, properties, sideBarLeft);
+        addWidget(placeId, properties, caseActions);
     }
 
     @Override
