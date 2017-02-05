@@ -16,25 +16,35 @@
 
 package org.jbpm.workbench.cm.backend.server;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.workbench.cm.model.CaseActionSummary;
 import org.jbpm.workbench.cm.model.CaseCommentSummary;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
 import org.jbpm.workbench.cm.service.CaseManagementService;
+import org.jbpm.workbench.cm.util.Actions;
+import org.jbpm.workbench.cm.util.CaseActionType;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.workbench.cm.util.CaseInstanceSortBy;
 import org.jbpm.workbench.cm.util.CaseMilestoneSearchRequest;
+import org.jbpm.workbench.cm.util.CaseStageStatus;
 import org.kie.server.api.model.cases.CaseComment;
 import org.kie.server.api.model.cases.CaseDefinition;
 import org.kie.server.api.model.cases.CaseInstance;
 import org.kie.server.api.model.cases.CaseMilestone;
+import org.kie.server.api.model.instance.NodeInstance;
 import org.kie.server.client.CaseServicesClient;
+import org.kie.server.client.UserTaskServicesClient;
 
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
@@ -46,9 +56,13 @@ import static java.util.Comparator.comparing;
 public class RemoteCaseManagementServiceImpl implements CaseManagementService {
 
     public static final int PAGE_SIZE_UNLIMITED = Integer.MAX_VALUE;
+    public static final List<String> NODE_TYPE_HUMAN_TASK = Arrays.asList("Human Task", "HumanTaskNode");
 
     @Inject
     private CaseServicesClient client;
+
+    @Inject
+    private UserTaskServicesClient userTaskServicesClient;
 
     @Override
     public List<CaseDefinitionSummary> getCaseDefinitions() {
@@ -159,5 +173,80 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
         return comparing(CaseMilestoneSummary::getStatus).thenComparing(request.getSortByAsc() ? comparatorByName: comparatorByName.reversed());
     }
 
+    @Override
+    public Actions getCaseActions(String serverTemplateId, String container, String caseId, String userId) {
+        Actions actions = new Actions();
+        actions.setAvailableActions(getAdHocActions(serverTemplateId, container, caseId));
+        actions.setInProgressAction(getInProgressActions(container, caseId));
+        actions.setCompleteActions(getCompletedActions(container, caseId));
+        return actions;
+    }
 
+    public List<CaseActionSummary> getInProgressActions(String containerId, String caseId) {
+        List<NodeInstance> activeNodes = client.getActiveNodes(containerId, caseId, 0, PAGE_SIZE_UNLIMITED);
+
+        return activeNodes.parallelStream()
+                .map(s -> new CaseActionNodeInstanceMapper(
+                        (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
+                                userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
+                                ""),
+                        CaseActionType.INPROGRESS).apply(s))
+                .collect(toList());
+    }
+
+    public List<NodeInstance> getCaseCompletedNodes(String containerId, String caseId) {
+        //TODO return client.getCompletedNodes(containerId, caseId, 0, PAGE_SIZE_UNLIMITED);
+        return new ArrayList<>();
+
+    }
+
+    public List<CaseActionSummary> getCompletedActions(String containerId, String caseId) {
+        List<NodeInstance> activeNodes = getCaseCompletedNodes(containerId, caseId);
+        return activeNodes.parallelStream()
+                .map(s -> new CaseActionNodeInstanceMapper(
+                        (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
+                                userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
+                                ""),
+                        CaseActionType.COMPLETED).apply(s))
+                .collect(toList());
+    }
+
+    public List<CaseActionSummary> getAdHocFragments(String containerId, String caseId) {
+        return client.getAdHocFragments(containerId, caseId)
+                .stream()
+                .map(new CaseActionAdHocMapper(""))
+                .collect(toList());
+    }
+
+    public List<CaseActionSummary> getAdHocActions(String serverTemplateId, String containerId, String caseId) {
+        List<CaseActionSummary> adHocActions = getAdHocFragments(containerId, caseId);
+        CaseInstanceSummary caseInstanceSummary = getCaseInstance(serverTemplateId, containerId, caseId);
+        caseInstanceSummary.getStages().stream()
+                .filter(s -> s.getStatus().equals(CaseStageStatus.ACTIVE.getStatus()))
+                .forEach(ah -> {
+                    if (ah.getAdHocActions().size() > 0) {
+                        adHocActions.addAll(ah.getAdHocActions());
+                    }
+                    return;
+                });
+        return adHocActions;
+    }
+
+    public void addDynamicUserTask(String containerId, String caseId, String name, String description, String actors, String groups, Map<String, Object> data) {
+        client.addDynamicUserTask(containerId, caseId, name, description, actors, groups, data);
+    }
+
+    public void addDynamicUserTaskToStage(String containerId, String caseId, String stageId, String name, String description, String actors, String groups, Map<String, Object> data) {
+        client.addDynamicUserTaskToStage(containerId, caseId, stageId, name, description, actors, groups, data);
+    }
+
+    @Override
+    public void triggerAdHocActionInStage(String containerId, String caseId, String stageId, String adHocName, Map<String, Object> data) {
+        client.triggerAdHocFragmentInStage(containerId, caseId, stageId, adHocName, data);
+    }
+
+    @Override
+    public void triggerAdHocAction(String containerId, String caseId, String adHocName, Map<String, Object> data) {
+        client.triggerAdHocFragment(containerId, caseId, adHocName, data);
+    }
 }

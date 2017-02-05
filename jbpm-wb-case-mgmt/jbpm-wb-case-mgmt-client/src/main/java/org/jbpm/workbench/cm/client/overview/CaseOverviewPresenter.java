@@ -20,6 +20,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.jbpm.workbench.cm.client.actions.CaseActionsPresenter;
 import org.jbpm.workbench.cm.client.comments.CaseCommentsPresenter;
 import org.jbpm.workbench.cm.client.milestones.CaseMilestoneListPresenter;
 import org.jbpm.workbench.cm.client.details.CaseDetailsPresenter;
@@ -66,6 +67,7 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
         view.addCaseComments(CaseCommentsPresenter.SCREEN_ID, place.getParameters());
         view.addCaseMilestones(CaseMilestoneListPresenter.SCREEN_ID,place.getParameters());
         view.addCaseStages(CaseStagesPresenter.SCREEN_ID, place.getParameters());
+        view.addCaseActions(CaseActionsPresenter.SCREEN_ID, place.getParameters());
     }
 
     protected void refreshCase() {

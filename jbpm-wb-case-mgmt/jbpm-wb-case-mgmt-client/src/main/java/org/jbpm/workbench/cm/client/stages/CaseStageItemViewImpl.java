@@ -32,7 +32,7 @@ import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.cm.client.util.AbstractView;
-import org.jbpm.workbench.cm.client.util.CaseStageStatus;
+import org.jbpm.workbench.cm.util.CaseStageStatus;
 import org.jbpm.workbench.cm.model.CaseStageSummary;
 
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
@@ -84,6 +84,10 @@ public class CaseStageItemViewImpl extends AbstractView<CaseStagesPresenter> imp
         String statusStr = convertStatusToStr(stageStatus.getStatus());
         switch(stageStatus){
             case COMPLETED:{
+                showStageStatus(statusStr, "fa", "fa-check");
+                break;
+            }
+            case ACTIVE: {
                 showStageStatus( statusStr, "pficon", "pficon-ok");
                 break;
             }

@@ -32,15 +32,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl;
+import org.jbpm.workbench.cm.model.CaseActionSummary;
 import org.jbpm.workbench.cm.model.CaseCommentSummary;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
 import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
 import org.jbpm.workbench.cm.model.CaseStageSummary;
+import org.jbpm.workbench.cm.util.CaseActionType;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
-
 import org.jbpm.workbench.cm.util.CaseMilestoneSearchRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,8 +57,10 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     private static final String CASE_DEFINITIONS_JSON = "case_definitions.json";
     private static final String CASE_MILESTONES_JSON = "case_milestones.json";
     private static final String CASE_STAGES_JSON = "case_stages.json";
+    private static final String CASE_ACTIONS_JSON = "case_actions.json";
 
     private static int commentIdGenerator = 0;
+    private static long actionIdLongenerator = 9;
 
     @Inject
     protected User identity;
@@ -66,6 +70,8 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     private List<CaseStageSummary> caseStageList = new ArrayList<>();
     private Map<String, List<CaseCommentSummary>> caseCommentMap = new HashMap<>();
     private List<CaseMilestoneSummary> caseMilestoneList = new ArrayList<>();
+    private Map<String, List<CaseActionSummary>> caseActionMap = new HashMap<>();
+    private List<CaseActionSummary> caseActionList = new ArrayList<>();
 
     @PostConstruct
     public void init() {
@@ -75,6 +81,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
             caseDefinitionList = Arrays.asList(mapper.readValue(inputStream, CaseDefinitionSummary[].class));
             caseMilestoneList = Arrays.asList(mapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(CASE_MILESTONES_JSON), CaseMilestoneSummary[].class));
             caseStageList = Arrays.asList(mapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(CASE_STAGES_JSON), CaseStageSummary[].class));
+            caseActionList = Arrays.asList(mapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(CASE_ACTIONS_JSON), CaseActionSummary[].class));
 
             LOGGER.info("Loaded {} case definitions", caseDefinitionList.size());
         } catch (Exception e) {
@@ -106,6 +113,13 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
                 .stages(caseStageList)
                 .build();
         caseInstanceList.add(ci);
+
+        List<CaseActionSummary> actions = new ArrayList<>(caseActionList);
+        caseActionMap.putIfAbsent(ci.getCaseId(), actions.stream().map(s -> {
+            s.setCreatedOn(new Date());
+            return s;
+        }).collect(toList()));
+
         return ci.getCaseId();
     }
 
@@ -204,4 +218,73 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
                     .collect(toList());
     }
 
+    public List<CaseActionSummary> getAdHocFragments(String containerId, String caseId) {
+        return ofNullable(caseActionMap.get(caseId)).orElse(emptyList()).stream()
+                .filter(c -> CaseActionType.AD_HOC == c.getActionType()).collect(toList());
+    }
+
+    public List<CaseActionSummary> getInProgressActions(String containerId, String caseId) {
+        return ofNullable(caseActionMap.get(caseId)).orElse(emptyList()).stream()
+                .filter(c -> CaseActionType.INPROGRESS == c.getActionType()).collect(toList());
+    }
+
+    public List<CaseActionSummary> getCompletedActions(String containerId, String caseId) {
+        return ofNullable(caseActionMap.get(caseId)).orElse(emptyList()).stream()
+                .filter(c -> CaseActionType.COMPLETED == c.getActionType()).collect(toList());
+    }
+
+    @Override
+    public void addDynamicUserTask(String containerId, String caseId, String name, String description, String actors, String groups, Map<String, Object> data) {
+        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
+        final CaseActionSummary action = CaseActionSummary.builder()
+                .id(actionIdLongenerator++)
+                .name(name)
+                .actualOwner(actors)
+                .type("Human Task")
+                .status(CaseActionType.INPROGRESS)
+                .createdOn(new Date())
+                .build();
+        actionSummaryList.add(action);
+        caseActionMap.putIfAbsent(caseId, actionSummaryList);
+    }
+
+    public void addDynamicUserTaskToStage(String containerId, String caseId, String stageId, String name, String description, String actors, String groups, Map<String, Object> data) {
+        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
+        final CaseActionSummary action = CaseActionSummary.builder()
+                .id(actionIdLongenerator++)
+                .name(name)
+                .actualOwner(actors)
+                .type("Human Task")
+                .status(CaseActionType.INPROGRESS)
+                .createdOn(new Date())
+                .build();
+        actionSummaryList.add(action);
+        caseActionMap.putIfAbsent(caseId, actionSummaryList);
+    }
+
+    @Override
+    public void triggerAdHocActionInStage(String containerId, String caseId, String stageId, String adHocName, Map<String, Object> data) {
+        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
+        final CaseActionSummary action = CaseActionSummary.builder()
+                .id(actionIdLongenerator++)
+                .name(adHocName)
+                .status(CaseActionType.INPROGRESS)
+                .createdOn(new Date())
+                .build();
+        actionSummaryList.add(action);
+        caseActionMap.putIfAbsent(caseId, actionSummaryList);
+    }
+
+    @Override
+    public void triggerAdHocAction(String containerId, String caseId, String adHocName, Map<String, Object> data) {
+        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
+        final CaseActionSummary action = CaseActionSummary.builder()
+                .id(actionIdLongenerator++)
+                .name(adHocName)
+                .status(CaseActionType.INPROGRESS)
+                .createdOn(new Date())
+                .build();
+        actionSummaryList.add(action);
+        caseActionMap.putIfAbsent(caseId, actionSummaryList);
+    }
 }

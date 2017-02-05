@@ -17,10 +17,14 @@
 package org.jbpm.workbench.cm.model;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
+
+import static java.util.Optional.ofNullable;
 
 @Bindable
 @Portable
@@ -29,6 +33,7 @@ public class CaseStageSummary {
     private String name;
     private String identifier;
     private String status;
+    private List<CaseActionSummary> adHocActions;
 
     public CaseStageSummary() {
     }
@@ -59,6 +64,14 @@ public class CaseStageSummary {
 
     public void setStatus(final String status) {
         this.status = status;
+    }
+
+    public List<CaseActionSummary> getAdHocActions() {
+        return adHocActions;
+    }
+
+    public void setAdHocActions(List<CaseActionSummary> adHocActions) {
+        this.adHocActions = ofNullable(adHocActions).orElse(new ArrayList<>());
     }
 
     @Override
@@ -108,6 +121,11 @@ public class CaseStageSummary {
 
         public Builder status(final String status) {
             caseStageSummary.setStatus(status);
+            return this;
+        }
+
+        public Builder adHocFragments(List<CaseActionSummary> adHocActions) {
+            caseStageSummary.setAdHocActions(adHocActions);
             return this;
         }
 

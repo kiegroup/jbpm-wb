@@ -1,0 +1,54 @@
+[
+  {
+    "id": "1",
+    "name": "Task1",
+    "type": "Human Task",
+    "actualOwner": "Joe",
+    "actionType": "INPROGRESS"
+  },
+  {
+    "id": "2",
+    "name": "Task2_noHumanTask",
+    "type": "Service Task",
+    "actionType": "INPROGRESS"
+  },
+  {
+    "id": "3",
+    "name": "Task3",
+    "type": "Human Task",
+    "actualOwner": "Jan",
+    "actionType": "INPROGRESS"
+  },
+  {
+    "id": "4",
+    "name": "Task4",
+    "type": "Human Task",
+    "actualOwner": "Max",
+    "actionType": "INPROGRESS"
+  },
+  {
+    "id": "5",
+    "name": "Task5",
+    "type": "Human Task",
+    "actualOwner": "Max",
+    "actionType": "COMPLETED"
+  },
+  {
+    "id": "6",
+    "name": "adhoc1",
+    "type": "SubProcessNode",
+    "actionType": "AD_HOC"
+  },
+  {
+    "id": "7",
+    "name": "Task6",
+    "type": "Human Task",
+    "actionType": "AD_HOC"
+  },
+  {
+    "id": "8",
+    "name": "adhoc2",
+    "type": "Human Task",
+    "actionType": "AD_HOC"
+  }
+]

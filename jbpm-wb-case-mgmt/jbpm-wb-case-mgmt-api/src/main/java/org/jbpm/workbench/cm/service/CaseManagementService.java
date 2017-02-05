@@ -17,11 +17,13 @@
 package org.jbpm.workbench.cm.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.workbench.cm.model.CaseCommentSummary;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
+import org.jbpm.workbench.cm.util.Actions;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.util.CaseMilestoneSearchRequest;
@@ -60,5 +62,15 @@ public interface CaseManagementService {
     void removeGroupFromRole(String serverTemplateId, String containerId, String caseId, String roleName, String group);
 
     List<CaseMilestoneSummary> getCaseMilestones(final String containerId, final String caseId , final CaseMilestoneSearchRequest request);
+
+    Actions getCaseActions(String templateId, String container, String caseId, String userId);
+
+    void addDynamicUserTask(String containerId, String caseId, String name, String description, String actors, String groups, Map<String, Object> data);
+
+    void addDynamicUserTaskToStage(String containerId, String caseId, String stageId, String name, String description, String actors, String groups, Map<String, Object> data);
+
+    void triggerAdHocActionInStage(String containerId, String caseId, String stageId, String adHocName, Map<String, Object> data);
+
+    void triggerAdHocAction(String containerId, String caseId, String adHocName, Map<String, Object> data);
 
 }

@@ -14,30 +14,31 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.cm.client.util;
+package org.jbpm.workbench.cm.util;
 
-import java.util.Arrays;
+public enum CaseActionType {
 
-public enum CaseStageStatus {
+    AD_HOC("AD_HOC"),
 
-    AVAILABLE("Available"),
+    ADD_DYNAMIC_USER_TASK("add_dynamic_user_task"),
 
-    COMPLETED("Completed"),
+    ADD_DYNAMIC_TASK("add_dynamic_task"),
 
-    CANCELED("Canceled");
+    ADD_DYNAMIC_SUBPROCESS("add_dynamic_subprocess"),
+
+    INPROGRESS("InProgress"),
+
+    COMPLETED("Completed");
 
     private String status;
 
-    CaseStageStatus(final String status) {
+
+    CaseActionType(final String status) {
         this.status = status;
     }
 
-    public static CaseStageStatus fromStatus(final String status) {
-        return Arrays.stream(CaseStageStatus.values()).filter(e -> e.getStatus().equals(status)).findFirst().get();
-    }
-
     public String getStatus() {
-        return status;
+        return this.status;
     }
 
 }

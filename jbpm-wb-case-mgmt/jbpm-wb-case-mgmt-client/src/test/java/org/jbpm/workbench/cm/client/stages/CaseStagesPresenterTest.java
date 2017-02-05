@@ -18,7 +18,7 @@ package org.jbpm.workbench.cm.client.stages;
 
 import com.google.common.collect.Lists;
 import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenterTest;
-import org.jbpm.workbench.cm.client.util.CaseStageStatus;
+import org.jbpm.workbench.cm.util.CaseStageStatus;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.CaseStageSummary;

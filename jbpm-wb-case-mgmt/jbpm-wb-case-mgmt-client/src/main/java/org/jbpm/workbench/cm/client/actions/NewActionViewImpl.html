@@ -1,0 +1,56 @@
+<div class="modal fade" data-field="modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-field="close" data-dismiss="modal" aria-hidden="true">
+                    <span class="pficon pficon-close"></span>
+                </button>
+                <h4 class="modal-title" data-i18n-key="NewAction"></h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <fieldset>
+                        <div class="form-group" data-field="action-name-group">
+                            <label class="control-label col-md-3" data-field="action-name-label" data-i18n-key="Name"></label>
+                            <div class="col-md-9">
+                                <input type="text" data-field="action-name-input" class="form-control"/>
+                                <span data-field="action-name-help" class="help-block"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3" data-i18n-key="Description"></label>
+                            <div class="col-md-9">
+                                <input type="text" data-field="action-desc-input" class="form-control"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group" data-field="action-users-group">
+                            <label class="control-label col-md-3" data-i18n-key="Users"></label>
+                            <div class="col-md-9">
+                                <input type="text" data-field="action-users-input" class="form-control"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group" data-field="action-groups-group">
+                            <label class="control-label col-md-3" data-i18n-key="Groups"></label>
+                            <div class="col-md-9">
+                                <input type="text" data-field="action-groups-input" class="form-control"/>
+                                <span data-field="assignation-help" class="help-block"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3" data-i18n-key="Stage"></label>
+                            <div class="col-md-9">
+                                <select id="select" class="selectpicker" data-width="120px" data-field="stages-select"></select>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-field="cancel" data-i18n-key="Cancel" data-dismiss="modal"></button>
+                <button type="button" class="btn btn-primary" data-field="addDynamicTask" data-i18n-key="AddTask"></button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,177 @@
+@import "/org/uberfire/client/views/static/uberfire-variables.less";
+@import "kie-variables.less";
+
+.kie-container--page {
+  margin-top: @pf-spacer-lg;
+}
+
+// override parts of patternfly horizontal nav and utility nav
+@navbar-pf-navbar-primary-bg-color-stop: @navbar-pf-bg-color; // #383F43
+@navbar-pf-navbar-utility-border-color: @navbar-pf-bg-color;
+@navbar-pf-navbar-utility-color: @color-pf-white;
+@navbar-pf-navbar-utility-hover-bg-color: @navbar-pf-bg-color;
+
+.navbar-toggle,
+.navbar-pf .navbar-utility {
+  top: 13px; //adjust top to vertically center the smaller item in the large masthead
+  .open > a,
+  .open > a:hover {
+    background-color: @navbar-pf-bg-color;
+  }
+}
+
+.kie-page__title {
+  font-size: @font-size-h1;
+  margin-bottom: @pf-spacer-lg;
+}
+
+// remove default space above and below breadcrumb
+.breadcrumb {
+  padding-bottom: 0;
+  padding-top: 0;
+}
+
+//remove default border and shadow from toolbar
+.kie-toolbar {
+  border-bottom: none;
+  box-shadow: none;
+}
+
+// title and subtitle in a toolbar
+.kie-toolbar__title {
+  font-size: @font-size-h2;
+}
+
+.kie-toolbar__subtitle {
+  font-size: @font-size-base;
+  font-weight: 600;
+}
+
+// align the first item
+.toolbar-pf .form-group:first-of-type {
+  padding-left: 0;
+}
+
+// container for the main content on a dashboard or overview
+.kie-dashboard-container {
+  background-color: @color-pf-black-150;
+  width: calc(~"100%" - @grid-gutter-width);
+  margin-left: calc(@grid-gutter-width / 2);
+  margin-right: calc(@grid-gutter-width / 2);
+  margin-top: @pf-spacer-sm;
+}
+
+// Building blocks are cards
+.kie-card__toolbar {
+  float: right;
+  margin-top: -.5em; //ugly tweak to line up the toolbar
+}
+
+.kie-toolbar__group {
+  display: inline-block;
+  padding-left: 1em;
+  padding-right: 1em;
+  border-right: 1px solid @color-pf-black-300;
+  &:last-of-type {
+    border-color: transparent;
+    padding-right: 0;
+  }
+}
+
+// subtitle icons for Actions
+.kie-card__subtitle-icon {
+  font-size: @font-size-h1;
+  padding-right: .5em;
+  &--available {
+    color: @kie-color-available;
+  }
+  &--inprogress {
+    color: @kie-color-inprogress;
+  }
+  &--complete {
+    color: @kie-color-complete;
+  }
+}
+
+// Pagination arrows for under a scrollbox
+.kie-list__pagination {
+  text-align: center;
+  padding-top: @pf-spacer-xs;
+  padding-bottom: @pf-spacer-xs;
+  //adjust size of chevron arrows
+  .card-pf-link-with-icon .fa, .card-pf-link-with-icon .pficon {
+    font-size: @icon-size-md;
+    position: relative;
+  }
+}
+
+// scrollbox adds a shadow indicating if there is more content above/below the current position
+.kie-scrollbox {
+  background: /* Shadow covers */ linear-gradient(@color-pf-white, rgba(255, 255, 255, 0)), //top
+  linear-gradient(rgba(255, 255, 255, 0), @color-pf-white) 0 100%, //bottom
+    /* Shadows */ linear-gradient(@color-pf-black-150, rgba(255, 255, 255, 0)),
+  linear-gradient(rgba(255, 255, 255, 0), @color-pf-black-150) 0 100%;
+  background-repeat: no-repeat;
+  background-color: @color-pf-white;
+  background-size: 100% 40px, 100% 40px, 100% 10px, 100% 14px;
+  background-attachment: local, local, scroll, scroll;
+  border-bottom: 1px solid @color-pf-black-300;
+
+  .list-group {
+    margin-bottom: 0;
+  }
+  .list-group-item {
+    background-color: transparent;
+    border-top: 1px solid @color-pf-black-200;
+    border-bottom: 1px solid @color-pf-black-200;
+    &:last-of-type {
+      border-bottom: none;
+    }
+  }
+
+  .kie-list-group-item-content {
+    display: flex;
+  }
+
+}
+
+.kie-list-view--embedded {
+  // wrap the list-view as if it were a narrow screen width since it is now in an embedded card
+  .list-view-pf-description {
+    @media (min-width: @screen-md-min) {
+      flex-flow: wrap;
+    }
+    .list-group-item-heading,
+    .list-group-item-text {
+      @media (min-width: @screen-md-min) {
+        flex-basis: 100%;
+      }
+    }
+  }
+}
+
+.kie-card-heading--embedded {
+  border-bottom: 1px solid @color-pf-black-500;
+  padding-left: @spacer;
+}
+
+// fix clickable area of a kebab
+.dropdown-kebab-pf .btn {
+  padding-left: @pf-spacer-sm;
+  padding-right: @pf-spacer-sm;
+  margin-right: -@pf-spacer-sm;
+}
+
+// case details uses dl
+dd:not(:last-child) {
+  margin-bottom: @pf-spacer-md;
+}
+
+.kie-card-body--embedded {
+  padding-left: @spacer;
+  padding-right: @spacer;
+}
+
+.card-pf {
+  margin: 0 0px 20px;
+}

@@ -20,9 +20,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.jbpm.workbench.cm.model.CaseActionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.CaseStageSummary;
+import org.jbpm.workbench.cm.util.CaseActionType;
 import org.junit.Test;
+import org.kie.server.api.model.cases.CaseAdHocFragment;
 import org.kie.server.api.model.cases.CaseInstance;
 import org.kie.server.api.model.cases.CaseStage;
 
@@ -58,6 +61,26 @@ public class CaseInstanceMapperTest {
                 assertEquals(caseStageSummary.getName(), caseStage.getName());
                 assertEquals(caseStageSummary.getIdentifier(), caseStage.getIdentifier());
                 assertEquals(caseStageSummary.getStatus(), caseStage.getStatus());
+                assertCaseStageAdHocFragments(caseStage.getAdHocFragments(), caseStageSummary.getAdHocActions(), caseStage.getIdentifier());
+            }
+        }
+    }
+
+    public static void assertCaseStageAdHocFragments(final List<CaseAdHocFragment> cahfl, final List<CaseActionSummary> casl, String stageId) {
+        assertNotNull(casl);
+        if (cahfl == null) {
+            assertEquals(0, casl.size());
+        } else {
+            assertEquals(casl.size(), cahfl.size());
+
+            CaseAdHocFragment caseAdHocFragment;
+            CaseActionSummary caseActionSummary;
+            for (int i = 0; i < cahfl.size(); i++) {
+                caseAdHocFragment = cahfl.get(i);
+                caseActionSummary = casl.get(i);
+                assertEquals(caseActionSummary.getName(), caseAdHocFragment.getName());
+                assertEquals(stageId, caseActionSummary.getStageId());
+                assertEquals(CaseActionType.AD_HOC, caseActionSummary.getActionType());
             }
         }
     }
@@ -66,7 +89,11 @@ public class CaseInstanceMapperTest {
     public void testCaseInstanceMapper_mapCaseInstance() {
         final CaseInstance ci = createCaseInstance();
         List<CaseStage> stagesList = new ArrayList();
-        stagesList.add(CaseStage.builder().name("stage1").status("Available").id("stage1").build());
+        List<CaseAdHocFragment> stageAdHocFragments = new ArrayList();
+        stageAdHocFragments.add(CaseAdHocFragment.builder().name("ad_hoc_stage_f1_name").build());
+        stageAdHocFragments.add(CaseAdHocFragment.builder().name("ad_hoc_stage_f2_name").build());
+
+        stagesList.add(CaseStage.builder().name("stage1").status("Available").id("stage1").adHocFragments(stageAdHocFragments).build());
         stagesList.add(CaseStage.builder().name("stage2").status("Completed").id("stage2").build());
         ci.setStages(stagesList);
 
@@ -74,6 +101,7 @@ public class CaseInstanceMapperTest {
 
         assertCaseInstance(ci, cis);
     }
+
 
     @Test
     public void testCaseInstanceMapper_mapNull() {

@@ -20,6 +20,10 @@ import java.util.function.Function;
 import org.jbpm.workbench.cm.model.CaseStageSummary;
 import org.kie.server.api.model.cases.CaseStage;
 
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
+
 public class CaseStageMapper implements Function<CaseStage, CaseStageSummary> {
 
     @Override
@@ -32,6 +36,11 @@ public class CaseStageMapper implements Function<CaseStage, CaseStageSummary> {
                 .name(stage.getName())
                 .identifier(stage.getIdentifier())
                 .status(stage.getStatus())
+                .adHocFragments(
+                        ofNullable(stage.getAdHocFragments()).orElse(emptyList())
+                                .stream()
+                                .map(new CaseActionAdHocMapper(stage.getIdentifier()))
+                                .collect(toList()))
                 .build();
     }
 
