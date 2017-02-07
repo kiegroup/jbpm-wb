@@ -1,65 +1,123 @@
-<div class="container-fluid full-height" data-field="container">
-    <div class="row full-height">
-        <div class="col-md-1 sidebar-pf sidebar-pf-left full-height sidebar-actions" data-field="side-bar-left"></div>
-        <div class="col-md-10 full-height">
-            <div class="container-fluid" style="padding-left: 0;padding-right: 0;">
-                <div class="row">
-                    <div class="col-md-12">
-                        <button class="btn btn-link primary-action" type="button" id="backToList">
+<div class="container-fluid " data-field="container">
+    <div class="kie-container--page">
+        <div class="row">
+            <!-- breadcrumb -->
+            <div class="col-xs-9 col-sm-10">
+                <ol class="breadcrumb">
+                    <li>
+                        <button class="btn-link" type="button" id="backToList">
                             <i class="fa fa-reply"></i>&nbsp;&nbsp;<span data-i18n-key="BackToList"></span>
                         </button>
-                        <button class="btn btn-link pull-right primary-action" type="button" id="refresh">
-                            <i class="fa fa-refresh"></i>&nbsp;&nbsp;<span data-i18n-key="Refresh"></span>
-                        </button>
+                    </li>
+                    <li class="active">
+                        <strong><span data-field="case-id"/></strong>
+                    </li>
+                </ol>
+            </div>
+            <!-- refresh button -->
+            <div class="col-xs-3 col-sm-2 text-right">
+          <span id="refreshCaseList" data-toggle="tooltip" data-placement="left"
+                title="refresh">
+            <button class="btn btn-link" type="button" id="refresh">
+                <i class="fa fa-refresh"></i>&nbsp;&nbsp;<span data-i18n-key="Refresh"></span>
+            </button>
+          </span>
+
+            </div>
+        </div>
+
+
+        <!-- toolbar -->
+        <div class="row toolbar-pf kie-toolbar">
+            <div class="col-sm-12">
+                <div class="toolbar-pf-actions">
+
+                    <!-- Title  -->
+                    <div class="form-group">
+                        <span class="kie-toolbar__title " data-field="case-title"></span>
+                        <span class="kie-toolbar__subtitle ">(</span><span class="kie-toolbar__subtitle " data-field="case-owner"></span><span class="kie-toolbar__subtitle ">)</span>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="dropdown dropdown-kebab-pf pull-right title-action">
-                            <button class="btn btn-link dropdown-toggle" type="button" id="dropdownKebab" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                <span class="fa fa-ellipsis-v"></span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownKebab">
-                                <li><a href="#" data-field="case-destroy" data-i18n-key="Close"></a></li>
-                            </ul>
+
+                    <!-- button and kebab -->
+                    <div class="toolbar-pf-action-right ">
+                        <div class="form-group">
+                            <div data-field="case-stages"></div>
                         </div>
-                        <button type="button" class="col-md-1 btn btn-default pull-right title-action" data-field="case-cancel" data-i18n-key="Complete"></button>
-                        <h2 class="case-title">
-                            <span data-field="case-title"></span>
-                            <small>
-                                <span data-field="case-id"></span>
-                            </small>
-                        </h2>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="case-details" data-field="case-details-content"></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div data-field="case-stages"></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div data-field="case-actions"></div>
-                    </div>
-                </div>
-                <div class="row row-cards-pf">
-                    <div class="col-md-4">
-                        <div data-field="case-comments"></div>
-                    </div>
-                    <div class="col-md-4">
-                        <div data-field="case-roles"></div>
-                    </div>
-                    <div class="col-md-4">
-                        <div data-field="case-milestones"></div>
+                        <div class="form-group">
+          <span class="btn-group ">
+
+            <button type="button" class="btn btn-primary" data-field="case-cancel" data-i18n-key="Complete"></button>
+
+              <!-- kebab menu -->
+            <div class="dropdown btn-group  dropdown-kebab-pf">
+              <button class="btn btn-link dropdown-toggle" type="button"
+                      data-toggle="dropdown"
+                      aria-haspopup="true" aria-expanded="true">
+                <span class="fa fa-ellipsis-v"></span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownProjectKebab">
+                <li><a href="#" data-field="case-destroy" data-i18n-key="Close"></a></li>
+              </ul>
+            </div>
+         </span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-1 sidebar-pf sidebar-pf-right full-height" data-field="side-bar-right"></div>
+
+        <!-- tabs -->
+        <div class="row">
+            <div class="col-xs-12">
+                <!-- navigation tabs -->
+                <ul class=" nav nav-tabs" id="navTabs">
+                    <li class="active"><a href="#" data-i18n-key="Overview"></a></li>
+                    <!--li><a href="#">Activity</a></li>
+                    <li><a href="#">Documents</a></li-->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Page content -->
+        <div class="row ">
+            <div class="col-sm-12">
+
+                <div class="cards-pf">
+                    <div class="container-cards-pf">
+                        <div class="row row-cards-pf">
+
+                            <!-- case details card -->
+                            <div class="col-xs-12 col-sm-12 col-md-3">
+                                <div data-field="case-details-content"></div>
+                            </div>
+
+                            <!-- task actions card -->
+                            <div class="col-xs-12 col-sm-12 col-md-9 ">
+                                <div data-field="case-actions"></div>
+                            </div>
+                        </div><!-- /row -->
+                        <div class="row row-cards-pf">
+
+                            <!-- roles card -->
+                            <div class="col-xs-12 col-sm-6 col-md-3 col-md-push-9">
+                                <div data-field="case-roles"></div>
+                            </div>
+
+                            <!-- comments card -->
+                            <div class="col-xs-12 col-sm-6 ">
+                                <div data-field="case-comments"></div>
+                            </div>
+
+                            <!-- activities card -->
+                            <div class="col-xs-12 col-sm-6 col-md-3 col-md-pull-9">
+                                <div data-field="case-milestones"></div>
+                            </div>
+
+
+                        </div><!-- /row -->
+                    </div><!-- /container -->
+                </div>
+            </div>
+        </div>
     </div>
 </div>

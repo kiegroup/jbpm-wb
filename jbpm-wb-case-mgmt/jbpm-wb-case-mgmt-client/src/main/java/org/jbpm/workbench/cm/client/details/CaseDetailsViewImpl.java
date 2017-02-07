@@ -42,12 +42,6 @@ public class CaseDetailsViewImpl implements CaseDetailsPresenter.CaseDetailsView
 
     @Inject
     @Bound
-    @DataField("case-id")
-    @SuppressWarnings("unused")
-    private Paragraph caseId;
-
-    @Inject
-    @Bound
     @DataField("case-description")
     @SuppressWarnings("unused")
     private Paragraph description;
@@ -63,12 +57,6 @@ public class CaseDetailsViewImpl implements CaseDetailsPresenter.CaseDetailsView
     @DataField("case-start")
     @SuppressWarnings("unused")
     private Paragraph startedAt;
-
-    @Inject
-    @Bound(converter = DateConverter.class)
-    @DataField("case-complete")
-    @SuppressWarnings("unused")
-    private Paragraph completedAt;
 
     @Inject
     @Bound

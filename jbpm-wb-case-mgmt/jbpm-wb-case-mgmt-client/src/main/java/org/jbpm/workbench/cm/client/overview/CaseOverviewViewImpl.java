@@ -35,7 +35,7 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
-@Templated(stylesheet = "CaseOverviewViewImpl.css")
+@Templated
 public class CaseOverviewViewImpl implements CaseOverviewPresenter.CaseOverviewView {
 
     @Inject
@@ -45,14 +45,6 @@ public class CaseOverviewViewImpl implements CaseOverviewPresenter.CaseOverviewV
     @Inject
     @DataField("case-details-content")
     FlowPanel caseDetails;
-
-    @Inject
-    @DataField("side-bar-left")
-    FlowPanel sideBarLeft;
-
-    @Inject
-    @DataField("side-bar-right")
-    FlowPanel sideBarRight;
 
     @Inject
     @DataField("case-stages")
@@ -85,6 +77,10 @@ public class CaseOverviewViewImpl implements CaseOverviewPresenter.CaseOverviewV
     @Inject
     @DataField("case-id")
     Span caseId;
+
+    @Inject
+    @DataField("case-owner")
+    Span caseOwner;
 
     @Inject
     @DataField("case-destroy")
@@ -149,7 +145,7 @@ public class CaseOverviewViewImpl implements CaseOverviewPresenter.CaseOverviewV
 
     @Override
     public void addCaseActivities(String placeId, Map<String, String> properties) {
-        addWidget(placeId, properties, sideBarRight);
+        //addWidget(placeId, properties, sideBarRight);
     }
 
     private void addWidget(final String placeId, final Map<String, String> properties, final HasWidgets widget) {
@@ -164,6 +160,11 @@ public class CaseOverviewViewImpl implements CaseOverviewPresenter.CaseOverviewV
     @Override
     public void setCaseId(final String description) {
         caseId.setTextContent(description);
+    }
+
+    @Override
+    public void setCaseOwner(final String owner) {
+        caseOwner.setTextContent(owner);
     }
 
     @EventHandler("case-destroy")

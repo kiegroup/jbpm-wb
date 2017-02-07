@@ -1,32 +1,30 @@
 <!DOCTYPE html>
-<div data-field="comments">
-    <div class="col-md-12">
-        <div class="card-pf-heading">
-            <h2 class="card-pf-title">
-                <span data-i18n-key="Comments"/>
-            </h2>
+<div data-field="comments" class="card-pf">
+    <div class="card-pf-heading">
+        <h2 class="card-pf-title">
+            <span data-i18n-key="Comments"/>
+        </h2>
+    </div>
+    <div class="card-pf-body" style="margin-bottom: 0px;">
+        <div class="list-group list-view-pf list-view-pf-view" data-field="comments-list">
         </div>
-        <div class="card-pf-body" style="margin-bottom: 0px;">
-            <div class="list-group list-view-pf list-view-pf-view" data-field="comments-list">
-            </div>
-            <div class="alert alert-info" data-field="empty-list-item">
-                <span class="pficon pficon-info"></span>
-                  <strong><span data-i18n-key="NoCommentsFound"></span></strong>
-            </div>
-            <div class="form">
-                <div data-field="comment-creation-group">
-                    <label class="control-label" data-i18n-key="NewComment"></label>
-                    <input type="text" data-field="comment-creation-input" class="form-control"/>
-                    <span data-field="comment-creation-help" class="help-block"></span>
-                </div>
+        <div class="alert alert-info" data-field="empty-list-item">
+            <span class="pficon pficon-info"></span>
+            <strong><span data-i18n-key="NoCommentsFound"></span></strong>
+        </div>
+        <div class="form">
+            <div data-field="comment-creation-group">
+                <label class="control-label" data-i18n-key="NewComment"></label>
+                <input type="text" data-field="comment-creation-input" class="form-control"/>
+                <span data-field="comment-creation-help" class="help-block"></span>
             </div>
         </div>
-        <div class="card-pf-footer">
-            <p>
-                <a href="#" class="card-pf-link-with-icon" data-field="addCommentButton">
-                    <span class="pficon pficon-add-circle-o"></span><span data-i18n-key="AddComment"></span>
-                </a>
-            </p>
-        </div>
+    </div>
+    <div class="card-pf-footer">
+        <p>
+            <a href="#" class="card-pf-link-with-icon" data-field="addCommentButton">
+                <span class="pficon pficon-add-circle-o"></span><span data-i18n-key="AddComment"></span>
+            </a>
+        </p>
     </div>
 </div>

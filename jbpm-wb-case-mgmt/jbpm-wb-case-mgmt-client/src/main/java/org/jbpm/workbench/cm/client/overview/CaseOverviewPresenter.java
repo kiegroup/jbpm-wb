@@ -78,12 +78,14 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
     protected void clearCaseInstance() {
         view.setCaseTitle("");
         view.setCaseId("");
+        view.setCaseOwner("");
     }
 
     @Override
     protected void loadCaseInstance(final CaseInstanceSummary cis) {
         view.setCaseTitle(cis.getDescription());
         view.setCaseId(cis.getCaseId());
+        view.setCaseOwner(cis.getOwner());
     }
 
     protected void cancelCaseInstance() {
@@ -128,6 +130,8 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
         void setCaseTitle(String title);
 
         void setCaseId(String caseId);
+
+        void setCaseOwner(String caseOwner);
 
         void addCaseDetails(String placeId, Map<String, String> properties);
 

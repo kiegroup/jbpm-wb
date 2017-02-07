@@ -38,7 +38,7 @@ import org.jbpm.workbench.cm.model.CaseStageSummary;
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
 
 @Dependent
-@Templated(stylesheet = "CaseStageItemViewImpl.css")
+@Templated
 public class CaseStageItemViewImpl extends AbstractView<CaseStagesPresenter> implements TakesValue<CaseStageSummary>, IsElement {
 
     @Inject
