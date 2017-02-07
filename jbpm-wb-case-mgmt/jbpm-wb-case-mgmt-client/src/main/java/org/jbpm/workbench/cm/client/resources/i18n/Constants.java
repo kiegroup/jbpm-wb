@@ -128,4 +128,7 @@ public interface Constants {
     @TranslationKey(defaultValue = "")
     String PLEASE_INTRO_USER_OR_GROUP_TO_ASSIGN_NEW_ACTION = "PleaseIntroUserOrGroupToAssignTheNewAction";
 
+    @TranslationKey(defaultValue = "")
+    String PLEASE_PROVIDE_CASE_OWNER = "PleaseProvideCaseOwner";
+
 }

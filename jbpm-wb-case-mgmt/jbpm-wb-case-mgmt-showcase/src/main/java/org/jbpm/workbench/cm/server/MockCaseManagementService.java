@@ -26,11 +26,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Specializes;
-import javax.inject.Inject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl;
 import org.jbpm.workbench.cm.model.CaseActionSummary;
 import org.jbpm.workbench.cm.model.CaseCommentSummary;
@@ -61,9 +59,6 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
 
     private static int commentIdGenerator = 0;
     private static long actionIdLongenerator = 9;
-
-    @Inject
-    protected User identity;
 
     private List<CaseDefinitionSummary> caseDefinitionList = emptyList();
     private List<CaseInstanceSummary> caseInstanceList = new ArrayList<>();
@@ -100,11 +95,11 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     }
 
     @Override
-    public String startCaseInstance(final String serverTemplateId, final String containerId, final String caseDefinitionId) {
+    public String startCaseInstance(final String serverTemplateId, final String containerId, final String caseDefinitionId, final String owner) {
         final CaseInstanceSummary ci = CaseInstanceSummary
                 .builder()
                 .caseId("CASE-" + Strings.padStart(String.valueOf(caseInstanceList.size() + 1), 5, '0'))
-                .owner(identity.getIdentifier())
+                .owner(owner)
                 .startedAt(new Date())
                 .caseDefinitionId(caseDefinitionId)
                 .status(1)

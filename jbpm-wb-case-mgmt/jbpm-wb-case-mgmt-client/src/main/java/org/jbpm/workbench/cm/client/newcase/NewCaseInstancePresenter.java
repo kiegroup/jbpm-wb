@@ -26,6 +26,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.cm.client.util.AbstractPresenter;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
@@ -50,6 +51,9 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
     @Inject
     private TranslationService translationService;
 
+    @Inject
+    private User identity;
+
     public void show() {
         loadCaseDefinitions();
     }
@@ -71,11 +75,12 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
                     Collections.sort(definitionNames);
                     view.setCaseDefinitions(definitionNames);
                     view.show();
+                    view.setOwner(identity.getIdentifier());
                 }
         ).getCaseDefinitions();
     }
 
-    protected void createCaseInstance(final String caseDefinitionName) {
+    protected void createCaseInstance(final String caseDefinitionName, final String owner) {
         final CaseDefinitionSummary caseDefinition = caseDefinitions.get(caseDefinitionName);
         if (caseDefinition == null) {
             notification.fire(new NotificationEvent(translationService.format(INVALID_CASE_DEFINITION), NotificationEvent.NotificationType.ERROR));
@@ -87,7 +92,7 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
                     notification.fire(new NotificationEvent(translationService.format(CASE_CREATED_WITH_ID, caseId), NotificationEvent.NotificationType.SUCCESS));
                     newCaseEvent.fire(new CaseCreatedEvent(caseId));
                 }
-        ).startCaseInstance(null, caseDefinition.getContainerId(), caseDefinition.getId());
+        ).startCaseInstance(null, caseDefinition.getContainerId(), caseDefinition.getId(), owner);
     }
 
     @Inject
@@ -115,6 +120,7 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
 
         void setCaseDefinitions(List<String> definitions);
 
+        void setOwner(String owner);
     }
 
 }

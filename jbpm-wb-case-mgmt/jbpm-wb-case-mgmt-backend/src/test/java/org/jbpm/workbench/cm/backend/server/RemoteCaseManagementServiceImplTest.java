@@ -37,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.kie.server.api.model.cases.CaseAdHocFragment;
 import org.kie.server.api.model.cases.CaseComment;
 import org.kie.server.api.model.cases.CaseDefinition;
+import org.kie.server.api.model.cases.CaseFile;
 import org.kie.server.api.model.cases.CaseInstance;
 import org.kie.server.api.model.cases.CaseMilestone;
 import org.kie.server.api.model.cases.CaseStage;
@@ -44,6 +45,7 @@ import org.kie.server.api.model.instance.NodeInstance;
 import org.kie.server.api.model.instance.TaskInstance;
 import org.kie.server.client.CaseServicesClient;
 import org.kie.server.client.UserTaskServicesClient;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -55,6 +57,7 @@ import static org.jbpm.workbench.cm.backend.server.CaseCommentMapperTest.assertC
 import static org.jbpm.workbench.cm.backend.server.CaseDefinitionMapperTest.assertCaseDefinition;
 import static org.jbpm.workbench.cm.backend.server.CaseInstanceMapperTest.assertCaseInstance;
 import static org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl.PAGE_SIZE_UNLIMITED;
+import static org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl.CASE_OWNER_ROLE;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyList;
@@ -189,9 +192,12 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void testStartCaseInstance() {
-        testedService.startCaseInstance(serverTemplateId, containerId, caseDefinitionId);
+        final String owner = "userx";
+        testedService.startCaseInstance(serverTemplateId, containerId, caseDefinitionId, owner);
 
-        verify(clientMock).startCase(containerId, caseDefinitionId);
+        final ArgumentCaptor<CaseFile> caseFileCaptor = ArgumentCaptor.forClass(CaseFile.class);
+        verify(clientMock).startCase(eq(containerId), eq(caseDefinitionId), caseFileCaptor.capture());
+        assertEquals(owner, caseFileCaptor.getValue().getUserAssignments().get(CASE_OWNER_ROLE));
     }
 
     @Test

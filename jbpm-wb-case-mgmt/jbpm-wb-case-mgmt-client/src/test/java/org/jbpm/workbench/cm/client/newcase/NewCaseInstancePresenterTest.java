@@ -19,7 +19,10 @@ package org.jbpm.workbench.cm.client.newcase;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.client.events.CaseCreatedEvent;
@@ -58,6 +61,9 @@ public class NewCaseInstancePresenterTest {
     @Mock
     TranslationService translationService;
 
+    @Mock
+    User identity;
+
     @InjectMocks
     NewCaseInstancePresenter presenter;
 
@@ -71,7 +77,7 @@ public class NewCaseInstancePresenterTest {
 
     @Test
     public void testCreateInvalidCaseInstance() {
-        presenter.createCaseInstance(null);
+        presenter.createCaseInstance(null, anyString());
 
         final ArgumentCaptor<NotificationEvent> captor = ArgumentCaptor.forClass(NotificationEvent.class);
         verify(notificationEvent).fire(captor.capture());
@@ -84,6 +90,8 @@ public class NewCaseInstancePresenterTest {
     public void testCreateCaseInstance() {
         final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().id("id").name("name").containerId("containerId").build();
         when(caseManagementService.getCaseDefinitions()).thenReturn(Arrays.asList(cds));
+        final String owner = "userx";
+        when(identity.getIdentifier()).thenReturn(owner);
 
         presenter.show();
 
@@ -93,11 +101,12 @@ public class NewCaseInstancePresenterTest {
         final List list = captor.getValue();
         assertEquals(1, list.size());
         assertEquals(cds.getName(), list.get(0));
+        verify(view).setOwner(owner);
         verify(view).show();
 
-        presenter.createCaseInstance(cds.getName());
+        presenter.createCaseInstance(cds.getName(), owner);
 
-        verify(caseManagementService).startCaseInstance(null, cds.getContainerId(), cds.getId());
+        verify(caseManagementService).startCaseInstance(null, cds.getContainerId(), cds.getId(), owner);
         verify(view).hide();
         verify(notificationEvent).fire(any(NotificationEvent.class));
         verify(caseCreatedEvent).fire(any(CaseCreatedEvent.class));
