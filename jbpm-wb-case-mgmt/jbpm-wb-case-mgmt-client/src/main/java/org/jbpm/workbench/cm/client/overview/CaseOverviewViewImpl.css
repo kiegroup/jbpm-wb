@@ -1,5 +1,17 @@
-.full-height {
-    height: 100%;
+.kie-cm-container {
+    display: table;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+.kie-cm-container-row {
+    display: table-row;
+}
+
+.kie-cm-container-column {
+    display: table-cell;
+    float: none;
 }
 
 .sidebar-actions .list-group-item {
