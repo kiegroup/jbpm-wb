@@ -72,7 +72,7 @@ public class KieServerUtils {
         LOGGER.debug("Creating client that will use following endpoint {}", endpoint);
         configuration.setTimeout(60000);
         configuration.setCapabilities(Arrays.asList(capabilities));
-        configuration.setMarshallingFormat(MarshallingFormat.XSTREAM);
+        configuration.setMarshallingFormat(MarshallingFormat.JSON);
         configuration.setLoadBalancer(LoadBalancer.getDefault(endpoint));
 
         KieServicesClient kieServicesClient;
