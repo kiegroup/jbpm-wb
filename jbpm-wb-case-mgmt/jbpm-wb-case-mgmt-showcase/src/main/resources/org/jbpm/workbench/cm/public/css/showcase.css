@@ -1,25 +1,5 @@
 /* Override PatternFly default css so border isn't duplicated */
-.navbar-pf {
-    border-top: none;
-}
 
-.navbar-pf ul.navbar-nav.navbar-utility {
-    top: -25px;
-}
-
-.navbar-pf .navbar-nav.uf-navbar-nav-compact {
-    left: 150px;
-    top: -25px;
-    position: absolute;
-}
-
-@media (max-width: 767px) {
-    .navbar-pf .navbar-nav.uf-navbar-nav-compact {
-        position: relative;
-        top: 0px;
-        left: 0px;
-    }
-}
 
 /* Loading indicator at Startup */
 #loading {

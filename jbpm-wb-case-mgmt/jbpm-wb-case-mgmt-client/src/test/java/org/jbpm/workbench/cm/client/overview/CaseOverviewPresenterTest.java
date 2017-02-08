@@ -90,6 +90,7 @@ public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest
 
         verify(view).setCaseId("");
         verify(view).setCaseTitle("");
+        verify(view).setCaseOwner("");
         verifyNoMoreInteractions(view);
         verify(caseManagementService, never()).getCaseInstance(anyString(), anyString(), anyString());
     }

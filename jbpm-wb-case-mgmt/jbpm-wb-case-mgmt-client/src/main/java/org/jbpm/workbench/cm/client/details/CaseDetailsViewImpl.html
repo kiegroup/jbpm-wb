@@ -1,51 +1,21 @@
-<div class="container-fluid" data-field="container">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="col-md-4">
-                <div class="form">
-                    <fieldset>
-                        <div class="form-group">
-                            <label class="control-label" for="caseIdText" data-i18n-key="CaseId"></label>
-                            <p class="form-control-static" data-field="case-id" id="caseIdText"/>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="control-label" for="caseDescriptionText" data-i18n-key="Description"></label>
-                            <p class="form-control-static" data-field="case-description" id="caseDescriptionText"/>
-                        </div>
-                    </fieldset>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form">
-                    <fieldset>
-                        <div class="form-group">
-                            <label class="control-label" for="caseStatusText" data-i18n-key="Status"></label>
-                            <p class="form-control-static">
-                                <span data-field="case-status" id="caseStatusText" class="label label-success"/>
-                            </p>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label" for="caseOwnerText" data-i18n-key="Owner"></label>
-                            <p class="form-control-static" data-field="case-owner" id="caseOwnerText"/>
-                        </div>
-                    </fieldset>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form">
-                    <fieldset>
-                        <div class="form-group">
-                            <label class="control-label" for="caseStartText" data-i18n-key="Started"></label>
-                            <p class="form-control-static" data-field="case-start" id="caseStartText"></p>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label" for="caseCompleteText" data-i18n-key="Completed"></label>
-                            <p class="form-control-static" data-field="case-complete" id="caseCompleteText"></p>
-                        </div>
-                    </fieldset>
-                </div>
-            </div>
-        </div>
+<div data-field="container" class="card-pf">
+    <div class="card-pf-heading">
+        <h2 class="card-pf-title">
+            <span data-i18n-key="CaseDetails"/>
+        </h2>
+    </div>
+    <div class="card-pf-body" style="margin-bottom: 0px;">
+        <dl>
+            <dt data-i18n-key="Description"></dt>
+            <dd><p class="form-control-static" data-field="case-description"/></dd>
+            <dt data-i18n-key="Status"></dt>
+            <dd>
+                <span data-field="case-status" class="label label-success"/>
+            </dd>
+            <dt data-i18n-key="Owner"></dt>
+            <dd><p class="form-control-static" data-field="case-owner" id="caseOwnerText"/></dd>
+            <dt data-i18n-key="Started"></dt>
+            <dd><p class="form-control-static" data-field="case-start"></p></dd>
+        </dl>
     </div>
 </div>
