@@ -67,7 +67,7 @@ public class KieServerDataSetManager {
 
         LOGGER.debug("Found {} data sets to register", dataSetDefs.size());
 
-        if( dataSetDefs.size() == 0 ){
+        if (dataSetDefs.isEmpty()) {
             return;
         }
 
@@ -88,15 +88,13 @@ public class KieServerDataSetManager {
                                         ).collect(Collectors.toSet());
 
                 registerQueriesWithRetry(serverTemplateId, serverInstanceId, queryDefinitions);
-
-                LOGGER.warn("Timeout while trying to register query definition on '{}'", serverInstanceId);
             } catch (Exception e) {
                 LOGGER.warn("Unable to register query definition on '{}' due to {}", serverInstanceId, e.getMessage(), e);
             }
         });
     }
 
-    protected void registerQueriesWithRetry(String serverTemplateId, String serverInstanceId, Set<QueryDefinition> queryDefinitions) throws Exception{
+    protected void registerQueriesWithRetry(String serverTemplateId, String serverInstanceId, Set<QueryDefinition> queryDefinitions) throws Exception {
         long waitLimit = 5 * 60 * 1000;   // default 5 min
         long elapsed = 0;
 
@@ -125,6 +123,7 @@ public class KieServerDataSetManager {
                 LOGGER.debug("Cannot reach KIE Server, elapsed time while waiting '{}', max time '{}' error {}", elapsed, waitLimit, e.getMessage());
             }
         }
-    }
 
+        LOGGER.warn("Timeout while trying to register query definitions on '{}'", serverInstanceId);
+    }
 }
