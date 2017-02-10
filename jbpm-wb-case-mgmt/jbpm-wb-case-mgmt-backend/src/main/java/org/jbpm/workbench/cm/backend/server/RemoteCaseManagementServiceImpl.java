@@ -40,6 +40,7 @@ import org.jbpm.workbench.cm.util.CaseMilestoneSearchRequest;
 import org.jbpm.workbench.cm.util.CaseStageStatus;
 import org.kie.server.api.model.cases.CaseComment;
 import org.kie.server.api.model.cases.CaseDefinition;
+import org.kie.server.api.model.cases.CaseFile;
 import org.kie.server.api.model.cases.CaseInstance;
 import org.kie.server.api.model.cases.CaseMilestone;
 import org.kie.server.api.model.instance.NodeInstance;
@@ -56,6 +57,7 @@ import static java.util.Comparator.comparing;
 public class RemoteCaseManagementServiceImpl implements CaseManagementService {
 
     public static final int PAGE_SIZE_UNLIMITED = Integer.MAX_VALUE;
+    public static final String CASE_OWNER_ROLE = "owner";
     public static final List<String> NODE_TYPE_HUMAN_TASK = Arrays.asList("Human Task", "HumanTaskNode");
 
     @Inject
@@ -96,8 +98,9 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public String startCaseInstance(final String serverTemplateId, final String containerId, final String caseDefinitionId) {
-        return client.startCase(containerId, caseDefinitionId);
+    public String startCaseInstance(final String serverTemplateId, final String containerId, final String caseDefinitionId, final String owner) {
+        final CaseFile caseFile = CaseFile.builder().addUserAssignments(CASE_OWNER_ROLE, owner).build();
+        return client.startCase(containerId, caseDefinitionId, caseFile);
     }
 
     @Override

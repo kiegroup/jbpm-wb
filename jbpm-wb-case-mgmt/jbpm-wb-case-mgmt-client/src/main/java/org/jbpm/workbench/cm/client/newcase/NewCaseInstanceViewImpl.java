@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.MouseEvent;
 import org.jboss.errai.common.client.dom.Span;
+import org.jboss.errai.common.client.dom.TextInput;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -37,6 +38,7 @@ import org.jbpm.workbench.cm.client.util.Select;
 import org.jbpm.workbench.cm.client.util.ValidationState;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.PLEASE_PROVIDE_CASE_OWNER;
 import static org.jbpm.workbench.cm.client.resources.i18n.Constants.PLEASE_SELECT_CASE_DEFINITION;
 
 @Dependent
@@ -60,6 +62,22 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
     private Select caseTemplatesList;
 
     @Inject
+    @DataField("owner-name-input")
+    private TextInput ownerNameInput;
+
+    @Inject
+    @DataField("owner-name-help")
+    private Span ownerNameHelp;
+
+    @Inject
+    @DataField("owner-name-group")
+    private FormGroup ownerNameGroup;
+
+    @Inject
+    @DataField("owner-name-label")
+    private FormLabel ownerNameLabel;
+
+    @Inject
     @DataField("definition-name-label")
     private FormLabel caseDefinitionNameLabel;
 
@@ -69,6 +87,7 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
     @PostConstruct
     public void init() {
         caseDefinitionNameLabel.addRequiredIndicator();
+        ownerNameLabel.addRequiredIndicator();
     }
 
     public void show() {
@@ -99,21 +118,35 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
         caseTemplatesList.setValue("");
         caseTemplatesList.getElement().focus();
         caseTemplatesList.enable();
+        ownerNameInput.setValue("");
         clearErrorMessages();
     }
 
     private boolean validateForm() {
         clearErrorMessages();
 
+        boolean valid = true;
+
         if (isNullOrEmpty(caseTemplatesList.getValue())) {
             caseTemplatesList.getElement().focus();
             definitionNameHelp.setTextContent(translationService.format(PLEASE_SELECT_CASE_DEFINITION));
             caseDefinitionNameGroup.setValidationState(ValidationState.ERROR);
-            return false;
-        } else {
-            caseDefinitionNameGroup.setValidationState(ValidationState.SUCCESS);
-            return true;
+            valid = false;
         }
+
+        if (isNullOrEmpty(ownerNameInput.getValue())) {
+            ownerNameInput.focus();
+            ownerNameHelp.setTextContent(translationService.format(PLEASE_PROVIDE_CASE_OWNER));
+            ownerNameGroup.setValidationState(ValidationState.ERROR);
+            valid = false;
+        }
+
+        if (valid) {
+            caseDefinitionNameGroup.setValidationState(ValidationState.SUCCESS);
+            ownerNameGroup.setValidationState(ValidationState.SUCCESS);
+        }
+
+        return valid;
     }
 
     @Override
@@ -122,12 +155,19 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
     }
 
     private void createCaseInstance() {
-        presenter.createCaseInstance(caseTemplatesList.getValue());
+        presenter.createCaseInstance(caseTemplatesList.getValue(), ownerNameInput.getValue());
     }
 
     private void clearErrorMessages() {
         definitionNameHelp.setTextContent("");
+        ownerNameHelp.setTextContent("");
         caseDefinitionNameGroup.clearValidationState();
+        ownerNameGroup.clearValidationState();
+    }
+
+    @Override
+    public void setOwner(final String owner) {
+        ownerNameInput.setValue(owner);
     }
 
     @EventHandler("start")

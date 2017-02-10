@@ -35,7 +35,7 @@ public interface CaseManagementService {
 
     List<CaseDefinitionSummary> getCaseDefinitions();
 
-    String startCaseInstance(String serverTemplateId, String containerId, String caseDefinitionId);
+    String startCaseInstance(String serverTemplateId, String containerId, String caseDefinitionId, String owner);
 
     List<CaseInstanceSummary> getCaseInstances(CaseInstanceSearchRequest request);
 
