@@ -100,9 +100,8 @@ public class AdvancedViewProcessDefDetailsPresenter extends
             view.getProcessNameText().setText( process.getName() );
             changeStyleRow( process.getName(), process.getVersion() );
         } else {
-            // set to null to ensure it's clear state
-            view.setEncodedProcessSource( null );
-            view.setProcessAssetPath( null );
+            // set to empty to ensure it's clear state
+            view.getProcessNameText().setText( "" );
         }
     }
 
@@ -218,10 +217,6 @@ public class AdvancedViewProcessDefDetailsPresenter extends
 
                     refreshServiceTasks( process.getServiceTasks() );
 
-                } else {
-                    // set to null to ensure it's clear state
-                    view.setEncodedProcessSource( null );
-                    view.setProcessAssetPath( null );
                 }
             }
         } ).getProcess(serverTemplateId, new ProcessDefinitionKey(serverTemplateId, deploymentId, processId));

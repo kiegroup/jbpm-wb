@@ -23,72 +23,48 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.workbench.common.model.GenericSummary;
 
 @Portable
-public class ProcessSummary extends GenericSummary{
+public class ProcessSummary extends GenericSummary {
 
     private String processDefId;
     private String processDefName;
-    private String packageName;
-    private String type;
     private String version;
-    private String originalPath;
     private String deploymentId;
-    private String encodedProcessSource;
-
+    private boolean dynamic;
     private Map<String, String[]> associatedEntities;
-
     private Map<String, String> serviceTasks;
-
     private Map<String, String> processVariables;
-
     private Collection<String> reusableSubProcesses;
 
     public ProcessSummary() {
     }
 
-    public ProcessSummary(String processDefId, String processDefName, String deploymentId, String packageName, String type, String version,
-            String originalpath, String processSource) {
-        this.id = processDefId;    
-        this.name = processDefName;
+    public ProcessSummary(String processDefId,
+                          String processDefName,
+                          String deploymentId,
+                          String version,
+                          boolean dynamic) {
+        super(processDefId, processDefName);
         this.processDefId = processDefId;
         this.processDefName = processDefName;
         this.deploymentId = deploymentId;
-        this.packageName = packageName;
-        this.type = type;
         this.version = version;
-        this.originalPath = originalpath;
-        this.encodedProcessSource = processSource;
+        this.dynamic = dynamic;
     }
 
     public String getProcessDefId() {
-      return processDefId;
+        return processDefId;
     }
 
     public void setProcessDefId(String processDefId) {
-      this.processDefId = processDefId;
+        this.processDefId = processDefId;
     }
 
     public String getProcessDefName() {
-      return processDefName;
+        return processDefName;
     }
 
     public void setProcessDefName(String processDefName) {
-      this.processDefName = processDefName;
-    }
-
-    public String getPackageName() {
-        return packageName;
-    }
-
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+        this.processDefName = processDefName;
     }
 
     public String getVersion() {
@@ -105,22 +81,6 @@ public class ProcessSummary extends GenericSummary{
 
     public void setDeploymentId(String deploymentId) {
         this.deploymentId = deploymentId;
-    }
-
-    public String getOriginalPath() {
-        return originalPath;
-    }
-
-    public void setOriginalPath(String originalPath) {
-        this.originalPath = originalPath;
-    }
-
-    public String getEncodedProcessSource() {
-        return encodedProcessSource;
-    }
-
-    public void setEncodedProcessSource(String encodedProcessSource) {
-        this.encodedProcessSource = encodedProcessSource;
     }
 
     public Map<String, String[]> getAssociatedEntities() {
@@ -153,5 +113,28 @@ public class ProcessSummary extends GenericSummary{
 
     public void setReusableSubProcesses(Collection<String> reusableSubProcesses) {
         this.reusableSubProcesses = reusableSubProcesses;
+    }
+
+    public boolean isDynamic() {
+        return dynamic;
+    }
+
+    public void setDynamic(Boolean dynamic) {
+        this.dynamic = dynamic;
+    }
+
+    @Override
+    public String toString() {
+        return "ProcessSummary{" +
+                "processDefId='" + processDefId + '\'' +
+                ", processDefName='" + processDefName + '\'' +
+                ", version='" + version + '\'' +
+                ", deploymentId='" + deploymentId + '\'' +
+                ", dynamic=" + dynamic +
+                ", associatedEntities=" + associatedEntities +
+                ", serviceTasks=" + serviceTasks +
+                ", processVariables=" + processVariables +
+                ", reusableSubProcesses=" + reusableSubProcesses +
+                '}';
     }
 }

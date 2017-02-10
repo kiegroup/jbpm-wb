@@ -24,7 +24,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.uberfire.backend.vfs.Path;
 import org.uberfire.workbench.events.NotificationEvent;
 
 public abstract class BaseProcessDefDetailsViewImpl extends Composite implements
@@ -57,10 +56,6 @@ public abstract class BaseProcessDefDetailsViewImpl extends Composite implements
     @Inject
     private Event<NotificationEvent> notification;
 
-    private Path processAssetPath;
-
-    private String encodedProcessSource;
-
     @PostConstruct
     public void initView() {
         init();
@@ -71,7 +66,6 @@ public abstract class BaseProcessDefDetailsViewImpl extends Composite implements
     @Override
     public void displayNotification( String text ) {
         notification.fire( new NotificationEvent( text ) );
-
     }
 
     @Override
@@ -85,25 +79,8 @@ public abstract class BaseProcessDefDetailsViewImpl extends Composite implements
     }
 
     @Override
-    public void setProcessAssetPath( Path processAssetPath ) {
-        this.processAssetPath = processAssetPath;
-    }
-
-    @Override
-    public void setEncodedProcessSource( String encodedProcessSource ) {
-        this.encodedProcessSource = encodedProcessSource;
-    }
-
-    @Override
     public HTML getProcessIdText() {
         return processIdText;
     }
 
-    public Path getProcessAssetPath() {
-        return processAssetPath;
-    }
-
-    public String getEncodedProcessSource() {
-        return encodedProcessSource;
-    }
 }

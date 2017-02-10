@@ -20,23 +20,25 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 
-import com.google.gwt.cell.client.ActionCell.Delegate;
+import com.google.gwt.cell.client.ActionCell;
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.common.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.base.AbstractListView;
 import org.jbpm.workbench.common.client.util.ButtonActionCell;
 import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
@@ -174,12 +176,9 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         // actions (icons)
         List<HasCell<ProcessSummary, ?>> cells = new LinkedList<HasCell<ProcessSummary, ?>>();
 
-        cells.add(new ButtonActionCell<ProcessSummary>(constants.Start(), new Delegate<ProcessSummary>() {
-            @Override
-            public void execute(ProcessSummary process) {
-                presenter.openGenericForm(process.getProcessDefId(), process.getDeploymentId(), process.getProcessDefName());
-            }
-        }));
+        cells.add(new StartButtonActionCell(constants.Start(), (ProcessSummary process) ->
+                presenter.openGenericForm(process.getProcessDefId(), process.getDeploymentId(), process.getProcessDefName())
+        ));
 
         CompositeCell<ProcessSummary> cell = new CompositeCell<ProcessSummary>(cells);
         Column<ProcessSummary, ProcessSummary> actionsColumn = new Column<ProcessSummary, ProcessSummary>(cell) {
@@ -192,4 +191,17 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         return actionsColumn;
     }
 
+    protected class StartButtonActionCell extends ButtonActionCell<ProcessSummary> {
+
+        public StartButtonActionCell( final String text, final ActionCell.Delegate<ProcessSummary> delegate ) {
+            super( text, delegate );
+        }
+
+        @Override
+        public void render(final Cell.Context context, final ProcessSummary summary, final SafeHtmlBuilder sb ) {
+            if ( summary.isDynamic() == false ) {
+                super.render( context, summary, sb );
+            }
+        }
+    }
 }

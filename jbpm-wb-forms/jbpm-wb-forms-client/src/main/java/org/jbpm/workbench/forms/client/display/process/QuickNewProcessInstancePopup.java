@@ -16,8 +16,6 @@
 
 package org.jbpm.workbench.forms.client.display.process;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
@@ -25,8 +23,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.ComplexPanel;
@@ -36,22 +33,21 @@ import org.gwtbootstrap3.client.shared.event.ModalHiddenEvent;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenHandler;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.ListBox;
 import org.gwtbootstrap3.client.ui.ModalFooter;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
+import org.gwtbootstrap3.extras.select.client.ui.OptGroup;
+import org.gwtbootstrap3.extras.select.client.ui.Option;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.forms.client.display.GenericFormDisplayer;
-import org.jbpm.workbench.forms.display.view.FormContentResizeListener;
-import org.jbpm.workbench.forms.client.display.views.FormDisplayerView;
-import org.jbpm.workbench.common.model.PortableQueryFilter;
-import org.jbpm.workbench.common.model.QueryFilter;
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
+import org.jbpm.workbench.forms.client.display.views.FormDisplayerView;
 import org.jbpm.workbench.forms.client.i18n.Constants;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
+import org.jbpm.workbench.forms.display.view.FormContentResizeListener;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
@@ -59,6 +55,8 @@ import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
+
+import static java.util.stream.Collectors.groupingBy;
 
 @Dependent
 public class QuickNewProcessInstancePopup extends BaseModal implements FormDisplayerView {
@@ -82,22 +80,13 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
     public FormGroup errorMessagesGroup;
 
     @UiField
-    public FormGroup processDeploymentIdControlGroup = new FormGroup();
+    public FormGroup processDefinitionsControlGroup;
 
     @UiField
-    public ListBox processDeploymentIdListBox = new ListBox();
+    public Select processDefinitionsListBox;
 
     @UiField
-    public HelpBlock processDeploymentIdHelpLabel = new HelpBlock();
-
-    @UiField
-    public FormGroup processDefinitionsControlGroup = new FormGroup();
-
-    @UiField
-    public ListBox processDefinitionsListBox = new ListBox();
-
-    @UiField
-    public HelpBlock processDefinitionsHelpLabel = new HelpBlock();
+    public HelpBlock processDefinitionsHelpLabel;
 
     @UiField
     public FlowPanel body;
@@ -110,8 +99,6 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
 
     @Inject
     private Caller<ProcessRuntimeDataService> processRuntimeDataService;
-
-    protected QueryFilter currentFilter;
 
     private static Binder uiBinder = GWT.create( Binder.class );
 
@@ -167,60 +154,45 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
 
     protected void loadFormValues(String serverTemplateId) {
         this.serverTemplateId = serverTemplateId;
-        final Map<String, List<String>> dropDowns = new HashMap<String, List<String>>();
         processDefinitionsListBox.clear();
-        processDeploymentIdListBox.clear();
-        currentFilter = new PortableQueryFilter( 0,
-                                                 10,
-                                                 false, "",
-                                                 "",
-                                                 true );
-        processRuntimeDataService.call(new RemoteCallback<List<ProcessSummary>>() {
-            @Override
-            public void callback( List<ProcessSummary> processSummaries ) {
 
-                for ( ProcessSummary sum : processSummaries ) {
-                    if ( dropDowns.get( sum.getDeploymentId() ) == null ) {
-                        dropDowns.put( sum.getDeploymentId(), new ArrayList<String>() );
+        processRuntimeDataService.call(( List<ProcessSummary> processSummaries ) -> {
 
-                    }
-                    dropDowns.get( sum.getDeploymentId() ).add( sum.getProcessDefId() );
-                }
-                processDeploymentIdListBox.clear();
-                processDeploymentIdListBox.addItem( "--------" );
-                processDeploymentIdListBox.setSelectedIndex( 0 );
-                for ( String deploymentId : dropDowns.keySet() ) {
-                    processDeploymentIdListBox.addItem( deploymentId );
-                }
+            //Skip case definitions (isDynamic == true)
+            Map<String, List<ProcessSummary>> defs = processSummaries.stream().filter(p -> p.isDynamic() == false).collect(groupingBy(ProcessSummary::getDeploymentId));
 
-            }
+            defs.keySet().stream().sorted().forEach( deploymentId -> {
+                final OptGroup group = new OptGroup();
+                group.setLabel(deploymentId);
+                processDefinitionsListBox.add(group);
+
+                defs.get(deploymentId).stream().sorted().forEach( p -> {
+
+                    final Option option = new Option();
+                    option.setText( p.getProcessDefId() );
+                    option.setValue( p.getProcessDefId() );
+                    group.add( option );
+
+                });
+
+            });
+
+            Scheduler.get().scheduleDeferred( () -> processDefinitionsListBox.refresh() );
         }).getProcesses(serverTemplateId, 0, 1000, "", true );
-
-        processDeploymentIdListBox.addChangeHandler( new ChangeHandler() {
-            @Override
-            public void onChange( ChangeEvent event ) {
-
-                processDefinitionsListBox.clear();
-                processDefinitionsListBox.addItem( "-------" );
-                processDefinitionsListBox.setSelectedIndex( 0 );
-                int selected = processDeploymentIdListBox.getSelectedIndex();
-
-                if ( dropDowns.get( processDeploymentIdListBox.getValue( selected ) ) != null ) {
-                    for ( String processDef : dropDowns.get( processDeploymentIdListBox.getValue( selected ) ) ) {
-                        processDefinitionsListBox.addItem( processDef );
-                    }
-                }
-
-            }
-        } );
 
     }
 
     private boolean validateForm() {
-        boolean valid = true;
-        clearErrorMessages();
+        if ( processDefinitionsListBox.getSelectedItem() == null ) {
 
-        return valid;
+            errorMessages.setText(Constants.INSTANCE.Select_Process());
+            errorMessagesGroup.setValidationState(ValidationState.ERROR);
+
+            return false;
+        } else {
+            clearErrorMessages();
+            return true;
+        }
     }
 
     public void displayNotification( String text ) {
@@ -228,29 +200,19 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
     }
 
     private void createNewProcessInstance() {
+        final Option selectedItem = processDefinitionsListBox.getSelectedItem();
+        deploymentId = ((OptGroup) selectedItem.getParent()).getLabel();
+        processId = selectedItem.getValue();
 
-        if ( processDefinitionsListBox.getSelectedIndex() == 0 ) {
+        processForm.setVisible(true);
+        basicForm.setVisible(false);
 
-            errorMessages.setText( Constants.INSTANCE.Select_Process() );
-            errorMessagesGroup.setValidationState( ValidationState.ERROR );
-
-        } else {
-            deploymentId = processDeploymentIdListBox.getSelectedValue();
-            processId = processDefinitionsListBox.getSelectedValue();
-
-            processForm.setVisible( true );
-            basicForm.setVisible( false );
-
-            ProcessDisplayerConfig config = new ProcessDisplayerConfig( new ProcessDefinitionKey( serverTemplateId, deploymentId, processId ), processId );
-            startProcessDisplayProvider.setup( config, this );
-
-        }
-
+        ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(serverTemplateId, deploymentId, processId), processId);
+        startProcessDisplayProvider.setup(config, this);
     }
 
     private void clearErrorMessages() {
         errorMessages.setText( "" );
-
     }
 
     protected void init() {

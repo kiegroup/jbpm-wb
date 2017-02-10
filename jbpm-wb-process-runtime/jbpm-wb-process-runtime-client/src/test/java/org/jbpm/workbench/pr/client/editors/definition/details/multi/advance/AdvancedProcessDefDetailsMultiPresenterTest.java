@@ -22,7 +22,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class AdvancedProcessDefDetailsMultiPresenterTest extends BaseProcessDefDetailsMultiPresenterTest {
+public class AdvancedProcessDefDetailsMultiPresenterTest
+        extends BaseProcessDefDetailsMultiPresenterTest<AdvancedProcessDefDetailsMultiPresenter.AdvancedProcessDefDetailsMultiView> {
 
     @InjectMocks
     AdvancedProcessDefDetailsMultiPresenter presenter;
