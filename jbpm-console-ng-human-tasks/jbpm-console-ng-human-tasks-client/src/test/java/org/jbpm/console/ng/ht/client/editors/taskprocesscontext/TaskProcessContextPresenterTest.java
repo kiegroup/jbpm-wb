@@ -15,10 +15,18 @@
  */
 package org.jbpm.console.ng.ht.client.editors.taskprocesscontext;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import javax.enterprise.event.Event;
 
 import com.google.common.collect.Sets;
+import org.guvnor.common.services.shared.security.KieWorkbenchACL;
+import org.guvnor.common.services.shared.security.KieWorkbenchRoles;
+import org.jboss.errai.security.shared.api.Role;
+import org.jboss.errai.security.shared.api.RoleImpl;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter.TaskProcessContextView;
 import org.jbpm.console.ng.ht.model.TaskKey;
@@ -39,6 +47,7 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mvp.PlaceRequest;
 
+import static org.apache.deltaspike.core.util.ArraysUtils.asSet;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -61,20 +70,30 @@ public class TaskProcessContextPresenterTest {
 
     @Mock
     private TaskProcessContextView viewMock;
+
     @Mock
     private PlaceManager placeManager;
+
     @Mock
     private ActivityManager activityManager;
+
+    @Mock
+    private KieWorkbenchACL kieACL;
+
+    @Mock
+    private User identity;
 
     private TaskProcessContextPresenter presenter;
 
     @Before
     public void before() {
         //Task query service mock
+
         TaskQueryService tqs = mock(TaskQueryService.class);
         when(tqs.getItem(new TaskKey(TASK_ID_NO_PROCESS))).thenReturn(taskNoProcess);
         when(tqs.getItem(new TaskKey(TASK_ID_WITH_PROC))).thenReturn(taskWithProcess);
         when(tqs.getItem(new TaskKey(TASK_ID_NULL_DETAILS))).thenReturn(null);
+
         CallerMock<TaskQueryService> taskQueryServiceMock
                 = new CallerMock<TaskQueryService>(tqs);
 
@@ -87,7 +106,9 @@ public class TaskProcessContextPresenterTest {
                 taskQueryServiceMock,
                 dataServiceCallerMock,
                 procNavigationMock,
-                activityManager);
+                activityManager,
+                kieACL,
+                identity);
     }
 
     @Test
@@ -114,7 +135,7 @@ public class TaskProcessContextPresenterTest {
 
         verify(viewMock).setProcessId("TEST_PROCESS_ID");
         verify(viewMock).setProcessInstanceId("123");
-        verify(viewMock, times(2)).enablePIDetailsButton(true);
+
     }
 
     @Test
@@ -142,6 +163,12 @@ public class TaskProcessContextPresenterTest {
 
     @Test
     public void testProcessContextEnabled() {
+        String allowedRole = "testRole";
+        Role role = new RoleImpl(allowedRole);
+
+        when(kieACL.getGrantedRoles(TaskProcessContextPresenter.PROCESS_INSTANCE_FEATURE_ID)).thenReturn(new HashSet(Arrays.asList(allowedRole)));
+        when(identity.getRoles()).thenReturn(new HashSet(Arrays.asList(role)));
+
         when(activityManager.getActivities(any(PlaceRequest.class))).thenReturn(Sets.newHashSet(mock(Activity.class)));
 
         presenter.init();
@@ -151,11 +178,32 @@ public class TaskProcessContextPresenterTest {
 
     @Test
     public void testProcessContextDisabled() {
+        String allowedRole = "testRole";
+        Role role = new RoleImpl(allowedRole);
+
+        when(kieACL.getGrantedRoles(TaskProcessContextPresenter.PROCESS_INSTANCE_FEATURE_ID)).thenReturn(new HashSet(Arrays.asList(allowedRole)));
+        when(identity.getRoles()).thenReturn(new HashSet(Arrays.asList(role)));
+
         when(activityManager.getActivities(any(PlaceRequest.class))).thenReturn(Collections.<Activity>emptySet());
+
 
         presenter.init();
 
         verify(viewMock).enablePIDetailsButton(false);
     }
+
+    @Test
+    public void testProcessContextDisabledWhenUserHasNoPermission() {
+        String allowedRole = "testRole";
+        Role role = new RoleImpl(allowedRole);
+
+        when(kieACL.getGrantedRoles(TaskProcessContextPresenter.PROCESS_INSTANCE_FEATURE_ID)).thenReturn(new HashSet(Arrays.asList("other")));
+        when(identity.getRoles()).thenReturn(new HashSet(Arrays.asList(role)));
+        presenter.init();
+
+        verify(viewMock).enablePIDetailsButton(false);
+    }
+
+
 
 }

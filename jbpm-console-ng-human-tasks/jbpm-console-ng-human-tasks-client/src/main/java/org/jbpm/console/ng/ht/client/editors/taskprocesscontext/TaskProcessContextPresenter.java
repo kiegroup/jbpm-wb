@@ -22,8 +22,11 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import org.guvnor.common.services.shared.security.KieWorkbenchACL;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.security.shared.api.Role;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.console.ng.bd.service.DataServiceEntryPoint;
 import org.jbpm.console.ng.ht.model.TaskKey;
 import org.jbpm.console.ng.ht.model.TaskSummary;
@@ -39,10 +42,14 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
+import static org.jbpm.process.audit.ProcessInstanceLog_.identity;
+
 @Dependent
 public class TaskProcessContextPresenter {
 
     public static final String PROCESS_INSTANCE_DETAILS = "DataSet Process Instances With Variables";
+
+    public static final String PROCESS_INSTANCE_FEATURE_ID = "wb_process_instances";
 
     public interface TaskProcessContextView extends UberView<TaskProcessContextPresenter> {
 
@@ -68,8 +75,15 @@ public class TaskProcessContextPresenter {
     private Caller<DataServiceEntryPoint> dataServices;
 
     private long currentTaskId = 0;
+
     private long currentProcessInstanceId = -1L;
+
     private boolean enableProcessInstanceDetails = true;
+
+    private KieWorkbenchACL kieACL;
+
+    private User identity;
+
 
     @Inject
     public TaskProcessContextPresenter(TaskProcessContextView view,
@@ -77,20 +91,26 @@ public class TaskProcessContextPresenter {
                                        Caller<TaskQueryService> taskQueryService,
                                        Caller<DataServiceEntryPoint> dataServices,
                                        Event<ProcessInstancesWithDetailsRequestEvent> processInstanceSelected,
-                                       ActivityManager activityManager) {
+                                       ActivityManager activityManager, KieWorkbenchACL kieACL, User identity) {
         this.view = view;
         this.taskQueryService = taskQueryService;
         this.dataServices = dataServices;
         this.placeManager = placeManager;
         this.processInstanceSelected = processInstanceSelected;
         this.activityManager = activityManager;
+        this.kieACL = kieACL;
+        this.identity = identity;
     }
 
     @PostConstruct
     public void init() {
         view.init(this);
-        final Set<Activity> activity = activityManager.getActivities(new DefaultPlaceRequest(PROCESS_INSTANCE_DETAILS));
-        enableProcessInstanceDetails = activity.isEmpty() == false;
+        if (!hasProcessInstanceGrant()) {
+            enableProcessInstanceDetails = false;
+        } else {
+            final Set<Activity> activity = activityManager.getActivities(new DefaultPlaceRequest(PROCESS_INSTANCE_DETAILS));
+            enableProcessInstanceDetails = activity.isEmpty() == false;
+        }
         view.enablePIDetailsButton(enableProcessInstanceDetails);
     }
 
@@ -130,12 +150,25 @@ public class TaskProcessContextPresenter {
                                       currentProcessInstanceId = details.getProcessInstanceId();
                                       view.setProcessInstanceId(String.valueOf(currentProcessInstanceId));
                                       view.setProcessId(details.getProcessId());
-                                      view.enablePIDetailsButton(true);
-                                      view.enablePIDetailsButton(enableProcessInstanceDetails);
                                   }
                               },
                 new DefaultErrorCallback()
         ).getItem(new TaskKey(currentTaskId));
+    }
+
+    protected boolean hasProcessInstanceGrant() {
+        Set<String> grantedRoles = kieACL.getGrantedRoles(PROCESS_INSTANCE_FEATURE_ID);
+        boolean processInstancesGrant = false;
+
+        if (grantedRoles != null && identity != null && identity.getRoles() != null) {
+            for (Role role : identity.getRoles()) {
+                if (grantedRoles.contains(role.getName())) {
+                    processInstancesGrant = true;
+                    break;
+                }
+            }
+        }
+        return processInstancesGrant;
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {

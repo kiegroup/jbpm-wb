@@ -160,6 +160,11 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-services-api</artifactId>
+    </dependency>
+
     <!-- Errai UI -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
