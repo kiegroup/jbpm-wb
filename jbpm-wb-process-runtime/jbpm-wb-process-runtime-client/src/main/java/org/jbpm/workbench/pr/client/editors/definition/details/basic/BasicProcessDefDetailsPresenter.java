@@ -59,14 +59,12 @@ public class BasicProcessDefDetailsPresenter extends BaseProcessDefDetailsPresen
             @Override
             public void callback( ProcessSummary process ) {
                 if (process != null) {
-                    view.setEncodedProcessSource( process.getEncodedProcessSource() );
                     view.getProcessNameText().setText( process.getName() );
 
                     changeStyleRow( process.getName(), process.getVersion() );
                 } else {
-                    // set to null to ensure it's clear state
-                    view.setEncodedProcessSource( null );
-                    view.setProcessAssetPath( null );
+                    // set to empty to ensure it's clear state
+                    view.getProcessNameText().setText( "" );
                 }
             }
         } ).getProcess(serverTemplateId, new ProcessDefinitionKey(serverTemplateId, deploymentId, processId));

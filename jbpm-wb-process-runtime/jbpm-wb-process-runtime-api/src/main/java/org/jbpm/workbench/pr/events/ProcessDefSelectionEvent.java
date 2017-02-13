@@ -20,11 +20,12 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class ProcessDefSelectionEvent {
+
     private String processId;
     private String processDefName;
     private String deploymentId;
-
     private String serverTemplateId;
+    private boolean dynamic;
 
     public ProcessDefSelectionEvent() {
     }
@@ -33,16 +34,12 @@ public class ProcessDefSelectionEvent {
         this.processId = processId;
     }
 
-    public ProcessDefSelectionEvent(String processId, String deploymentId) {
-        this.processId = processId;
-        this.deploymentId = deploymentId;
-    }
-
-    public ProcessDefSelectionEvent(String processId, String deploymentId, String serverTemplateId, String processDefName) {
-        this.processId = processId;
+    public ProcessDefSelectionEvent(String processId, String deploymentId, String serverTemplateId, String processDefName, boolean dynamic) {
+        this(processId);
         this.deploymentId = deploymentId;
         this.serverTemplateId = serverTemplateId;
         this.processDefName = processDefName;
+        this.dynamic = dynamic;
     }
 
     public String getProcessId() {
@@ -77,5 +74,11 @@ public class ProcessDefSelectionEvent {
         this.serverTemplateId = serverTemplateId;
     }
 
+    public boolean isDynamic() {
+        return dynamic;
+    }
 
+    public void setDynamic(boolean dynamic) {
+        this.dynamic = dynamic;
+    }
 }

@@ -108,12 +108,11 @@ public class ProcessDefinitionListPresenterTest {
 
     @Test
     public void testProcessDefNameDefinitionPropagation(){
-        String processDefName = "testProcessDefName";
-
-        ProcessSummary processSummary = new ProcessSummary();
+        final ProcessSummary processSummary = new ProcessSummary();
         processSummary.setProcessDefId("testProcessDefId");
         processSummary.setDeploymentId("testDeploymentId");
-        processSummary.setProcessDefName(processDefName);
+        processSummary.setProcessDefName("testProcessDefName");
+        processSummary.setDynamic(false);
 
         when(placeManager.getStatus(any(PlaceRequest.class))).thenReturn(PlaceStatus.CLOSE);
         presenter.selectProcessDefinition(processSummary, true);
@@ -121,7 +120,11 @@ public class ProcessDefinitionListPresenterTest {
         verify(processDefSelectionEvent).fire(any(ProcessDefSelectionEvent.class));
         ArgumentCaptor<ProcessDefSelectionEvent> argument = ArgumentCaptor.forClass( ProcessDefSelectionEvent.class );
         verify( processDefSelectionEvent).fire(argument.capture());
-        assertEquals( processDefName, argument.getValue().getProcessDefName() );
+        final ProcessDefSelectionEvent event = argument.getValue();
+        assertEquals( processSummary.getProcessDefName(), event.getProcessDefName() );
+        assertEquals( processSummary.getDeploymentId(), event.getDeploymentId() );
+        assertEquals( processSummary.getProcessDefId(), event.getProcessId() );
+        assertEquals( processSummary.isDynamic(), event.isDynamic() );
     }
 
     @Test

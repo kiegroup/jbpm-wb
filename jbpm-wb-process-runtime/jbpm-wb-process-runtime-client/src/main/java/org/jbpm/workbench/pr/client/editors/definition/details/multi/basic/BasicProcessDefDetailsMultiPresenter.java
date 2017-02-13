@@ -20,33 +20,28 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import org.jbpm.workbench.pr.client.editors.definition.details.multi.BaseProcessDefDetailsMultiPresenter;
-import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.pr.client.editors.definition.details.basic.BasicProcessDefDetailsPresenter;
+import org.jbpm.workbench.pr.client.editors.definition.details.multi.BaseProcessDefDetailsMultiPresenter;
 import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
-import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
-import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @Dependent
 @WorkbenchScreen(identifier = "Basic Process Details Multi", preferredWidth = 500)
-public class BasicProcessDefDetailsMultiPresenter extends BaseProcessDefDetailsMultiPresenter {
+public class BasicProcessDefDetailsMultiPresenter extends BaseProcessDefDetailsMultiPresenter<BasicProcessDefDetailsMultiPresenter.BasicProcessDefDetailsMultiView> {
 
     public interface BasicProcessDefDetailsMultiView extends
                                                      UberView<BasicProcessDefDetailsMultiPresenter>,
                                                      BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView {
 
     }
-
-    @Inject
-    private BasicProcessDefDetailsMultiView view;
 
     @Inject
     private BasicProcessDefDetailsPresenter detailsPresenter;
@@ -68,24 +63,10 @@ public class BasicProcessDefDetailsMultiPresenter extends BaseProcessDefDetailsM
     @WorkbenchMenu
     public Menus buildMenu() {
         return MenuFactory
-                .newTopLevelCustomMenu(new MenuFactory.CustomMenuBuilder() {
-
-                    @Override
-                    public void push(MenuFactory.CustomMenuBuilder element) {
-                    }
-
-                    @Override
-                    public MenuItem build() {
-                        return new BaseMenuCustom<IsWidget>() {
-
-                            @Override
-                            public IsWidget build() {
-                                return view.getNewInstanceButton();
-                            }
-                        };
-                    }
-                }).endMenu()
+                .newTopLevelCustomMenu(newInstanceMenu).endMenu()
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
                 .build();
     }
+
+
 }

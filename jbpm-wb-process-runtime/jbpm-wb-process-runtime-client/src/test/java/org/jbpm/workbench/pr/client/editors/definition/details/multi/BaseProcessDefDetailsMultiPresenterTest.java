@@ -33,10 +33,13 @@ import org.uberfire.mvp.PlaceRequest;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-public abstract class BaseProcessDefDetailsMultiPresenterTest {
+public abstract class BaseProcessDefDetailsMultiPresenterTest<T extends BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView> {
 
     @Mock
     PlaceManager placeManager;
+
+    @Mock
+    T view;
 
     @Mock
     protected EventSourceMock<ProcessDefSelectionEvent> processDefSelectionEvent = new EventSourceMock<ProcessDefSelectionEvent>();

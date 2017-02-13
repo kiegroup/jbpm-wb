@@ -21,7 +21,6 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessDefStyleEvent;
-import org.uberfire.backend.vfs.Path;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -44,13 +43,6 @@ public abstract class BaseProcessDefDetailsPresenter {
 
         HTML getDeploymentIdText();
 
-        void setProcessAssetPath( Path processAssetPath );
-
-        void setEncodedProcessSource( String encodedProcessSource );
-
-        Path getProcessAssetPath();
-
-        String getEncodedProcessSource();
     }
 
     protected void changeStyleRow( String processDefName, String processDefVersion ) {

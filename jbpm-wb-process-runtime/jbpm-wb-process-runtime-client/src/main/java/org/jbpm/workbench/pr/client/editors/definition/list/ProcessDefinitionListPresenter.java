@@ -28,19 +28,19 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.workbench.common.model.PortableQueryFilter;
 import org.jbpm.workbench.common.client.list.base.AbstractListView.ListView;
 import org.jbpm.workbench.common.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.workbench.common.client.list.base.events.SearchEvent;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.common.model.PortableQueryFilter;
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
-import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
-import org.jbpm.workbench.pr.model.ProcessSummary;
+import org.jbpm.workbench.pr.client.i18n.Constants;
 import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
+import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
+import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -179,12 +179,16 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
         if ( status == PlaceStatus.CLOSE ) {
             placeManager.goTo( placeIdentifier );
-            processDefSelected.fire( new ProcessDefSelectionEvent( processSummary.getProcessDefId(), processSummary.getDeploymentId(), selectedServerTemplate, processSummary.getProcessDefName() ) );
+            fireProcessDefSelectionEvent(processSummary);
         } else if ( status == PlaceStatus.OPEN && !close ) {
-            processDefSelected.fire( new ProcessDefSelectionEvent( processSummary.getProcessDefId(), processSummary.getDeploymentId(), selectedServerTemplate, processSummary.getProcessDefName() ) );
+            fireProcessDefSelectionEvent(processSummary);
         } else if ( status == PlaceStatus.OPEN && close ) {
             placeManager.closePlace( placeIdentifier );
         }
+    }
+
+    private void fireProcessDefSelectionEvent(final ProcessSummary processSummary) {
+        processDefSelected.fire(new ProcessDefSelectionEvent(processSummary.getProcessDefId(), processSummary.getDeploymentId(), selectedServerTemplate, processSummary.getProcessDefName(), processSummary.isDynamic()));
     }
 
     public void refreshNewProcessInstance( @Observes NewProcessInstanceEvent newProcessInstance ) {

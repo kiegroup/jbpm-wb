@@ -37,7 +37,7 @@ import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @Dependent
 @WorkbenchScreen(identifier = "Advanced Process Details Multi", preferredWidth = 500)
-public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetailsMultiPresenter {
+public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetailsMultiPresenter<AdvancedProcessDefDetailsMultiPresenter.AdvancedProcessDefDetailsMultiView> {
 
     public interface AdvancedProcessDefDetailsMultiView extends
                                                         UberView<AdvancedProcessDefDetailsMultiPresenter>,
@@ -45,9 +45,6 @@ public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetai
 
         IsWidget getOptionsButton();
     }
-
-    @Inject
-    public AdvancedProcessDefDetailsMultiView view;
 
     @Inject
     private AdvancedViewProcessDefDetailsPresenter detailPresenter;
@@ -65,23 +62,7 @@ public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetai
     @WorkbenchMenu
     public Menus buildMenu() {
         return MenuFactory
-                .newTopLevelCustomMenu(new MenuFactory.CustomMenuBuilder() {
-
-                    @Override
-                    public void push(MenuFactory.CustomMenuBuilder element) {
-                    }
-
-                    @Override
-                    public MenuItem build() {
-                        return new BaseMenuCustom<IsWidget>() {
-
-                            @Override
-                            public IsWidget build() {
-                                return view.getNewInstanceButton();
-                            }
-                        };
-                    }
-                }).endMenu()
+                .newTopLevelCustomMenu(newInstanceMenu).endMenu()
 
                 .newTopLevelCustomMenu(new MenuFactory.CustomMenuBuilder() {
 

@@ -16,33 +16,39 @@
 
 package org.jbpm.workbench.pr.client.editors.definition.details.multi;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
-import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
-import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramUtil;
-import org.jbpm.workbench.pr.client.i18n.Constants;
-import org.jbpm.workbench.pr.client.perspectives.DataSetProcessInstancesWithVariablesPerspective;
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
-import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
+import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramUtil;
+import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.perspectives.DataSetProcessInstancesWithVariablesPerspective;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
+import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
+import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.MenuItem;
+import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
-public abstract class BaseProcessDefDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
+public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView> implements RefreshMenuBuilder.SupportsRefresh {
 
     public interface BaseProcessDefDetailsMultiView {
 
         IsWidget getNewInstanceButton();
+
+        void setNewInstanceButtonVisible(boolean visible);
 
     }
 
@@ -50,6 +56,9 @@ public abstract class BaseProcessDefDetailsMultiPresenter implements RefreshMenu
 
     @Inject
     protected PopupFormDisplayerView formDisplayPopUp;
+
+    @Inject
+    protected T view;
 
     @Inject
     private PlaceManager placeManager;
@@ -73,6 +82,30 @@ public abstract class BaseProcessDefDetailsMultiPresenter implements RefreshMenu
 
     private String serverTemplateId = "";
 
+    private boolean dynamic;
+
+    protected MenuFactory.CustomMenuBuilder newInstanceMenu;
+
+    @PostConstruct
+    public void init(){
+        newInstanceMenu = new MenuFactory.CustomMenuBuilder() {
+
+            @Override
+            public void push(MenuFactory.CustomMenuBuilder element) {
+            }
+
+            @Override
+            public MenuItem build() {
+                return new BaseMenuCustom<IsWidget>() {
+                    @Override
+                    public IsWidget build() {
+                        return view.getNewInstanceButton();
+                    }
+                };
+            }
+        };
+    }
+
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.Details();
@@ -88,15 +121,17 @@ public abstract class BaseProcessDefDetailsMultiPresenter implements RefreshMenu
         processId = event.getProcessId();
         processDefName = event.getProcessDefName();
         serverTemplateId = event.getServerTemplateId();
+        dynamic = event.isDynamic();
 
-        changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place,
-                                                                 String.valueOf( deploymentId ) + " - " + processDefName ) );
+        view.setNewInstanceButtonVisible(dynamic == false);
+
+        changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place, String.valueOf(deploymentId) + " - " + processDefName));
     }
 
     public void createNewProcessInstance() {
         final ProcessDisplayerConfig config = new ProcessDisplayerConfig( new ProcessDefinitionKey( serverTemplateId, deploymentId, processId, processDefName ), processDefName );
 
-        formDisplayPopUp.setTitle( "" );
+        formDisplayPopUp.setTitle( processDefName );
         startProcessDisplayProvider.setup( config, formDisplayPopUp );
     }
 
@@ -114,7 +149,7 @@ public abstract class BaseProcessDefDetailsMultiPresenter implements RefreshMenu
 
     @Override
     public void onRefresh() {
-        processDefSelectionEvent.fire(new ProcessDefSelectionEvent(processId, deploymentId, serverTemplateId, processDefName));
+        processDefSelectionEvent.fire(new ProcessDefSelectionEvent(processId, deploymentId, serverTemplateId, processDefName, dynamic));
     }
 
     public void closeDetails() {

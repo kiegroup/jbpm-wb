@@ -147,17 +147,7 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
 
         List<ProcessDefinition> processes = queryServicesClient.findProcesses(page, pageSize, sort, sortOrder);
 
-        return processes
-                .stream()
-                .map(definition -> new ProcessSummary(definition.getId(),
-                        definition.getName(),
-                        definition.getContainerId(),
-                        definition.getPackageName(),
-                        "",
-                        definition.getVersion(),
-                        "",
-                        ""))
-                .collect(toList());
+        return processes.stream().map(new ProcessSummaryMapper()).collect(toList());
     }
 
     @Override
@@ -170,21 +160,7 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
 
         ProcessDefinition definition = queryServicesClient.getProcessDefinition(processDefinitionKey.getDeploymentId(), processDefinitionKey.getProcessId());
 
-        ProcessSummary summary = new ProcessSummary(definition.getId(),
-                definition.getName(),
-                definition.getContainerId(),
-                definition.getPackageName(),
-                "",
-                definition.getVersion(),
-                "",
-                "");
-
-        summary.setAssociatedEntities(definition.getAssociatedEntities());
-        summary.setProcessVariables(definition.getProcessVariables());
-        summary.setReusableSubProcesses(definition.getReusableSubProcesses());
-        summary.setServiceTasks(definition.getServiceTasks());
-
-        return summary;
+        return new ProcessSummaryMapper().apply(definition);
     }
 
     @Override
@@ -197,17 +173,7 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
 
         List<ProcessDefinition> processes = queryServicesClient.findProcesses(textSearch, page, pageSize, sort, sortOrder);
 
-        return processes
-                .stream()
-                .map(definition -> new ProcessSummary(definition.getId(),
-                        definition.getName(),
-                        definition.getContainerId(),
-                        definition.getPackageName(),
-                        "",
-                        definition.getVersion(),
-                        "",
-                        ""))
-                .collect(toList());
+        return processes.stream().map(new ProcessSummaryMapper()).collect(toList());
     }
 
     @Override
@@ -220,21 +186,7 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
 
         ProcessDefinition definition = queryServicesClient.findProcessByContainerIdProcessId(containerId, processId);
 
-        ProcessSummary summary = new ProcessSummary(definition.getId(),
-                definition.getName(),
-                definition.getContainerId(),
-                definition.getPackageName(),
-                "",
-                definition.getVersion(),
-                "",
-                "");
-
-        summary.setAssociatedEntities(definition.getAssociatedEntities());
-        summary.setProcessVariables(definition.getProcessVariables());
-        summary.setReusableSubProcesses(definition.getReusableSubProcesses());
-        summary.setServiceTasks(definition.getServiceTasks());
-
-        return summary;
+        return new ProcessSummaryMapper().apply(definition);
     }
 
     @Override
