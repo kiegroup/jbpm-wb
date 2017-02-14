@@ -19,6 +19,7 @@ import java.util.Collections;
 import javax.enterprise.event.Event;
 
 import com.google.common.collect.Sets;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.ht.model.TaskSummary;
@@ -37,6 +38,8 @@ import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.security.Resource;
+import org.uberfire.security.authz.AuthorizationManager;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -64,6 +67,10 @@ public class TaskProcessContextPresenterTest {
     private PlaceManager placeManager;
     @Mock
     private ActivityManager activityManager;
+    @Mock
+    private AuthorizationManager authorizationManager;
+    @Mock
+    public User identity;
 
     private TaskProcessContextPresenter presenter;
 
@@ -86,7 +93,9 @@ public class TaskProcessContextPresenterTest {
                 taskQueryServiceMock,
                 dataServiceCallerMock,
                 procNavigationMock,
-                activityManager);
+                activityManager,
+                authorizationManager,
+                identity);
     }
 
     @Test
@@ -113,7 +122,7 @@ public class TaskProcessContextPresenterTest {
 
         verify(viewMock).setProcessId("TEST_PROCESS_ID");
         verify(viewMock).setProcessInstanceId("123");
-        verify(viewMock, times(2)).enablePIDetailsButton(true);
+
     }
 
     @Test
@@ -141,6 +150,7 @@ public class TaskProcessContextPresenterTest {
 
     @Test
     public void testProcessContextEnabled() {
+        when(authorizationManager.authorize(any(Resource.class), eq(identity))).thenReturn(true);
         when(activityManager.getActivities(any(PlaceRequest.class))).thenReturn(Sets.newHashSet(mock(Activity.class)));
 
         presenter.init();
@@ -150,7 +160,17 @@ public class TaskProcessContextPresenterTest {
 
     @Test
     public void testProcessContextDisabled() {
+        when(authorizationManager.authorize(any(Resource.class), eq(identity))).thenReturn(true);
         when(activityManager.getActivities(any(PlaceRequest.class))).thenReturn(Collections.<Activity>emptySet());
+
+        presenter.init();
+
+        verify(viewMock).enablePIDetailsButton(false);
+    }
+
+    @Test
+    public void testProcessContextDisabledWhenUserHasNoPermission() {
+        when(authorizationManager.authorize(any(Resource.class), eq(identity))).thenReturn(false);
 
         presenter.init();
 

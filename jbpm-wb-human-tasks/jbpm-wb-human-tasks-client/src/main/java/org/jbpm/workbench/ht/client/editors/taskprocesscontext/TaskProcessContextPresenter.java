@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.ht.model.TaskSummary;
@@ -33,11 +34,15 @@ import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.pr.events.ProcessInstancesWithDetailsRequestEvent;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
+import org.kie.workbench.common.workbench.client.PerspectiveIds;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.security.ResourceRef;
+import org.uberfire.security.authz.AuthorizationManager;
+import org.uberfire.workbench.model.ActivityResourceType;
 
 @Dependent
 public class TaskProcessContextPresenter {
@@ -61,6 +66,10 @@ public class TaskProcessContextPresenter {
 
     private TaskProcessContextView view;
 
+    private AuthorizationManager authorizationManager;
+
+    public User identity;
+
     private Event<ProcessInstancesWithDetailsRequestEvent> processInstanceSelected;
 
     private Caller<TaskService> taskService;
@@ -79,20 +88,28 @@ public class TaskProcessContextPresenter {
                                        Caller<TaskService> taskService,
                                        Caller<ProcessRuntimeDataService> processRuntimeDataService,
                                        Event<ProcessInstancesWithDetailsRequestEvent> processInstanceSelected,
-                                       ActivityManager activityManager) {
+                                       ActivityManager activityManager,
+                                       AuthorizationManager authorizationManager,
+                                       User identity) {
         this.view = view;
         this.taskService = taskService;
         this.processRuntimeDataService = processRuntimeDataService;
         this.placeManager = placeManager;
         this.processInstanceSelected = processInstanceSelected;
         this.activityManager = activityManager;
+        this.authorizationManager = authorizationManager;
+        this.identity = identity;
     }
 
     @PostConstruct
     public void init() {
         view.init(this);
-        final Set<Activity> activity = activityManager.getActivities(new DefaultPlaceRequest(PROCESS_INSTANCE_DETAILS));
-        enableProcessInstanceDetails = activity.isEmpty() == false;
+        if (!hasAccessToPerspective(PerspectiveIds.DATASET_PROC_INST_VARS)) {
+            enableProcessInstanceDetails = false;
+        } else {
+            final Set<Activity> activity = activityManager.getActivities(new DefaultPlaceRequest(PROCESS_INSTANCE_DETAILS));
+            enableProcessInstanceDetails = activity.isEmpty() == false;
+        }
         view.enablePIDetailsButton(enableProcessInstanceDetails);
     }
 
@@ -132,12 +149,16 @@ public class TaskProcessContextPresenter {
                                       currentProcessInstanceId = details.getProcessInstanceId();
                                       view.setProcessInstanceId(String.valueOf(currentProcessInstanceId));
                                       view.setProcessId(details.getProcessId());
-                                      view.enablePIDetailsButton(true);
-                                      view.enablePIDetailsButton(enableProcessInstanceDetails);
                                   }
                               }
         ).getTask(serverTemplateId, containerId, currentTaskId);
     }
+
+    boolean hasAccessToPerspective(String perspectiveId) {
+        ResourceRef resourceRef = new ResourceRef(perspectiveId, ActivityResourceType.PERSPECTIVE);
+        return authorizationManager.authorize(resourceRef, identity);
+    }
+
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
         this.currentTaskId = event.getTaskId();
