@@ -32,6 +32,7 @@ import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.workbench.cm.client.resources.i18n.Constants;
 import org.jbpm.workbench.cm.client.util.AbstractView;
 
 import org.jbpm.workbench.cm.client.util.CaseMilestoneStatus;
@@ -84,29 +85,29 @@ public class CaseMilestoneItemView extends AbstractView<CaseMilestoneListPresent
         this.caseMilestoneSummary.setModel(model);
         final CaseMilestoneStatus milestoneStatus = CaseMilestoneStatus.fromStatus(model.getStatus());
 
-        String statusStr = convertStatusToStr(model.getStatus());
         switch (milestoneStatus) {
             case AVAILABLE: {
-                showMilestoneStatus(statusStr, "", "label", "label-info");
+                showMilestoneStatus(translationService.format(Constants.MILESTONES_HAS_NOT_BEEN_COMPLETED), "fa-flag", "fa-process-flow-bxms");
                 break;
             }
             case COMPLETED: {
                 String achievedAtStr = DateConverter.getDateStr(model.getAchievedAt());
-                showMilestoneStatus("", statusStr + (achievedAtStr.isEmpty() ? "" : "(" + achievedAtStr + ")"),
-                        "pficon", "pficon-ok");
+                showMilestoneStatus(translationService.format(Constants.MILESTONES_HAS_BEEN_COMPLETED ,(achievedAtStr.isEmpty() ? "" : "(" + achievedAtStr + ")")),
+                        "fa-check" ,"kie-milestones__icon--completed");
+                addCSSClass(this.listGroupItem, "kie-milestones__item--completed");
                 break;
             }
             case TERMINATED: {
                 String achievedAtStr = DateConverter.getDateStr(model.getAchievedAt());
-                showMilestoneStatus("", statusStr + (achievedAtStr.isEmpty() ? "" : "(" + achievedAtStr + ")"),
-                        "pficon", "pficon-error-circle-o");
+                showMilestoneStatus(translationService.format(Constants.MILESTONES_HAS_BEEN_TERMINATED, (achievedAtStr.isEmpty() ? "" : "(" + achievedAtStr + ")")),
+                        "fa-close", "kie-milestones__icon--terminated");
+                addCSSClass(this.listGroupItem, "kie-milestones__item--terminated");
                 break;
             }
         }
     }
 
-    public void showMilestoneStatus(final String statusText, final String tooltipTitle, final String... stylesClass) {
-        status.setTextContent(statusText);
+    public void showMilestoneStatus(final String tooltipTitle, final String... stylesClass) {
         status.setAttribute("data-original-title", tooltipTitle);
         for (String styleClass : stylesClass) {
             addCSSClass(this.status, styleClass);

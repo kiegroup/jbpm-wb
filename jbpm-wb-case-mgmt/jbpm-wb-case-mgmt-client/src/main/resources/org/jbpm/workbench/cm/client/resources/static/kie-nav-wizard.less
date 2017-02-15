@@ -1,0 +1,151 @@
+@import "/org/uberfire/client/views/static/uberfire-variables.less";
+@import "kie-variables.less";
+
+
+//===============================================
+// Variables
+//===============================================
+@kie-wizard-background: @color-pf-black-300;
+@kie-wizard-border-color: @color-pf-white; //around and between each element
+@kie-wizard-border-width: 2px;
+
+@kie-wizard-complete-color : @color-pf-black-900;
+@kie-wizard-complete-background : @color-pf-black-300;
+
+@kie-wizard-active-color : @color-pf-white;
+@kie-wizard-active-background : @color-pf-blue-300;
+
+@kie-wizard-incomplete-color : @color-pf-black-900;
+@kie-wizard-incomplete-background : @color-pf-white;
+
+@kie-wizard-row-height: 42px;
+@kie-wizard-chevron-width: 16px;
+
+//===============================================
+// Mixins
+//===============================================
+
+.kie-wizard-step-color(@color, @background) {
+  color: @color;
+  background: @background;
+  &:after {
+    border-left: @kie-wizard-chevron-width solid @background;
+  }
+  a, a:active, a:visited, a:focus {
+    color: @color;
+    background: @background;
+  }
+}
+
+.kie-chevron(@color) {
+  position: absolute;
+  display: block;
+  border: (@kie-wizard-row-height / 2) + @kie-wizard-border-width solid transparent;
+  border-left: @kie-wizard-chevron-width solid @color;
+  border-right: 0;
+  top: -@kie-wizard-border-width;
+  z-index: 10;
+  content: '';
+}
+
+//===============================================
+// Class Def
+//===============================================
+
+ul.kie-nav-wizard {
+  border-radius: 3px;
+  display: flex;
+  position: relative;
+  // the :before hides the tips of the triangles that stick out above and below
+  &:before {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -@kie-wizard-border-width;
+    height: @kie-wizard-row-height + (2 * @kie-wizard-border-width);
+    border-top: @kie-wizard-border-width solid @kie-wizard-border-color;
+    border-bottom: @kie-wizard-border-width solid @kie-wizard-border-color;
+    z-index: 11;
+    content: " ";
+  }
+  li {
+    background-color: @kie-wizard-background;
+    display: flex;
+    float: left;
+    height: @kie-wizard-row-height;
+    margin: 0;
+    position: relative;
+    min-width: @kie-wizard-chevron-width + @kie-wizard-border-width; // only let steps shrink down to the width of the chevron
+    &:first-of-type a {
+      padding-left: @pf-spacer-xs;
+    }
+    a {
+      color: @kie-wizard-complete-color;
+      align-self: center; // vertically aligns the a and therefore the text
+      max-height: @kie-wizard-row-height - (2 * @kie-wizard-border-width);
+      padding: 0 @pf-spacer-xs 0 calc(@pf-spacer-xs ~"+" @kie-wizard-chevron-width);
+      line-height: 1.3;
+      // let long text wrap to 2 lines before ellipsing
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow:hidden;
+      //display:block; // for the text-overflow: ellipsis
+      //text-overflow: ellipsis;
+      flex-shrink: 1;
+      &:hover {
+        background-color: transparent;
+      }
+    }
+    // :before is the part behind the :after that will be the line
+    &:before {
+      .kie-chevron(@kie-wizard-border-color);
+      right: -@kie-wizard-chevron-width;
+    }
+    // :after is the part on top that appears connected to the step and will obscure part of the :before
+    &:after {
+      .kie-chevron(@kie-wizard-background);
+      right: -@kie-wizard-chevron-width + @kie-wizard-border-width; // makes the divider line thicker
+    }
+    // don't let the first, last, and current steps shrink down
+    &:first-of-type,
+    &:last-of-type,
+    &:active {
+      flex-shrink: 0;
+    }
+    // make room for the chevron at the very end
+    &:last-of-type {
+      margin-right: @kie-wizard-chevron-width;
+    }
+    // don't shrink the active one
+    &.active {
+      .kie-wizard-step-color(@kie-wizard-active-color, @kie-wizard-active-background);
+      font-weight: @pf-font-weight-bold;
+      flex-shrink: 0;
+    }
+  }
+
+  // lis that are after the active li are incomplete
+  .active ~ li {
+    .kie-wizard-step-color(@kie-wizard-incomplete-color, @kie-wizard-incomplete-background);
+    border-top: @kie-wizard-border-width solid @kie-wizard-background;
+    border-bottom: @kie-wizard-border-width solid @kie-wizard-background;
+    // adjust the chevrons on incomplete steps because they are bordered instead of having a background
+    &:before {
+      .kie-chevron(@kie-wizard-background);
+      border-top-width: (@kie-wizard-row-height / 2);
+      border-bottom-width: (@kie-wizard-row-height / 2);
+      right: -@kie-wizard-chevron-width; // with :after, controls thickness of the line
+    }
+    &:after {
+      border-top-width: (@kie-wizard-row-height / 2) - @kie-wizard-border-width;
+      border-bottom-width: (@kie-wizard-row-height / 2) - @kie-wizard-border-width;
+      right: -@kie-wizard-chevron-width + (@kie-wizard-border-width * sqrt(2)); //adjust because it's approx a 45 deg angle and this thickens up the line to match the border width
+      top: 0;
+      border-left-width:  ((@kie-wizard-row-height / 2) - @kie-wizard-border-width) * @kie-wizard-chevron-width / (@kie-wizard-row-height / 2);
+    }
+  }
+
+}
+

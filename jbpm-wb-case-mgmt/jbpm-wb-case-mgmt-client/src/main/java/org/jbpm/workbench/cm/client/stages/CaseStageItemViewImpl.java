@@ -47,10 +47,6 @@ public class CaseStageItemViewImpl extends AbstractView<CaseStagesPresenter> imp
     Span name;
 
     @Inject
-    @DataField("stage-status")
-    Span status;
-
-    @Inject
     @DataField("list-group-item")
     ListItem listGroupItem;
 
@@ -63,7 +59,6 @@ public class CaseStageItemViewImpl extends AbstractView<CaseStagesPresenter> imp
 
     @PostConstruct
     public void init() {
-        tooltip(status);
         tooltip(name);
     }
     @Override
@@ -79,43 +74,12 @@ public class CaseStageItemViewImpl extends AbstractView<CaseStagesPresenter> imp
     @Override
     public void setValue(final CaseStageSummary model) {
         this.caseStageSummary.setModel(model);
-        final CaseStageStatus stageStatus = CaseStageStatus.fromStatus(model.getStatus());
 
-        String statusStr = convertStatusToStr(stageStatus.getStatus());
-        switch(stageStatus){
-            case COMPLETED:{
-                showStageStatus(statusStr, "fa", "fa-check");
-                break;
-            }
-            case ACTIVE: {
-                showStageStatus( statusStr, "pficon", "pficon-ok");
-                break;
-            }
-            case AVAILABLE:{
-                showStageStatus( statusStr, "fa", "fa-circle-o");
-                break;
-            }
-            case CANCELED:{
-                showStageStatus( statusStr, "pficon", "pficon-error-circle-o");
-                break;
-            }
+        if (model.getStatus().equals(CaseStageStatus.ACTIVE.getStatus())) {
+            addCSSClass(this.listGroupItem, "active");
         }
+
     }
 
-    public void showStageStatus(final String tooltipTitle, final String ... stylesClass) {
-        name.setAttribute("data-original-title", tooltipTitle);
-        status.setAttribute("data-original-title", tooltipTitle);
-        for(String styleClass :stylesClass){
-            addCSSClass(this.status, styleClass);
-        }
-    }
-
-    public String convertStatusToStr(final String modelValue){
-        if (modelValue == null) {
-            return "";
-        } else {
-            return translationService.format(CaseStageStatus.fromStatus(modelValue).getStatus());
-        }
-    }
 
 }

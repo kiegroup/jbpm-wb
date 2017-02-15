@@ -111,6 +111,15 @@ public interface Constants {
     String MILESTONES = "Milestones";
 
     @TranslationKey(defaultValue = "")
+    String MILESTONES_HAS_NOT_BEEN_COMPLETED = "MilestonHasNotBeenCompleted";
+
+    @TranslationKey(defaultValue = "")
+    String MILESTONES_HAS_BEEN_TERMINATED = "MilestonHasBeenTerminated";
+
+    @TranslationKey(defaultValue = "")
+    String MILESTONES_HAS_BEEN_COMPLETED = "MilestonHasBeenCompleted";
+
+    @TranslationKey(defaultValue = "")
     String CASE_STAGES = "CaseStages";
 
     @TranslationKey(defaultValue = "")
