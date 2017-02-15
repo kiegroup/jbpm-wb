@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<div class="list-group-item">
-    <div class="list-view-pf-actions"  style="min-width: 15px;">
-        <span data-field="milestone-status" data-toggle="tooltip" title="..."></span>
-    </div>
-    <div class="list-view-pf-main-info">
-        <div class="list-view-pf-body">
-            <div class="list-view-pf-description">
-                <div class="list-group-item-heading"><span data-field="milestone-name"></span></div>
+<div data-field="list-group-item" class="list-group-item kie-milestones__list-group-item">
+    <div class="kie-list-group-item-content">
+        <div class="list-view-pf-main-info kie-milestones__main-info">
+            <div class="list-view-pf-left kie-milestones__list-view-pf-left" >
+                <span data-field="milestone-status" class="fa list-view-pf-icon-sm"
+                      data-toggle="tooltip" data-placement="right" title="..."></span>
+            </div>
+            <div class="list-group-item-heading">
+                <span data-field="milestone-name"></span>
             </div>
         </div>
     </div>

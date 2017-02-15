@@ -2,7 +2,7 @@
 @import "kie-variables.less";
 
 .kie-container--page {
-  margin-top: @pf-spacer-lg;
+  margin-top: @pf-spacer-xxl;
 }
 
 // override parts of patternfly horizontal nav and utility nav
@@ -133,7 +133,7 @@
 .kie-scrollbox {
   //IMPORTANT: can change to overflow-y: auto to see how the scroll shadows work. JS will have to manually set the scroll of the list
   //caseMgmt REM  overflow-y: hidden;
-  //caseMgmt REM  max-height: 15em;
+  //caseMgmt REM max-height: 15em;
   background: /* Shadow covers */ linear-gradient(@color-pf-white, rgba(255, 255, 255, 0)), //top
   linear-gradient(rgba(255, 255, 255, 0), @color-pf-white) 0 100%, //bottom
     /* Shadows */ linear-gradient(@color-pf-black-150, rgba(255, 255, 255, 0)),
@@ -184,6 +184,30 @@
   }
 }
 
+.kie-milestones__list-group-item {
+  padding-left: @pf-spacer-xs;
+}
+
+.kie-milestones__main-info {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.kie-milestones__item--completed,
+.kie-milestones__item--terminated {
+  color: @color-pf-black-500;
+}
+
+.kie-milestones__list-view-pf-left {
+  padding-right: @pf-spacer-md
+}
+
+// overcoming specificity
+.list-view-pf-left .fa.kie-milestones__icon--completed,
+.list-view-pf-left .fa.kie-milestones__icon--terminated {
+  border-color: transparent;
+}
+
 .kie-card-heading--embedded {
   border-bottom: 1px solid @color-pf-black-500;
   padding-left: @spacer;
@@ -201,6 +225,12 @@ dd:not(:last-child) {
   margin-bottom: @pf-spacer-md;
 }
 
+.kie-btn-link {
+  color: @color-pf-black;
+  &:hover {
+    color: @link-hover-color;
+  }
+}
 .card-pf {
   margin: 0 0px 20px;
 }
