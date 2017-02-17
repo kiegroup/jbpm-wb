@@ -291,7 +291,6 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
 
     protected RemoteCallback<Void> getCompleteTaskRemoteCallback() {
         return nothing -> {
-            taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId, deploymentId, taskId));
             jsniHelper.notifySuccessMessage(opener, constants.TaskCompleted(taskId));
             close();
         };
