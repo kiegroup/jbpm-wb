@@ -110,7 +110,7 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
         final List<MenuItem> result = new ArrayList<>(3);
 
         result.add(MenuFactory.newSimpleItem(constants.Process_Definitions()).perspective(PROCESS_DEFINITIONS).endMenu().build().getItems().get(0));
-        result.add(MenuFactory.newSimpleItem(constants.Process_Instances()).perspective(DATASET_PROC_INST_VARS).endMenu().build().getItems().get(0));
+        result.add(MenuFactory.newSimpleItem(constants.Process_Instances()).perspective(PROCESS_INSTANCES).endMenu().build().getItems().get(0));
         result.add(MenuFactory.newSimpleItem(constants.Process_Instances_Admin()).perspective(ProcessAdminSettingsPerspective.PERSPECTIVE_ID).endMenu().build().getItems().get(0));
 
         return result;
@@ -137,7 +137,7 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
     protected List<? extends MenuItem> getWorkViews() {
         final List<MenuItem> result = new ArrayList<>(4);
 
-        result.add(MenuFactory.newSimpleItem(constants.Tasks_List()).perspective(DATASET_TASKS).endMenu().build().getItems().get(0));
+        result.add(MenuFactory.newSimpleItem(constants.Tasks_List()).perspective(TASKS).endMenu().build().getItems().get(0));
         result.add(MenuFactory.newSimpleItem(constants.Tasks_List_Admin()).perspective(TaskAdminSettingsPerspective.PERSPECTIVE_ID).endMenu().build().getItems().get(0));
         result.add(MenuFactory.newSimpleItem(constants.Data_Sets()).perspective(DATASET_AUTHORING).endMenu().build().getItems().get(0));
 

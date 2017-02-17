@@ -104,7 +104,7 @@ public class TaskProcessContextPresenter {
     @PostConstruct
     public void init() {
         view.init(this);
-        if (!hasAccessToPerspective(PerspectiveIds.DATASET_PROC_INST_VARS)) {
+        if (!hasAccessToPerspective(PerspectiveIds.PROCESS_INSTANCES)) {
             enableProcessInstanceDetails = false;
         } else {
             final Set<Activity> activity = activityManager.getActivities(new DefaultPlaceRequest(PROCESS_INSTANCE_DETAILS));

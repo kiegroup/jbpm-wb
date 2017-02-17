@@ -199,11 +199,11 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
 
         modelProcessAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(ProjectAuthoringPerspective.PERSPECTIVE_ID)));
 
-        workTaskListAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(DATASET_TASKS)));
+        workTaskListAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(TASKS)));
 
         workProcessDefinitionsAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(PROCESS_DEFINITIONS)));
 
-        workProcessInstancesAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(DATASET_PROC_INST_VARS)));
+        workProcessInstancesAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(PROCESS_INSTANCES)));
 
         processDashboardsAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(PROCESS_DASHBOARD)));
 
