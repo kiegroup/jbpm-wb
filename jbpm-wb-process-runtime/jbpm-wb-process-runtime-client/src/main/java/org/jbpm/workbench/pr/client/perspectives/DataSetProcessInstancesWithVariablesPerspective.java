@@ -36,7 +36,7 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 @WorkbenchPerspective(identifier = DataSetProcessInstancesWithVariablesPerspective.PERSPECTIVE_ID)
 public class DataSetProcessInstancesWithVariablesPerspective extends AbstractPerspective {
 
-    public static final String PERSPECTIVE_ID = "DataSet Process Instances With Variables";
+    public static final String PERSPECTIVE_ID = "ProcessInstances";
     public static final String PROCESS_ID = "processDefinitionId";
 
     @Inject

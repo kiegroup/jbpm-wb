@@ -33,7 +33,7 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 @WorkbenchPerspective( identifier = DataSetTasksListPerspective.PERSPECTIVE_ID )
 public class DataSetTasksListPerspective extends AbstractPerspective {
 
-    public static final String PERSPECTIVE_ID = "DataSet Tasks";
+    public static final String PERSPECTIVE_ID = "Tasks";
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
