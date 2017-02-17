@@ -29,11 +29,11 @@ import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.dashbuilder.dataset.def.SQLDataSetDef;
 import org.jbpm.workbench.ks.events.KieServerDataSetRegistered;
-import org.kie.server.common.rest.KieServerHttpRequestException;
+import org.jbpm.workbench.ks.integration.event.ServerInstanceRegistered;
 import org.kie.server.api.model.definition.QueryDefinition;
 import org.kie.server.client.KieServicesException;
 import org.kie.server.client.QueryServicesClient;
-import org.kie.server.controller.api.model.events.ServerInstanceConnected;
+import org.kie.server.common.rest.KieServerHttpRequestException;
 import org.kie.server.controller.api.model.runtime.ServerInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,8 +57,8 @@ public class KieServerDataSetManager {
         this.event = event;
     }
 
-    public void registerInKieServer(@Observes final ServerInstanceConnected serverInstanceConnected) {
-        final ServerInstance serverInstance = serverInstanceConnected.getServerInstance();
+    public void registerInKieServer(@Observes final ServerInstanceRegistered serverInstanceRegistered) {
+        final ServerInstance serverInstance = serverInstanceRegistered.getServerInstance();
         final String serverInstanceId = serverInstance.getServerInstanceId();
         final String serverTemplateId = serverInstance.getServerTemplateId();
         LOGGER.info("Server instance '{}' connected, registering data sets", serverInstanceId);
