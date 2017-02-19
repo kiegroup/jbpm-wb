@@ -25,9 +25,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.jbpm.workbench.ks.integration.event.ServerInstanceRegistered;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.server.api.KieServerConstants;
@@ -67,6 +69,9 @@ public class KieServerIntegration {
 
     @Inject
     private SpecManagementService specManagementService;
+
+    @Inject
+    private Event<ServerInstanceRegistered> serverInstanceRegisteredEvent;
 
     @PostConstruct
     public void createAvailableClients() {
@@ -191,6 +196,8 @@ public class KieServerIntegration {
         KieServicesClient adminClient = adminClients.get(serverInstance.getServerTemplateId());
         // update admin clients
         updateOrBuildClient(adminClient, serverInstance);
+        // once all steps are completed successfully notify other parts interested so the serverClient can actually be used
+        serverInstanceRegisteredEvent.fire(new ServerInstanceRegistered(serverInstanceConnected.getServerInstance()));
     }
 
     protected void updateOrBuildClient(KieServicesClient client, ServerInstance serverInstance) {

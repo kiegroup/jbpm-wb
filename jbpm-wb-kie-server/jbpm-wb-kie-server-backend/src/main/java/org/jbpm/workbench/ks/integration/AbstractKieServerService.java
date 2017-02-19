@@ -38,7 +38,7 @@ public abstract class AbstractKieServerService {
     protected KieServicesClient getKieServicesClient(final String serverTemplateId, final String containerId) {
         KieServicesClient client = kieServerIntegration.getServerClient(serverTemplateId, containerId);
         if (client == null) {
-            throw new RuntimeException("No client to interact with server " + serverTemplateId);
+            throw new RuntimeException("No connection to '" + serverTemplateId + "' server(s). Server template configuration requires container '" + containerId + "' to be configured and started");
         }
         return client;
     }
@@ -46,7 +46,7 @@ public abstract class AbstractKieServerService {
     protected KieServicesClient getKieServicesClient(final String serverTemplateId) {
         KieServicesClient client = kieServerIntegration.getServerClient(serverTemplateId);
         if (client == null) {
-            throw new RuntimeException("No client to interact with server " + serverTemplateId);
+            throw new RuntimeException("No connection to '" + serverTemplateId + "' server(s)");
         }
         return client;
     }

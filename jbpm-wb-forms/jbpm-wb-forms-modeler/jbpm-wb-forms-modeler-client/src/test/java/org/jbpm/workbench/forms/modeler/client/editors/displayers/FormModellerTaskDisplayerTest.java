@@ -206,7 +206,7 @@ public class FormModellerTaskDisplayerTest {
 
         displayer.onFormSubmitted( formSubmittedEvent );
         verify( service ).completeTaskFromContext( anyString(), anyString(), anyString(), anyLong() );
-        verify( taskRefreshed ).fire( any() );
+        verify( taskRefreshed, never() ).fire( any() );
         verify( jsniHelper ).notifySuccessMessage( anyString(), anyString() );
     }
 
