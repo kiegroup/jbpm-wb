@@ -105,8 +105,9 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
 
         verify(caseAllActionsView).setAvailableActionsList(captor.capture());
-        assertEquals(caseActionSummaryList.size() + 1, captor.getValue().size());
+        assertEquals(caseActionSummaryList.size() + 2, captor.getValue().size());
         assertEquals(CaseActionType.ADD_DYNAMIC_USER_TASK, ((CaseActionSummary) captor.getValue().get(0)).getActionType());
+        assertEquals(CaseActionType.ADD_DYNAMIC_SUBPROCESS_TASK, ((CaseActionSummary) captor.getValue().get(1)).getActionType());
 
         verify(caseAllActionsView).setInProgressActionsList(caseActionSummaryList);
         verify(caseAllActionsView).setCompletedActionsList(caseActionSummaryList);
@@ -123,7 +124,7 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         String actionActors = "dynAct-actors";
         String actionGroups = "dynAct-groups";
         setupCaseInstance(cis, serverTemplateId);
-        presenter.addDynamicAction(actionName, actionDescription, actionActors, actionGroups, null);
+        presenter.addDynamicUserTaskAction(actionName, actionDescription, actionActors, actionGroups, null);
 
         verify(caseManagementService).addDynamicUserTask(eq(containerId), eq(caseId), eq(actionName),
                 eq(actionDescription), eq(actionActors), eq(actionGroups), any());
@@ -139,7 +140,7 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         setupCaseInstance(cis, serverTemplateId);
 
 
-        presenter.addDynamicAction(actionName, actionDescription, actionActors, actionGroups, stageId);
+        presenter.addDynamicUserTaskAction(actionName, actionDescription, actionActors, actionGroups, stageId);
 
         verify(caseManagementService).addDynamicUserTaskToStage(eq(containerId), eq(caseId), eq(stageId), eq(actionName),
                 eq(actionDescription), eq(actionActors), eq(actionGroups), any());

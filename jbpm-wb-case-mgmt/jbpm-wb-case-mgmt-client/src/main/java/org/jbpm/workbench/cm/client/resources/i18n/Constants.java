@@ -129,13 +129,26 @@ public interface Constants {
     String ACTION_START = "ActionStart";
 
     @TranslationKey(defaultValue = "")
+    String ADD_DYNAMIC_TASK = "AddNewDynamicTask";
+
+    @TranslationKey(defaultValue = "")
     String ADD_DYNAMIC_USER_TASK = "AddNewDynamicUserTask";
+
+    @TranslationKey(defaultValue = "")
+    String ADD_DYNAMIC_SUBPROCESS_TASK = "AddNewDynamicSubprocessTask";
 
     @TranslationKey(defaultValue = "")
     String PLEASE_INTRO_ACTION_NAME = "PleaseIntroActionName";
 
     @TranslationKey(defaultValue = "")
     String PLEASE_INTRO_USER_OR_GROUP_TO_ASSIGN_NEW_ACTION = "PleaseIntroUserOrGroupToAssignTheNewAction";
+
+    @TranslationKey(defaultValue = "")
+    String PLEASE_INTRO_SUBPROCESS_ID = "PleaseIntroSubprocessId";
+
+    @TranslationKey(defaultValue = "")
+    String PLEASE_INTRO_NODETYPE_ID = "PleaseIntroNodeType";
+
 
     @TranslationKey(defaultValue = "")
     String PLEASE_PROVIDE_CASE_OWNER = "PleaseProvideCaseOwner";

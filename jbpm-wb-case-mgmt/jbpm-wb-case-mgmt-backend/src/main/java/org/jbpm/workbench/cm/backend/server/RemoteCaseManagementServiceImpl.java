@@ -243,6 +243,22 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
         client.addDynamicUserTaskToStage(containerId, caseId, stageId, name, description, actors, groups, data);
     }
 
+    public void addDynamicTask(String containerId, String caseId, String nodeType, String name, Map<String, Object> data) {
+        client.addDynamicTask(containerId, caseId, nodeType, name, data);
+    }
+
+    public void addDynamicTaskToStage(String containerId, String caseId, String stageId, String nodeType, String name, Map<String, Object> data) {
+        client.addDynamicTaskToStage(containerId, caseId, stageId, nodeType, name, data);
+    }
+
+    public void addDynamicSubProcess(String containerId, String caseId, String processId, Map<String, Object> data) {
+        client.addDynamicSubProcess(containerId, caseId, processId, data);
+    }
+
+    public void addDynamicSubProcessToStage(String containerId, String caseId, String stageId, String processId, Map<String, Object> data) {
+        client.addDynamicSubProcessToStage(containerId, caseId, stageId, processId, data);
+    }
+
     @Override
     public void triggerAdHocActionInStage(String containerId, String caseId, String stageId, String adHocName, Map<String, Object> data) {
         client.triggerAdHocFragmentInStage(containerId, caseId, stageId, adHocName, data);

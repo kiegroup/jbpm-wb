@@ -132,8 +132,8 @@
 // scrollbox adds a shadow indicating if there is more content above/below the current position
 .kie-scrollbox {
   //IMPORTANT: can change to overflow-y: auto to see how the scroll shadows work. JS will have to manually set the scroll of the list
-  //caseMgmt REM  overflow-y: hidden;
-  //caseMgmt REM max-height: 15em;
+  overflow-y: hidden;
+  max-height: 20em;
   background: /* Shadow covers */ linear-gradient(@color-pf-white, rgba(255, 255, 255, 0)), //top
   linear-gradient(rgba(255, 255, 255, 0), @color-pf-white) 0 100%, //bottom
     /* Shadows */ linear-gradient(@color-pf-black-150, rgba(255, 255, 255, 0)),
@@ -159,14 +159,7 @@
   .kie-list-group-item-content {
     display: flex;
   }
-  // IMPORTANT: .dropup needs to be manually set on the list item that will appear at the bottom of the page
-  // It was a nice idea to select the nth child, but because the class really needs to be set rather than just pulling in the styles, I've manually added the .dropup class to the nth children for now and that will have to be handled by the back end unless we have another way
-  //.dropdown-kebab-pf {
-  //  .dropdown;
-  //}
-  //.list-group-item:nth-child(3n) .dropdown-kebab-pf {
-  //  .dropup;
-  //}
+
 }
 
 .kie-list-view--embedded {
