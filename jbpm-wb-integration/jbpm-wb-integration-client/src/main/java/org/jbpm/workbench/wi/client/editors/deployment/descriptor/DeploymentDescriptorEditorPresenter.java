@@ -62,6 +62,9 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
     @Inject
     private Event<NotificationEvent> notification;
 
+    @Inject
+    private ValidationPopup validationPopup;
+
     private DeploymentDescriptorModel model;
 
     private TranslationService translationService;
@@ -126,7 +129,7 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
                             notification.fire( new NotificationEvent( CommonConstants.INSTANCE.ItemValidatedSuccessfully(),
                                     NotificationEvent.NotificationType.SUCCESS ) );
                         } else {
-                            ValidationPopup.showMessages(results);
+                            validationPopup.showMessages(results);
                         }
                     }
                 } ).validate( versionRecordManager.getCurrentPath(),
