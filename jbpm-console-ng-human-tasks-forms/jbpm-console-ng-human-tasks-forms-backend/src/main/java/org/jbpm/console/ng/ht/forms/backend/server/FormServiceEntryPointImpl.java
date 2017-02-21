@@ -21,9 +21,11 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.jbpm.console.ng.ht.forms.display.ht.api.TaskFormPermissionDeniedException;
 import org.jbpm.kie.services.api.FormProviderService;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.console.ng.ga.forms.service.FormServiceEntryPoint;
+import org.jbpm.services.task.exception.PermissionDeniedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,16 +39,20 @@ public class FormServiceEntryPointImpl implements FormServiceEntryPoint {
     @Inject
     private FormProviderService displayService;
 
-   
+
     @PostConstruct
     public void init() {
-        
+
 
     }
 
     @Override
     public String getFormDisplayTask(long taskId) {
-        return displayService.getFormDisplayTask(taskId);
+        try {
+            return displayService.getFormDisplayTask(taskId);
+        } catch (PermissionDeniedException ex) {
+            throw new TaskFormPermissionDeniedException();
+        }
     }
 
     @Override

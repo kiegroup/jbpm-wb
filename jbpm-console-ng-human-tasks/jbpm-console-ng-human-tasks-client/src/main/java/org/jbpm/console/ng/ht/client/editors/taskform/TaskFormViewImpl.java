@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.jbpm.console.ng.ga.forms.display.view.FormDisplayerView;
-import org.jbpm.console.ng.gc.forms.client.display.views.EmbeddedFormDisplayView;
+import org.jbpm.console.ng.gc.forms.client.display.views.display.EmbeddedFormDisplayer;
 
 @Dependent
 public class TaskFormViewImpl extends Composite implements TaskFormPresenter.TaskFormView {
@@ -44,16 +44,16 @@ public class TaskFormViewImpl extends Composite implements TaskFormPresenter.Tas
     FlowPanel content;
 
     @Inject
-    private EmbeddedFormDisplayView view;
+    private EmbeddedFormDisplayer formDisplayer;
 
     @PostConstruct
     public void init() {
         initWidget(uiBinder.createAndBindUi(this));
-        content.add(view.getView());
+        content.add(formDisplayer);
     }
 
     @Override
     public FormDisplayerView getDisplayerView() {
-        return view;
+        return formDisplayer;
     }
 }
