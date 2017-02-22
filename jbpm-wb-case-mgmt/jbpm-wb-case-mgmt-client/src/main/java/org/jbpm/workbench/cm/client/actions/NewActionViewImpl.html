@@ -5,7 +5,7 @@
                 <button type="button" class="close" data-field="close" data-dismiss="modal" aria-hidden="true">
                     <span class="pficon pficon-close"></span>
                 </button>
-                <h4 class="modal-title" data-i18n-key="NewAction"></h4>
+                <h4 class="modal-title"><span data-field="action-creation-title"></span></h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal">
@@ -17,7 +17,7 @@
                                 <span data-field="action-name-help" class="help-block"></span>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" data-field="action-desc-group">
                             <label class="control-label col-md-3" data-i18n-key="Description"></label>
                             <div class="col-md-9">
                                 <input type="text" data-field="action-desc-input" class="form-control"/>
@@ -38,6 +38,23 @@
                                 <span data-field="assignation-help" class="help-block"></span>
                             </div>
                         </div>
+
+                        <div class="form-group" data-field="action-nodetype-group">
+                            <label class="control-label col-md-3" data-i18n-key="NodeType"></label>
+                            <div class="col-md-9">
+                                <input type="text" data-field="action-nodetype-input" class="form-control"/>
+                                <span data-field="nodetype-help" class="help-block"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group" data-field="action-case-definitions-group">
+                            <label class="control-label col-md-3" data-i18n-key="ProcessId"></label>
+                            <div class="col-md-9">
+                                <select class="selectpicker form-control" data-field="action-case-definitions-select"></select>
+                                <span data-field="case-definitions-help" class="help-block"></span>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label class="control-label col-md-3" data-i18n-key="Stage"></label>
                             <div class="col-md-9">

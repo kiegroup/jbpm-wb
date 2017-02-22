@@ -92,6 +92,7 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
     @Override
     public void setValue(final CaseActionSummary model) {
         this.caseActionSummary.setModel(model);
+        removeCSSClass(actions,"dropup");
         final CaseActionType actionType = model.getActionType();
 
         switch (actionType) {
@@ -125,6 +126,8 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
                 });
                 break;
             }
+            case ADD_DYNAMIC_TASK:
+            case ADD_DYNAMIC_SUBPROCESS_TASK:
             case ADD_DYNAMIC_USER_TASK: {
                 addAction(new CaseActionsPresenter.CaseActionAction() {
                     @Override
@@ -134,7 +137,7 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
 
                     @Override
                     public void execute() {
-                        presenter.showAddDynUserTaskAction();
+                        presenter.showAddDynUserTaskAction(actionType);
                     }
                 });
                 break;
@@ -152,6 +155,10 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
         final HTMLElement li = getDocument().createElement("li");
         li.appendChild(a);
         actionsItems.appendChild(li);
+    }
+
+    public void setLastElementStyle(){
+        addCSSClass(actions, "dropup");
     }
 
 }

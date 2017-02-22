@@ -282,4 +282,56 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
         actionSummaryList.add(action);
         caseActionMap.putIfAbsent(caseId, actionSummaryList);
     }
+
+    @Override
+    public void addDynamicTask(String containerId, String caseId, String nodeType, String name, Map<String, Object> data) {
+        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
+        final CaseActionSummary action = CaseActionSummary.builder()
+                .id(actionIdLongenerator++)
+                .name(name + " type:" + nodeType)
+                .status(CaseActionType.INPROGRESS)
+                .createdOn(new Date())
+                .build();
+        actionSummaryList.add(action);
+        caseActionMap.putIfAbsent(caseId, actionSummaryList);
+    }
+
+    @Override
+    public void addDynamicTaskToStage(String containerId, String caseId, String stageId, String nodeType, String name, Map<String, Object> data) {
+        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
+        final CaseActionSummary action = CaseActionSummary.builder()
+                .id(actionIdLongenerator++)
+                .name(name + " type:" + nodeType + " inStage:" + stageId)
+                .status(CaseActionType.INPROGRESS)
+                .createdOn(new Date())
+                .build();
+        actionSummaryList.add(action);
+        caseActionMap.putIfAbsent(caseId, actionSummaryList);
+    }
+
+    @Override
+    public void addDynamicSubProcess(String containerId, String caseId, String processId, Map<String, Object> data) {
+        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
+        final CaseActionSummary action = CaseActionSummary.builder()
+                .id(actionIdLongenerator++)
+                .name("subprocess: " + processId)
+                .status(CaseActionType.INPROGRESS)
+                .createdOn(new Date())
+                .build();
+        actionSummaryList.add(action);
+        caseActionMap.putIfAbsent(caseId, actionSummaryList);
+    }
+
+    @Override
+    public void addDynamicSubProcessToStage(String containerId, String caseId, String stageId, String processId, Map<String, Object> data) {
+        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
+        final CaseActionSummary action = CaseActionSummary.builder()
+                .id(actionIdLongenerator++)
+                .name("subprocess: " + processId + " inStage:" + stageId)
+                .status(CaseActionType.INPROGRESS)
+                .createdOn(new Date())
+                .build();
+        actionSummaryList.add(action);
+        caseActionMap.putIfAbsent(caseId, actionSummaryList);
+    }
 }

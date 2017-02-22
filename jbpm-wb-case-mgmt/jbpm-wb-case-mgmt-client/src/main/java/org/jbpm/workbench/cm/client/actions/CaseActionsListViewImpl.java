@@ -21,7 +21,9 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import org.jboss.errai.common.client.dom.Anchor;
 import org.jboss.errai.common.client.dom.Div;
+import org.jboss.errai.common.client.dom.Event;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.databinding.client.api.DataBinder;
@@ -29,6 +31,8 @@ import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.cm.client.util.AbstractView;
 import org.jbpm.workbench.cm.model.CaseActionSummary;
@@ -38,6 +42,7 @@ import static org.jboss.errai.common.client.dom.DOMUtil.*;
 @Dependent
 @Templated
 public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter> implements CaseActionsPresenter.CaseActionsListView {
+    private int PAGE_SIZE = 4;
 
     @Inject
     @DataField("simple-list")
@@ -60,6 +65,14 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter> 
     private Div emptyContainer;
 
     @Inject
+    @DataField("nextPage")
+    Anchor nextPage;
+
+    @Inject
+    @DataField("prevPage")
+    Anchor prevPage;
+
+    @Inject
     @Bound
     @DataField("actions-list")
     private ListComponent<CaseActionSummary, CaseActionItemView> tasks;
@@ -68,6 +81,9 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter> 
     @AutoBound
     private DataBinder<List<CaseActionSummary>> caseActionList;
 
+    List<CaseActionSummary> allActionsList;
+    int currentPage ;
+
     @Override
     public void init(final CaseActionsPresenter presenter) {
         this.presenter = presenter;
@@ -75,13 +91,15 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter> 
     }
 
     public void setCaseActionList(final List<CaseActionSummary> caseActionList) {
-        this.caseActionList.setModel(caseActionList);
+        allActionsList = caseActionList;
+        currentPage = 0;
+        setVisibleItemsList(currentPage);
         if (caseActionList.isEmpty()) {
             removeCSSClass(emptyContainer, "hidden");
         } else {
             addCSSClass(emptyContainer, "hidden");
         }
-        actionsListHeaderCounter.setTextContent(String.valueOf(caseActionList.size()));
+        actionsListHeaderCounter.setTextContent(String.valueOf(allActionsList.size()));
     }
 
     @Override
@@ -96,9 +114,50 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter> 
         }
     }
 
+    protected void setVisibleItemsList(int currentPage){
+        this.currentPage = currentPage;
+        int allItemsSize = allActionsList.size();
+        List<CaseActionSummary> visibleItems;
+
+        if(currentPage==0){
+            addCSSClass(prevPage,"disabled");
+        } else {
+            removeCSSClass(prevPage,"disabled");
+        }
+
+        if( PAGE_SIZE * (currentPage +1) < allItemsSize){
+            removeCSSClass(nextPage,"disabled");
+            visibleItems = allActionsList.subList( PAGE_SIZE * currentPage , PAGE_SIZE *(currentPage+1));
+        } else {
+            addCSSClass(this.nextPage, "disabled");
+            visibleItems=  allActionsList.subList(PAGE_SIZE * currentPage,allItemsSize);
+        }
+
+        this.caseActionList.setModel(visibleItems);
+        int tasksSize =visibleItems.size();
+        if(tasksSize > 0){
+            tasks.getComponent(tasksSize-1).setLastElementStyle();
+        }
+    }
+
     @Override
     public HTMLElement getElement() {
         return simpleList;
+    }
+
+    @EventHandler("nextPage")
+    @SuppressWarnings("unsued")
+    public void onNextPageClick(@ForEvent("click") final Event event) {
+        if (! hasCSSClass(nextPage,"disabled")) {
+            setVisibleItemsList(currentPage + 1);
+        }
+    }
+    @EventHandler("prevPage")
+    @SuppressWarnings("unsued")
+    public void onPrevPageClick(@ForEvent("click") final Event event) {
+        if (! hasCSSClass(prevPage,"disabled")) {
+            setVisibleItemsList(currentPage - 1);
+        }
     }
 
 }

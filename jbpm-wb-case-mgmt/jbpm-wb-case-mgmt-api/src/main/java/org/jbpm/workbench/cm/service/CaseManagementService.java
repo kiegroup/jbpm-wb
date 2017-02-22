@@ -69,6 +69,14 @@ public interface CaseManagementService {
 
     void addDynamicUserTaskToStage(String containerId, String caseId, String stageId, String name, String description, String actors, String groups, Map<String, Object> data);
 
+    void addDynamicTask(String containerId, String caseId, String nodeType, String name, Map<String, Object> data);
+
+    void addDynamicTaskToStage(String containerId, String caseId, String stageId, String nodeType, String name, Map<String, Object> data);
+
+    void addDynamicSubProcess(String containerId, String caseId, String processId, Map<String, Object> data);
+
+    void addDynamicSubProcessToStage(String containerId, String caseId, String stageId, String processId, Map<String, Object> data);
+
     void triggerAdHocActionInStage(String containerId, String caseId, String stageId, String adHocName, Map<String, Object> data);
 
     void triggerAdHocAction(String containerId, String caseId, String adHocName, Map<String, Object> data);

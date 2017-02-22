@@ -24,7 +24,7 @@ public enum CaseActionType {
 
     ADD_DYNAMIC_TASK("add_dynamic_task"),
 
-    ADD_DYNAMIC_SUBPROCESS("add_dynamic_subprocess"),
+    ADD_DYNAMIC_SUBPROCESS_TASK("add_dynamic_subprocess_task"),
 
     INPROGRESS("InProgress"),
 
