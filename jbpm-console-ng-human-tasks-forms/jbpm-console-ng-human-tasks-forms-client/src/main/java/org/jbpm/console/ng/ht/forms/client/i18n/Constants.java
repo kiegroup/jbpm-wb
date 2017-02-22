@@ -66,4 +66,10 @@ public interface Constants extends Messages {
     String TaskSaved(Long id);
 
     String TaskReleased(Long id);
+
+    String TaskFormErrorHeader();
+
+    String PermissionDenied();
+
+    String Exception(String message);
 }

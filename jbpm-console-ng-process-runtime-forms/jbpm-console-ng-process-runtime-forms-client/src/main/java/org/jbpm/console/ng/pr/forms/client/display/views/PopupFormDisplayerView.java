@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -29,6 +29,7 @@ import org.jbpm.console.ng.ga.forms.display.view.FormContentResizeListener;
 import org.jbpm.console.ng.ga.forms.display.view.FormDisplayerView;
 import org.jbpm.console.ng.pr.forms.display.process.api.StartProcessFormDisplayProvider;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.mvp.Command;
 
 @Dependent
@@ -113,6 +114,11 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
         }
         setWidth( "" );
         initialized = false;
+    }
+
+    @Override
+    public void displayErrorMessage(String header, String errorMessage) {
+        ErrorPopup.showMessage(header + "\n" + errorMessage);
     }
 
     @Override

@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -25,15 +25,20 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jbpm.console.ng.ht.forms.client.i18n.Constants;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskDisplayerConfig;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayer;
 import org.jbpm.console.ng.ht.forms.display.ht.api.HumanTaskFormDisplayProvider;
 import org.jbpm.console.ng.ga.forms.display.view.FormDisplayerView;
 import org.jbpm.console.ng.ga.forms.service.FormServiceEntryPoint;
+import org.jbpm.console.ng.ht.forms.display.ht.api.TaskFormPermissionDeniedException;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.mvp.Command;
 
 @ApplicationScoped
@@ -94,6 +99,20 @@ public class HumanTaskFormDisplayProviderImpl implements HumanTaskFormDisplayPro
                             return;
                         }
                     }
+                }
+            }, new ErrorCallback<Message>() {
+
+                @Override
+                public boolean error(Message message,
+                                     Throwable throwable) {
+                    String errorMessage;
+                    if ( throwable instanceof TaskFormPermissionDeniedException) {
+                        errorMessage = Constants.INSTANCE.PermissionDenied();
+                    } else {
+                        errorMessage = Constants.INSTANCE.Exception(throwable.getMessage());
+                    }
+                    view.displayErrorMessage( Constants.INSTANCE.TaskFormErrorHeader(), errorMessage );
+                    return false;
                 }
             }).getFormDisplayTask(config.getKey().getTaskId());
         }

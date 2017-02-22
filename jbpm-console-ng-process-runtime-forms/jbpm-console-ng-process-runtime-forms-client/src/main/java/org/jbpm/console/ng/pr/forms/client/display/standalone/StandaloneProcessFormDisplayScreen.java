@@ -19,7 +19,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import org.jbpm.console.ng.gc.forms.client.display.views.EmbeddedFormDisplayView;
+import org.jbpm.console.ng.gc.forms.client.display.views.display.EmbeddedFormDisplayer;
 import org.jbpm.console.ng.pr.forms.display.process.api.ProcessDisplayerConfig;
 import org.jbpm.console.ng.pr.forms.display.process.api.StartProcessFormDisplayProvider;
 import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
@@ -32,9 +32,6 @@ import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 
-/**
- * @author pefernan
- */
 @Dependent
 @WorkbenchScreen(identifier = "Standalone Process Form Display")
 public class StandaloneProcessFormDisplayScreen {
@@ -43,7 +40,7 @@ public class StandaloneProcessFormDisplayScreen {
     private PlaceManager placeManager;
 
     @Inject
-    private EmbeddedFormDisplayView view;
+    private EmbeddedFormDisplayer view;
 
     @Inject
     private StartProcessFormDisplayProvider processFormDisplayProvider;
@@ -60,7 +57,7 @@ public class StandaloneProcessFormDisplayScreen {
 
     @WorkbenchPartView
     public IsWidget getView() {
-        return view.getView();
+        return view;
     }
 
     @OnStartup

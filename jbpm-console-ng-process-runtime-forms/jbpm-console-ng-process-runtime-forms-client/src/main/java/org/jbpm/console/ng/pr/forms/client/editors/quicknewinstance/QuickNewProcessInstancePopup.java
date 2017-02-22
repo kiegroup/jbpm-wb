@@ -58,6 +58,7 @@ import org.jbpm.console.ng.pr.model.ProcessDefinitionKey;
 import org.jbpm.console.ng.pr.model.ProcessSummary;
 import org.jbpm.console.ng.pr.service.ProcessDefinitionService;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -331,6 +332,11 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
         hide();
         super.hide();
 
+    }
+
+    @Override
+    public void displayErrorMessage(String header, String errorMessage) {
+        ErrorPopup.showMessage(header + "\n" + errorMessage);
     }
 
     private void removeFooter( final ComplexPanel panel ) {
