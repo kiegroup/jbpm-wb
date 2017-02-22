@@ -45,6 +45,7 @@ import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayer;
 import org.jbpm.workbench.forms.client.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskKey;
 import org.jbpm.workbench.ht.model.TaskSummary;
+import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
@@ -84,6 +85,9 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
 
     @Inject
     protected Event<TaskRefreshedEvent> taskRefreshed;
+
+    @Inject
+    protected Event<TaskCompletedEvent> taskCompleted;
 
     @Inject
     protected User identity;
@@ -291,6 +295,7 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
 
     protected RemoteCallback<Void> getCompleteTaskRemoteCallback() {
         return nothing -> {
+            taskCompleted.fire(new TaskCompletedEvent(serverTemplateId, deploymentId, taskId));
             jsniHelper.notifySuccessMessage(opener, constants.TaskCompleted(taskId));
             close();
         };

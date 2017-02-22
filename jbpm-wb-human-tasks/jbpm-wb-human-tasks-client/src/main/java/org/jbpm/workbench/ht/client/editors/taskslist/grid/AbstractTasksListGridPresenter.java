@@ -51,6 +51,7 @@ import org.jbpm.workbench.ht.client.editors.taskslist.grid.dash.DataSetTasksList
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.NewTaskEvent;
+import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
@@ -431,6 +432,10 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
     }
 
     public void onTaskRefreshedEvent( @Observes TaskRefreshedEvent event ) {
+        refreshGrid();
+    }
+
+    public void onTaskCompletedEvent( @Observes TaskCompletedEvent event ) {
         refreshGrid();
     }
 
