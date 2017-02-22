@@ -55,8 +55,8 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
     Span name;
 
     @Inject
-    @DataField("action-actualOwner")
-    Span actualOwner;
+    @DataField("action-info")
+    Span actionInfo;
 
     @Inject
     @DataField("action-createdOn")
@@ -92,14 +92,14 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
     @Override
     public void setValue(final CaseActionSummary model) {
         this.caseActionSummary.setModel(model);
+        removeCSSClass(actions,"dropup");
         final CaseActionType actionType = model.getActionType();
 
         switch (actionType) {
             case INPROGRESS: {
                 removeCSSClass(createdOn, "hidden");
                 if (!isNullOrEmpty(model.getActualOwner())) {
-                    removeCSSClass(actualOwner, "hidden");
-                    actualOwner.setTextContent(" (" + model.getActualOwner() + ") ");
+                    actionInfo.setTextContent(" (" + model.getActualOwner() + ") ");
                 }
                 break;
             }
@@ -123,9 +123,17 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
                         }
                     }
                 });
+                if (isNullOrEmpty(model.getStageId())){
+                    actionInfo.setTextContent(translationService.format(AVAILABLE_IN)+": "+translationService.format(CASE));
+                } else {
+                    actionInfo.setTextContent(translationService.format(AVAILABLE_IN)+": "+model.getStageId());
+                }
+
                 break;
             }
+            case ADD_DYNAMIC_SUBPROCESS_TASK:
             case ADD_DYNAMIC_USER_TASK: {
+                actionInfo.setTextContent(translationService.format(DYMANIC));
                 addAction(new CaseActionsPresenter.CaseActionAction() {
                     @Override
                     public String label() {
@@ -134,7 +142,7 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
 
                     @Override
                     public void execute() {
-                        presenter.showAddDynUserTaskAction();
+                        presenter.showAddDynUserTaskAction(actionType);
                     }
                 });
                 break;
@@ -152,6 +160,10 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
         final HTMLElement li = getDocument().createElement("li");
         li.appendChild(a);
         actionsItems.appendChild(li);
+    }
+
+    public void setLastElementStyle(){
+        addCSSClass(actions, "dropup");
     }
 
 }

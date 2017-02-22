@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.cm.client.actions;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -25,6 +26,7 @@ import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenterTest;
 import org.jbpm.workbench.cm.model.CaseActionSummary;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
+import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
 import org.jbpm.workbench.cm.util.Actions;
 import org.jbpm.workbench.cm.util.CaseActionType;
 import org.junit.Before;
@@ -99,14 +101,19 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
 
     @Test
     public void testLoadCaseInstance() {
+        String subProcessName ="Subprocess1";
+        List<ProcessDefinitionSummary> pdsl = Arrays.asList(ProcessDefinitionSummary.builder().id("processId").name(subProcessName).build());
+        when(caseManagementService.getProcessDefinitions(containerId)).thenReturn(pdsl);
+
         setupCaseInstance(cis, serverTemplateId);
         verify(caseManagementService).getCaseActions(serverTemplateId, containerId, caseId, identity.getIdentifier());
 
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
 
         verify(caseAllActionsView).setAvailableActionsList(captor.capture());
-        assertEquals(caseActionSummaryList.size() + 1, captor.getValue().size());
+        assertEquals(caseActionSummaryList.size() + 2, captor.getValue().size());
         assertEquals(CaseActionType.ADD_DYNAMIC_USER_TASK, ((CaseActionSummary) captor.getValue().get(0)).getActionType());
+        assertEquals(CaseActionType.ADD_DYNAMIC_SUBPROCESS_TASK, ((CaseActionSummary) captor.getValue().get(1)).getActionType());
 
         verify(caseAllActionsView).setInProgressActionsList(caseActionSummaryList);
         verify(caseAllActionsView).setCompletedActionsList(caseActionSummaryList);
@@ -114,6 +121,11 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         verify(actions).getInProgressAction();
         verify(actions).getCompleteActions();
         verify(newActionViewMock, times(2)).setCaseStagesList(cis.getStages());
+        final ArgumentCaptor<List> captor2 = ArgumentCaptor.forClass(List.class);
+
+        verify(caseManagementService).getProcessDefinitions(containerId);
+        verify(newActionViewMock).setProcessDefinitions(captor.capture());
+        assertEquals(subProcessName,captor.getValue().get(0));
     }
 
     @Test
@@ -123,7 +135,7 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         String actionActors = "dynAct-actors";
         String actionGroups = "dynAct-groups";
         setupCaseInstance(cis, serverTemplateId);
-        presenter.addDynamicAction(actionName, actionDescription, actionActors, actionGroups, null);
+        presenter.addDynamicUserTaskAction(actionName, actionDescription, actionActors, actionGroups, null);
 
         verify(caseManagementService).addDynamicUserTask(eq(containerId), eq(caseId), eq(actionName),
                 eq(actionDescription), eq(actionActors), eq(actionGroups), any());
@@ -139,7 +151,7 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         setupCaseInstance(cis, serverTemplateId);
 
 
-        presenter.addDynamicAction(actionName, actionDescription, actionActors, actionGroups, stageId);
+        presenter.addDynamicUserTaskAction(actionName, actionDescription, actionActors, actionGroups, stageId);
 
         verify(caseManagementService).addDynamicUserTaskToStage(eq(containerId), eq(caseId), eq(stageId), eq(actionName),
                 eq(actionDescription), eq(actionActors), eq(actionGroups), any());

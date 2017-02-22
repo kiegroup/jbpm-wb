@@ -23,6 +23,7 @@ import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.workbench.cm.model.CaseCommentSummary;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
+import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
 import org.jbpm.workbench.cm.util.Actions;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
@@ -69,8 +70,14 @@ public interface CaseManagementService {
 
     void addDynamicUserTaskToStage(String containerId, String caseId, String stageId, String name, String description, String actors, String groups, Map<String, Object> data);
 
+    void addDynamicSubProcess(String containerId, String caseId, String processId, Map<String, Object> data);
+
+    void addDynamicSubProcessToStage(String containerId, String caseId, String stageId, String processId, Map<String, Object> data);
+
     void triggerAdHocActionInStage(String containerId, String caseId, String stageId, String adHocName, Map<String, Object> data);
 
     void triggerAdHocAction(String containerId, String caseId, String adHocName, Map<String, Object> data);
+
+    List<ProcessDefinitionSummary> getProcessDefinitions(String containerId);
 
 }

@@ -31,6 +31,7 @@ import org.jbpm.workbench.cm.model.CaseCommentSummary;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
+import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
 import org.jbpm.workbench.cm.service.CaseManagementService;
 import org.jbpm.workbench.cm.util.Actions;
 import org.jbpm.workbench.cm.util.CaseActionType;
@@ -43,6 +44,7 @@ import org.kie.server.api.model.cases.CaseDefinition;
 import org.kie.server.api.model.cases.CaseFile;
 import org.kie.server.api.model.cases.CaseInstance;
 import org.kie.server.api.model.cases.CaseMilestone;
+import org.kie.server.api.model.definition.ProcessDefinition;
 import org.kie.server.api.model.instance.NodeInstance;
 import org.kie.server.client.CaseServicesClient;
 import org.kie.server.client.UserTaskServicesClient;
@@ -243,6 +245,14 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
         client.addDynamicUserTaskToStage(containerId, caseId, stageId, name, description, actors, groups, data);
     }
 
+    public void addDynamicSubProcess(String containerId, String caseId, String processId, Map<String, Object> data) {
+        client.addDynamicSubProcess(containerId, caseId, processId, data);
+    }
+
+    public void addDynamicSubProcessToStage(String containerId, String caseId, String stageId, String processId, Map<String, Object> data) {
+        client.addDynamicSubProcessToStage(containerId, caseId, stageId, processId, data);
+    }
+
     @Override
     public void triggerAdHocActionInStage(String containerId, String caseId, String stageId, String adHocName, Map<String, Object> data) {
         client.triggerAdHocFragmentInStage(containerId, caseId, stageId, adHocName, data);
@@ -251,5 +261,11 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     @Override
     public void triggerAdHocAction(String containerId, String caseId, String adHocName, Map<String, Object> data) {
         client.triggerAdHocFragment(containerId, caseId, adHocName, data);
+    }
+
+    @Override
+    public List<ProcessDefinitionSummary> getProcessDefinitions(String containerId){
+        final List<ProcessDefinition> processDefinitions = client.findProcessesByContainerId(containerId,0,PAGE_SIZE_UNLIMITED);
+        return processDefinitions.stream().map(new ProcessDefinitionMapper()).collect(toList());
     }
 }
