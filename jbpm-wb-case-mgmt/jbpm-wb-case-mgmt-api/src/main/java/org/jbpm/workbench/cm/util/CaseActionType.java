@@ -22,16 +22,13 @@ public enum CaseActionType {
 
     ADD_DYNAMIC_USER_TASK("add_dynamic_user_task"),
 
-    ADD_DYNAMIC_TASK("add_dynamic_task"),
-
-    ADD_DYNAMIC_SUBPROCESS("add_dynamic_subprocess"),
+    ADD_DYNAMIC_SUBPROCESS_TASK("add_dynamic_subprocess_task"),
 
     INPROGRESS("InProgress"),
 
     COMPLETED("Completed");
 
     private String status;
-
 
     CaseActionType(final String status) {
         this.status = status;

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "SubProcess1",
+    "name": "Example SubProcess1 for Development",
+    "containerId": "example",
+    "version": "1.0",
+    "packageName": "org.demo"
+  },
+  {
+    "id": "SubProcess2",
+    "name": "Example SubProcess2 for Development",
+    "containerId": "example",
+    "version": "1.0",
+    "packageName": "org.demo"
+  }
+]

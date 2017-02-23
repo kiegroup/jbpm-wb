@@ -21,37 +21,16 @@ import org.jboss.errai.ui.shared.api.annotations.TranslationKey;
 public interface Constants {
 
     @TranslationKey(defaultValue = "")
-    String ID = "Id";
-
-    @TranslationKey(defaultValue = "")
     String CASE = "Case";
-
-    @TranslationKey(defaultValue = "")
-    String DESCRIPTION = "Description";
-
-    @TranslationKey(defaultValue = "")
-    String STATUS = "Status";
 
     @TranslationKey(defaultValue = "")
     String OWNER = "Owner";
 
     @TranslationKey(defaultValue = "")
-    String STARTED_AT = "StartedAt";
-
-    @TranslationKey(defaultValue = "")
-    String ACTIONS = "Actions";
-
-    @TranslationKey(defaultValue = "")
     String CASES_LIST = "CasesList";
 
     @TranslationKey(defaultValue = "")
-    String CREATE = "Create";
-
-    @TranslationKey(defaultValue = "")
     String CASE_CREATED_WITH_ID = "CaseCreatedWithId";
-
-    @TranslationKey(defaultValue = "")
-    String ACTIVE = "Active";
 
     @TranslationKey(defaultValue = "")
     String INVALID_CASE_DEFINITION = "InvalidCaseDefinition";
@@ -129,7 +108,10 @@ public interface Constants {
     String ACTION_START = "ActionStart";
 
     @TranslationKey(defaultValue = "")
-    String ADD_DYNAMIC_USER_TASK = "AddNewDynamicUserTask";
+    String NEW_USER_TASK = "NewUserTask";
+
+    @TranslationKey(defaultValue = "")
+    String NEW_PROCESS_TASK = "NewProcessTask";
 
     @TranslationKey(defaultValue = "")
     String PLEASE_INTRO_ACTION_NAME = "PleaseIntroActionName";
@@ -138,6 +120,15 @@ public interface Constants {
     String PLEASE_INTRO_USER_OR_GROUP_TO_ASSIGN_NEW_ACTION = "PleaseIntroUserOrGroupToAssignTheNewAction";
 
     @TranslationKey(defaultValue = "")
+    String PLEASE_INTRO_SUBPROCESS_ID = "PleaseIntroSubprocessId";
+
+    @TranslationKey(defaultValue = "")
     String PLEASE_PROVIDE_CASE_OWNER = "PleaseProvideCaseOwner";
+
+    @TranslationKey(defaultValue = "")
+    String AVAILABLE_IN = "AvailableIn";
+
+    @TranslationKey(defaultValue = "")
+    String DYMANIC = "Dynamic";
 
 }
