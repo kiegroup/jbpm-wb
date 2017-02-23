@@ -24,6 +24,7 @@ import org.jbpm.workbench.forms.client.display.util.JSNIHelper;
 import org.jbpm.workbench.forms.modeler.client.editors.displayers.test.TestFormModellerTaskDisplayerImpl;
 import org.jbpm.workbench.forms.modeler.display.impl.FormModelerFormRenderingSettings;
 import org.jbpm.workbench.forms.modeler.service.FormModelerProcessStarterEntryPoint;
+import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.formModeler.api.client.FormRenderContextTO;
@@ -50,6 +51,9 @@ public class FormModellerTaskDisplayerTest {
 
     @Mock
     protected EventSourceMock<TaskRefreshedEvent> taskRefreshed;
+
+    @Mock
+    protected EventSourceMock<TaskCompletedEvent> taskCompleted;
 
     @Mock
     protected User identity;
@@ -84,6 +88,7 @@ public class FormModellerTaskDisplayerTest {
         displayer.setIdentity( identity );
         displayer.setJSNIHelper( jsniHelper );
         displayer.setTaskRefreshedEvent( taskRefreshed );
+        displayer.setTaskCompletedEvent(taskCompleted);
 
         displayer.setResizeListener( resizeListener );
 
@@ -207,6 +212,7 @@ public class FormModellerTaskDisplayerTest {
         displayer.onFormSubmitted( formSubmittedEvent );
         verify( service ).completeTaskFromContext( anyString(), anyString(), anyString(), anyLong() );
         verify( taskRefreshed, never() ).fire( any() );
+        verify( taskCompleted ).fire( any() );
         verify( jsniHelper ).notifySuccessMessage( anyString(), anyString() );
     }
 
@@ -222,6 +228,7 @@ public class FormModellerTaskDisplayerTest {
 
         verify( service, never() ).saveTaskStateFromRenderContext( anyString(), anyString(), anyString(), anyLong() );
         verify( taskRefreshed, never() ).fire( any() );
+        verify( taskCompleted, never() ).fire( any() );
         verify( jsniHelper, never() ).notifySuccessMessage( anyString(), anyString() );
     }
 }
