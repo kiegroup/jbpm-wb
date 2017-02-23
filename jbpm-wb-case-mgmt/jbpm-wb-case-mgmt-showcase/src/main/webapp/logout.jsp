@@ -1,6 +1,20 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="org.slf4j.Logger" %>
+<%@ page import="org.slf4j.LoggerFactory" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
+<%
+    final Logger logger = LoggerFactory.getLogger( "logout.jsp" );
+    try {
+        request.logout();
+        javax.servlet.http.HttpSession httpSession = request.getSession(false);
+        if (httpSession != null) {
+            httpSession.invalidate();
+        }
+    } catch ( SecurityException e ) {
+        //The only case we know that this  happens is when java security manager is enabled on EAP.
+        logger.debug( "Security exception happened, without consequences, during logout.", e );
+    }
+%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" class="login-pf">
 <head>
