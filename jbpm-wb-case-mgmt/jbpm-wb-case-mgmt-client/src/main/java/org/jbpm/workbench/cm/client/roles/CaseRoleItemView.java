@@ -44,10 +44,6 @@ public class CaseRoleItemView implements IsElement {
     Span name;
 
     @Inject
-    @DataField("user-actions")
-    Div userActions;
-
-    @Inject
     @DataField("icon-type")
     Span iconType;
 
@@ -90,6 +86,14 @@ public class CaseRoleItemView implements IsElement {
         final HTMLElement li = getDocument().createElement("li");
         li.appendChild(a);
         actionsItems.appendChild(li);
+    }
+
+    public void setLastElementStyle(boolean last){
+        if(last) {
+            addCSSClass(actions, "dropup");
+        }else{
+            removeCSSClass(actions,"dropup");
+        }
     }
 
 }

@@ -102,7 +102,7 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
 
         verify(view).enableNewRoleAssignments();
         verify(view).setUserAddCommand(any(Command.class));
-        verify(view).setGroupAddCommand(any(Command.class));
+
     }
 
     @Test
@@ -190,15 +190,22 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
         final ArgumentCaptor<Command> captor = ArgumentCaptor.forClass(Command.class);
         verify(view).setUserAddCommand(captor.capture());
         captor.getValue().execute();
-        verify(assignmentView).show(eq(true), eq(singleton(CASE_ROLE)), captor.capture());
+        verify(assignmentView).show( eq(singleton(CASE_ROLE)), captor.capture());
+
+        when(assignmentView.getUserName()).thenReturn("user1");
+        when(assignmentView.getGroupName()).thenReturn("");
         captor.getValue().execute();
         verify(caseManagementService).assignUserToRole(anyString(), anyString(), anyString(), anyString(), anyString());
 
-        verify(view).setGroupAddCommand(captor.capture());
-        captor.getValue().execute();
-        verify(assignmentView).show(eq(false), eq(singleton(CASE_ROLE)), captor.capture());
+        when(assignmentView.getUserName()).thenReturn("");
+        when(assignmentView.getGroupName()).thenReturn("groupName");
         captor.getValue().execute();
         verify(caseManagementService).assignGroupToRole(anyString(), anyString(), anyString(), anyString(), anyString());
+
+        when(assignmentView.getUserName()).thenReturn("user1");
+        when(assignmentView.getGroupName()).thenReturn("groupName");
+        captor.getValue().execute();
+        verify(caseManagementService).assignGroupAndUserToRole(anyString(), anyString(), anyString(), anyString(), anyString(),anyString());
     }
 
     @Test

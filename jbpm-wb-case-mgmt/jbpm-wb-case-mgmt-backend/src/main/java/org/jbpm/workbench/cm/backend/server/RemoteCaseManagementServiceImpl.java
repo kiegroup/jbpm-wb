@@ -133,6 +133,12 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
+    public void assignGroupAndUserToRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String user, final String group) {
+        client.assignGroupToRole(containerId, caseId, roleName, group);
+        client.assignUserToRole(containerId, caseId, roleName, user);
+    }
+
+    @Override
     public void removeUserFromRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String user) {
         client.removeUserFromRole(containerId, caseId, roleName, user);
     }
