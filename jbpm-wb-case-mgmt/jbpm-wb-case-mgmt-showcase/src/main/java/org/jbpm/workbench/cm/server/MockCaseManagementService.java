@@ -183,6 +183,12 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     }
 
     @Override
+    public void assignGroupAndUserToRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String user, final String group) {
+        executeOnCaseRole(caseId, roleName, r -> r.getGroups().add(group));
+        executeOnCaseRole(caseId, roleName, r -> r.getUsers().add(user));
+    }
+
+    @Override
     public void removeUserFromRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String user) {
         executeOnCaseRole(caseId, roleName, r -> r.getUsers().remove(user));
     }

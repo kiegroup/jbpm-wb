@@ -55,6 +55,7 @@
 ul.kie-nav-wizard {
   border-radius: 3px;
   display: flex;
+  padding-left: 0;
   position: relative;
   // the :before hides the tips of the triangles that stick out above and below
   &:before {
@@ -72,6 +73,8 @@ ul.kie-nav-wizard {
   li {
     background-color: @kie-wizard-background;
     display: flex;
+    //flex-shrink: 1;
+    flex: 1 10000 0;//10em;
     float: left;
     height: @kie-wizard-row-height;
     margin: 0;
@@ -112,7 +115,8 @@ ul.kie-nav-wizard {
     &:first-of-type,
     &:last-of-type,
     &:active {
-      flex-shrink: 0;
+      //flex-shrink: 1;
+      flex: 1 1 8em;
     }
     // make room for the chevron at the very end
     &:last-of-type {
@@ -122,7 +126,8 @@ ul.kie-nav-wizard {
     &.active {
       .kie-wizard-step-color(@kie-wizard-active-color, @kie-wizard-active-background);
       font-weight: @pf-font-weight-bold;
-      flex-shrink: 0;
+      //flex-shrink: 0;
+      flex: 1 1 8em;
     }
   }
 
@@ -148,4 +153,3 @@ ul.kie-nav-wizard {
   }
 
 }
-

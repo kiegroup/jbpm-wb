@@ -57,16 +57,7 @@ public interface Constants {
     String REMOVE = "Remove";
 
     @TranslationKey(defaultValue = "")
-    String USER = "User";
-
-    @TranslationKey(defaultValue = "")
-    String USER_REQUIRED = "UserRequired";
-
-    @TranslationKey(defaultValue = "")
-    String GROUP = "Group";
-
-    @TranslationKey(defaultValue = "")
-    String GROUP_REQUIRED = "GroupRequired";
+    String PLEASE_INTRO_USER_OR_GROUP_TO_CREATE_ASSIGNMENT = "PleaseIntroUserOrGroupToCreateAssignment";
 
     @TranslationKey(defaultValue = "")
     String CASE_COMMENTS = "Comments";

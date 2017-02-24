@@ -29,6 +29,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.mvp.Command;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 
 @Dependent
@@ -58,6 +59,8 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesP
         setupRoleAssignments(cis);
 
         setupNewRoleAssignments(cis);
+
+        view.setupPagination();
     }
 
     protected void setupNewRoleAssignments(final CaseInstanceSummary cis) {
@@ -74,8 +77,11 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesP
 
                     view.enableNewRoleAssignments();
 
-                    view.setUserAddCommand(() -> newRoleAssignmentView.show(true, roles, () -> addUserToRole(newRoleAssignmentView.getUserName(), newRoleAssignmentView.getRoleName())));
-                    view.setGroupAddCommand(() -> newRoleAssignmentView.show(false, roles, () -> addGroupToRole(newRoleAssignmentView.getUserName(), newRoleAssignmentView.getRoleName())));
+                    view.setUserAddCommand(() ->
+                            newRoleAssignmentView.show( roles, () ->
+                                    addAssignment(newRoleAssignmentView.getUserName(),
+                                            newRoleAssignmentView.getGroupName(),
+                                            newRoleAssignmentView.getRoleName())));
                 }
         ).getCaseDefinition(serverTemplateId, containerId, cis.getCaseDefinitionId());
     }
@@ -131,6 +137,21 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesP
         );
     }
 
+    protected void addAssignment(final String userName,final String groupName, final String roleName) {
+        if(!isNullOrEmpty(userName) && !isNullOrEmpty(groupName)){
+            caseService.call(
+                    (Void) -> findCaseInstance()
+            ).assignGroupAndUserToRole(serverTemplateId, containerId, caseId, roleName, userName,groupName);
+        }else {
+            if (!isNullOrEmpty(userName)) {
+                addUserToRole(userName, roleName);
+            }
+            if(!isNullOrEmpty(groupName)){
+                addGroupToRole(groupName,roleName);
+            }
+        }
+    }
+
     protected void addUserToRole(final String userName, final String roleName) {
         caseService.call(
                 (Void) -> findCaseInstance()
@@ -165,7 +186,7 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesP
 
         void setUserAddCommand(Command command);
 
-        void setGroupAddCommand(Command command);
+        void setupPagination();
 
         void enableNewRoleAssignments();
 
@@ -174,13 +195,15 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesP
 
     public interface NewRoleAssignmentView extends UberElement<CaseRolesPresenter> {
 
-        void show(Boolean forUser, Set<String> roles, Command okCommand);
+        void show( Set<String> roles, Command okCommand);
 
         void hide();
 
         String getRoleName();
 
         String getUserName();
+
+        String getGroupName();
 
     }
 

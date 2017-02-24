@@ -61,26 +61,32 @@ public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssi
     FormLabel roleNameLabel;
 
     @Inject
-    @DataField("user-name-label")
-    FormLabel userNameLabel;
+    @DataField("assignment-label")
+    FormLabel assignmentLabel;
 
     @Inject
     @DataField("user-name-input")
     TextInput userNameInput;
 
     @Inject
-    @DataField("user-name-help")
-    Span userNameHelp;
-
-    @Inject
     @DataField("user-name-group")
     FormGroup userNameGroup;
 
     @Inject
+    @DataField("group-name-input")
+    TextInput groupNameInput;
+
+    @Inject
+    @DataField("group-name-help")
+    Span groupNameHelp;
+
+    @Inject
+    @DataField("group-name-group")
+    FormGroup groupNameGroup;
+
+    @Inject
     @DataField("modal")
     private Modal modal;
-
-    private Boolean forUser;
 
     private Command okCommand;
 
@@ -90,6 +96,7 @@ public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssi
     @PostConstruct
     public void init() {
         this.roleNameLabel.addRequiredIndicator();
+        this.assignmentLabel.addRequiredIndicator();
     }
 
     @Override
@@ -97,14 +104,9 @@ public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssi
     }
 
     @Override
-    public void show(final Boolean forUser, final Set<String> roles, final Command okCommand) {
+    public void show( final Set<String> roles, final Command okCommand) {
         clearErrorMessages();
         clearValues();
-
-        this.forUser = forUser;
-
-        userNameLabel.getElement().setTextContent(translationService.format(forUser ? USER : GROUP));
-        userNameLabel.addRequiredIndicator();
 
         roles.forEach(r -> roleNameList.addOption(r));
         roleNameList.refresh();
@@ -120,6 +122,7 @@ public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssi
     }
 
     private boolean validateForm() {
+        boolean validForm=true;
         clearErrorMessages();
 
         final boolean roleNameEmpty = isNullOrEmpty(roleNameList.getValue());
@@ -127,23 +130,24 @@ public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssi
             roleNameList.getElement().focus();
             roleNameHelp.setTextContent(translationService.format(PLEASE_SELECT_ROLE));
             roleNameGroup.setValidationState(ValidationState.ERROR);
+            validForm=false;
         }
 
-        final boolean userNameEmpty = isNullOrEmpty(userNameInput.getValue());
-        if (userNameEmpty) {
+        if (isNullOrEmpty(userNameInput.getValue()) && isNullOrEmpty(groupNameInput.getValue())) {
             userNameInput.focus();
-            userNameHelp.setTextContent(translationService.format(forUser ? USER_REQUIRED : GROUP_REQUIRED));
             userNameGroup.setValidationState(ValidationState.ERROR);
+            groupNameGroup.setValidationState(ValidationState.ERROR);
+            groupNameHelp.setTextContent(translationService.format(PLEASE_INTRO_USER_OR_GROUP_TO_CREATE_ASSIGNMENT));
+            validForm = false;
         }
 
-        if (roleNameEmpty || userNameEmpty) {
-            return false;
+        if (validForm) {
+            roleNameGroup.setValidationState(ValidationState.SUCCESS);
+            userNameGroup.setValidationState(ValidationState.SUCCESS);
+            groupNameGroup.setValidationState(ValidationState.SUCCESS);
+
         }
-
-        roleNameGroup.setValidationState(ValidationState.SUCCESS);
-        userNameGroup.setValidationState(ValidationState.SUCCESS);
-
-        return true;
+        return validForm;
     }
 
     private void clearValues() {
@@ -151,13 +155,15 @@ public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssi
         roleNameList.removeAllOptions();
         roleNameList.refresh();
         userNameInput.setValue("");
+        groupNameInput.setValue("");
     }
 
     private void clearErrorMessages() {
         roleNameHelp.setTextContent("");
-        userNameHelp.setTextContent("");
-        userNameGroup.clearValidationState();
+        groupNameHelp.setTextContent("");
         roleNameGroup.clearValidationState();
+        userNameGroup.clearValidationState();
+        groupNameGroup.clearValidationState();
     }
 
     @Override
@@ -168,6 +174,12 @@ public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssi
     @Override
     public String getUserName() {
         return userNameInput.getValue();
+    }
+
+
+    @Override
+    public String getGroupName() {
+        return groupNameInput.getValue();
     }
 
     @Override

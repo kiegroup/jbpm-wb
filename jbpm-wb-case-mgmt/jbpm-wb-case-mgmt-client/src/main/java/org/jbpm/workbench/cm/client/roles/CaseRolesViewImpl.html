@@ -1,23 +1,34 @@
 <!DOCTYPE html>
-<div data-field="roles" class="card-pf">
+<div class="card-pf"  data-field="roles">
     <div class="card-pf-heading">
+        <div class=" kie-card__toolbar">
+            <div class="kie-toolbar__group">
+                <button type="button" class="btn btn-default" data-field="user-add"><span data-i18n-key="Add"/></button>
+            </div>
+        </div>
         <h2 class="card-pf-title">
-            <span data-i18n-key="Roles"/>
+            <span data-i18n-key="RoleAssignments"></span>
+            <span class="badge" data-field="roles-badge" ></span>
         </h2>
     </div>
-    <div class="card-pf-body">
-        <div class="list-group list-view-pf list-view-pf-view" data-field="role-list">
+    <div class="card-pf-body ">
+        <div class="row">
+            <!-- Roles -->
+            <div class="col-xs-12">
+
+                <div class="kie-scrollbox" data-field="scrollbox">
+                    <div class=" list-group kie-list-view--embedded" data-field="role-list"></div>
+                </div>
+                <div data-field="pagination"/>
+            </div>
+
         </div>
     </div>
     <div class="card-pf-footer hidden" data-field="footer">
         <p>
-            <a href="#" class="card-pf-link-with-icon" data-field="user-add" style="margin-left: 15px;">
-                <span class="pficon pficon-add-circle-o"></span><span data-i18n-key="AddUser"></span>
-            </a>
             <a href="#" class="card-pf-link-with-icon" data-field="group-add" style="margin-left: 15px;">
                 <span class="pficon pficon-add-circle-o"></span><span data-i18n-key="AddGroup"></span>
             </a>
         </p>
     </div>
-
 </div>
