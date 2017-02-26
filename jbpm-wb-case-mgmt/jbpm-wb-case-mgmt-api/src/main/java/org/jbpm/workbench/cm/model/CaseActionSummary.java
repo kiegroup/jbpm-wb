@@ -21,6 +21,7 @@ import java.util.Objects;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
+import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseActionType;
 
 @Bindable
@@ -30,10 +31,11 @@ public class CaseActionSummary {
     private Long id;
     private String name;
     private String type;
-    private String actualOwner;
-    private CaseActionType actionType;
     private Date createdOn;
     private String stageId;
+    private String actualOwner;
+    private CaseActionType actionType;
+    private CaseActionStatus actionStatus;
 
     public CaseActionSummary() {
     }
@@ -66,6 +68,22 @@ public class CaseActionSummary {
         this.type = type;
     }
 
+    public Date getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(Date createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public String getStageId() {
+        return stageId;
+    }
+
+    public void setStageId(String stageId) {
+        this.stageId = stageId;
+    }
+
     public String getActualOwner() {
         return actualOwner;
     }
@@ -82,21 +100,9 @@ public class CaseActionSummary {
         this.actionType = actionType;
     }
 
-    public Date getCreatedOn() {
-        return createdOn;
-    }
+    public CaseActionStatus getActionStatus() { return actionStatus; }
 
-    public void setCreatedOn(Date createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public String getStageId() {
-        return stageId;
-    }
-
-    public void setStageId(String stageId) {
-        this.stageId = stageId;
-    }
+    public void setActionStatus(CaseActionStatus actionStatus) { this.actionStatus = actionStatus; }
 
     @Override
     public boolean equals(Object o) {
@@ -122,10 +128,11 @@ public class CaseActionSummary {
                 " id='" + id + '\'' +
                 " name='" + name + '\'' +
                 " type='" + type + '\'' +
-                " actualOwner='" + actualOwner + '\'' +
-                " actionType='" + actionType + '\'' +
                 " createdOn='" + createdOn + '\'' +
                 " stageId='" + stageId + '\'' +
+                " actualOwner='" + actualOwner + '\'' +
+                " actionType='" + actionType + '\'' +
+                " actionStatus='" + actionStatus + '\'' +
                 '}';
     }
 
@@ -152,13 +159,8 @@ public class CaseActionSummary {
             return this;
         }
 
-        public Builder actualOwner(String actualOwner) {
-            caseActionSummary.setActualOwner(actualOwner);
-            return this;
-        }
-
-        public Builder status(CaseActionType status) {
-            caseActionSummary.setActionType(status);
+        public Builder createdOn(Date createdOn) {
+            caseActionSummary.setCreatedOn(createdOn);
             return this;
         }
 
@@ -167,8 +169,8 @@ public class CaseActionSummary {
             return this;
         }
 
-        public Builder createdOn(Date createdOn) {
-            caseActionSummary.setCreatedOn(createdOn);
+        public Builder actualOwner(String actualOwner) {
+            caseActionSummary.setActualOwner(actualOwner);
             return this;
         }
 
@@ -176,6 +178,12 @@ public class CaseActionSummary {
             caseActionSummary.setActionType(actionType);
             return this;
         }
+
+        public Builder actionStatus(CaseActionStatus actionStatus) {
+            caseActionSummary.setActionStatus(actionStatus);
+            return this;
+        }
+
     }
 
 }

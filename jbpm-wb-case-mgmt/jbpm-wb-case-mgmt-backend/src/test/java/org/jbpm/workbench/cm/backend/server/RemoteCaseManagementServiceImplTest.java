@@ -27,7 +27,7 @@ import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
 import org.jbpm.workbench.cm.util.Actions;
-import org.jbpm.workbench.cm.util.CaseActionType;
+import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.workbench.cm.util.CaseInstanceSortBy;
 import org.jbpm.workbench.cm.util.CaseMilestoneSearchRequest;
@@ -448,8 +448,8 @@ public class RemoteCaseManagementServiceImplTest {
         List<CaseActionSummary> actionsSummaries = testedService.getInProgressActions(containerId, caseId);
 
         assertEquals(2, actionsSummaries.size());
-        assertEquals(CaseActionType.INPROGRESS, actionsSummaries.get(0).getActionType());
-        assertEquals(CaseActionType.INPROGRESS, actionsSummaries.get(1).getActionType());
+        assertEquals(CaseActionStatus.IN_PROGRESS, actionsSummaries.get(0).getActionStatus());
+        assertEquals(CaseActionStatus.IN_PROGRESS, actionsSummaries.get(1).getActionStatus());
         assertEquals(taskActualOwner, actionsSummaries.get(0).getActualOwner());
         assertTrue(isNullOrEmpty(actionsSummaries.get(1).getActualOwner()));
 

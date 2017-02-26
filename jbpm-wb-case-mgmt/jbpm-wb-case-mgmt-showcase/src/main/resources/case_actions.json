@@ -4,51 +4,54 @@
     "name": "Task1",
     "type": "Human Task",
     "actualOwner": "Joe",
-    "actionType": "INPROGRESS"
+    "actionStatus": "IN_PROGRESS"
   },
   {
     "id": "2",
     "name": "Task2_noHumanTask",
     "type": "Service Task",
-    "actionType": "INPROGRESS"
+    "actionStatus": "IN_PROGRESS"
   },
   {
     "id": "3",
     "name": "Task3",
     "type": "Human Task",
     "actualOwner": "Jan",
-    "actionType": "INPROGRESS"
+    "actionStatus": "IN_PROGRESS"
   },
   {
     "id": "4",
     "name": "Task4",
     "type": "Human Task",
     "actualOwner": "Max",
-    "actionType": "INPROGRESS"
+    "actionStatus": "IN_PROGRESS"
   },
   {
     "id": "5",
     "name": "Task5",
     "type": "Human Task",
     "actualOwner": "Max",
-    "actionType": "COMPLETED"
+    "actionStatus": "COMPLETED"
   },
   {
     "id": "6",
     "name": "adhoc1",
     "type": "SubProcessNode",
-    "actionType": "AD_HOC"
+    "actionType": "AD_HOC_TASK",
+    "actionStatus": "AVAILABLE"
   },
   {
     "id": "7",
     "name": "Task6",
     "type": "Human Task",
-    "actionType": "AD_HOC"
+    "actionType": "AD_HOC_TASK",
+    "actionStatus": "AVAILABLE"
   },
   {
     "id": "8",
     "name": "adhoc2",
     "type": "Human Task",
-    "actionType": "AD_HOC"
+    "actionType": "AD_HOC_TASK",
+    "actionStatus": "AVAILABLE"
   }
 ]

@@ -19,17 +19,17 @@ package org.jbpm.workbench.cm.backend.server;
 import java.util.function.Function;
 
 import org.jbpm.workbench.cm.model.CaseActionSummary;
-import org.jbpm.workbench.cm.util.CaseActionType;
+import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.kie.server.api.model.instance.NodeInstance;
 
 public class CaseActionNodeInstanceMapper implements Function<NodeInstance, CaseActionSummary> {
 
     private String actualOwner;
-    private CaseActionType actionType;
+    private CaseActionStatus actionStatus;
 
-    public CaseActionNodeInstanceMapper(String actualOwner, CaseActionType actionType) {
+    public CaseActionNodeInstanceMapper(String actualOwner, CaseActionStatus actionStatus) {
         this.actualOwner = actualOwner;
-        this.actionType = actionType;
+        this.actionStatus = actionStatus;
     }
 
     @Override
@@ -38,12 +38,12 @@ public class CaseActionNodeInstanceMapper implements Function<NodeInstance, Case
             return null;
         }
         return CaseActionSummary.builder()
+                .id(nodeInstance.getId())
                 .name(nodeInstance.getName())
-                .createdOn(nodeInstance.getDate())
                 .type(nodeInstance.getNodeType())
-                .id(nodeInstance.getWorkItemId())
+                .createdOn(nodeInstance.getDate())
                 .actualOwner(actualOwner)
-                .actionType(actionType)
+                .actionStatus(actionStatus)
                 .build();
     }
 

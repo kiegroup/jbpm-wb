@@ -73,7 +73,6 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         return CaseActionSummary.builder()
                 .id(Long.valueOf(1))
                 .name("actionName")
-                .status(CaseActionType.INPROGRESS)
                 .build();
     }
 
@@ -112,8 +111,8 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
 
         verify(caseAllActionsView).setAvailableActionsList(captor.capture());
         assertEquals(caseActionSummaryList.size() + 2, captor.getValue().size());
-        assertEquals(CaseActionType.ADD_DYNAMIC_USER_TASK, ((CaseActionSummary) captor.getValue().get(0)).getActionType());
-        assertEquals(CaseActionType.ADD_DYNAMIC_SUBPROCESS_TASK, ((CaseActionSummary) captor.getValue().get(1)).getActionType());
+        assertEquals(CaseActionType.DYNAMIC_USER_TASK, ((CaseActionSummary) captor.getValue().get(0)).getActionType());
+        assertEquals(CaseActionType.DYNAMIC_SUBPROCESS_TASK, ((CaseActionSummary) captor.getValue().get(1)).getActionType());
 
         verify(caseAllActionsView).setInProgressActionsList(caseActionSummaryList);
         verify(caseAllActionsView).setCompletedActionsList(caseActionSummaryList);

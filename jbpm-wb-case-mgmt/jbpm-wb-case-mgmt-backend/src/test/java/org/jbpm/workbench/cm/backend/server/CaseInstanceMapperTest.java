@@ -80,7 +80,7 @@ public class CaseInstanceMapperTest {
                 caseActionSummary = casl.get(i);
                 assertEquals(caseActionSummary.getName(), caseAdHocFragment.getName());
                 assertEquals(stageId, caseActionSummary.getStageId());
-                assertEquals(CaseActionType.AD_HOC, caseActionSummary.getActionType());
+                assertEquals(CaseActionType.AD_HOC_TASK, caseActionSummary.getActionType());
             }
         }
     }

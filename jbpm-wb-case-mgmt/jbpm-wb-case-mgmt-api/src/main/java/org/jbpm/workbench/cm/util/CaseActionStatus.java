@@ -16,11 +16,11 @@
 
 package org.jbpm.workbench.cm.util;
 
-public enum CaseActionType {
+public enum CaseActionStatus {
 
-    AD_HOC_TASK,
+    AVAILABLE,
 
-    DYNAMIC_USER_TASK,
+    IN_PROGRESS,
 
-    DYNAMIC_SUBPROCESS_TASK,
+    COMPLETED
 }
