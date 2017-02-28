@@ -224,7 +224,7 @@
             <artifactId>jbpm-runtime-manager</artifactId>
         </dependency>
 
-        <!-- jBPM Console Panels -->
+        <!-- jBPM WB Panels -->
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-wb-common-api</artifactId>
@@ -1312,7 +1312,7 @@
                         <compileSourcesArtifact>org.uberfire:uberfire-backend-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-patternfly</compileSourcesArtifact>
 
-                        <!-- jBPM Console -->
+                        <!-- jBPM WB -->
                         <compileSourcesArtifact>org.jbpm:jbpm-wb-human-tasks-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-wb-human-tasks-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.jbpm:jbpm-wb-forms-modeler-api</compileSourcesArtifact>
