@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.backend.server.cases.service;
+package org.jbpm.workbench.wi.backend.server.casemgmt.service;
 
 import java.io.File;
 import java.net.HttpURLConnection;
@@ -29,16 +29,22 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningCompletedEvent;
+import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningFailedEvent;
+import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningStartedEvent;
+import org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningService;
+import org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningSettings;
+import org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.uberfire.backend.server.cdi.SystemConfigProducer;
 import org.uberfire.java.nio.file.spi.FileSystemProvider;
 import org.uberfire.java.nio.fs.file.SimpleFileSystemProvider;
 
-import static org.jbpm.workbench.wi.backend.server.cases.service.CaseManagementProvisioningSettings.CASEMGMT_PROPERTIES;
+import static org.jbpm.workbench.wi.backend.server.casemgmt.service.CaseProvisioningSettingsImpl.CASEMGMT_PROPERTIES;
 
 @RunWith(Arquillian.class)
-public class CaseManagementProvisioningIT {
+public class CaseProvisioningIT {
 
     @Deployment(testable = false)
     public static WebArchive create() {
@@ -58,9 +64,15 @@ public class CaseManagementProvisioningIT {
                 .asFile();
 
         final WebArchive war = ShrinkWrap.create(WebArchive.class)
-                .addClass(CaseManagementProvisioningService.class)
-                .addClass(CaseManagementProvisioningExecutor.class)
-                .addClass(CaseManagementProvisioningSettings.class)
+                .addClass(CaseProvisioningSettings.class)
+                .addClass(CaseProvisioningStartedEvent.class)
+                .addClass(CaseProvisioningCompletedEvent.class)
+                .addClass(CaseProvisioningFailedEvent.class)
+                .addClass(CaseProvisioningService.class)
+                .addClass(CaseProvisioningStatus.class)
+                .addClass(CaseProvisioningServiceImpl.class)
+                .addClass(CaseProvisioningExecutor.class)
+                .addClass(CaseProvisioningSettingsImpl.class)
                 .addClass(SystemConfigProducer.class)
                 .addAsResource(CASEMGMT_PROPERTIES)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")

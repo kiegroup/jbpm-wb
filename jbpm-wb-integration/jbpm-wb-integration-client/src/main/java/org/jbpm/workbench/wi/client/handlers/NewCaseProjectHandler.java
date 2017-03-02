@@ -34,7 +34,7 @@ import org.guvnor.common.services.project.model.Project;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.workbench.wi.cases.service.CaseProjectService;
+import org.jbpm.workbench.wi.casemgmt.service.CaseProjectService;
 import org.jbpm.workbench.wi.client.i18n.Constants;
 import org.kie.workbench.common.screens.projecteditor.client.handlers.NewProjectHandlerView;
 import org.kie.workbench.common.screens.projecteditor.client.resources.ProjectEditorResources;

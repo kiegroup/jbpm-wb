@@ -35,4 +35,6 @@
   <inherits name="org.jbpm.workbench.common.JbpmWorkbenchCommonAPI"/>
   <inherits name="org.guvnor.structure.GuvnorStructureClient"/>
 
+  <source path='client'/>
+
 </module>

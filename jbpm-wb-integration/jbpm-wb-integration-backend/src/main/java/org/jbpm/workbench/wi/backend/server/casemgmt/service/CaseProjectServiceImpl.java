@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.backend.server.cases.service;
+package org.jbpm.workbench.wi.backend.server.casemgmt.service;
 
 import java.io.IOException;
 import java.net.URI;
@@ -31,7 +31,7 @@ import org.apache.commons.io.IOUtils;
 import org.guvnor.common.services.project.events.NewPackageEvent;
 import org.guvnor.common.services.project.model.Project;
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.workbench.wi.cases.service.CaseProjectService;
+import org.jbpm.workbench.wi.casemgmt.service.CaseProjectService;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.model.Parameter;

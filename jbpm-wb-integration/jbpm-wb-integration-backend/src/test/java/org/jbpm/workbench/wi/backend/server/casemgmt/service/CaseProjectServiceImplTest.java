@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.backend.server.cases.service;
+package org.jbpm.workbench.wi.backend.server.casemgmt.service;
 
 import java.net.URI;
 import java.util.ArrayList;

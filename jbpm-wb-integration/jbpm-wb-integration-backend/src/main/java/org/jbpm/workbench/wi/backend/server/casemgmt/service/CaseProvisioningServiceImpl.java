@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.backend.server.cases.service;
+package org.jbpm.workbench.wi.backend.server.casemgmt.service;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.guvnor.ala.build.maven.config.impl.MavenDependencyConfigImpl;
@@ -39,6 +40,13 @@ import org.guvnor.ala.wildfly.config.WildflyProviderConfig;
 import org.guvnor.ala.wildfly.config.impl.ContextAwareWildflyRuntimeExecConfig;
 import org.guvnor.ala.wildfly.executor.WildflyProviderConfigExecutor;
 import org.guvnor.ala.wildfly.executor.WildflyRuntimeExecExecutor;
+import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningCompletedEvent;
+import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningFailedEvent;
+import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningStartedEvent;
+import org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningService;
+import org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningSettings;
+import org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
@@ -46,19 +54,23 @@ import org.uberfire.commons.services.cdi.StartupType;
 
 import static java.util.Arrays.asList;
 import static org.guvnor.ala.pipeline.StageUtil.config;
+import static org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningStatus.*;
 
 @ApplicationScoped
 @Startup(StartupType.BOOTSTRAP)
-public class CaseManagementProvisioningService {
+@Service
+public class CaseProvisioningServiceImpl implements CaseProvisioningService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CaseManagementProvisioningService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CaseProvisioningServiceImpl.class);
     private static final String PIPELINE_NAME = "jBPM Case Management showcase pipeline";
 
     @Inject
-    private CaseManagementProvisioningSettings settings;
+    private CaseProvisioningSettings settings;
 
     @Inject
-    private CaseManagementProvisioningExecutor executor;
+    private CaseProvisioningExecutor executor;
+
+    private CaseProvisioningStatus status = DISABLED;
 
     @PostConstruct
     public void init() {
@@ -122,6 +134,23 @@ public class CaseManagementProvisioningService {
         }
 
         executor.execute(pipelineExecutor, pipeline, input);
+    }
+
+    @Override
+    public CaseProvisioningStatus getProvisioningStatus() {
+        return status;
+    }
+
+    public void onCaseManagementProvisioningStartedEvent(@Observes CaseProvisioningStartedEvent event) {
+        status = STARTED;
+    }
+
+    public void onCaseManagementProvisioningCompletedEvent(@Observes CaseProvisioningCompletedEvent event) {
+        status = COMPLETED;
+    }
+
+    public void onCaseManagementProvisioningFailedEvent(@Observes CaseProvisioningFailedEvent event) {
+        status = FAILED;
     }
 
 }
