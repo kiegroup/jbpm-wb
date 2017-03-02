@@ -7,13 +7,15 @@
       {
         "id": "100",
         "name": "adhoc_stage1_1",
-        "actionType": "AD_HOC",
+        "actionType": "AD_HOC_TASK",
+        "actionStatus": "AVAILABLE",
         "stageId": "Stage1"
       },
       {
         "id": "101",
         "name": "adhoc_stage1_2",
-        "actionType": "AD_HOC",
+        "actionType": "AD_HOC_TASK",
+        "actionStatus": "AVAILABLE",
         "stageId": "Stage1"
       }
     ]
@@ -32,13 +34,15 @@
       {
         "id": "300",
         "name": "adhoc_stage3_1",
-        "actionType": "AD_HOC",
+        "actionType": "AD_HOC_TASK",
+        "actionStatus": "AVAILABLE",
         "stageId": "Stage3"
       },
       {
         "id": "301",
         "name": "adhoc_stage3_2",
-        "actionType": "AD_HOC",
+        "actionType": "AD_HOC_TASK",
+        "actionStatus": "AVAILABLE",
         "stageId": "Stage3"
       }
     ]

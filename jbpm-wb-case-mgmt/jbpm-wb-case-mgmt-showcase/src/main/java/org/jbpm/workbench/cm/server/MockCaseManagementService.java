@@ -38,6 +38,7 @@ import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
 import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
 import org.jbpm.workbench.cm.model.CaseStageSummary;
 import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
+import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseActionType;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.workbench.cm.util.CaseMilestoneSearchRequest;
@@ -226,17 +227,17 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
 
     public List<CaseActionSummary> getAdHocFragments(String containerId, String caseId) {
         return ofNullable(caseActionMap.get(caseId)).orElse(emptyList()).stream()
-                .filter(c -> CaseActionType.AD_HOC == c.getActionType()).collect(toList());
+                .filter(c -> CaseActionType.AD_HOC_TASK == c.getActionType()).collect(toList());
     }
 
     public List<CaseActionSummary> getInProgressActions(String containerId, String caseId) {
         return ofNullable(caseActionMap.get(caseId)).orElse(emptyList()).stream()
-                .filter(c -> CaseActionType.INPROGRESS == c.getActionType()).collect(toList());
+                .filter(c -> CaseActionStatus.IN_PROGRESS == c.getActionStatus()).collect(toList());
     }
 
     public List<CaseActionSummary> getCompletedActions(String containerId, String caseId) {
         return ofNullable(caseActionMap.get(caseId)).orElse(emptyList()).stream()
-                .filter(c -> CaseActionType.COMPLETED == c.getActionType()).collect(toList());
+                .filter(c -> CaseActionStatus.COMPLETED == c.getActionStatus()).collect(toList());
     }
 
     @Override
@@ -247,7 +248,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
                 .name(name)
                 .actualOwner(actors)
                 .type("Human Task")
-                .status(CaseActionType.INPROGRESS)
+                .actionStatus(CaseActionStatus.IN_PROGRESS)
                 .createdOn(new Date())
                 .build();
         actionSummaryList.add(action);
@@ -261,7 +262,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
                 .name(name)
                 .actualOwner(actors)
                 .type("Human Task")
-                .status(CaseActionType.INPROGRESS)
+                .actionStatus(CaseActionStatus.IN_PROGRESS)
                 .createdOn(new Date())
                 .build();
         actionSummaryList.add(action);
@@ -274,7 +275,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
         final CaseActionSummary action = CaseActionSummary.builder()
                 .id(actionIdLongenerator++)
                 .name(adHocName)
-                .status(CaseActionType.INPROGRESS)
+                .actionStatus(CaseActionStatus.IN_PROGRESS)
                 .createdOn(new Date())
                 .build();
         actionSummaryList.add(action);
@@ -287,7 +288,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
         final CaseActionSummary action = CaseActionSummary.builder()
                 .id(actionIdLongenerator++)
                 .name(adHocName)
-                .status(CaseActionType.INPROGRESS)
+                .actionStatus(CaseActionStatus.IN_PROGRESS)
                 .createdOn(new Date())
                 .build();
         actionSummaryList.add(action);
@@ -300,7 +301,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
         final CaseActionSummary action = CaseActionSummary.builder()
                 .id(actionIdLongenerator++)
                 .name("subprocess: " + processId)
-                .status(CaseActionType.INPROGRESS)
+                .actionStatus(CaseActionStatus.IN_PROGRESS)
                 .createdOn(new Date())
                 .build();
         actionSummaryList.add(action);
@@ -313,7 +314,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
         final CaseActionSummary action = CaseActionSummary.builder()
                 .id(actionIdLongenerator++)
                 .name("subprocess: " + processId + " inStage:" + stageId)
-                .status(CaseActionType.INPROGRESS)
+                .actionStatus(CaseActionStatus.IN_PROGRESS)
                 .createdOn(new Date())
                 .build();
         actionSummaryList.add(action);

@@ -34,7 +34,7 @@ import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
 import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
 import org.jbpm.workbench.cm.service.CaseManagementService;
 import org.jbpm.workbench.cm.util.Actions;
-import org.jbpm.workbench.cm.util.CaseActionType;
+import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.workbench.cm.util.CaseInstanceSortBy;
 import org.jbpm.workbench.cm.util.CaseMilestoneSearchRequest;
@@ -201,7 +201,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                         (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
                                 userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
                                 ""),
-                        CaseActionType.INPROGRESS).apply(s))
+                        CaseActionStatus.IN_PROGRESS).apply(s))
                 .collect(toList());
     }
 
@@ -218,7 +218,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                         (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
                                 userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
                                 ""),
-                        CaseActionType.COMPLETED).apply(s))
+                        CaseActionStatus.COMPLETED).apply(s))
                 .collect(toList());
     }
 

@@ -32,6 +32,7 @@ import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.CaseStageSummary;
 import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
 import org.jbpm.workbench.cm.util.Actions;
+import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseActionType;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -85,9 +86,9 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
         refreshData(true);
     }
 
-    protected void showAddDynUserTaskAction(CaseActionType caseActionType) {
+    protected void showDynamicAction(CaseActionType caseActionType) {
         switch (caseActionType) {
-           case ADD_DYNAMIC_USER_TASK: {
+           case DYNAMIC_USER_TASK: {
                 newActionView.show(caseActionType, () ->
                         addDynamicUserTaskAction(
                                 newActionView.getTaskName(),
@@ -97,7 +98,7 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
                                 newActionView.getStageId()));
                 break;
             }
-            case ADD_DYNAMIC_SUBPROCESS_TASK: {
+            case DYNAMIC_SUBPROCESS_TASK: {
                 newActionView.show(caseActionType, () ->
                         addDynamicSubprocessTaskAction(
                                 newActionView.getProcessDefinitionName(),
@@ -139,11 +140,13 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
                 List<CaseActionSummary> availableActions = new ArrayList<>();
                 availableActions.add(CaseActionSummary.builder()
                         .name(translationService.getTranslation(NEW_USER_TASK))
-                        .status(CaseActionType.ADD_DYNAMIC_USER_TASK)
+                        .actionType(CaseActionType.DYNAMIC_USER_TASK)
+                        .actionStatus(CaseActionStatus.AVAILABLE)
                         .build());
                 availableActions.add(CaseActionSummary.builder()
                         .name(translationService.getTranslation(NEW_PROCESS_TASK))
-                        .status(CaseActionType.ADD_DYNAMIC_SUBPROCESS_TASK)
+                        .actionType(CaseActionType.DYNAMIC_SUBPROCESS_TASK)
+                        .actionStatus(CaseActionStatus.AVAILABLE)
                         .build());
                 availableActions.addAll(actions.getAvailableActions());
                 view.setAvailableActionsList(availableActions);

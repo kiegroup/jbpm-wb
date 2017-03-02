@@ -33,6 +33,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.cm.client.util.AbstractView;
 import org.jbpm.workbench.cm.client.util.DateConverter;
+import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseActionType;
 import org.jbpm.workbench.cm.model.CaseActionSummary;
 
@@ -93,10 +94,16 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
     public void setValue(final CaseActionSummary model) {
         this.caseActionSummary.setModel(model);
         removeCSSClass(actions,"dropup");
-        final CaseActionType actionType = model.getActionType();
 
-        switch (actionType) {
-            case INPROGRESS: {
+        final CaseActionType actionType = model.getActionType();
+        final CaseActionStatus actionStatus = model.getActionStatus();
+
+        switch (actionStatus) {
+            case AVAILABLE: {
+                prepareAction(model, actionType);
+                break;
+            }
+            case IN_PROGRESS: {
                 removeCSSClass(createdOn, "hidden");
                 if (!isNullOrEmpty(model.getActualOwner())) {
                     actionInfo.setTextContent(" (" + model.getActualOwner() + ") ");
@@ -105,9 +112,18 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
             }
             case COMPLETED: {
                 removeCSSClass(createdOn, "hidden");
-                break;
             }
-            case AD_HOC: {
+        }
+    }
+
+    private void prepareAction(CaseActionSummary model, CaseActionType actionType){
+        switch (actionType) {
+            case AD_HOC_TASK: {
+                if (isNullOrEmpty(model.getStageId())){
+                    actionInfo.setTextContent(translationService.format(AVAILABLE_IN) + ": " + translationService.format(CASE));
+                } else {
+                    actionInfo.setTextContent(translationService.format(AVAILABLE_IN) + ": " + model.getStageId());
+                }
                 addAction(new CaseActionsPresenter.CaseActionAction() {
                     @Override
                     public String label() {
@@ -123,16 +139,10 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
                         }
                     }
                 });
-                if (isNullOrEmpty(model.getStageId())){
-                    actionInfo.setTextContent(translationService.format(AVAILABLE_IN)+": "+translationService.format(CASE));
-                } else {
-                    actionInfo.setTextContent(translationService.format(AVAILABLE_IN)+": "+model.getStageId());
-                }
-
                 break;
             }
-            case ADD_DYNAMIC_SUBPROCESS_TASK:
-            case ADD_DYNAMIC_USER_TASK: {
+            case DYNAMIC_SUBPROCESS_TASK:
+            case DYNAMIC_USER_TASK: {
                 actionInfo.setTextContent(translationService.format(DYMANIC));
                 addAction(new CaseActionsPresenter.CaseActionAction() {
                     @Override
@@ -142,15 +152,14 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
 
                     @Override
                     public void execute() {
-                        presenter.showAddDynUserTaskAction(actionType);
+                        presenter.showDynamicAction(actionType);
                     }
                 });
-                break;
             }
         }
     }
 
-    public void addAction(final CaseActionsPresenter.CaseActionAction action) {
+    private void addAction(final CaseActionsPresenter.CaseActionAction action) {
         removeCSSClass(actions, "hidden");
 
         final HTMLElement a = getDocument().createElement("a");

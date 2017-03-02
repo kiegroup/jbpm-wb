@@ -19,10 +19,12 @@ package org.jbpm.workbench.cm.backend.server;
 import java.util.function.Function;
 
 import org.jbpm.workbench.cm.model.CaseActionSummary;
+import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseActionType;
 import org.kie.server.api.model.cases.CaseAdHocFragment;
 
 public class CaseActionAdHocMapper implements Function<CaseAdHocFragment, CaseActionSummary> {
+
     private String stageId;
 
     public CaseActionAdHocMapper(String stageId) {
@@ -37,9 +39,10 @@ public class CaseActionAdHocMapper implements Function<CaseAdHocFragment, CaseAc
 
         return CaseActionSummary.builder()
                 .name(adHocFragment.getName())
-                .status(CaseActionType.AD_HOC)
                 .type(adHocFragment.getType())
                 .stageId(stageId)
+                .actionType(CaseActionType.AD_HOC_TASK)
+                .actionStatus(CaseActionStatus.AVAILABLE)
                 .build();
     }
 

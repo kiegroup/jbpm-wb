@@ -175,7 +175,7 @@ public class NewActionViewImpl implements CaseActionsPresenter.NewActionView {
             validForm = false;
         }
         switch (caseActionType) {
-            case ADD_DYNAMIC_USER_TASK: {
+            case DYNAMIC_USER_TASK: {
                 if (isNullOrEmpty(actionUsersInput.getValue()) && isNullOrEmpty(actionGroupsInput.getValue())) {
                     actionUsersInput.focus();
                     actionUsersGroup.setValidationState(ValidationState.ERROR);
@@ -185,7 +185,7 @@ public class NewActionViewImpl implements CaseActionsPresenter.NewActionView {
                 }
                 break;
             }
-            case ADD_DYNAMIC_SUBPROCESS_TASK: {
+            case DYNAMIC_SUBPROCESS_TASK: {
                 if (isNullOrEmpty(processDefinitionsList.getValue())) {
                     processDefinitionsList.getElement().focus();
                     actionProcessDefinitionsGroup.setValidationState(ValidationState.ERROR);
@@ -267,7 +267,7 @@ public class NewActionViewImpl implements CaseActionsPresenter.NewActionView {
     public void setCaseActionType(CaseActionType caseActionType) {
         this.caseActionType = caseActionType;
         switch (caseActionType) {
-            case ADD_DYNAMIC_USER_TASK: {
+            case DYNAMIC_USER_TASK: {
                 modalTitle.setTextContent(translationService.format(NEW_USER_TASK));
                 removeCSSClass(this.actionDescGroup.getElement(), "hidden");
                 removeCSSClass(this.actionUsersGroup.getElement(), "hidden");
@@ -275,7 +275,7 @@ public class NewActionViewImpl implements CaseActionsPresenter.NewActionView {
                 addCSSClass(this.actionProcessDefinitionsGroup.getElement(), "hidden");
                 break;
             }
-            case ADD_DYNAMIC_SUBPROCESS_TASK: {
+            case DYNAMIC_SUBPROCESS_TASK: {
                 modalTitle.setTextContent(translationService.format(NEW_PROCESS_TASK));
                 addCSSClass(this.actionDescGroup.getElement(), "hidden");
                 addCSSClass(this.actionUsersGroup.getElement(), "hidden");
