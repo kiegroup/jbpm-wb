@@ -72,7 +72,7 @@ public interface Constants {
     String EDIT = "Edit";
 
     @TranslationKey(defaultValue = "")
-    String SAVE = "Save";
+    String UPDATE = "Update";
 
     @TranslationKey(defaultValue = "")
     String CANCEL = "Cancel";
@@ -122,4 +122,21 @@ public interface Constants {
     @TranslationKey(defaultValue = "")
     String DYMANIC = "Dynamic";
 
+    @TranslationKey(defaultValue = "")
+    String DELETE_COMMENT = "DeleteComment";
+
+    @TranslationKey(defaultValue = "")
+    String DELETE_THIS_COMMENT = "DeleteThisComment";
+
+    @TranslationKey(defaultValue = "")
+    String SORT_BY_DATE_ASC = "SortByDateAsc";
+
+    @TranslationKey(defaultValue = "")
+    String SORT_BY_DATE_DESC = "SortByDateDesc";
+
+    @TranslationKey(defaultValue = "")
+    String SORT_BY_NAME_ASC = "SortByNameAsc";
+
+    @TranslationKey(defaultValue = "")
+    String SORT_BY_NAME_DESC = "SortByNameDesc";
 }

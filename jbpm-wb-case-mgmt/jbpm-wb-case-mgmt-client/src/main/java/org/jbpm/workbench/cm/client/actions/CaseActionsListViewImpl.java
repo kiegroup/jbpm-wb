@@ -38,7 +38,7 @@ import static org.jboss.errai.common.client.dom.DOMUtil.*;
 
 @Dependent
 @Templated
-public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter> implements CaseActionsPresenter.CaseActionsListView,PaginationViewImpl.PageList {
+public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter> implements CaseActionsPresenter.CaseActionsListView, PaginationViewImpl.PageList {
     private int PAGE_SIZE = 4;
 
     @Inject
@@ -80,7 +80,6 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter> 
     private DataBinder<List<CaseActionSummary>> caseActionList;
 
     List<CaseActionSummary> allActionsList;
-    int currentPage ;
 
     @Override
     public void init(final CaseActionsPresenter presenter) {

@@ -30,6 +30,8 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.mvp.Command;
 
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.toList;
 import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 
 @Dependent
@@ -40,6 +42,8 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
 
     @Inject
     User identity;
+
+    boolean sortAsc = false;
 
     @WorkbenchPartTitle
     public String getTittle() {
@@ -59,22 +63,26 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
         view.clearCommentInputForm();
         caseService.call(
                 (List<CaseCommentSummary> comments) -> {
-                    view.setCaseCommentList(comments);
+                    view.setCaseCommentList(comments.stream()
+                            .sorted((sortAsc ?
+                                    comparing(CaseCommentSummary::getAddedAt) :
+                                    comparing(CaseCommentSummary::getAddedAt).reversed()))
+                            .collect(toList()));
                 }
         ).getComments(serverTemplateId, containerId, caseId);
     }
 
-    protected void addCaseComment(String caseCommentText) {
-        caseService.call(
-                (Void) -> refreshComments()
-        ).addComment(serverTemplateId, containerId, caseId, identity.getIdentifier(), caseCommentText);
+    public void sortComments(final boolean sortAsc) {
+        this.sortAsc =sortAsc;
+        refreshComments();
     }
 
-    protected void addCaseComment(final CaseCommentSummary caseCommentSummary) {
+    protected void addCaseComment(String caseCommentText) {
         caseService.call(
-                (Void) -> refreshComments()
-        ).addComment(serverTemplateId, containerId, caseId, caseCommentSummary.getAuthor(),
-                caseCommentSummary.getText());
+                (Void) -> {
+                    view.resetPagination();
+                }
+        ).addComment(serverTemplateId, containerId, caseId, identity.getIdentifier(), caseCommentText);
     }
 
     protected void updateCaseComment(final CaseCommentSummary caseCommentSummary, String caseCommentNewText) {
@@ -95,6 +103,8 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
         void clearCommentInputForm();
 
         void setCaseCommentList(List<CaseCommentSummary> caseCommentList);
+
+        void resetPagination();
 
     }
 
