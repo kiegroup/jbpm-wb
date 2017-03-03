@@ -1181,6 +1181,160 @@
             <artifactId>kie-security</artifactId>
         </dependency>
 
+        <!-- Stunner and BPMN set. -->
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-core-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-client-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-backend-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-core-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-backend-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-processors</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-backend</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-client-common</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-lienzo</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-shapes-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-shapes-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-lienzo-extensions</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-widgets</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-svg-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-svg-gen</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-basicset-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-basicset-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-bpmn-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-bpmn-backend</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-bpmn-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-bpmn-project-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-bpmn-project-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-forms-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-forms-backend</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-forms-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-project-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-project-backend</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.workbench.stunner</groupId>
+            <artifactId>kie-wb-common-stunner-project-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Test deps -->
         <dependency>
             <groupId>org.mockito</groupId>
@@ -1210,7 +1364,7 @@
                 <artifactId>gwt-maven-plugin</artifactId>
                 <configuration>
                     <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
-                    <extraJvmArgs>-Xms1g -Xmx3g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.dynamic_validation.enabled=true -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true -Dorg.uberfire.async.executor.safemode=true</extraJvmArgs>
+                    <extraJvmArgs>-Xms1g -Xmx4g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.dynamic_validation.enabled=true -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true -Dorg.uberfire.async.executor.safemode=true</extraJvmArgs>
                     <module>org.jbpm.workbench.jBPMShowcase</module>
                     <logLevel>INFO</logLevel>
                     <noServer>false</noServer>
@@ -1348,6 +1502,29 @@
                         <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-data-modeller-integration-client</compileSourcesArtifact>
                         <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-jbpm-integration-api</compileSourcesArtifact>
                         <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-jbpm-integration-client</compileSourcesArtifact>
+
+                        <!-- Stunner and BPMN -->
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-core-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-backend-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-client-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-core-common</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-client-common</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-lienzo</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-shapes-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-shapes-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-lienzo-extensions</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-widgets</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-svg-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-basicset-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-basicset-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-bpmn-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-bpmn-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-bpmn-project-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-bpmn-project-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-forms-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-forms-client</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-project-api</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-project-client</compileSourcesArtifact>
 
                         <!-- Dashbuilder -->
                         <compileSourcesArtifact>org.dashbuilder:dashbuilder-json</compileSourcesArtifact>
