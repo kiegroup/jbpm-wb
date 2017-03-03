@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenter;
@@ -28,15 +29,16 @@ import org.jbpm.workbench.cm.model.CaseCommentSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -81,13 +83,13 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
     @Test
     public void testAddCaseComment() {
         final CaseInstanceSummary cis = newCaseInstanceSummary();
-        final CaseCommentSummary caseComment = CaseCommentSummary.builder().id(commentId).author(author).text(text).addedAt(addedAt).build();
+        when(identity.getIdentifier()).thenReturn(author);
 
         setupCaseInstance(cis, serverTemplateId);
-        presenter.addCaseComment(caseComment);
+        presenter.addCaseComment(text);
 
         verify(caseManagementService).addComment(eq(serverTemplateId), eq(cis.getContainerId()), eq(cis.getCaseId()), eq(author), eq(text));
-        verifyClearCaseInstance(2);
+        verifyClearCaseInstance(1);
     }
 
     @Test
@@ -159,5 +161,32 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
         presenter.onStartup(placeRequest);
 
         verify(caseManagementService, times(timesCalled)).getCaseInstance(anyString(), anyString(), anyString());
+    }
+
+    @Test
+    public void testSortComments() {
+        final CaseInstanceSummary cis = newCaseInstanceSummary();
+
+        String comment1_id = "comment1";
+        String comment2_id = "comment2";
+        Date first = new Date(1000);
+        Date second = new Date(2000);
+        final CaseCommentSummary caseComment1 = CaseCommentSummary.builder().id(comment1_id).author(author).text(text).addedAt(first).build();
+        final CaseCommentSummary caseComment2 = CaseCommentSummary.builder().id(comment2_id).author(author).text(text).addedAt(second).build();
+
+        when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId())).thenReturn(
+                Arrays.asList(caseComment1,caseComment2));
+
+        setupCaseInstance(cis, serverTemplateId);
+        final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        verify(caseCommentsView).setCaseCommentList(captor.capture());
+        assertEquals(comment2_id,((CaseCommentSummary)captor.getValue().get(0)).getId());
+        assertEquals(comment1_id,((CaseCommentSummary)captor.getValue().get(1)).getId());
+
+        presenter.sortComments(true);
+        verify(caseCommentsView, times(2)).setCaseCommentList(captor.capture());
+        assertEquals(comment1_id,((CaseCommentSummary)captor.getValue().get(0)).getId());
+        assertEquals(comment2_id,((CaseCommentSummary)captor.getValue().get(1)).getId());
+
     }
 }

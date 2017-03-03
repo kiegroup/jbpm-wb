@@ -17,17 +17,19 @@
 package org.jbpm.workbench.cm.client.comments;
 
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.dom.Anchor;
+import org.jboss.errai.common.client.dom.Button;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.Event;
 
 import org.jboss.errai.common.client.dom.HTMLElement;
-import org.jboss.errai.common.client.dom.KeyboardEvent;
+import org.jboss.errai.common.client.dom.MouseEvent;
 import org.jboss.errai.common.client.dom.Span;
-import org.jboss.errai.common.client.dom.TextInput;
+import org.jboss.errai.common.client.dom.TextArea;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
@@ -38,6 +40,7 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+import org.jbpm.workbench.cm.client.pagination.PaginationViewImpl;
 import org.jbpm.workbench.cm.client.util.AbstractView;
 import org.jbpm.workbench.cm.client.util.FormGroup;
 import org.jbpm.workbench.cm.client.util.ValidationState;
@@ -50,11 +53,20 @@ import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 
 @Dependent
 @Templated
-public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> implements CaseCommentsPresenter.CaseCommentsView {
+public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> implements CaseCommentsPresenter.CaseCommentsView, PaginationViewImpl.PageList {
+    private int PAGE_SIZE = 4;
 
     @Inject
     @DataField("comments")
     Div commentsContainer;
+
+    @Inject
+    @DataField("sort-alpha-asc")
+    private Button sortAlphaAsc;
+
+    @Inject
+    @DataField("sort-alpha-desc")
+    private Button sortAlphaDesc;
 
     @Inject
     @Bound
@@ -71,7 +83,7 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
 
     @Inject
     @DataField("comment-creation-input")
-    TextInput newCommentTextArea;
+    TextArea newCommentTextArea;
 
     @Inject
     @DataField("comment-creation-help")
@@ -86,7 +98,25 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
     Anchor addCommentButton;
 
     @Inject
+    @DataField("scrollbox")
+    private Div scrollbox;
+
+    @Inject
+    @DataField("pagination")
+    private PaginationViewImpl pagination;
+
+    @Inject
     private TranslationService translationService;
+
+    List<CaseCommentSummary> allCommentsList;
+
+    @PostConstruct
+    public void init() {
+        tooltip(sortAlphaAsc);
+        sortAlphaAsc.setAttribute("data-original-title", translationService.format(SORT_BY_DATE_DESC));
+        tooltip(sortAlphaDesc);
+        sortAlphaDesc.setAttribute("data-original-title", translationService.format(SORT_BY_DATE_ASC));
+    }
 
     @Override
     public HTMLElement getElement() {
@@ -111,8 +141,16 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
     }
 
     @Override
+    public void resetPagination() {
+        pagination.setCurrentPage(0);
+        onSortChange(sortAlphaAsc, sortAlphaDesc, false);
+    }
+
+    @Override
     public void setCaseCommentList(final List<CaseCommentSummary> caseCommentList) {
-        this.caseCommentList.setModel(caseCommentList);
+        allCommentsList = caseCommentList;
+        pagination.init(allCommentsList, this, PAGE_SIZE);
+
         if (caseCommentList.isEmpty()) {
             removeCSSClass(emptyContainer, "hidden");
         } else {
@@ -120,19 +158,24 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
         }
     }
 
+    @Override
+    public Div getScrollBox() {
+        return scrollbox;
+    }
+
+    @Override
+    public void setVisibleItems(List visibleItems) {
+        this.caseCommentList.setModel(visibleItems);
+        int tasksSize =visibleItems.size();
+        if(tasksSize > 0){
+            comments.getComponent(tasksSize-1).setLastElementStyle();
+        }
+    }
+
     @EventHandler("addCommentButton")
     @SuppressWarnings("unsued")
     public void addCommentButton(@ForEvent("click") final Event e) {
         submitCommentAddition();
-    }
-
-    @EventHandler("comment-creation-input")
-    @SuppressWarnings("unsued")
-    public void addCommentPressingEnter(@ForEvent("keyup") final KeyboardEvent e) {
-        //Chrome bug, key is not set
-        if ("Enter".equals(e.getKey()) || "Enter".equals(e.getCode()) || "NumpadEnter".equals(e.getCode())) {
-            submitCommentAddition();
-        }
     }
 
     private void submitCommentAddition(){
@@ -154,4 +197,19 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
         return true;
     }
 
+    @EventHandler("sort-alpha-asc")
+    public void onSortAlphaAsc(final @ForEvent("click") MouseEvent event) {
+        onSortChange(sortAlphaAsc, sortAlphaDesc, false);
+    }
+
+    @EventHandler("sort-alpha-desc")
+    public void onSortAlphaDesc(final @ForEvent("click") MouseEvent event) {
+        onSortChange(sortAlphaDesc, sortAlphaAsc, true);
+    }
+
+    private void onSortChange(final HTMLElement toHide, final HTMLElement toShow, final Boolean sortByAsc){
+        addCSSClass(toHide, "hidden");
+        removeCSSClass(toShow, "hidden");
+        presenter.sortComments(sortByAsc);
+    }
 }

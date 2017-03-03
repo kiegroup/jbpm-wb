@@ -51,7 +51,7 @@ public class PaginationViewImpl implements IsElement {
     Anchor prevPage;
 
     List allElementsList = new ArrayList();
-    int currentPage;
+    int currentPage = 0;
     int pageSize;
     PageList pageList;
 
@@ -59,7 +59,7 @@ public class PaginationViewImpl implements IsElement {
         this.allElementsList = allElementsList;
         this.pageList = pageList;
         this.pageSize = pageSize;
-        setVisibleItemsList(0);
+        setVisibleItemsList(currentPage);
     }
 
     protected void setVisibleItemsList(int currentPage) {
@@ -132,6 +132,9 @@ public class PaginationViewImpl implements IsElement {
         return pagination;
     }
 
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
 
     public interface PageList {
 

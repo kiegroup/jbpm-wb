@@ -26,9 +26,8 @@ import com.google.gwt.user.client.TakesValue;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
-import org.jboss.errai.common.client.dom.KeyboardEvent;
 import org.jboss.errai.common.client.dom.Span;
-import org.jboss.errai.common.client.dom.TextInput;
+import org.jboss.errai.common.client.dom.TextArea;
 import org.jboss.errai.common.client.dom.UnorderedList;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -36,13 +35,13 @@ import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import org.jbpm.workbench.cm.client.events.CaseCommentEditEvent;
 import org.jbpm.workbench.cm.client.util.AbstractView;
+import org.jbpm.workbench.cm.client.util.ConfirmPopup;
 import org.jbpm.workbench.cm.client.util.DateConverter;
 import org.jbpm.workbench.cm.client.util.FormGroup;
 import org.jbpm.workbench.cm.client.util.ValidationState;
@@ -68,6 +67,10 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
     Span text;
 
     @Inject
+    @DataField("icon-type")
+    Span iconType;
+
+    @Inject
     @DataField("comment-addedat")
     @Bound(converter = DateConverter.class)
     Span addedAt;
@@ -86,7 +89,7 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
 
     @Inject
     @DataField("comment-update-input")
-    TextInput updateCommentText;
+    TextArea updateCommentText;
 
     @Inject
     @DataField("comment-update-help")
@@ -114,6 +117,9 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
     @Inject
     User identity;
 
+    @Inject
+    ConfirmPopup confirmPopup;
+
     private Event<CaseCommentEditEvent> commentEditEvent;
 
     CaseCommentsPresenter.CaseCommentAction updateCommandAction;
@@ -123,6 +129,10 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
     @Inject
     public void setCommentEditEvent(final Event<CaseCommentEditEvent> commentEditEvent) {
         this.commentEditEvent = commentEditEvent;
+    }
+
+    public void setIconType(final String iconTypeClass) {
+        addCSSClass(this.iconType, iconTypeClass);
     }
 
     @Override
@@ -154,6 +164,7 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
             addCSSClass(commentShowGroup, "hidden");
             removeCSSClass(commentUpdate, "hidden");
             updateCommentText.setValue(getValue().getText());
+            clearErrorMessages();
             updateCommentText.focus();
         } else {
             addCSSClass(commentUpdate, "hidden");
@@ -178,13 +189,17 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
         return true;
     }
 
-    @EventHandler("comment-update-input")
-    @SuppressWarnings("unsued")
-    public void updateCommentPressingEnter(@ForEvent("keyup") final KeyboardEvent e) {
-        //Chrome bug, key is not set
-        if ("Enter".equals(e.getKey()) || "Enter".equals(e.getCode()) || "NumpadEnter".equals(e.getCode())) {
+    @EventHandler("update-comment")
+    public void onUpdateCommentClick(@ForEvent("click") org.jboss.errai.common.client.dom.Event e) {
+        if (updateCommandAction != null) {
             updateCommandAction.execute();
         }
+    }
+
+    @EventHandler("cancel-edition")
+    public void onCancelEdtionClick(@ForEvent("click") org.jboss.errai.common.client.dom.Event e) {
+        setEditMode(false);
+
     }
 
     @Override
@@ -201,22 +216,11 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
     protected void updateActions(final boolean editItem) {
         actionsItems.setInnerHTML("");
         if (identity.getIdentifier().equals(getValue().getAuthor())) {
-            addAction(new CaseCommentsPresenter.CaseCommentAction() {
-                @Override
-                public String label() {
-                    return translationService.format(DELETE);
-                }
-
-                @Override
-                public void execute() {
-                    presenter.deleteCaseComment(getValue());
-                }
-            });
             if (editItem) {
                 addUpdateCommentAction(new CaseCommentsPresenter.CaseCommentAction() {
                     @Override
                     public String label() {
-                        return translationService.format(SAVE);
+                        return translationService.format(UPDATE);
                     }
 
                     @Override
@@ -250,6 +254,22 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
                     }
                 });
             }
+            addAction(new CaseCommentsPresenter.CaseCommentAction() {
+                @Override
+                public String label() {
+                    return translationService.format(DELETE);
+                }
+
+                @Override
+                public void execute() {
+                    confirmPopup.show(translationService.format(DELETE_COMMENT),
+                            translationService.format(DELETE),
+                            translationService.format(DELETE_THIS_COMMENT),
+                            () -> presenter.deleteCaseComment(getValue()));
+                }
+            });
+        } else {
+            setIconType("kie-user-disabled-icon");
         }
     }
 
@@ -261,6 +281,10 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
                 setEditMode(false);
             }
         }
+    }
+
+    public void setLastElementStyle(){
+        addCSSClass(actions, "dropup");
     }
 
 }

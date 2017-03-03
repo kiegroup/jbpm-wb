@@ -29,6 +29,7 @@ import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.api.StateSync;
 
 
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -40,6 +41,7 @@ import org.jbpm.workbench.cm.util.CaseMilestoneSearchRequest;
 
 
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 
 @Dependent
 @Templated("CaseMilestoneListViewImpl.html#search-actions")
@@ -68,6 +70,9 @@ public class CaseMilestoneListSearchViewImpl extends AbstractView<CaseMilestoneL
 
     private CaseMilestoneListPresenter presenter;
 
+    @Inject
+    private TranslationService translationService;
+
     @Override
     public void init(final CaseMilestoneListPresenter presenter) {
         this.presenter = presenter;
@@ -75,6 +80,11 @@ public class CaseMilestoneListSearchViewImpl extends AbstractView<CaseMilestoneL
 
     @PostConstruct
     public void init() {
+        tooltip(sortAlphaAsc);
+        sortAlphaAsc.setAttribute("data-original-title", translationService.format(SORT_BY_NAME_DESC));
+        tooltip(sortAlphaDesc);
+        sortAlphaDesc.setAttribute("data-original-title", translationService.format(SORT_BY_NAME_ASC));
+
         searchRequest.setModel(new CaseMilestoneSearchRequest(), StateSync.FROM_MODEL);
         searchRequest.addPropertyChangeHandler( e -> presenter.searchCaseMilestones() );
         onSortAlphaDesc(null);

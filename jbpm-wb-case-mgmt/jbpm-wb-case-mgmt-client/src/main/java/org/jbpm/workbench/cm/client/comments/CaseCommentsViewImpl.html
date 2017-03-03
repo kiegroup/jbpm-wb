@@ -1,30 +1,64 @@
 <!DOCTYPE html>
-<div data-field="comments" class="card-pf">
+<div class="card-pf" data-field="comments">
     <div class="card-pf-heading">
+        <div class="card-pf-time-frame-filter" data-field="search-actions">
+            <button class="btn btn-link kie-btn-link" type="button" data-field="sort-alpha-desc"
+                    data-toggle="tooltip" data-placement="left" title="..." >
+                <span class="fa fa-sort-numeric-desc"></span>
+            </button>
+            <button class="btn btn-link kie-btn-link hidden" type="button" data-field="sort-alpha-asc"
+                    data-toggle="tooltip"  data-placement="left" title="..." >
+                <span class="fa fa-sort-numeric-asc"></span>
+            </button>
+        </div>
         <h2 class="card-pf-title">
-            <span data-i18n-key="Comments"/>
+            <span data-i18n-key="Comments"></span>
         </h2>
     </div>
-    <div class="card-pf-body" style="margin-bottom: 0px;">
-        <div class="list-group list-view-pf list-view-pf-view" data-field="comments-list">
-        </div>
-        <div class="alert alert-info" data-field="empty-list-item">
-            <span class="pficon pficon-info"></span>
-            <strong><span data-i18n-key="NoCommentsFound"></span></strong>
-        </div>
-        <div class="form">
-            <div data-field="comment-creation-group">
-                <label class="control-label" data-i18n-key="NewComment"></label>
-                <input type="text" data-field="comment-creation-input" class="form-control"/>
-                <span data-field="comment-creation-help" class="help-block"></span>
+    <div class="card-pf-body ">
+        <div class="row">
+            <!-- Roles -->
+
+            <div class="col-xs-12">
+                <div class="list-group-item list-group kie-list-view--embedded kie-scrollbox" data-field="list-group-item">
+                    <div class="">
+                        <div class="pull-right" data-field="actions-dropdown">
+                            <a href="#"   data-field="addCommentButton">
+                                <span class="fa fa-plus-circle kie-addition-button"></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="kie-list-group-item-content">
+
+                        <div class="list-view-pf-left">
+                            <span class="pficon pficon-user list-view-pf-icon-sm"></span>
+                        </div>
+                        <div class="list-view-pf-body">
+                            <div class="list-view-pf-description">
+                                <div class="list-group-item-text">
+                                    <div class="form">
+                                        <div data-field="comment-creation-group">
+                                            <textarea rows="2" data-field="comment-creation-input" class="form-control"></textarea>
+                                            <span data-field="comment-creation-help" class="help-block"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="kie-scrollbox" data-field="scrollbox">
+                    <div class=" list-group kie-list-view--embedded" data-field="comments-list"></div>
+                    <div class="card-pf-body kie-card-body--embedded" data-field="empty-list-item">
+                        <div href="" class="card-pf-link-with-icon"><span class="pficon pficon-info"></span>
+                            <span data-i18n-key="NoCommentsFound"></span>
+                        </div>
+                    </div>
+                </div>
+                <div data-field="pagination"/>
+
             </div>
+
         </div>
-    </div>
-    <div class="card-pf-footer">
-        <p>
-            <a href="#" class="card-pf-link-with-icon" data-field="addCommentButton">
-                <span class="pficon pficon-add-circle-o"></span><span data-i18n-key="AddComment"></span>
-            </a>
-        </p>
     </div>
 </div>
