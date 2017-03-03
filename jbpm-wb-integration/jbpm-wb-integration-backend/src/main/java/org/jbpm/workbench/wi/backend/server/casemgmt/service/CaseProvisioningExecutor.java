@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.backend.server.cases.service;
+package org.jbpm.workbench.wi.backend.server.casemgmt.service;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.apache.http.auth.AuthScope;
@@ -29,23 +30,40 @@ import org.apache.http.impl.client.HttpClients;
 import org.guvnor.ala.pipeline.Input;
 import org.guvnor.ala.pipeline.Pipeline;
 import org.guvnor.ala.pipeline.execution.PipelineExecutor;
+import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningCompletedEvent;
+import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningFailedEvent;
+import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningStartedEvent;
+import org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.async.DescriptiveRunnable;
 import org.uberfire.commons.async.SimpleAsyncExecutorService;
 
 @Dependent
-public class CaseManagementProvisioningExecutor {
+public class CaseProvisioningExecutor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CaseManagementProvisioningExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CaseProvisioningExecutor.class);
 
     @Inject
-    private CaseManagementProvisioningSettings settings;
+    private CaseProvisioningSettings settings;
 
-    public void execute(final PipelineExecutor executor, final Pipeline pipeline, final Input input){
-        SimpleAsyncExecutorService.getDefaultInstance().execute(new ProvisionRunnable(() -> executor.execute(input, pipeline, b ->
-                LOGGER.info("jBPM Case Management Showcase app provisioning completed.")
-        )));
+    @Inject
+    private Event<CaseProvisioningStartedEvent> startedEvent;
+
+    @Inject
+    private Event<CaseProvisioningCompletedEvent> completedEvent;
+
+    @Inject
+    private Event<CaseProvisioningFailedEvent> failedEvent;
+
+    public void execute(final PipelineExecutor executor, final Pipeline pipeline, final Input input) {
+        SimpleAsyncExecutorService.getDefaultInstance().execute(new ProvisionRunnable(() -> {
+            startedEvent.fire(new CaseProvisioningStartedEvent());
+            executor.execute(input, pipeline, b -> {
+                completedEvent.fire(new CaseProvisioningCompletedEvent());
+                LOGGER.info("jBPM Case Management Showcase app provisioning completed.");
+            });
+        }));
     }
 
     protected int getManagementInterfaceStatus(String host, String managementPort, String password, String username) {
@@ -59,6 +77,12 @@ public class CaseManagementProvisioningExecutor {
             LOGGER.error("Exception while trying to connect to Wildfly Management interface", ex);
             return -1;
         }
+    }
+
+    private interface ProvisioningCommand {
+
+        void execute();
+
     }
 
     private class ProvisionRunnable implements DescriptiveRunnable {
@@ -80,6 +104,7 @@ public class CaseManagementProvisioningExecutor {
                 LOGGER.info("Executing jBPM Case Management Showcase app provisioning...");
                 provisionApp();
             } catch (Exception ex) {
+                failedEvent.fire(new CaseProvisioningFailedEvent());
                 LOGGER.error("Failed to provision jBPM Case Management Showcase app: " + ex.getMessage(), ex);
             }
         }
@@ -111,13 +136,6 @@ public class CaseManagementProvisioningExecutor {
 
             LOGGER.info("Timeout while trying to connect with Wildfly Management interface");
         }
-
-    }
-
-
-    private interface ProvisioningCommand {
-
-        void execute();
 
     }
 

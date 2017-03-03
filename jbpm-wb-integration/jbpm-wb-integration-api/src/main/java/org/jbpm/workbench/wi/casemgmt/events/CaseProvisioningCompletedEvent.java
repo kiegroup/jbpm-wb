@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.cases.service;
+package org.jbpm.workbench.wi.casemgmt.events;
 
-import org.guvnor.common.services.project.model.Project;
-import org.jboss.errai.bus.server.annotations.Remote;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
-@Remote
-public interface CaseProjectService {
+@Portable
+public class CaseProvisioningCompletedEvent {
 
-    void configureNewCaseProject(final Project project);
+    @Override
+    public String toString() {
+        return "CaseProvisioningCompletedEvent{}";
+    }
 }

@@ -26,10 +26,7 @@
   <inherits name="org.jbpm.workbench.common.JbpmWorkbenchCommonAPI"/>
   <inherits name="org.jbpm.workbench.ks.JbpmWorkbenchKieServerAPI"/>
 
-  <source path="model"/>
-  <source path="service"/>
-  <source path="exception"/>
   <source path="dd"/>
-  <source path="cases"/>
+  <source path="casemgmt"/>
 
 </module>

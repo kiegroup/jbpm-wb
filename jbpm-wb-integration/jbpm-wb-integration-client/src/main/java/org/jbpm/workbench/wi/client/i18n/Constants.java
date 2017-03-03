@@ -144,4 +144,13 @@ public interface Constants extends Messages {
     String ConfigureProjectSuccess(String projectName);
 
     String ConfigureProjectFailure(String projectName);
+
+    String CaseAppProvisioningStarted();
+
+    String CaseAppProvisioningCompleted();
+
+    String CaseAppProvisioningFailed();
+
+    String CaseAppName();
+
 }
