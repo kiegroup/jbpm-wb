@@ -93,6 +93,10 @@
   <inherits name="org.jbpm.dashboard.renderer.DashboardRendererApi"/>
   <inherits name="org.jbpm.dashboard.renderer.client.DashboardRendererClient"/>
 
+  <!-- Stunner -->
+  <inherits name="org.kie.workbench.common.stunner.project.StunnerProjectClient"/>
+  <inherits name="org.kie.workbench.common.stunner.bpmn.StunnerBpmnProjectClient"/>
+
   <!-- Specify the paths for translatable code -->
   <source path='client'/>
   <source path='api'/>
