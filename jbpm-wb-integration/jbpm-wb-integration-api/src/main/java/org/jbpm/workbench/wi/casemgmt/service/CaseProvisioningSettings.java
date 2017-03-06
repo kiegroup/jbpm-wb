@@ -29,8 +29,6 @@ public interface CaseProvisioningSettings {
 
     String getHost();
 
-    String getPort();
-
     String getManagementPort();
 
     String getUsername();
