@@ -35,9 +35,8 @@ public class CaseProvisioningSettingsImpl implements CaseProvisioningSettings {
     public static final String SHOWCASE_DEPLOY = "org.jbpm.casemgmt.showcase.deploy";
     public static final String SHOWCASE_PATH = "org.jbpm.casemgmt.showcase.path";
     public static final String SHOWCASE_GAV = "showcase.gav";
-    public static final String WIDLFLY_PORT = "org.jbpm.casemgmt.showcase.wildfly.port";
     public static final String WIDLFLY_MANAGEMENT_PORT = "org.jbpm.casemgmt.showcase.wildfly.management-port";
-    public static final String WIDLFLY_HOST = "org.jbpm.casemgmt.showcase.wildfly.host";
+    public static final String WIDLFLY_MANAGEMENT_HOST = "org.jbpm.casemgmt.showcase.wildfly.management-host";
     public static final String WIDLFLY_USER_NAME = "org.jbpm.casemgmt.showcase.wildfly.username";
     public static final String WIDLFLY_PASSWORD = "org.jbpm.casemgmt.showcase.wildfly.password";
     public static final String CASEMGMT_PROPERTIES = "casemgmt.properties";
@@ -72,12 +71,7 @@ public class CaseProvisioningSettingsImpl implements CaseProvisioningSettings {
 
     @Override
     public String getHost() {
-        return System.getProperty(WIDLFLY_HOST, "localhost");
-    }
-
-    @Override
-    public String getPort() {
-        return System.getProperty(WIDLFLY_PORT, "8080");
+        return System.getProperty(WIDLFLY_MANAGEMENT_HOST, "localhost");
     }
 
     @Override

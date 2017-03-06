@@ -93,7 +93,6 @@ public class CaseProvisioningServiceImpl implements CaseProvisioningService {
         input.put("wildfly-user", settings.getUsername());
         input.put("wildfly-password", settings.getPassword());
         input.put("host", settings.getHost());
-        input.put("port", settings.getPort());
         input.put("management-port", settings.getManagementPort());
         input.put("redeploy", "none");
 
