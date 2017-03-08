@@ -49,7 +49,7 @@ import org.uberfire.workbench.model.menu.Menus;
 import static org.jbpm.workbench.cm.client.resources.i18n.ShowcaseConstants.LOG_OUT;
 import static org.jbpm.workbench.cm.client.resources.i18n.ShowcaseConstants.ROLE;
 
-@Bundle( "resources/i18n/ShowcaseConstants.properties" )
+@Bundle("resources/i18n/ShowcaseConstants.properties")
 @EntryPoint
 public class ShowcaseEntryPoint {
 
@@ -78,7 +78,7 @@ public class ShowcaseEntryPoint {
         hideLoadingPopup();
     }
 
-    public void setupMenu( @Observes final ApplicationReadyEvent event ) {
+    public void setupMenu(@Observes final ApplicationReadyEvent event) {
         final Menus utilityMenus =
                 MenuFactory.newTopLevelCustomMenu(userMenu)
                         .endMenu()
@@ -111,24 +111,24 @@ public class ShowcaseEntryPoint {
 
     public void hideLoadingPopup() {
         @SuppressWarnings("GwtToHtmlReferences")
-        final Element e = RootPanel.get( "loading" ).getElement();
+        final Element e = RootPanel.get("loading").getElement();
 
         new Animation() {
             @Override
-            protected void onUpdate( double progress ) {
-                e.getStyle().setOpacity( 1.0 - progress );
+            protected void onUpdate(double progress) {
+                e.getStyle().setOpacity(1.0 - progress);
             }
 
             @Override
             protected void onComplete() {
-                e.getStyle().setVisibility( Style.Visibility.HIDDEN );
+                e.getStyle().setVisibility(Style.Visibility.HIDDEN);
             }
-        }.run( 500 );
+        }.run(500);
     }
 
     @UncaughtExceptionHandler
-    public void handleUncaughtException( final Throwable t ) {
-        LOGGER.error( "Uncaught exception encountered", t );
+    public void handleUncaughtException(final Throwable t) {
+        LOGGER.error("Uncaught exception encountered", t);
     }
 
     protected class LogoutCommand implements Command {

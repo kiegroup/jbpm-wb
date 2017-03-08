@@ -22,11 +22,11 @@ import javax.inject.Inject;
 
 import org.jbpm.workbench.cm.client.actions.CaseActionsPresenter;
 import org.jbpm.workbench.cm.client.comments.CaseCommentsPresenter;
-import org.jbpm.workbench.cm.client.milestones.CaseMilestoneListPresenter;
 import org.jbpm.workbench.cm.client.details.CaseDetailsPresenter;
 import org.jbpm.workbench.cm.client.events.CaseCancelEvent;
 import org.jbpm.workbench.cm.client.events.CaseDestroyEvent;
 import org.jbpm.workbench.cm.client.events.CaseRefreshEvent;
+import org.jbpm.workbench.cm.client.milestones.CaseMilestoneListPresenter;
 import org.jbpm.workbench.cm.client.perspectives.CaseInstanceListPerspective;
 import org.jbpm.workbench.cm.client.roles.CaseRolesPresenter;
 import org.jbpm.workbench.cm.client.stages.CaseStagesPresenter;
@@ -38,7 +38,7 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.lifecycle.OnOpen;
 
-import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.CASE_OVERVIEW;
 
 @Dependent
 @WorkbenchScreen(identifier = CaseOverviewPresenter.SCREEN_ID)
@@ -65,7 +65,7 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
         view.addCaseDetails(CaseDetailsPresenter.SCREEN_ID, place.getParameters());
         view.addCaseRoles(CaseRolesPresenter.SCREEN_ID, place.getParameters());
         view.addCaseComments(CaseCommentsPresenter.SCREEN_ID, place.getParameters());
-        view.addCaseMilestones(CaseMilestoneListPresenter.SCREEN_ID,place.getParameters());
+        view.addCaseMilestones(CaseMilestoneListPresenter.SCREEN_ID, place.getParameters());
         view.addCaseStages(CaseStagesPresenter.SCREEN_ID, place.getParameters());
         view.addCaseActions(CaseActionsPresenter.SCREEN_ID, place.getParameters());
     }

@@ -19,6 +19,7 @@ package org.jbpm.workbench.cm.server;
 import java.util.Properties;
 
 import org.junit.Test;
+import org.uberfire.commons.config.ConfigProperties;
 
 import static org.jbpm.workbench.cm.server.JGitFileSystemProvider.*;
 import static org.junit.Assert.*;
@@ -27,10 +28,11 @@ public class JGitFileSystemProviderTest {
 
     @Test
     public void testDefaultProperties() {
-        final JGitFileSystemProvider.DefaultConfigProperties gitPrefs = new JGitFileSystemProvider.DefaultConfigProperties(new Properties());
+        final ConfigProperties gitPrefs = new ConfigProperties(new JGitFileSystemProvider.DefaultProperties());
 
-        assertEquals(false, gitPrefs.get(GIT_DAEMON_ENABLED, DAEMON_DEFAULT_ENABLED).getBooleanValue());
-        assertEquals(false, gitPrefs.get(GIT_SSH_ENABLED, SSH_DEFAULT_ENABLED).getBooleanValue());
+        assertEquals(false, gitPrefs.get(GIT_DAEMON_ENABLED, null).getBooleanValue());
+        assertEquals(false, gitPrefs.get(GIT_SSH_ENABLED, null).getBooleanValue());
+        assertEquals(NIOGIT_CASEAPP, gitPrefs.get(GIT_NIO_DIR_NAME, null).getValue());
     }
 
     @Test
@@ -38,10 +40,12 @@ public class JGitFileSystemProviderTest {
         final Properties configuredValues = new Properties();
         configuredValues.put(GIT_DAEMON_ENABLED, "true");
         configuredValues.put(GIT_SSH_ENABLED, "true");
-        final JGitFileSystemProvider.DefaultConfigProperties gitPrefs = new JGitFileSystemProvider.DefaultConfigProperties(configuredValues);
+        configuredValues.put(GIT_NIO_DIR_NAME, ".niogit");
+        final ConfigProperties gitPrefs = new ConfigProperties(new JGitFileSystemProvider.DefaultProperties(configuredValues));
 
-        assertEquals(true, gitPrefs.get(GIT_DAEMON_ENABLED, DAEMON_DEFAULT_ENABLED).getBooleanValue());
-        assertEquals(true, gitPrefs.get(GIT_SSH_ENABLED, SSH_DEFAULT_ENABLED).getBooleanValue());
+        assertEquals(false, gitPrefs.get(GIT_DAEMON_ENABLED, null).getBooleanValue());
+        assertEquals(false, gitPrefs.get(GIT_SSH_ENABLED, null).getBooleanValue());
+        assertEquals(NIOGIT_CASEAPP, gitPrefs.get(GIT_NIO_DIR_NAME, null).getValue());
     }
 
 }

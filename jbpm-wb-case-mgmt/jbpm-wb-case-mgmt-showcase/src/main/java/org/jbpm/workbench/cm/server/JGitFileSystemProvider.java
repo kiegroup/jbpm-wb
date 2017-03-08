@@ -22,30 +22,29 @@ import org.uberfire.commons.config.ConfigProperties;
 
 public class JGitFileSystemProvider extends org.uberfire.java.nio.fs.jgit.JGitFileSystemProvider {
 
-    public static final String GIT_DAEMON_ENABLED = "org.uberfire.nio.git.daemon.enabled";
-    public static final String GIT_SSH_ENABLED = "org.uberfire.nio.git.ssh.enabled";
+    public static final String NIOGIT_CASEAPP = ".niogit-caseapp";
 
     public JGitFileSystemProvider() {
-        super(new DefaultConfigProperties(System.getProperties()));
+        super(new ConfigProperties(new DefaultProperties()));
     }
 
     public JGitFileSystemProvider(final ConfigProperties gitPrefs) {
         super(gitPrefs);
     }
 
-    public static class DefaultConfigProperties extends ConfigProperties {
+    public static class DefaultProperties extends Properties {
 
-        public DefaultConfigProperties(final Properties configuredValues) {
-            super(configuredValues);
+        public DefaultProperties() {
+            this(System.getProperties());
         }
 
-        @Override
-        public ConfigProperty get(final String name, final String defaultValue) {
-            if(GIT_DAEMON_ENABLED.equals(name) || GIT_SSH_ENABLED.equals(name)){
-                return super.get(name, "false");
-            }
-            return super.get(name, defaultValue);
+        public DefaultProperties(final Properties defaults) {
+            super(defaults);
+            setProperty(GIT_DAEMON_ENABLED, "false");
+            setProperty(GIT_SSH_ENABLED, "false");
+            setProperty(GIT_NIO_DIR_NAME, NIOGIT_CASEAPP);
         }
+
     }
 
 }

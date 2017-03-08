@@ -23,12 +23,12 @@ import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
 import org.uberfire.client.views.pfly.sys.PatternFlyBootstrapper;
 
-@Bundle( "resources/i18n/Constants.properties" )
+@Bundle("resources/i18n/Constants.properties")
 @EntryPoint
 public class CaseManagementEntryPoint {
 
     @AfterInitialization
-    public void init(){
+    public void init() {
         PatternFlyBootstrapper.ensurejQueryIsAvailable();
         ScriptInjector.fromUrl(GWT.getModuleBaseURL() + "js/bootstrap-select.min.js")
                 .setWindow(ScriptInjector.TOP_WINDOW).inject();
