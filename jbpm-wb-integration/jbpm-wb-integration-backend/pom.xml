@@ -212,11 +212,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.sonatype.sisu.inject</groupId>
-      <artifactId>guice-servlet</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-wb-case-mgmt-showcase</artifactId>
       <scope>test</scope>

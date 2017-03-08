@@ -57,8 +57,7 @@ public class CaseProvisioningIT {
                         "org.guvnor:guvnor-ala-registry-local",
                         "org.guvnor:guvnor-ala-services-api",
                         "org.guvnor:guvnor-ala-build-maven",
-                        "org.uberfire:uberfire-io",
-                        "org.sonatype.sisu.inject:guice-servlet"
+                        "org.uberfire:uberfire-io"
                 )
                 .withTransitivity()
                 .asFile();

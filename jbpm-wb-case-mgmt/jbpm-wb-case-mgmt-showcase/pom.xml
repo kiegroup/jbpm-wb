@@ -393,13 +393,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.sonatype.sisu</groupId>
-      <artifactId>sisu-guice</artifactId>
-      <classifier>no_aop</classifier>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.sonatype.sisu.inject</groupId>
       <artifactId>guice-servlet</artifactId>
       <scope>runtime</scope>
