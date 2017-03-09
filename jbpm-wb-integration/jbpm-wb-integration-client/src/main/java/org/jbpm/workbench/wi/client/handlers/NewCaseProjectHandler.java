@@ -16,12 +16,6 @@
 
 package org.jbpm.workbench.wi.client.handlers;
 
-import java.util.Collections;
-import java.util.List;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -40,7 +34,7 @@ import org.kie.workbench.common.screens.projecteditor.client.handlers.NewProject
 import org.kie.workbench.common.screens.projecteditor.client.resources.ProjectEditorResources;
 import org.kie.workbench.common.screens.projecteditor.client.wizard.NewProjectWizard;
 import org.kie.workbench.common.screens.projecteditor.client.wizard.POMBuilder;
-import org.kie.workbench.common.widgets.client.handlers.NewResourceHandler;
+import org.kie.workbench.common.widgets.client.handlers.NewProjectHandler;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
 import org.uberfire.commons.data.Pair;
 import org.uberfire.ext.editor.commons.client.validation.ValidatorWithReasonCallback;
@@ -50,12 +44,18 @@ import org.uberfire.workbench.events.NotificationEvent;
 import org.uberfire.workbench.type.AnyResourceTypeDefinition;
 import org.uberfire.workbench.type.ResourceTypeDefinition;
 
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Handler for the creation of new Projects
  */
-@ApplicationScoped
+@Dependent
 public class NewCaseProjectHandler
-        implements NewResourceHandler {
+        implements NewProjectHandler {
 
     private NewProjectHandlerView view;
     private ProjectContext context;
@@ -69,30 +69,39 @@ public class NewCaseProjectHandler
     private Caller<CaseProjectService> caseProjectService;
     private Event<NotificationEvent> notification;
 
+    private boolean openEditorOnCreation = true;
+    private org.uberfire.client.callbacks.Callback<Project> creationSuccessCallback;
+
     @Inject
     public void setCaseProjectService(Caller<CaseProjectService> caseProjectService) {
         this.caseProjectService = caseProjectService;
     }
+
     @Inject
     public void setNotification(Event<NotificationEvent> notification) {
         this.notification = notification;
     }
 
-    private org.uberfire.client.callbacks.Callback<Project> configureCaseProjectCallback = new org.uberfire.client.callbacks.Callback<Project>() {
+    org.uberfire.client.callbacks.Callback<Project> configureCaseProjectCallback = new org.uberfire.client.callbacks.Callback<Project>() {
         @Override
         public void callback(Project project) {
-            caseProjectService.call(new RemoteCallback<Void>() {
-                @Override
-                public void callback(Void aVoid) {
-                    notification.fire( new NotificationEvent( Constants.INSTANCE.ConfigureProjectSuccess(project.getProjectName()), NotificationEvent.NotificationType.SUCCESS ) );
-                }
-            }, new DefaultErrorCallback() {
-                @Override
-                public boolean error(Message message, Throwable throwable) {
-                    notification.fire( new NotificationEvent( Constants.INSTANCE.ConfigureProjectFailure(project.getProjectName()), NotificationEvent.NotificationType.ERROR ) );
-                    return super.error(message, throwable);
-                }
-            }).configureNewCaseProject(project);
+            if (project != null) {
+                caseProjectService.call(new RemoteCallback<Void>() {
+                    @Override
+                    public void callback(Void aVoid) {
+                        notification.fire(new NotificationEvent(Constants.INSTANCE.ConfigureProjectSuccess(project.getProjectName()), NotificationEvent.NotificationType.SUCCESS));
+                        if (creationSuccessCallback != null) {
+                            creationSuccessCallback.callback(project);
+                        }
+                    }
+                }, new DefaultErrorCallback() {
+                    @Override
+                    public boolean error(Message message, Throwable throwable) {
+                        notification.fire(new NotificationEvent(Constants.INSTANCE.ConfigureProjectFailure(project.getProjectName()), NotificationEvent.NotificationType.ERROR));
+                        return super.error(message, throwable);
+                    }
+                }).configureNewCaseProject(project);
+            }
         }
     };
 
@@ -102,11 +111,11 @@ public class NewCaseProjectHandler
 
     @Inject
     public NewCaseProjectHandler(final NewProjectHandlerView view,
-            final ProjectContext context,
-            final NewProjectWizard wizard,
-            final Caller<RepositoryStructureService> repoStructureService,
-            final ProjectController projectController,
-            final AnyResourceTypeDefinition resourceType) {
+                                 final ProjectContext context,
+                                 final NewProjectWizard wizard,
+                                 final Caller<RepositoryStructureService> repoStructureService,
+                                 final ProjectController projectController,
+                                 final AnyResourceTypeDefinition resourceType) {
         this.view = view;
         this.context = context;
         this.wizard = wizard;
@@ -127,7 +136,7 @@ public class NewCaseProjectHandler
 
     @Override
     public IsWidget getIcon() {
-        return new Image( ProjectEditorResources.INSTANCE.newProjectIcon() );
+        return new Image(ProjectEditorResources.INSTANCE.newProjectIcon());
     }
 
     @Override
@@ -141,68 +150,69 @@ public class NewCaseProjectHandler
     }
 
     @Override
-    public void create( final Package pkg,
-                        final String projectName,
-                        final NewResourcePresenter presenter ) {
+    public void create(final Package pkg,
+                       final String projectName,
+                       final NewResourcePresenter presenter) {
         //This is not supported by the NewProjectHandler. It is invoked via NewResourceView that has bypassed for NewProjectHandler
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void validate( final String projectName,
-                          final ValidatorWithReasonCallback callback ) {
+    public void validate(final String projectName,
+                         final ValidatorWithReasonCallback callback) {
         //This is not supported by the NewProjectHandler. It is invoked via NewResourceView that has bypassed for NewProjectHandler
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void acceptContext( final Callback<Boolean, Void> response ) {
+    public void acceptContext(final Callback<Boolean, Void> response) {
 
-        if ( context.getActiveRepository() != null ) {
+        if (context.getActiveRepository() != null) {
 
             //You can always create a new Project (provided a repository has been selected)
-            repoStructureService.call( new RemoteCallback<RepositoryStructureModel>() {
+            repoStructureService.call(new RemoteCallback<RepositoryStructureModel>() {
 
                 @Override
-                public void callback( RepositoryStructureModel repoModel ) {
-                    if ( repoModel != null && repoModel.isManaged() ) {
+                public void callback(RepositoryStructureModel repoModel) {
+                    if (repoModel != null && repoModel.isManaged()) {
                         boolean isMultiModule = repoModel.isMultiModule();
-                        response.onSuccess( isMultiModule );
+                        response.onSuccess(isMultiModule);
                     } else {
-                        response.onSuccess( true );
+                        response.onSuccess(true);
                     }
                 }
-            } ).load( context.getActiveRepository(),
-                      context.getActiveBranch() );
+            }).load(context.getActiveRepository(),
+                    context.getActiveBranch());
         } else {
-            response.onSuccess( false );
+            response.onSuccess(false);
         }
     }
 
     @Override
-    public Command getCommand( final NewResourcePresenter newResourcePresenter ) {
+    public Command getCommand(final NewResourcePresenter newResourcePresenter) {
         return new Command() {
             @Override
             public void execute() {
-                if ( context.getActiveRepository() != null ) {
-                    repoStructureService.call( new RemoteCallback<RepositoryStructureModel>() {
+                if (context.getActiveRepository() != null) {
+                    repoStructureService.call(new RemoteCallback<RepositoryStructureModel>() {
 
                         @Override
-                        public void callback( final RepositoryStructureModel repositoryStructureModel ) {
+                        public void callback(final RepositoryStructureModel repositoryStructureModel) {
                             POMBuilder builder = new POMBuilder();
-                            if ( repositoryStructureModel != null && repositoryStructureModel.isManaged() ) {
-                                builder.setProjectName( "" )
-                                        .setGroupId( repositoryStructureModel.getPOM().getGav().getGroupId() )
-                                        .setVersion( repositoryStructureModel.getPOM().getGav().getVersion() );
+                            if (repositoryStructureModel != null && repositoryStructureModel.isManaged()) {
+                                builder.setProjectName("")
+                                        .setGroupId(repositoryStructureModel.getPOM().getGav().getGroupId())
+                                        .setVersion(repositoryStructureModel.getPOM().getGav().getVersion());
                             } else {
-                                builder.setProjectName( "" )
-                                        .setGroupId( context.getActiveOrganizationalUnit().getDefaultGroupId() );
+                                builder.setProjectName("")
+                                        .setGroupId(context.getActiveOrganizationalUnit().getDefaultGroupId());
                             }
-                            wizard.initialise( builder.build() );
-                            wizard.start(configureCaseProjectCallback, true);
+                            wizard.initialise(builder.build());
+                            wizard.start(configureCaseProjectCallback,
+                                    openEditorOnCreation);
                         }
-                    } ).load( context.getActiveRepository(),
-                              context.getActiveBranch() );
+                    }).load(context.getActiveRepository(),
+                            context.getActiveBranch());
 
                 } else {
                     view.showNoRepositorySelectedPleaseSelectARepository();
@@ -214,5 +224,15 @@ public class NewCaseProjectHandler
     @Override
     public ProjectContext getProjectContext() {
         return context;
+    }
+
+    @Override
+    public void setCreationSuccessCallback(final org.uberfire.client.callbacks.Callback<Project> creationSuccessCallback) {
+        this.creationSuccessCallback = creationSuccessCallback;
+    }
+
+    @Override
+    public void setOpenEditorOnCreation(final boolean openEditorOnCreation) {
+        this.openEditorOnCreation = openEditorOnCreation;
     }
 }
