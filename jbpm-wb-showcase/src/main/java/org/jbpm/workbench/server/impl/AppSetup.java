@@ -41,7 +41,7 @@ public class AppSetup extends BaseAppSetup {
 
     // default repository section - start
     private static final String JBPM_WB_PLAYGROUND_ALIAS = "jbpm-playground";
-    private static final String JBPM_WB_PLAYGROUND_ORIGIN = "https://github.com/droolsjbpm/jbpm-playground.git";
+    private static final String JBPM_WB_PLAYGROUND_ORIGIN = "https://github.com/kiegroup/jbpm-playground.git";
     private static final String OU_NAME = "demo";
     private static final String OU_OWNER = "demo@demo.org";
 
