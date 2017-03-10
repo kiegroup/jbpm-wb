@@ -50,7 +50,6 @@
 \*\/$
 ]]>
     </checkstyle.header.template>
-    <enforcer.failOnDuplicatedClasses>true</enforcer.failOnDuplicatedClasses>
   </properties>
 
   <modules>
