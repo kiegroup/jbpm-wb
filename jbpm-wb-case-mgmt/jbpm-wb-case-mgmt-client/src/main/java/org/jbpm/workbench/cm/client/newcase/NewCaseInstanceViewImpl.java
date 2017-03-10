@@ -21,25 +21,37 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import org.jboss.errai.common.client.dom.Div;
+import org.jboss.errai.common.client.dom.Event;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.MouseEvent;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.common.client.dom.TextInput;
+import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.databinding.client.components.ListComponent;
+import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jboss.errai.ui.shared.api.annotations.AutoBound;
+import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.workbench.cm.client.resources.i18n.Constants;
 import org.jbpm.workbench.cm.client.util.AbstractView;
 import org.jbpm.workbench.cm.client.util.FormGroup;
 import org.jbpm.workbench.cm.client.util.FormLabel;
+import org.jbpm.workbench.cm.client.util.InlineNotification;
 import org.jbpm.workbench.cm.client.util.Modal;
+import org.jbpm.workbench.cm.client.util.Popover;
 import org.jbpm.workbench.cm.client.util.Select;
 import org.jbpm.workbench.cm.client.util.ValidationState;
+import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static org.jbpm.workbench.cm.client.resources.i18n.Constants.PLEASE_PROVIDE_CASE_OWNER;
-import static org.jbpm.workbench.cm.client.resources.i18n.Constants.PLEASE_SELECT_CASE_DEFINITION;
+import static java.util.Collections.emptyList;
+import static org.jboss.errai.common.client.dom.DOMUtil.addCSSClass;
+import static org.jboss.errai.common.client.dom.DOMUtil.removeCSSClass;
 
 @Dependent
 @Templated
@@ -82,12 +94,37 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
     private FormLabel caseDefinitionNameLabel;
 
     @Inject
+    @DataField("roles-form-group")
+    private Div rolesFormGroup;
+
+    @Inject
+    @DataField("alert")
+    private InlineNotification notification;
+
+    @Inject
+    @Bound
+    @ListContainer("tbody")
+    @DataField("roles")
+    @SuppressWarnings("unused")
+    private ListComponent<CaseRoleAssignmentSummary, RoleAssignmentViewImpl> roleAssignments;
+
+    @Inject
+    @AutoBound
+    private DataBinder<List<CaseRoleAssignmentSummary>> roleAssignmentList;
+
+    @Inject
+    @DataField("roles-help")
+    private Popover rolesHelp;
+
+    @Inject
     private TranslationService translationService;
 
     @PostConstruct
     public void init() {
         caseDefinitionNameLabel.addRequiredIndicator();
         ownerNameLabel.addRequiredIndicator();
+        rolesHelp.setContent(translationService.getTranslation(Constants.ROLES_INFO_TEXT));
+        notification.setType(InlineNotification.InlineNotificationType.DANGER);
     }
 
     public void show() {
@@ -107,11 +144,30 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
     }
 
     @Override
+    public void clearRoles() {
+        roleAssignmentList.setModel(emptyList());
+        addCSSClass(rolesFormGroup,
+                    "hidden");
+    }
+
+    @Override
     public void setCaseDefinitions(final List<String> definitions) {
+        clearCaseDefinitions();
+        caseTemplatesList.setValue("");
         for (final String definition : definitions) {
             caseTemplatesList.addOption(definition);
         }
         caseTemplatesList.refresh();
+    }
+
+    @Override
+    public void setRoles(final List<CaseRoleAssignmentSummary> roles) {
+        if (roles.size() > 0) {
+            removeCSSClass(rolesFormGroup,
+                           "hidden");
+        }
+
+        roleAssignmentList.setModel(roles);
     }
 
     public void cleanForm() {
@@ -119,6 +175,8 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
         caseTemplatesList.getElement().focus();
         caseTemplatesList.enable();
         ownerNameInput.setValue("");
+        addCSSClass(notification.getElement(),
+                    "hidden");
         clearErrorMessages();
     }
 
@@ -129,14 +187,14 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
 
         if (isNullOrEmpty(caseTemplatesList.getValue())) {
             caseTemplatesList.getElement().focus();
-            definitionNameHelp.setTextContent(translationService.format(PLEASE_SELECT_CASE_DEFINITION));
+            definitionNameHelp.setTextContent(translationService.format(Constants.PLEASE_SELECT_CASE));
             caseDefinitionNameGroup.setValidationState(ValidationState.ERROR);
             valid = false;
         }
 
         if (isNullOrEmpty(ownerNameInput.getValue())) {
             ownerNameInput.focus();
-            ownerNameHelp.setTextContent(translationService.format(PLEASE_PROVIDE_CASE_OWNER));
+            ownerNameHelp.setTextContent(translationService.format(Constants.PLEASE_PROVIDE_CASE_OWNER));
             ownerNameGroup.setValidationState(ValidationState.ERROR);
             valid = false;
         }
@@ -150,12 +208,25 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
     }
 
     @Override
+    public void showValidationError(final List<String> messages) {
+        if (messages.isEmpty()) {
+            return;
+        }
+
+        notification.setMessage(messages);
+        removeCSSClass(notification.getElement(),
+                       "hidden");
+    }
+
+    @Override
     public HTMLElement getElement() {
         return modal.getElement();
     }
 
     private void createCaseInstance() {
-        presenter.createCaseInstance(caseTemplatesList.getValue(), ownerNameInput.getValue());
+        presenter.createCaseInstance(caseTemplatesList.getValue(),
+                                     ownerNameInput.getValue(),
+                                     roleAssignmentList.getModel());
     }
 
     private void clearErrorMessages() {
@@ -187,4 +258,8 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
         hide();
     }
 
+    @EventHandler("definition-name-select")
+    public void onCaseChanged(final @ForEvent("change") Event event) {
+        presenter.loadCaseRoles(caseTemplatesList.getValue());
+    }
 }

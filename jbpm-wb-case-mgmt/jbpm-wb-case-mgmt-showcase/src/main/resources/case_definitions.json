@@ -1,10 +1,20 @@
 [
   {
-    "id": "Example",
-    "name": "Example Case for Development",
+    "id": "Example1",
+    "name": "Case for Development",
     "containerId": "example",
     "roles": {
-      "participant" : -1
+      "owner": 1,
+      "participant" : -1,
+      "developer" : 1
+    }
+  },
+  {
+    "id": "Example2",
+    "name": "Case for Development without roles",
+    "containerId": "example",
+    "roles": {
+      "owner": 1
     }
   }
 ]

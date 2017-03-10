@@ -23,6 +23,7 @@ import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.workbench.cm.model.CaseCommentSummary;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
+import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
 import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
 import org.jbpm.workbench.cm.util.Actions;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
@@ -36,7 +37,7 @@ public interface CaseManagementService {
 
     List<CaseDefinitionSummary> getCaseDefinitions();
 
-    String startCaseInstance(String serverTemplateId, String containerId, String caseDefinitionId, String owner);
+    String startCaseInstance(String serverTemplateId, String containerId, String caseDefinitionId, String owner, List<CaseRoleAssignmentSummary> roleAssignments);
 
     List<CaseInstanceSummary> getCaseInstances(CaseInstanceSearchRequest request);
 

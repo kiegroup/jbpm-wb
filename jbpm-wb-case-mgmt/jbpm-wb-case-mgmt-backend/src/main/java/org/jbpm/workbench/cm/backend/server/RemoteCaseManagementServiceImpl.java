@@ -31,6 +31,7 @@ import org.jbpm.workbench.cm.model.CaseCommentSummary;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
+import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
 import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
 import org.jbpm.workbench.cm.service.CaseManagementService;
 import org.jbpm.workbench.cm.util.Actions;
@@ -100,9 +101,15 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public String startCaseInstance(final String serverTemplateId, final String containerId, final String caseDefinitionId, final String owner) {
-        final CaseFile caseFile = CaseFile.builder().addUserAssignments(CASE_OWNER_ROLE, owner).build();
-        return client.startCase(containerId, caseDefinitionId, caseFile);
+    public String startCaseInstance(final String serverTemplateId, final String containerId, final String caseDefinitionId, final String owner,
+                                    final List<CaseRoleAssignmentSummary> roleAssignments) {
+        final CaseFile.Builder builder = CaseFile.builder();
+        builder.addUserAssignments(CASE_OWNER_ROLE, owner);
+        roleAssignments.forEach( a -> {
+            a.getGroups().forEach(g -> builder.addGroupAssignments(a.getName(), g));
+            a.getUsers().forEach(u -> builder.addUserAssignments(a.getName(), u));
+        });
+        return client.startCase(containerId, caseDefinitionId, builder.build());
     }
 
     @Override

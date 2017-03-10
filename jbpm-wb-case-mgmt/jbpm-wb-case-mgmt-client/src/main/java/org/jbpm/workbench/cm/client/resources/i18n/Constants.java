@@ -36,7 +36,7 @@ public interface Constants {
     String INVALID_CASE_DEFINITION = "InvalidCaseDefinition";
 
     @TranslationKey(defaultValue = "")
-    String PLEASE_SELECT_CASE_DEFINITION = "PleaseSelectCaseDefinition";
+    String PLEASE_SELECT_CASE = "PleaseSelectCase";
 
     @TranslationKey(defaultValue = "")
     String NO_CASE_DEFINITION = "NoCaseDefinition";
@@ -139,4 +139,10 @@ public interface Constants {
 
     @TranslationKey(defaultValue = "")
     String SORT_BY_NAME_DESC = "SortByNameDesc";
+
+    @TranslationKey(defaultValue = "")
+    String ROLES_INFO_TEXT = "RolesInfoText";
+
+    @TranslationKey(defaultValue = "")
+    String INVALID_ROLE_ASSIGNMENT = "InvalidRoleAssignment";
 }
