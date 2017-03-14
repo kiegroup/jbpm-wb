@@ -162,7 +162,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.outputDirectory}/org/jbpm/workbench/cm/public/</outputDirectory>
+              <outputDirectory>${project.build.outputDirectory}/org/jbpm/workbench/cm/static/</outputDirectory>
               <resources>
                 <resource>
                   <directory>${project.build.directory}/bootstrap-select/META-INF/resources/webjars/bootstrap-select/${version.org.webjars.bower.bootstrap-select}/dist</directory>

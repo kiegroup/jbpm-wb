@@ -455,7 +455,7 @@
           <configuration>
             <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
             <localWorkers>${gwt.compiler.localWorkers}</localWorkers>
-            <extraJvmArgs>${gwt.memory.settings} -XX:CompileThreshold=7000 -Derrai.jboss.home=${jboss.home}</extraJvmArgs>
+            <extraJvmArgs>${gwt.memory.settings} -XX:CompileThreshold=7000 -Derrai.jboss.home=${jboss.home} -Derrai.server.classOutput=${project.build.outputDirectory}</extraJvmArgs>
             <strict>true</strict>
             <logLevel>INFO</logLevel>
             <noServer>false</noServer>

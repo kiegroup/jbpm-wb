@@ -33,7 +33,7 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 @WorkbenchPerspective(identifier = CaseOverviewPerspective.PERSPECTIVE_ID)
 public class CaseOverviewPerspective {
 
-    public static final String PERSPECTIVE_ID = "Case Overview Perspective";
+    public static final String PERSPECTIVE_ID = "CaseOverview";
 
     private final DefaultPlaceRequest overview = new DefaultPlaceRequest(CaseOverviewPresenter.SCREEN_ID);
 

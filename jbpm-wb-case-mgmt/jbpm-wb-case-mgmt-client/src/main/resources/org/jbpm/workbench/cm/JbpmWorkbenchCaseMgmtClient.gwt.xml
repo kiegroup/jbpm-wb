@@ -28,11 +28,13 @@
   <inherits name="org.jboss.errai.common.ErraiCommon"/>
   <inherits name="org.jboss.errai.databinding.DataBinding" />
   <inherits name="org.uberfire.UberfireClientAPI"/>
+  <inherits name="org.uberfire.UberfireWorkbench"/>
+  <inherits name="org.uberfire.client.views.PatternFly"/>
 
   <inherits name="org.jbpm.workbench.cm.JbpmWorkbenchCaseMgmtAPI"/>
 
   <source path='client'/>
 
-  <public path="public"/>
+  <public path="static"/>
 
 </module>

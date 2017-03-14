@@ -31,7 +31,7 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 @WorkbenchPerspective(identifier = CaseInstanceListPerspective.PERSPECTIVE_ID, isDefault = true)
 public class CaseInstanceListPerspective {
 
-    public static final String PERSPECTIVE_ID = "Case List Perspective";
+    public static final String PERSPECTIVE_ID = "CaseList";
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
