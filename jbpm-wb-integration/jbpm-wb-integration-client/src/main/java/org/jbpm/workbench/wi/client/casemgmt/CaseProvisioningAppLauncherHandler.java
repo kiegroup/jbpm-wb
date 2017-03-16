@@ -50,7 +50,7 @@ public class CaseProvisioningAppLauncherHandler {
     public void verifyCaseAppStatus() {
         service.call(s -> {
             if (s == COMPLETED) {
-                addCaseAppLauncher();
+                service.call((String ctx) -> addCaseAppLauncher(ctx)).getApplicationContext();
             }
         }).getProvisioningStatus();
     }
@@ -61,11 +61,11 @@ public class CaseProvisioningAppLauncherHandler {
 
     public void onCaseManagementProvisioningCompletedEvent(@Observes CaseProvisioningCompletedEvent event) {
         notification.fire(new NotificationEvent(constants.CaseAppProvisioningCompleted(), SUCCESS));
-        addCaseAppLauncher();
+        addCaseAppLauncher(event.getAppContext());
     }
 
-    protected void addCaseAppLauncher() {
-        appLauncherAddEvent.fire(new AppLauncherAddEvent(constants.CaseAppName(), "/jbpm-cm", null));
+    protected void addCaseAppLauncher(final String caseAppContext) {
+        appLauncherAddEvent.fire(new AppLauncherAddEvent(constants.CaseAppName(), caseAppContext, null));
     }
 
     public void onCaseManagementProvisioningFailedEvent(@Observes CaseProvisioningFailedEvent event) {

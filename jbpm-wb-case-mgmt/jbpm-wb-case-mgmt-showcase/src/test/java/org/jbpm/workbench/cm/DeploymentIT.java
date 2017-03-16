@@ -23,6 +23,7 @@ import java.net.URL;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.importer.ZipImporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -35,7 +36,6 @@ import static org.junit.Assert.*;
 public class DeploymentIT {
 
     public static final String ARCHIVE_NAME = "jbpm-wb-case-mgmt-showcase.war";
-    public static final String URL = "http://127.0.0.1:8080/jbpm-cm";
 
     @Deployment(testable = false)
     public static WebArchive create() {
@@ -46,10 +46,10 @@ public class DeploymentIT {
 
     @Test
     @RunAsClient
-    public void testDeployment() throws Exception {
+    public void testDeployment(@ArquillianResource URL baseURL) throws Exception {
         HttpURLConnection c = null;
         try {
-            c = (HttpURLConnection) new URL(URL).openConnection();
+            c = (HttpURLConnection) baseURL.openConnection();
             assertEquals(200, c.getResponseCode());
         } finally {
             if (c != null) {

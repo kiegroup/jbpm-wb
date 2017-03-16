@@ -21,8 +21,27 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class CaseProvisioningCompletedEvent {
 
+    private String appContext;
+
+    public CaseProvisioningCompletedEvent() {
+    }
+
+    public CaseProvisioningCompletedEvent(final String appContext) {
+        this.appContext = appContext;
+    }
+
+    public String getAppContext() {
+        return appContext;
+    }
+
+    public void setAppContext(String appContext) {
+        this.appContext = appContext;
+    }
+
     @Override
     public String toString() {
-        return "CaseProvisioningCompletedEvent{}";
+        return "CaseProvisioningCompletedEvent{" +
+                "appContext='" + appContext + '\'' +
+                '}';
     }
 }
