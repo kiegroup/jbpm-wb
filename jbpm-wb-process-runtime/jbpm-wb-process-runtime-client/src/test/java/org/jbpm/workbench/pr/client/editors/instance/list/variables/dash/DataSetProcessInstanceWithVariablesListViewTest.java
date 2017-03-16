@@ -142,5 +142,24 @@ public class DataSetProcessInstanceWithVariablesListViewTest {
 
         verify(currentListGrid).addColumns(anyList());
     }
+    
+    @Test
+    public void testColumnNumber() {
+        when(gridPreferencesStore.getColumnPreferences()).thenReturn(new ArrayList<GridColumnPreference>());
+        when(currentListGrid.getGridPreferencesStore()).thenReturn(gridPreferencesStore);
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+                final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[0];
+                assertTrue(columns.size() == 11);
+                return null;
+            }
+        }).when(currentListGrid).addColumns(anyList());
+
+        view.initColumns(currentListGrid);
+
+        verify(currentListGrid).addColumns(anyList());
+    }
+    
 
 }

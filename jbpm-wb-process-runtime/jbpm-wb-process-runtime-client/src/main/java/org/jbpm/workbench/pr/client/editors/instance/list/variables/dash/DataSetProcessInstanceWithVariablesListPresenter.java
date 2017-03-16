@@ -19,13 +19,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
@@ -37,25 +36,24 @@ import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.base.AbstractListView.ListView;
 import org.jbpm.workbench.common.client.list.base.AbstractScreenListPresenter;
 import org.jbpm.workbench.common.client.list.base.events.SearchEvent;
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
+import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.workbench.forms.client.display.process.QuickNewProcessInstancePopup;
 import org.jbpm.workbench.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
 import org.jbpm.workbench.pr.client.i18n.Constants;
 import org.jbpm.workbench.pr.client.perspectives.DataSetProcessInstancesWithVariablesPerspective;
-import org.jbpm.workbench.forms.client.display.process.QuickNewProcessInstancePopup;
 import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
 import org.jbpm.workbench.pr.events.ProcessInstancesWithDetailsRequestEvent;
+import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.service.ProcessService;
-import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -73,6 +71,9 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
+
+import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.view.client.Range;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
@@ -117,9 +118,6 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
     protected final List<ProcessInstanceSummary> myProcessInstancesFromDataSet = new ArrayList<ProcessInstanceSummary>();
 
-    @Inject
-    private Caller<ProcessRuntimeDataService> processRuntimeDataService;
-
     private Caller<ProcessService> processService;
 
     @Inject
@@ -140,54 +138,31 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
         try {
             if ( !isAddingDefaultFilters() ) {
                 final FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
-                if ( currentTableSettings != null) {
-                    currentTableSettings.setServerTemplateId( selectedServerTemplate );
-                    currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
-                    ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                    if ( columnSortList != null && columnSortList.size() > 0 ) {
-                        dataSetQueryHelper.setLastOrderedColumn( columnSortList.size() > 0 ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
-                        dataSetQueryHelper.setLastSortOrder( columnSortList.size() > 0 && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
-                    } else {
-                        dataSetQueryHelper.setLastOrderedColumn( COLUMN_START );
-                        dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
-                    }
-
-                    final List<ColumnFilter> filters = getColumnFilters(textSearchStr);
-                    if (filters.isEmpty() == false) {
-                        if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
-                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(OR(filters));
-                        } else {
-                            final DataSetFilter filter = new DataSetFilter();
-                            filter.addFilterColumn(OR(filters));
-                            currentTableSettings.getDataSetLookup().addOperation(filter);
-                        }
-                    }
-
-                    dataSetQueryHelper.setCurrentTableSettings( currentTableSettings );
-                    dataSetQueryHelper.setDataSetHandler( currentTableSettings );
-                    dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), createDataSetProcessInstanceCallback( visibleRange.getStart(), currentTableSettings ) );
+                currentTableSettings.setServerTemplateId( selectedServerTemplate );
+                currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
+                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+                if ( columnSortList != null && columnSortList.size() > 0 ) {
+                    dataSetQueryHelper.setLastOrderedColumn( columnSortList.size() > 0 ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
+                    dataSetQueryHelper.setLastSortOrder( columnSortList.size() > 0 && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
                 } else {
-                    List<Integer> statuses = new ArrayList<Integer>();
-                    if (currentTableSettings.getKey().equals(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX+"_0")) {
-                        statuses.add(ProcessInstance.STATE_ACTIVE);
-                    } else if (currentTableSettings.getKey().equals(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX+"_1")) {
-                        statuses.add(ProcessInstance.STATE_COMPLETED);
-                    } else if (currentTableSettings.getKey().equals(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX+"_2")) {
-                        statuses.add(ProcessInstance.STATE_ABORTED);
-                    }
-                    processRuntimeDataService.call(new RemoteCallback<List<ProcessInstanceSummary>>() {
-                        @Override
-                        public void callback(List<ProcessInstanceSummary> processInstanceSummaries) {
-                            boolean lastPageExactCount=false;
-                            if ( processInstanceSummaries.size() < visibleRange.getLength() ) {
-                                lastPageExactCount = true;
-                            }
-                            updateDataOnCallback(processInstanceSummaries, visibleRange.getStart(), visibleRange.getStart()+processInstanceSummaries.size(), lastPageExactCount);
-
-                        }
-                    }).getProcessInstances(selectedServerTemplate, statuses, visibleRange.getStart()/visibleRange.getLength(), visibleRange.getLength());
-
+                    dataSetQueryHelper.setLastOrderedColumn( COLUMN_START );
+                    dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                 }
+
+                final List<ColumnFilter> filters = getColumnFilters(textSearchStr);
+                if (filters.isEmpty() == false) {
+                    if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
+                        currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(OR(filters));
+                    } else {
+                        final DataSetFilter filter = new DataSetFilter();
+                        filter.addFilterColumn(OR(filters));
+                        currentTableSettings.getDataSetLookup().addOperation(filter);
+                    }
+                }
+
+                dataSetQueryHelper.setCurrentTableSettings( currentTableSettings );
+                dataSetQueryHelper.setDataSetHandler( currentTableSettings );
+                dataSetQueryHelper.lookupDataSet( visibleRange.getStart(), createDataSetProcessInstanceCallback( visibleRange.getStart(), currentTableSettings ) );
             }
         } catch ( Exception e ) {
             errorPopup.showMessage(Constants.INSTANCE.UnexpectedError(e.getMessage()));
@@ -312,7 +287,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
     }
 
-    private ProcessInstanceSummary createProcessInstanceSummaryFromDataSet( DataSet dataSet, int i ) {
+    protected ProcessInstanceSummary createProcessInstanceSummaryFromDataSet( DataSet dataSet, int i ) {
         return new ProcessInstanceSummary(
                 dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PROCESS_INSTANCE_ID, i ),
                 dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESS_ID, i ),
@@ -321,10 +296,12 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
                 dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESS_VERSION, i ),
                 dataSetQueryHelper.getColumnIntValue( dataSet, COLUMN_STATUS, i ),
                 dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_START, i ),
+                dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_END, i ),
                 dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_IDENTITY, i ),
                 dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESS_INSTANCE_DESCRIPTION, i ),
                 dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_CORRELATION_KEY, i ),
-                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENT_PROCESS_INSTANCE_ID, i ) );
+                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENT_PROCESS_INSTANCE_ID, i ),
+                dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_LAST_MODIFICATION_DATE, i ) );
     }
 
 

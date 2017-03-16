@@ -26,25 +26,27 @@ import org.jbpm.workbench.common.model.GenericSummary;
 
 @Portable
 public class ProcessInstanceSummary extends GenericSummary {
+
     private Long processInstanceId;
     private String processId;
     private String processName;
     private String processVersion;
     private int state;
     private Date startTime;
+    private Date endTime;
     private String deploymentId;
     private String initiator;
     private String processInstanceDescription;
     private Long parentId;
-
     private String correlationKey;
-    
     private Map<String, String> domainData = new HashMap<String, String>();
-
     private List<UserTaskSummary> activeTasks;
+    private Date lastModificationDate;
     
     public ProcessInstanceSummary(long processInstanceId, String processId, String deploymentId, String processName, String processVersion,
-            int state, Date startTime, String initiator,String processInstanceDescription, String correlationKey, Long parentId) {
+            int state, Date startTime, Date endTime, String initiator,String processInstanceDescription, String correlationKey, Long parentId,
+            Date lastModificationDate
+     ) {
         super();
         this.id = processInstanceId;
         this.name = processName;
@@ -55,10 +57,12 @@ public class ProcessInstanceSummary extends GenericSummary {
         this.processVersion = processVersion;
         this.state = state;
         this.startTime = startTime;
+        this.endTime = endTime;
         this.initiator = initiator;
         this.processInstanceDescription = processInstanceDescription;
         this.correlationKey = correlationKey;
         this.parentId = parentId;
+        this.lastModificationDate = lastModificationDate;
     }
 
     public ProcessInstanceSummary() {
@@ -124,6 +128,14 @@ public class ProcessInstanceSummary extends GenericSummary {
         this.startTime = startTime;
     }
 
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
     public String getDeploymentId() {
         return deploymentId;
     }
@@ -170,5 +182,13 @@ public class ProcessInstanceSummary extends GenericSummary {
 
     public void setParentId(Long parentId) {
         this.parentId = parentId;
+    }
+
+    public Date getLastModificationDate(){
+        return lastModificationDate;
+    }
+
+    public void setLastModificationDate(Date lastModificationDate){
+        this.lastModificationDate = lastModificationDate;
     }
 }

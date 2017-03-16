@@ -60,9 +60,15 @@ public class DataSetDefsBootstrap {
                             "log.processName, " +
                             "log.correlationKey, " +
                             "log.externalId, " +
-                            "log.processInstanceDescription " +
+                            "log.processInstanceDescription, " +
+                            "info.lastModificationDate " +
                         "from " +
-                            "ProcessInstanceLog log", false)
+                            "ProcessInstanceLog log " +
+                        "left join " +
+                            "ProcessInstanceInfo info " +
+                        "on " +
+                            "info.InstanceId=log.processInstanceId"
+                 , false)
                 .number(COLUMN_PROCESS_INSTANCE_ID)
                 .label(COLUMN_PROCESS_ID)
                 .date(COLUMN_START)
@@ -77,6 +83,7 @@ public class DataSetDefsBootstrap {
                 .label(COLUMN_CORRELATION_KEY)
                 .label(COLUMN_EXTERNAL_ID)
                 .label(COLUMN_PROCESS_INSTANCE_DESCRIPTION)
+                .date(COLUMN_LAST_MODIFICATION_DATE)
                 .buildDef();
 
         DataSetDef processWithVariablesDef = DataSetDefFactory.newSQLDataSetDef()

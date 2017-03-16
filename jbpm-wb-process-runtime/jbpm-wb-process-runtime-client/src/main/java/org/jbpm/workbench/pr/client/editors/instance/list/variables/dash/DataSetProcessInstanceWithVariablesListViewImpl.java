@@ -16,10 +16,12 @@
 package org.jbpm.workbench.pr.client.editors.instance.list.variables.dash;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -53,12 +55,12 @@ import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
-import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.common.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.base.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.util.DateUtils;
+import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
+import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceSummaryActionCell;
 import org.jbpm.workbench.pr.client.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
@@ -120,6 +122,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         initColumns.add(COLUMN_PROCESS_NAME);
         initColumns.add(COLUMN_PROCESS_INSTANCE_DESCRIPTION);
         initColumns.add(COLUMN_PROCESS_VERSION);
+        initColumns.add(COLUMN_LAST_MODIFICATION_DATE);
         initColumns.add(COL_ID_ACTIONS);
 
         final Button button = new Button();
@@ -246,7 +249,9 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         Column processVersionColumn = initProcessVersionColumn();
         Column processStateColumn = initProcessStateColumn();
         Column startTimeColumn = initStartDateColumn();
+        Column lastModificationColumn = initLastModificationDateColumn();
         Column descriptionColumn = initDescriptionColumn();
+        Column correlationKeyColumn = initCorrelationKeyColumn();
         actionsColumn = initActionsColumn();
 
         List<ColumnMeta<ProcessInstanceSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessInstanceSummary>>();
@@ -258,6 +263,8 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processVersionColumn, constants.Version() ) );
         columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processStateColumn, constants.State() ) );
         columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( startTimeColumn, constants.Start_Date() ) );
+        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( lastModificationColumn, constants.Last_Modification_Date() ) );
+        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( correlationKeyColumn, constants.Correlation_Key() ) );
         columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( actionsColumn, constants.Actions() ) );
 
         List<GridColumnPreference> columPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
@@ -270,7 +277,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
             }
         }
         extendedPagedTable.addColumns( columnMetas );
-        extendedPagedTable.setColumnWidth(checkColumMeta.getColumn(),37, Style.Unit.PX );
+        extendedPagedTable.setColumnWidth(checkColumMeta.getColumn(), 37, Style.Unit.PX );
         extendedPagedTable.storeColumnToPreferences();
     }
 
@@ -420,6 +427,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
     }
 
     private Column initInitiatorColumn() {
+        // Initiator
         Column<ProcessInstanceSummary, String> processInitiatorColumn = new Column<ProcessInstanceSummary, String>(
                 new TextCell() ) {
             @Override
@@ -484,7 +492,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
     }
 
     private Column initStartDateColumn() {
-        // start time
+        // Start time
         Column<ProcessInstanceSummary, String> startTimeColumn = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
             @Override
             public String getValue( ProcessInstanceSummary object ) {
@@ -495,6 +503,24 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         startTimeColumn.setDataStoreName( COLUMN_START );
 
         return startTimeColumn;
+    }
+    
+    private Column initLastModificationDateColumn() {
+        // Modification time
+        Column<ProcessInstanceSummary, String> col = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
+            @Override
+            public String getValue( ProcessInstanceSummary object ) {
+                Date colDate = object.getLastModificationDate();
+                if(colDate == null){
+                    colDate = object.getEndTime();
+                }
+                return DateUtils.getDateTimeStr(colDate);
+            }
+        };
+        col.setSortable( true );
+        col.setDataStoreName( COLUMN_LAST_MODIFICATION_DATE );
+
+        return col;
     }
 
     private Column initActionsColumn() {
@@ -567,7 +593,6 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
     }
 
     private Column initDescriptionColumn() {
-        // start time
         Column<ProcessInstanceSummary, String> descriptionColumn = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
             @Override
             public String getValue( ProcessInstanceSummary object ) {
@@ -577,6 +602,18 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         descriptionColumn.setSortable( true );
         descriptionColumn.setDataStoreName(COLUMN_PROCESS_INSTANCE_DESCRIPTION);
         return descriptionColumn;
+    }
+
+    private Column initCorrelationKeyColumn() {
+        Column<ProcessInstanceSummary, String> col = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
+            @Override
+            public String getValue( ProcessInstanceSummary object ) {
+                return object.getCorrelationKey();
+            }
+        };
+        col.setSortable( true );
+        col.setDataStoreName(COLUMN_CORRELATION_KEY);
+        return col;
     }
 
     public void initDefaultFilters( GridGlobalPreferences preferences,

@@ -257,10 +257,12 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
                 processInstance.getProcessVersion(),
                 processInstance.getState(),
                 processInstance.getDate(),
+                null,
                 processInstance.getInitiator(),
                 processInstance.getProcessInstanceDescription(),
                 processInstance.getCorrelationKey(),
-                processInstance.getParentId()
+                processInstance.getParentId(),
+                null
         );
 
         if (processInstance.getActiveUserTasks() != null && processInstance.getActiveUserTasks().getTasks() != null) {
