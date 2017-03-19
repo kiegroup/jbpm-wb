@@ -7,6 +7,5 @@
 <jboss-web>
 
   <security-domain>other</security-domain>
-  <context-root>jbpm-cm</context-root>
 
 </jboss-web>

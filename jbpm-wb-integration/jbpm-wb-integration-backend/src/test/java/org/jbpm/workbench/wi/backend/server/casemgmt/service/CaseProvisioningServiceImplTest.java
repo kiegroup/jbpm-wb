@@ -93,7 +93,7 @@ public class CaseProvisioningServiceImplTest {
 
     @Test
     public void testOnCaseManagementProvisioningCompletedEvent() {
-        service.onCaseManagementProvisioningCompletedEvent(new CaseProvisioningCompletedEvent());
+        service.onCaseManagementProvisioningCompletedEvent(new CaseProvisioningCompletedEvent("/context"));
 
         assertEquals(COMPLETED, service.getProvisioningStatus());
     }

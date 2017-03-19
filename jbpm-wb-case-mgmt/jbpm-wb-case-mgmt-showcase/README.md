@@ -77,7 +77,7 @@ Start the server by running:
 ./standalone.sh -Dorg.kie.server.location=http://localhost:8230/kie-server/services/rest/server -Dorg.kie.server.user=kieserver -Dorg.kie.server.pwd=kieserver1!
 ```
 
-Verify the application is running. Go to http://SERVER:PORT/jbpm-cm/ and type the specified username and password. You should see simple XML message with basic information about the server.
+Verify the application is running. Go to http://SERVER:PORT/jbpm-wb-case-mgmt-showcase/ and type the specified username and password. You should see simple XML message with basic information about the server.
 
 For more details, please check the [Getting Started Guide](https://docs.jboss.org/author/display/WFLY10/Getting+Started+Guide).
 

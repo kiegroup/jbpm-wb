@@ -17,8 +17,10 @@
 package org.jbpm.workbench.wi.backend.server.casemgmt.service;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Properties;
 import javax.enterprise.inject.spi.Extension;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -37,6 +39,7 @@ import org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningSettings;
 import org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.uberfire.apache.commons.io.FilenameUtils;
 import org.uberfire.backend.server.cdi.SystemConfigProducer;
 import org.uberfire.java.nio.file.spi.FileSystemProvider;
 import org.uberfire.java.nio.fs.file.SimpleFileSystemProvider;
@@ -57,7 +60,8 @@ public class CaseProvisioningIT {
                         "org.guvnor:guvnor-ala-registry-local",
                         "org.guvnor:guvnor-ala-services-api",
                         "org.guvnor:guvnor-ala-build-maven",
-                        "org.uberfire:uberfire-io"
+                        "org.uberfire:uberfire-io",
+                        "com.google.inject.extensions:guice-servlet"
                 )
                 .withTransitivity()
                 .asFile();
@@ -74,10 +78,13 @@ public class CaseProvisioningIT {
                 .addClass(CaseProvisioningSettingsImpl.class)
                 .addClass(SystemConfigProducer.class)
                 .addAsResource(CASEMGMT_PROPERTIES)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+                .addAsWebInfResource(EmptyAsset.INSTANCE,
+                                     "beans.xml")
                 .addAsLibraries(files)
-                .addAsServiceProvider(Extension.class, SystemConfigProducer.class)
-                .addAsServiceProvider(FileSystemProvider.class, SimpleFileSystemProvider.class);
+                .addAsServiceProvider(Extension.class,
+                                      SystemConfigProducer.class)
+                .addAsServiceProvider(FileSystemProvider.class,
+                                      SimpleFileSystemProvider.class);
 
         return war;
     }
@@ -85,26 +92,38 @@ public class CaseProvisioningIT {
     @Test(timeout = 30000)
     @RunAsClient
     public void testDeployment(@ArquillianResource URL baseURL) throws Exception {
-        final URL cm = new URL(baseURL, "/jbpm-cm");
-        try {
-            while (true) {
-                HttpURLConnection c = null;
-                try {
-                    c = (HttpURLConnection) cm.openConnection();
-                    if (c.getResponseCode() == 200) {
-                        break;
-                    } else {
-                        Thread.sleep(500);
-                    }
-                } finally {
-                    if (c != null) {
-                        c.disconnect();
-                    }
+        final URL cm = new URL(baseURL,
+                               getCaseAppContext());
+        while (true) {
+            HttpURLConnection c = null;
+            try {
+                c = (HttpURLConnection) cm.openConnection();
+                if (c.getResponseCode() == 200) {
+                    break;
+                } else {
+                    Thread.sleep(500);
+                }
+            } finally {
+                if (c != null) {
+                    c.disconnect();
                 }
             }
-        } catch (Throwable t) {
-            t.printStackTrace();
         }
     }
 
+    private String getCaseAppContext() {
+        final String showcaseGAV = loadShowcaseGAV();
+        final File file = Maven.configureResolver().workOffline().resolve(showcaseGAV).withoutTransitivity().asSingleFile();
+        return "/" + FilenameUtils.getBaseName(file.getName());
+    }
+
+    private String loadShowcaseGAV() {
+        final Properties properties = new Properties();
+        try (final InputStream resource = Thread.currentThread().getContextClassLoader().getResourceAsStream(CASEMGMT_PROPERTIES)) {
+            properties.load(resource);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return properties.getProperty(CaseProvisioningSettingsImpl.SHOWCASE_GAV);
+    }
 }

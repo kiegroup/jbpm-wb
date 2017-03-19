@@ -72,6 +72,8 @@ public class CaseProvisioningServiceImpl implements CaseProvisioningService {
 
     private CaseProvisioningStatus status = DISABLED;
 
+    private String caseAppContext;
+
     @PostConstruct
     public void init() {
         if (settings.isProvisioningEnabled() == false) {
@@ -146,10 +148,15 @@ public class CaseProvisioningServiceImpl implements CaseProvisioningService {
 
     public void onCaseManagementProvisioningCompletedEvent(@Observes CaseProvisioningCompletedEvent event) {
         status = COMPLETED;
+        this.caseAppContext = event.getAppContext();
     }
 
     public void onCaseManagementProvisioningFailedEvent(@Observes CaseProvisioningFailedEvent event) {
         status = FAILED;
     }
 
+    @Override
+    public String getApplicationContext() {
+        return caseAppContext;
+    }
 }

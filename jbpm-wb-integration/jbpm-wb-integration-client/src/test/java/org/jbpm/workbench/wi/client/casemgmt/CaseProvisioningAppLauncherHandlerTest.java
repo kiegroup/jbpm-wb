@@ -77,6 +77,7 @@ public class CaseProvisioningAppLauncherHandlerTest {
     @Test
     public void testVerifyCaseAppStatusCompleted() {
         when(caseManagementService.getProvisioningStatus()).thenReturn(COMPLETED);
+        when(caseManagementService.getApplicationContext()).thenReturn("/context");
 
         appLauncherHandler.verifyCaseAppStatus();
 
@@ -95,7 +96,7 @@ public class CaseProvisioningAppLauncherHandlerTest {
 
     @Test
     public void testOnCaseManagementProvisioningCompletedEvent() {
-        appLauncherHandler.onCaseManagementProvisioningCompletedEvent(new CaseProvisioningCompletedEvent());
+        appLauncherHandler.onCaseManagementProvisioningCompletedEvent(new CaseProvisioningCompletedEvent("/context"));
 
         verify(appLauncherAddEvent).fire(any(AppLauncherAddEvent.class));
         assertNotification(SUCCESS);

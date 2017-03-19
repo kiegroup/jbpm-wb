@@ -30,12 +30,14 @@ import org.apache.http.impl.client.HttpClients;
 import org.guvnor.ala.pipeline.Input;
 import org.guvnor.ala.pipeline.Pipeline;
 import org.guvnor.ala.pipeline.execution.PipelineExecutor;
+import org.guvnor.ala.wildfly.model.WildflyRuntime;
 import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningCompletedEvent;
 import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningFailedEvent;
 import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningStartedEvent;
 import org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.apache.commons.io.FilenameUtils;
 import org.uberfire.commons.async.DescriptiveRunnable;
 import org.uberfire.commons.async.SimpleAsyncExecutorService;
 
@@ -59,8 +61,9 @@ public class CaseProvisioningExecutor {
     public void execute(final PipelineExecutor executor, final Pipeline pipeline, final Input input) {
         SimpleAsyncExecutorService.getDefaultInstance().execute(new ProvisionRunnable(() -> {
             startedEvent.fire(new CaseProvisioningStartedEvent());
-            executor.execute(input, pipeline, b -> {
-                completedEvent.fire(new CaseProvisioningCompletedEvent());
+            executor.execute(input, pipeline, (WildflyRuntime b) -> {
+                final String context = "/" + FilenameUtils.getBaseName(b.getId());
+                completedEvent.fire(new CaseProvisioningCompletedEvent(context));
                 LOGGER.info("jBPM Case Management Showcase app provisioning completed.");
             });
         }));

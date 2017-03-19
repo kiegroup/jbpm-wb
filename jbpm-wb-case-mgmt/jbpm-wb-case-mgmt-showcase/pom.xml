@@ -518,7 +518,7 @@
                     <run>/opt/jboss/wildfly/bin/add-user.sh -u admin -p admin -g kie-server,user -a -s</run>
                     <run>/opt/jboss/wildfly/bin/add-user.sh -u user -p user -g kie-server,user -a -s</run>
                     <run>/opt/jboss/wildfly/bin/add-user.sh -u kieserver -p kieserver1! -g kie-server -a -s</run>
-                    <run>ln -s /maven/jbpm-wb-case-mgmt-showcase.war /opt/jboss/wildfly/standalone/deployments/jbpm-wb-case-mgmt-showcase.war</run>
+                    <run>ln -s /maven/jbpm-cm.war /opt/jboss/wildfly/standalone/deployments/jbpm-cm.war</run>
                     <run>ln -s /maven/kie-server.war /opt/jboss/wildfly/standalone/deployments/kie-server.war</run>
                     <run>mkdir $HOME/.m2</run>
                     <run>ln -s /maven/settings.xml $HOME/.m2/settings.xml</run>
@@ -531,7 +531,7 @@
                           <includes>
                             <include>org.jbpm:jbpm-wb-case-mgmt-showcase:war</include>
                           </includes>
-                          <outputFileNameMapping>jbpm-wb-case-mgmt-showcase.war</outputFileNameMapping>
+                          <outputFileNameMapping>jbpm-cm.war</outputFileNameMapping>
                         </dependencySet>
                         <dependencySet>
                           <scope>provided</scope>
