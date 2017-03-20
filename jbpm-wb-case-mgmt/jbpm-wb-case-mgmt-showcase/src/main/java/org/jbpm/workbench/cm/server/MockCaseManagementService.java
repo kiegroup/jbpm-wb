@@ -42,7 +42,6 @@ import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseActionType;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.workbench.cm.util.CaseMilestoneSearchRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +100,11 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     }
 
     @Override
-    public String startCaseInstance(final String serverTemplateId, final String containerId, final String caseDefinitionId, final String owner) {
+    public String startCaseInstance(final String serverTemplateId,
+                                    final String containerId,
+                                    final String caseDefinitionId,
+                                    final String owner,
+                                    final List<CaseRoleAssignmentSummary> roleAssignments) {
         final CaseInstanceSummary ci = CaseInstanceSummary
                 .builder()
                 .caseId("CASE-" + Strings.padStart(String.valueOf(caseInstanceList.size() + 1), 5, '0'))
@@ -112,6 +115,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
                 .description("New case instance for development")
                 .containerId(containerId)
                 .stages(caseStageList)
+                .roleAssignments(roleAssignments)
                 .build();
         caseInstanceList.add(ci);
 

@@ -130,10 +130,10 @@ public class CaseRolesViewImpl implements CaseRolesPresenter.CaseRolesView,Pagin
         removeAllChildren(roles);
         int visibleItemsSize = visibleItems.size();
         if(visibleItemsSize>0){
-            visibleItems.stream().forEach(e -> ((CaseRoleItemView)e).setLastElementStyle(false));
+            visibleItems.forEach(e -> ((CaseRoleItemView)e).setLastElementStyle(false));
             ((CaseRoleItemView)visibleItems.get(visibleItemsSize-1)).setLastElementStyle(true);
         }
-        visibleItems.stream().forEach(e -> roles.appendChild(((CaseRoleItemView)e).getElement()) );
+        visibleItems.forEach(e -> roles.appendChild(((CaseRoleItemView)e).getElement()) );
     }
 
     @Override

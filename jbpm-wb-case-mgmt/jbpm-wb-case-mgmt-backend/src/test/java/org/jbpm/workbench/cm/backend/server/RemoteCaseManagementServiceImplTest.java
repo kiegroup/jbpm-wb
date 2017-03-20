@@ -26,6 +26,7 @@ import org.jbpm.workbench.cm.model.CaseCommentSummary;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
+import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
 import org.jbpm.workbench.cm.util.Actions;
 import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
@@ -193,11 +194,16 @@ public class RemoteCaseManagementServiceImplTest {
     @Test
     public void testStartCaseInstance() {
         final String owner = "userx";
-        testedService.startCaseInstance(serverTemplateId, containerId, caseDefinitionId, owner);
+        final String role = "test";
+        final String user = "user1";
+        final List<CaseRoleAssignmentSummary> roles = singletonList(CaseRoleAssignmentSummary.builder().name(role).users(singletonList(user)).build());
+        testedService.startCaseInstance(serverTemplateId, containerId, caseDefinitionId, owner, roles);
 
         final ArgumentCaptor<CaseFile> caseFileCaptor = ArgumentCaptor.forClass(CaseFile.class);
         verify(clientMock).startCase(eq(containerId), eq(caseDefinitionId), caseFileCaptor.capture());
-        assertEquals(owner, caseFileCaptor.getValue().getUserAssignments().get(CASE_OWNER_ROLE));
+        final CaseFile caseFile = caseFileCaptor.getValue();
+        assertEquals(owner, caseFile.getUserAssignments().get(CASE_OWNER_ROLE));
+        assertEquals(user, caseFile.getUserAssignments().get(role));
     }
 
     @Test

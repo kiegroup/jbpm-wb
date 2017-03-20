@@ -61,7 +61,6 @@ public class CaseMilestoneListViewImpl extends AbstractView<CaseMilestoneListPre
     @AutoBound
     private DataBinder<List<CaseMilestoneSummary>> caseMilestoneList;
 
-
     @Override
     public void init(final CaseMilestoneListPresenter presenter) {
         super.init(presenter);
