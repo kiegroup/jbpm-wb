@@ -23,31 +23,49 @@ If running on Wildfly, please check the different ways you can provide these set
 - [General configuration concepts](https://docs.jboss.org/author/display/WFLY10/General+configuration+concepts)
 - [Command line parameters](https://docs.jboss.org/author/display/WFLY10/Command+line+parameters)
 
-### Authentication options
+### General settings
 
-Independently from the method you choose, the url for the running Kie Server must be provided. This is done via the system property *org.kie.server.location*.
+To get started, you need to provide the url for the running Kie Server instance. This is done via the system property *org.kie.server.location*.
 
-- Authenticate using a pre-defined user name and password
-  Please note that using this method any user connected to the showcase application would share the credentials in the connected Kie Server.
   Example:
+
   *org.kie.server.location*=http://localhost:8230/kie-server/services/rest/server
-  *org.kie.server.user*=kieserver
-  *org.kie.server.pwd*=kieserver1!
-- Authenticate using the current logged in user
-  To forward the current authenticated user into Kie Server, a new login module should be added to the WildFly instance running the showcase app.
+
+For some administrative operations to be executed on the Kie Server, i.e. provisioning of example project, it is also required that a pre-defined user is set.
+This can be done via two different methods:
+
+- Using a pre-defined user name and password (default)
+
+    Example:
+
+    *org.kie.server.user*=kieserver
+
+    *org.kie.server.pwd*=kieserver1!
+
+- Using a Keyclock token
+
+    For more information on how to set up Keyclock using token based authentication, please read the [Keycloak SSO integration](https://docs.jboss.org/drools/release/6.5.0.Final/drools-docs/html_single/index.html#kie.KeycloakSSOIntegration) documentaion.
+
+    Example:
+
+    *org.kie.server.location*=http://localhost:8230/kie-server/services/rest/server
+
+    *org.kie.server.token*=kieserver1!
+
+For more information about how to set up and operate the Kie Server, please read the upstream [documentation](https://docs.jboss.org/drools/release/6.5.0.Final/drools-docs/html_single/index.html#d0e24201).
+
+### Authentication setup
+
+To authenticate using the current logged in user and forward the user credentials to the Kie Server, a new login module should be added to the WildFly instance running the showcase app.
   Please add this new login module in the security domain *other*.
   ```
   <login-module code="org.kie.security.jaas.KieLoginModule" flag="required" module="deployment.jbpm-wb-case-mgmt-showcase.war"/>
   ```
   When using this mode, users must co-exist in both servers where the showcase app and Kie Server are running in order for the authentication to suceed.
-  To enable this authentication mode, only the Kie Server location system property must be provided.
-  Example:
-  *org.kie.server.location*=http://localhost:8230/kie-server/services/rest/server
-- Authenticate using a Keyclock token
-  For more information on how to set up Keyclock using token based authentication, please check the [Keycloak SSO integration](https://docs.jboss.org/drools/release/6.5.0.Final/drools-docs/html_single/index.html#kie.KeycloakSSOIntegration) documentaion.
-  Example:
-  *org.kie.server.location*=http://localhost:8230/kie-server/services/rest/server
-  *org.kie.server.token*=kieserver1!
+
+  Users should also have the following roles:
+  - user
+  - kie-server
 
 ## Development mode
 
@@ -80,34 +98,3 @@ Start the server by running:
 Verify the application is running. Go to http://SERVER:PORT/jbpm-wb-case-mgmt-showcase/ and type the specified username and password. You should see simple XML message with basic information about the server.
 
 For more details, please check the [Getting Started Guide](https://docs.jboss.org/author/display/WFLY10/Getting+Started+Guide).
-
-## Demo Docker image
-
-To allow you to quickly get started with the jBPM Case Management Showcase fully integrated with a running Kie Server, a Docker image can be generated as part of the build.
-This image contains both applications deployed to a single WildFly 10 instance. It also provides the settings necessary for showcase to retrieve the necessary data from the running Kie Server instance.
-By default, a few demo containers are deployed to allow you to interact with the Case Management concepts as well as pre-defined users with the following credentials: admin/admin and user/user. 
-Please note, that you need [Docker](https://www.docker.io/) installed in your system to successfully build the demo image.
-
-To build the image, please execute the following command:
-```
-mvn clean package -Dfull -Ddocker
-```
-Once the build is complete you can check your local Docker repository for a new image with name: jboss/jbpm-case-mgmt-showcase-demo
-```
-docker images
-```
-
-To build and start the image, please execute the following command or simply use the Docker CLI
-```
-mvn clean package -Dfull -Ddocker docker:start
-```
-The newly created container image will be started and a random port will be assigned to in your localhost to the WildFly instance running on the container.
-You can check the actual value by executing:
-```
-docker ps
-```
-
-For checking the WildFly instance logs via Maven, please execute the following command:  
-```
-mvn docker:logs -Ddocker.follow
-```
