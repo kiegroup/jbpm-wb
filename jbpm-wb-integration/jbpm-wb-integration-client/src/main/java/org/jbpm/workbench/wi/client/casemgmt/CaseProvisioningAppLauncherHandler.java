@@ -30,7 +30,7 @@ import org.jbpm.workbench.wi.client.i18n.Constants;
 import org.kie.workbench.common.widgets.client.popups.launcher.events.AppLauncherAddEvent;
 import org.uberfire.workbench.events.NotificationEvent;
 
-import static org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningStatus.COMPLETED;
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.uberfire.workbench.events.NotificationEvent.NotificationType.ERROR;
 import static org.uberfire.workbench.events.NotificationEvent.NotificationType.SUCCESS;
 
@@ -48,11 +48,11 @@ public class CaseProvisioningAppLauncherHandler {
     private Caller<CaseProvisioningService> service;
 
     public void verifyCaseAppStatus() {
-        service.call(s -> {
-            if (s == COMPLETED) {
-                service.call((String ctx) -> addCaseAppLauncher(ctx)).getApplicationContext();
+        service.call((String ctx) -> {
+            if (isNullOrEmpty(ctx) == false) {
+                addCaseAppLauncher(ctx);
             }
-        }).getProvisioningStatus();
+        }).getApplicationContext();
     }
 
     public void onCaseManagementProvisioningStartedEvent(@Observes CaseProvisioningStartedEvent event) {
@@ -60,21 +60,24 @@ public class CaseProvisioningAppLauncherHandler {
     }
 
     public void onCaseManagementProvisioningCompletedEvent(@Observes CaseProvisioningCompletedEvent event) {
-        notification.fire(new NotificationEvent(constants.CaseAppProvisioningCompleted(), SUCCESS));
+        notification.fire(new NotificationEvent(constants.CaseAppProvisioningCompleted(),
+                                                SUCCESS));
         addCaseAppLauncher(event.getAppContext());
     }
 
     protected void addCaseAppLauncher(final String caseAppContext) {
-        appLauncherAddEvent.fire(new AppLauncherAddEvent(constants.CaseAppName(), caseAppContext, null));
+        appLauncherAddEvent.fire(new AppLauncherAddEvent(constants.CaseAppName(),
+                                                         caseAppContext,
+                                                         null));
     }
 
     public void onCaseManagementProvisioningFailedEvent(@Observes CaseProvisioningFailedEvent event) {
-        notification.fire(new NotificationEvent(constants.CaseAppProvisioningFailed(), ERROR));
+        notification.fire(new NotificationEvent(constants.CaseAppProvisioningFailed(),
+                                                ERROR));
     }
 
     @Inject
     public void setCaseProvisioningService(final Caller<CaseProvisioningService> service) {
         this.service = service;
     }
-
 }

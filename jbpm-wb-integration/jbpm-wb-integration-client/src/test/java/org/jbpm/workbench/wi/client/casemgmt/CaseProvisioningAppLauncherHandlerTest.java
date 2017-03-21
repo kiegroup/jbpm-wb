@@ -36,7 +36,6 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.workbench.events.NotificationEvent;
 
-import static org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningStatus.*;
 import static org.uberfire.workbench.events.NotificationEvent.NotificationType.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -66,8 +65,8 @@ public class CaseProvisioningAppLauncherHandlerTest {
     }
 
     @Test
-    public void testVerifyCaseAppStatusDisabled() {
-        when(caseManagementService.getProvisioningStatus()).thenReturn(DISABLED);
+    public void testVerifyCaseAppEmpty() {
+        when(caseManagementService.getApplicationContext()).thenReturn("");
 
         appLauncherHandler.verifyCaseAppStatus();
 
@@ -75,8 +74,16 @@ public class CaseProvisioningAppLauncherHandlerTest {
     }
 
     @Test
-    public void testVerifyCaseAppStatusCompleted() {
-        when(caseManagementService.getProvisioningStatus()).thenReturn(COMPLETED);
+    public void testVerifyCaseAppNull() {
+        when(caseManagementService.getApplicationContext()).thenReturn(null);
+
+        appLauncherHandler.verifyCaseAppStatus();
+
+        verify(appLauncherAddEvent, never()).fire(any(AppLauncherAddEvent.class));
+    }
+
+    @Test
+    public void testVerifyCaseApp() {
         when(caseManagementService.getApplicationContext()).thenReturn("/context");
 
         appLauncherHandler.verifyCaseAppStatus();
