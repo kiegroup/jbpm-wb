@@ -157,6 +157,10 @@ public class CaseProvisioningServiceImpl implements CaseProvisioningService {
 
     @Override
     public String getApplicationContext() {
-        return caseAppContext;
+        if(status == DISABLED){
+            return settings.getURL();
+        } else {
+            return caseAppContext;
+        }
     }
 }

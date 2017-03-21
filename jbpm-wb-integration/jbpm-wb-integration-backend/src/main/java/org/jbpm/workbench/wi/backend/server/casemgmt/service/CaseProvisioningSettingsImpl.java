@@ -34,6 +34,7 @@ public class CaseProvisioningSettingsImpl implements CaseProvisioningSettings {
 
     public static final String SHOWCASE_DEPLOY = "org.jbpm.casemgmt.showcase.deploy";
     public static final String SHOWCASE_PATH = "org.jbpm.casemgmt.showcase.path";
+    public static final String SHOWCASE_URL = "org.jbpm.casemgmt.showcase.url";
     public static final String SHOWCASE_GAV = "showcase.gav";
     public static final String WIDLFLY_MANAGEMENT_PORT = "org.jbpm.casemgmt.showcase.wildfly.management-port";
     public static final String WIDLFLY_MANAGEMENT_HOST = "org.jbpm.casemgmt.showcase.wildfly.management-host";
@@ -94,4 +95,8 @@ public class CaseProvisioningSettingsImpl implements CaseProvisioningSettings {
         return showcaseGAV;
     }
 
+    @Override
+    public String getURL() {
+        return System.getProperty(SHOWCASE_URL);
+    }
 }

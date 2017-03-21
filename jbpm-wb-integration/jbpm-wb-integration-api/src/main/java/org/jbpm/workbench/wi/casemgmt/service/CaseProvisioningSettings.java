@@ -37,4 +37,6 @@ public interface CaseProvisioningSettings {
 
     String getGAV();
 
+    String getURL();
+
 }
