@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Strings.isNullOrEmpty;
 
 public class KieServerUtils {
 
@@ -42,14 +41,7 @@ public class KieServerUtils {
     public static KieServicesClient createKieServicesClient(final String... capabilities) {
         final String kieServerEndpoint = System.getProperty(KieServerConstants.KIE_SERVER_LOCATION);
         checkNotNull(kieServerEndpoint, "Missing Kie Server system property " + KieServerConstants.KIE_SERVER_LOCATION);
-        final String userName = System.getProperty(KieServerConstants.CFG_KIE_USER);
-        final String password = System.getProperty(KieServerConstants.CFG_KIE_PASSWORD);
-
-        if (isNullOrEmpty(userName)) {
-            return createKieServicesClient(kieServerEndpoint, null, getCredentialsProvider(), capabilities);
-        } else {
-            return createKieServicesClient(kieServerEndpoint, null, userName, password, capabilities);
-        }
+        return createKieServicesClient(kieServerEndpoint, null, getCredentialsProvider(), capabilities);
     }
 
     public static KieServicesClient createAdminKieServicesClient(final String... capabilities) {
