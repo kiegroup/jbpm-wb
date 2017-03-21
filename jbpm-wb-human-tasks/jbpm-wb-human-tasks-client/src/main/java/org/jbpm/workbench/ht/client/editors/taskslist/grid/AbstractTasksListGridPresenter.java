@@ -339,6 +339,9 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
                 dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESS_INSTANCE_ID, i),
                 dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_DEPLOYMENT_ID, i),
                 dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PARENT_ID, i),
+                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_LAST_MODIFICATION_DATE, i),
+                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_PROCESS_INSTANCE_CORRELATION_KEY, i),
+                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_PROCESS_INSTANCE_DESCRIPTION, i),
                 HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet.getUUID()));
     }
 

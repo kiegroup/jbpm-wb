@@ -158,7 +158,7 @@ public class DataSetTasksListGridViewTest {
             @Override
             public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
                 final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[ 0 ];
-                assertTrue(columns.size()==10);
+                assertTrue(columns.size()==14);
                 return null;
             }
         } ).when( currentListGrid ).addColumns(anyList());
@@ -178,7 +178,7 @@ public class DataSetTasksListGridViewTest {
             @Override
             public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
                 final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[ 0 ];
-                assertTrue(columns.size()==13);
+                assertTrue(columns.size()==17);
                 return null;
             }
         } ).when( currentListGrid ).addColumns(anyList());

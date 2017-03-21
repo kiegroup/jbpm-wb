@@ -16,6 +16,8 @@
 package org.jbpm.workbench.ht.client.editors.taskprocesscontext;
 
 import java.util.Collections;
+import java.util.Date;
+
 import javax.enterprise.event.Event;
 
 import com.google.common.collect.Sets;
@@ -52,8 +54,8 @@ public class TaskProcessContextPresenterTest {
     private static final Long TASK_ID_WITH_PROC = 2L;
     private static final Long TASK_ID_NULL_DETAILS = 3L;
 
-    TaskSummary taskNoProcess = new TaskSummary(TASK_ID_NO_PROCESS, "task without process", null, null, 0, null, null, null, null, null, null/*ProcessID*/, -1, -1 /*Proc instId*/, null, -1);
-    TaskSummary taskWithProcess = new TaskSummary(TASK_ID_WITH_PROC, "task with process", null, null, 0, null, null, null, null, null, "TEST_PROCESS_ID"/*ProcessID*/, -1, 123L /*Proc inst Id*/, null, -1);
+    TaskSummary taskNoProcess = new TaskSummary(TASK_ID_NO_PROCESS, "task without process", null, null, 0, null, null, null, null, null, null/*ProcessID*/, -1, -1 /*Proc instId*/, null, -1, new Date(), null, null);
+    TaskSummary taskWithProcess = new TaskSummary(TASK_ID_WITH_PROC, "task with process", null, null, 0, null, null, null, null, null, "TEST_PROCESS_ID"/*ProcessID*/, -1, 123L /*Proc inst Id*/, null, -1, new Date(), null, null);
 
     @Mock
     ProcessRuntimeDataService dataServiceEntryPoint;
