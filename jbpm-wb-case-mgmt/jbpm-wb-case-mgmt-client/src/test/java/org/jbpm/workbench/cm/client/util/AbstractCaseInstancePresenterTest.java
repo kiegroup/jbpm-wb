@@ -23,6 +23,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.service.CaseManagementService;
+import org.jbpm.workbench.cm.util.CaseStatus;
 import org.junit.Before;
 import org.mockito.Mock;
 import org.uberfire.mocks.CallerMock;
@@ -56,7 +57,7 @@ public abstract class AbstractCaseInstancePresenterTest {
         return CaseInstanceSummary.builder()
                 .caseId("caseId")
                 .description("description")
-                .status(1)
+                .status(CaseStatus.OPEN)
                 .containerId("containerId")
                 .owner("admin")
                 .completedAt(new Date())

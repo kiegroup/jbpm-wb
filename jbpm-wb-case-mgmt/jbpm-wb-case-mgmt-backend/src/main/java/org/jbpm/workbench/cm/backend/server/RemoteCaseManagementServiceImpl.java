@@ -82,7 +82,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
 
     @Override
     public List<CaseInstanceSummary> getCaseInstances(final CaseInstanceSearchRequest request) {
-        final List<CaseInstance> caseInstances = client.getCaseInstances(singletonList(request.getStatus()), 0, PAGE_SIZE_UNLIMITED);
+        final List<CaseInstance> caseInstances = client.getCaseInstances(singletonList(request.getStatus().getName()), 0, PAGE_SIZE_UNLIMITED);
         final Comparator<CaseInstanceSummary> comparator = getCaseInstanceSummaryComparator(request);
         return caseInstances.stream().map(new CaseInstanceMapper()).sorted(comparator).collect(toList());
     }

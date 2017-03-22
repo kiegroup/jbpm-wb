@@ -22,6 +22,7 @@ import org.jbpm.workbench.cm.util.CaseStageStatus;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.CaseStageSummary;
+import org.jbpm.workbench.cm.util.CaseStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,7 +67,7 @@ public class CaseStagesPresenterTest extends AbstractCaseInstancePresenterTest {
                 .caseId(caseId)
                 .caseDefinitionId(caseDefId)
                 .description("description")
-                .status(1)
+                .status(CaseStatus.OPEN)
                 .containerId(containerId)
                 .stages(Lists.newArrayList(createCaseStageSummary()))
                 .build();
