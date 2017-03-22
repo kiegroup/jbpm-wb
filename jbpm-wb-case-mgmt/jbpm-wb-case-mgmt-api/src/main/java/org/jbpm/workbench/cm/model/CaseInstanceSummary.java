@@ -23,6 +23,7 @@ import java.util.Objects;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
+import org.jbpm.workbench.cm.util.CaseStatus;
 
 import static java.util.Optional.ofNullable;
 
@@ -32,7 +33,7 @@ public class CaseInstanceSummary {
 
     private String caseId;
     private String description;
-    private Integer status;
+    private CaseStatus status;
     private String containerId;
     private String owner;
     private Date startedAt;
@@ -64,11 +65,11 @@ public class CaseInstanceSummary {
         this.description = description;
     }
 
-    public Integer getStatus() {
+    public CaseStatus getStatus() {
         return status;
     }
 
-    public void setStatus(final Integer status) {
+    public void setStatus(final CaseStatus status) {
         this.status = status;
     }
 
@@ -180,7 +181,7 @@ public class CaseInstanceSummary {
             return this;
         }
 
-        public Builder status(final Integer status) {
+        public Builder status(final CaseStatus status) {
             caseInstance.setStatus(status);
             return this;
         }

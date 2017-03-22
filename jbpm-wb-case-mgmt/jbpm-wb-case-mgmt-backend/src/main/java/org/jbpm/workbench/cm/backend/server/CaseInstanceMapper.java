@@ -19,6 +19,7 @@ package org.jbpm.workbench.cm.backend.server;
 import java.util.function.Function;
 
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
+import org.jbpm.workbench.cm.util.CaseStatus;
 import org.kie.server.api.model.cases.CaseInstance;
 
 import static java.util.Collections.emptyList;
@@ -36,7 +37,7 @@ public class CaseInstanceMapper implements Function<CaseInstance, CaseInstanceSu
         return CaseInstanceSummary.builder().
                 caseId(ci.getCaseId()).
                 description(ci.getCaseDescription()).
-                status(ci.getCaseStatus()).
+                status(CaseStatus.fromId(ci.getCaseStatus())).
                 containerId(ci.getContainerId()).
                 owner(ci.getCaseOwner()).
                 startedAt(ci.getStartedAt()).

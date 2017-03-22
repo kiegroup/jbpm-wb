@@ -24,6 +24,7 @@ import org.jbpm.workbench.cm.client.overview.CaseOverviewPresenter;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.service.CaseManagementService;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
+import org.jbpm.workbench.cm.util.CaseStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,7 +62,7 @@ public class CaseInstanceListPresenterTest {
         return CaseInstanceSummary.builder()
                 .caseId("caseId")
                 .description("description")
-                .status(1)
+                .status(CaseStatus.OPEN)
                 .containerId("containerId")
                 .build();
     }

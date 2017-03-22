@@ -37,7 +37,7 @@ import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.cm.client.util.AbstractView;
 import org.jbpm.workbench.cm.client.util.CaseStatusConverter;
-import org.jbpm.workbench.cm.client.util.CaseStatusEnum;
+import org.jbpm.workbench.cm.util.CaseStatus;
 import org.jbpm.workbench.cm.client.util.DateConverter;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 
@@ -141,8 +141,7 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
 
     private void executeOnlyIfActive(final Consumer<CaseInstanceSummary> consumer){
         final CaseInstanceSummary caseInstanceSummary = this.caseInstanceSummary.getModel();
-        final CaseStatusEnum status = CaseStatusEnum.fromStatus(caseInstanceSummary.getStatus());
-        if(status == CaseStatusEnum.ACTIVE){
+        if(caseInstanceSummary.getStatus() == CaseStatus.OPEN){
             consumer.accept(caseInstanceSummary);
         }
     }

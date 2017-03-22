@@ -19,26 +19,31 @@ package org.jbpm.workbench.cm.client.util;
 import org.jboss.errai.databinding.client.api.Converter;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jbpm.workbench.cm.util.CaseStatus;
 
-public class CaseStatusConverter implements Converter<Integer, String> {
-
-    @Override
-    public Integer toModelValue(final String widgetValue) {
-        throw new UnsupportedOperationException("Case status converter from String not implemented.");
-    }
+public class CaseStatusConverter implements Converter<CaseStatus, String> {
 
     @Override
-    public String toWidgetValue(final Integer modelValue) {
-        if (modelValue == null) {
-            return "";
+    public CaseStatus toModelValue(final String widgetValue) {
+        if (widgetValue == null) {
+            return null;
         } else {
-            return getTranslationService().format(CaseStatusEnum.fromStatus(modelValue).getLabel());
+            return CaseStatus.fromName(widgetValue);
         }
     }
 
     @Override
-    public Class<Integer> getModelType() {
-        return Integer.class;
+    public String toWidgetValue(final CaseStatus modelValue) {
+        if (modelValue == null) {
+            return "";
+        } else {
+            return getTranslationService().format(modelValue.getLabel());
+        }
+    }
+
+    @Override
+    public Class<CaseStatus> getModelType() {
+        return CaseStatus.class;
     }
 
     @Override

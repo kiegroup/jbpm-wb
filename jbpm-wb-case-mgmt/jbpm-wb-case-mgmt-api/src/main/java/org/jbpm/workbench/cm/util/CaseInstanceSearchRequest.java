@@ -23,7 +23,7 @@ import org.jboss.errai.databinding.client.api.Bindable;
 @Bindable
 public class CaseInstanceSearchRequest {
 
-    private Integer status = 1;
+    private CaseStatus status = CaseStatus.OPEN;
 
     private CaseInstanceSortBy sortBy = CaseInstanceSortBy.CASE_ID;
 
@@ -32,11 +32,11 @@ public class CaseInstanceSearchRequest {
     public CaseInstanceSearchRequest() {
     }
 
-    public Integer getStatus() {
+    public CaseStatus getStatus() {
         return status;
     }
 
-    public void setStatus(final Integer status) {
+    public void setStatus(final CaseStatus status) {
         this.status = status;
     }
 

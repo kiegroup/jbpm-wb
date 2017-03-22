@@ -34,7 +34,8 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.cm.client.util.AbstractView;
-import org.jbpm.workbench.cm.client.util.CaseStatusEnum;
+import org.jbpm.workbench.cm.client.util.CaseStatusConverter;
+import org.jbpm.workbench.cm.util.CaseStatus;
 import org.jbpm.workbench.cm.client.util.Select;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.workbench.cm.util.CaseInstanceSortBy;
@@ -58,7 +59,7 @@ public class CaseInstanceListSearchViewImpl extends AbstractView<CaseInstanceLis
     private Select sortBy;
 
     @Inject
-    @Bound
+    @Bound(converter = CaseStatusConverter.class)
     @DataField("status-select")
     private Select status;
 
@@ -92,10 +93,7 @@ public class CaseInstanceListSearchViewImpl extends AbstractView<CaseInstanceLis
 
     @PostConstruct
     public void init() {
-        stream(CaseStatusEnum.values())
-                .collect(toMap(e -> translationService.format(e.getLabel()), e -> e.getStatus()))
-                .entrySet().stream().sorted((s1, s2) -> s1.getKey().compareTo(s2.getKey()))
-                .forEach(e -> status.addOption(e.getKey(), e.getValue().toString()));
+        stream(CaseStatus.values()).forEach(s -> status.addOption(translationService.format(s.getLabel()), s.getName()));
         status.refresh();
 
         stream(CaseInstanceSortBy.values()).collect(toMap(s -> s.name(), s -> translationService.format(s.name()))).entrySet().stream().sorted((e1, e2) -> e1.getValue().compareTo(e2.getValue())).forEach(s -> sortBy.addOption(s.getValue(), s.getKey()));
@@ -115,6 +113,7 @@ public class CaseInstanceListSearchViewImpl extends AbstractView<CaseInstanceLis
 
         searchRequest.setModel(new CaseInstanceSearchRequest(), StateSync.FROM_MODEL);
         searchRequest.addPropertyChangeHandler(e -> presenter.searchCaseInstances());
+
     }
 
     public CaseInstanceSearchRequest getCaseInstanceSearchRequest() {

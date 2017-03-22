@@ -42,6 +42,7 @@ import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseActionType;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.workbench.cm.util.CaseMilestoneSearchRequest;
+import org.jbpm.workbench.cm.util.CaseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +112,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
                 .owner(owner)
                 .startedAt(new Date())
                 .caseDefinitionId(caseDefinitionId)
-                .status(1)
+                .status(CaseStatus.OPEN)
                 .description("New case instance for development")
                 .containerId(containerId)
                 .stages(caseStageList)
@@ -143,12 +144,12 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
 
     @Override
     public void cancelCaseInstance(final String serverTemplateId, final String containerId, final String caseId) {
-        executeOnCaseInstance(caseId, c -> c.setStatus(3));
+        executeOnCaseInstance(caseId, c -> c.setStatus(CaseStatus.CANCELLED));
     }
 
     @Override
     public void destroyCaseInstance(final String serverTemplateId, final String containerId, final String caseId) {
-        executeOnCaseInstance(caseId, c -> c.setStatus(3));
+        executeOnCaseInstance(caseId, c -> c.setStatus(CaseStatus.CANCELLED));
     }
 
     @Override

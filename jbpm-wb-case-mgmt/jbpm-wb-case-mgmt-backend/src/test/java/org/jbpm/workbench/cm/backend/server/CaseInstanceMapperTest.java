@@ -37,7 +37,7 @@ public class CaseInstanceMapperTest {
         assertNotNull(cis);
         assertEquals(ci.getCaseId(), cis.getCaseId());
         assertEquals(ci.getContainerId(), cis.getContainerId());
-        assertEquals(ci.getCaseStatus(), cis.getStatus());
+        assertEquals(ci.getCaseStatus(), cis.getStatus().getId());
         assertEquals(ci.getCaseDescription(), cis.getDescription());
         assertEquals(ci.getCaseOwner(), cis.getOwner());
         assertEquals(ci.getStartedAt(), cis.getStartedAt());

@@ -135,7 +135,7 @@ public class RemoteCaseManagementServiceImplTest {
     public void getCaseInstances_singleCaseInstance() {
         final CaseInstanceSearchRequest request = new CaseInstanceSearchRequest();
         final CaseInstance instance = createTestInstance(caseId);
-        when(clientMock.getCaseInstances(eq(singletonList(request.getStatus())), anyInt(), anyInt())).thenReturn(singletonList(instance));
+        when(clientMock.getCaseInstances(eq(singletonList(request.getStatus().getName())), anyInt(), anyInt())).thenReturn(singletonList(instance));
 
         final List<CaseInstanceSummary> instances = testedService.getCaseInstances(request);
         assertNotNull(instances);
@@ -146,7 +146,7 @@ public class RemoteCaseManagementServiceImplTest {
     @Test
     public void getCaseInstances_emptyList() {
         final CaseInstanceSearchRequest request = new CaseInstanceSearchRequest();
-        when(clientMock.getCaseInstances(eq(singletonList(request.getStatus())), anyInt(), anyInt())).thenReturn(emptyList());
+        when(clientMock.getCaseInstances(eq(singletonList(request.getStatus().getName())), anyInt(), anyInt())).thenReturn(emptyList());
 
         final List<CaseInstanceSummary> instances = testedService.getCaseInstances(request);
         assertNotNull(instances);
