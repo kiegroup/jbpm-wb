@@ -30,6 +30,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import static org.jboss.errai.common.client.dom.DOMUtil.addCSSClass;
 import static org.jboss.errai.common.client.dom.DOMUtil.removeCSSClass;
+import static org.jboss.errai.common.client.dom.DOMUtil.removeAllElementChildren;
 import static org.jboss.errai.common.client.dom.Window.getDocument;
 
 @Templated(stylesheet = "InlineNotification.css")
@@ -62,6 +63,7 @@ public class InlineNotification implements IsElement {
     }
 
     public void setMessage(final List<String> messages) {
+        removeAllElementChildren(this.message);
         final HTMLElement ul = getDocument().createElement("ul");
         addCSSClass(ul, "list-unstyled");
         for (String message : messages) {

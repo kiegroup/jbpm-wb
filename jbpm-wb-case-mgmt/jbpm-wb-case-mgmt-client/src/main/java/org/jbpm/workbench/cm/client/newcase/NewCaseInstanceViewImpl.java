@@ -208,7 +208,7 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
     }
 
     @Override
-    public void showValidationError(final List<String> messages) {
+    public void showError(final List<String> messages) {
         if (messages.isEmpty()) {
             return;
         }

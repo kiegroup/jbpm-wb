@@ -25,6 +25,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.common.collect.Iterables;
+import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
@@ -38,6 +39,7 @@ import org.uberfire.client.mvp.UberElement;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -112,7 +114,7 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
         final List<String> assignmentErrors = validateRolesAssignments(caseDefinition,
                                                                        assignments);
         if (assignmentErrors.isEmpty() == false) {
-            view.showValidationError(assignmentErrors);
+            view.showError(assignmentErrors);
             return;
         }
 
@@ -123,6 +125,10 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
                                                                                       caseId),
                                                             NotificationEvent.NotificationType.SUCCESS));
                     newCaseEvent.fire(new CaseCreatedEvent(caseId));
+                },
+                (Message message, Throwable t) -> {
+                    view.showError(singletonList(t.getMessage()));
+                    return false;
                 }
         ).startCaseInstance(null,
                             caseDefinition.getContainerId(),
@@ -181,6 +187,6 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
 
         void setOwner(String owner);
 
-        void showValidationError(List<String> messages);
+        void showError(List<String> messages);
     }
 }
