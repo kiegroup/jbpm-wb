@@ -203,7 +203,10 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                 dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_MESSAGE, index),
                 dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_BUSINESSKEY, index),
                 dataSetQueryHelper.getColumnIntValue(dataSet, COLUMN_RETRIES, index),
-                dataSetQueryHelper.getColumnIntValue(dataSet, COLUMN_EXECUTIONS, index)
+                dataSetQueryHelper.getColumnIntValue(dataSet, COLUMN_EXECUTIONS, index),
+                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_PROCESS_NAME, index),
+                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESS_INSTANCE_ID, index),
+                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_PROCESS_INSTANCE_DESCRIPTION, index)
         );
     }
 

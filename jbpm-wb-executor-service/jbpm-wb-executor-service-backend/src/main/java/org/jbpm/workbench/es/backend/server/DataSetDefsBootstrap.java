@@ -46,7 +46,24 @@ public class DataSetDefsBootstrap {
                 .uuid(REQUEST_LIST_DATASET)
                 .name("Request List")
                 .dataSource(JBPM_DATA_SOURCE)
-                .dbSQL("select id, timestamp, status, commandName, message, businessKey, retries, executions from RequestInfo", false)
+                .dbSQL("select "
+                            + "ri.id, "
+                            + "ri.timestamp, "
+                            + "ri.status, "
+                            + "ri.commandName, "
+                            + "ri.message, "
+                            + "ri.businessKey, "
+                            + "ri.retries, "
+                            + "ri.executions, "
+                            + "pil.processName, "
+                            + "pil.processInstanceId, "
+                            + "pil.processInstanceDescription "
+                        + "from "
+                            + "RequestInfo ri "
+                        + "left join "
+                            + "ProcessInstanceLog pil "
+                        + "on "
+                            + "pil.processInstanceId=ri.processInstanceId", false)
                 .number(COLUMN_ID)
                 .date(COLUMN_TIMESTAMP)
                 .label(COLUMN_STATUS)
@@ -55,6 +72,9 @@ public class DataSetDefsBootstrap {
                 .label(COLUMN_BUSINESSKEY)
                 .number(COLUMN_RETRIES)
                 .number(COLUMN_EXECUTIONS)
+                .label(COLUMN_PROCESS_NAME)
+                .number(COLUMN_PROCESS_INSTANCE_ID)
+                .label(COLUMN_PROCESS_INSTANCE_DESCRIPTION)
                 .buildDef();
 
         // Hide all these internal data set from end user view

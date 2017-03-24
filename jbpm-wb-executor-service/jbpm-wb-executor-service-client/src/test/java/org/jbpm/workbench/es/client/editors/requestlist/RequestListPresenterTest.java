@@ -171,6 +171,9 @@ public class RequestListPresenterTest {
         final Integer retries = 2;
         final Integer executions = 1;
         final Date time = new Date();
+        final String processName = "myProcessName";
+        final Long processInstanceId = Long.valueOf(33);
+        final String processInstanceDescription = "myProcessInstanceDescription";
 
         when(dataSetQueryHelper.getColumnLongValue(any(DataSet.class), eq(COLUMN_ID), eq(0))).thenReturn(id);
         when(dataSetQueryHelper.getColumnDateValue(any(DataSet.class), eq(COLUMN_TIMESTAMP), eq(0))).thenReturn(time);
@@ -180,6 +183,9 @@ public class RequestListPresenterTest {
         when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class), eq(COLUMN_BUSINESSKEY), eq(0))).thenReturn(businessKey);
         when(dataSetQueryHelper.getColumnIntValue(any(DataSet.class), eq(COLUMN_RETRIES), eq(0))).thenReturn(retries);
         when(dataSetQueryHelper.getColumnIntValue(any(DataSet.class), eq(COLUMN_EXECUTIONS), eq(0))).thenReturn(executions);
+        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class), eq(COLUMN_PROCESS_NAME), eq(0))).thenReturn(processName);
+        when(dataSetQueryHelper.getColumnLongValue(any(DataSet.class), eq(COLUMN_PROCESS_INSTANCE_ID), eq(0))).thenReturn(processInstanceId);
+        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class), eq(COLUMN_PROCESS_INSTANCE_DESCRIPTION), eq(0))).thenReturn(processInstanceDescription);
 
         final RequestSummary rs = presenter.getRequestSummary(mock(DataSet.class), 0);
 
@@ -191,6 +197,9 @@ public class RequestListPresenterTest {
         assertEquals(businessKey, rs.getKey());
         assertEquals(retries, rs.getRetries());
         assertEquals(executions, rs.getExecutions());
+        assertEquals(processName, rs.getProcessName());
+        assertEquals(processInstanceId, rs.getProcessInstanceId());
+        assertEquals(processInstanceDescription, rs.getProcessInstanceDescription());
     }
 
     private FilterSettings createTableSettingsPrototype() {

@@ -35,11 +35,15 @@ public class RequestSummary extends GenericSummary {
     private Integer retries = 0;
     // Number of times that this request has been executed
     private Integer executions = 0;
+    private String processName;
+    private Long processInstanceId;
+    private String processInstanceDescription;
 
     public RequestSummary() {
     }
 
-    public RequestSummary(Long jobId, Date time, String status, String commandName, String message, String key, Integer retries, Integer executions) {
+    public RequestSummary(Long jobId, Date time, String status, String commandName, String message, String key,
+            Integer retries, Integer executions, String processName, Long processInstanceId, String processInstanceDescription) {
         this.id = jobId;
         this.jobId = jobId;
         this.time = time;
@@ -49,6 +53,9 @@ public class RequestSummary extends GenericSummary {
         this.key = key;
         this.retries = retries;
         this.executions = executions;
+        this.processName = processName;
+        this.processInstanceId = processInstanceId;
+        this.processInstanceDescription = processInstanceDescription;
     }
 
     public Long getJobId() {
@@ -113,6 +120,36 @@ public class RequestSummary extends GenericSummary {
 
     public void setExecutions(Integer executions) {
         this.executions = executions;
+    }
+
+    
+    public String getProcessName() {
+        return processName;
+    }
+
+    
+    public void setProcessName(String processName) {
+        this.processName = processName;
+    }
+
+    
+    public Long getProcessInstanceId() {
+        return processInstanceId;
+    }
+
+    
+    public void setProcessInstanceId(Long processInstanceId) {
+        this.processInstanceId = processInstanceId;
+    }
+
+    
+    public String getProcessInstanceDescription() {
+        return processInstanceDescription;
+    }
+
+    
+    public void setProcessInstanceDescription(String processInstanceDescription) {
+        this.processInstanceDescription = processInstanceDescription;
     }
 
 }
