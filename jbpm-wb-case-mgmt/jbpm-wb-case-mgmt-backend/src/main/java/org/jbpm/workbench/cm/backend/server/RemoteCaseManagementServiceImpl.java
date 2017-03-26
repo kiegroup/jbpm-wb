@@ -57,6 +57,7 @@ import static java.util.Comparator.comparing;
 
 @Service
 @ApplicationScoped
+@KieServerExceptionHandler
 public class RemoteCaseManagementServiceImpl implements CaseManagementService {
 
     public static final int PAGE_SIZE_UNLIMITED = Integer.MAX_VALUE;

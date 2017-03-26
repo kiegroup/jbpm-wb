@@ -36,6 +36,7 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
+import org.jbpm.workbench.cm.client.util.ErrorPopup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.client.mvp.PlaceManager;
@@ -72,6 +73,13 @@ public class ShowcaseEntryPoint {
 
     @Inject
     protected Caller<AuthenticationService> authService;
+
+    @Inject
+    protected ErrorPopup errorPopup;
+
+    public static native void redirect(String url)/*-{
+        $wnd.location = url;
+    }-*/;
 
     @AfterInitialization
     public void startDefaultWorkbench() {
@@ -128,7 +136,9 @@ public class ShowcaseEntryPoint {
 
     @UncaughtExceptionHandler
     public void handleUncaughtException(final Throwable t) {
-        LOGGER.error("Uncaught exception encountered", t);
+        errorPopup.showGenericError(t.getMessage());
+        LOGGER.error("Uncaught exception encountered",
+                     t);
     }
 
     protected class LogoutCommand implements Command {
@@ -145,7 +155,8 @@ public class ShowcaseEntryPoint {
         String getRedirectURL() {
             final String gwtModuleBaseURL = getGWTModuleBaseURL();
             final String gwtModuleName = getGWTModuleName();
-            final String url = gwtModuleBaseURL.replaceFirst("/" + gwtModuleName + "/", "/logout.jsp");
+            final String url = gwtModuleBaseURL.replaceFirst("/" + gwtModuleName + "/",
+                                                             "/logout.jsp");
             return url;
         }
 
@@ -156,11 +167,5 @@ public class ShowcaseEntryPoint {
         String getGWTModuleName() {
             return GWT.getModuleName();
         }
-
     }
-
-    public static native void redirect(String url)/*-{
-        $wnd.location = url;
-    }-*/;
-
 }
