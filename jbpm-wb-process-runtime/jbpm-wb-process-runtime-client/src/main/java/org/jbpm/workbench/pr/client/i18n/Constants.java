@@ -252,7 +252,9 @@ public interface Constants extends Messages {
     String Close();
 
     String Correlation_Key();
-    
+
+    String Last_Modification_Date();
+
     String Process_DeploymentId();
     
     String Basic();

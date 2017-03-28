@@ -316,7 +316,8 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
 
     public static ProcessInstanceSummary createProcessInstanceSummary(int key, int status) {
         return new ProcessInstanceSummary(key, "procTest", "test.0.1", "Test Proc", "1.0",
-                status, new Date(), "intiatior", "procTestInstanceDesc", "cKey", Long.valueOf(0));
+                status, new Date(), new Date(), "intiatior", "procTestInstanceDesc", "cKey",
+                Long.valueOf(0), new Date());
     }
 
     @Test
@@ -385,6 +386,53 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
         assertEquals(COLUMN_PROCESS_NAME, filters.get(1).getColumnId());
         assertEquals(COLUMN_PROCESS_INSTANCE_DESCRIPTION, filters.get(2).getColumnId());
         assertEquals(COLUMN_IDENTITY, filters.get(3).getColumnId());
+    }
+    
+    @Test
+    public void testDataSetQueryHelperColumnMapping() {
+        final Long TEST_PROC_INST_ID = Long.valueOf(55);
+        final String TEST_PROC_ID = "TEST_PROC_ID";
+        final String TEST_EXT_ID = "TEST_EXT_ID";
+        final String TEST_PROC_NAME = "TEST_PROC_NAME";
+        final String TEST_PROC_VER = "TEST_PROC_VER";
+        final int TEST_STATE = 7;
+        final Date TEST_START_DATE = new Date(new Date().getTime() - (2*60*60*1000));
+        final Date TEST_END_DATE = new Date(new Date().getTime() + (2*60*60*1000));
+        final String TEST_IDENTITY = "TEST_IDENTITY";
+        final String TEST_INST_DESC = "TEST_INST_DESC";
+        final String TEST_CORREL_KEY = "TEST_CORREL_KEY";
+        final Long TEST_PARENT_PROC_INST_ID = Long.valueOf(66);
+        final Date TEST_LAST_MODIF_DATE = new Date();
+
+        when(dataSetQueryHelper.getColumnLongValue(dataSetProcessVar, COLUMN_PROCESS_INSTANCE_ID, 0)).thenReturn(TEST_PROC_INST_ID);
+        when(dataSetQueryHelper.getColumnStringValue(dataSetProcessVar, COLUMN_PROCESS_ID, 0)).thenReturn(TEST_PROC_ID);
+        when(dataSetQueryHelper.getColumnStringValue(dataSetProcessVar, COLUMN_EXTERNAL_ID, 0)).thenReturn(TEST_EXT_ID);
+        when(dataSetQueryHelper.getColumnStringValue(dataSetProcessVar, COLUMN_PROCESS_NAME, 0)).thenReturn(TEST_PROC_NAME);
+        when(dataSetQueryHelper.getColumnStringValue(dataSetProcessVar, COLUMN_PROCESS_VERSION, 0)).thenReturn(TEST_PROC_VER);
+        when(dataSetQueryHelper.getColumnIntValue(dataSetProcessVar, COLUMN_STATUS, 0)).thenReturn(TEST_STATE);
+        when(dataSetQueryHelper.getColumnDateValue(dataSetProcessVar, COLUMN_START, 0)).thenReturn(TEST_START_DATE);
+        when(dataSetQueryHelper.getColumnDateValue(dataSetProcessVar, COLUMN_END, 0)).thenReturn(TEST_END_DATE);
+        when(dataSetQueryHelper.getColumnStringValue(dataSetProcessVar, COLUMN_IDENTITY, 0)).thenReturn(TEST_IDENTITY);
+        when(dataSetQueryHelper.getColumnStringValue(dataSetProcessVar, COLUMN_PROCESS_INSTANCE_DESCRIPTION, 0)).thenReturn(TEST_INST_DESC);
+        when(dataSetQueryHelper.getColumnStringValue(dataSetProcessVar, COLUMN_CORRELATION_KEY, 0)).thenReturn(TEST_CORREL_KEY);
+        when(dataSetQueryHelper.getColumnLongValue(dataSetProcessVar, COLUMN_PARENT_PROCESS_INSTANCE_ID, 0)).thenReturn(TEST_PARENT_PROC_INST_ID);
+        when(dataSetQueryHelper.getColumnDateValue(dataSetProcessVar, COLUMN_LAST_MODIFICATION_DATE, 0)).thenReturn(TEST_LAST_MODIF_DATE);
+
+        ProcessInstanceSummary pis = presenter.createProcessInstanceSummaryFromDataSet(dataSetProcessVar, 0);
+
+        assertEquals(TEST_PROC_INST_ID, pis.getProcessInstanceId());
+        assertEquals(TEST_PROC_ID, pis.getProcessId());
+        assertEquals(TEST_EXT_ID, pis.getDeploymentId());
+        assertEquals(TEST_PROC_NAME, pis.getProcessName());
+        assertEquals(TEST_PROC_VER, pis.getProcessVersion());
+        assertEquals(TEST_STATE, pis.getState());
+        assertEquals(TEST_START_DATE, pis.getStartTime());
+        assertEquals(TEST_END_DATE, pis.getEndTime());
+        assertEquals(TEST_IDENTITY, pis.getInitiator());
+        assertEquals(TEST_INST_DESC, pis.getProcessInstanceDescription());
+        assertEquals(TEST_CORREL_KEY, pis.getCorrelationKey());
+        assertEquals(TEST_PARENT_PROC_INST_ID, pis.getParentId());
+        assertEquals(TEST_LAST_MODIF_DATE, pis.getLastModificationDate());
     }
 
 }
