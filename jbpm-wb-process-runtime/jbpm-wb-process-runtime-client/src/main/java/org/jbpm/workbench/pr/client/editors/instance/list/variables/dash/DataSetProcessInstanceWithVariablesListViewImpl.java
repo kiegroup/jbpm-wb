@@ -770,22 +770,6 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
         builder.initBuilder();
 
         builder.dataset( PROCESS_INSTANCE_DATASET );
-
-//        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_ID() );
-//        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Definition_Id() );
-//        builder.setColumn(COLUMN_START, constants.Start(), DateUtils.getDateTimeFormatMask());
-//        builder.setColumn(COLUMN_END, constants.End(), DateUtils.getDateTimeFormatMask());
-//        builder.setColumn(COLUMN_STATUS, constants.Status());
-//        builder.setColumn(COLUMN_PARENT_PROCESS_INSTANCE_ID, constants.ParentProcessInstanceId() );
-//        builder.setColumn(COLUMN_OUTCOME, constants.Outcome());
-//        builder.setColumn(COLUMN_DURATION, constants.Duration());
-//        builder.setColumn(COLUMN_IDENTITY, constants.Identity());
-//        builder.setColumn(COLUMN_PROCESS_VERSION, constants.Version() );
-//        builder.setColumn(COLUMN_PROCESS_NAME, constants.Name() );
-//        builder.setColumn(COLUMN_CORRELATION_KEY, constants.Correlation_Key() );
-//        builder.setColumn(COLUMN_EXTERNAL_ID, constants.ExternalId() );
-//        builder.setColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION, constants.Process_Instance_Description() );
-
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
         builder.tableOrderDefault( COLUMN_START, DESCENDING );
