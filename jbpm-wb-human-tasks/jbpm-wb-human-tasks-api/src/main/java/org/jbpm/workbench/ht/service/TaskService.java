@@ -29,8 +29,6 @@ import org.jbpm.workbench.ht.model.TaskSummary;
 @Remote
 public interface TaskService {
 
-    List<TaskSummary> getActiveTasks(String serverTemplateId, Integer page, Integer pageSize);
-
     TaskSummary getTask(String serverTemplateId, String containerId, Long taskId);
 
     void updateTask(String serverTemplateId, String containerId, Long taskId, Integer priority, String description, Date dueDate);

@@ -48,19 +48,6 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
     private IdentityProvider identityProvider;
 
     @Override
-    public List<TaskSummary> getActiveTasks(String serverTemplateId, Integer page, Integer pageSize) {
-        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
-            return emptyList();
-        }
-
-        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
-
-        List<org.kie.server.api.model.instance.TaskSummary> tasks = client.findTasksAssignedAsPotentialOwner(identityProvider.getName(), page, pageSize);
-
-        return tasks.stream().map(t -> build(t)).collect(toList());
-    }
-
-    @Override
     public TaskSummary getTask(String serverTemplateId, String containerId, Long taskId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return null;

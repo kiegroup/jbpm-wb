@@ -30,8 +30,6 @@ import org.jbpm.workbench.pr.model.TaskDefSummary;
 @Remote
 public interface ProcessRuntimeDataService {
 
-    List<ProcessInstanceSummary> getProcessInstances(String serverTemplateId, List<Integer> statuses, Integer page, Integer pageSize);
-
     ProcessInstanceSummary getProcessInstance(String serverTemplateId, ProcessInstanceKey processInstanceKey);
 
     List<NodeInstanceSummary> getProcessInstanceActiveNodes(String serverTemplateId, String deploymentId, Long processInstanceId);
@@ -45,8 +43,6 @@ public interface ProcessRuntimeDataService {
     ProcessSummary getProcess(String serverTemplateId, ProcessDefinitionKey processDefinitionKey);
 
     List<ProcessSummary> getProcessesByFilter(String serverTemplateId, String textSearch, Integer page, Integer pageSize, String sort, Boolean sortOrder);
-
-    ProcessSummary getProcessesByContainerIdProcessId(String serverTemplateId, String containerId, String processId);
 
     List<TaskDefSummary> getProcessUserTasks(String serverTemplateId, String containerId, String processId);
 
