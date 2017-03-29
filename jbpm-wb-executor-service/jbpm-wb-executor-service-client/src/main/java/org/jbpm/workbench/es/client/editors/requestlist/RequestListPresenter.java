@@ -140,52 +140,49 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         try {
             if(!isAddingDefaultFilters()) {
                 FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
-
-                if ( currentTableSettings != null ) {
-                    currentTableSettings.setServerTemplateId(selectedServerTemplate);
-                    currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
-                    ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                    if ( columnSortList != null && columnSortList.size() > 0 ) {
-                        dataSetQueryHelper.setLastOrderedColumn( columnSortList.size() > 0 ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
-                        dataSetQueryHelper.setLastSortOrder( columnSortList.size() > 0 && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
-                    } else {
-                        dataSetQueryHelper.setLastOrderedColumn( COLUMN_TIMESTAMP );
-                        dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
-                    }
-
-                    final List<ColumnFilter> filters = getColumnFilters(textSearchStr);
-                    if (filters.isEmpty() == false) {
-                        if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
-                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(OR(filters));
-                        } else {
-                            final DataSetFilter filter = new DataSetFilter();
-                            filter.addFilterColumn(OR(filters));
-                            currentTableSettings.getDataSetLookup().addOperation(filter);
-                        }
-                    }
-
-                    dataSetQueryHelper.setDataSetHandler(currentTableSettings);
-                    dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), new AbstractDataSetReadyCallback( errorPopup, view, currentTableSettings.getDataSet() ) {
-                        @Override
-                        public void callback(DataSet dataSet) {
-                            if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(currentTableSettings.getKey())) {
-                                List<RequestSummary> myRequestSumaryFromDataSet = new ArrayList<RequestSummary>();
-
-                                for (int i = 0; i < dataSet.getRowCount(); i++) {
-
-                                    myRequestSumaryFromDataSet.add(getRequestSummary(dataSet, i));
-                                }
-                                boolean lastPageExactCount=false;
-                                if( dataSet.getRowCount() < view.getListGrid().getPageSize()) {
-                                    lastPageExactCount=true;
-                                }
-                                updateDataOnCallback(myRequestSumaryFromDataSet,visibleRange.getStart(),visibleRange.getStart()+ myRequestSumaryFromDataSet.size(), lastPageExactCount);
-
-                            }
-                        }
-                    });
-                    view.hideBusyIndicator();
+                currentTableSettings.setServerTemplateId(selectedServerTemplate);
+                currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
+                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+                if ( columnSortList != null && columnSortList.size() > 0 ) {
+                    dataSetQueryHelper.setLastOrderedColumn( columnSortList.size() > 0 ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
+                    dataSetQueryHelper.setLastSortOrder( columnSortList.size() > 0 && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
+                } else {
+                    dataSetQueryHelper.setLastOrderedColumn( COLUMN_TIMESTAMP );
+                    dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
                 }
+
+                final List<ColumnFilter> filters = getColumnFilters(textSearchStr);
+                if (filters.isEmpty() == false) {
+                    if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
+                        currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(OR(filters));
+                    } else {
+                        final DataSetFilter filter = new DataSetFilter();
+                        filter.addFilterColumn(OR(filters));
+                        currentTableSettings.getDataSetLookup().addOperation(filter);
+                    }
+                }
+
+                dataSetQueryHelper.setDataSetHandler(currentTableSettings);
+                dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), new AbstractDataSetReadyCallback( errorPopup, view, currentTableSettings.getDataSet() ) {
+                    @Override
+                    public void callback(DataSet dataSet) {
+                        if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(currentTableSettings.getKey())) {
+                            List<RequestSummary> myRequestSumaryFromDataSet = new ArrayList<RequestSummary>();
+
+                            for (int i = 0; i < dataSet.getRowCount(); i++) {
+
+                                myRequestSumaryFromDataSet.add(getRequestSummary(dataSet, i));
+                            }
+                            boolean lastPageExactCount=false;
+                            if( dataSet.getRowCount() < view.getListGrid().getPageSize()) {
+                                lastPageExactCount=true;
+                            }
+                            updateDataOnCallback(myRequestSumaryFromDataSet,visibleRange.getStart(),visibleRange.getStart()+ myRequestSumaryFromDataSet.size(), lastPageExactCount);
+
+                        }
+                    }
+                });
+                view.hideBusyIndicator();
             }
         } catch ( Exception e ) {
             view.displayNotification(constants.ErrorRetrievingJobs(e.getMessage()));

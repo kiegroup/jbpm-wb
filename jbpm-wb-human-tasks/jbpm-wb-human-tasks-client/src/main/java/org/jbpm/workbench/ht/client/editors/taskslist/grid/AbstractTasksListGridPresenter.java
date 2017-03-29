@@ -126,44 +126,29 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
         try {
             if (!isAddingDefaultFilters()) {
                 FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
-
-                if (currentTableSettings != null ) {
-                    currentTableSettings.setServerTemplateId(selectedServerTemplate);
-                    currentTableSettings.setTablePageSize(view.getListGrid().getPageSize());
-                    ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                    if (columnSortList != null && columnSortList.size() > 0) {
-                        dataSetQueryHelper.setLastOrderedColumn(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "");
-                        dataSetQueryHelper.setLastSortOrder((columnSortList.size() > 0) && columnSortList.get(0).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
-                    } else {
-                        dataSetQueryHelper.setLastOrderedColumn(COLUMN_CREATED_ON);
-                        dataSetQueryHelper.setLastSortOrder(SortOrder.ASCENDING);
-                    }
-
-                    final List<ColumnFilter> filters = getColumnFilters(textSearchStr);
-                    if (filters.isEmpty() == false) {
-                        if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
-                            currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(OR(filters));
-                        } else {
-                            final DataSetFilter filter = new DataSetFilter();
-                            filter.addFilterColumn(OR(filters));
-                            currentTableSettings.getDataSetLookup().addOperation(filter);
-                        }
-                    }
-                    dataSetQueryHelper.setDataSetHandler(currentTableSettings);
-                    dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), createDataSetTaskCallback(visibleRange.getStart(), currentTableSettings));
+                currentTableSettings.setServerTemplateId(selectedServerTemplate);
+                currentTableSettings.setTablePageSize(view.getListGrid().getPageSize());
+                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+                if (columnSortList != null && columnSortList.size() > 0) {
+                    dataSetQueryHelper.setLastOrderedColumn(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "");
+                    dataSetQueryHelper.setLastSortOrder((columnSortList.size() > 0) && columnSortList.get(0).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
                 } else {
-                    taskService.call(new RemoteCallback<List<TaskSummary>>() {
-                        @Override
-                        public void callback(List<TaskSummary> taskSummaries) {
-                            boolean lastPage=false;
-                            if ( taskSummaries.size() < visibleRange.getLength() ) {
-                                lastPage = true;
-                            }
-                            updateDataOnCallback(taskSummaries,visibleRange.getStart(), visibleRange.getStart() + taskSummaries.size(), lastPage);
-
-                        }
-                    }).getActiveTasks(selectedServerTemplate, visibleRange.getStart()/visibleRange.getLength(), visibleRange.getLength());
+                    dataSetQueryHelper.setLastOrderedColumn(COLUMN_CREATED_ON);
+                    dataSetQueryHelper.setLastSortOrder(SortOrder.ASCENDING);
                 }
+
+                final List<ColumnFilter> filters = getColumnFilters(textSearchStr);
+                if (filters.isEmpty() == false) {
+                    if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
+                        currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(OR(filters));
+                    } else {
+                        final DataSetFilter filter = new DataSetFilter();
+                        filter.addFilterColumn(OR(filters));
+                        currentTableSettings.getDataSetLookup().addOperation(filter);
+                    }
+                }
+                dataSetQueryHelper.setDataSetHandler(currentTableSettings);
+                dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), createDataSetTaskCallback(visibleRange.getStart(), currentTableSettings));
             }
         } catch (Exception e) {
             errorPopup.showMessage(constants.UnexpectedError(e.getMessage()));
