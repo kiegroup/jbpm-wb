@@ -113,7 +113,7 @@ public class RequestListViewTest {
             @Override
             public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
                 final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[ 0 ];
-                assertTrue(columns.size()==6);
+                assertTrue(columns.size()==9);
                 return null;
             }
         } ).when( currentListGrid ).addColumns(anyList());

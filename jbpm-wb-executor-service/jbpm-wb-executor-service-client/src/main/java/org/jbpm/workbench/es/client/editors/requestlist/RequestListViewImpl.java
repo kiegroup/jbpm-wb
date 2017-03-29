@@ -138,6 +138,9 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         Column jobTypeColumn = initJobTypeColumn();
         Column statusColumn = initStatusColumn();
         Column dueDateColumn = initDueDateColumn();
+        Column processNameColumn = initProcessNameColumn();
+        Column processInstanceIdColumn = initProcessInstanceIdColumn();
+        Column processInstanceDescription = initProcessInstanceDescription();
         actionsColumn = initActionsColumn();
 
         List<ColumnMeta<RequestSummary>> columnMetas = new ArrayList<ColumnMeta<RequestSummary>>();
@@ -146,6 +149,9 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         columnMetas.add(new ColumnMeta<RequestSummary>(jobTypeColumn, constants.Type()));
         columnMetas.add(new ColumnMeta<RequestSummary>(statusColumn, constants.Status()));
         columnMetas.add(new ColumnMeta<RequestSummary>(dueDateColumn, constants.Due_On()));
+        columnMetas.add(new ColumnMeta<RequestSummary>(processNameColumn, constants.Process_Name()));
+        columnMetas.add(new ColumnMeta<RequestSummary>(processInstanceIdColumn, constants.Process_Instance_Id()));
+        columnMetas.add(new ColumnMeta<RequestSummary>(processInstanceDescription, constants.Process_Description()));
         columnMetas.add(new ColumnMeta<RequestSummary>(actionsColumn, constants.Actions()));
         extendedPagedTable.addColumns( columnMetas );
     }
@@ -287,6 +293,48 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         dueDateColumn.setSortable( true );
         dueDateColumn.setDataStoreName( COLUMN_TIMESTAMP );
         return dueDateColumn;
+
+    }
+    
+    private Column initProcessNameColumn() {
+        // Process name
+        Column<RequestSummary, String> col = new Column<RequestSummary, String>( new TextCell() ) {
+            @Override
+            public String getValue( RequestSummary object ) {
+                return object.getProcessName();
+            }
+        };
+        col.setSortable( true );
+        col.setDataStoreName( COLUMN_PROCESS_NAME );
+        return col;
+
+    }
+    
+    private Column initProcessInstanceIdColumn() {
+        // Process instance ID
+        Column<RequestSummary, Number> col = new Column<RequestSummary, Number>( new NumberCell() ) {
+            @Override
+            public Number getValue( RequestSummary object ) {
+                return object.getProcessInstanceId();
+            }
+        };
+        col.setSortable( true );
+        col.setDataStoreName( COLUMN_PROCESS_INSTANCE_ID );
+        return col;
+
+    }
+    
+    private Column initProcessInstanceDescription() {
+        // Process instance description
+        Column<RequestSummary, String> col = new Column<RequestSummary, String>( new TextCell() ) {
+            @Override
+            public String getValue( RequestSummary object ) {
+                return object.getProcessInstanceDescription();
+            }
+        };
+        col.setSortable( true );
+        col.setDataStoreName( COLUMN_PROCESS_INSTANCE_DESCRIPTION );
+        return col;
 
     }
 
@@ -432,6 +480,9 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         builder.setColumn( COLUMN_BUSINESSKEY, constants.Key() );
         builder.setColumn( COLUMN_RETRIES, constants.Retries() );
         builder.setColumn( COLUMN_EXECUTIONS, constants.Executions() );
+        builder.setColumn( COLUMN_PROCESS_NAME, constants.Process_Name() );
+        builder.setColumn( COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
+        builder.setColumn( COLUMN_PROCESS_INSTANCE_DESCRIPTION, constants.Process_Description() );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
@@ -490,6 +541,9 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         builder.setColumn( COLUMN_BUSINESSKEY, constants.Key() );
         builder.setColumn( COLUMN_RETRIES, constants.Retries() );
         builder.setColumn( COLUMN_EXECUTIONS, constants.Executions() );
+        builder.setColumn( COLUMN_PROCESS_NAME, constants.Process_Name() );
+        builder.setColumn( COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
+        builder.setColumn( COLUMN_PROCESS_INSTANCE_DESCRIPTION, constants.Process_Description() );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );

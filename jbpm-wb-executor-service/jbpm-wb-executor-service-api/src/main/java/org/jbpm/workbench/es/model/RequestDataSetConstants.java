@@ -27,4 +27,8 @@ public interface RequestDataSetConstants {
     String COLUMN_BUSINESSKEY = "businessKey";
     String COLUMN_RETRIES = "retries";
     String COLUMN_EXECUTIONS = "executions";
+    String COLUMN_PROCESS_NAME = "processName";
+    String COLUMN_PROCESS_INSTANCE_ID = "processInstanceId";
+    String COLUMN_PROCESS_INSTANCE_DESCRIPTION = "processInstanceDescription";
+
 }

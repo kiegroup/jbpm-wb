@@ -41,6 +41,10 @@ public class RequestSummaryMapperTest {
         assertEquals(request.getRetries(), rs.getRetries());
         assertEquals(request.getScheduledDate(), rs.getTime());
         assertEquals(request.getMessage(), rs.getMessage());
+        assertEquals(null, rs.getProcessName());
+        assertEquals(null, rs.getProcessInstanceId());
+        assertEquals(null, rs.getProcessInstanceDescription());
+
     }
 
     public static RequestInfoInstance newRequestInfoInstance() {

@@ -81,6 +81,12 @@ public interface Constants extends Messages {
 
     String Due_On();
 
+    String Process_Name();
+
+    String Process_Instance_Id();
+
+    String Process_Description();
+
     String Actions();
 
     String No_Parameters_added_yet();
