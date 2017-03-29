@@ -48,21 +48,6 @@ import static java.util.Collections.emptyList;
 @ApplicationScoped
 public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerService implements ProcessRuntimeDataService {
 
-    public List<ProcessInstanceSummary> getProcessInstances(String serverTemplateId, List<Integer> statuses, Integer page, Integer pageSize) {
-        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
-            return emptyList();
-        }
-
-        QueryServicesClient queryServicesClient = getClient(serverTemplateId, QueryServicesClient.class);
-
-        List<ProcessInstance> processInstances = queryServicesClient.findProcessInstancesByStatus(statuses, page, pageSize);
-
-        return processInstances
-                .stream()
-                .map( p -> build(p))
-                .collect(toList());
-    }
-
     @Override
     public ProcessInstanceSummary getProcessInstance(String serverTemplateId, ProcessInstanceKey processInstanceKey) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
@@ -174,19 +159,6 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
         List<ProcessDefinition> processes = queryServicesClient.findProcesses(textSearch, page, pageSize, sort, sortOrder);
 
         return processes.stream().map(new ProcessSummaryMapper()).collect(toList());
-    }
-
-    @Override
-    public ProcessSummary getProcessesByContainerIdProcessId(final String serverTemplateId, final String containerId, final String processId) {
-        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
-            return null;
-        }
-
-        QueryServicesClient queryServicesClient = getClient(serverTemplateId, QueryServicesClient.class);
-
-        ProcessDefinition definition = queryServicesClient.findProcessByContainerIdProcessId(containerId, processId);
-
-        return new ProcessSummaryMapper().apply(definition);
     }
 
     @Override

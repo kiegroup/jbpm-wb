@@ -122,18 +122,6 @@ public class RemoteProcessRuntimeDataServiceImplTest {
     }
 
     @Test
-    public void testGetProcessesByContainerIdProcessId(){
-        final ProcessDefinition def = ProcessDefinition.builder().id(processId).build();
-
-        when(queryServicesClient.findProcessByContainerIdProcessId(containerId, processId)).thenReturn(def);
-
-        final ProcessSummary summary = service.getProcessesByContainerIdProcessId(serverTemplateId, containerId, processId);
-
-        assertNotNull(summary);
-        assertProcessSummary(def, summary);
-    }
-
-    @Test
     public void testGetProcess(){
         final ProcessDefinition def = ProcessDefinition.builder().id(processId).build();
 
