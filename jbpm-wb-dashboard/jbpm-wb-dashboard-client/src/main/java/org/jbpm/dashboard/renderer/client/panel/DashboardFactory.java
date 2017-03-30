@@ -15,17 +15,36 @@
  */
 package org.jbpm.dashboard.renderer.client.panel;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 
+@ApplicationScoped
 public class DashboardFactory {
 
+    private final ManagedInstance<MetricDisplayer> metricDisplayers;
+    private final ManagedInstance<TableDisplayer> tableDisplayers;
+
+    protected DashboardFactory() {
+        this(null, null);
+    }
+
+    @Inject
+    public DashboardFactory(final ManagedInstance<MetricDisplayer> metricDisplayers,
+                            final ManagedInstance<TableDisplayer> tableDisplayers) {
+        this.metricDisplayers = metricDisplayers;
+        this.tableDisplayers = tableDisplayers;
+    }
+
     public MetricDisplayer createMetricDisplayer() {
-        return new MetricDisplayer();
+        return metricDisplayers.get();
     }
 
     public TableDisplayer createTableDisplayer() {
-        return new TableDisplayer();
+        return tableDisplayers.get();
     }
 }
 
