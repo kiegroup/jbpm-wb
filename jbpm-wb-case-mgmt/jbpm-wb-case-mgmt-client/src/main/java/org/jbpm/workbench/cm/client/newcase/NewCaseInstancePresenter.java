@@ -16,7 +16,6 @@
 
 package org.jbpm.workbench.cm.client.newcase;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +31,7 @@ import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.cm.client.events.CaseCreatedEvent;
 import org.jbpm.workbench.cm.client.resources.i18n.Constants;
 import org.jbpm.workbench.cm.client.util.AbstractPresenter;
+import org.jbpm.workbench.cm.client.util.CaseRolesValidations;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
 import org.jbpm.workbench.cm.service.CaseManagementService;
@@ -56,6 +56,9 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
 
     @Inject
     private TranslationService translationService;
+
+    @Inject
+    CaseRolesValidations caseRolesValidations;
 
     @Inject
     private User identity;
@@ -111,7 +114,7 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
             return;
         }
 
-        final List<String> assignmentErrors = validateRolesAssignments(caseDefinition,
+        final List<String> assignmentErrors = caseRolesValidations.validateRolesAssignments(caseDefinition,
                                                                        assignments);
         if (assignmentErrors.isEmpty() == false) {
             view.showError(assignmentErrors);
@@ -135,25 +138,6 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
                             caseDefinition.getId(),
                             owner,
                             assignments);
-    }
-
-    protected List<String> validateRolesAssignments(final CaseDefinitionSummary caseDefinition,
-                                                    final List<CaseRoleAssignmentSummary> assignments) {
-        final List<String> errors = new ArrayList<>();
-        assignments.forEach(a -> {
-            final Integer roleCardinality = caseDefinition.getRoles().get(a.getName());
-            if (roleCardinality == -1) {
-                return;
-            }
-            final Integer roleAssignments = a.getUsers().size() + a.getGroups().size();
-            if (roleAssignments > roleCardinality) {
-                errors.add(translationService.format(Constants.INVALID_ROLE_ASSIGNMENT,
-                                                     a.getName(),
-                                                     roleCardinality));
-            }
-        });
-
-        return errors;
     }
 
     @Inject

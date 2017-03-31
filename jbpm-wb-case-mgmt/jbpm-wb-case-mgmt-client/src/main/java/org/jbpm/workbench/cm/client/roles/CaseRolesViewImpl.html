@@ -3,7 +3,7 @@
     <div class="card-pf-heading">
         <div class=" kie-card__toolbar">
             <div class="kie-toolbar__group">
-                <button type="button" class="btn btn-default" data-field="user-add"><span data-i18n-key="Add"/></button>
+                <select id="status" class="selectpicker" data-width="100px" data-field="filter-select"></select>
             </div>
         </div>
         <h2 class="card-pf-title">
@@ -18,6 +18,11 @@
 
                 <div class="kie-scrollbox" data-field="scrollbox">
                     <div class=" list-group kie-list-view--embedded" data-field="role-list"></div>
+                    <div class="card-pf-body kie-card-body--embedded" data-field="empty-list-item">
+                        <div href="" class="card-pf-link-with-icon"><span class="pficon pficon-info"></span>
+                            <span data-i18n-key="NoRolesAssignmentsFound"></span>
+                        </div>
+                    </div>
                 </div>
                 <div data-field="pagination"/>
             </div>
