@@ -16,20 +16,26 @@
 
 package org.jbpm.workbench.cm.client.roles;
 
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.TakesValue;
 import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenter;
+import org.jbpm.workbench.cm.client.util.CaseRolesAssignmentFilterBy;
+import org.jbpm.workbench.cm.client.util.CaseRolesValidations;
+import org.jbpm.workbench.cm.client.util.ConfirmPopup;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
+import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.mvp.Command;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.stream.Collectors.toList;
 import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 
 @Dependent
@@ -37,142 +43,160 @@ import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesPresenter.CaseRolesView> {
 
     public static final String SCREEN_ID = "Case Roles";
+    public static final String CASE_OWNER_ROLE = "owner";
 
     @Inject
-    private NewRoleAssignmentView newRoleAssignmentView;
+    private EditRoleAssignmentView editRoleAssignmentView;
+
+    @Inject
+    ConfirmPopup confirmPopup;
+
+    @Inject
+    CaseRolesValidations caseRolesValidations;
+
+    List<CaseRoleAssignmentSummary> allUnfilteredElements = new ArrayList();
 
     @WorkbenchPartTitle
     public String getTittle() {
         return translationService.format(ROLES);
     }
 
+    private CaseDefinitionSummary caseDefinition;
+
     @Override
     protected void clearCaseInstance() {
-        view.disableNewRoleAssignments();
         view.removeAllRoles();
+        allUnfilteredElements = new ArrayList();
     }
 
     @Override
     protected void loadCaseInstance(final CaseInstanceSummary cis) {
-        view.addUser(cis.getOwner(), translationService.format(OWNER));
-
-        setupRoleAssignments(cis);
-
-        setupNewRoleAssignments(cis);
-
-        view.setupPagination();
+        setupExistingAssignments(cis);
     }
 
-    protected void setupNewRoleAssignments(final CaseInstanceSummary cis) {
+    protected void setupExistingAssignments(final CaseInstanceSummary cis) {
         caseService.call(
                 (CaseDefinitionSummary cds) -> {
-                    if (cds.getRoles() == null || cds.getRoles().isEmpty()) {
+                    if (cds == null || cds.getRoles() == null || cds.getRoles().isEmpty()) {
                         return;
                     }
-
-                    final Set<String> roles = getRolesAvailableForAssignment(cis, cds);
-                    if (roles.isEmpty()) {
-                        return;
-                    }
-
-                    view.enableNewRoleAssignments();
-
-                    view.setUserAddCommand(() ->
-                            newRoleAssignmentView.show( roles, () ->
-                                    addAssignment(newRoleAssignmentView.getUserName(),
-                                            newRoleAssignmentView.getGroupName(),
-                                            newRoleAssignmentView.getRoleName())));
+                    caseDefinition = cds;
+                    cds.getRoles()
+                            .keySet()
+                            .forEach(roleName -> allUnfilteredElements.add(getRoleAssignment(cis, roleName)));
+                    filterElements();
                 }
         ).getCaseDefinition(serverTemplateId, containerId, cis.getCaseDefinitionId());
     }
 
-    protected Set<String> getRolesAvailableForAssignment(final CaseInstanceSummary cis, final CaseDefinitionSummary cds) {
-        return cds.getRoles().keySet().stream().filter(
-                role -> {
-                    if ("owner".equals(role)) {
-                        return false;
-                    }
-                    final Integer roleCardinality = cds.getRoles().get(role);
-                    if (roleCardinality == -1) {
-                        return true;
-                    }
-                    final Integer roleInstanceCardinality = cis.getRoleAssignments().stream().filter(ra -> role.equals(ra.getName())).findFirst().map(ra -> ra.getGroups().size() + ra.getUsers().size()).orElse(0);
-                    return roleInstanceCardinality < roleCardinality;
-                }
-        ).collect(Collectors.toSet());
+    private boolean hasAssignment(CaseRoleAssignmentSummary caseRoleAssignmentSummary) {
+        return caseRoleAssignmentSummary.getUsers().size() + caseRoleAssignmentSummary.getGroups().size() > 0;
+
     }
 
-    protected void setupRoleAssignments(final CaseInstanceSummary cis) {
-        if (cis.getRoleAssignments() == null || cis.getRoleAssignments().isEmpty()) {
+    public void filterElements() {
+        String filterBy = view.getFilterValue();
+
+        if (filterBy.equals(CaseRolesAssignmentFilterBy.ASSIGNED.getLabel())) {
+            view.setRolesAssignmentList(
+                    allUnfilteredElements.stream()
+                            .filter(caseRoleAssignmentSummary -> hasAssignment(caseRoleAssignmentSummary))
+                            .collect(toList()));
+        } else if (filterBy.equals(CaseRolesAssignmentFilterBy.UNASSIGNED.getLabel())) {
+            view.setRolesAssignmentList(
+                    allUnfilteredElements.stream()
+                            .filter(caseRoleAssignmentSummary -> !hasAssignment(caseRoleAssignmentSummary))
+                            .collect(toList()));
+        } else {
+            view.setRolesAssignmentList(allUnfilteredElements);
+        }
+    }
+
+    public void editAction(CaseRoleAssignmentSummary caseRoleAssignmentSummary, final List<String> oldUserAssignments,
+                           final List<String> oldGroupsAssignments) {
+        editRoleAssignmentView.setValue(CaseRoleAssignmentSummary.builder()
+                .name(caseRoleAssignmentSummary.getName())
+                .users(caseRoleAssignmentSummary.getUsers())
+                .groups(caseRoleAssignmentSummary.getGroups()).build());
+
+        editRoleAssignmentView.show(() -> assignToRole(oldUserAssignments, oldGroupsAssignments));
+    }
+
+    protected CaseRoleAssignmentSummary getRoleAssignment(final CaseInstanceSummary cis, final String roleName) {
+        if (CASE_OWNER_ROLE.equals(roleName)) {
+            return CaseRoleAssignmentSummary.builder().name(roleName).users(Arrays.asList(cis.getOwner())).build();
+        }
+        return cis.getRoleAssignments()
+                .stream()
+                .filter(ra -> roleName.equals(ra.getName()))
+                .findFirst().orElse(CaseRoleAssignmentSummary.builder().name(roleName).build());
+    }
+
+    protected void assignToRole(final List<String> oldUserAssignments,
+                                final List<String> oldGroupsAssignments) {
+
+        final List<String> assignmentErrors =
+                caseRolesValidations.validateRolesAssignments(caseDefinition,
+                        Arrays.asList(editRoleAssignmentView.getValue()));
+        if (assignmentErrors.isEmpty() == false) {
+            editRoleAssignmentView.showValidationError(assignmentErrors);
             return;
         }
-
-        cis.getRoleAssignments().forEach(
-                crs -> {
-                    crs.getUsers().forEach(user -> view.addUser(user, crs.getName(), new CaseRoleAction() {
-
-                        @Override
-                        public String label() {
-                            return translationService.format(REMOVE);
-                        }
-
-                        @Override
-                        public void execute() {
-                            removeUserFromRole(user, crs.getName());
-                        }
-                    }));
-                    crs.getGroups().forEach(group -> view.addGroup(group, crs.getName(), new CaseRoleAction() {
-
-                        @Override
-                        public String label() {
-                            return translationService.format(REMOVE);
-                        }
-
-                        @Override
-                        public void execute() {
-                            removeGroupFromRole(group, crs.getName());
-                        }
-                    }));
-                }
-        );
+        editRoleAssignmentView.hide();
+        storeRoleAssignments(editRoleAssignmentView.getValue().getName(),
+                editRoleAssignmentView.getValue().getUsers(),
+                editRoleAssignmentView.getValue().getGroups(),
+                oldUserAssignments,
+                oldGroupsAssignments);
     }
 
-    protected void addAssignment(final String userName,final String groupName, final String roleName) {
-        if(!isNullOrEmpty(userName) && !isNullOrEmpty(groupName)){
-            caseService.call(
-                    (Void) -> findCaseInstance()
-            ).assignGroupAndUserToRole(serverTemplateId, containerId, caseId, roleName, userName,groupName);
-        }else {
-            if (!isNullOrEmpty(userName)) {
-                addUserToRole(userName, roleName);
-            }
-            if(!isNullOrEmpty(groupName)){
-                addGroupToRole(groupName,roleName);
-            }
-        }
+    protected CaseRoleAssignmentSummary getRoleAssignmentByName(String roleName) {
+        return allUnfilteredElements.stream()
+                .filter(caseRoleAssignmentSummary -> roleName.equals(caseRoleAssignmentSummary.getName()))
+                .findFirst().get();
     }
 
-    protected void addUserToRole(final String userName, final String roleName) {
-        caseService.call(
-                (Void) -> findCaseInstance()
-        ).assignUserToRole(serverTemplateId, containerId, caseId, roleName, userName);
-    }
+    protected void storeRoleAssignments(String roleName, List<String> users, List<String> groups,
+                                        List<String> oldUserAssignments, List<String> oldGroupsAssignments) {
 
-    protected void addGroupToRole(final String groupName, final String roleName) {
-        caseService.call(
-                (Void) -> findCaseInstance()
-        ).assignGroupToRole(serverTemplateId, containerId, caseId, roleName, groupName);
+        CaseRoleAssignmentSummary cras = getRoleAssignmentByName(roleName);
+        cras.setGroups(new ArrayList<>(groups));
+        cras.setUsers(new ArrayList<>(users));
+        filterElements();
+
+        List<String> usersToRemove = new ArrayList<String>(oldUserAssignments);
+        usersToRemove.removeAll(users);
+        usersToRemove.forEach(
+                user -> caseService.call().removeUserFromRole(serverTemplateId, containerId, caseId, roleName, user));
+
+        users.removeAll(oldUserAssignments);
+        users.stream().distinct().forEach(
+                user -> caseService.call().assignUserToRole(serverTemplateId, containerId, caseId, roleName, user));
+
+        List<String> groupsToRemove = new ArrayList<String>(oldGroupsAssignments);
+        groupsToRemove.removeAll(groups);
+        groupsToRemove.forEach(
+                group -> caseService.call().removeGroupFromRole(serverTemplateId, containerId, caseId, roleName, group));
+
+        groups.removeAll(oldGroupsAssignments);
+        groups.stream().distinct().forEach(
+                group -> caseService.call().assignGroupToRole(serverTemplateId, containerId, caseId, roleName, group));
+
     }
 
     protected void removeUserFromRole(final String userName, final String roleName) {
+        CaseRoleAssignmentSummary cras = getRoleAssignmentByName(roleName);
+        cras.getUsers().remove(userName);
+        filterElements();
         caseService.call(
-                (Void) -> findCaseInstance()
         ).removeUserFromRole(serverTemplateId, containerId, caseId, roleName, userName);
     }
 
     protected void removeGroupFromRole(final String groupName, final String roleName) {
+        CaseRoleAssignmentSummary cras = getRoleAssignmentByName(roleName);
+        cras.getGroups().remove(groupName);
+        filterElements();
         caseService.call(
-                (Void) -> findCaseInstance()
         ).removeGroupFromRole(serverTemplateId, containerId, caseId, roleName, groupName);
     }
 
@@ -180,30 +204,21 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesP
 
         void removeAllRoles();
 
-        void addUser(String userName, String roleName, CaseRoleAction... actions);
+        void setRolesAssignmentList(List<CaseRoleAssignmentSummary> caseRoleAssignmentSummaryList);
 
-        void addGroup(String groupName, String roleName, CaseRoleAction... actions);
+        void resetPagination();
 
-        void setUserAddCommand(Command command);
+        String getFilterValue();
 
-        void setupPagination();
-
-        void enableNewRoleAssignments();
-
-        void disableNewRoleAssignments();
     }
 
-    public interface NewRoleAssignmentView extends UberElement<CaseRolesPresenter> {
+    public interface EditRoleAssignmentView extends UberElement<CaseRolesPresenter>, TakesValue<CaseRoleAssignmentSummary> {
 
-        void show( Set<String> roles, Command okCommand);
+        void show(Command command);
+
+        void showValidationError(List<String> messages);
 
         void hide();
-
-        String getRoleName();
-
-        String getUserName();
-
-        String getGroupName();
 
     }
 
@@ -211,6 +226,13 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesP
 
         String label();
 
+        boolean isEnabled();
+
     }
 
+    public interface CaseAssignmentItem extends Command {
+
+        String label();
+
+    }
 }

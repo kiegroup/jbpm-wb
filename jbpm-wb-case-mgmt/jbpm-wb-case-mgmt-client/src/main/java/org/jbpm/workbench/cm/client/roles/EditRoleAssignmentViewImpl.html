@@ -5,20 +5,26 @@
                 <button type="button" class="close" data-field="close" data-dismiss="modal" aria-hidden="true">
                     <span class="pficon pficon-close"></span>
                 </button>
-                <h4 class="modal-title" data-i18n-key="NewRoleAssignment"></h4>
+                <h4 class="modal-title" data-i18n-key="EditRoleAssignment"></h4>
             </div>
             <div class="modal-body">
+                <div data-field="alert"></div>
                 <form class="form-horizontal">
                     <fieldset>
                         <div class="form-group" data-field="role-name-group">
                             <label class="control-label col-md-3" data-field="role-name-label" data-i18n-key="Role"></label>
                             <div class="col-md-9">
-                                <select class="selectpicker form-control" data-field="role-name-select"></select>
                                 <span data-field="role-name-help" class="help-block"></span>
+                                <span  data-field="role-name-text"></span>
                             </div>
                         </div>
                         <div class="form-group" data-field="user-name-group">
-                            <label class="control-label col-md-3"  data-field="assignment-label" data-i18n-key="Assignment"></label>
+                            <div class="control-label col-md-3">
+                                <label   data-field="assignment-label" data-i18n-key="Assignment"></label>
+                                <a tabindex="0" data-field="roles-help" role="button" data-toggle="popover" data-trigger="focus" title="" data-content="...">
+                                    <span class="fa fa-info-circle"></span>
+                                </a>
+                            </div>
                             <div class="col-md-9">
                                 <label data-i18n-key="User" ></label>
                                 <input type="text" data-field="user-name-input" class="form-control"/>

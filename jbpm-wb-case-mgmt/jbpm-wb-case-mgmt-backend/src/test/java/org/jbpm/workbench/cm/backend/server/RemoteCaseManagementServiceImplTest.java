@@ -41,6 +41,7 @@ import org.kie.server.api.model.cases.CaseDefinition;
 import org.kie.server.api.model.cases.CaseFile;
 import org.kie.server.api.model.cases.CaseInstance;
 import org.kie.server.api.model.cases.CaseMilestone;
+//import org.kie.server.api.model.cases.CaseRoleAssignment;
 import org.kie.server.api.model.cases.CaseStage;
 import org.kie.server.api.model.instance.NodeInstance;
 import org.kie.server.api.model.instance.TaskInstance;

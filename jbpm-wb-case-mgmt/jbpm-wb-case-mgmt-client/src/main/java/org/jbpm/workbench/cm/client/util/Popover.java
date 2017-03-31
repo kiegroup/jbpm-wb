@@ -48,8 +48,11 @@ public class Popover implements IsElement {
         return anchor;
     }
 
-    private native void init(final HTMLElement e) /*-{
-        $wnd.jQuery(e).popover();
+    public native void init(final HTMLElement e ) /*-{
+        $wnd.jQuery(e).popover({
+            container: 'body',
+            trigger:'focus'
+        });
     }-*/;
 
 }
