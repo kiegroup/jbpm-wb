@@ -13,33 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.ht.client.editors.taskslist.grid.dash;
+package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jbpm.workbench.ht.client.editors.taskslist.grid.AbstractTasksListGridPresenterTest;
-import org.junit.Test;
+import org.jbpm.workbench.ht.client.editors.taskslist.TaskListPresenter;
+import org.jbpm.workbench.ht.client.editors.taskslist.TaskListViewImpl;
+
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.uberfire.workbench.model.menu.Menus;
+import org.mockito.Mock;
 
-import static org.junit.Assert.*;
+import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class DataSetTasksListGridPresenterTest extends AbstractTasksListGridPresenterTest {
-
+public class TaskListViewTest extends AbstractTaskListViewTest {
+    
     @InjectMocks
-    protected DataSetTasksListGridPresenter presenter;
-
+    private TaskListViewImpl view;
+    
+    @Mock
+    private TaskListPresenter presenter;
+    
     @Override
-    public DataSetTasksListGridPresenter getPresenter() {
+    protected AbstractTaskListView getView(){
+        return view;
+    }
+    
+    @Override
+    protected AbstractTaskListPresenter<?> getPresenter(){
         return presenter;
     }
-
-    @Test
-    public void testMenus() {
-        final Menus menus = presenter.getMenus();
-
-        assertEquals(4, menus.getItems().size());
+    
+    @Override
+    protected int getInitialTabCount(){
+        return 4;
+    }
+    
+    @Override
+    protected String getDatasetId(){
+        return HUMAN_TASKS_WITH_USER_DATASET;
     }
 
 }

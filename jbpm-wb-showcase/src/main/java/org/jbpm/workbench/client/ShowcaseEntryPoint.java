@@ -112,6 +112,7 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
         result.add(MenuFactory.newSimpleItem(constants.Process_Definitions()).perspective(PROCESS_DEFINITIONS).endMenu().build().getItems().get(0));
         result.add(MenuFactory.newSimpleItem(constants.Process_Instances()).perspective(PROCESS_INSTANCES).endMenu().build().getItems().get(0));
         result.add(MenuFactory.newSimpleItem(constants.Process_Instances_Admin()).perspective(ProcessAdminSettingsPerspective.PERSPECTIVE_ID).endMenu().build().getItems().get(0));
+        result.add(MenuFactory.newSimpleItem(constants.Tasks_Admin()).perspective(TASKS_ADMIN).endMenu().build().getItems().get(0));
 
         return result;
     }

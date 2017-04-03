@@ -35,7 +35,7 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 @WorkbenchPerspective(identifier = TaskAdminSettingsPerspective.PERSPECTIVE_ID)
 public class TaskAdminSettingsPerspective extends Composite {
 
-    public static final String PERSPECTIVE_ID = "Tasks Admin";
+    public static final String PERSPECTIVE_ID = "TaskAdminSettings";
 
     @Perspective
     public PerspectiveDefinition getPerspective() {

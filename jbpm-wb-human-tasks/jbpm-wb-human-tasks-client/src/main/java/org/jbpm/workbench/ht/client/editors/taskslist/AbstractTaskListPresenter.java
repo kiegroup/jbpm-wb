@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.ht.client.editors.taskslist.grid;
+package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -47,7 +47,7 @@ import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.AbstractListView;
 import org.jbpm.workbench.common.client.list.AbstractScreenListPresenter;
 import org.jbpm.workbench.common.client.events.SearchEvent;
-import org.jbpm.workbench.ht.client.editors.taskslist.grid.dash.DataSetTasksListGridPresenter;
+import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.NewTaskEvent;
@@ -55,21 +55,23 @@ import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
-import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
+import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
-public abstract class AbstractTasksListGridPresenter extends AbstractScreenListPresenter<TaskSummary> {
+public abstract class AbstractTaskListPresenter<T extends AbstractTaskListPresenter.DataSetTaskListView> extends AbstractScreenListPresenter<TaskSummary> {
 
-    public interface DataSetTaskListView extends AbstractListView.ListView<TaskSummary, AbstractTasksListGridPresenter> {
+    public interface DataSetTaskListView extends AbstractListView.ListView<TaskSummary, AbstractTaskListPresenter> {
 
         int getRefreshValue();
 
@@ -85,13 +87,13 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
 
     }
 
-    private Constants constants = Constants.INSTANCE;
+    protected Constants constants = Constants.INSTANCE;
 
-    private DataSetTasksListGridPresenter.DataSetTaskListView view;
+    private T view;
 
     private Caller<TaskService> taskService;
 
-    protected DataSetQueryHelper dataSetQueryHelper;
+    private DataSetQueryHelper dataSetQueryHelper;
 
     private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
 
@@ -101,9 +103,9 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
     @Inject
     private Event<TaskSelectionEvent> taskSelected;
 
-    protected RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder(this);
+    private RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder(this);
 
-    public AbstractTasksListGridPresenter() {
+    public AbstractTaskListPresenter() {
         dataProvider = new AsyncDataProvider<TaskSummary>() {
 
             @Override
@@ -335,13 +337,8 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
         refreshGrid();
     }
 
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.Tasks_List();
-    }
-
     @WorkbenchPartView
-    public UberView<AbstractTasksListGridPresenter> getView() {
+    public UberView<AbstractTaskListPresenter> getView() {
         return view;
     }
 
@@ -387,7 +384,15 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
         view.applyFilterOnPresenter(dataSetQueryHelper.getCurrentTableSettings().getKey());
     }
 
-    public abstract Menus getMenus();
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return MenuFactory
+            .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder).endMenu()
+            .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
+            .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()
+            .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
+            .build();
+    }
 
     public void selectTask(final TaskSummary summary, final Boolean close) {
         final DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Task Details Multi" );
@@ -428,7 +433,7 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
     }
 
     @Inject
-    public void setView(final DataSetTaskListView view) {
+    public void setView(final T view) {
         this.view = view;
     }
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.ht.client.editors.taskslist.grid.dash;
+package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.gwt.view.client.AsyncDataProvider;
-import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.filter.ColumnFilter;
@@ -33,12 +32,11 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.ht.client.editors.taskslist.TaskListViewImpl;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -56,13 +54,12 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
-@RunWith(GwtMockitoTestRunner.class)
-public class DataSetTasksListGridViewTest {
+public abstract class AbstractTaskListViewTest {
 
-    private CallerMock<UserPreferencesService> callerMockUserPreferencesService;
+    protected CallerMock<UserPreferencesService> callerMockUserPreferencesService;
 
     @Mock
-    private UserPreferencesService userPreferencesServiceMock;
+    protected UserPreferencesService userPreferencesServiceMock;
 
     @Mock
     protected ExtendedPagedTable<TaskSummary> currentListGrid;
@@ -71,37 +68,44 @@ public class DataSetTasksListGridViewTest {
     protected GridPreferencesStore gridPreferencesStoreMock;
 
     @Mock
-    MultiGridPreferencesStore multiGridPreferencesStoreMock;
+    protected MultiGridPreferencesStore multiGridPreferencesStoreMock;
 
     @Mock
-    DataSetQueryHelper dataSetQueryHelperMock;
+    protected DataSetQueryHelper dataSetQueryHelperMock;
 
     @Mock
-    FilterPagedTable filterPagedTableMock;
+    protected FilterPagedTable filterPagedTableMock;
 
     @Mock
     protected Button mockButton;
-
-    @InjectMocks
-    private DataSetTasksListGridViewImpl view;
-
-    @Mock
-    private DataSetTasksListGridPresenter presenter;
-
+    
     @Mock
     public User identity;
 
     @Mock @SuppressWarnings("unused")
     private DataSetEditorManager dataSetEditorManagerMock;
+    
+    @Mock
+    protected HashMap mockGridSettingsMap;
+    
+    protected abstract AbstractTaskListView getView();
 
+    protected abstract AbstractTaskListPresenter<?> getPresenter();
+    
+    protected abstract int getInitialTabCount();
+    
+    protected abstract String getDatasetId();
+    
     @Before
     public void setupMocks() {
-        when(presenter.getDataProvider()).thenReturn(mock(AsyncDataProvider.class));
+        when(getPresenter().getDataProvider()).thenReturn(mock(AsyncDataProvider.class));
 
         when(filterPagedTableMock.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStoreMock);
+        when(multiGridPreferencesStoreMock.getGridSettings(anyString())).thenReturn(mockGridSettingsMap);
+        
         when(currentListGrid.getGridPreferencesStore()).thenReturn(new GridPreferencesStore());
         callerMockUserPreferencesService = new CallerMock<UserPreferencesService>(userPreferencesServiceMock);
-        view.setPreferencesService(callerMockUserPreferencesService);
+        getView().setPreferencesService(callerMockUserPreferencesService);
     }
 
     @Test
@@ -117,7 +121,7 @@ public class DataSetTasksListGridViewTest {
             }
         } ).when( currentListGrid ).addColumns( anyList() );
 
-        view.initColumns(currentListGrid);
+        getView().initColumns(currentListGrid);
 
         verify( currentListGrid ).addColumns( anyList() );
     }
@@ -125,8 +129,8 @@ public class DataSetTasksListGridViewTest {
     @Test
     public void testIsNullTableSettingsPrototype(){
         when(identity.getIdentifier()).thenReturn("user");
-        view.setIdentity(identity);
-        FilterSettings filterSettings = view.createTableSettingsPrototype();
+        getView().setIdentity(identity);
+        FilterSettings filterSettings = getView().createTableSettingsPrototype();
         List <DataSetOp> ops = filterSettings.getDataSetLookup().getOperationList();
         for(DataSetOp op : ops){
             if(op.getType().equals(DataSetOpType.FILTER)){
@@ -140,7 +144,7 @@ public class DataSetTasksListGridViewTest {
 
     @Test
     public void getVariablesTableSettingsTest(){
-        FilterSettings filterSettings = view.getVariablesTableSettings("Test");
+        FilterSettings filterSettings = getView().getVariablesTableSettings("Test");
         List <DataSetOp> ops = filterSettings.getDataSetLookup().getOperationList();
         for(DataSetOp op : ops){
             if(op.getType().equals(DataSetOpType.FILTER)){
@@ -167,7 +171,7 @@ public class DataSetTasksListGridViewTest {
         when(currentListGrid.getGridPreferencesStore()).thenReturn(gridPreferencesStoreMock);
         when(gridPreferencesStoreMock.getColumnPreferences()).thenReturn(columnPreferences);
 
-        view.initColumns( currentListGrid );
+        getView().initColumns( currentListGrid );
 
         verify( currentListGrid ).addColumns( anyList() );
     }
@@ -190,19 +194,20 @@ public class DataSetTasksListGridViewTest {
         when(currentListGrid.getGridPreferencesStore()).thenReturn(gridPreferencesStoreMock);
         when(gridPreferencesStoreMock.getColumnPreferences()).thenReturn(columnPreferences);
 
-        view.initColumns( currentListGrid );
+        getView().initColumns( currentListGrid );
 
         verify( currentListGrid ).addColumns( anyList() );
     }
 
     @Test
     public void initDefaultFiltersOwnTaskFilter() {
-        view.initDefaultFilters(new GridGlobalPreferences(), mockButton);
+        int initTabCount = getInitialTabCount();
+        getView().initDefaultFilters(new GridGlobalPreferences(), mockButton);
 
-        verify(filterPagedTableMock, times(5)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
+        verify(filterPagedTableMock, times(initTabCount)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
         verify(filterPagedTableMock).addAddTableButton(mockButton);
-        verify(presenter).setAddingDefaultFilters(true);
-        verify(presenter).setAddingDefaultFilters(false);
+        verify(getPresenter()).setAddingDefaultFilters(true);
+        verify(getPresenter()).setAddingDefaultFilters(false);
     }
 
     @Test
@@ -212,7 +217,7 @@ public class DataSetTasksListGridViewTest {
         domainColumns.add("var2");
         domainColumns.add("var3");
 
-        view.addDomainSpecifColumns(currentListGrid, domainColumns);
+        getView().addDomainSpecifColumns(currentListGrid, domainColumns);
 
         final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
         verify(currentListGrid).addColumns(argument.capture());
@@ -229,21 +234,28 @@ public class DataSetTasksListGridViewTest {
 
     @Test
     public void setDefaultFilterTitleAndDescriptionTest() {
-        view.resetDefaultFilterTitleAndDescription();
+        int initTabCount = getInitialTabCount();
+        getView().resetDefaultFilterTitleAndDescription();
 
-        verify(filterPagedTableMock, times(5)).getMultiGridPreferencesStore();
-        verify(filterPagedTableMock, times(5)).saveTabSettings(anyString(), any(HashMap.class));
+        verify(filterPagedTableMock, times(initTabCount)).getMultiGridPreferencesStore();
+        verify(filterPagedTableMock, times(initTabCount)).saveTabSettings(anyString(), eq(mockGridSettingsMap));
+        assertEquals(multiGridPreferencesStoreMock.getGridSettings(anyString()), mockGridSettingsMap);
     }
 
     @Test
     public void initialColumsTest(){
-        view.init(presenter);
-        List<GridColumnPreference> columnPreferences = view.getListGrid().getGridPreferencesStore().getColumnPreferences();
+        getView().init(getPresenter());
+        List<GridColumnPreference> columnPreferences = getView().getListGrid().getGridPreferencesStore().getColumnPreferences();
         assertEquals(COLUMN_NAME,columnPreferences.get(0).getName());
         assertEquals(COLUMN_PROCESS_ID,columnPreferences.get(1).getName());
         assertEquals(COLUMN_STATUS,columnPreferences.get(2).getName());
         assertEquals(COLUMN_CREATED_ON,columnPreferences.get(3).getName());
-        assertEquals(DataSetTasksListGridViewImpl.COL_ID_ACTIONS,columnPreferences.get(4).getName());
+        assertEquals(TaskListViewImpl.COL_ID_ACTIONS,columnPreferences.get(4).getName());
+    }
+
+    @Test
+    public void testDatasetName(){
+        assertEquals(getDatasetId(), getView().createTableSettingsPrototype().getDataSetLookup().getDataSetUUID());
     }
 
 }

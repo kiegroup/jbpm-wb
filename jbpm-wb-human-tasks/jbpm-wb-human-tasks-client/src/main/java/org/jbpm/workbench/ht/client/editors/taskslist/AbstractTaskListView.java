@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.ht.client.editors.taskslist.grid.dash;
+package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.cell.client.ActionCell;
@@ -52,9 +51,7 @@ import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.util.ButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
-import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
-import org.jbpm.workbench.ht.client.editors.taskslist.grid.AbstractTasksListGridPresenter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
@@ -67,25 +64,25 @@ import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.dashbuilder.dataset.sort.SortOrder.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
-@Dependent
-public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, AbstractTasksListGridPresenter>
-        implements AbstractTasksListGridPresenter.DataSetTaskListView {
+public abstract class AbstractTaskListView extends AbstractMultiGridView<TaskSummary, AbstractTaskListPresenter>
+        implements AbstractTaskListPresenter.DataSetTaskListView {
 
-    public static final String DATA_SET_TASK_LIST_PREFIX = "DataSetTaskListGrid";
-    public static final String COL_ID_ACTIONS = "actions";
-    private static final String TAB_ADMIN = DATA_SET_TASK_LIST_PREFIX + "_4";
-    private static final String TAB_ALL = DATA_SET_TASK_LIST_PREFIX + "_3";
-    private static final String TAB_GROUP = DATA_SET_TASK_LIST_PREFIX + "_2";
-    private static final String TAB_PERSONAL = DATA_SET_TASK_LIST_PREFIX + "_1";
-    private static final String TAB_ACTIVE = DATA_SET_TASK_LIST_PREFIX + "_0";
+    protected static final String COL_ID_ACTIONS = "actions";
 
-    private final Constants constants = Constants.INSTANCE;
+    protected final Constants constants = Constants.INSTANCE;
 
     @Inject
     private DataSetEditorManager dataSetEditorManager;
+    
+    public abstract void resetDefaultFilterTitleAndDescription();
+    
+    public abstract String getDatasetId();
+    
+    public abstract String getDatasetTaskListPrefix();
+    
 
     @Override
-    public void init( final AbstractTasksListGridPresenter presenter ) {
+    public void init( final AbstractTaskListPresenter presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
         bannedColumns.add( COLUMN_NAME );
         bannedColumns.add( COL_ID_ACTIONS );
@@ -100,7 +97,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         button.setSize( ButtonSize.SMALL );
         button.addClickHandler( new ClickHandler() {
             public void onClick( ClickEvent event ) {
-                final String key = getValidKeyForAdditionalListGrid( DATA_SET_TASK_LIST_PREFIX + "_" );
+                final String key = getValidKeyForAdditionalListGrid( getDatasetTaskListPrefix() + "_" );
 
                 Command addNewGrid = new Command() {
                     @Override
@@ -127,7 +124,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
             }
         } );
-        super.init( presenter, new GridGlobalPreferences( DATA_SET_TASK_LIST_PREFIX, initColumns, bannedColumns ), button );
+        super.init( presenter, new GridGlobalPreferences( getDatasetTaskListPrefix(), initColumns, bannedColumns ), button );
     }
 
     public void initSelectionModel() {
@@ -214,21 +211,21 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     }
 
     @Override
-    public void initColumns( ExtendedPagedTable extendedPagedTable ) {
+    public void initColumns( ExtendedPagedTable<TaskSummary>  extendedPagedTable ) {
         initCellPreview( extendedPagedTable );
-        Column taskIdColumn = initTaskIdColumn();
-        Column taskNameColumn = initTaskNameColumn();
-        Column descriptionColumn = initTaskDescriptionColumn();
-        Column processIdColumn = initProcessIdColumn();
-        Column processInstanceIdColumn = initProcessInstanceIdColumn();
-        Column taskPriorityColumn = initTaskPriorityColumn();
-        Column statusColumn = initTaskStatusColumn();
-        Column createdOnDateColumn = initTaskCreatedOnColumn();
-        Column dueDateColumn = initTaskDueColumn();
-        Column actualOwnerColumn = initActualOwnerColumn();
-        Column lastModificationDateColumn = initLastModificationDateColumn();
-        Column piCorrelationKey = initProcInstanceCorrelationKeyColumn();
-        Column piDescription = initProcInstanceDescriptionColumn();
+        Column<TaskSummary, ?> taskIdColumn = initTaskIdColumn();
+        Column<TaskSummary, ?> taskNameColumn = initTaskNameColumn();
+        Column<TaskSummary, ?> descriptionColumn = initTaskDescriptionColumn();
+        Column<TaskSummary, ?> processIdColumn = initProcessIdColumn();
+        Column<TaskSummary, ?> processInstanceIdColumn = initProcessInstanceIdColumn();
+        Column<TaskSummary, ?> taskPriorityColumn = initTaskPriorityColumn();
+        Column<TaskSummary, ?> statusColumn = initTaskStatusColumn();
+        Column<TaskSummary, ?> createdOnDateColumn = initTaskCreatedOnColumn();
+        Column<TaskSummary, ?> dueDateColumn = initTaskDueColumn();
+        Column<TaskSummary, ?> actualOwnerColumn = initActualOwnerColumn();
+        Column<TaskSummary, ?> lastModificationDateColumn = initLastModificationDateColumn();
+        Column<TaskSummary, ?> piCorrelationKey = initProcInstanceCorrelationKeyColumn();
+        Column<TaskSummary, ?> piDescription = initProcInstanceDescriptionColumn();
 
         actionsColumn = initActionsColumn();
 
@@ -252,7 +249,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         for ( GridColumnPreference colPref : columPreferenceList ) {
             if ( !isColumnAdded( columnMetas, colPref.getName() ) ) {
-                Column genericColumn = initGenericColumn( colPref.getName() );
+                Column<TaskSummary, ?> genericColumn = initGenericColumn( colPref.getName() );
                 genericColumn.setSortable( false );
                 columnMetas.add( new ColumnMeta<TaskSummary>( genericColumn, colPref.getName(), true, true ) );
             }
@@ -261,7 +258,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         extendedPagedTable.addColumns( columnMetas );
     }
 
-    private void initCellPreview( final ExtendedPagedTable extendedPagedTable ) {
+    private void initCellPreview( final ExtendedPagedTable<TaskSummary> extendedPagedTable ) {
         extendedPagedTable.addCellPreviewHandler( new CellPreviewEvent.Handler<TaskSummary>() {
 
             @Override
@@ -276,7 +273,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
     }
 
-    private void onMouseOverGrid( ExtendedPagedTable extendedPagedTable,
+    private void onMouseOverGrid( ExtendedPagedTable<TaskSummary> extendedPagedTable,
                                   final CellPreviewEvent<TaskSummary> event ) {
         TaskSummary task = event.getValue();
 
@@ -285,7 +282,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         }
     }
 
-    private Column initTaskIdColumn() {
+    private Column<TaskSummary, ?> initTaskIdColumn() {
         Column<TaskSummary, Number> taskIdColumn = new Column<TaskSummary, Number>( new NumberCell() ) {
             @Override
             public Number getValue( TaskSummary object ) {
@@ -297,7 +294,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return taskIdColumn;
     }
 
-    private Column initTaskNameColumn() {
+    private Column<TaskSummary, ?> initTaskNameColumn() {
         Column<TaskSummary, String> taskNameColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue( TaskSummary object ) {
@@ -309,7 +306,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return taskNameColumn;
     }
 
-    private Column initTaskDescriptionColumn() {
+    private Column<TaskSummary, ?> initTaskDescriptionColumn() {
         Column<TaskSummary, String> descriptionColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue( TaskSummary object ) {
@@ -321,7 +318,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return descriptionColumn;
     }
 
-    private Column initTaskPriorityColumn() {
+    private Column<TaskSummary, ?> initTaskPriorityColumn() {
         Column<TaskSummary, Number> taskPriorityColumn = new Column<TaskSummary, Number>( new NumberCell() ) {
             @Override
             public Number getValue( TaskSummary object ) {
@@ -333,7 +330,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return taskPriorityColumn;
     }
 
-    private Column initTaskStatusColumn() {
+    private Column<TaskSummary, ?> initTaskStatusColumn() {
         Column<TaskSummary, String> statusColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue( TaskSummary object ) {
@@ -345,7 +342,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return statusColumn;
     }
 
-    private Column initTaskCreatedOnColumn() {
+    private Column<TaskSummary, ?> initTaskCreatedOnColumn() {
         Column<TaskSummary, String> createdOnDateColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue( TaskSummary object ) {
@@ -357,7 +354,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return createdOnDateColumn;
     }
 
-    private Column initTaskDueColumn() {
+    private Column<TaskSummary, ?> initTaskDueColumn() {
         Column<TaskSummary, String> dueDateColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue( TaskSummary object ) {
@@ -369,7 +366,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return dueDateColumn;
     }
 
-    private Column initProcessIdColumn() {
+    private Column<TaskSummary, ?> initProcessIdColumn() {
         Column<TaskSummary, String> taskProcessIdColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue( TaskSummary object ) {
@@ -381,7 +378,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return taskProcessIdColumn;
     }
 
-    private Column initProcessInstanceIdColumn() {
+    private Column<TaskSummary, ?> initProcessInstanceIdColumn() {
         Column<TaskSummary, Number> taskProcessInstanceIdColumn = new Column<TaskSummary, Number>( new NumberCell() ) {
             @Override
             public Number getValue( TaskSummary object ) {
@@ -393,7 +390,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return taskProcessInstanceIdColumn;
     }
     
-    private Column initActualOwnerColumn(){
+    private Column<TaskSummary, ?> initActualOwnerColumn(){
         Column<TaskSummary, String> col = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue( TaskSummary object ) {
@@ -405,7 +402,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return col;
     }
     
-    private Column initLastModificationDateColumn() {
+    private Column<TaskSummary, ?> initLastModificationDateColumn() {
         Column<TaskSummary, String> col = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue( TaskSummary object ) {
@@ -417,7 +414,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return col;
     }
     
-    private Column initProcInstanceCorrelationKeyColumn(){
+    private Column<TaskSummary, ?> initProcInstanceCorrelationKeyColumn(){
         Column<TaskSummary, String> col = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue( TaskSummary object ) {
@@ -429,7 +426,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return col;
     }
     
-    private Column initProcInstanceDescriptionColumn(){
+    private Column<TaskSummary, ?> initProcInstanceDescriptionColumn(){
         Column<TaskSummary, String> col = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
             public String getValue( TaskSummary object ) {
@@ -441,7 +438,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return col;
     }
 
-    private Column initActionsColumn() {
+    private Column<TaskSummary, ?> initActionsColumn() {
         List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
         cells.add( new ClaimActionHasCell( constants.Claim(), new ActionCell.Delegate<TaskSummary>() {
             @Override
@@ -520,130 +517,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         }
     }
 
-    @Override
-    public void initDefaultFilters( GridGlobalPreferences preferences,
-                                    Button createTabButton ) {
-
-        presenter.setAddingDefaultFilters( true );
-
-        //Filter status Active
-        initOwnTabFilter(preferences,
-                         TAB_ACTIVE,
-                         Constants.INSTANCE.Active(),
-                         Constants.INSTANCE.FilterActive(),
-                         TaskUtils.getStatusByType(TaskUtils.TaskType.ACTIVE));
-
-        //Filter status Personal
-        initPersonalTabFilter(preferences,
-                              TAB_PERSONAL,
-                              Constants.INSTANCE.Personal(),
-                              Constants.INSTANCE.FilterPersonal(),
-                              TaskUtils.getStatusByType(TaskUtils.TaskType.PERSONAL));
-
-        //Filter status Group
-        initGroupTabFilter(preferences,
-                           TAB_GROUP,
-                           Constants.INSTANCE.Group(),
-                           Constants.INSTANCE.FilterGroup(),
-                           TaskUtils.getStatusByType(TaskUtils.TaskType.GROUP));
-
-        //Filter status All
-        initOwnTabFilter(preferences,
-                         TAB_ALL,
-                         Constants.INSTANCE.All(),
-                         Constants.INSTANCE.FilterAll(),
-                         TaskUtils.getStatusByType(TaskUtils.TaskType.ALL));
-
-        //Filter status Admin
-        initAdminTabFilter(preferences,
-                           TAB_ADMIN,
-                           Constants.INSTANCE.Task_Admin(),
-                           Constants.INSTANCE.FilterTaskAdmin(),
-                           TaskUtils.getStatusByType(TaskUtils.TaskType.ADMIN));
-
-        filterPagedTable.addAddTableButton( createTabButton );
-        selectFirstTabAndEnableQueries(TAB_ACTIVE);
-    }
-
-    private void initGroupTabFilter( GridGlobalPreferences preferences,
-                                     final String key,
-                                     String tabName,
-                                     String tabDesc,
-                                     List<String> states ) {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
-        List<Comparable> names = new ArrayList<>(states);
-        builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names ) );
-
-        builder.filter(COLUMN_ACTUAL_OWNER, OR(equalsTo(""), isNull()) );
-
-        builder.group(COLUMN_TASK_ID);
-
-        addCommonColumnSettings(builder);
-
-        initFilterTab(builder , key, tabName, tabDesc, preferences);
-    }
-
-    private void initAdminTabFilter( GridGlobalPreferences preferences,
-                                     final String key,
-                                     String tabName,
-                                     String tabDesc,
-                                     List<String> states ) {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(HUMAN_TASKS_WITH_ADMIN_DATASET);
-        List<Comparable> names = new ArrayList<>(states);
-        builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names ) );
-
-        builder.group(COLUMN_TASK_ID);
-
-        addCommonColumnSettings(builder);
-
-        initFilterTab(builder, key, tabName, tabDesc, preferences );
-    }
-
-    private void initPersonalTabFilter( GridGlobalPreferences preferences,
-                                        final String key,
-                                        String tabName,
-                                        String tabDesc,
-                                        List<String> states ) {
-
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset( HUMAN_TASKS_DATASET );
-        List<Comparable> names = new ArrayList<>(states);
-        builder.filter( equalsTo( COLUMN_STATUS, names ) );
-        builder.filter( equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier() ) );
-
-        addCommonColumnSettings(builder);
-
-        initFilterTab(builder, key, tabName, tabDesc, preferences );
-    }
-
-    private void initOwnTabFilter( GridGlobalPreferences preferences,
-                                   final String key,
-                                   String tabName,
-                                   String tabDesc,
-                                   List<String> states ) {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
-        List<Comparable> names = new ArrayList<>(states);
-        builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names ) );
-
-        builder.group(COLUMN_TASK_ID);
-
-        addCommonColumnSettings(builder);
-
-        initFilterTab(builder, key, tabName, tabDesc, preferences );
-    }
-
-    private void addCommonColumnSettings(FilterSettingsBuilderHelper builder) {
+    protected void addCommonColumnSettings(FilterSettingsBuilderHelper builder) {
         builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), DateUtils.getDateTimeFormatMask());
         builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner());
         builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy());
@@ -669,12 +543,11 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.tableOrderDefault(COLUMN_CREATED_ON, DESCENDING);
     }
 
-    private void initFilterTab(FilterSettingsBuilderHelper builder, final String key, String tabName, String tabDesc, GridGlobalPreferences preferences) {
+    protected void initFilterTab(FilterSettingsBuilderHelper builder, final String key, String tabName, String tabDesc, GridGlobalPreferences preferences) {
         FilterSettings tableSettings = builder.buildSettings();
         tableSettings.setKey(key);
         tableSettings.setTableName(tabName);
         tableSettings.setTableDescription(tabDesc);
-        tableSettings.setUUID(tableSettings.getDataSetLookup().getDataSetUUID());
 
         HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
 
@@ -696,7 +569,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             }
         });
     }
-
+    
     public void applyFilterOnPresenter(HashMap<String, Object> params) {
         String tableSettingsJSON = (String) params.get(FILTER_TABLE_SETTINGS);
         FilterSettings tableSettings = dataSetEditorManager.getStrToTableSettings(tableSettingsJSON);
@@ -711,19 +584,17 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     /*-------------------------------------------------*/
     /*---              DashBuilder                   --*/
     /*-------------------------------------------------*/
-
+    
     public FilterSettings createTableSettingsPrototype() {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
+        builder.dataset(getDatasetId());
         builder.group(COLUMN_TASK_ID);
 
         addCommonColumnSettings(builder);
 
-        final FilterSettings filterSettings = builder.buildSettings();
-        filterSettings.setUUID(HUMAN_TASKS_WITH_USER_DATASET);
-        return filterSettings;
+        return builder.buildSettings();
     }
 
     public int getRefreshValue() {
@@ -752,8 +623,8 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         extendedPagedTable.storeColumnToPreferences();
 
-        HashMap modifiedCaptions = new HashMap<String, String>();
-        ArrayList<ColumnMeta> existingExtraColumns = new ArrayList<ColumnMeta>();
+        HashMap<String, String> modifiedCaptions = new HashMap<String, String>();
+        ArrayList<ColumnMeta<TaskSummary>> existingExtraColumns = new ArrayList<ColumnMeta<TaskSummary>>();
         for ( ColumnMeta<TaskSummary> cm : extendedPagedTable.getColumnMetaList() ) {
             if ( cm.isExtraColumn() ) {
                 existingExtraColumns.add( cm );
@@ -765,7 +636,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
                 }
             }
         }
-        for ( ColumnMeta colMet : existingExtraColumns ) {
+        for ( ColumnMeta<TaskSummary> colMet : existingExtraColumns ) {
             if ( !columns.contains( colMet.getCaption() ) ) {
                 extendedPagedTable.removeColumnMeta( colMet );
             } else {
@@ -780,7 +651,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
             if ( modifiedCaptions.get( c ) != null ) {
                 caption = (String) modifiedCaptions.get( c );
             }
-            Column genericColumn = initGenericColumn( c );
+            Column<TaskSummary, ?> genericColumn = initGenericColumn( c );
             genericColumn.setSortable( false );
 
             columnMetas.add( new ColumnMeta<TaskSummary>( genericColumn, caption, true, true ) );
@@ -804,12 +675,12 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         FilterSettings varTableSettings =builder.buildSettings();
         varTableSettings.setTablePageSize(-1);
-        varTableSettings.setUUID(HUMAN_TASKS_WITH_VARIABLES_DATASET);
 
         return varTableSettings;
+
     }
 
-    private Column initGenericColumn( final String key ) {
+    private Column<TaskSummary, ?> initGenericColumn( final String key ) {
 
         Column<TaskSummary, String> genericColumn = new Column<TaskSummary, String>( new TextCell() ) {
             @Override
@@ -821,25 +692,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         genericColumn.setDataStoreName(key);
 
         return genericColumn;
-    }
-
-    @Override
-    public void resetDefaultFilterTitleAndDescription() {
-        saveTabSettings(TAB_ACTIVE,
-                        constants.Active(),
-                        constants.FilterActive());
-        saveTabSettings(TAB_PERSONAL,
-                        constants.Personal(),
-                        constants.FilterPersonal());
-        saveTabSettings(TAB_GROUP,
-                        constants.Group(),
-                        constants.FilterGroup());
-        saveTabSettings(TAB_ALL,
-                        constants.All(),
-                        constants.FilterAll());
-        saveTabSettings(TAB_ADMIN,
-                        constants.Task_Admin(),
-                        constants.FilterTaskAdmin());
     }
 
     @Override
