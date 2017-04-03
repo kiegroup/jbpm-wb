@@ -57,6 +57,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
@@ -386,5 +387,12 @@ public abstract class AbstractTaskListPresenterTest {
         ColumnFilter userOwnerFilter = columnFilters.get(1);
         assertEquals(userOwnerFilter.getColumnId(), COLUMN_ACTUAL_OWNER);
     }
+    
+    @Test
+    public void testMenus() {
+        final Menus menus = getPresenter().getMenus();
+        assertEquals(4, menus.getItems().size());
+    }
+
 
 }

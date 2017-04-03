@@ -23,14 +23,14 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
-@WorkbenchScreen(identifier = TaskListPresenter.SCREEN_ID)
-public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImpl> {
+@WorkbenchScreen(identifier = TaskAdminListPresenter.SCREEN_ID)
+public class TaskAdminListPresenter extends AbstractTaskListPresenter<TaskAdminListViewImpl> {
 
-    public static final String SCREEN_ID = "Tasks List";
+    public static final String SCREEN_ID = "Task Admin List";
     
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.Tasks_List();
+        return constants.Tasks_Admin();
     }
 
     @WorkbenchMenu

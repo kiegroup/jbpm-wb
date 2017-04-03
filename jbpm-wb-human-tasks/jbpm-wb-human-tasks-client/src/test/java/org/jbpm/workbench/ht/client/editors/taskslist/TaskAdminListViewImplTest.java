@@ -16,8 +16,6 @@
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jbpm.workbench.ht.client.editors.taskslist.TaskListPresenter;
-import org.jbpm.workbench.ht.client.editors.taskslist.TaskListViewImpl;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -25,14 +23,14 @@ import org.mockito.Mock;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class TaskListViewImplTest extends AbstractTaskListViewTest {
-
+public class TaskAdminListViewImplTest extends AbstractTaskListViewTest {
+    
     @InjectMocks
-    private TaskListViewImpl view;
+    private TaskAdminListViewImpl view;
 
     @Mock
-    private TaskListPresenter presenter;
-    
+    private TaskAdminListPresenter presenter;
+
     @Override
     public AbstractTaskListView getView(){
         return view;
@@ -45,12 +43,12 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
 
     @Override
     public String getDataSetId(){
-        return HUMAN_TASKS_WITH_USER_DATASET;
+        return HUMAN_TASKS_WITH_ADMIN_DATASET;
     }
-
+    
     @Override
     public int getExpectedDefaultTabFilterCount(){
-        return 4;
+        return 1;
     }
 
 }
