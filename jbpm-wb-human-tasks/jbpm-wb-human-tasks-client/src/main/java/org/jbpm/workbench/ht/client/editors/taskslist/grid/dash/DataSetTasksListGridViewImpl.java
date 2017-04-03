@@ -220,6 +220,10 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         Column statusColumn = initTaskStatusColumn();
         Column createdOnDateColumn = initTaskCreatedOnColumn();
         Column dueDateColumn = initTaskDueColumn();
+        Column actualOwnerColumn = initActualOwnerColumn();
+        Column lastModificationDateColumn = initLastModificationDateColumn();
+        Column piCorrelationKey = initProcInstanceCorrelationKeyColumn();
+        Column piDescription = initProcInstanceDescriptionColumn();
 
         actionsColumn = initActionsColumn();
 
@@ -233,6 +237,10 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         columnMetas.add( new ColumnMeta<TaskSummary>( statusColumn, constants.Status() ) );
         columnMetas.add( new ColumnMeta<TaskSummary>( createdOnDateColumn, constants.Created_On() ) );
         columnMetas.add( new ColumnMeta<TaskSummary>( dueDateColumn, constants.Due_On() ) );
+        columnMetas.add( new ColumnMeta<TaskSummary>( actualOwnerColumn, constants.Actual_Owner() ) );
+        columnMetas.add( new ColumnMeta<TaskSummary>( piCorrelationKey, constants.Process_Instance_Correlation_Key() ) );
+        columnMetas.add( new ColumnMeta<TaskSummary>( piDescription, constants.Process_Instance_Description() ) );
+        columnMetas.add( new ColumnMeta<TaskSummary>( lastModificationDateColumn, constants.Last_Modification_Date() ) );
 
         columnMetas.add( new ColumnMeta<TaskSummary>( actionsColumn, constants.Actions() ) );
         List<GridColumnPreference> columPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
@@ -378,6 +386,54 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         taskProcessInstanceIdColumn.setSortable( true );
         taskProcessInstanceIdColumn.setDataStoreName(COLUMN_PROCESS_INSTANCE_ID);
         return taskProcessInstanceIdColumn;
+    }
+    
+    private Column initActualOwnerColumn(){
+        Column<TaskSummary, String> col = new Column<TaskSummary, String>( new TextCell() ) {
+            @Override
+            public String getValue( TaskSummary object ) {
+                return object.getActualOwner();
+            }
+        };
+        col.setSortable( true );
+        col.setDataStoreName(COLUMN_ACTUAL_OWNER);
+        return col;
+    }
+    
+    private Column initLastModificationDateColumn() {
+        Column<TaskSummary, String> col = new Column<TaskSummary, String>( new TextCell() ) {
+            @Override
+            public String getValue( TaskSummary object ) {
+                return DateUtils.getDateTimeStr(object.getLastModificationDate());
+            }
+        };
+        col.setSortable( true );
+        col.setDataStoreName(COLUMN_LAST_MODIFICATION_DATE);
+        return col;
+    }
+    
+    private Column initProcInstanceCorrelationKeyColumn(){
+        Column<TaskSummary, String> col = new Column<TaskSummary, String>( new TextCell() ) {
+            @Override
+            public String getValue( TaskSummary object ) {
+                return object.getProcessInstanceCorrelationKey();
+            }
+        };
+        col.setSortable( true );
+        col.setDataStoreName(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY);
+        return col;
+    }
+    
+    private Column initProcInstanceDescriptionColumn(){
+        Column<TaskSummary, String> col = new Column<TaskSummary, String>( new TextCell() ) {
+            @Override
+            public String getValue( TaskSummary object ) {
+                return object.getProcessInstanceDescription();
+            }
+        };
+        col.setSortable( true );
+        col.setDataStoreName(COLUMN_PROCESS_INSTANCE_DESCRIPTION);
+        return col;
     }
 
     private Column initActionsColumn() {
@@ -587,6 +643,9 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         builder.setColumn(COLUMN_STATUS, constants.Status());
         builder.setColumn(COLUMN_TASK_ID, constants.Id());
         builder.setColumn(COLUMN_WORK_ITEM_ID, constants.WorkItemId());
+        builder.setColumn(COLUMN_LAST_MODIFICATION_DATE, constants.Last_Modification_Date());
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY, constants.Process_Instance_Correlation_Key());
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION, constants.Process_Instance_Description());
 
         builder.filterOn(true, true, true);
         builder.tableOrderEnabled(true);

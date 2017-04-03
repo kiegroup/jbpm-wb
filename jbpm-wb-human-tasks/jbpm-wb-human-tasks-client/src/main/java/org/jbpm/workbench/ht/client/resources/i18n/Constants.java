@@ -98,6 +98,12 @@ public interface Constants extends Messages {
     String Process_Definition_Id();
 
     String Process_Instance_Details();
+    
+    String Process_Instance_Correlation_Key();
+    
+    String Process_Instance_Description();
+    
+    String Last_Modification_Date();
 
     String No_Comments_For_This_Task();
 

@@ -18,6 +18,7 @@ package org.jbpm.workbench.ht.client.editors.taskslist.grid;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -160,7 +161,7 @@ public abstract class AbstractTasksListGridPresenterTest {
 
     @Test
     public void releaseTaskTest() {
-        final TaskSummary task = new TaskSummary(TASK_ID, null, null, null, 0, null, null, null, null, null, null, -1, -1, TASK_DEPLOYMENT_ID, -1);
+        final TaskSummary task = new TaskSummary(TASK_ID, null, null, null, 0, null, null, null, null, null, null, -1, -1, TASK_DEPLOYMENT_ID, -1, new Date(), null, null);
 
         getPresenter().releaseTask(task);
 
@@ -169,7 +170,7 @@ public abstract class AbstractTasksListGridPresenterTest {
 
     @Test
     public void claimTaskTest() {
-        final TaskSummary task = new TaskSummary(TASK_ID, null, null, null, 0, null, null, null, null, null, null, -1, -1, TASK_DEPLOYMENT_ID, -1);
+        final TaskSummary task = new TaskSummary(TASK_ID, null, null, null, 0, null, null, null, null, null, null, -1, -1, TASK_DEPLOYMENT_ID, -1, new Date(), null, null);
 
         getPresenter().claimTask(task);
 

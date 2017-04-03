@@ -38,7 +38,10 @@ public class TaskSummary extends GenericSummary {
     private Date createdOn;
     private Date activationTime;
     private Date expirationTime;
+    private Date lastModificationDate;
     private Long processInstanceId;
+    private String processInstanceCorrelationKey;
+    private String processInstanceDescription;
     private String processId;
     private Long processSessionId;
     private String deploymentId;
@@ -51,7 +54,8 @@ public class TaskSummary extends GenericSummary {
 
     public TaskSummary(long taskId, String taskName, String description, String status,
             int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
-            Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId) {
+            Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId,
+            long parentId, Date lastModificationDate, String processInstanceCorrelationKey, String processInstanceDescription) {
         super();
         this.id = taskId;
         this.name = taskName;
@@ -70,49 +74,48 @@ public class TaskSummary extends GenericSummary {
         this.processInstanceId = processInstanceId;
         this.deploymentId = deploymentId;
         this.parentId = parentId;
-    }
-
-    public void addDomainData(String key, String value){
-        domainData.put(key, value);
-    }
-
-    public String getDomainDataValue(String key){
-        return domainData.get(key);
-    }
-
-    public Map<String, String> getDomainData(){
-        return domainData;
+        this.lastModificationDate = lastModificationDate;
+        this.processInstanceCorrelationKey = processInstanceCorrelationKey;
+        this.processInstanceDescription = processInstanceDescription;
     }
 
     public TaskSummary(long taskId, String taskName, String description, String status,
             int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
-            Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId, boolean isForAdmin) {
+            Date expirationTime, String processId, long processSessionId, long processInstanceId,
+            String deploymentId, long parentId, Date lastModificationDate, String processInstanceCorrelationKey,
+            String processInstanceDescription, boolean isForAdmin) {
         this(taskId, taskName, description, status, priority,
                 actualOwner, createdBy, createdOn, activationTime,
                 expirationTime, processId, processSessionId,
-                processInstanceId, deploymentId, parentId);
+                processInstanceId, deploymentId, parentId,
+                lastModificationDate, processInstanceCorrelationKey, processInstanceDescription);
         this.isForAdmin = isForAdmin;
     }
 
     public TaskSummary(long taskId, String taskName, String description, String status,
             int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
             Date expirationTime, String processId, long processSessionId, long processInstanceId,
-            String deploymentId, long parentId, boolean isForAdmin, boolean isLogOnly) {
+            String deploymentId, long parentId, Date lastModificationDate, String processInstanceCorrelationKey,
+            String processInstanceDescription, boolean isForAdmin, boolean isLogOnly) {
         this(taskId, taskName, description, status, priority,
                 actualOwner, createdBy, createdOn, activationTime,
                 expirationTime, processId, processSessionId,
-                processInstanceId, deploymentId, parentId, isForAdmin);
+                processInstanceId, deploymentId, parentId, lastModificationDate,
+                processInstanceCorrelationKey, processInstanceDescription, isForAdmin);
         this.isLogOnly = isLogOnly;
 
     }
 
     public TaskSummary(long taskId, String taskName, String description, String status,
             int priority, String actualOwner, String createdBy, Date createdOn, Date activationTime,
-            Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId, long parentId, boolean isForAdmin, List<String> potOwnersString) {
+            Date expirationTime, String processId, long processSessionId, long processInstanceId, String deploymentId,
+            long parentId, Date lastModificationDate, String processInstanceCorrelationKey, String processInstanceDescription,
+            boolean isForAdmin, List<String> potOwnersString) {
         this(taskId, taskName, description, status, priority,
                 actualOwner, createdBy, createdOn, activationTime,
                 expirationTime, processId, processSessionId,
-                processInstanceId, deploymentId, parentId);
+                processInstanceId, deploymentId, parentId,
+                lastModificationDate, processInstanceCorrelationKey, processInstanceDescription);
         this.isForAdmin = isForAdmin;
         this.potOwnersString.clear();
         this.potOwnersString.addAll(potOwnersString);
@@ -124,6 +127,18 @@ public class TaskSummary extends GenericSummary {
     public TaskSummary(Long taskId, String taskName) {
         this.taskId = taskId;
         this.taskName = taskName;
+    }
+    
+    public void addDomainData(String key, String value){
+        domainData.put(key, value);
+    }
+
+    public String getDomainDataValue(String key){
+        return domainData.get(key);
+    }
+
+    public Map<String, String> getDomainData(){
+        return domainData;
     }
 
     public Long getTaskId() {
@@ -206,9 +221,39 @@ public class TaskSummary extends GenericSummary {
         return isLogOnly;
     }
 
+    
+    public Date getLastModificationDate() {
+        return lastModificationDate;
+    }
+
+    
+    public void setLastModificationDate(Date lastModificationDate) {
+        this.lastModificationDate = lastModificationDate;
+    }
+
+    
+    public String getProcessInstanceCorrelationKey() {
+        return processInstanceCorrelationKey;
+    }
+
+    
+    public void setProcessInstanceCorrelationKey(String processInstanceCorrelationKey) {
+        this.processInstanceCorrelationKey = processInstanceCorrelationKey;
+    }
+
+    
+    public String getProcessInstanceDescription() {
+        return processInstanceDescription;
+    }
+
+    
+    public void setProcessInstanceDescription(String processInstanceDescription) {
+        this.processInstanceDescription = processInstanceDescription;
+    }
+
     @Override
     public String toString() {
-        return "TaskSummary{" + "taskId=" + taskId + ", taskName=" + taskName + ", description=" + description + ", status=" + status + ", priority=" + priority + ", actualOwner=" + actualOwner + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", activationTime=" + activationTime + ", expirationTime=" + expirationTime + ", processInstanceId=" + processInstanceId + ", processId=" + processId + ", processSessionId=" + processSessionId + ", deploymentId=" + deploymentId + ", isForAdmin=" + isForAdmin + ", isLogOnly=" + isLogOnly + ", parentId=" + parentId + ", potOwnersString=" + potOwnersString + '}';
+        return "TaskSummary {taskId=" + taskId + ", taskName=" + taskName + ", description=" + description + ", status=" + status + ", priority=" + priority + ", actualOwner=" + actualOwner + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", activationTime=" + activationTime + ", expirationTime=" + expirationTime + ", lastModificationDate=" + lastModificationDate + ", processInstanceId=" + processInstanceId + ", processInstanceCorrelationKey=" + processInstanceCorrelationKey + ", processInstanceDescription=" + processInstanceDescription + ", processId=" + processId + ", processSessionId=" + processSessionId + ", deploymentId=" + deploymentId + ", isForAdmin=" + isForAdmin + ", isLogOnly=" + isLogOnly + ", parentId=" + parentId + ", potOwnersString=" + potOwnersString + ", domainData=" + domainData + "}";
     }
 
 }

@@ -274,6 +274,9 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
                 task.getProcessInstanceId(),
                 task.getContainerId(),
                 task.getParentId(),
+                null,
+                null,
+                null,
                 false
         );
 
@@ -301,6 +304,9 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
                 task.getProcessInstanceId(),
                 task.getContainerId(),
                 task.getParentId(),
+                null,
+                null,
+                null,
                 false
         );
 
