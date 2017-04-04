@@ -10,7 +10,6 @@
 html {
   font-size: @font-size-base;
 }
-
 @font-size-h1: 2rem; // ~24px
 @font-size-h2: 1.8333rem; // ~22px
 @font-size-h3: 1.3333rem; // ~16px
@@ -18,10 +17,10 @@ html {
 @font-size-h5: 1.0833rem; // ~13px
 
 // Use relative font sizes when font size should vary with the parent
-// mgmt REMOVED @font-size-relative-base: 1em !default;
-// mgmt REMOVED @font-size-relative-lg:   1.25em !default;
-// mgmt REMOVED @font-size-relative-sm:   .875em !default;
-// mgmt REMOVED @font-size-relative-xs:   .75em !default;
+@font-size-relative-base: 1em;
+@font-size-relative-lg:   1.25em;
+@font-size-relative-sm:   .875em;
+@font-size-relative-xs:   .75em;
 
 @line-height-base: 1.66666667;
 
@@ -31,9 +30,9 @@ html {
 
 // Font weight
 //
-@pf-font-weight-bold: 600;
+@pf-font-weight-bold:   600;
 @pf-font-weight-normal: 400;
-@pf-font-weight-light: 200;
+@pf-font-weight-light:  200;
 
 @headings-font-weight: @pf-font-weight-bold;
 
@@ -43,22 +42,26 @@ html {
 // variables. Mostly focused on spacing.
 // You can add more entries to the @spacers map, should you need more variation.
 
-@spacer: 1rem;
-@pf-spacer-xxxs: (@spacer * .25); // ~3px
-@pf-spacer-xxs: (@spacer * .5); // 7px
-@pf-spacer-xs: (@spacer * .75); // ~10px
-@pf-spacer-sm: @spacer; // 14px
-@pf-spacer-md: (@spacer * 1.25); // ~17px
-@pf-spacer-lg: (@spacer * 1.5); // 21px
-@pf-spacer-xl: (@spacer * 1.75); // ~24px
-@pf-spacer-xxl: (@spacer * 2); // 28 px
-@pf-spacer-xxxl: (@spacer * 2.5); // 35 px
-@pf-spacer-xxxxl: (@spacer * 3); // 42 px
+@spacer:   1rem;
+@pf-spacer-xxxs:   (@spacer * .25);   // ~3px
+@pf-spacer-xxs:    (@spacer * .5);    // 7px
+@pf-spacer-xs:     (@spacer * .75);   // ~10px
+@pf-spacer-sm:     @spacer;           // 14px
+@pf-spacer-md:     (@spacer * 1.25);  // ~17px
+@pf-spacer-lg:     (@spacer * 1.5);   // 21px
+@pf-spacer-xl:     (@spacer * 1.75);  // ~24px
+@pf-spacer-xxl:    (@spacer * 2);     // 28 px
+@pf-spacer-xxxl:   (@spacer * 2.5);   // 35 px
+@pf-spacer-xxxxl:  (@spacer * 3);     // 42 px
+
 
 // specific to building blocks
 @kie-color-available: @color-pf-green;
-@kie-color-inprogress: @color-pf-blue;
-@kie-color-complete: @color-pf-black-800;
+@kie-color-inprogress:  @color-pf-blue;
+@kie-color-complete:  @color-pf-black-800;
+
+@kie-card-large-height: 359px;
+@kie-card-small-height: 340px;
 
 // fix to make multi-line tooltips work
 .tooltip-inner {

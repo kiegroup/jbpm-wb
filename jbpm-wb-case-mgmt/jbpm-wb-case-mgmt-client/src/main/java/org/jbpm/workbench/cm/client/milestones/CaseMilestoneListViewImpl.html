@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<div data-field="milestones" class="card-pf">
+<div data-field="milestones" class="card-pf kie-card-small-height">
     <div class="card-pf-heading">
         <div class="card-pf-time-frame-filter" data-field="search-actions">
             <button class="btn btn-link kie-btn-link" type="button" data-field="sort-alpha-asc"
@@ -16,11 +16,14 @@
         </h2>
     </div>
     <div class="card-pf-body">
-        <div class=" list-group kie-list-view--embedded kie-milestones" data-field="milestone-list">
-        </div>
-        <div class="row" data-field="empty-list-item">
-            <div class="col-xs-12">
-                <div class="card-pf-link-with-icon"><span class="pficon pficon-info"></span><span data-i18n-key="NoMilestonesFound"></span></div>
+        <div class="col-xs-12">
+            <div class="kie-scrollbox kie-scrollbox--milestones">
+                <div class=" list-group kie-list-view--embedded " data-field="milestone-list"></div>
+                <div class="card-pf-body kie-card-body--embedded" data-field="empty-list-item">
+                    <div href="" class="card-pf-link-with-icon"><span class="pficon pficon-info"></span>
+                        <span data-i18n-key="NoMilestonesFound"></span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

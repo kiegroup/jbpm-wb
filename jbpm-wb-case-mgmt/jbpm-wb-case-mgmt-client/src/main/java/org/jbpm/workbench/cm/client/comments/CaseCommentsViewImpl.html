@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<div class="card-pf" data-field="comments">
+<div class="card-pf kie-card-small-height" data-field="comments">
     <div class="card-pf-heading">
         <div class="card-pf-time-frame-filter" data-field="search-actions">
             <button class="btn btn-link kie-btn-link" type="button" data-field="sort-alpha-desc"
@@ -20,35 +20,32 @@
             <!-- Roles -->
 
             <div class="col-xs-12">
-                <div class="list-group-item list-group kie-list-view--embedded kie-scrollbox" data-field="list-group-item">
-                    <div class="">
-                        <div class="pull-right" data-field="actions-dropdown">
-                            <a href="#"   data-field="addCommentButton">
-                                <span class="fa fa-plus-circle kie-addition-button"></span>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="kie-list-group-item-content">
 
-                        <div class="list-view-pf-left">
+                <!-- input for comments -->
+                <div class="list-group-item kie-list-group-item--header" data-field="list-group-item">
+                    <div class="list-view-pf-actions kie-comments__pf-actions" data-field="actions-dropdown">
+                        <a href="#" data-field="addCommentButton">
+                            <span class="fa fa-plus-circle pull-right kie-comments__add-button"></span>
+                        </a>
+                    </div>
+                    <div class="list-view-pf-main-info kie-comments__main-info">
+                        <div class="list-view-pf-left kie-comments__list-view-pf-left">
                             <span class="pficon pficon-user list-view-pf-icon-sm"></span>
                         </div>
                         <div class="list-view-pf-body">
-                            <div class="list-view-pf-description">
-                                <div class="list-group-item-text">
-                                    <div class="form">
-                                        <div data-field="comment-creation-group">
-                                            <textarea rows="2" data-field="comment-creation-input" class="form-control"></textarea>
-                                            <span data-field="comment-creation-help" class="help-block"></span>
-                                        </div>
-                                    </div>
+                            <div class="list-view-pf-description kie-comments__list-view-pf-description" data-field="comment-creation-group">
+                                <div class="kie-full-width">
+                                    <input type="text" class="form-control input-lg" placeholder="Add a comment." data-field="comment-creation-input">
+                                    <span data-field="comment-creation-help" class="help-block"></span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="kie-scrollbox" data-field="scrollbox">
-                    <div class=" list-group kie-list-view--embedded" data-field="comments-list"></div>
+
+                <!-- list of comments -->
+                <div class="kie-scrollbox kie-scrollbox--comments" data-field="scrollbox">
+                    <div class=" list-group kie-list-view--embedded" data-field="comments-list" ></div>
                     <div class="card-pf-body kie-card-body--embedded" data-field="empty-list-item">
                         <div href="" class="card-pf-link-with-icon"><span class="pficon pficon-info"></span>
                             <span data-i18n-key="NoCommentsFound"></span>
@@ -56,6 +53,7 @@
                     </div>
                 </div>
                 <div data-field="pagination"/>
+
 
             </div>
 
