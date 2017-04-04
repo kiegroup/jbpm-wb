@@ -27,9 +27,9 @@ import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.Event;
 
 import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.Input;
 import org.jboss.errai.common.client.dom.MouseEvent;
 import org.jboss.errai.common.client.dom.Span;
-import org.jboss.errai.common.client.dom.TextArea;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
@@ -54,7 +54,7 @@ import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 @Dependent
 @Templated
 public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> implements CaseCommentsPresenter.CaseCommentsView, PaginationViewImpl.PageList {
-    private int PAGE_SIZE = 4;
+    private int PAGE_SIZE = 20;
 
     @Inject
     @DataField("comments")
@@ -83,7 +83,7 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
 
     @Inject
     @DataField("comment-creation-input")
-    TextArea newCommentTextArea;
+    Input newCommentTextArea;
 
     @Inject
     @DataField("comment-creation-help")
@@ -166,9 +166,9 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
     @Override
     public void setVisibleItems(List visibleItems) {
         this.caseCommentList.setModel(visibleItems);
-        int tasksSize =visibleItems.size();
-        if(tasksSize > 0){
-            comments.getComponent(tasksSize-1).setLastElementStyle();
+        int pageSize =visibleItems.size();
+        if(pageSize > 1){
+            comments.getComponent(pageSize-1).setLastElementStyle();
         }
     }
 

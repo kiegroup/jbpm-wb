@@ -2,6 +2,7 @@
 
 .kie-container--page {
   margin-top: @pf-spacer-xxl;
+  line-height: 1;
 }
 
 // override parts of patternfly horizontal nav and utility nav
@@ -38,11 +39,11 @@
 }
 
 // title and subtitle in a toolbar
-.kie-toolbar__title {
-  font-size: @font-size-h2;
+.kie-case-view-header__title {
+  font-size: @font-size-h3;
 }
 
-.kie-toolbar__subtitle {
+.kie-case-view-header__subtitle {
   font-size: @font-size-base;
   font-weight: 600;
 }
@@ -75,6 +76,52 @@
   &:last-of-type {
     border-color: transparent;
     padding-right: 0;
+  }
+}
+
+// help the header align things vertically
+.kie-vertical-align {
+  display: flex;
+  align-items: center;
+}
+
+// header on case view
+.kie-case-view-header {
+  margin-bottom: @pf-spacer-md;
+  @media (min-width: @screen-sm) {
+    .kie-vertical-align;
+  }
+}
+
+.kie-case-view-header__lhs {
+  margin-bottom: @pf-spacer-sm;
+  @media (min-width: @screen-sm) {
+    margin-bottom: 0;
+  }
+}
+
+.kie-case-view-header__rhs {
+  @media (min-width: @screen-sm) {
+    .kie-vertical-align;
+  }
+}
+
+.kie-case-view-header__stages {
+  margin-bottom: @pf-spacer-sm;
+  @media (min-width: @screen-sm) {
+    margin-bottom: 0;
+  }
+}
+
+.kie-stages-div{
+  display: flex;
+  width:100%;
+}
+
+.kie-case-view-header__actions {
+  @media (min-width: @screen-sm) {
+    .kie-vertical-align;
+    justify-content: flex-end;
   }
 }
 
@@ -121,7 +168,7 @@
   padding-top: @pf-spacer-lg;
   //adjust size of chevron arrows
   .fa, .pficon {
-    font-size: @icon-size-md;
+    font-size: @icon-size-sm;
     position: relative;
     padding-left: @pf-spacer-xs;
     padding-right: @pf-spacer-xs;
@@ -130,14 +177,19 @@
 
 // scrollbox adds a shadow indicating if there is more content above/below the current position
 .kie-scrollbox {
-  background-color: @color-pf-white;
-  border-bottom: 1px solid @color-pf-black-300;
-  background:  linear-gradient(@color-pf-white, rgba(255, 255, 255, 0)), //top
-               linear-gradient(rgba(255, 255, 255, 0), @color-pf-white) 0 100%; //bottom
+  //IMPORTANT: can change to overflow-y: auto to see how the scroll shadows work. JS will have to manually set the scroll of the list
+  //overflow-y: hidden;
+  line-height: 1.66666667;
+  height: 15em;
+  background: /* Shadow covers */ linear-gradient(@color-pf-white, rgba(255, 255, 255, 0)), //top
+  linear-gradient(rgba(255, 255, 255, 0), @color-pf-white) 0 100%, //bottom
+    /* Shadows */ linear-gradient(@color-pf-black-150, rgba(255, 255, 255, 0)),
+  linear-gradient(rgba(255, 255, 255, 0), @color-pf-black-150) 0 100%;
   background-repeat: no-repeat;
-  background-attachment: local, local, scroll, scroll;
   background-color: @color-pf-white;
-  background-size: 100% 40px, 100% 40px;
+  background-size: 100% 40px, 100% 40px, 100% 10px, 100% 14px;
+  background-attachment: local, local, scroll, scroll;
+  border-bottom: 1px solid @color-pf-black-300;
 
   .list-group {
     margin-bottom: 0;
@@ -150,9 +202,11 @@
       border-bottom: none;
     }
   }
+
   .kie-list-group-item-content {
     display: flex;
   }
+
 }
 
 .kie-scrollbox-show-overflow{
@@ -239,24 +293,128 @@ dd:not(:last-child) {
     color: @link-hover-color;
   }
 }
+
+// Activities
+.kie-scrollbox--activities {
+  max-height: 20em;
+  overflow-y: auto;
+  border-bottom: none;
+  .list-group-item {
+    border-top: none;
+    border-bottom: none;
+  }
+
+}
+
+.kie-activities {
+  border-top: 0;
+  margin-bottom: 0;
+}
+
+.kie-activities__list-group-item {
+  background-color: transparent;
+  border-top: 0;
+  border-bottom: 0;
+  .list-group-item-heading,
+  .list-group-item-text {
+    font-size: @font-size-relative-base;
+    margin-right: 0;
+  }
+}
+
+.kie-activities__list-view-pf-left {
+  .list-view-pf-icon-sm {
+    background-color: @color-pf-white;
+  }
+}
+
+.kie-activities__list-view-pf-left .pficon.kie-no-highlight,
+.kie-activities__list-view-pf-left .fa.kie-no-highlight {
+  background-color: @color-pf-black-200;
+  border-color: transparent;
+}
+.kie-activities__main-info {
+  padding-top: 0;
+  padding-bottom: 0;
+  flex-wrap: wrap;
+}
+.kie-activities__list-view-pf-description {
+  width: 100%;
+}
+.kie-activities--dotted-line {
+  background-image: linear-gradient(to bottom, @color-pf-black-300, @color-pf-black-300 3px, @color-pf-white 3px, @color-pf-white);
+  background-repeat: repeat-y;
+  background-size: 1px 5px;
+  background-position: 30px 1px;
+}
+
+// Comments
+.kie-scrollbox--comments{
+  overflow: auto;
+}
+
+.kie-list-group-item--header {
+  border-bottom: 2px solid @color-pf-black-300;
+  border-top: 0;
+  display: flex;
+  align-items: center;
+  padding-top: 0;
+}
+.kie-comments__add-button {
+  font-size: @icon-size-sm;
+}
+
+.kie-comments__pf-actions {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.kie-comments__main-info {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.kie-item-heading__role {
+  font-weight: @pf-font-weight-normal;
+}
+.kie-comments__list-view-pf-description {
+  width: 100%;
+}
+.kie-comments__list-view-pf-left .pficon.kie-no-highlight,
+.kie-comments__list-view-pf-left .fa.kie-no-highlight {
+  background-color: @color-pf-black-200;
+  border-color: transparent;
+}
+
+.kie-card-frame{
+  margin-left: -10px;
+  margin-right: -10px;
+}
+
 .card-pf {
   margin: 0 0px 20px;
 }
 
-.kie-user-disabled-icon {
-  background-color: #f5f5f5;
-  border:none !important;
+.kie-card-large-height{
+  min-height:@kie-card-large-height;
 }
 
-.kie-padding-right_10 {
-  padding-right: 10px;
+.kie-card-small-height{
+  min-height:@kie-card-small-height;
 }
 
-.kie-addition-button {
-  position: relative;
-  font-size: 16px;
-  padding-left: 5px;
+.kie-full-width {
+  width: 100%;
+  display:inline-block;
 }
+
+.kie-scrollbox--milestones {
+  height: 21em;
+  overflow-y: auto;
+  border-bottom: none;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
+
 
 
 

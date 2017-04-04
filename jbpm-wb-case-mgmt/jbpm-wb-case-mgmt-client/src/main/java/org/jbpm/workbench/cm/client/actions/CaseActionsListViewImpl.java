@@ -39,7 +39,7 @@ import static org.jboss.errai.common.client.dom.DOMUtil.*;
 @Dependent
 @Templated
 public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter> implements CaseActionsPresenter.CaseActionsListView, PaginationViewImpl.PageList {
-    private int PAGE_SIZE = 4;
+    private int PAGE_SIZE = 3;
 
     @Inject
     @DataField("simple-list")
@@ -114,7 +114,7 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter> 
     public void setVisibleItems(List visibleItems) {
         this.caseActionList.setModel(visibleItems);
         int tasksSize =visibleItems.size();
-        if(tasksSize > 0){
+        if(tasksSize > 1){
             tasks.getComponent(tasksSize-1).setLastElementStyle();
         }
     }

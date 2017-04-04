@@ -6,7 +6,9 @@
     "roles": {
       "owner": 1,
       "participant" : -1,
-      "developer" : 1
+      "developer" : 1,
+      "designer" : -1,
+      "reviewer" : -1
     }
   },
   {

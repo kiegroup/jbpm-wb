@@ -39,7 +39,7 @@ import static org.jboss.errai.common.client.dom.DOMUtil.*;
 @Dependent
 @Templated
 public class CaseRolesViewImpl implements CaseRolesPresenter.CaseRolesView,PaginationViewImpl.PageList {
-    public static int PAGE_SIZE = 4;
+    public static int PAGE_SIZE = 3;
 
     @Inject
     @DataField("roles")

@@ -269,7 +269,7 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
                 }
             });
         } else {
-            setIconType("kie-user-disabled-icon");
+            setIconType("kie-no-highlight");
         }
     }
 
