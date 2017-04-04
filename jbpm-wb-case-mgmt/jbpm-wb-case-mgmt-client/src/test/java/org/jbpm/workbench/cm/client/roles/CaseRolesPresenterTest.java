@@ -92,7 +92,6 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
         setupCaseInstance(caseInstance, serverTemplateId);
 
         verifyClearCaseInstance();
-        verify(view).addUser("admin", "Owner");
 
         final ArgumentCaptor<CaseRolesPresenter.CaseRoleAction> captor = ArgumentCaptor.forClass(CaseRolesPresenter.CaseRoleAction.class);
         verify(view).addUser(eq(USER), eq(CASE_ROLE), captor.capture());
