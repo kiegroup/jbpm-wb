@@ -18,7 +18,6 @@ package org.jbpm.workbench.cm.server;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +27,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Specializes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.base.Strings;
 import org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl;
 import org.jbpm.workbench.cm.model.CaseActionSummary;
@@ -62,7 +62,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
 
 
     private static int commentIdGenerator = 0;
-    private static long actionIdLongenerator = 9;
+    private static long actionIdGenerator = 9;
 
     private List<CaseDefinitionSummary> caseDefinitionList = emptyList();
     private List<CaseInstanceSummary> caseInstanceList = new ArrayList<>();
@@ -72,21 +72,29 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     private Map<String, List<CaseActionSummary>> caseActionMap = new HashMap<>();
     private List<CaseActionSummary> caseActionList = new ArrayList<>();
     private List<ProcessDefinitionSummary> processDefinitionList = emptyList();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @PostConstruct
     public void init() {
-        try {
-            final ObjectMapper mapper = new ObjectMapper();
-            final InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(CASE_DEFINITIONS_JSON);
-            caseDefinitionList = Arrays.asList(mapper.readValue(inputStream, CaseDefinitionSummary[].class));
-            caseMilestoneList = Arrays.asList(mapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(CASE_MILESTONES_JSON), CaseMilestoneSummary[].class));
-            caseStageList = Arrays.asList(mapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(CASE_STAGES_JSON), CaseStageSummary[].class));
-            caseActionList = Arrays.asList(mapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(CASE_ACTIONS_JSON), CaseActionSummary[].class));
-            processDefinitionList = Arrays.asList(mapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(PROCESS_DEFINITION_JSON), ProcessDefinitionSummary[].class));
-
+            caseDefinitionList = readJsonValues(CaseDefinitionSummary.class, CASE_DEFINITIONS_JSON);
+            caseMilestoneList = readJsonValues(CaseMilestoneSummary.class, CASE_MILESTONES_JSON);
+            caseStageList = readJsonValues(CaseStageSummary.class, CASE_STAGES_JSON);
+            caseActionList = readJsonValues(CaseActionSummary.class, CASE_ACTIONS_JSON);
+            processDefinitionList = readJsonValues(ProcessDefinitionSummary.class, PROCESS_DEFINITION_JSON);
             LOGGER.info("Loaded {} case definitions", caseDefinitionList.size());
+    }
+
+    private <T> List<T> readJsonValues(final Class<T> type,
+                                       final String fileName) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
+            final CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class,
+                                                                                                  type);
+            return mapper.readValue(inputStream,
+                                    collectionType);
         } catch (Exception e) {
-            LOGGER.error("Failed to load json data file", e);
+            LOGGER.error("Failed to load json data file",
+                         e);
+            return emptyList();
         }
     }
 
@@ -243,7 +251,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     public void addDynamicUserTask(String containerId, String caseId, String name, String description, String actors, String groups, Map<String, Object> data) {
         final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
         final CaseActionSummary action = CaseActionSummary.builder()
-                .id(actionIdLongenerator++)
+                .id(actionIdGenerator++)
                 .name(name)
                 .actualOwner(actors)
                 .type("Human Task")
@@ -257,7 +265,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     public void addDynamicUserTaskToStage(String containerId, String caseId, String stageId, String name, String description, String actors, String groups, Map<String, Object> data) {
         final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
         final CaseActionSummary action = CaseActionSummary.builder()
-                .id(actionIdLongenerator++)
+                .id(actionIdGenerator++)
                 .name(name)
                 .actualOwner(actors)
                 .type("Human Task")
@@ -272,7 +280,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     public void triggerAdHocActionInStage(String containerId, String caseId, String stageId, String adHocName, Map<String, Object> data) {
         final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
         final CaseActionSummary action = CaseActionSummary.builder()
-                .id(actionIdLongenerator++)
+                .id(actionIdGenerator++)
                 .name(adHocName)
                 .actionStatus(CaseActionStatus.IN_PROGRESS)
                 .createdOn(new Date())
@@ -285,7 +293,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     public void triggerAdHocAction(String containerId, String caseId, String adHocName, Map<String, Object> data) {
         final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
         final CaseActionSummary action = CaseActionSummary.builder()
-                .id(actionIdLongenerator++)
+                .id(actionIdGenerator++)
                 .name(adHocName)
                 .actionStatus(CaseActionStatus.IN_PROGRESS)
                 .createdOn(new Date())
@@ -298,7 +306,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     public void addDynamicSubProcess(String containerId, String caseId, String processId, Map<String, Object> data) {
         final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
         final CaseActionSummary action = CaseActionSummary.builder()
-                .id(actionIdLongenerator++)
+                .id(actionIdGenerator++)
                 .name("subprocess: " + processId)
                 .actionStatus(CaseActionStatus.IN_PROGRESS)
                 .createdOn(new Date())
@@ -311,7 +319,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     public void addDynamicSubProcessToStage(String containerId, String caseId, String stageId, String processId, Map<String, Object> data) {
         final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
         final CaseActionSummary action = CaseActionSummary.builder()
-                .id(actionIdLongenerator++)
+                .id(actionIdGenerator++)
                 .name("subprocess: " + processId + " inStage:" + stageId)
                 .actionStatus(CaseActionStatus.IN_PROGRESS)
                 .createdOn(new Date())

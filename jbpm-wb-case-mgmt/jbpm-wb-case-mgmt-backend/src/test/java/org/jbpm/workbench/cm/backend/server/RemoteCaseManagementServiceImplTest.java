@@ -57,14 +57,13 @@ import static java.util.Collections.singletonList;
 import static org.jbpm.workbench.cm.backend.server.CaseCommentMapperTest.assertCaseComment;
 import static org.jbpm.workbench.cm.backend.server.CaseDefinitionMapperTest.assertCaseDefinition;
 import static org.jbpm.workbench.cm.backend.server.CaseInstanceMapperTest.assertCaseInstance;
-import static org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl.PAGE_SIZE_UNLIMITED;
 import static org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl.CASE_OWNER_ROLE;
+import static org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl.PAGE_SIZE_UNLIMITED;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -93,7 +92,10 @@ public class RemoteCaseManagementServiceImplTest {
     @Test
     public void testGetCaseDefinitions_singleCaseDefinition() {
         final CaseDefinition definition = createTestDefinition();
-        when(clientMock.getCaseDefinitions(anyInt(), anyInt()))
+        when(clientMock.getCaseDefinitions(anyInt(),
+                                           anyInt(),
+                                           eq(CaseServicesClient.SORT_BY_CASE_DEFINITION_NAME),
+                                           eq(true)))
                 .thenReturn(singletonList(definition));
 
         List<CaseDefinitionSummary> definitions = testedService.getCaseDefinitions();

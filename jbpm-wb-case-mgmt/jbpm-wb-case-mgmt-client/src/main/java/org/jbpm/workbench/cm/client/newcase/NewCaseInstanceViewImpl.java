@@ -17,6 +17,8 @@
 package org.jbpm.workbench.cm.client.newcase;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -46,6 +48,7 @@ import org.jbpm.workbench.cm.client.util.Modal;
 import org.jbpm.workbench.cm.client.util.Popover;
 import org.jbpm.workbench.cm.client.util.Select;
 import org.jbpm.workbench.cm.client.util.ValidationState;
+import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -151,13 +154,27 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
     }
 
     @Override
-    public void setCaseDefinitions(final List<String> definitions) {
+    public void setCaseDefinitions(final List<CaseDefinitionSummary> definitions) {
         clearCaseDefinitions();
         caseTemplatesList.setValue("");
-        for (final String definition : definitions) {
-            caseTemplatesList.addOption(definition);
-        }
+
+        final Map<String, List<CaseDefinitionSummary>> nameToDefinitions = definitions.stream().collect(Collectors.groupingBy(CaseDefinitionSummary::getName));
+
+        nameToDefinitions.entrySet().forEach(entry -> {
+            if (entry.getValue().size() > 1) {
+                entry.getValue().forEach(def -> caseTemplatesList.addOption(def.getName(),
+                                                                            def.getContainerId(),
+                                                                            def.getUniqueId(),
+                                                                            false));
+            } else {
+                final CaseDefinitionSummary def = entry.getValue().get(0);
+                caseTemplatesList.addOption(def.getName(),
+                                            def.getUniqueId());
+            }
+        });
+
         caseTemplatesList.refresh();
+        loadCaseRoles();
     }
 
     @Override
@@ -261,6 +278,10 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
 
     @EventHandler("definition-name-select")
     public void onCaseChanged(final @ForEvent("change") Event event) {
+        loadCaseRoles();
+    }
+
+    private void loadCaseRoles(){
         presenter.loadCaseRoles(caseTemplatesList.getValue());
     }
 }

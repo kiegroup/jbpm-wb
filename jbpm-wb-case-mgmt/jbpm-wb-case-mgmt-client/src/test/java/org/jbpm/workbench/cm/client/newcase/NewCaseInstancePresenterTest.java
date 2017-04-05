@@ -113,12 +113,12 @@ public class NewCaseInstancePresenterTest {
         final List list = captor.getValue();
         assertEquals(1,
                      list.size());
-        assertEquals(cds.getName(),
+        assertEquals(cds,
                      list.get(0));
         verify(view).setOwner(owner);
         verify(view).show();
 
-        presenter.createCaseInstance(cds.getName(),
+        presenter.createCaseInstance(cds.getUniqueId(),
                                      owner,
                                      emptyList());
 
