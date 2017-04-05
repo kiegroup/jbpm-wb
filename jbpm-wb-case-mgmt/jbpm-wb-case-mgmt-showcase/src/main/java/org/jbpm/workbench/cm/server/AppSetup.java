@@ -57,7 +57,7 @@ public class AppSetup {
     @ApplicationScoped
     public KieServicesClient produceKieServicesClient() {
         LOGGER.info("Creating KieServicesClient...");
-        return createKieServicesClient(KieServerConstants.CAPABILITY_CASE);
+        return createKieServicesClient(KieServerConstants.CAPABILITY_CASE, KieServerConstants.CAPABILITY_BPM);
     }
 
     @Produces

@@ -54,7 +54,6 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesP
 
     @Override
     protected void loadCaseInstance(final CaseInstanceSummary cis) {
-        view.addUser(cis.getOwner(), translationService.format(OWNER));
 
         setupRoleAssignments(cis);
 
@@ -109,18 +108,24 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesP
 
         cis.getRoleAssignments().forEach(
                 crs -> {
-                    crs.getUsers().forEach(user -> view.addUser(user, crs.getName(), new CaseRoleAction() {
+                    crs.getUsers().forEach(user -> {
+                        if (crs.getName().equals("owner")) {
+                            view.addUser(user, crs.getName());
+                        } else {
+                            view.addUser(user, crs.getName(), new CaseRoleAction() {
 
-                        @Override
-                        public String label() {
-                            return translationService.format(REMOVE);
-                        }
+                                @Override
+                                public String label() {
+                                    return translationService.format(REMOVE);
+                                }
 
-                        @Override
-                        public void execute() {
-                            removeUserFromRole(user, crs.getName());
+                                @Override
+                                public void execute() {
+                                    removeUserFromRole(user, crs.getName());
+                                }
+                            });
                         }
-                    }));
+                    });
                     crs.getGroups().forEach(group -> view.addGroup(group, crs.getName(), new CaseRoleAction() {
 
                         @Override

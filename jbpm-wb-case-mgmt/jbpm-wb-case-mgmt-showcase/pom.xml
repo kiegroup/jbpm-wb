@@ -341,6 +341,11 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-wb-kie-server-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-document</artifactId>
+      <scope>runtime</scope>
+    </dependency>
 
     <!-- GWT -->
     <dependency>

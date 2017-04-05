@@ -204,7 +204,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     public List<CaseActionSummary> getInProgressActions(String containerId, String caseId) {
         List<NodeInstance> activeNodes = client.getActiveNodes(containerId, caseId, 0, PAGE_SIZE_UNLIMITED);
 
-        return activeNodes.parallelStream()
+        return activeNodes.stream()
                 .map(s -> new CaseActionNodeInstanceMapper(
                         (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
                                 userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
@@ -221,7 +221,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
 
     public List<CaseActionSummary> getCompletedActions(String containerId, String caseId) {
         List<NodeInstance> activeNodes = getCaseCompletedNodes(containerId, caseId);
-        return activeNodes.parallelStream()
+        return activeNodes.stream()
                 .map(s -> new CaseActionNodeInstanceMapper(
                         (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
                                 userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
