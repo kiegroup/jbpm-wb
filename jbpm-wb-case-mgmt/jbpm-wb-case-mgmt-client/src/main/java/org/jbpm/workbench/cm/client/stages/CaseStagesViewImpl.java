@@ -43,10 +43,6 @@ public class CaseStagesViewImpl extends AbstractView<CaseStagesPresenter> implem
     private Div stagesContainer;
 
     @Inject
-    @DataField("empty-list-item")
-    private Div emptyContainer;
-
-    @Inject
     @Bound
     @DataField("stages-list")
     private ListComponent<CaseStageSummary, CaseStageItemViewImpl> stages;
@@ -65,11 +61,6 @@ public class CaseStagesViewImpl extends AbstractView<CaseStagesPresenter> implem
     @Override
     public void setCaseStagesList(final List<CaseStageSummary> caseStageList) {
         this.caseStageList.setModel(caseStageList);
-        if (caseStageList.isEmpty()) {
-            removeCSSClass(emptyContainer, "hidden");
-        } else {
-            addCSSClass(emptyContainer, "hidden");
-        }
     }
 
     @Override
