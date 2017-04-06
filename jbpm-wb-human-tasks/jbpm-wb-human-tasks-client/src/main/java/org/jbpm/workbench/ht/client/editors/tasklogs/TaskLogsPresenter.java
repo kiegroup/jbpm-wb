@@ -16,12 +16,10 @@
 package org.jbpm.workbench.ht.client.editors.tasklogs;
 
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -31,16 +29,17 @@ import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+
 @Dependent
 public class TaskLogsPresenter {
 
     public interface TaskLogsView extends IsWidget {
 
-        void init( final TaskLogsPresenter presenter );
+        void displayNotification(String text);
 
-        void displayNotification( final String text );
-
-        void setLogTextAreaText( final String text );
+        void setLogTextAreaText(List<String> logs);
 
     }
 
@@ -58,33 +57,23 @@ public class TaskLogsPresenter {
         this.taskService = taskService;
     }
 
-    @PostConstruct
-    public void init() {
-        view.init( this );
-    }
-
     public IsWidget getView() {
         return view;
     }
 
     public void refreshLogs() {
-        view.setLogTextAreaText("");
+        view.setLogTextAreaText(emptyList());
         taskService.call(
                 new RemoteCallback<List<TaskEventSummary>>() {
                     @Override
-                    public void callback(List<TaskEventSummary>events) {
-                        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                        for (TaskEventSummary tes : events) {
-                            String summaryStr = summaryToString(tes);
-                            safeHtmlBuilder.appendEscapedLines(summaryStr);
-                        }
-                        view.setLogTextAreaText(safeHtmlBuilder.toSafeHtml().asString());
+                    public void callback(final List<TaskEventSummary> events) {
+                        view.setLogTextAreaText(events.stream().map(e -> summaryToString(e)).collect(toList()));
                     }
 
                     public String summaryToString(TaskEventSummary tes) {
                         String timeStamp = DateUtils.getDateTimeStr(tes.getLogTime());
                         String additionalDetail = "UPDATED".equals(tes.getType()) ? tes.getMessage() : tes.getUserId();
-                        return timeStamp + ": Task " + tes.getType() + " (" + additionalDetail + ")\n";
+                        return timeStamp + ": Task " + tes.getType() + " (" + additionalDetail + ")";
                     }
                 }
         ).getTaskEvents( serverTemplateId, containerId, currentTaskId );

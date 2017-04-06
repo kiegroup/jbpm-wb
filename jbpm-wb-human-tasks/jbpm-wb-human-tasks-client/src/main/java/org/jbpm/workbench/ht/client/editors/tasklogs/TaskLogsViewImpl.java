@@ -16,18 +16,21 @@
 
 package org.jbpm.workbench.ht.client.editors.tasklogs;
 
+import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
-import org.gwtbootstrap3.client.ui.Label;
+import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.UnorderedList;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.uberfire.workbench.events.NotificationEvent;
+
+import static org.jboss.errai.common.client.dom.DOMUtil.removeAllChildren;
+import static org.jboss.errai.common.client.dom.Window.getDocument;
 
 @Dependent
 @Templated(value = "TaskLogsViewImpl.html")
@@ -35,21 +38,10 @@ public class TaskLogsViewImpl extends Composite implements TaskLogsPresenter.Tas
 
     @Inject
     @DataField
-    public HTML logTextArea;
-
-    @Inject
-    @DataField
-    public Label logTextLabel;
+    public UnorderedList logTextArea;
 
     @Inject
     private Event<NotificationEvent> notification;
-
-    private Constants constants = GWT.create( Constants.class );
-
-    @Override
-    public void init( final TaskLogsPresenter presenter ) {
-        logTextLabel.setText( constants.Task_Log() );
-    }
 
     @Override
     public void displayNotification( String text ) {
@@ -57,8 +49,13 @@ public class TaskLogsViewImpl extends Composite implements TaskLogsPresenter.Tas
     }
 
     @Override
-    public void setLogTextAreaText( final String text ) {
-        logTextArea.setHTML( text );
+    public void setLogTextAreaText(final List<String> logs) {
+        removeAllChildren(logTextArea);
+        logs.forEach(log -> {
+            HTMLElement li = getDocument().createElement("li");
+            li.setTextContent(SafeHtmlUtils.htmlEscape(log));
+            logTextArea.appendChild(li);
+        });
     }
 
 }

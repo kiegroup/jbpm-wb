@@ -173,8 +173,6 @@ public interface Constants extends Messages {
 
     String Logs();
 
-    String Task_Log();
-
     String Provide_User_Or_Group();
 
     String Task_Admin();
