@@ -232,6 +232,7 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
     private void clearErrorMessages() {
         definitionNameHelp.setTextContent("");
         ownerNameHelp.setTextContent("");
+        notification.setMessage("");
         caseDefinitionNameGroup.clearValidationState();
         ownerNameGroup.clearValidationState();
     }
