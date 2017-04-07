@@ -41,6 +41,7 @@ import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.FieldValueProcessor;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.FormValuesProcessor;
 import org.kie.workbench.common.forms.fields.test.TestFieldManager;
+import org.kie.workbench.common.forms.jbpm.server.service.formGeneration.impl.runtime.BPMNRuntimeFormGeneratorService;
 import org.kie.workbench.common.forms.jbpm.server.service.impl.DynamicBPMNFormGeneratorImpl;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
 import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
@@ -86,7 +87,7 @@ public abstract class AbstractFormProvidingEngineTest<SETTINGS extends Rendering
 
         formValuesProcessor = new FormValuesProcessorImpl( fieldValueProcessors );
 
-        dynamicBPMNFormGenerator = new DynamicBPMNFormGeneratorImpl( new TestFieldManager(), new DynamicFormLayoutTemplateGenerator() );
+        dynamicBPMNFormGenerator = new DynamicBPMNFormGeneratorImpl( new BPMNRuntimeFormGeneratorService(new TestFieldManager(), new DynamicFormLayoutTemplateGenerator()));
 
         contextManager = new BackendFormRenderingContextManagerImpl( formValuesProcessor, new ContextModelConstraintsExtractorImpl() );
 
