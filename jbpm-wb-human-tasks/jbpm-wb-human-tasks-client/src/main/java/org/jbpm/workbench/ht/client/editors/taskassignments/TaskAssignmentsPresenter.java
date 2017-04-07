@@ -15,6 +15,7 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskassignments;
 
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -32,6 +33,9 @@ import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.uberfire.ext.widgets.common.client.callbacks.DefaultErrorCallback;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+
 @Dependent
 public class TaskAssignmentsPresenter {
 
@@ -41,7 +45,7 @@ public class TaskAssignmentsPresenter {
 
         void displayNotification(String text);
 
-        void setPotentialOwnersInfo(String text);
+        void setPotentialOwnersInfo(List<String> owners);
 
         void enableDelegateButton(boolean enable);
 
@@ -114,15 +118,15 @@ public class TaskAssignmentsPresenter {
         if (currentTaskId != 0) {
             view.enableDelegateButton(false);
             view.enableUserOrGroupInput(false);
-            view.setPotentialOwnersInfo("");
+            view.setPotentialOwnersInfo(emptyList());
 
             taskService.call(new RemoteCallback<TaskAssignmentSummary>() {
                 @Override
                 public void callback(final TaskAssignmentSummary response) {
                     if (response == null || response.getPotOwnersString() == null || response.getPotOwnersString().isEmpty()) {
-                        view.setPotentialOwnersInfo(constants.No_Potential_Owners());
+                        view.setPotentialOwnersInfo(singletonList(constants.No_Potential_Owners()));
                     } else {
-                        view.setPotentialOwnersInfo(response.getPotOwnersString().toString());
+                        view.setPotentialOwnersInfo(response.getPotOwnersString());
                         view.enableDelegateButton(response.isDelegationAllowed());
                         view.enableUserOrGroupInput(response.isDelegationAllowed());
                     }
