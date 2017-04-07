@@ -25,6 +25,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.cm.client.events.CaseCreatedEvent;
+import org.jbpm.workbench.cm.client.util.CaseRolesValidations;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
 import org.jbpm.workbench.cm.service.CaseManagementService;
@@ -39,8 +40,7 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.workbench.events.NotificationEvent;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
+import static java.util.Collections.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -63,6 +63,9 @@ public class NewCaseInstancePresenterTest {
 
     @Mock
     TranslationService translationService;
+
+    @Mock
+    CaseRolesValidations caseRolesValidations;
 
     @Mock
     User identity;
@@ -99,6 +102,8 @@ public class NewCaseInstancePresenterTest {
         when(caseManagementService.getCaseDefinitions()).thenReturn(Arrays.asList(cds));
         final String owner = "userx";
         when(identity.getIdentifier()).thenReturn(owner);
+        when(caseRolesValidations.validateRolesAssignments(any(CaseDefinitionSummary.class),anyList())).thenReturn(EMPTY_LIST);
+
 
         presenter.show();
 
@@ -126,53 +131,4 @@ public class NewCaseInstancePresenterTest {
         verify(notificationEvent).fire(any(NotificationEvent.class));
         verify(caseCreatedEvent).fire(any(CaseCreatedEvent.class));
     }
-
-    @Test
-    public void testValidateRolesAssignments_SingleAssignmentUser() {
-        final Map<String, Integer> role = Collections.singletonMap("test",
-                                                                   1);
-        final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().roles(role).build();
-
-        final List<CaseRoleAssignmentSummary> roles = singletonList(CaseRoleAssignmentSummary.builder().name("test").users(singletonList("user1")).build());
-        final List<String> errors = presenter.validateRolesAssignments(cds,
-                                                                       roles);
-        assertTrue(errors.isEmpty());
-    }
-
-    @Test
-    public void testValidateRolesAssignments_SingleAssignmentGroup() {
-        final Map<String, Integer> role = Collections.singletonMap("test",
-                                                                   1);
-        final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().roles(role).build();
-
-        final List<CaseRoleAssignmentSummary> roles = singletonList(CaseRoleAssignmentSummary.builder().name("test").groups(singletonList("group1")).build());
-        final List<String> errors = presenter.validateRolesAssignments(cds,
-                                                                       roles);
-        assertTrue(errors.isEmpty());
-    }
-
-    @Test
-    public void testValidateRolesAssignments_InvalidAssignment() {
-        final Map<String, Integer> role = Collections.singletonMap("test",
-                                                                   1);
-        final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().roles(role).build();
-
-        final List<CaseRoleAssignmentSummary> roles = singletonList(CaseRoleAssignmentSummary.builder().name("test").users(singletonList("user1")).groups(singletonList("group1")).build());
-        final List<String> errors = presenter.validateRolesAssignments(cds,
-                                                                       roles);
-        assertFalse(errors.isEmpty());
-    }
-
-    @Test
-    public void testValidateRolesAssignments_MultipleAssignments() {
-        final Map<String, Integer> role = Collections.singletonMap("test",
-                                                                   -1);
-        final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().roles(role).build();
-
-        final List<CaseRoleAssignmentSummary> roles = singletonList(CaseRoleAssignmentSummary.builder().name("test").users(singletonList("user1")).groups(singletonList("group1")).build());
-        final List<String> errors = presenter.validateRolesAssignments(cds,
-                                                                       roles);
-        assertTrue(errors.isEmpty());
-    }
-
 }

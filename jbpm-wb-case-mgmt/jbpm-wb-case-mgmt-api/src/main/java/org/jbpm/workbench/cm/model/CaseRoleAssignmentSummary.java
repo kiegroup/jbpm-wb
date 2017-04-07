@@ -64,6 +64,10 @@ public class CaseRoleAssignmentSummary {
         this.users = ofNullable(users).orElse(new ArrayList<>());
     }
 
+    public boolean hasAssignment(){
+        return users.size() + groups.size() > 0;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

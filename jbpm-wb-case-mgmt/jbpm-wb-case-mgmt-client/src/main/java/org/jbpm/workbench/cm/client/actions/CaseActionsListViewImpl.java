@@ -69,7 +69,6 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter> 
     @DataField("scrollbox")
     private Div scrollbox;
 
-
     @Inject
     @Bound
     @DataField("actions-list")
@@ -128,7 +127,5 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter> 
     public HTMLElement getElement() {
         return simpleList;
     }
-
-
 
 }
