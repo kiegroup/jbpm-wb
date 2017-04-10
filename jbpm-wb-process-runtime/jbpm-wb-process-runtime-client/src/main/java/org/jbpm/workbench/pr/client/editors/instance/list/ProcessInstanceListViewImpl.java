@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.pr.client.editors.instance.list.variables.dash;
+package org.jbpm.workbench.pr.client.editors.instance.list;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,7 +61,6 @@ import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
-import org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceSummaryActionCell;
 import org.jbpm.workbench.pr.client.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.kie.api.runtime.process.ProcessInstance;
@@ -76,12 +75,12 @@ import static org.dashbuilder.dataset.sort.SortOrder.*;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
-public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMultiGridView<ProcessInstanceSummary, DataSetProcessInstanceWithVariablesListPresenter>
-        implements DataSetProcessInstanceWithVariablesListPresenter.DataSetProcessInstanceWithVariablesListView {
+public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessInstanceSummary, ProcessInstanceListPresenter>
+        implements ProcessInstanceListPresenter.ProcessInstanceListView {
 
     interface Binder
             extends
-            UiBinder<Widget, DataSetProcessInstanceWithVariablesListViewImpl> {
+            UiBinder<Widget, ProcessInstanceListViewImpl> {
 
     }
 
@@ -109,7 +108,7 @@ public class DataSetProcessInstanceWithVariablesListViewImpl extends AbstractMul
 
 
     @Override
-    public void init( final DataSetProcessInstanceWithVariablesListPresenter presenter ) {
+    public void init( final ProcessInstanceListPresenter presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
         bannedColumns.add(COL_ID_SELECT);
         bannedColumns.add(COLUMN_PROCESS_INSTANCE_ID);

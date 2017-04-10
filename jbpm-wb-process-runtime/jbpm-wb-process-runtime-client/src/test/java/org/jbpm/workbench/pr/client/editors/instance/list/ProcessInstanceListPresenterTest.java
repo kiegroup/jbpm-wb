@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.pr.client.editors.instance.list.variables.dash;
+package org.jbpm.workbench.pr.client.editors.instance.list;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +34,8 @@ import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
+import org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceListPresenter;
+import org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceListViewImpl;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
@@ -60,7 +62,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class DataSetProcessInstanceWithVariablesListPresenterTest {
+public class ProcessInstanceListPresenterTest {
 
     private CallerMock<ProcessService> remoteProcessServiceCaller;
 
@@ -68,7 +70,7 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
     private ProcessService processService;
 
     @Mock
-    private DataSetProcessInstanceWithVariablesListViewImpl viewMock;
+    private ProcessInstanceListViewImpl viewMock;
 
     @Mock
     private DataSetQueryHelper dataSetQueryHelper;
@@ -94,7 +96,7 @@ public class DataSetProcessInstanceWithVariablesListPresenterTest {
     private ArrayList<ProcessInstanceSummary> processInstanceSummaries;
 
     @InjectMocks
-    private DataSetProcessInstanceWithVariablesListPresenter presenter;
+    private ProcessInstanceListPresenter presenter;
 
     @Before
     public void setupMocks() {

@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.pr.client.editors.instance.list.variables.dash;
+package org.jbpm.workbench.pr.client.editors.instance.list;
 
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.common.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceListPresenter;
+import org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceListViewImpl;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 
-public class ProcessInstancesWithVariableListViewExtension extends DataSetProcessInstanceWithVariablesListViewImpl{
+public class ProcessInstanceListViewExtension extends ProcessInstanceListViewImpl {
     ExtendedPagedTable  mockExtendedPagedTable;
 
     public void setUpMocks(ExtendedPagedTable extendedPagedTable,
             FilterPagedTable filterPagedTable,
             DataSetEditorManager dataSetEditorManager,
-            DataSetProcessInstanceWithVariablesListPresenter presenter){
+            ProcessInstanceListPresenter presenter){
         this.mockExtendedPagedTable = extendedPagedTable;
         this.filterPagedTable = filterPagedTable;
         this.dataSetEditorManager =dataSetEditorManager;

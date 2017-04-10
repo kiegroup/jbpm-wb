@@ -18,7 +18,7 @@ package org.jbpm.workbench.pr.client.editors.definition.details.multi;
 
 import javax.enterprise.event.Event;
 
-import org.jbpm.workbench.pr.client.perspectives.DataSetProcessInstancesWithVariablesPerspective;
+import org.jbpm.workbench.pr.client.perspectives.ProcessInstanceListPerspective;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,8 +66,8 @@ public abstract class BaseProcessDefDetailsMultiPresenterTest<T extends BaseProc
         final ArgumentCaptor<PlaceRequest> captor = ArgumentCaptor.forClass(PlaceRequest.class);
         verify(placeManager).goTo(captor.capture());
         final PlaceRequest request = captor.getValue();
-        assertEquals(DataSetProcessInstancesWithVariablesPerspective.PERSPECTIVE_ID, request.getIdentifier());
-        assertEquals(process, request.getParameter(DataSetProcessInstancesWithVariablesPerspective.PROCESS_ID, null));
+        assertEquals(ProcessInstanceListPerspective.PERSPECTIVE_ID, request.getIdentifier());
+        assertEquals(process, request.getParameter(ProcessInstanceListPerspective.PROCESS_ID, null));
     }
 
     @Test

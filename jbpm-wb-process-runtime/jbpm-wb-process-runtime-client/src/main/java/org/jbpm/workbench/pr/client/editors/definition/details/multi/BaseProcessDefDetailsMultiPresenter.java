@@ -28,7 +28,7 @@ import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
 import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.workbench.pr.client.i18n.Constants;
-import org.jbpm.workbench.pr.client.perspectives.DataSetProcessInstancesWithVariablesPerspective;
+import org.jbpm.workbench.pr.client.perspectives.ProcessInstanceListPerspective;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -142,8 +142,8 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
     }
 
     public void viewProcessInstances() {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( DataSetProcessInstancesWithVariablesPerspective.PERSPECTIVE_ID );
-        placeRequestImpl.addParameter( DataSetProcessInstancesWithVariablesPerspective.PROCESS_ID, processId );
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(ProcessInstanceListPerspective.PERSPECTIVE_ID );
+        placeRequestImpl.addParameter( ProcessInstanceListPerspective.PROCESS_ID, processId );
         placeManager.goTo( placeRequestImpl );
     }
 

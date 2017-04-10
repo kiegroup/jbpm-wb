@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.pr.client.editors.instance.list.variables.dash;
+package org.jbpm.workbench.pr.client.editors.instance.list;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -47,7 +47,7 @@ import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.forms.client.display.process.QuickNewProcessInstancePopup;
 import org.jbpm.workbench.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
 import org.jbpm.workbench.pr.client.i18n.Constants;
-import org.jbpm.workbench.pr.client.perspectives.DataSetProcessInstancesWithVariablesPerspective;
+import org.jbpm.workbench.pr.client.perspectives.ProcessInstanceListPerspective;
 import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
@@ -79,12 +79,12 @@ import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
-@WorkbenchScreen( identifier = DataSetProcessInstanceWithVariablesListPresenter.SCREEN_ID)
-public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractScreenListPresenter<ProcessInstanceSummary> {
+@WorkbenchScreen( identifier = ProcessInstanceListPresenter.SCREEN_ID)
+public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<ProcessInstanceSummary> {
 
     public static final String SCREEN_ID = "DataSet Process Instance List With Variables";
 
-    public interface DataSetProcessInstanceWithVariablesListView extends ListView<ProcessInstanceSummary, DataSetProcessInstanceWithVariablesListPresenter> {
+    public interface ProcessInstanceListView extends ListView<ProcessInstanceSummary, ProcessInstanceListPresenter> {
 
         int getRefreshValue();
 
@@ -100,7 +100,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
     }
 
     @Inject
-    private DataSetProcessInstanceWithVariablesListView view;
+    private ProcessInstanceListView view;
 
     @Inject
     private DataSetQueryHelper dataSetQueryHelper;
@@ -315,7 +315,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
     @OnOpen
     public void onOpen() {
-        this.textSearchStr = place.getParameter(DataSetProcessInstancesWithVariablesPerspective.PROCESS_ID, "");
+        this.textSearchStr = place.getParameter(ProcessInstanceListPerspective.PROCESS_ID, "");
         super.onOpen();
     }
 
@@ -395,7 +395,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
     }
 
     @WorkbenchPartView
-    public UberView<DataSetProcessInstanceWithVariablesListPresenter> getView() {
+    public UberView<ProcessInstanceListPresenter> getView() {
         return view;
     }
 
