@@ -15,6 +15,7 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskassignments;
 
+import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -23,15 +24,19 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.FormControlStatic;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.UnorderedList;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.uberfire.workbench.events.NotificationEvent;
+
+import static org.jboss.errai.common.client.dom.DOMUtil.removeAllChildren;
+import static org.jboss.errai.common.client.dom.Window.getDocument;
 
 @Dependent
 @Templated(value = "TaskAssignmentsViewImpl.html")
@@ -57,7 +62,7 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
 
     @Inject
     @DataField
-    public FormControlStatic usersGroupsControlsPanel;
+    public UnorderedList usersGroupsControlsPanel;
 
     @Inject
     @DataField
@@ -85,8 +90,13 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
     }
 
     @Override
-    public void setPotentialOwnersInfo(String info) {
-        usersGroupsControlsPanel.setText(info);
+    public void setPotentialOwnersInfo(final List<String> owners) {
+        removeAllChildren(usersGroupsControlsPanel);
+        owners.forEach(owner -> {
+            HTMLElement li = getDocument().createElement("li");
+            li.setTextContent(owner);
+            usersGroupsControlsPanel.appendChild(li);
+        });
     }
 
     @Override
