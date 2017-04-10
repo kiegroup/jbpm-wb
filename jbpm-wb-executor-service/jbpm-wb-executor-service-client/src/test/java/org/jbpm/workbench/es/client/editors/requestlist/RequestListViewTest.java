@@ -21,10 +21,12 @@ import java.util.List;
 
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.gwtbootstrap3.client.ui.Button;
+import com.google.gwtmockito.WithClassesToStub;
+import org.jbpm.workbench.common.client.list.AdvancedSearchTable;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.es.model.RequestSummary;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -35,14 +37,18 @@ import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
+import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
-import org.uberfire.mvp.Command;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
+import org.uberfire.mocks.CallerMock;
+import org.uberfire.mvp.Command;
 
+import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-@RunWith( GwtMockitoTestRunner.class )
+@RunWith(GwtMockitoTestRunner.class)
+@WithClassesToStub(AdvancedSearchTable.class)
 public class RequestListViewTest {
 
     @Mock
@@ -58,9 +64,6 @@ public class RequestListViewTest {
     protected GridPreferencesStore gridPreferencesStoreMock;
 
     @Mock
-    protected Button mockButton;
-
-    @Mock
     protected RequestListPresenter presenter;
 
     @Mock
@@ -69,8 +72,21 @@ public class RequestListViewTest {
     @Mock
     private AsyncDataProvider dataProvider;
 
+    @Mock
+    protected UserPreferencesService userPreferencesServiceMock;
+
+    protected CallerMock<UserPreferencesService> callerMockUserPreferencesService;
+
     @InjectMocks
     private RequestListViewImpl view;
+
+    @Before
+    public void setup(){
+        when(presenter.getDataProvider()).thenReturn(mock(AsyncDataProvider.class));
+
+        callerMockUserPreferencesService = new CallerMock<UserPreferencesService>(userPreferencesServiceMock);
+        view.setPreferencesService(callerMockUserPreferencesService);
+    }
 
     @Test
     public void testDataStoreNameIsSet() {
@@ -95,8 +111,9 @@ public class RequestListViewTest {
         when(filterPagedTableMock.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStoreMock);
         view.resetDefaultFilterTitleAndDescription();
 
-        verify(filterPagedTableMock, times(7)).getMultiGridPreferencesStore();
-        verify(filterPagedTableMock, times(7)).saveTabSettings(anyString(), any(HashMap.class));
+        verify(filterPagedTableMock, times(8)).getMultiGridPreferencesStore();
+        verify(filterPagedTableMock, times(8)).saveTabSettings(anyString(), any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.TAB_SEARCH), any(HashMap.class));
         verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_0"), any(HashMap.class));
         verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_1"), any(HashMap.class));
         verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_2"), any(HashMap.class));
@@ -128,15 +145,27 @@ public class RequestListViewTest {
     }
 
     @Test
-    public void initDefaultFiltersOwnTaskFilter() {
-        when(presenter.getDataProvider()).thenReturn(dataProvider);
-        view.initDefaultFilters(new GridGlobalPreferences(), mockButton);
+    public void initialColumnsTest() {
+        view.init(presenter);
 
-        verify(filterPagedTableMock, times(7)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
-        verify(filterPagedTableMock).addAddTableButton(mockButton);
-        verify(presenter).setAddingDefaultFilters(true);
-        verify(presenter).setAddingDefaultFilters(false);
+        List<GridColumnPreference> columnPreferences = view.getListGrid().getGridPreferencesStore().getColumnPreferences();
+        assertEquals(COLUMN_ID,
+                     columnPreferences.get(0).getName());
+        assertEquals(COLUMN_BUSINESSKEY,
+                     columnPreferences.get(1).getName());
+        assertEquals(COLUMN_COMMANDNAME,
+                     columnPreferences.get(2).getName());
+        assertEquals(RequestListViewImpl.COL_ID_ACTIONS,
+                     columnPreferences.get(3).getName());
     }
 
+    @Test
+    public void initDefaultFiltersOwnTaskFilter() {
+        when(presenter.getDataProvider()).thenReturn(dataProvider);
+        view.initDefaultFilters(new GridGlobalPreferences());
+
+        verify(filterPagedTableMock, times(8)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
+        verify(presenter).setAddingDefaultFilters(true);
+    }
 
 }

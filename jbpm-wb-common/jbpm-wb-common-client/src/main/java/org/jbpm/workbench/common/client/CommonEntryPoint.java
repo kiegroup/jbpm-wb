@@ -16,17 +16,19 @@
 
 package org.jbpm.workbench.common.client;
 
-import javax.annotation.PostConstruct;
-
+import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
+import org.jboss.errai.ui.shared.api.annotations.Bundle;
 import org.jbpm.workbench.common.client.resources.CommonResources;
+import org.uberfire.client.views.pfly.sys.PatternFlyBootstrapper;
 
+@Bundle("resources/i18n/Constants.properties")
 @EntryPoint
 public class CommonEntryPoint {
 
-    @PostConstruct
+    @AfterInitialization
     public void init() {
         CommonResources.INSTANCE.css().ensureInjected();
+        PatternFlyBootstrapper.ensureBootstrapSelectIsAvailable();
     }
-
 }

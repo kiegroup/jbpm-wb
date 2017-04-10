@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.common.client.list;
+package org.jbpm.workbench.es.util;
 
-import org.jbpm.workbench.common.model.GenericSummary;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
+public enum RequestStatus {
 
-public interface MultiGridView<T extends GenericSummary, V> extends ListView<T, V>,
-                                                                    AdvancedSearchFiltersView {
+    QUEUED,
+    DONE,
+    CANCELLED,
+    ERROR,
+    RETRYING,
+    RUNNING
 
-    int getRefreshValue();
-
-    void saveRefreshValue(int newValue);
-
-    void applyFilterOnPresenter(String key);
-
-    FilterSettings getAdvancedSearchFilterSettings();
-
-    void saveAdvancedSearchFilterSettings(final FilterSettings settings);
 }

@@ -15,21 +15,13 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.view.client.AsyncDataProvider;
-
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-
+import com.google.gwt.view.client.AsyncDataProvider;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.filter.ColumnFilter;
@@ -60,10 +52,10 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mvp.Command;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public abstract class AbstractTaskListViewTest {
     
@@ -225,13 +217,11 @@ public abstract class AbstractTaskListViewTest {
     @Test
     public void initDefaultFiltersOwnTaskFilter() {
         AbstractTaskListPresenter<?> presenter = getPresenter();
-        getView().initDefaultFilters(new GridGlobalPreferences(), mockButton);
+        getView().initDefaultFilters(new GridGlobalPreferences());
 
         verify(filterPagedTableMock, times(getExpectedDefaultTabFilterCount()))
             .addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
-        verify(filterPagedTableMock).addAddTableButton(mockButton);
         verify(presenter).setAddingDefaultFilters(true);
-        verify(presenter).setAddingDefaultFilters(false);
     }
 
     @Test
@@ -261,19 +251,26 @@ public abstract class AbstractTaskListViewTest {
         getView().resetDefaultFilterTitleAndDescription();
         int filterCount = getExpectedDefaultTabFilterCount();
         verify(filterPagedTableMock, times(filterCount)).getMultiGridPreferencesStore();
+        verify(filterPagedTableMock, times(1)).saveTabSettings(eq(AbstractTaskListView.TAB_SEARCH), any(HashMap.class));
         verify(filterPagedTableMock, times(filterCount)).saveTabSettings(anyString(), any(HashMap.class));
     }
 
     @Test
-    public void initialColumsTest(){
+    public void initialColumnsTest() {
         AbstractTaskListView view = getView();
         view.init(getPresenter());
+
         List<GridColumnPreference> columnPreferences = view.getListGrid().getGridPreferencesStore().getColumnPreferences();
-        assertEquals(COLUMN_NAME, columnPreferences.get(0).getName());
-        assertEquals(COLUMN_PROCESS_ID, columnPreferences.get(1).getName());
-        assertEquals(COLUMN_STATUS, columnPreferences.get(2).getName());
-        assertEquals(COLUMN_CREATED_ON, columnPreferences.get(3).getName());
-        assertEquals(AbstractTaskListView.COL_ID_ACTIONS, columnPreferences.get(4).getName());
+        assertEquals(COLUMN_NAME,
+                     columnPreferences.get(0).getName());
+        assertEquals(COLUMN_PROCESS_ID,
+                     columnPreferences.get(1).getName());
+        assertEquals(COLUMN_STATUS,
+                     columnPreferences.get(2).getName());
+        assertEquals(COLUMN_CREATED_ON,
+                     columnPreferences.get(3).getName());
+        assertEquals(AbstractTaskListView.COL_ID_ACTIONS,
+                     columnPreferences.get(4).getName());
     }
     
     @Test

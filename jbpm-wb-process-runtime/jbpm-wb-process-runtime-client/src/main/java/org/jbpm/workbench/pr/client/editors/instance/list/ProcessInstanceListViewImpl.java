@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.AbstractCell;
@@ -32,6 +31,7 @@ import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -61,7 +61,6 @@ import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
-import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.pr.client.resources.ProcessRuntimeResources;
 import org.jbpm.workbench.pr.client.resources.css.ProcessRuntimeCSS;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
@@ -69,7 +68,6 @@ import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 
@@ -81,16 +79,13 @@ import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessInstanceSummary, ProcessInstanceListPresenter>
         implements ProcessInstanceListPresenter.ProcessInstanceListView {
 
-    private static final String TAB_ACTIVE = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0";
-    private static final String TAB_COMPLETED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1";
-    private static final String TAB_ABORTED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2";
+    public static final String TAB_ACTIVE = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0";
+    public static final String TAB_COMPLETED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1";
+    public static final String TAB_ABORTED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2";
 
     private List<ProcessInstanceSummary> selectedProcessInstances = new ArrayList<ProcessInstanceSummary>();
 
     private final Constants constants = Constants.INSTANCE;
-
-    @Inject
-    private DataSetEditorManager dataSetEditorManager;
 
     private List<Column<ProcessInstanceSummary, ?>> ignoreSelectionColumns = new ArrayList<Column<ProcessInstanceSummary, ?>>();
 
@@ -125,9 +120,9 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         initColumns.add(COLUMN_ERROR_COUNT);
         initColumns.add(COL_ID_ACTIONS);
 
-        final Button button = new Button();
-        button.setIcon( IconType.PLUS );
-        button.setSize( ButtonSize.SMALL );
+        final Button button = GWT.create(Button.class);
+        button.setIcon(IconType.PLUS);
+        button.setSize(ButtonSize.SMALL);
 
         button.addClickHandler( new ClickHandler() {
             public void onClick( ClickEvent event ) {
@@ -167,9 +162,8 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         final ExtendedPagedTable extendedPagedTable = getListGrid();
         extendedPagedTable.setEmptyTableCaption(constants.No_Process_Instances_Found());
         extendedPagedTable.getRightActionsToolbar().clear();
-        initExtraButtons(extendedPagedTable);
         initBulkActions(extendedPagedTable);
-        selectionModel = new NoSelectionModel<ProcessInstanceSummary>();
+        NoSelectionModel<ProcessInstanceSummary> selectionModel = new NoSelectionModel<ProcessInstanceSummary>();
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             @Override
             public void onSelectionChange(SelectionChangeEvent event) {
@@ -189,7 +183,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             }
         });
 
-        noActionColumnManager = DefaultSelectionEventManager
+        DefaultSelectionEventManager<ProcessInstanceSummary> noActionColumnManager = DefaultSelectionEventManager
                 .createCustomManager( new DefaultSelectionEventManager.EventTranslator<ProcessInstanceSummary>() {
 
                     @Override
@@ -393,25 +387,29 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         return genericColumn;
     }
 
-    public void initExtraButtons( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
-    }
-
     private void initBulkActions( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
-        bulkAbortNavLink = new AnchorListItem( constants.Bulk_Abort() );
-        bulkSignalNavLink = new AnchorListItem( constants.Bulk_Signal() );
+        bulkAbortNavLink = GWT.create(AnchorListItem.class);
+        bulkAbortNavLink.setText(constants.Bulk_Abort());
+        bulkSignalNavLink = GWT.create(AnchorListItem.class);
+        bulkSignalNavLink.setText(constants.Bulk_Signal());
 
-        final ButtonGroup bulkActions = new ButtonGroup() {{
-            add( new Button( constants.Bulk_Actions() ) {{
-                setDataToggle( Toggle.DROPDOWN );
-                getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-            }} );
-            add( new DropDownMenu() {{
-                addStyleName( Styles.DROPDOWN_MENU + "-right" );
-                getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                add( bulkAbortNavLink );
-                add( bulkSignalNavLink );
-            }} );
-        }};
+        final ButtonGroup bulkActions = GWT.create(ButtonGroup.class);
+
+        final Button bulkButton = GWT.create(Button.class);
+        bulkButton.setText(constants.Bulk_Actions());
+        bulkButton.setDataToggle(Toggle.DROPDOWN);
+        bulkButton.getElement().getStyle().setMarginRight(5,
+                                                          Style.Unit.PX);
+        bulkActions.add(bulkButton);
+
+        final DropDownMenu bulkDropDown = GWT.create(DropDownMenu.class);
+        bulkDropDown.addStyleName(Styles.DROPDOWN_MENU + "-right");
+        bulkDropDown.getElement().getStyle().setMarginRight(5,
+                                                            Style.Unit.PX);
+        bulkDropDown.add(bulkAbortNavLink);
+        bulkDropDown.add(bulkSignalNavLink);
+        bulkActions.add(bulkDropDown);
+
         bulkAbortNavLink.setIcon( IconType.BAN );
         bulkAbortNavLink.setIconFixedWidth( true );
         bulkAbortNavLink.addClickHandler( new ClickHandler() {
@@ -557,10 +555,10 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         return checkColMeta;
     }
 
-    public void initDefaultFilters( GridGlobalPreferences preferences,
-                                    Button createTabButton ) {
+    @Override
+    public void initDefaultFilters(final GridGlobalPreferences preferences) {
+        super.initDefaultFilters(preferences);
 
-        presenter.setAddingDefaultFilters( true );
         //Filter status Active
         initGenericTabFilter(preferences,
                              TAB_ACTIVE,
@@ -581,54 +579,38 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                              constants.Aborted(),
                              constants.FilterAborted(),
                              ProcessInstance.STATE_ABORTED);
-
-        filterPagedTable.addAddTableButton( createTabButton );
-        selectFirstTabAndEnableQueries(TAB_ACTIVE);
     }
 
-    private void initGenericTabFilter( GridGlobalPreferences preferences,
-                                       final String key,
-                                       String tabName,
-                                       String tabDesc,
-                                       Integer state ) {
+    private void initGenericTabFilter(final GridGlobalPreferences preferences,
+                                      final String key,
+                                      final String tabName,
+                                      final String tabDesc,
+                                      final Integer state) {
 
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
-        builder.dataset( PROCESS_INSTANCE_DATASET );
+        builder.dataset(PROCESS_INSTANCE_DATASET);
 
-        builder.filter( equalsTo( COLUMN_STATUS, state ) );
+        builder.filter(equalsTo(COLUMN_STATUS,
+                                state));
 
-        builder.filterOn( true, true, true );
-        builder.tableOrderEnabled( true );
-        builder.tableOrderDefault( COLUMN_START, DESCENDING );
+        builder.filterOn(true,
+                         true,
+                         true);
+        builder.tableOrderEnabled(true);
+        builder.tableOrderDefault(COLUMN_START,
+                                  DESCENDING);
 
         FilterSettings tableSettings = builder.buildSettings();
-        tableSettings.setKey( key );
-        tableSettings.setTableName( tabName );
-        tableSettings.setTableDescription( tabDesc );
-        tableSettings.setUUID( PROCESS_INSTANCE_DATASET );
+        tableSettings.setKey(key);
+        tableSettings.setTableName(tabName);
+        tableSettings.setTableDescription(tabDesc);
+        tableSettings.setUUID(PROCESS_INSTANCE_DATASET);
 
-        HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
-
-        tabSettingsValues.put( FILTER_TABLE_SETTINGS, dataSetEditorManager.getTableSettingsToStr( tableSettings ) );
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName() );
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription() );
-
-        filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
-
-        final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
-        currentListGrid = extendedPagedTable;
-        extendedPagedTable.setDataProvider( presenter.getDataProvider() );
-
-        filterPagedTable.addTab( extendedPagedTable, key, new Command() {
-            @Override
-            public void execute() {
-                currentListGrid = extendedPagedTable;
-                applyFilterOnPresenter( key );
-            }
-        } );
-
+        addNewTab(key,
+                  preferences,
+                  tableSettings);
     }
 
     @Override
@@ -716,6 +698,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     /*-------------------------------------------------*/
     /*---              DashBuilder                   --*/
     /*-------------------------------------------------*/
+    @Override
     public FilterSettings createTableSettingsPrototype() {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
@@ -729,11 +712,11 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         final FilterSettings filterSettings = builder.buildSettings();
         filterSettings.setUUID( PROCESS_INSTANCE_DATASET );
         return filterSettings;
-
     }
 
     @Override
     public void resetDefaultFilterTitleAndDescription(){
+        super.resetDefaultFilterTitleAndDescription();
         saveTabSettings(TAB_ACTIVE,
                         constants.Active(),
                         constants.FilterActive());

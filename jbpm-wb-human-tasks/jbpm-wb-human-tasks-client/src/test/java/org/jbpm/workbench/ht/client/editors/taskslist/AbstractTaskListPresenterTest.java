@@ -45,11 +45,13 @@ import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.ht.client.editors.taskslist.AbstractTaskListPresenter;
 import org.jbpm.workbench.ht.client.editors.taskslist.TaskListViewImpl;
+import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.junit.Before;
 import org.junit.Test;
+import org.kie.api.runtime.process.ProcessInstance;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -57,10 +59,13 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.jbpm.workbench.common.client.util.TaskUtils.TASK_STATUS_READY;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.COLUMN_STATUS;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -99,6 +104,9 @@ public abstract class AbstractTaskListPresenterTest {
     @Mock
     protected TaskService taskService;
 
+    @Spy
+    private DataSetLookup dataSetLookup;
+
     protected CallerMock<TaskService> callerMockRemoteTaskService;
 
     @Mock
@@ -115,7 +123,6 @@ public abstract class AbstractTaskListPresenterTest {
         doNothing().when(taskSelected).fire(any(TaskSelectionEvent.class));
 
         //Mock that actually calls the callbacks
-        DataSetLookup dataSetLookup = new DataSetLookup();
         dataSetLookup.setDataSetUUID(HUMAN_TASKS_DATASET);
 
         when(filterSettings.getDataSetLookup()).thenReturn(dataSetLookup);
@@ -124,6 +131,7 @@ public abstract class AbstractTaskListPresenterTest {
         when(viewMock.getVariablesTableSettings(anyString())).thenReturn(new TaskListViewImpl().getVariablesTableSettings("taskName"));
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
+        when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
         when(filterSettings.getKey()).thenReturn("key");
 
 
@@ -410,6 +418,23 @@ public abstract class AbstractTaskListPresenterTest {
     public void testMenus() {
         final Menus menus = getPresenter().getMenus();
         assertEquals(4, menus.getItems().size());
+    }
+
+    @Test
+    public void testAdvancedSearchDefaultActiveFilter(){
+        getPresenter().setupAdvanceSearchView();
+
+        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Status()),
+                                         eq(TASK_STATUS_READY),
+                                         eq(TASK_STATUS_READY),
+                                         any(ParameterizedCommand.class));
+
+        final ArgumentCaptor<DataSetFilter> captor = ArgumentCaptor.forClass(DataSetFilter.class);
+        verify(dataSetLookup).addOperation(captor.capture());
+
+        final DataSetFilter filter = captor.getValue();
+        assertEquals(1, filter.getColumnFilterList().size());
+        assertEquals(COLUMN_STATUS, filter.getColumnFilterList().get(0).getColumnId());
     }
 
 

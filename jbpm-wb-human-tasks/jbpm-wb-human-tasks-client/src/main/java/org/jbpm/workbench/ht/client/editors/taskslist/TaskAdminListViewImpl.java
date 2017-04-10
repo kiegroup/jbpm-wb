@@ -19,13 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 
-import org.gwtbootstrap3.client.ui.Button;
+import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
-import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Dependent
@@ -48,18 +47,11 @@ public class TaskAdminListViewImpl extends AbstractTaskListView<TaskAdminListPre
     }
 
     @Override
-    public void initDefaultFilters( GridGlobalPreferences preferences,
-                                    Button createTabButton ) {
-
-        List<String> states;
-        presenter.setAddingDefaultFilters( true );
+    public void initDefaultFilters( GridGlobalPreferences preferences ) {
+        super.initDefaultFilters(preferences);
         //Filter status Admin
-        states = TaskUtils.getStatusByType( TaskUtils.TaskType.ADMIN );
+        List<String> states = TaskUtils.getStatusByType( TaskUtils.TaskType.ADMIN );
         initAdminTabFilter( preferences, TAB_ADMIN, constants.Task_Admin(), constants.FilterTaskAdmin(), states);
-
-        filterPagedTable.addAddTableButton( createTabButton );
-        selectFirstTabAndEnableQueries( TAB_ADMIN );
-
     }
 
     private void initAdminTabFilter( GridGlobalPreferences preferences,
@@ -83,13 +75,14 @@ public class TaskAdminListViewImpl extends AbstractTaskListView<TaskAdminListPre
     
     @Override
     public void resetDefaultFilterTitleAndDescription() {
+        super.resetDefaultFilterTitleAndDescription();
         saveTabSettings(TAB_ADMIN,
                 constants.Task_Admin(),
                 constants.FilterTaskAdmin());
     }
 
     @Override
-    public String getDatasetTaskListPrefix() {
+    public String getDataSetTaskListPrefix() {
         return DATA_SET_TASK_LIST_PREFIX;
     }
 

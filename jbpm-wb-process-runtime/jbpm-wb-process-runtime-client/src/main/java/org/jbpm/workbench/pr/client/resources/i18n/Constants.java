@@ -308,9 +308,17 @@ public interface Constants extends Messages {
     String ProcessInstanceNeedsToBeActiveInOrderToBeAborted();
 
     String SelectServerTemplate();
-    
+
     String ErrorCountNumber(int errCount);
     
     String ErrorCountViewLink();
     
+    String FilterByProcessInstanceId();
+
+    String FilterByInitiator();
+
+    String FilterByCorrelationKey();
+
+    String FilterByDescription();
+
 }
