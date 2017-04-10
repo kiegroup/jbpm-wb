@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.pr.client.editors.instance.list.variables.dash;
+package org.jbpm.workbench.pr.client.editors.instance.list;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class DataSetProcessInstanceWithVariablesListViewTest {
+public class ProcessInstanceListViewTest {
 
     @Mock
     protected ExtendedPagedTable currentListGrid;
@@ -60,14 +60,14 @@ public class DataSetProcessInstanceWithVariablesListViewTest {
     protected FilterPagedTable filterPagedTable;
 
     @Mock
-    protected DataSetProcessInstanceWithVariablesListPresenter presenter;
+    protected ProcessInstanceListPresenter presenter;
 
-    private ProcessInstancesWithVariableListViewExtension view;
+    private ProcessInstanceListViewExtension view;
 
     @Before
     public void setupMocks() {
 
-        view = new ProcessInstancesWithVariableListViewExtension();
+        view = new ProcessInstanceListViewExtension();
         view.setUpMocks(currentListGrid, filterPagedTable, dataSetEditorManager, presenter);
         when(filterPagedTable.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStore);
 
