@@ -42,7 +42,25 @@ public interface Constants {
     String NO_CASE_DEFINITION = "NoCaseDefinition";
 
     @TranslationKey(defaultValue = "")
-    String PLEASE_SELECT_ROLE = "PleaseSelectRole";
+    String REMOVE_ASSIGNMENT = "RemoveAssignment";
+
+    @TranslationKey(defaultValue = "")
+    String TOTAL_NUMBER_OF_ROLES = "TotalNumberOfRoles";
+
+    @TranslationKey(defaultValue = "")
+    String REMOVE_ALL_ASSIGNMENTS = "RemoveAllAssignments";
+
+    @TranslationKey(defaultValue = "")
+    String REMOVE_ALL_USERS_GROUPS_FROM_ROLE = "RemoveAllUsersAndGroupsForRole";
+
+    @TranslationKey(defaultValue = "")
+    String REMOVE_USER_ASSIGNMENT_FROM_ROLE = "RemoveUserAssignmentFromRole";
+
+    @TranslationKey(defaultValue = "")
+    String REMOVE_GROUP_ASSIGNMENT_FROM_ROLE = "RemoveGroupAssignmentFromRole";
+
+    @TranslationKey(defaultValue = "")
+    String ASSIGN = "Assign";
 
     @TranslationKey(defaultValue = "")
     String CASE_OVERVIEW = "CaseOverview";
