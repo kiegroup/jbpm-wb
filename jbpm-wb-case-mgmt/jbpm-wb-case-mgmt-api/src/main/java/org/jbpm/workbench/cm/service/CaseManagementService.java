@@ -59,8 +59,6 @@ public interface CaseManagementService {
 
     void assignGroupToRole(String serverTemplateId, String containerId, String caseId, String roleName, String group);
 
-    void assignGroupAndUserToRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String user, final String group);
-
     void removeUserFromRole(String serverTemplateId, String containerId, String caseId, String roleName, String user);
 
     void removeGroupFromRole(String serverTemplateId, String containerId, String caseId, String roleName, String group);

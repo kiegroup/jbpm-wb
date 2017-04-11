@@ -16,7 +16,8 @@
 
 package org.jbpm.workbench.cm.client.roles;
 
-import java.util.Set;
+import java.util.Arrays;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -25,24 +26,35 @@ import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.MouseEvent;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.common.client.dom.TextInput;
+import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jboss.errai.ui.shared.api.annotations.AutoBound;
+import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.workbench.cm.client.util.AbstractView;
+import org.jbpm.workbench.cm.client.util.CommaListValuesConverter;
 import org.jbpm.workbench.cm.client.util.FormGroup;
 import org.jbpm.workbench.cm.client.util.FormLabel;
+import org.jbpm.workbench.cm.client.util.InlineNotification;
 import org.jbpm.workbench.cm.client.util.Modal;
-import org.jbpm.workbench.cm.client.util.Select;
+import org.jbpm.workbench.cm.client.util.Popover;
 import org.jbpm.workbench.cm.client.util.ValidationState;
+import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
 import org.uberfire.mvp.Command;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
+import static org.jboss.errai.common.client.dom.DOMUtil.*;
 import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 
 @Dependent
 @Templated
-public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssignmentView {
+public class EditRoleAssignmentViewImpl extends AbstractView<CaseRolesPresenter> implements CaseRolesPresenter.EditRoleAssignmentView {
+
+    @Inject
+    @DataField("alert")
+    private InlineNotification notification;
 
     @Inject
     @DataField("role-name-group")
@@ -53,8 +65,9 @@ public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssi
     Span roleNameHelp;
 
     @Inject
-    @DataField("role-name-select")
-    Select roleNameList;
+    @Bound
+    @DataField("role-name-text")
+    Span name;
 
     @Inject
     @DataField("role-name-label")
@@ -65,16 +78,22 @@ public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssi
     FormLabel assignmentLabel;
 
     @Inject
+    @DataField("roles-help")
+    private Popover rolesHelp;
+
+    @Inject
+    @Bound(converter = CommaListValuesConverter.class)
     @DataField("user-name-input")
-    TextInput userNameInput;
+    TextInput users;
 
     @Inject
     @DataField("user-name-group")
     FormGroup userNameGroup;
 
     @Inject
+    @Bound(converter = CommaListValuesConverter.class)
     @DataField("group-name-input")
-    TextInput groupNameInput;
+    TextInput groups;
 
     @Inject
     @DataField("group-name-help")
@@ -88,6 +107,10 @@ public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssi
     @DataField("modal")
     private Modal modal;
 
+    @Inject
+    @AutoBound
+    private DataBinder<CaseRoleAssignmentSummary> binder;
+
     private Command okCommand;
 
     @Inject
@@ -97,6 +120,8 @@ public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssi
     public void init() {
         this.roleNameLabel.addRequiredIndicator();
         this.assignmentLabel.addRequiredIndicator();
+        rolesHelp.setContent(translationService.getTranslation(ROLES_INFO_TEXT));
+        notification.setType(InlineNotification.InlineNotificationType.DANGER);
     }
 
     @Override
@@ -104,15 +129,29 @@ public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssi
     }
 
     @Override
-    public void show( final Set<String> roles, final Command okCommand) {
+    public void setValue(final CaseRoleAssignmentSummary caseRoleAssignmentSummary) {
+        binder.setModel(caseRoleAssignmentSummary);
+    }
+
+    @Override
+    public CaseRoleAssignmentSummary getValue() {
+        return binder.getModel();
+    }
+
+    @Override
+    public void showValidationError(final List<String> messages) {
+        if (messages.isEmpty()) {
+            return;
+        }
+        notification.setMessage(messages);
+        removeCSSClass(notification.getElement(),
+                       "hidden");
+    }
+
+    @Override
+    public void show(final Command okCommand) {
         clearErrorMessages();
-        clearValues();
-
-        roles.forEach(r -> roleNameList.addOption(r));
-        roleNameList.refresh();
-
         this.okCommand = okCommand;
-
         modal.show();
     }
 
@@ -122,22 +161,15 @@ public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssi
     }
 
     private boolean validateForm() {
-        boolean validForm=true;
+        boolean validForm = true;
         clearErrorMessages();
+        CaseRoleAssignmentSummary model = getValue();
 
-        final boolean roleNameEmpty = isNullOrEmpty(roleNameList.getValue());
-        if (roleNameEmpty) {
-            roleNameList.getElement().focus();
-            roleNameHelp.setTextContent(translationService.format(PLEASE_SELECT_ROLE));
-            roleNameGroup.setValidationState(ValidationState.ERROR);
-            validForm=false;
-        }
-
-        if (isNullOrEmpty(userNameInput.getValue()) && isNullOrEmpty(groupNameInput.getValue())) {
-            userNameInput.focus();
+        if (!model.hasAssignment()) {
+            users.focus();
             userNameGroup.setValidationState(ValidationState.ERROR);
             groupNameGroup.setValidationState(ValidationState.ERROR);
-            groupNameHelp.setTextContent(translationService.format(PLEASE_INTRO_USER_OR_GROUP_TO_CREATE_ASSIGNMENT));
+            showValidationError(Arrays.asList(translationService.format(PLEASE_INTRO_USER_OR_GROUP_TO_CREATE_ASSIGNMENT)));
             validForm = false;
         }
 
@@ -145,41 +177,19 @@ public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssi
             roleNameGroup.setValidationState(ValidationState.SUCCESS);
             userNameGroup.setValidationState(ValidationState.SUCCESS);
             groupNameGroup.setValidationState(ValidationState.SUCCESS);
-
         }
         return validForm;
     }
 
-    private void clearValues() {
-        roleNameList.setValue("");
-        roleNameList.removeAllOptions();
-        roleNameList.refresh();
-        userNameInput.setValue("");
-        groupNameInput.setValue("");
-    }
-
     private void clearErrorMessages() {
+        addCSSClass(notification.getElement(),
+                    "hidden");
+        notification.setMessage("");
         roleNameHelp.setTextContent("");
         groupNameHelp.setTextContent("");
         roleNameGroup.clearValidationState();
         userNameGroup.clearValidationState();
         groupNameGroup.clearValidationState();
-    }
-
-    @Override
-    public String getRoleName() {
-        return roleNameList.getValue();
-    }
-
-    @Override
-    public String getUserName() {
-        return userNameInput.getValue();
-    }
-
-
-    @Override
-    public String getGroupName() {
-        return groupNameInput.getValue();
     }
 
     @Override
@@ -196,8 +206,6 @@ public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssi
         if (okCommand != null) {
             okCommand.execute();
         }
-
-        hide();
     }
 
     @EventHandler("cancel")
@@ -209,5 +217,4 @@ public class NewRoleAssignmentViewImpl implements CaseRolesPresenter.NewRoleAssi
     public void onCloseClick(final @ForEvent("click") MouseEvent event) {
         hide();
     }
-
 }
