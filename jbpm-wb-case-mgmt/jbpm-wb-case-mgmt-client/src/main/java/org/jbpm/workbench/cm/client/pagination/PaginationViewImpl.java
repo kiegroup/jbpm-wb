@@ -55,7 +55,9 @@ public class PaginationViewImpl implements IsElement {
     int pageSize;
     PageList pageList;
 
-    public void init(List allElementsList, PageList pageList, int pageSize) {
+    public void init(List allElementsList,
+                     PageList pageList,
+                     int pageSize) {
         this.allElementsList = allElementsList;
         this.pageList = pageList;
         this.pageSize = pageSize;
@@ -75,39 +77,53 @@ public class PaginationViewImpl implements IsElement {
 
         if (pageSize * (currentPage + 1) < allItemsSize) {
             hasNextPage = true;
-            visibleItems = allElementsList.subList(pageSize * currentPage, pageSize * (currentPage + 1));
+            visibleItems = allElementsList.subList(pageSize * currentPage,
+                                                   pageSize * (currentPage + 1));
         } else {
-            visibleItems = allElementsList.subList(pageSize * currentPage, allItemsSize);
+            visibleItems = allElementsList.subList(pageSize * currentPage,
+                                                   allItemsSize);
         }
 
         boolean showPagination = false;
-        removeCSSClass(pageList.getScrollBox(), "kie-end-scroll");
-        removeCSSClass(pageList.getScrollBox(), "kie-start-scroll");
-        removeCSSClass(pageList.getScrollBox(), "kie-both-scroll");
+        removeCSSClass(pageList.getScrollBox(),
+                       "kie-end-scroll");
+        removeCSSClass(pageList.getScrollBox(),
+                       "kie-start-scroll");
+        removeCSSClass(pageList.getScrollBox(),
+                       "kie-both-scroll");
 
         if (hasNextPage) {
             showPagination = true;
-            removeCSSClass(nextPage, "disabled");
+            removeCSSClass(nextPage,
+                           "disabled");
             if (hasPrevPage) {
-                addCSSClass(pageList.getScrollBox(), "kie-both-scroll");
+                addCSSClass(pageList.getScrollBox(),
+                            "kie-both-scroll");
             } else {
-                addCSSClass(pageList.getScrollBox(), "kie-end-scroll");
+                addCSSClass(pageList.getScrollBox(),
+                            "kie-end-scroll");
             }
         } else {
-            addCSSClass(nextPage, "disabled");
+            addCSSClass(nextPage,
+                        "disabled");
         }
         if (hasPrevPage) {
             showPagination = true;
-            removeCSSClass(prevPage, "disabled");
-            addCSSClass(pageList.getScrollBox(), "kie-start-scroll");
+            removeCSSClass(prevPage,
+                           "disabled");
+            addCSSClass(pageList.getScrollBox(),
+                        "kie-start-scroll");
         } else {
-            addCSSClass(prevPage, "disabled");
+            addCSSClass(prevPage,
+                        "disabled");
         }
         pagination.setHidden(!showPagination);
         if (visibleItems.size() == 1) {
-            addCSSClass(pageList.getScrollBox(), "kie-scrollbox-show-overflow");
+            addCSSClass(pageList.getScrollBox(),
+                        "kie-scrollbox-show-overflow");
         } else {
-            removeCSSClass(pageList.getScrollBox(), "kie-scrollbox-show-overflow");
+            removeCSSClass(pageList.getScrollBox(),
+                           "kie-scrollbox-show-overflow");
         }
         pageList.setVisibleItems(visibleItems);
     }
@@ -115,7 +131,8 @@ public class PaginationViewImpl implements IsElement {
     @EventHandler("nextPage")
     @SuppressWarnings("unsued")
     public void onNextPageClick(@ForEvent("click") final Event event) {
-        if (!hasCSSClass(nextPage, "disabled")) {
+        if (!hasCSSClass(nextPage,
+                         "disabled")) {
             setVisibleItemsList(currentPage + 1);
         }
     }
@@ -123,7 +140,8 @@ public class PaginationViewImpl implements IsElement {
     @EventHandler("prevPage")
     @SuppressWarnings("unsued")
     public void onPrevPageClick(@ForEvent("click") final Event event) {
-        if (!hasCSSClass(prevPage, "disabled")) {
+        if (!hasCSSClass(prevPage,
+                         "disabled")) {
             setVisibleItemsList(currentPage - 1);
         }
     }
@@ -136,11 +154,10 @@ public class PaginationViewImpl implements IsElement {
         this.currentPage = currentPage;
     }
 
-    public interface PageList {
+    public interface PageList<T> {
 
-        void setVisibleItems(List visibleItems);
+        void setVisibleItems(List<T> visibleItems);
 
         Div getScrollBox();
-
     }
 }

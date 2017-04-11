@@ -64,12 +64,21 @@ public class CaseRoleAssignmentSummary {
         this.users = ofNullable(users).orElse(new ArrayList<>());
     }
 
+    public boolean hasAssignment() {
+        return users.size() + groups.size() > 0;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         CaseRoleAssignmentSummary that = (CaseRoleAssignmentSummary) o;
-        return Objects.equals(name, that.name);
+        return Objects.equals(name,
+                              that.name);
     }
 
     @Override
@@ -113,7 +122,5 @@ public class CaseRoleAssignmentSummary {
             caseRoleAssignment.setUsers(users);
             return this;
         }
-
     }
-
 }

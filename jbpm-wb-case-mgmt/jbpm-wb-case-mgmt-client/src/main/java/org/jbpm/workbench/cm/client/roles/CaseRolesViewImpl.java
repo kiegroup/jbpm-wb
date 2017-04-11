@@ -16,30 +16,42 @@
 
 package org.jbpm.workbench.cm.client.roles;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.jboss.errai.common.client.dom.Button;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.Event;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.Span;
-import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.databinding.client.components.ListComponent;
+
+import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jboss.errai.ui.shared.api.annotations.AutoBound;
+import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.workbench.cm.client.events.CaseRoleAssignmentListLoadEvent;
 import org.jbpm.workbench.cm.client.pagination.PaginationViewImpl;
-import org.uberfire.mvp.Command;
+import org.jbpm.workbench.cm.client.util.AbstractView;
+import org.jbpm.workbench.cm.client.util.CaseRolesAssignmentFilterBy;
+import org.jbpm.workbench.cm.client.util.Select;
+import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
 
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.TOTAL_NUMBER_OF_ROLES;
 
 @Dependent
 @Templated
-public class CaseRolesViewImpl implements CaseRolesPresenter.CaseRolesView,PaginationViewImpl.PageList {
-    public static int PAGE_SIZE = 3;
+public class CaseRolesViewImpl extends AbstractView<CaseRolesPresenter> implements CaseRolesPresenter.CaseRolesView,
+                                                                                   PaginationViewImpl.PageList<CaseRoleAssignmentSummary> {
+
+    public static int PAGE_SIZE = 2;
 
     @Inject
     @DataField("roles")
@@ -50,90 +62,101 @@ public class CaseRolesViewImpl implements CaseRolesPresenter.CaseRolesView,Pagin
     Span rolesBadge;
 
     @Inject
-    @DataField("role-list")
-    private Div roles;
-
-    @Inject
-    @DataField("user-add")
-    private Button userAddButton;
+    @DataField("filter-select")
+    private Select filterSelect;
 
     @Inject
     @DataField("scrollbox")
     private Div scrollbox;
 
     @Inject
+    @DataField("empty-list-item")
+    private Div emptyContainer;
+
+    @Inject
     @DataField("pagination")
     private PaginationViewImpl pagination;
 
-    List allElementsList = new ArrayList();
-
-    private Command userAddCommand;
+    @Inject
+    private TranslationService translationService;
 
     @Inject
-    private ManagedInstance<CaseRoleItemView> provider;
+    @Bound
+    @DataField("role-list")
+    private ListComponent<CaseRoleAssignmentSummary, CaseRoleItemView> roleAssignments;
+
+    @Inject
+    @AutoBound
+    private DataBinder<List<CaseRoleAssignmentSummary>> caseRolesList;
+
+    private javax.enterprise.event.Event<CaseRoleAssignmentListLoadEvent> roleAssignmentListLoadEvent;
+
+    @Inject
+    public void setRoleAssignmentListLoadEvent(final javax.enterprise.event.Event<CaseRoleAssignmentListLoadEvent> roleAssignmentListLoadEvent) {
+        this.roleAssignmentListLoadEvent = roleAssignmentListLoadEvent;
+    }
 
     @Override
     public void init(final CaseRolesPresenter presenter) {
+        this.presenter = presenter;
+        roleAssignments.addComponentCreationHandler(v -> v.init(presenter));
+    }
 
+    @PostConstruct
+    public void init() {
+        for (CaseRolesAssignmentFilterBy filterBy : CaseRolesAssignmentFilterBy.values()) {
+            filterSelect.addOption(translationService.format(filterBy.getLabel()),
+                                   filterBy.getLabel());
+        }
+        filterSelect.refresh();
+        tooltip(rolesBadge);
+        rolesBadge.setAttribute("data-original-title",
+                                translationService.format(TOTAL_NUMBER_OF_ROLES));
+    }
+
+    public void setRolesAssignmentList(final List<CaseRoleAssignmentSummary> caseRoleAssignmentSummaryList) {
+        if (caseRoleAssignmentSummaryList.isEmpty()) {
+            removeCSSClass(emptyContainer,
+                           "hidden");
+        } else {
+            addCSSClass(emptyContainer,
+                        "hidden");
+        }
+        pagination.init(caseRoleAssignmentSummaryList,
+                        this,
+                        PAGE_SIZE);
     }
 
     @Override
     public void removeAllRoles() {
-        removeAllChildren(roles);
-        allElementsList = new ArrayList();
+        roleAssignments.deselectAll();
+        caseRolesList.setModel(Collections.emptyList());
+    }
+
+    public String getFilterValue() {
+        return filterSelect.getValue();
     }
 
     @Override
-    public void enableNewRoleAssignments() {
-        removeCSSClass(userAddButton, "hidden");
+    public void resetPagination() {
+        pagination.setCurrentPage(0);
     }
 
     @Override
-    public void disableNewRoleAssignments() {
-        addCSSClass(userAddButton, "hidden");
+    public void setBadge(String badgeContent) {
+        rolesBadge.setTextContent(badgeContent);
     }
 
     @Override
-    public void setUserAddCommand(final Command command) {
-        this.userAddCommand = command;
-    }
-
-    @Override
-    public void addUser(final String userName, final String roleName, final CaseRolesPresenter.CaseRoleAction... actions) {
-        addRoleView(userName, roleName, "pficon-user", actions);
-    }
-
-    @Override
-    public void addGroup(final String groupName, final String roleName, final CaseRolesPresenter.CaseRoleAction... actions) {
-        addRoleView(groupName, roleName, "pficon-users", actions);
-    }
-
-    private void  addRoleView(final String name, final String roleName, final String iconType, final CaseRolesPresenter.CaseRoleAction... actions) {
-        final CaseRoleItemView roleItemView = provider.get();
-        roleItemView.setRoleName(roleName);
-        roleItemView.setName(name);
-        roleItemView.setIconType(iconType);
-        for (CaseRolesPresenter.CaseRoleAction action : actions) {
-            roleItemView.addAction(action);
+    public void setVisibleItems(List<CaseRoleAssignmentSummary> visibleItems) {
+        removeAllRoles();
+        this.caseRolesList.setModel(visibleItems);
+        int maxWidth = scrollbox.getBoundingClientRect().getWidth().intValue() - 70;
+        roleAssignmentListLoadEvent.fire(new CaseRoleAssignmentListLoadEvent(maxWidth));
+        int rolesListSize = visibleItems.size();
+        if (rolesListSize > 0) {
+            roleAssignments.getComponent(rolesListSize - 1).setLastElementStyle();
         }
-        allElementsList.add(roleItemView);
-    }
-
-    @Override
-    public void setupPagination() {
-        rolesBadge.setTextContent(String.valueOf(allElementsList.size()));
-        pagination.init(allElementsList, this, PAGE_SIZE);
-    }
-
-    @Override
-    public void setVisibleItems(List visibleItems) {
-        removeAllChildren(roles);
-        int visibleItemsSize = visibleItems.size();
-        if(visibleItemsSize>0){
-            visibleItems.forEach(e -> ((CaseRoleItemView)e).setLastElementStyle(false));
-            ((CaseRoleItemView)visibleItems.get(visibleItemsSize-1)).setLastElementStyle(true);
-        }
-        visibleItems.forEach(e -> roles.appendChild(((CaseRoleItemView)e).getElement()) );
     }
 
     @Override
@@ -141,11 +164,10 @@ public class CaseRolesViewImpl implements CaseRolesPresenter.CaseRolesView,Pagin
         return scrollbox;
     }
 
-    @EventHandler("user-add")
-    public void onUserAddClick(@ForEvent("click") Event e) {
-        if (userAddCommand != null) {
-            userAddCommand.execute();
-        }
+    @EventHandler("filter-select")
+    public void onRolesAssignmentFilterChange(@ForEvent("change") Event e) {
+        resetPagination();
+        presenter.filterElements();
     }
 
     @Override

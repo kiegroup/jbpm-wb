@@ -38,7 +38,8 @@ import static org.jboss.errai.common.client.dom.DOMUtil.*;
 
 @Dependent
 @Templated
-public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter> implements CaseActionsPresenter.CaseActionsListView, PaginationViewImpl.PageList {
+public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter>
+        implements CaseActionsPresenter.CaseActionsListView, PaginationViewImpl.PageList <CaseActionSummary> {
     private int PAGE_SIZE = 3;
 
     @Inject
@@ -68,7 +69,6 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter> 
     @Inject
     @DataField("scrollbox")
     private Div scrollbox;
-
 
     @Inject
     @Bound
@@ -111,7 +111,7 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter> 
     }
 
     @Override
-    public void setVisibleItems(List visibleItems) {
+    public void setVisibleItems(List<CaseActionSummary> visibleItems) {
         this.caseActionList.setModel(visibleItems);
         int tasksSize =visibleItems.size();
         if(tasksSize > 1){
@@ -128,7 +128,5 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter> 
     public HTMLElement getElement() {
         return simpleList;
     }
-
-
 
 }
