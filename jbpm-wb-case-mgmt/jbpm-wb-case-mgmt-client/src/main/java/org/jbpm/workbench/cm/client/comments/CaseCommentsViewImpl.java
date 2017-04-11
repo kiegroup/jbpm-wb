@@ -53,7 +53,8 @@ import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 
 @Dependent
 @Templated
-public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> implements CaseCommentsPresenter.CaseCommentsView, PaginationViewImpl.PageList {
+public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter>
+        implements CaseCommentsPresenter.CaseCommentsView, PaginationViewImpl.PageList<CaseCommentSummary> {
     private int PAGE_SIZE = 20;
 
     @Inject
@@ -164,7 +165,7 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
     }
 
     @Override
-    public void setVisibleItems(List visibleItems) {
+    public void setVisibleItems(List<CaseCommentSummary> visibleItems) {
         this.caseCommentList.setModel(visibleItems);
         int pageSize =visibleItems.size();
         if(pageSize > 1){
