@@ -49,6 +49,10 @@ public class CaseDefinitionSummary implements Comparable<CaseDefinitionSummary> 
         this.id = id;
     }
 
+    public String getUniqueId() {
+        return getId() + "|" + getContainerId();
+    }
+
     public String getName() {
         return name;
     }

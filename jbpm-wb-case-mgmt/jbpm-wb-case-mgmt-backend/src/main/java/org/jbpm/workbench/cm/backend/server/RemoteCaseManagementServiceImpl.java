@@ -72,7 +72,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
 
     @Override
     public List<CaseDefinitionSummary> getCaseDefinitions() {
-        final List<CaseDefinition> caseDefinitions = client.getCaseDefinitions(0, PAGE_SIZE_UNLIMITED);
+        final List<CaseDefinition> caseDefinitions = client.getCaseDefinitions(0, PAGE_SIZE_UNLIMITED, CaseServicesClient.SORT_BY_CASE_DEFINITION_NAME, true);
         return caseDefinitions.stream().map(new CaseDefinitionMapper()).collect(toList());
     }
 
