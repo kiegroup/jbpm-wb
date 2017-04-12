@@ -16,14 +16,12 @@
 
 package org.jbpm.workbench.cm.client.newcase;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.common.collect.Iterables;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -38,15 +36,14 @@ import org.jbpm.workbench.cm.service.CaseManagementService;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.workbench.events.NotificationEvent;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 @Dependent
 public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstancePresenter.NewCaseInstanceView> {
 
-    private Map<String, CaseDefinitionSummary> caseDefinitions = new HashMap<>();
+    private List<CaseDefinitionSummary> caseDefinitions = emptyList();
 
     private Caller<CaseManagementService> caseService;
 
@@ -63,17 +60,14 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
     @Inject
     private User identity;
 
-    protected void loadCaseRoles(final String caseDefinition) {
+    protected void loadCaseRoles(final String caseDefinitionId) {
         view.clearRoles();
-        if (isNullOrEmpty(caseDefinition)) {
-            return;
-        }
-        final CaseDefinitionSummary caseDefinitionSummary = caseDefinitions.get(caseDefinition);
-        if (caseDefinitionSummary == null) {
-            return;
-        }
-        final List<CaseRoleAssignmentSummary> roles = caseDefinitionSummary.getRoles().keySet().stream().filter(r -> "owner".equals(r) == false).map(r -> CaseRoleAssignmentSummary.builder().name(r).build()).collect(toList());
-        view.setRoles(roles);
+        final Optional<CaseDefinitionSummary> cds = getCaseDefinitionSummary(caseDefinitionId);
+        cds.ifPresent(d -> view.setRoles(d.getRoles().keySet().stream().filter(r -> "owner".equals(r) == false).map(r -> CaseRoleAssignmentSummary.builder().name(r).build()).collect(toList())));
+    }
+
+    private Optional<CaseDefinitionSummary> getCaseDefinitionSummary(final String caseDefinitionId) {
+        return caseDefinitions.stream().filter(d -> d.getUniqueId().equals(caseDefinitionId)).findFirst();
     }
 
     public void show() {
@@ -91,53 +85,49 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
                         return;
                     }
 
-                    caseDefinitions = definitions.stream().collect(toMap(s -> s.getName(),
-                                                                         s -> s));
+                    caseDefinitions = definitions;
 
-                    final List<String> caseDefinitions = this.caseDefinitions.values().stream().map(s -> s.getName()).sorted().collect(toList());
                     view.show();
                     view.setCaseDefinitions(caseDefinitions);
-                    loadCaseRoles(Iterables.getFirst(caseDefinitions,
-                                                     null));
                     view.setOwner(identity.getIdentifier());
                 }
         ).getCaseDefinitions();
     }
 
-    protected void createCaseInstance(final String caseDefinitionName,
+    protected void createCaseInstance(final String caseDefinitionId,
                                       final String owner,
                                       final List<CaseRoleAssignmentSummary> assignments) {
-        final CaseDefinitionSummary caseDefinition = caseDefinitions.get(caseDefinitionName);
-        if (caseDefinition == null) {
+        final Optional<CaseDefinitionSummary> cds = getCaseDefinitionSummary(caseDefinitionId);
+        if (cds.isPresent()) {
+            final CaseDefinitionSummary caseDefinition = cds.get();
+            final List<String> assignmentErrors = caseRolesValidations.validateRolesAssignments(caseDefinition,
+                                                                                                assignments);
+            if (assignmentErrors.isEmpty() == false) {
+                view.showError(assignmentErrors);
+                return;
+            }
+
+            caseService.call(
+                    (String caseId) -> {
+                        view.hide();
+                        notification.fire(new NotificationEvent(translationService.format(Constants.CASE_CREATED_WITH_ID,
+                                                                                          caseId),
+                                                                NotificationEvent.NotificationType.SUCCESS));
+                        newCaseEvent.fire(new CaseCreatedEvent(caseId));
+                    },
+                    (Message message, Throwable t) -> {
+                        view.showError(singletonList(t.getMessage()));
+                        return false;
+                    }
+            ).startCaseInstance(null,
+                                caseDefinition.getContainerId(),
+                                caseDefinition.getId(),
+                                owner,
+                                assignments);
+        } else {
             notification.fire(new NotificationEvent(translationService.format(Constants.INVALID_CASE_DEFINITION),
                                                     NotificationEvent.NotificationType.ERROR));
-            return;
         }
-
-        final List<String> assignmentErrors = caseRolesValidations.validateRolesAssignments(caseDefinition,
-                                                                       assignments);
-        if (assignmentErrors.isEmpty() == false) {
-            view.showError(assignmentErrors);
-            return;
-        }
-
-        caseService.call(
-                (String caseId) -> {
-                    view.hide();
-                    notification.fire(new NotificationEvent(translationService.format(Constants.CASE_CREATED_WITH_ID,
-                                                                                      caseId),
-                                                            NotificationEvent.NotificationType.SUCCESS));
-                    newCaseEvent.fire(new CaseCreatedEvent(caseId));
-                },
-                (Message message, Throwable t) -> {
-                    view.showError(singletonList(t.getMessage()));
-                    return false;
-                }
-        ).startCaseInstance(null,
-                            caseDefinition.getContainerId(),
-                            caseDefinition.getId(),
-                            owner,
-                            assignments);
     }
 
     @Inject
@@ -163,7 +153,7 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
 
         void clearCaseDefinitions();
 
-        void setCaseDefinitions(List<String> definitions);
+        void setCaseDefinitions(List<CaseDefinitionSummary> definitions);
 
         void clearRoles();
 

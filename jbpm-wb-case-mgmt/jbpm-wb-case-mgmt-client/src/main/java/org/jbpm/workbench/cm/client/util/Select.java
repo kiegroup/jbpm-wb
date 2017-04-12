@@ -27,6 +27,7 @@ import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.Option;
 import org.jboss.errai.common.client.dom.OptionsCollection;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.jboss.errai.common.client.dom.DOMUtil.removeAllElementChildren;
 
 @Dependent
@@ -52,10 +53,18 @@ public class Select implements IsElement, TakesValue<String> {
     }
 
     public void addOption(final String text, final String value, final Boolean selected) {
+        addOption(text, null, value, selected);
+    }
+
+    public void addOption(final String text, final String subText, final String value, final Boolean selected) {
         final Option option = (Option) document.createElement("option");
         option.setText(text);
         option.setValue(value);
         option.setSelected(selected);
+        if(isNullOrEmpty(subText) == false) {
+            option.setAttribute("data-subtext",
+                                subText);
+        }
         select.add(option);
     }
 
