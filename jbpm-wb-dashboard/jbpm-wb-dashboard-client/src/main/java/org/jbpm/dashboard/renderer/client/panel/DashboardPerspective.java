@@ -18,6 +18,7 @@ package org.jbpm.dashboard.renderer.client.panel;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
+import org.kie.workbench.common.workbench.client.PerspectiveIds;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
@@ -28,7 +29,7 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
  * A Perspective to show the Process dashboard
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "DashboardPerspective")
+@WorkbenchPerspective(identifier = PerspectiveIds.PROCESS_DASHBOARD)
 public class DashboardPerspective {
 
     @Perspective

@@ -22,6 +22,7 @@ import org.jbpm.workbench.pr.client.perspectives.ProcessInstanceListPerspective;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.junit.Before;
 import org.junit.Test;
+import org.kie.workbench.common.workbench.client.PerspectiveIds;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -66,7 +67,7 @@ public abstract class BaseProcessDefDetailsMultiPresenterTest<T extends BaseProc
         final ArgumentCaptor<PlaceRequest> captor = ArgumentCaptor.forClass(PlaceRequest.class);
         verify(placeManager).goTo(captor.capture());
         final PlaceRequest request = captor.getValue();
-        assertEquals(ProcessInstanceListPerspective.PERSPECTIVE_ID, request.getIdentifier());
+        assertEquals(PerspectiveIds.PROCESS_INSTANCES, request.getIdentifier());
         assertEquals(process, request.getParameter(ProcessInstanceListPerspective.PROCESS_ID, null));
     }
 

@@ -18,6 +18,7 @@ package org.jbpm.workbench.pr.client.perspectives;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
+import org.kie.workbench.common.workbench.client.PerspectiveIds;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.ClosableSimpleWorkbenchPanelPresenter;
@@ -30,21 +31,19 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = ProcessDefinitionsPerspective.PERSPECTIVE_ID )
+@WorkbenchPerspective(identifier = PerspectiveIds.PROCESS_DEFINITIONS)
 public class ProcessDefinitionsPerspective extends AbstractPerspective {
-
-    public static final String PERSPECTIVE_ID = "ProcessDefinitions";
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl( ClosableSimpleWorkbenchPanelPresenter.class.getName() );
-        p.setName( PERSPECTIVE_ID );
+        p.setName( PerspectiveIds.PROCESS_DEFINITIONS );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Process Definition List" ) ) );
         return p;
     }
 
     @Override
     public String getPerspectiveId() {
-        return PERSPECTIVE_ID;
+        return PerspectiveIds.PROCESS_DEFINITIONS;
     }
 }

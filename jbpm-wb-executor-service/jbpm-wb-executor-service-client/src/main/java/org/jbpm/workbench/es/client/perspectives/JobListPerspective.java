@@ -18,6 +18,7 @@ package org.jbpm.workbench.es.client.perspectives;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
+import org.kie.workbench.common.workbench.client.PerspectiveIds;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
@@ -30,21 +31,19 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = JobListPerspective.PERSPECTIVE_ID )
+@WorkbenchPerspective(identifier = PerspectiveIds.JOBS)
 public class JobListPerspective extends AbstractPerspective {
-
-    public static final String PERSPECTIVE_ID = "Requests";
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl( MultiListWorkbenchPanelPresenter.class.getName() );
-        p.setName( PERSPECTIVE_ID );
+        p.setName( PerspectiveIds.JOBS );
         p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Requests List" ) ) );
         return p;
     }
 
     @Override
     public String getPerspectiveId() {
-        return PERSPECTIVE_ID;
+        return PerspectiveIds.JOBS;
     }
 }
