@@ -412,11 +412,17 @@ public class RemoteCaseManagementServiceImplTest {
         NodeInstance node2 = createTestNodeInstace("active2", "Service Task", node2WorkItemId);
         when(clientMock.getActiveNodes(eq(containerId), eq(caseId), anyInt(), anyInt())).thenReturn(Arrays.asList(node1, node2));
 
+        Long node3WorkItemId = 3L;
+        Long node4WorkItemId = 4L;
+        NodeInstance node3 = createTestNodeInstace("complete1", "Human Task", node3WorkItemId);
+        NodeInstance node4 = createTestNodeInstace("complete2", "Service Task", node4WorkItemId);
+        when(clientMock.getCompletedNodes(eq(containerId), eq(caseId), anyInt(), anyInt())).thenReturn(Arrays.asList(node3, node4));
+
         TaskInstance t1 = TaskInstance.builder()
                 .actualOwner("Koe")
                 .build();
         when(userTaskServicesClient.findTaskByWorkItemId(node1WorkItemId)).thenReturn(t1);
-
+        when(userTaskServicesClient.findTaskByWorkItemId(node3WorkItemId)).thenReturn(t1);
 
         Actions actions = testedService.getCaseActions(serverTemplateId, containerId, caseId, userId);
 
@@ -430,11 +436,16 @@ public class RemoteCaseManagementServiceImplTest {
         CaseActionMapperTest.assertCaseActionNodeInstance(node1, actions.getInProgressAction().get(0));
         CaseActionMapperTest.assertCaseActionNodeInstance(node2, actions.getInProgressAction().get(1));
 
-        assertEquals(0, actions.getCompleteActions().size());
+        assertEquals(2, actions.getCompleteActions().size());
+        CaseActionMapperTest.assertCaseActionNodeInstance(node3, actions.getCompleteActions().get(0));
+        CaseActionMapperTest.assertCaseActionNodeInstance(node4, actions.getCompleteActions().get(1));
+
 
         verify(clientMock).getAdHocFragments(containerId, caseId);
         verify(clientMock).getActiveNodes(eq(containerId), eq(caseId), eq(0), anyInt());
+        verify(clientMock).getCompletedNodes(eq(containerId), eq(caseId), eq(0), anyInt());
         verify(userTaskServicesClient).findTaskByWorkItemId(node1WorkItemId);
+        verify(userTaskServicesClient).findTaskByWorkItemId(node3WorkItemId);
         verify(userTaskServicesClient, never()).findTaskByWorkItemId(node2WorkItemId);
     }
 

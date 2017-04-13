@@ -16,7 +16,6 @@
 
 package org.jbpm.workbench.cm.backend.server;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -208,9 +207,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     public List<NodeInstance> getCaseCompletedNodes(String containerId, String caseId) {
-        //TODO return client.getCompletedNodes(containerId, caseId, 0, PAGE_SIZE_UNLIMITED);
-        return new ArrayList<>();
-
+        return client.getCompletedNodes(containerId, caseId, 0, PAGE_SIZE_UNLIMITED);
     }
 
     public List<CaseActionSummary> getCompletedActions(String containerId, String caseId) {
