@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.common.client.experimental.grid.base;
+package org.jbpm.workbench.common.client.list;
 
 import java.util.Collection;
 

@@ -22,7 +22,7 @@ import java.util.List;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
-import org.jbpm.workbench.common.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.junit.Before;
 import org.junit.Test;

@@ -19,7 +19,7 @@ package org.jbpm.workbench.common.client.dataset;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
-import org.jbpm.workbench.common.client.list.base.AbstractListView;
+import org.jbpm.workbench.common.client.list.AbstractListView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.common.client.list.base;
+package org.jbpm.workbench.common.client.list;
 
 
 import java.util.ArrayList;
@@ -25,8 +25,7 @@ import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.jbpm.workbench.common.client.experimental.grid.base.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.list.base.events.SearchEvent;
+import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

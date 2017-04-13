@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.common.client.list.base.events;
+package org.jbpm.workbench.common.client.events;
 
 public class SearchEvent {
+
     private String filter;
 
     public SearchEvent(String filter) {

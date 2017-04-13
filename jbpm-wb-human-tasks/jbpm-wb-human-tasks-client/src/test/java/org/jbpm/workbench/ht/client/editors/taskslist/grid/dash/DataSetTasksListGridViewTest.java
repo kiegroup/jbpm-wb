@@ -32,7 +32,7 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
-import org.jbpm.workbench.common.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.junit.Before;
 import org.junit.Test;
