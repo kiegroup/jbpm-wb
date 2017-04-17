@@ -15,7 +15,6 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskprocesscontext;
 
-import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -35,7 +34,6 @@ import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.pr.events.ProcessInstancesWithDetailsRequestEvent;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.kie.workbench.common.workbench.client.PerspectiveIds;
-import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
@@ -46,8 +44,6 @@ import org.uberfire.workbench.model.ActivityResourceType;
 
 @Dependent
 public class TaskProcessContextPresenter {
-
-    public static final String PROCESS_INSTANCE_DETAILS = "DataSet Process Instances With Variables";
 
     public interface TaskProcessContextView extends UberView<TaskProcessContextPresenter> {
 
@@ -78,7 +74,6 @@ public class TaskProcessContextPresenter {
 
     private long currentTaskId = 0;
     private long currentProcessInstanceId = -1L;
-    private boolean enableProcessInstanceDetails = true;
     private String serverTemplateId;
     private String containerId;
 
@@ -104,13 +99,12 @@ public class TaskProcessContextPresenter {
     @PostConstruct
     public void init() {
         view.init(this);
-        if (!hasAccessToPerspective(PerspectiveIds.PROCESS_INSTANCES)) {
-            enableProcessInstanceDetails = false;
-        } else {
-            final Set<Activity> activity = activityManager.getActivities(new DefaultPlaceRequest(PROCESS_INSTANCE_DETAILS));
-            enableProcessInstanceDetails = activity.isEmpty() == false;
+        boolean enableProcessInstanceLink = false;
+        if( hasAccessToPerspective(PerspectiveIds.PROCESS_INSTANCES) &&
+                !activityManager.getActivities(new DefaultPlaceRequest(PerspectiveIds.PROCESS_INSTANCES)).isEmpty() ) {
+            enableProcessInstanceLink = true;
         }
-        view.enablePIDetailsButton(enableProcessInstanceDetails);
+        view.enablePIDetailsButton(enableProcessInstanceLink);
     }
 
     public IsWidget getView() {
@@ -121,7 +115,7 @@ public class TaskProcessContextPresenter {
         processRuntimeDataService.call(new RemoteCallback<ProcessInstanceSummary>() {
                               @Override
                               public void callback(ProcessInstanceSummary summary) {
-                                  placeManager.goTo(PROCESS_INSTANCE_DETAILS);
+                                  placeManager.goTo(PerspectiveIds.PROCESS_INSTANCES);
                                   processInstanceSelected.fire(new ProcessInstancesWithDetailsRequestEvent(
                                           serverTemplateId,
                                           summary.getDeploymentId(),
