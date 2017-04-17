@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
 import org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceListPresenter;
 import org.kie.workbench.common.widgets.client.search.SetSearchTextEvent;
+import org.kie.workbench.common.workbench.client.PerspectiveIds;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.ClosableSimpleWorkbenchPanelPresenter;
@@ -33,10 +34,9 @@ import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 @ApplicationScoped
-@WorkbenchPerspective(identifier = ProcessInstanceListPerspective.PERSPECTIVE_ID)
+@WorkbenchPerspective(identifier = PerspectiveIds.PROCESS_INSTANCES)
 public class ProcessInstanceListPerspective extends AbstractPerspective {
 
-    public static final String PERSPECTIVE_ID = "ProcessInstances";
     public static final String PROCESS_ID = "processDefinitionId";
 
     @Inject
@@ -47,7 +47,7 @@ public class ProcessInstanceListPerspective extends AbstractPerspective {
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(ClosableSimpleWorkbenchPanelPresenter.class.getName());
-        p.setName(PERSPECTIVE_ID);
+        p.setName(PerspectiveIds.PROCESS_INSTANCES);
         final DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(ProcessInstanceListPresenter.SCREEN_ID);
         defaultPlaceRequest.addParameter(PROCESS_ID, currentProcessDefinition);
         p.getRoot().addPart(new PartDefinitionImpl(defaultPlaceRequest));
@@ -56,7 +56,7 @@ public class ProcessInstanceListPerspective extends AbstractPerspective {
 
     @Override
     public String getPerspectiveId() {
-        return PERSPECTIVE_ID;
+        return PerspectiveIds.PROCESS_INSTANCES;
     }
 
     @OnStartup

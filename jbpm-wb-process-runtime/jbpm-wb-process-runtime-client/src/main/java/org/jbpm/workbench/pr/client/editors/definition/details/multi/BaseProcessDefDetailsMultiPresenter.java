@@ -31,6 +31,7 @@ import org.jbpm.workbench.pr.client.i18n.Constants;
 import org.jbpm.workbench.pr.client.perspectives.ProcessInstanceListPerspective;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
+import org.kie.workbench.common.workbench.client.PerspectiveIds;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
@@ -142,7 +143,7 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
     }
 
     public void viewProcessInstances() {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(ProcessInstanceListPerspective.PERSPECTIVE_ID );
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(PerspectiveIds.PROCESS_INSTANCES);
         placeRequestImpl.addParameter( ProcessInstanceListPerspective.PROCESS_ID, processId );
         placeManager.goTo( placeRequestImpl );
     }
