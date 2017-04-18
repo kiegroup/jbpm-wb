@@ -178,6 +178,24 @@ public abstract class AbstractTaskListPresenterTest {
 
         verify(taskService).claimTask("", TASK_DEPLOYMENT_ID, TASK_ID);
     }
+    
+    @Test
+    public void resumeTaskTest() {
+        final TaskSummary task = new TaskSummary(TASK_ID, null, null, null, 0, null, null, null, null, null, null, -1, -1, TASK_DEPLOYMENT_ID, -1, new Date(), null, null);
+
+        getPresenter().resumeTask(task);
+
+        verify(taskService).resumeTask("", TASK_DEPLOYMENT_ID, TASK_ID);
+    }
+    
+    @Test
+    public void suspendTaskTest() {
+        final TaskSummary task = new TaskSummary(TASK_ID, null, null, null, 0, null, null, null, null, null, null, -1, -1, TASK_DEPLOYMENT_ID, -1, new Date(), null, null);
+
+        getPresenter().suspendTask(task);
+
+        verify(taskService).suspendTask("", TASK_DEPLOYMENT_ID, TASK_ID);
+    }
 
     @Test
     public void isFilteredByTaskNameTest() {

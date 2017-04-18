@@ -61,6 +61,7 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresenter.TaskListView> extends AbstractMultiGridPresenter<TaskSummary, V> {
@@ -306,7 +307,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         refreshGrid();
                     }
                 }).releaseTask(selectedServerTemplate, task.getDeploymentId(), task.getTaskId());
-        taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, task.getDeploymentId(),task.getTaskId(), task.getTaskName() ) );
+        taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, task.getDeploymentId(), task.getTaskId(), task.getTaskName() ) );
     }
 
     public void claimTask(final TaskSummary task) {
@@ -319,7 +320,33 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                     }
                 }
         ).claimTask(selectedServerTemplate, task.getDeploymentId(), task.getTaskId());
-        taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, task.getDeploymentId(),task.getTaskId(), task.getTaskName() ) );
+        taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, task.getDeploymentId(), task.getTaskId(), task.getTaskName() ) );
+    }
+    
+    public void resumeTask(final TaskSummary task) {
+        taskService.call(
+                new RemoteCallback<Void>() {
+                    @Override
+                    public void callback(Void nothing) {
+                        view.displayNotification(constants.TaskResumed(String.valueOf(task.getTaskId())));
+                        refreshGrid();
+                    }
+                }
+        ).resumeTask(selectedServerTemplate, task.getDeploymentId(), task.getTaskId());
+        taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, task.getDeploymentId(), task.getTaskId(), task.getTaskName() ) );
+    }
+    
+    public void suspendTask(final TaskSummary task) {
+        taskService.call(
+                new RemoteCallback<Void>() {
+                    @Override
+                    public void callback(Void nothing) {
+                        view.displayNotification(constants.TaskSuspended(String.valueOf(task.getTaskId())));
+                        refreshGrid();
+                    }
+                }
+        ).suspendTask(selectedServerTemplate, task.getDeploymentId(), task.getTaskId());
+        taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, task.getDeploymentId(), task.getTaskId(), task.getTaskName() ) );
     }
     
     public Menus getMenus(){ //To be used by subclass methods annotated with @WorkbenchMenu
@@ -335,7 +362,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         final DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Task Details Multi" );
         final PlaceStatus status = placeManager.getStatus( defaultPlaceRequest );
         boolean logOnly = false;
-        if ( summary.getStatus().equals( "Completed" ) && summary.isLogOnly() ) {
+        if ( summary.getStatus().equals( TASK_STATUS_COMPLETED ) && summary.isLogOnly() ) {
             logOnly = true;
         }
         if ( status == PlaceStatus.CLOSE ) {

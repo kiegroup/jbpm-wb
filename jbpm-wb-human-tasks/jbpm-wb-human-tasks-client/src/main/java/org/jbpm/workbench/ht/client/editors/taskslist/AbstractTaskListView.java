@@ -42,6 +42,7 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.resources.CommonResources;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
@@ -61,6 +62,7 @@ import org.uberfire.mvp.Command;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.dashbuilder.dataset.sort.SortOrder.*;
+import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter> extends AbstractMultiGridView<TaskSummary, P>
@@ -136,7 +138,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
                 if ( rowIndex == selectedRow ) {
                     return CommonResources.INSTANCE.css().selected();
                 } else {
-                    if ( row.getStatus().equals( "InProgress" ) || row.getStatus().equals( "Ready" ) ) {
+                    if ( row.getStatus().equals( TASK_STATUS_INPROGRESS ) || row.getStatus().equals( TASK_STATUS_READY ) ) {
                         switch (row.getPriority()) {
                             case 5:
                                 return HumanTaskResources.INSTANCE.css().taskPriorityFive();
@@ -151,7 +153,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
                             default:
                                 return "";
                         }
-                    } else if ( row.getStatus().equals( "Completed" ) ) {
+                    } else if ( row.getStatus().equals( TASK_STATUS_COMPLETED ) ) {
                         return HumanTaskResources.INSTANCE.css().taskCompleted();
                     }
 
@@ -291,44 +293,44 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
             extendedPagedTable.setTooltip( extendedPagedTable.getKeyboardSelectedRow(), event.getColumn(), task.getDescription() );
         }
     }
-    
+
     private Column<TaskSummary, ?> initActionsColumn() {
         List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
-        cells.add( new ClaimActionHasCell( constants.Claim(), new ActionCell.Delegate<TaskSummary>() {
-            @Override
-            public void execute( final TaskSummary task ) {
-                presenter.claimTask( task );
-            }
-        } ) );
+        
+        cells.add(new ClaimActionHasCell(constants.Claim(), task -> {
+            presenter.claimTask(task);
+        }));
 
-        cells.add( new ReleaseActionHasCell( constants.Release(), new ActionCell.Delegate<TaskSummary>() {
-            @Override
-            public void execute( final TaskSummary task ) {
-                presenter.releaseTask( task );
-            }
-        } ) );
+        cells.add(new ReleaseActionHasCell(identity, constants.Release(), task -> {
+            presenter.releaseTask(task);
+        }));
 
-        cells.add( new CompleteActionHasCell( constants.Open(), new ActionCell.Delegate<TaskSummary>() {
-            @Override
-            public void execute( final TaskSummary task ) {
-                selectedRow = -1;
-                presenter.selectTask(task, false);
-            }
-        } ) );
+        cells.add(new SuspendActionHasCell(identity, constants.Suspend(), task -> {
+            presenter.suspendTask(task);
+        }));
 
-        CompositeCell<TaskSummary> cell = new CompositeCell<TaskSummary>( cells );
-        Column<TaskSummary, TaskSummary> actionsColumn = new Column<TaskSummary, TaskSummary>( cell ) {
+        cells.add(new ResumeActionHasCell(identity, constants.Resume(), task -> {
+            presenter.resumeTask(task);
+        }));
+
+        cells.add(new CompleteActionHasCell(constants.Open(), task -> {
+            selectedRow = -1;
+            presenter.selectTask(task, false);
+        }));
+
+        CompositeCell<TaskSummary> cell = new CompositeCell<TaskSummary>(cells);
+        Column<TaskSummary, TaskSummary> actionsColumn = new Column<TaskSummary, TaskSummary>(cell) {
             @Override
-            public TaskSummary getValue( TaskSummary object ) {
+            public TaskSummary getValue(TaskSummary object) {
                 return object;
             }
         };
-        actionsColumn.setDataStoreName( COL_ID_ACTIONS );
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
 
     }
 
-    protected class CompleteActionHasCell extends ButtonActionCell<TaskSummary> {
+    protected static class CompleteActionHasCell extends ButtonActionCell<TaskSummary> {
 
         public CompleteActionHasCell( final String text, final ActionCell.Delegate<TaskSummary> delegate ) {
             super( text, delegate );
@@ -336,13 +338,13 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
 
         @Override
         public void render( final Cell.Context context, final TaskSummary value, final SafeHtmlBuilder sb ) {
-            if ( value.getActualOwner() != null && value.getStatus().equals( "InProgress" ) ) {
+            if ( value.getActualOwner() != null && value.getStatus().equals( TASK_STATUS_INPROGRESS ) ) {
                 super.render( context, value, sb );
             }
         }
     }
 
-    protected class ClaimActionHasCell extends ButtonActionCell<TaskSummary> {
+    protected static class ClaimActionHasCell extends ButtonActionCell<TaskSummary> {
 
         public ClaimActionHasCell( final String text, final ActionCell.Delegate<TaskSummary> delegate ) {
             super( text, delegate );
@@ -350,22 +352,71 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
 
         @Override
         public void render( final Cell.Context context, final TaskSummary value, final SafeHtmlBuilder sb ) {
-            if ( value.getStatus().equals( "Ready" ) ) {
+            if ( value.getStatus().equals( TASK_STATUS_READY ) ) {
                 super.render( context, value, sb );
             }
         }
     }
 
-    protected class ReleaseActionHasCell extends ButtonActionCell<TaskSummary> {
+    protected static class ReleaseActionHasCell extends ButtonActionCell<TaskSummary> {
+        
+        private final User identity;
 
-        public ReleaseActionHasCell( final String text, final ActionCell.Delegate<TaskSummary> delegate ) {
+        public ReleaseActionHasCell(  final User identity, final String text, final ActionCell.Delegate<TaskSummary> delegate ) {
             super( text, delegate );
+            this.identity = identity;
         }
 
         @Override
         public void render( final Cell.Context context, final TaskSummary value, final SafeHtmlBuilder sb ) {
             if ( value.getActualOwner() != null && value.getActualOwner().equals( identity.getIdentifier() )
-                    && ( value.getStatus().equals( "Reserved" ) || value.getStatus().equals( "InProgress" ) ) ) {
+                    && ( value.getStatus().equals( TASK_STATUS_RESERVED ) || value.getStatus().equals( TASK_STATUS_INPROGRESS ) ) ) {
+                super.render( context, value, sb );
+            }
+        }
+    }
+
+    protected static class ResumeActionHasCell extends ButtonActionCell<TaskSummary> {
+        
+        private final User identity;
+
+        public ResumeActionHasCell( final User identity, final String text, final ActionCell.Delegate<TaskSummary> delegate ) {
+            super( text, delegate );
+            this.identity = identity;
+        }
+
+        @Override
+        public void render( final Cell.Context context, final TaskSummary value, final SafeHtmlBuilder sb ) {
+            String taskStatus = value.getStatus();
+            String actualOwner = value.getActualOwner();
+            String currentId = identity.getIdentifier();
+            List<String> potOwners =  value.getPotOwnersString();
+            if ( taskStatus.equals( TASK_STATUS_SUSPENDED ) && ( ( actualOwner != null && actualOwner.equals( currentId ) ) 
+                || ( potOwners != null && potOwners.contains( currentId ) ) ) ){
+                super.render( context, value, sb );
+            }
+        }
+    }
+
+    protected static class SuspendActionHasCell extends ButtonActionCell<TaskSummary> {
+        
+        private final User identity;
+
+        public SuspendActionHasCell( final User identity, final String text, final ActionCell.Delegate<TaskSummary> delegate ) {
+            super( text, delegate );
+            this.identity = identity;
+        }
+
+        @Override
+        public void render( final Cell.Context context, final TaskSummary value, final SafeHtmlBuilder sb ) {
+            String taskStatus = value.getStatus();
+            String actualOwner = value.getActualOwner();
+            String currentId = identity.getIdentifier();
+            List<String> potOwners =  value.getPotOwnersString();
+            if ( ( actualOwner != null && actualOwner.equals( currentId ) &&
+                    ( taskStatus.equals( TASK_STATUS_RESERVED ) || taskStatus.equals( TASK_STATUS_INPROGRESS ) ) ) 
+                || ( potOwners != null && potOwners.contains(currentId)
+                    && taskStatus.equals( TASK_STATUS_READY ) ) ){
                 super.render( context, value, sb );
             }
         }

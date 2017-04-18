@@ -40,6 +40,10 @@ public interface TaskService {
     void startTask(String serverTemplateId, String containerId, Long taskId);
 
     void completeTask(String serverTemplateId, String containerId, Long taskId, Map<String, Object> output);
+    
+    void resumeTask(String serverTemplateId, String containerId, Long taskId);
+    
+    void suspendTask(String serverTemplateId, String containerId, Long taskId);
 
     void saveTaskContent(String serverTemplateId, String containerId, Long taskId, Map<String, Object> output);
 

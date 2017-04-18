@@ -33,6 +33,7 @@ import org.mockito.Mock;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 
+import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
@@ -73,7 +74,7 @@ public class TaskAssignmentsPresenterTest {
 
         final TaskAssignmentSummary task = new TaskAssignmentSummary();
         task.setTaskId(TASK_ID);
-        task.setStatus("InProgress");
+        task.setStatus(TASK_STATUS_INPROGRESS);
         task.setPotOwnersString(Arrays.asList(CURRENT_USER));
         task.setDelegationAllowed(true);
 
@@ -109,7 +110,7 @@ public class TaskAssignmentsPresenterTest {
         final long COMPLETED_TASK_ID = 1;
         final TaskAssignmentSummary task = new TaskAssignmentSummary();
         task.setTaskId(COMPLETED_TASK_ID);
-        task.setStatus("Completed");
+        task.setStatus(TASK_STATUS_COMPLETED);
         task.setPotOwnersString(Arrays.asList(CURRENT_USER));
         when(taskService.getTaskAssignmentDetails(anyString(), anyString(), eq(COMPLETED_TASK_ID))).thenReturn(task);
 
@@ -128,7 +129,7 @@ public class TaskAssignmentsPresenterTest {
 
         final TaskAssignmentSummary task = new TaskAssignmentSummary();
         task.setTaskId(TASK_OWNED_BY_SOMEONE_ELSE_ID);
-        task.setStatus("Ready");
+        task.setStatus(TASK_STATUS_READY);
         task.setActualOwner(OTHER_USER);
         task.setPotOwnersString(Arrays.asList(OTHER_USER));
         task.setDelegationAllowed(false);
@@ -149,7 +150,7 @@ public class TaskAssignmentsPresenterTest {
 
         final TaskAssignmentSummary task = new TaskAssignmentSummary();
         task.setTaskId(TASK_OWNED_BY_CURRENT_USER);
-        task.setStatus("Ready");
+        task.setStatus(TASK_STATUS_READY);
         task.setActualOwner(CURRENT_USER);
         task.setPotOwnersString(Arrays.asList(CURRENT_USER));
         task.setDelegationAllowed(true);

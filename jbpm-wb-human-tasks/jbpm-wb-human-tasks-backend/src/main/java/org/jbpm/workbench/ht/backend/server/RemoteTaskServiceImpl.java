@@ -121,6 +121,28 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
     }
 
     @Override
+    public void resumeTask(String serverTemplateId, String containerId, Long taskId) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return;
+        }
+
+        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+
+        client.resumeTask(containerId, taskId, identityProvider.getName());
+    }
+
+    @Override
+    public void suspendTask(String serverTemplateId, String containerId, Long taskId) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return;
+        }
+
+        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+
+        client.suspendTask(containerId, taskId, identityProvider.getName());
+    }
+
+    @Override
     public void saveTaskContent(String serverTemplateId, String containerId, Long taskId, Map<String, Object> output) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return;
