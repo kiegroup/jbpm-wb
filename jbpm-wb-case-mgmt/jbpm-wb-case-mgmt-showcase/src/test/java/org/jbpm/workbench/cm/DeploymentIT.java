@@ -35,12 +35,13 @@ import static org.junit.Assert.*;
 @RunWith(Arquillian.class)
 public class DeploymentIT {
 
-    public static final String ARCHIVE_NAME = "jbpm-wb-case-mgmt-showcase.war";
+    public static final String ARCHIVE_NAME = "wildfly.war";
 
     @Deployment(testable = false)
     public static WebArchive create() {
-        return ShrinkWrap.create(ZipImporter.class, ARCHIVE_NAME)
-                .importFrom(new File("target/" + ARCHIVE_NAME))
+        final String warFile = System.getProperty(ARCHIVE_NAME);
+        return ShrinkWrap.create(ZipImporter.class, warFile)
+                .importFrom(new File("target/" + warFile))
                 .as(WebArchive.class);
     }
 
