@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component>
+  <!-- Assembly configuration for WildFly 10 and EAP 7 -->
+  <dependencySets>
+    <dependencySet>
+      <includes>
+        <include>org.jbpm:jbpm-wb-case-mgmt-showcase</include>
+      </includes>
+      <outputDirectory>.</outputDirectory>
+      <unpack>true</unpack>
+      <unpackOptions>
+        <excludes>
+          <exclude>WEB-INF/classes/application-roles.properties</exclude>
+          <exclude>WEB-INF/classes/application-users.properties</exclude>
+          <exclude>WEB-INF/classes/*.json</exclude>
+        </excludes>
+      </unpackOptions>
+    </dependencySet>
+  </dependencySets>
+
+</component>
