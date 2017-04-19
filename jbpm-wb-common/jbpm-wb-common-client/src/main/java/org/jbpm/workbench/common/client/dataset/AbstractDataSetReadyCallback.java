@@ -21,7 +21,7 @@ import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
-import org.jbpm.workbench.common.client.list.base.AbstractListView;
+import org.jbpm.workbench.common.client.list.AbstractListView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 
 public abstract class AbstractDataSetReadyCallback implements DataSetReadyCallback {

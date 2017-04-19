@@ -18,7 +18,7 @@ package org.jbpm.workbench.pr.client.editors.documents.list;
 import java.util.List;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jbpm.workbench.common.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.common.client.list.base;
+package org.jbpm.workbench.common.client.list;
 
 import java.util.ArrayList;
 import javax.enterprise.event.Event;
@@ -34,7 +34,6 @@ import org.gwtbootstrap3.client.ui.Button;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.workbench.common.client.experimental.grid.base.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.resources.CommonResources;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.model.GenericSummary;

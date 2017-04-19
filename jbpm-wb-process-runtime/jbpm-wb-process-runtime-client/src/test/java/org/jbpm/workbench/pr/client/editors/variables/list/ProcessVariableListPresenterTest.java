@@ -22,7 +22,7 @@ import java.util.List;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
-import org.jbpm.workbench.common.client.experimental.grid.base.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.service.ProcessVariablesService;
 import org.junit.Before;

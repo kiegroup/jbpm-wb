@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.common.client.list.base;
+package org.jbpm.workbench.common.client.list;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +26,8 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
+import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
-import org.jbpm.workbench.common.client.list.base.events.SearchEvent;
 import org.jbpm.workbench.common.model.QueryFilter;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;

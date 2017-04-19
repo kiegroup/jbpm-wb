@@ -17,9 +17,7 @@
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
-import org.jbpm.workbench.common.client.experimental.grid.base.ExtendedPagedTable;
-import org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceListPresenter;
-import org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceListViewImpl;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 
