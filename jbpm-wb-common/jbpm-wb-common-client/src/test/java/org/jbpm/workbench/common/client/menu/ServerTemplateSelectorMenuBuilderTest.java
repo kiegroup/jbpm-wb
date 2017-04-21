@@ -23,6 +23,7 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.controller.api.model.events.ServerTemplateUpdated;
 import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
@@ -163,6 +164,35 @@ public class ServerTemplateSelectorMenuBuilderTest {
         verify(view).addServerTemplate(serverTemplateId);
         verify(view).selectServerTemplate(serverTemplateId);
         verify(view).setVisible(false);
+
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void testServerTemplateUpdatedWithoutServerInstance() {
+        final String serverTemplateId = "id1";
+        final ServerTemplate st1 = new ServerTemplate(serverTemplateId, "kie-server-template1");
+        when(specManagementService.listServerTemplates()).thenReturn(Collections.singletonList(st1));
+
+        serverTemplateSelectorMenuBuilder.onServerTemplateUpdated(new ServerTemplateUpdated(st1));
+
+        verify(specManagementService).listServerTemplates();
+        verify(view).removeAllServerTemplates();
+        verify(view,never()).addServerTemplate(serverTemplateId);
+        verify(view).setVisible(false);
+        verify(view).getSelectedServerTemplate();
+
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void testServerTemplateUpdatedWithServerInstance() {
+        final String serverTemplateId = "id1";
+        final ServerTemplate st1 = new ServerTemplate(serverTemplateId, "kie-server-template1");
+        st1.addServerInstance(new ServerInstanceKey());
+        when(specManagementService.listServerTemplates()).thenReturn(Collections.singletonList(st1));
+
+        serverTemplateSelectorMenuBuilder.onServerTemplateUpdated(new ServerTemplateUpdated(st1));
 
         verifyNoMoreInteractions(view);
     }

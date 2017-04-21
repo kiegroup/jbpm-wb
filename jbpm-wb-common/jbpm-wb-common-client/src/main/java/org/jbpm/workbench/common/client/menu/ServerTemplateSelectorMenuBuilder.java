@@ -115,7 +115,9 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
     }
 
     public void onServerTemplateUpdated(@Observes final ServerTemplateUpdated serverTemplateUpdated) {
-        loadServerTemplates();
+        if(serverTemplateUpdated.getServerTemplate().getServerInstanceKeys().isEmpty()){
+            loadServerTemplates();
+        }
     }
 
     public void onKieServerDataSetRegistered(@Observes final KieServerDataSetRegistered kieServerDataSetRegistered) {
