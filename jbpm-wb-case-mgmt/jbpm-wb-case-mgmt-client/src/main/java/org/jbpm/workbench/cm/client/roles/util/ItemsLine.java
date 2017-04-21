@@ -55,10 +55,6 @@ public class ItemsLine extends AbstractView<CaseRolesPresenter> {
     UnorderedList hiddenItems;
 
     @Inject
-    @DataField("div-unassigned")
-    Div unassignedDiv;
-
-    @Inject
     @DataField("custom-popover")
     Div customPopover;
 
@@ -92,9 +88,7 @@ public class ItemsLine extends AbstractView<CaseRolesPresenter> {
                                   List<CaseRolesPresenter.CaseAssignmentItem> items) {
         this.itemsLineId = itemsLineId;
 
-        if (items.size() == 0) {
-            displayUnassignedItem();
-        } else {
+        if (items.size() > 0) {
             boolean overflow = false;
 
             for (CaseRolesPresenter.CaseAssignmentItem item : items) {
@@ -120,11 +114,6 @@ public class ItemsLine extends AbstractView<CaseRolesPresenter> {
                 }
             }
         }
-    }
-
-    public void displayUnassignedItem() {
-        removeCSSClass(unassignedDiv,
-                       "hidden");
     }
 
     public void showAllItems() {
