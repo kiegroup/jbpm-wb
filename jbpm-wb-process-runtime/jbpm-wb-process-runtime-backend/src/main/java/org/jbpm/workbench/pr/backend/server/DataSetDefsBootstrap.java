@@ -61,7 +61,7 @@ public class DataSetDefsBootstrap {
                             "log.correlationKey, " +
                             "log.externalId, " +
                             "log.processInstanceDescription, " +
-                            "info.lastModificationDate " +
+                            "COALESCE(info.lastModificationDate,log.end_date) as lastModificationDate " +
                         "from " +
                             "ProcessInstanceLog log " +
                         "left join " +
