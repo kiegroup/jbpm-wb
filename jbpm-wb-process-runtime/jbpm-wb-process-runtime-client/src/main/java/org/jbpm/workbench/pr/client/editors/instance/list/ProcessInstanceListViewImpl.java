@@ -16,7 +16,6 @@
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -509,11 +508,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         Column<ProcessInstanceSummary, String> col = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
             @Override
             public String getValue( ProcessInstanceSummary object ) {
-                Date colDate = object.getLastModificationDate();
-                if(colDate == null){
-                    colDate = object.getEndTime();
-                }
-                return DateUtils.getDateTimeStr(colDate);
+                return DateUtils.getDateTimeStr(object.getLastModificationDate());
             }
         };
         col.setSortable( true );
