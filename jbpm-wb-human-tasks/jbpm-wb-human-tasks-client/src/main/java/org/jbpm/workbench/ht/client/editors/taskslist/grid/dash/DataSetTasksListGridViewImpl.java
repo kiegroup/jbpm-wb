@@ -657,6 +657,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         tableSettings.setKey(key);
         tableSettings.setTableName(tabName);
         tableSettings.setTableDescription(tabDesc);
+        tableSettings.setUUID(tableSettings.getDataSetLookup().getDataSetUUID());
 
         HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
 
@@ -703,7 +704,9 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         addCommonColumnSettings(builder);
 
-        return builder.buildSettings();
+        final FilterSettings filterSettings = builder.buildSettings();
+        filterSettings.setUUID(HUMAN_TASKS_WITH_USER_DATASET);
+        return filterSettings;
     }
 
     public int getRefreshValue() {
@@ -784,6 +787,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         FilterSettings varTableSettings =builder.buildSettings();
         varTableSettings.setTablePageSize(-1);
+        varTableSettings.setUUID(HUMAN_TASKS_WITH_VARIABLES_DATASET);
 
         return varTableSettings;
 

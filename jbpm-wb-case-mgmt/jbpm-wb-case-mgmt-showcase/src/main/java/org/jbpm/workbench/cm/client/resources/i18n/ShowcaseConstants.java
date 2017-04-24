@@ -29,4 +29,9 @@ public interface ShowcaseConstants {
     @TranslationKey(defaultValue = "")
     String ROLE = "Role";
 
+    @TranslationKey(defaultValue = "")
+    String KIE_SERVER_ERROR_403 = "KieServerError403";
+
+    @TranslationKey(defaultValue = "")
+    String KIE_SERVER_ERROR_401 = "KieServerError401";
 }

@@ -484,6 +484,10 @@
               <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-patternfly</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-backend-api</compileSourcesArtifact>
 
+              <!-- Kie Server -->
+              <compileSourcesArtifact>org.kie:kie-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.server:kie-server-api</compileSourcesArtifact>
+
               <!-- Dashbuilder -->
               <compileSourcesArtifact>org.dashbuilder:dashbuilder-json</compileSourcesArtifact>
               <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-api</compileSourcesArtifact>
