@@ -17,34 +17,39 @@
 package org.jbpm.workbench.common.client.dataset;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import com.google.gwtmockito.WithClassesToStub;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
+import org.gwtbootstrap3.client.ui.html.Text;
+import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jbpm.workbench.common.client.list.AbstractListView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.mockito.Mock;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
+@WithClassesToStub({Text.class})
 public class AbstractDataSetReadyCallbackTest {
 
     @Mock
     ErrorPopupPresenter errorPopup;
 
     @Mock
-    AbstractListView.BasicListView view;
+    DefaultWorkbenchErrorCallback errorCallback;
 
     @Mock
-    DataSet dataSet;
+    AbstractListView.BasicListView view;
 
     AbstractDataSetReadyCallback dataSetReadyCallback;
 
     @Before
     public void setup() {
-        dataSetReadyCallback = new AbstractDataSetReadyCallback(errorPopup, view, dataSet) {
+        dataSetReadyCallback = new AbstractDataSetReadyCallback(errorPopup, view, "", errorCallback) {
             @Override
             public void callback(DataSet dataSet) {
                 //Do nothing
@@ -59,6 +64,7 @@ public class AbstractDataSetReadyCallbackTest {
 
         verify(view).hideBusyIndicator();
         verify(errorPopup).showMessage(anyString());
+        verify(errorCallback, never()).error(any(Message.class), any(Throwable.class));
     }
 
     @Test
@@ -66,7 +72,8 @@ public class AbstractDataSetReadyCallbackTest {
         dataSetReadyCallback.onError(mock(ClientRuntimeError.class));
 
         verify(view).hideBusyIndicator();
-        verify(errorPopup).showMessage(anyString());
+        verify(errorPopup, never()).showMessage(anyString());
+        verify(errorCallback).error(any(Message.class), any(Throwable.class));
     }
 
 }

@@ -31,10 +31,10 @@ import org.jbpm.workbench.ht.model.TaskEventSummary;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.kie.internal.identity.IdentityProvider;
+import org.kie.server.api.exception.KieServicesException;
 import org.kie.server.api.model.instance.TaskComment;
 import org.kie.server.api.model.instance.TaskEventInstance;
 import org.kie.server.api.model.instance.TaskInstance;
-import org.kie.server.client.KieServicesException;
 import org.kie.server.client.UserTaskServicesClient;
 
 import static java.util.Collections.emptyList;

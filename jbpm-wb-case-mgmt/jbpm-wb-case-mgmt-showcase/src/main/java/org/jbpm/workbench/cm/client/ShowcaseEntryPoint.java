@@ -37,6 +37,7 @@ import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
 import org.jbpm.workbench.cm.client.util.ErrorPopup;
+import org.kie.server.api.exception.KieServicesHttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.client.mvp.PlaceManager;
@@ -47,6 +48,8 @@ import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
+import static org.jbpm.workbench.cm.client.resources.i18n.ShowcaseConstants.KIE_SERVER_ERROR_401;
+import static org.jbpm.workbench.cm.client.resources.i18n.ShowcaseConstants.KIE_SERVER_ERROR_403;
 import static org.jbpm.workbench.cm.client.resources.i18n.ShowcaseConstants.LOG_OUT;
 import static org.jbpm.workbench.cm.client.resources.i18n.ShowcaseConstants.ROLE;
 
@@ -136,7 +139,18 @@ public class ShowcaseEntryPoint {
 
     @UncaughtExceptionHandler
     public void handleUncaughtException(final Throwable t) {
-        errorPopup.showGenericError(t.getMessage());
+        if (t instanceof KieServicesHttpException) {
+            final KieServicesHttpException kieException = (KieServicesHttpException) t;
+            if (kieException.getHttpCode() == 401) {
+                errorPopup.showGenericError(translationService.format(KIE_SERVER_ERROR_401));
+            } else if (kieException.getHttpCode() == 403) {
+                errorPopup.showGenericError(translationService.format(KIE_SERVER_ERROR_403));
+            } else {
+                errorPopup.showGenericError(kieException.getExceptionMessage());
+            }
+        } else {
+            errorPopup.showGenericError(t.getMessage());
+        }
         LOGGER.error("Uncaught exception encountered",
                      t);
     }

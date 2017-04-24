@@ -680,6 +680,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         tableSettings.setKey( key );
         tableSettings.setTableName( tabName );
         tableSettings.setTableDescription( tabDesc );
+        tableSettings.setUUID( PROCESS_INSTANCE_DATASET );
 
         HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
 
@@ -811,7 +812,9 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         builder.tableOrderDefault( COLUMN_START, DESCENDING );
         builder.tableWidth( 1000 );
 
-        return builder.buildSettings();
+        final FilterSettings filterSettings = builder.buildSettings();
+        filterSettings.setUUID( PROCESS_INSTANCE_DATASET );
+        return filterSettings;
 
     }
 
