@@ -27,7 +27,6 @@ import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
-import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
@@ -44,17 +43,17 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.jbpm.workbench.common.client.resources.CommonResources;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
-import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.resources.CommonResources;
 import org.jbpm.workbench.common.client.util.ButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.common.client.util.TaskUtils;
-import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
+import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
+import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.ht.client.editors.taskslist.grid.AbstractTasksListGridPresenter;
+import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
@@ -216,38 +215,53 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     @Override
     public void initColumns( ExtendedPagedTable extendedPagedTable ) {
         initCellPreview( extendedPagedTable );
-        Column taskIdColumn = initTaskIdColumn();
-        Column taskNameColumn = initTaskNameColumn();
-        Column descriptionColumn = initTaskDescriptionColumn();
-        Column processIdColumn = initProcessIdColumn();
-        Column processInstanceIdColumn = initProcessInstanceIdColumn();
-        Column taskPriorityColumn = initTaskPriorityColumn();
-        Column statusColumn = initTaskStatusColumn();
-        Column createdOnDateColumn = initTaskCreatedOnColumn();
-        Column dueDateColumn = initTaskDueColumn();
-        Column actualOwnerColumn = initActualOwnerColumn();
-        Column lastModificationDateColumn = initLastModificationDateColumn();
-        Column piCorrelationKey = initProcInstanceCorrelationKeyColumn();
-        Column piDescription = initProcInstanceDescriptionColumn();
 
         actionsColumn = initActionsColumn();
 
-        List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
-        columnMetas.add( new ColumnMeta<TaskSummary>( taskIdColumn, constants.Id() ) );
-        columnMetas.add( new ColumnMeta<TaskSummary>( taskNameColumn, constants.Task() ) );
-        columnMetas.add( new ColumnMeta<TaskSummary>( descriptionColumn, constants.Description() ) );
-        columnMetas.add( new ColumnMeta<TaskSummary>( processIdColumn, constants.Process_Name() ) );
-        columnMetas.add( new ColumnMeta<TaskSummary>( processInstanceIdColumn, constants.Process_Id() ) );
-        columnMetas.add( new ColumnMeta<TaskSummary>( taskPriorityColumn, constants.Priority() ) );
-        columnMetas.add( new ColumnMeta<TaskSummary>( statusColumn, constants.Status() ) );
-        columnMetas.add( new ColumnMeta<TaskSummary>( createdOnDateColumn, constants.Created_On() ) );
-        columnMetas.add( new ColumnMeta<TaskSummary>( dueDateColumn, constants.Due_On() ) );
-        columnMetas.add( new ColumnMeta<TaskSummary>( actualOwnerColumn, constants.Actual_Owner() ) );
-        columnMetas.add( new ColumnMeta<TaskSummary>( piCorrelationKey, constants.Process_Instance_Correlation_Key() ) );
-        columnMetas.add( new ColumnMeta<TaskSummary>( piDescription, constants.Process_Instance_Description() ) );
-        columnMetas.add( new ColumnMeta<TaskSummary>( lastModificationDateColumn, constants.Last_Modification_Date() ) );
+        final List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
 
-        columnMetas.add( new ColumnMeta<TaskSummary>( actionsColumn, constants.Actions() ) );
+        columnMetas.add(new ColumnMeta<>(createNumberColumn(COLUMN_TASK_ID,
+                                                            task -> task.getTaskId()),
+                                         constants.Id()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_NAME,
+                                                          task -> task.getTaskName()),
+                                         constants.Task()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_DESCRIPTION,
+                                                          task -> task.getDescription()),
+                                         constants.Description()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_PROCESS_ID,
+                                                          task -> task.getProcessId()),
+                                         constants.Process_Name()));
+        columnMetas.add(new ColumnMeta<>(createNumberColumn(COLUMN_PROCESS_INSTANCE_ID,
+                                                            task -> task.getProcessInstanceId()),
+                                         constants.Process_Id()));
+        columnMetas.add(new ColumnMeta<>(createNumberColumn(COLUMN_PRIORITY,
+                                                            task -> task.getPriority()),
+                                         constants.Priority()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_STATUS,
+                                                          task -> task.getStatus()),
+                                         constants.Status()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_CREATED_ON,
+                                                          task -> DateUtils.getDateTimeStr(task.getCreatedOn())),
+                                         constants.Created_On()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_DUE_DATE,
+                                                          task -> DateUtils.getDateTimeStr(task.getExpirationTime())),
+                                         constants.Due_On()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_ACTUAL_OWNER,
+                                                          task -> task.getActualOwner()),
+                                         constants.Actual_Owner()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
+                                                          task -> task.getProcessInstanceCorrelationKey()),
+                                         constants.Process_Instance_Correlation_Key()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                          task -> task.getProcessInstanceDescription()),
+                                         constants.Process_Instance_Description()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_LAST_MODIFICATION_DATE,
+                                                          task -> DateUtils.getDateTimeStr(task.getLastModificationDate())),
+                                         constants.Last_Modification_Date()));
+        columnMetas.add(new ColumnMeta<>(actionsColumn,
+                                         constants.Actions()));
+
         List<GridColumnPreference> columPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
 
         for ( GridColumnPreference colPref : columPreferenceList ) {
@@ -283,162 +297,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         if ( task.getDescription() != null ) {
             extendedPagedTable.setTooltip( extendedPagedTable.getKeyboardSelectedRow(), event.getColumn(), task.getDescription() );
         }
-    }
-
-    private Column initTaskIdColumn() {
-        Column<TaskSummary, Number> taskIdColumn = new Column<TaskSummary, Number>( new NumberCell() ) {
-            @Override
-            public Number getValue( TaskSummary object ) {
-                return object.getTaskId();
-            }
-        };
-        taskIdColumn.setSortable( true );
-        taskIdColumn.setDataStoreName(COLUMN_TASK_ID);
-        return taskIdColumn;
-    }
-
-    private Column initTaskNameColumn() {
-        Column<TaskSummary, String> taskNameColumn = new Column<TaskSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( TaskSummary object ) {
-                return object.getTaskName();
-            }
-        };
-        taskNameColumn.setSortable( true );
-        taskNameColumn.setDataStoreName( COLUMN_NAME );
-        return taskNameColumn;
-    }
-
-    private Column initTaskDescriptionColumn() {
-        Column<TaskSummary, String> descriptionColumn = new Column<TaskSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( TaskSummary object ) {
-                return object.getDescription();
-            }
-        };
-        descriptionColumn.setSortable( true );
-        descriptionColumn.setDataStoreName( COLUMN_DESCRIPTION );
-        return descriptionColumn;
-    }
-
-    private Column initTaskPriorityColumn() {
-        Column<TaskSummary, Number> taskPriorityColumn = new Column<TaskSummary, Number>( new NumberCell() ) {
-            @Override
-            public Number getValue( TaskSummary object ) {
-                return object.getPriority();
-            }
-        };
-        taskPriorityColumn.setSortable( true );
-        taskPriorityColumn.setDataStoreName( COLUMN_PRIORITY );
-        return taskPriorityColumn;
-    }
-
-    private Column initTaskStatusColumn() {
-        Column<TaskSummary, String> statusColumn = new Column<TaskSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( TaskSummary object ) {
-                return object.getStatus();
-            }
-        };
-        statusColumn.setSortable( true );
-        statusColumn.setDataStoreName( COLUMN_STATUS );
-        return statusColumn;
-    }
-
-    private Column initTaskCreatedOnColumn() {
-        Column<TaskSummary, String> createdOnDateColumn = new Column<TaskSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( TaskSummary object ) {
-                return DateUtils.getDateTimeStr(object.getCreatedOn());
-            }
-        };
-        createdOnDateColumn.setSortable( true );
-        createdOnDateColumn.setDataStoreName(COLUMN_CREATED_ON);
-        return createdOnDateColumn;
-    }
-
-    private Column initTaskDueColumn() {
-        Column<TaskSummary, String> dueDateColumn = new Column<TaskSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( TaskSummary object ) {
-                return DateUtils.getDateTimeStr(object.getExpirationTime());
-            }
-        };
-        dueDateColumn.setSortable( true );
-        dueDateColumn.setDataStoreName(COLUMN_DUE_DATE);
-        return dueDateColumn;
-    }
-
-    private Column initProcessIdColumn() {
-        Column<TaskSummary, String> taskProcessIdColumn = new Column<TaskSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( TaskSummary object ) {
-                return object.getProcessId();
-            }
-        };
-        taskProcessIdColumn.setSortable( true );
-        taskProcessIdColumn.setDataStoreName(COLUMN_PROCESS_ID);
-        return taskProcessIdColumn;
-    }
-
-    private Column initProcessInstanceIdColumn() {
-        Column<TaskSummary, Number> taskProcessInstanceIdColumn = new Column<TaskSummary, Number>( new NumberCell() ) {
-            @Override
-            public Number getValue( TaskSummary object ) {
-                return object.getProcessInstanceId();
-            }
-        };
-        taskProcessInstanceIdColumn.setSortable( true );
-        taskProcessInstanceIdColumn.setDataStoreName(COLUMN_PROCESS_INSTANCE_ID);
-        return taskProcessInstanceIdColumn;
-    }
-    
-    private Column initActualOwnerColumn(){
-        Column<TaskSummary, String> col = new Column<TaskSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( TaskSummary object ) {
-                return object.getActualOwner();
-            }
-        };
-        col.setSortable( true );
-        col.setDataStoreName(COLUMN_ACTUAL_OWNER);
-        return col;
-    }
-    
-    private Column initLastModificationDateColumn() {
-        Column<TaskSummary, String> col = new Column<TaskSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( TaskSummary object ) {
-                return DateUtils.getDateTimeStr(object.getLastModificationDate());
-            }
-        };
-        col.setSortable( true );
-        col.setDataStoreName(COLUMN_LAST_MODIFICATION_DATE);
-        return col;
-    }
-    
-    private Column initProcInstanceCorrelationKeyColumn(){
-        Column<TaskSummary, String> col = new Column<TaskSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( TaskSummary object ) {
-                return object.getProcessInstanceCorrelationKey();
-            }
-        };
-        col.setSortable( true );
-        col.setDataStoreName(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY);
-        return col;
-    }
-    
-    private Column initProcInstanceDescriptionColumn(){
-        Column<TaskSummary, String> col = new Column<TaskSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( TaskSummary object ) {
-                return object.getProcessInstanceDescription();
-            }
-        };
-        col.setSortable( true );
-        col.setDataStoreName(COLUMN_PROCESS_INSTANCE_DESCRIPTION);
-        return col;
     }
 
     private Column initActionsColumn() {

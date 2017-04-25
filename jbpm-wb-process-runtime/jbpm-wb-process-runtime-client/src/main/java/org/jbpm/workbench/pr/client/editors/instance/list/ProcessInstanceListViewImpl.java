@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -52,8 +51,8 @@ import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
@@ -67,8 +66,8 @@ import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.dashbuilder.dataset.sort.SortOrder.*;
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
@@ -234,43 +233,75 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
     @Override
     public void initColumns( ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
+        final ColumnMeta checkColumnMeta = initChecksColumn();
 
-        ColumnMeta checkColumMeta = initChecksColumn();
-        Column processInstanceIdColumn = initProcessInstanceIdColumn();
-        Column processNameColumn = initProcessNameColumn();
-        Column processInitiatorColumn = initInitiatorColumn();
-        Column processVersionColumn = initProcessVersionColumn();
-        Column processStateColumn = initProcessStateColumn();
-        Column startTimeColumn = initStartDateColumn();
-        Column lastModificationColumn = initLastModificationDateColumn();
-        Column descriptionColumn = initDescriptionColumn();
-        Column correlationKeyColumn = initCorrelationKeyColumn();
         actionsColumn = initActionsColumn();
 
-        List<ColumnMeta<ProcessInstanceSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessInstanceSummary>>();
-        columnMetas.add( checkColumMeta );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processInstanceIdColumn, constants.Id() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processNameColumn, constants.Name() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( descriptionColumn, constants.Process_Instance_Description() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processInitiatorColumn, constants.Initiator() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processVersionColumn, constants.Version() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( processStateColumn, constants.State() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( startTimeColumn, constants.Start_Date() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( lastModificationColumn, constants.Last_Modification_Date() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( correlationKeyColumn, constants.Correlation_Key() ) );
-        columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( actionsColumn, constants.Actions() ) );
+        final List<ColumnMeta<ProcessInstanceSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessInstanceSummary>>();
+
+        columnMetas.add(checkColumnMeta);
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_PROCESS_INSTANCE_ID,
+                                                          process -> String.valueOf(process.getProcessInstanceId())),
+                                         constants.Id()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_PROCESS_NAME,
+                                                          process -> process.getProcessName()),
+                                         constants.Name()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                          process -> process.getProcessInstanceDescription()),
+                                         constants.Process_Instance_Description()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_IDENTITY,
+                                                          process -> process.getInitiator()),
+                                         constants.Initiator()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_PROCESS_VERSION,
+                                                          process -> process.getProcessVersion()),
+                                         constants.Version()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_STATUS,
+                                                          process -> {
+                                                              switch (process.getState()) {
+                                                                  case ProcessInstance.STATE_ACTIVE:
+                                                                      return constants.Active();
+                                                                  case ProcessInstance.STATE_ABORTED:
+                                                                      return constants.Aborted();
+                                                                  case ProcessInstance.STATE_COMPLETED:
+                                                                      return constants.Completed();
+                                                                  case ProcessInstance.STATE_PENDING:
+                                                                      return constants.Pending();
+                                                                  case ProcessInstance.STATE_SUSPENDED:
+                                                                      return constants.Suspended();
+                                                                  default:
+                                                                      return constants.Unknown();
+                                                              }
+                                                          }),
+                                         constants.State()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_START,
+                                                          process -> DateUtils.getDateTimeStr(process.getStartTime())),
+                                         constants.Start_Date()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_LAST_MODIFICATION_DATE,
+                                                          process -> DateUtils.getDateTimeStr(process.getLastModificationDate())),
+                                         constants.Last_Modification_Date()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_CORRELATION_KEY,
+                                                          process -> process.getCorrelationKey()),
+                                         constants.Correlation_Key()));
+        columnMetas.add(new ColumnMeta<>(initActionsColumn(),
+                                         constants.Actions()));
 
         List<GridColumnPreference> columPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
 
-        for ( GridColumnPreference colPref : columPreferenceList ) {
-            if ( !isColumnAdded( columnMetas, colPref.getName() ) ) {
-                Column genericColumn = initGenericColumn( colPref.getName() );
-                genericColumn.setSortable( false );
-                columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( genericColumn, colPref.getName(), true, true ) );
+        for (GridColumnPreference colPref : columPreferenceList) {
+            if (!isColumnAdded(columnMetas,
+                               colPref.getName())) {
+                Column genericColumn = initGenericColumn(colPref.getName());
+                genericColumn.setSortable(false);
+                columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(genericColumn,
+                                                                       colPref.getName(),
+                                                                       true,
+                                                                       true));
             }
         }
-        extendedPagedTable.addColumns( columnMetas );
-        extendedPagedTable.setColumnWidth(checkColumMeta.getColumn(), 37, Style.Unit.PX );
+        extendedPagedTable.addColumns(columnMetas);
+        extendedPagedTable.setColumnWidth(checkColumnMeta.getColumn(),
+                                          37,
+                                          Style.Unit.PX);
         extendedPagedTable.storeColumnToPreferences();
     }
 
@@ -391,127 +422,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         controlBulkOperations();
     }
 
-    private Column initProcessInstanceIdColumn() {
-        // Process Instance Id.
-        Column<ProcessInstanceSummary, String> processInstanceIdColumn = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( ProcessInstanceSummary object ) {
-                return String.valueOf( object.getProcessInstanceId() );
-            }
-        };
-        processInstanceIdColumn.setSortable( true );
-        processInstanceIdColumn.setDataStoreName(COLUMN_PROCESS_INSTANCE_ID);
-
-        return processInstanceIdColumn;
-    }
-
-    private Column initProcessNameColumn() {
-        // Process Name.
-        Column<ProcessInstanceSummary, String> processNameColumn = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( ProcessInstanceSummary object ) {
-                return object.getProcessName();
-            }
-        };
-        processNameColumn.setSortable( true );
-        processNameColumn.setDataStoreName(COLUMN_PROCESS_NAME);
-
-        return processNameColumn;
-    }
-
-    private Column initInitiatorColumn() {
-        // Initiator
-        Column<ProcessInstanceSummary, String> processInitiatorColumn = new Column<ProcessInstanceSummary, String>(
-                new TextCell() ) {
-            @Override
-            public String getValue( ProcessInstanceSummary object ) {
-                return object.getInitiator();
-            }
-        };
-        processInitiatorColumn.setSortable( true );
-        processInitiatorColumn.setDataStoreName( COLUMN_IDENTITY );
-
-        return processInitiatorColumn;
-    }
-
-    private Column initProcessVersionColumn() {
-        // Process Version.
-        Column<ProcessInstanceSummary, String> processVersionColumn = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( ProcessInstanceSummary object ) {
-                return object.getProcessVersion();
-            }
-        };
-        processVersionColumn.setSortable( true );
-        processVersionColumn.setDataStoreName(COLUMN_PROCESS_VERSION);
-
-        return processVersionColumn;
-    }
-
-    private Column initProcessStateColumn() {
-        // Process State
-        Column<ProcessInstanceSummary, String> processStateColumn = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( ProcessInstanceSummary object ) {
-                String statusStr = constants.Unknown();
-                switch ( object.getState() ) {
-                    case ProcessInstance.STATE_ACTIVE:
-                        statusStr = constants.Active();
-                        break;
-                    case ProcessInstance.STATE_ABORTED:
-                        statusStr = constants.Aborted();
-                        break;
-                    case ProcessInstance.STATE_COMPLETED:
-                        statusStr = constants.Completed();
-                        break;
-                    case ProcessInstance.STATE_PENDING:
-                        statusStr = constants.Pending();
-                        break;
-                    case ProcessInstance.STATE_SUSPENDED:
-                        statusStr = constants.Suspended();
-                        break;
-
-                    default:
-                        break;
-                }
-
-                return statusStr;
-            }
-        };
-        processStateColumn.setSortable( true );
-        processStateColumn.setDataStoreName( COLUMN_STATUS );
-
-        return processStateColumn;
-    }
-
-    private Column initStartDateColumn() {
-        // Start time
-        Column<ProcessInstanceSummary, String> startTimeColumn = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( ProcessInstanceSummary object ) {
-                return DateUtils.getDateTimeStr(object.getStartTime());
-            }
-        };
-        startTimeColumn.setSortable( true );
-        startTimeColumn.setDataStoreName( COLUMN_START );
-
-        return startTimeColumn;
-    }
-    
-    private Column initLastModificationDateColumn() {
-        // Modification time
-        Column<ProcessInstanceSummary, String> col = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( ProcessInstanceSummary object ) {
-                return DateUtils.getDateTimeStr(object.getLastModificationDate());
-            }
-        };
-        col.setSortable( true );
-        col.setDataStoreName( COLUMN_LAST_MODIFICATION_DATE );
-
-        return col;
-    }
-
     private Column initActionsColumn() {
         List<HasCell<ProcessInstanceSummary, ?>> cells = new LinkedList<HasCell<ProcessInstanceSummary, ?>>();
 
@@ -579,30 +489,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         ColumnMeta<ProcessInstanceSummary> checkColMeta = new ColumnMeta<ProcessInstanceSummary>( checkColumn, "");
         checkColMeta.setHeader(selectPageHeader);
         return checkColMeta;
-    }
-
-    private Column initDescriptionColumn() {
-        Column<ProcessInstanceSummary, String> descriptionColumn = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( ProcessInstanceSummary object ) {
-                return object.getProcessInstanceDescription();
-            }
-        };
-        descriptionColumn.setSortable( true );
-        descriptionColumn.setDataStoreName(COLUMN_PROCESS_INSTANCE_DESCRIPTION);
-        return descriptionColumn;
-    }
-
-    private Column initCorrelationKeyColumn() {
-        Column<ProcessInstanceSummary, String> col = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( ProcessInstanceSummary object ) {
-                return object.getCorrelationKey();
-            }
-        };
-        col.setSortable( true );
-        col.setDataStoreName(COLUMN_CORRELATION_KEY);
-        return col;
     }
 
     public void initDefaultFilters( GridGlobalPreferences preferences,

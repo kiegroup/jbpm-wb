@@ -28,8 +28,6 @@ import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
-import com.google.gwt.cell.client.NumberCell;
-import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Element;
@@ -140,27 +138,37 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
     @Override
     public void initColumns( ExtendedPagedTable extendedPagedTable ) {
-        Column jobIdColumn = initJobIdColumn();
-        Column jobNameColumn = initJobNameColumn();
-        Column jobTypeColumn = initJobTypeColumn();
-        Column statusColumn = initStatusColumn();
-        Column dueDateColumn = initDueDateColumn();
-        Column processNameColumn = initProcessNameColumn();
-        Column processInstanceIdColumn = initProcessInstanceIdColumn();
-        Column processInstanceDescription = initProcessInstanceDescription();
         actionsColumn = initActionsColumn();
+        final List<ColumnMeta<RequestSummary>> columnMetas = new ArrayList<ColumnMeta<RequestSummary>>();
+        columnMetas.add(new ColumnMeta<>(createNumberColumn(COLUMN_ID,
+                                                            req -> req.getJobId()),
+                                         constants.Id()));
 
-        List<ColumnMeta<RequestSummary>> columnMetas = new ArrayList<ColumnMeta<RequestSummary>>();
-        columnMetas.add(new ColumnMeta<RequestSummary>(jobIdColumn, constants.Id()));
-        columnMetas.add(new ColumnMeta<RequestSummary>(jobNameColumn, constants.BusinessKey()));
-        columnMetas.add(new ColumnMeta<RequestSummary>(jobTypeColumn, constants.Type()));
-        columnMetas.add(new ColumnMeta<RequestSummary>(statusColumn, constants.Status()));
-        columnMetas.add(new ColumnMeta<RequestSummary>(dueDateColumn, constants.Due_On()));
-        columnMetas.add(new ColumnMeta<RequestSummary>(processNameColumn, constants.Process_Name()));
-        columnMetas.add(new ColumnMeta<RequestSummary>(processInstanceIdColumn, constants.Process_Instance_Id()));
-        columnMetas.add(new ColumnMeta<RequestSummary>(processInstanceDescription, constants.Process_Description()));
-        columnMetas.add(new ColumnMeta<RequestSummary>(actionsColumn, constants.Actions()));
-        extendedPagedTable.addColumns( columnMetas );
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_BUSINESSKEY,
+                                                          req -> req.getKey()),
+                                         constants.BusinessKey()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_COMMANDNAME,
+                                                          req -> req.getCommandName()),
+                                         constants.Type()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_STATUS,
+                                                          req -> req.getStatus()),
+                                         constants.Status()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_TIMESTAMP,
+                                                          req -> DateUtils.getDateTimeStr(req.getTime())),
+                                         constants.Due_On()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_PROCESS_NAME,
+                                                          req -> req.getProcessName()),
+                                         constants.Process_Name()));
+        columnMetas.add(new ColumnMeta<>(createNumberColumn(COLUMN_PROCESS_INSTANCE_ID,
+                                                            req -> req.getProcessInstanceId()),
+                                         constants.Process_Instance_Id()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                          req -> req.getProcessInstanceDescription()),
+                                         constants.Process_Description()));
+        columnMetas.add(new ColumnMeta<>(actionsColumn,
+                                         constants.Actions()));
+
+        extendedPagedTable.addColumns(columnMetas);
     }
 
     public void initSelectionModel() {
@@ -228,120 +236,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                     }
 
                 } );
-
-    }
-
-    private Column initJobIdColumn() {
-        // Id
-        Column<RequestSummary, Number> jobIdColumn = new Column<RequestSummary, Number>( new NumberCell() ) {
-            @Override
-            public Number getValue( RequestSummary object ) {
-                return object.getJobId();
-            }
-        };
-        jobIdColumn.setSortable( true );
-        jobIdColumn.setDataStoreName( COLUMN_ID );
-
-        return jobIdColumn;
-
-    }
-
-    private Column initJobNameColumn() {
-        // Job name
-        Column<RequestSummary, String> jobNameColumn = new Column<RequestSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( RequestSummary object ) {
-                return object.getKey();
-            }
-        };
-        jobNameColumn.setSortable( true );
-        jobNameColumn.setDataStoreName( COLUMN_BUSINESSKEY );
-        return jobNameColumn;
-
-    }
-
-    private Column initJobTypeColumn() {
-        // Job type
-        Column<RequestSummary, String> jobTypeColumn = new Column<RequestSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( RequestSummary object ) {
-                return object.getCommandName();
-            }
-        };
-        jobTypeColumn.setSortable( true );
-        jobTypeColumn.setDataStoreName( COLUMN_COMMANDNAME );
-        return jobTypeColumn;
-
-    }
-
-    private Column initStatusColumn() {
-        // Status
-        Column<RequestSummary, String> statusColumn = new Column<RequestSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( RequestSummary object ) {
-                return object.getStatus();
-            }
-        };
-        statusColumn.setSortable( true );
-        statusColumn.setDataStoreName( COLUMN_STATUS );
-
-        return statusColumn;
-
-    }
-
-    private Column initDueDateColumn() {
-        // Time
-        Column<RequestSummary, String> dueDateColumn = new Column<RequestSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( RequestSummary object ) {
-                return DateUtils.getDateTimeStr(object.getTime());
-            }
-        };
-        dueDateColumn.setSortable( true );
-        dueDateColumn.setDataStoreName( COLUMN_TIMESTAMP );
-        return dueDateColumn;
-
-    }
-    
-    private Column initProcessNameColumn() {
-        // Process name
-        Column<RequestSummary, String> col = new Column<RequestSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( RequestSummary object ) {
-                return object.getProcessName();
-            }
-        };
-        col.setSortable( true );
-        col.setDataStoreName( COLUMN_PROCESS_NAME );
-        return col;
-
-    }
-    
-    private Column initProcessInstanceIdColumn() {
-        // Process instance ID
-        Column<RequestSummary, Number> col = new Column<RequestSummary, Number>( new NumberCell() ) {
-            @Override
-            public Number getValue( RequestSummary object ) {
-                return object.getProcessInstanceId();
-            }
-        };
-        col.setSortable( true );
-        col.setDataStoreName( COLUMN_PROCESS_INSTANCE_ID );
-        return col;
-
-    }
-    
-    private Column initProcessInstanceDescription() {
-        // Process instance description
-        Column<RequestSummary, String> col = new Column<RequestSummary, String>( new TextCell() ) {
-            @Override
-            public String getValue( RequestSummary object ) {
-                return object.getProcessInstanceDescription();
-            }
-        };
-        col.setSortable( true );
-        col.setDataStoreName( COLUMN_PROCESS_INSTANCE_DESCRIPTION );
-        return col;
 
     }
 
