@@ -29,9 +29,9 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jbpm.workbench.common.client.list.ListView;
 import org.jbpm.workbench.common.model.PortableQueryFilter;
 import org.jbpm.workbench.common.client.list.AbstractListPresenter;
-import org.jbpm.workbench.common.client.list.AbstractListView;
 import org.jbpm.workbench.pr.client.i18n.Constants;
 import org.jbpm.workbench.pr.model.DocumentSummary;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
@@ -43,7 +43,7 @@ public class ProcessDocumentListPresenter extends AbstractListPresenter<Document
 
     private Constants constants = Constants.INSTANCE;
 
-    public interface ProcessDocumentListView extends AbstractListView.ListView<DocumentSummary, ProcessDocumentListPresenter> {
+    public interface ProcessDocumentListView extends ListView<DocumentSummary, ProcessDocumentListPresenter> {
 
     }
 
@@ -76,7 +76,7 @@ public class ProcessDocumentListPresenter extends AbstractListPresenter<Document
     }
 
     @Override
-    protected AbstractListView.ListView getListView() {
+    protected ListView getListView() {
         return view;
     }
 

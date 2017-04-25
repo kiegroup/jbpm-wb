@@ -29,11 +29,14 @@
 
   <name>jBPM Workbench - Common Client</name>
 
-
   <dependencies>
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-wb-kie-server-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-wb-data-filters-client</artifactId>
     </dependency>
     <dependency>
       <groupId>org.gwtbootstrap3</groupId>

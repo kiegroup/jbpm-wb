@@ -67,8 +67,8 @@ import static org.dashbuilder.dataset.sort.SortOrder.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Dependent
-public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, AbstractTasksListGridPresenter>
-        implements AbstractTasksListGridPresenter.DataSetTaskListView {
+public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, DataSetTasksListGridPresenter>
+        implements AbstractTasksListGridPresenter.DataSetTaskListView<DataSetTasksListGridPresenter> {
 
     public static final String DATA_SET_TASK_LIST_PREFIX = "DataSetTaskListGrid";
     public static final String COL_ID_ACTIONS = "actions";
@@ -84,7 +84,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     private DataSetEditorManager dataSetEditorManager;
 
     @Override
-    public void init( final AbstractTasksListGridPresenter presenter ) {
+    public void init( final DataSetTasksListGridPresenter presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
         bannedColumns.add( COLUMN_NAME );
         bannedColumns.add( COL_ID_ACTIONS );
@@ -555,17 +555,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         });
     }
 
-    public void applyFilterOnPresenter(HashMap<String, Object> params) {
-        String tableSettingsJSON = (String) params.get(FILTER_TABLE_SETTINGS);
-        FilterSettings tableSettings = dataSetEditorManager.getStrToTableSettings(tableSettingsJSON);
-        presenter.filterGrid(tableSettings);
-    }
-
-    @Override
-    public void applyFilterOnPresenter(String key) {
-        initSelectionModel();
-        applyFilterOnPresenter(filterPagedTable.getMultiGridPreferencesStore().getGridSettings(key));
-    }
     /*-------------------------------------------------*/
     /*---              DashBuilder                   --*/
     /*-------------------------------------------------*/
@@ -583,15 +572,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         filterSettings.setUUID(HUMAN_TASKS_WITH_USER_DATASET);
         return filterSettings;
     }
-
-    public int getRefreshValue() {
-        return getMultiGridPreferencesStore().getRefreshInterval();
-    }
-
-    public void saveRefreshValue( int newValue ) {
-        filterPagedTable.saveNewRefreshInterval( newValue );
-    }
-
 
     private boolean isColumnAdded( List<ColumnMeta<TaskSummary>> columnMetas,
             String caption ) {

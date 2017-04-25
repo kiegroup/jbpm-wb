@@ -22,7 +22,7 @@ import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.gwtbootstrap3.client.ui.html.Text;
 import org.jboss.errai.bus.client.api.messaging.Message;
-import org.jbpm.workbench.common.client.list.AbstractListView;
+import org.jbpm.workbench.common.client.list.ListView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +43,7 @@ public class AbstractDataSetReadyCallbackTest {
     DefaultWorkbenchErrorCallback errorCallback;
 
     @Mock
-    AbstractListView.BasicListView view;
+    ListView view;
 
     AbstractDataSetReadyCallback dataSetReadyCallback;
 

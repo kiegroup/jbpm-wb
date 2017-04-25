@@ -25,8 +25,6 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.view.client.AsyncDataProvider;
-import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetOp;
@@ -40,14 +38,12 @@ import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.Group;
+import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
+import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.list.AbstractListView;
-import org.jbpm.workbench.common.client.list.AbstractScreenListPresenter;
-import org.jbpm.workbench.common.client.events.SearchEvent;
-import org.jbpm.workbench.ht.client.editors.taskslist.grid.dash.DataSetTasksListGridPresenter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.NewTaskEvent;
@@ -56,26 +52,17 @@ import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
-import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.mvp.PlaceStatus;
-import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
-import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
-public abstract class AbstractTasksListGridPresenter extends AbstractScreenListPresenter<TaskSummary> {
+public abstract class AbstractTasksListGridPresenter extends AbstractMultiGridPresenter<TaskSummary, AbstractTasksListGridPresenter.DataSetTaskListView> {
 
-    public interface DataSetTaskListView extends AbstractListView.ListView<TaskSummary, AbstractTasksListGridPresenter> {
-
-        int getRefreshValue();
-
-        void saveRefreshValue(int newValue);
-
-        void applyFilterOnPresenter(String key);
+    public interface DataSetTaskListView<T extends AbstractTasksListGridPresenter> extends MultiGridView<TaskSummary, T> {
 
         void addDomainSpecifColumns(ExtendedPagedTable<TaskSummary> extendedPagedTable, Set<String> columns);
 
@@ -87,11 +74,7 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
 
     private Constants constants = Constants.INSTANCE;
 
-    private DataSetTasksListGridPresenter.DataSetTaskListView view;
-
     private Caller<TaskService> taskService;
-
-    protected DataSetQueryHelper dataSetQueryHelper;
 
     private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
 
@@ -100,26 +83,6 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
 
     @Inject
     private Event<TaskSelectionEvent> taskSelected;
-
-    protected RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder(this);
-
-    public AbstractTasksListGridPresenter() {
-        dataProvider = new AsyncDataProvider<TaskSummary>() {
-
-            @Override
-            protected void onRangeChanged(HasData<TaskSummary> display) {
-                view.showBusyIndicator(constants.Loading());
-                final Range visibleRange = view.getListGrid().getVisibleRange();
-                getData(visibleRange);
-
-            }
-        };
-    }
-
-    @Override
-    protected AbstractListView.ListView getListView() {
-        return view;
-    }
 
     @Override
     public void getData(final Range visibleRange) {
@@ -330,19 +293,9 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
                 HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet.getUUID()));
     }
 
-    public void filterGrid(FilterSettings tableSettings) {
-        dataSetQueryHelper.setCurrentTableSettings(tableSettings);
-        refreshGrid();
-    }
-
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.Tasks_List();
-    }
-
-    @WorkbenchPartView
-    public UberView<AbstractTasksListGridPresenter> getView() {
-        return view;
     }
 
     public void releaseTask(final TaskSummary task) {
@@ -368,23 +321,6 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
                 }
         ).claimTask(selectedServerTemplate, task.getDeploymentId(), task.getTaskId());
         taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, task.getDeploymentId(),task.getTaskId(), task.getTaskName() ) );
-    }
-
-    @Override
-    public void onGridPreferencesStoreLoaded() {
-        refreshSelectorMenuBuilder.loadOptions(view.getRefreshValue());
-    }
-
-    @Override
-    public void onUpdateRefreshInterval(boolean enableAutoRefresh, int newInterval) {
-        super.onUpdateRefreshInterval(enableAutoRefresh, newInterval);
-        view.saveRefreshValue(newInterval);
-    }
-
-    @Override
-    protected void onSearchEvent(@Observes SearchEvent searchEvent) {
-        textSearchStr = searchEvent.getFilter();
-        view.applyFilterOnPresenter(dataSetQueryHelper.getCurrentTableSettings().getKey());
     }
 
     public abstract Menus getMenus();
@@ -425,16 +361,6 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
 
     public void onTaskCompletedEvent( @Observes TaskCompletedEvent event ) {
         refreshGrid();
-    }
-
-    @Inject
-    public void setView(final DataSetTaskListView view) {
-        this.view = view;
-    }
-
-    @Inject
-    public void setDataSetQueryHelper(final DataSetQueryHelper dataSetQueryHelper) {
-        this.dataSetQueryHelper = dataSetQueryHelper;
     }
 
     @Inject

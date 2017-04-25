@@ -49,7 +49,7 @@ public class AbstractMultiGridViewTest {
 
 
     @Mock
-    private AbstractListPresenter presenter;
+    private AbstractMultiGridPresenter presenter;
 
     @Mock
     protected Button mockButton;

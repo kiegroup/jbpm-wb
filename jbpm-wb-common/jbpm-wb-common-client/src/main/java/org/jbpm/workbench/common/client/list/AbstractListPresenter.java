@@ -58,7 +58,7 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
     protected int autoRefreshSeconds = 0; // This should be loaded from the grid settings (probably the filters)
 
 
-    protected abstract AbstractListView.ListView getListView();
+    protected abstract ListView getListView();
 
     public AbstractListPresenter() {
         initDataProvider();

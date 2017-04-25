@@ -41,6 +41,8 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.resources.CommonResources;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.model.GenericSummary;
+import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
@@ -54,8 +56,8 @@ import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
-public abstract class AbstractMultiGridView<T extends GenericSummary, V extends AbstractListPresenter>
-        extends Composite implements RequiresResize {
+public abstract class AbstractMultiGridView<T extends GenericSummary, V extends AbstractMultiGridPresenter>
+        extends Composite implements RequiresResize, MultiGridView<T, V> {
 
     public static String FILTER_TABLE_SETTINGS = "tableSettings";
     public static String USER_DEFINED = "ud_";
@@ -70,6 +72,9 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     @Inject
     protected Event<NotificationEvent> notification;
+
+    @Inject
+    protected DataSetEditorManager dataSetEditorManager;
 
     @Inject
     protected PlaceManager placeManager;
@@ -322,7 +327,15 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         });
     }
 
+    public void applyFilterOnPresenter( HashMap<String, Object> params ) {
+        String tableSettingsJSON = (String) params.get( FILTER_TABLE_SETTINGS );
+        FilterSettings tableSettings = dataSetEditorManager.getStrToTableSettings(tableSettingsJSON );
+        presenter.filterGrid( tableSettings );
+    }
+
     public void applyFilterOnPresenter( String key ) {
+        initSelectionModel();
+        applyFilterOnPresenter( filterPagedTable.getMultiGridPreferencesStore().getGridSettings( key ) );
     }
 
     public void setIdentity(User identity){
@@ -378,4 +391,13 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         column.setDataStoreName( columnId );
         return column;
     }
+
+    public int getRefreshValue() {
+        return getMultiGridPreferencesStore().getRefreshInterval();
+    }
+
+    public void saveRefreshValue( int newValue ) {
+        filterPagedTable.saveNewRefreshInterval( newValue );
+    }
+
 }

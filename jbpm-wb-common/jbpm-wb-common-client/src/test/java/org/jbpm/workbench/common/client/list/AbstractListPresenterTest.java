@@ -43,7 +43,7 @@ public class AbstractListPresenterTest {
     private Timer timer;
 
     @Mock
-    private AbstractListView.ListView viewMock;
+    private ListView viewMock;
 
     @Mock
     ExtendedPagedTable extendedPagedTable;

@@ -37,10 +37,9 @@ import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
+import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.list.AbstractListView.ListView;
-import org.jbpm.workbench.common.client.list.AbstractScreenListPresenter;
-import org.jbpm.workbench.common.client.events.SearchEvent;
+import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
@@ -57,14 +56,11 @@ import org.jbpm.workbench.pr.service.ProcessService;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
-import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceStatus;
-import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
-import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
@@ -80,38 +76,24 @@ import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
 @WorkbenchScreen( identifier = ProcessInstanceListPresenter.SCREEN_ID)
-public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<ProcessInstanceSummary> {
+public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<ProcessInstanceSummary, ProcessInstanceListPresenter.ProcessInstanceListView> {
 
     public static final String SCREEN_ID = "DataSet Process Instance List With Variables";
 
-    public interface ProcessInstanceListView extends ListView<ProcessInstanceSummary, ProcessInstanceListPresenter> {
-
-        int getRefreshValue();
-
-        void saveRefreshValue( int newValue );
+    public interface ProcessInstanceListView extends MultiGridView<ProcessInstanceSummary, ProcessInstanceListPresenter> {
 
         FilterSettings getVariablesTableSettings( String processName );
 
         void addDomainSpecifColumns( ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable,
                                      Set<String> columns );
 
-        void applyFilterOnPresenter( String key );
-
     }
-
-    @Inject
-    private ProcessInstanceListView view;
-
-    @Inject
-    private DataSetQueryHelper dataSetQueryHelper;
 
     @Inject
     private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
 
     @Inject
     private ErrorPopupPresenter errorPopup;
-
-    private RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder( this );
 
     @Inject
     private QuickNewProcessInstancePopup newProcessInstancePopup;
@@ -122,16 +104,6 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
 
     @Inject
     private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
-
-    public void filterGrid( FilterSettings tableSettings ) {
-        dataSetQueryHelper.setCurrentTableSettings( tableSettings );
-        refreshGrid();
-    }
-
-    @Override
-    protected ListView getListView() {
-        return view;
-    }
 
     @Override
     public void getData( final Range visibleRange ) {
@@ -394,11 +366,6 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
         return Constants.INSTANCE.Process_Instances();
     }
 
-    @WorkbenchPartView
-    public UberView<ProcessInstanceListPresenter> getView() {
-        return view;
-    }
-
     @WorkbenchMenu
     public Menus getMenus() {
         return MenuFactory
@@ -421,24 +388,7 @@ public class ProcessInstanceListPresenter extends AbstractScreenListPresenter<Pr
                 .build();
     }
 
-    @Override
-    public void onGridPreferencesStoreLoaded() {
-        refreshSelectorMenuBuilder.loadOptions( view.getRefreshValue() );
-    }
-
-    @Override
-    public void onUpdateRefreshInterval( boolean enableAutoRefresh, int newInterval ) {
-        super.onUpdateRefreshInterval( enableAutoRefresh, newInterval );
-        view.saveRefreshValue( newInterval );
-    }
-
-    @Override
-    protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
-        textSearchStr = searchEvent.getFilter();
-        view.applyFilterOnPresenter( dataSetQueryHelper.getCurrentTableSettings().getKey() );
-    }
-
-    protected  List<ProcessInstanceSummary> getDisplayedProcessInstances(){
+    protected List<ProcessInstanceSummary> getDisplayedProcessInstances(){
         return  myProcessInstancesFromDataSet;
     }
 
