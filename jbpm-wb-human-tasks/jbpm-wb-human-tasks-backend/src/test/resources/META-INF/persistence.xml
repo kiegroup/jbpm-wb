@@ -35,12 +35,13 @@
         <class>org.jbpm.services.task.audit.impl.model.TaskVariableImpl</class>
         <class>org.jbpm.process.audit.ProcessInstanceLog</class>
 
-
         <!--BAM for task service -->
         <class>org.jbpm.services.task.audit.impl.model.BAMTaskSummaryImpl</class>
 
+        <!-- error handling -->
+        <class>org.jbpm.runtime.manager.impl.jpa.ExecutionErrorInfo</class>
 
-        <properties>
+    <properties>
           <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
 
           <property name="hibernate.max_fetch_depth" value="3" />
