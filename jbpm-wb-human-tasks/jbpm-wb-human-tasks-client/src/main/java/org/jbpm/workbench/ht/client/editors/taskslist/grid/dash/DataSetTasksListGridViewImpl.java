@@ -71,8 +71,13 @@ import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, AbstractTasksListGridPresenter>
         implements AbstractTasksListGridPresenter.DataSetTaskListView {
 
-    public static final String DATASET_TASK_LIST_PREFIX = "DataSetTaskListGrid";
+    public static final String DATA_SET_TASK_LIST_PREFIX = "DataSetTaskListGrid";
     public static final String COL_ID_ACTIONS = "actions";
+    private static final String TAB_ADMIN = DATA_SET_TASK_LIST_PREFIX + "_4";
+    private static final String TAB_ALL = DATA_SET_TASK_LIST_PREFIX + "_3";
+    private static final String TAB_GROUP = DATA_SET_TASK_LIST_PREFIX + "_2";
+    private static final String TAB_PERSONAL = DATA_SET_TASK_LIST_PREFIX + "_1";
+    private static final String TAB_ACTIVE = DATA_SET_TASK_LIST_PREFIX + "_0";
 
     private final Constants constants = Constants.INSTANCE;
 
@@ -95,7 +100,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         button.setSize( ButtonSize.SMALL );
         button.addClickHandler( new ClickHandler() {
             public void onClick( ClickEvent event ) {
-                final String key = getValidKeyForAdditionalListGrid( DATASET_TASK_LIST_PREFIX + "_" );
+                final String key = getValidKeyForAdditionalListGrid( DATA_SET_TASK_LIST_PREFIX + "_" );
 
                 Command addNewGrid = new Command() {
                     @Override
@@ -122,7 +127,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
             }
         } );
-        super.init( presenter, new GridGlobalPreferences( DATASET_TASK_LIST_PREFIX, initColumns, bannedColumns ), button );
+        super.init( presenter, new GridGlobalPreferences( DATA_SET_TASK_LIST_PREFIX, initColumns, bannedColumns ), button );
     }
 
     public void initSelectionModel() {
@@ -519,31 +524,45 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     public void initDefaultFilters( GridGlobalPreferences preferences,
                                     Button createTabButton ) {
 
-        List<String> states;
         presenter.setAddingDefaultFilters( true );
+
         //Filter status Active
-        states = TaskUtils.getStatusByType( TaskUtils.TaskType.ACTIVE );
-        initOwnTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_0", Constants.INSTANCE.Active(), Constants.INSTANCE.FilterActive(), states);
+        initOwnTabFilter(preferences,
+                         TAB_ACTIVE,
+                         Constants.INSTANCE.Active(),
+                         Constants.INSTANCE.FilterActive(),
+                         TaskUtils.getStatusByType(TaskUtils.TaskType.ACTIVE));
 
         //Filter status Personal
-        states = TaskUtils.getStatusByType( TaskUtils.TaskType.PERSONAL );
-        initPersonalTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_1", Constants.INSTANCE.Personal(), Constants.INSTANCE.FilterPersonal(), states);
+        initPersonalTabFilter(preferences,
+                              TAB_PERSONAL,
+                              Constants.INSTANCE.Personal(),
+                              Constants.INSTANCE.FilterPersonal(),
+                              TaskUtils.getStatusByType(TaskUtils.TaskType.PERSONAL));
 
         //Filter status Group
-        states = TaskUtils.getStatusByType( TaskUtils.TaskType.GROUP );
-        initGroupTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_2", Constants.INSTANCE.Group(), Constants.INSTANCE.FilterGroup(), states);
+        initGroupTabFilter(preferences,
+                           TAB_GROUP,
+                           Constants.INSTANCE.Group(),
+                           Constants.INSTANCE.FilterGroup(),
+                           TaskUtils.getStatusByType(TaskUtils.TaskType.GROUP));
 
         //Filter status All
-        states = TaskUtils.getStatusByType( TaskUtils.TaskType.ALL );
-        initOwnTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_3", Constants.INSTANCE.All(), Constants.INSTANCE.FilterAll(), states);
+        initOwnTabFilter(preferences,
+                         TAB_ALL,
+                         Constants.INSTANCE.All(),
+                         Constants.INSTANCE.FilterAll(),
+                         TaskUtils.getStatusByType(TaskUtils.TaskType.ALL));
 
         //Filter status Admin
-        states = TaskUtils.getStatusByType( TaskUtils.TaskType.ADMIN );
-        initAdminTabFilter( preferences, DATASET_TASK_LIST_PREFIX + "_4", Constants.INSTANCE.Task_Admin(), Constants.INSTANCE.FilterTaskAdmin(), states);
+        initAdminTabFilter(preferences,
+                           TAB_ADMIN,
+                           Constants.INSTANCE.Task_Admin(),
+                           Constants.INSTANCE.FilterTaskAdmin(),
+                           TaskUtils.getStatusByType(TaskUtils.TaskType.ADMIN));
 
         filterPagedTable.addAddTableButton( createTabButton );
-        selectFirstTabAndEnableQueries( DATASET_TASK_LIST_PREFIX + "_0" );
-
+        selectFirstTabAndEnableQueries(TAB_ACTIVE);
     }
 
     private void initGroupTabFilter( GridGlobalPreferences preferences,
@@ -566,8 +585,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
 
         initFilterTab(builder , key, tabName, tabDesc, preferences);
     }
-
-
 
     private void initAdminTabFilter( GridGlobalPreferences preferences,
                                      final String key,
@@ -790,7 +807,6 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         varTableSettings.setUUID(HUMAN_TASKS_WITH_VARIABLES_DATASET);
 
         return varTableSettings;
-
     }
 
     private Column initGenericColumn( final String key ) {
@@ -807,43 +823,23 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
         return genericColumn;
     }
 
+    @Override
     public void resetDefaultFilterTitleAndDescription() {
-
-        HashMap<String, Object> tabSettingsValues = null;
-
-        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(DATASET_TASK_LIST_PREFIX + "_0");
-        if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Active());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterActive());
-            filterPagedTable.saveTabSettings(DATASET_TASK_LIST_PREFIX + "_0", tabSettingsValues);
-        }
-
-        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(DATASET_TASK_LIST_PREFIX + "_1");
-        if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Personal());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterPersonal());
-            filterPagedTable.saveTabSettings(DATASET_TASK_LIST_PREFIX + "_1", tabSettingsValues);
-        }
-
-        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(DATASET_TASK_LIST_PREFIX + "_2");
-        if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Group());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterGroup());
-            filterPagedTable.saveTabSettings(DATASET_TASK_LIST_PREFIX + "_2", tabSettingsValues);
-        }
-
-        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(DATASET_TASK_LIST_PREFIX + "_3");
-        if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.All());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterAll());
-            filterPagedTable.saveTabSettings(DATASET_TASK_LIST_PREFIX + "_3", tabSettingsValues);
-        }
-        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(DATASET_TASK_LIST_PREFIX + "_4");
-        if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Task_Admin());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterTaskAdmin());
-            filterPagedTable.saveTabSettings(DATASET_TASK_LIST_PREFIX + "_4", tabSettingsValues);
-        }
+        saveTabSettings(TAB_ACTIVE,
+                        constants.Active(),
+                        constants.FilterActive());
+        saveTabSettings(TAB_PERSONAL,
+                        constants.Personal(),
+                        constants.FilterPersonal());
+        saveTabSettings(TAB_GROUP,
+                        constants.Group(),
+                        constants.FilterGroup());
+        saveTabSettings(TAB_ALL,
+                        constants.All(),
+                        constants.FilterAll());
+        saveTabSettings(TAB_ADMIN,
+                        constants.Task_Admin(),
+                        constants.FilterTaskAdmin());
     }
 
     @Override

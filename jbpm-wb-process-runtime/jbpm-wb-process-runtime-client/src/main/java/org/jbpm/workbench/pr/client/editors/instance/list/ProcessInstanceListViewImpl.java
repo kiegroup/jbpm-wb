@@ -37,11 +37,9 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
@@ -77,11 +75,9 @@ import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessInstanceSummary, ProcessInstanceListPresenter>
         implements ProcessInstanceListPresenter.ProcessInstanceListView {
 
-    interface Binder
-            extends
-            UiBinder<Widget, ProcessInstanceListViewImpl> {
-
-    }
+    private static final String TAB_ACTIVE = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0";
+    private static final String TAB_COMPLETED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1";
+    private static final String TAB_ABORTED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2";
 
     private List<ProcessInstanceSummary> selectedProcessInstances = new ArrayList<ProcessInstanceSummary>();
 
@@ -104,7 +100,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             bulkSignalNavLink.setEnabled( false );
         }
     }
-
 
     @Override
     public void init( final ProcessInstanceListPresenter presenter ) {
@@ -613,59 +608,44 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     public void initDefaultFilters( GridGlobalPreferences preferences,
                                     Button createTabButton ) {
 
-
-        List<Integer> states = new ArrayList<Integer>();
         presenter.setAddingDefaultFilters( true );
         //Filter status Active
-        states.add( Integer.valueOf( ProcessInstance.STATE_ACTIVE ) );
-        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0", constants.Active(), constants.FilterActive(), states );
+        initGenericTabFilter(preferences,
+                             TAB_ACTIVE,
+                             constants.Active(),
+                             constants.FilterActive(),
+                             ProcessInstance.STATE_ACTIVE);
 
         //Filter status completed
-        states = new ArrayList<Integer>();
-        states.add( Integer.valueOf( ProcessInstance.STATE_COMPLETED ) );
-        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1", constants.Completed(), constants.FilterCompleted(), states );
+        initGenericTabFilter(preferences,
+                             TAB_COMPLETED,
+                             constants.Completed(),
+                             constants.FilterCompleted(),
+                             ProcessInstance.STATE_COMPLETED);
 
         //Filter status completed
-        states = new ArrayList<Integer>();
-        states.add( Integer.valueOf( ProcessInstance.STATE_ABORTED ) );
-        initGenericTabFilter( preferences, PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2", constants.Aborted(), constants.FilterAborted(), states );
+        initGenericTabFilter(preferences,
+                             TAB_ABORTED,
+                             constants.Aborted(),
+                             constants.FilterAborted(),
+                             ProcessInstance.STATE_ABORTED);
 
         filterPagedTable.addAddTableButton( createTabButton );
-        selectFirstTabAndEnableQueries( PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0" );
-
+        selectFirstTabAndEnableQueries(TAB_ACTIVE);
     }
 
     private void initGenericTabFilter( GridGlobalPreferences preferences,
                                        final String key,
                                        String tabName,
                                        String tabDesc,
-                                       List<Integer> states ) {
+                                       Integer state ) {
 
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
         builder.dataset( PROCESS_INSTANCE_DATASET );
-        List<Comparable> names = new ArrayList<Comparable>();
 
-        for ( Integer s : states ) {
-            names.add( s );
-        }
-        builder.filter( equalsTo( COLUMN_STATUS, names ) );
-
-//        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_ID() );
-//        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Definition_Id() );
-//        builder.setColumn(COLUMN_START, constants.Start(), DateUtils.getDateTimeFormatMask());
-//        builder.setColumn(COLUMN_END, constants.End(), DateUtils.getDateTimeFormatMask());
-//        builder.setColumn(COLUMN_STATUS, constants.Status());
-//        builder.setColumn(COLUMN_PARENT_PROCESS_INSTANCE_ID, constants.ParentProcessInstanceId() );
-//        builder.setColumn(COLUMN_OUTCOME, constants.Outcome());
-//        builder.setColumn(COLUMN_DURATION, constants.Duration());
-//        builder.setColumn(COLUMN_IDENTITY, constants.Identity());
-//        builder.setColumn(COLUMN_PROCESS_VERSION, constants.Version() );
-//        builder.setColumn(COLUMN_PROCESS_NAME, constants.Name() );
-//        builder.setColumn(COLUMN_CORRELATION_KEY, constants.Correlation_Key() );
-//        builder.setColumn(COLUMN_EXTERNAL_ID, constants.ExternalId() );
-//        builder.setColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION, constants.Process_Instance_Description() );
+        builder.filter( equalsTo( COLUMN_STATUS, state ) );
 
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
@@ -821,31 +801,17 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         filterPagedTable.saveNewRefreshInterval( newValue );
     }
 
+    @Override
     public void resetDefaultFilterTitleAndDescription(){
-
-        HashMap<String, Object> tabSettingsValues =null;
-
-        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0");
-        if(tabSettingsValues!=null){
-            tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Active() );
-            tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterActive() );
-            filterPagedTable.saveTabSettings(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0",tabSettingsValues);
-        }
-
-        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1");
-        if(tabSettingsValues!=null){
-            tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Completed() );
-            tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterCompleted() );
-            filterPagedTable.saveTabSettings(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1",tabSettingsValues);
-        }
-
-        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2");
-        if(tabSettingsValues!=null){
-            tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, Constants.INSTANCE.Aborted() );
-            tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, Constants.INSTANCE.FilterAborted() );
-            filterPagedTable.saveTabSettings(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2",tabSettingsValues);
-        }
-
+        saveTabSettings(TAB_ACTIVE,
+                        constants.Active(),
+                        constants.FilterActive());
+        saveTabSettings(TAB_COMPLETED,
+                        constants.Completed(),
+                        constants.FilterCompleted());
+        saveTabSettings(TAB_ABORTED,
+                        constants.Aborted(),
+                        constants.FilterAborted());
     }
 
 }

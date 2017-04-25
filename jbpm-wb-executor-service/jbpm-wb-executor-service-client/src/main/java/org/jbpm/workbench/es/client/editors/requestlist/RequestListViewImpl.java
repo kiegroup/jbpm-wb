@@ -74,6 +74,13 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
     public static String REQUEST_LIST_PREFIX = "DS_RequestListGrid";
     public static final String COL_ID_ACTIONS = "Actions";
+    private static final String TAB_CANCELLED = REQUEST_LIST_PREFIX + "_6";
+    private static final String TAB_COMPLETED = REQUEST_LIST_PREFIX + "_5";
+    private static final String TAB_ERROR = REQUEST_LIST_PREFIX + "_4";
+    private static final String TAB_RETRYING = REQUEST_LIST_PREFIX + "_3";
+    private static final String TAB_RUNNING = REQUEST_LIST_PREFIX + "_2";
+    private static final String TAB_QUEUED = REQUEST_LIST_PREFIX + "_1";
+    private static final String TAB_ALL = REQUEST_LIST_PREFIX + "_0";
 
     private List<RequestSummary> selectedRequestSummary = new ArrayList<RequestSummary>();
 
@@ -413,66 +420,61 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     public void initDefaultFilters( GridGlobalPreferences preferences,
                                     Button createTabButton ) {
 
-        List<String> statuses;
         presenter.setAddingDefaultFilters( true );
-        statuses = new ArrayList<String>();
 
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_0", constants.All(), constants.FilterAll(), statuses );
-
-        statuses = new ArrayList<String>();
-        statuses.add( "QUEUED" );
-
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_1", constants.Queued(), constants.FilterQueued(), statuses );
-
-        statuses = new ArrayList<String>();
-        statuses.add( "RUNNING" );
-
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_2", constants.Running(), constants.FilterRunning(), statuses );
-
-        statuses = new ArrayList<String>();
-        statuses.add( "RETRYING" );
-
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_3", constants.Retrying(), constants.FilterRetrying(), statuses );
-
-        statuses = new ArrayList<String>();
-        statuses.add( "ERROR" );
-
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_4", constants.Error(), constants.FilterError(), statuses );
-
-        statuses = new ArrayList<String>();
-        statuses.add( "DONE" );
-
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_5", constants.Completed(), constants.FilterCompleted(), statuses );
-
-        statuses = new ArrayList<String>();
-        statuses.add( "CANCELLED" );
-
-        initTabFilter( preferences, REQUEST_LIST_PREFIX + "_6", constants.Cancelled(), constants.FilterCancelled(), statuses );
+        initTabFilter(preferences,
+                      TAB_ALL,
+                      constants.All(),
+                      constants.FilterAll(),
+                      null);
+        initTabFilter(preferences,
+                      TAB_QUEUED,
+                      constants.Queued(),
+                      constants.FilterQueued(),
+                      "QUEUED");
+        initTabFilter(preferences,
+                      TAB_RUNNING,
+                      constants.Running(),
+                      constants.FilterRunning(),
+                      "RUNNING");
+        initTabFilter(preferences,
+                      TAB_RETRYING,
+                      constants.Retrying(),
+                      constants.FilterRetrying(),
+                      "RETRYING");
+        initTabFilter(preferences,
+                      TAB_ERROR,
+                      constants.Error(),
+                      constants.FilterError(),
+                      "ERROR");
+        initTabFilter(preferences,
+                      TAB_COMPLETED,
+                      constants.Completed(),
+                      constants.FilterCompleted(),
+                      "DONE");
+        initTabFilter(preferences,
+                      TAB_CANCELLED,
+                      constants.Cancelled(),
+                      constants.FilterCancelled(),
+                      "CANCELLED");
 
         filterPagedTable.addAddTableButton( createTabButton );
 
-        selectFirstTabAndEnableQueries(  REQUEST_LIST_PREFIX + "_0" );
-
+        selectFirstTabAndEnableQueries(TAB_ALL);
     }
 
     private void initTabFilter( GridGlobalPreferences preferences,
                                 final String key,
                                 String tabName,
                                 String tabDesc,
-                                List<String> statuses ) {
+                                String status ) {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
-        if ( statuses != null && statuses.size() > 0 ) {
-            builder.dataset( REQUEST_LIST_DATASET );
-            List<Comparable> names = new ArrayList<Comparable>();
-
-            for ( String s : statuses ) {
-                names.add( s );
-            }
-            builder.filter( equalsTo( COLUMN_STATUS, names ) );
-        }
         builder.dataset( REQUEST_LIST_DATASET );
-        builder.setColumn(COLUMN_ID, constants.Id());
+        if ( status != null ) {
+            builder.filter( equalsTo( COLUMN_STATUS, status ) );
+        }
+        builder.setColumn( COLUMN_ID, constants.Id() );
         builder.setColumn( COLUMN_TIMESTAMP, constants.Time(), DateUtils.getDateTimeFormatMask() );
         builder.setColumn( COLUMN_STATUS, constants.Status() );
         builder.setColumn( COLUMN_COMMANDNAME, constants.CommandName() );
@@ -563,58 +565,29 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         filterPagedTable.saveNewRefreshInterval( newValue );
     }
 
+    @Override
     public void resetDefaultFilterTitleAndDescription() {
-
-        HashMap<String, Object> tabSettingsValues = null;
-
-        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_0");
-        if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, constants.All());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, constants.FilterAll());
-            filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_0", tabSettingsValues);
-        }
-
-        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_1");
-        if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, constants.Queued());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, constants.FilterQueued());
-            filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_1", tabSettingsValues);
-        }
-
-        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_2");
-        if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, constants.Running());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, constants.FilterRunning());
-            filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_2", tabSettingsValues);
-        }
-
-        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_3");
-        if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, constants.Retrying());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, constants.FilterRetrying());
-            filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_3", tabSettingsValues);
-        }
-
-        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_4");
-        if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, constants.Error());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, constants.FilterError());
-            filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_4", tabSettingsValues);
-        }
-
-        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_5");
-        if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, constants.Completed());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, constants.FilterCompleted());
-            filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_5", tabSettingsValues);
-        }
-
-        tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(REQUEST_LIST_PREFIX + "_6");
-        if (tabSettingsValues != null) {
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, constants.Cancelled());
-            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, constants.FilterCancelled());
-            filterPagedTable.saveTabSettings(REQUEST_LIST_PREFIX + "_6", tabSettingsValues);
-        }
+        saveTabSettings(TAB_ALL,
+                        constants.All(),
+                        constants.FilterAll());
+        saveTabSettings(TAB_QUEUED,
+                        constants.Queued(),
+                        constants.FilterQueued());
+        saveTabSettings(TAB_RUNNING,
+                        constants.Running(),
+                        constants.FilterRunning());
+        saveTabSettings(TAB_RETRYING,
+                        constants.Retrying(),
+                        constants.FilterRetrying());
+        saveTabSettings(TAB_ERROR,
+                        constants.Error(),
+                        constants.FilterError());
+        saveTabSettings(TAB_COMPLETED,
+                        constants.Completed(),
+                        constants.FilterCompleted());
+        saveTabSettings(TAB_CANCELLED,
+                        constants.Cancelled(),
+                        constants.FilterCancelled());
     }
 
 }
