@@ -188,7 +188,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
 
     protected DataSetReadyCallback createDataSetDomainSpecificCallback( final int startRange,
                                                                         final FilterSettings tableSettings,boolean lastPage ) {
-        return new AbstractDataSetReadyCallback( errorPopup, view, tableSettings.getDataSet() ) {
+        return new AbstractDataSetReadyCallback( errorPopup, view, tableSettings.getUUID() ) {
             @Override
             public void callback( DataSet dataSet ) {
                 Set<String> columns = new HashSet<String>();
@@ -213,7 +213,7 @@ public class DataSetProcessInstanceWithVariablesListPresenter extends AbstractSc
     }
 
     protected DataSetReadyCallback createDataSetProcessInstanceCallback( final int startRange, final FilterSettings tableSettings ) {
-        return new AbstractDataSetReadyCallback( errorPopup, view, tableSettings.getDataSet() ) {
+        return new AbstractDataSetReadyCallback( errorPopup, view, tableSettings.getUUID() ) {
 
             @Override
             public void callback( DataSet dataSet ) {

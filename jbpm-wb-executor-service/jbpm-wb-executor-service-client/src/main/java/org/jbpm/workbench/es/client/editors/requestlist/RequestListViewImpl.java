@@ -62,8 +62,8 @@ import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.dashbuilder.dataset.sort.SortOrder.*;
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 
 @Dependent
@@ -489,6 +489,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         builder.tableOrderDefault( COLUMN_TIMESTAMP, DESCENDING );
 
         FilterSettings tableSettings = builder.buildSettings();
+        tableSettings.setUUID( REQUEST_LIST_DATASET );
         tableSettings.setKey( key );
         tableSettings.setTableName( tabName );
         tableSettings.setTableDescription( tabDesc );

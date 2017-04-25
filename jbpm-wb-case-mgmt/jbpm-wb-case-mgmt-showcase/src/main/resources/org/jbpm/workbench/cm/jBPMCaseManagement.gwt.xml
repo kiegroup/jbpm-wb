@@ -26,6 +26,9 @@
   <inherits name="org.uberfire.UberfireClientAll"/>
   <inherits name="org.uberfire.client.views.PatternFlyTheme"/>
 
+  <!-- Kie Server -->
+  <inherits name="org.kie.server.api.KieServerAPI"/>
+
   <!-- Dashbuilder -->
   <inherits name="org.dashbuilder.DatasetAPI"/>
 

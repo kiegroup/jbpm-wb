@@ -163,7 +163,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                 }
 
                 dataSetQueryHelper.setDataSetHandler(currentTableSettings);
-                dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), new AbstractDataSetReadyCallback( errorPopup, view, currentTableSettings.getDataSet() ) {
+                dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), new AbstractDataSetReadyCallback( errorPopup, view, currentTableSettings.getUUID() ) {
                     @Override
                     public void callback(DataSet dataSet) {
                         if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(currentTableSettings.getKey())) {
