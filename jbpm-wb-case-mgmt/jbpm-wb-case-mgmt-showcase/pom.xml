@@ -99,12 +99,6 @@
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-cdi-jboss</artifactId>
       <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>ant</groupId>
-          <artifactId>ant</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jboss.errai</groupId>
@@ -297,6 +291,10 @@
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-nio2-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
       <artifactId>uberfire-workbench-client-backend</artifactId>
       <scope>provided</scope>
     </dependency>
@@ -352,12 +350,6 @@
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
       <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>ant</groupId>
-          <artifactId>ant</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -404,30 +396,14 @@
     </dependency>
 
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <classifier>no_aop</classifier>
     </dependency>
 
-    <!-- GUVNOR ALA Dependencies -->
     <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-ala-services-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-ala-spi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-ala-registry-local</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-ala-build-maven</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-ala-source-git</artifactId>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
 
     <dependency>
@@ -496,91 +472,6 @@
               <compileSourcesArtifact>org.jbpm:jbpm-wb-case-mgmt-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.jbpm:jbpm-wb-case-mgmt-client</compileSourcesArtifact>
             </compileSourcesArtifacts>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>io.fabric8</groupId>
-          <artifactId>docker-maven-plugin</artifactId>
-          <version>0.20.0</version>
-          <configuration>
-            <images>
-              <image>
-                <name>jboss/jbpm-case-mgmt-showcase-demo:${project.version}</name>
-                <build>
-                  <from>jboss/wildfly:10.0.0.Final</from>
-                  <ports>
-                    <port>8080</port>
-                  </ports>
-                  <cmd>
-                    <exec>
-                      <arg>/opt/jboss/wildfly/bin/standalone.sh</arg>
-                      <arg>-b</arg>
-                      <arg>0.0.0.0</arg>
-                      <arg>-c</arg>
-                      <arg>standalone-full-jbpm.xml</arg>
-                      <arg>-Dorg.kie.server.location=http://localhost:8080/kie-server/services/rest/server</arg>
-                      <arg>-Dorg.kie.demo=true</arg>
-                    </exec>
-                  </cmd>
-                  <runCmds>
-                    <run>/opt/jboss/wildfly/bin/add-user.sh -u admin -p admin -g kie-server,user -a -s</run>
-                    <run>/opt/jboss/wildfly/bin/add-user.sh -u user -p user -g kie-server,user -a -s</run>
-                    <run>/opt/jboss/wildfly/bin/add-user.sh -u kieserver -p kieserver1! -g kie-server -a -s</run>
-                    <run>ln -s /maven/jbpm-cm.war /opt/jboss/wildfly/standalone/deployments/jbpm-cm.war</run>
-                    <run>ln -s /maven/kie-server.war /opt/jboss/wildfly/standalone/deployments/kie-server.war</run>
-                    <run>mkdir $HOME/.m2</run>
-                    <run>ln -s /maven/settings.xml $HOME/.m2/settings.xml</run>
-                    <run>ln -s /maven/standalone-full-jbpm.xml /opt/jboss/wildfly/standalone/configuration/standalone-full-jbpm.xml</run>
-                  </runCmds>
-                  <assembly>
-                    <inline>
-                      <dependencySets>
-                        <dependencySet>
-                          <includes>
-                            <include>org.jbpm:jbpm-wb-case-mgmt-showcase:war</include>
-                          </includes>
-                          <outputFileNameMapping>jbpm-cm.war</outputFileNameMapping>
-                        </dependencySet>
-                        <dependencySet>
-                          <scope>provided</scope>
-                          <useProjectArtifact>false</useProjectArtifact>
-                          <includes>
-                            <include>org.kie.server:kie-server:war:ee7</include>
-                          </includes>
-                          <outputFileNameMapping>kie-server.war</outputFileNameMapping>
-                        </dependencySet>
-                      </dependencySets>
-                      <fileSets>
-                        <fileSet>
-                          <directory>src/main/docker</directory>
-                          <outputDirectory>.</outputDirectory>
-                        </fileSet>
-                      </fileSets>
-                    </inline>
-                    <user>jboss:jboss:jboss</user>
-                  </assembly>
-                </build>
-                <run>
-                  <ports>
-                    <port>wildfly.port:8080</port>
-                  </ports>
-                  <log>
-                    <enabled>true</enabled>
-                  </log>
-                  <env>
-                    <M2_HOME>$HOME/.m2</M2_HOME>
-                  </env>
-                  <wait>
-                    <http>
-                      <url>http://localhost:${wildfly.port}/jbpm-cm/jbpm-cm.html</url>
-                      <method>GET</method>
-                      <status>200</status>
-                    </http>
-                    <time>60000</time>
-                  </wait>
-                </run>
-              </image>
-            </images>
           </configuration>
         </plugin>
       </plugins>
@@ -712,39 +603,6 @@
   </build>
 
   <profiles>
-    <profile>
-      <id>docker</id>
-      <activation>
-        <property>
-          <name>docker</name>
-        </property>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>org.kie.server</groupId>
-          <artifactId>kie-server</artifactId>
-          <type>war</type>
-          <classifier>ee7</classifier>
-          <scope>provided</scope>
-        </dependency>
-      </dependencies>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>io.fabric8</groupId>
-            <artifactId>docker-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>build</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
     <!-- Full profile builds all GWT permutations -->
     <profile>
       <id>fullProfile</id>
