@@ -18,7 +18,6 @@ package org.jbpm.dashboard.renderer.client.panel.widgets;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -29,7 +28,11 @@ import org.dashbuilder.displayer.client.AbstractDisplayerListener;
 import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.displayer.client.DisplayerListener;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
+import org.kie.workbench.common.workbench.client.resources.i18n.DefaultWorkbenchConstants;
 import org.uberfire.client.mvp.UberView;
+
+import static org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback.isKieServerForbiddenException;
+import static org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback.isKieServerUnauthorizedException;
 
 public class DisplayerContainer implements IsWidget {
 
@@ -151,7 +154,12 @@ public class DisplayerContainer implements IsWidget {
 
     protected void showError(ClientRuntimeError e) {
         error = true;
-        GWT.log(e.getMessage(), e.getThrowable());
-        view.showError(e.getMessage(), e.getCause());
+        if(isKieServerForbiddenException(e.getThrowable())){
+            view.showError(DefaultWorkbenchConstants.INSTANCE.KieServerError403(), e.getCause());
+        } else if(isKieServerUnauthorizedException(e.getThrowable())){
+            view.showError(DefaultWorkbenchConstants.INSTANCE.KieServerError401(), e.getCause());
+        } else {
+            view.showError(e.getMessage(), e.getCause());
+        }
     }
 }

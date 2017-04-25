@@ -21,7 +21,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.Range;
 import org.jboss.errai.bus.client.api.messaging.Message;
@@ -149,8 +148,6 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
             public boolean error( Message message,
                                   Throwable throwable ) {
                 view.hideBusyIndicator();
-                view.displayNotification(constants.ErrorRetrievingProcessDefinitions(throwable.getMessage()));
-                GWT.log( throwable.toString() );
                 return true;
             }
         } ).getProcessesByFilter(selectedServerTemplate, textSearchStr, visibleRange.getStart() / visibleRange.getLength(), visibleRange.getLength(),

@@ -199,7 +199,7 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
     }
 
     protected DataSetReadyCallback createDataSetTaskCallback(final int startRange, final FilterSettings tableSettings) {
-        return new AbstractDataSetReadyCallback(errorPopup, view, tableSettings.getDataSet()) {
+        return new AbstractDataSetReadyCallback(errorPopup, view, tableSettings.getUUID()) {
 
             @Override
             public void callback(DataSet dataSet) {
@@ -277,12 +277,12 @@ public abstract class AbstractTasksListGridPresenter extends AbstractScreenListP
         filter.addFilterColumn(filter1);
         variablesTableSettings.getDataSetLookup().addOperation(filter);
 
-        dataSetQueryHelperDomainSpecific.lookupDataSet(0, createDataSetDomainSpecificCallback(startRange, myTasksFromDataSet, variablesTableSettings.getDataSet(),lastPageExactCount));
+        dataSetQueryHelperDomainSpecific.lookupDataSet(0, createDataSetDomainSpecificCallback(startRange, myTasksFromDataSet, variablesTableSettings, lastPageExactCount));
 
     }
 
-    protected DataSetReadyCallback createDataSetDomainSpecificCallback(final int startRange, final List<TaskSummary> instances, final DataSet dataset, boolean lastPageExactCount) {
-        return new AbstractDataSetReadyCallback(errorPopup, view, dataset) {
+    protected DataSetReadyCallback createDataSetDomainSpecificCallback(final int startRange, final List<TaskSummary> instances, final FilterSettings tableSettings, boolean lastPageExactCount) {
+        return new AbstractDataSetReadyCallback(errorPopup, view, tableSettings.getUUID()) {
             @Override
             public void callback(DataSet dataSet) {
                 if (dataSet.getRowCount() > 0) {

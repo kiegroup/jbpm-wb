@@ -18,39 +18,55 @@ package org.jbpm.workbench.common.client.dataset;
 
 import com.google.gwt.core.client.GWT;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
-import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
-import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.client.list.AbstractListView;
+import org.jbpm.workbench.common.client.resources.i18n.Constants;
+import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 
 public abstract class AbstractDataSetReadyCallback implements DataSetReadyCallback {
+
+    private DefaultWorkbenchErrorCallback errorCallback;
 
     private ErrorPopupPresenter errorPopup;
 
     private AbstractListView.BasicListView view;
 
-    private DataSet dataSet;
+    private String UUID;
 
-    public AbstractDataSetReadyCallback(final ErrorPopupPresenter errorPopup, final AbstractListView.BasicListView view, final DataSet dataSet) {
+    public AbstractDataSetReadyCallback(final ErrorPopupPresenter errorPopup,
+                                        final AbstractListView.BasicListView view,
+                                        final String UUID) {
+        this(errorPopup,
+             view,
+             UUID,
+             new DefaultWorkbenchErrorCallback());
+    }
+
+    public AbstractDataSetReadyCallback(final ErrorPopupPresenter errorPopup,
+                                        final AbstractListView.BasicListView view,
+                                        final String UUID,
+                                        final DefaultWorkbenchErrorCallback errorCallback) {
         this.errorPopup = errorPopup;
         this.view = view;
-        this.dataSet = dataSet;
+        this.UUID = UUID;
+        this.errorCallback = errorCallback;
     }
 
     @Override
     public void notFound() {
         view.hideBusyIndicator();
-        errorPopup.showMessage(Constants.INSTANCE.DataSetNotFound(dataSet.getUUID()));
-        GWT.log("DataSet with UUID [ " + dataSet.getUUID() + " ] not found.");
+        errorPopup.showMessage(Constants.INSTANCE.DataSetNotFound(UUID));
+        GWT.log("DataSet with UUID [ " + UUID + " ] not found.");
     }
 
     @Override
     public boolean onError(final ClientRuntimeError error) {
         view.hideBusyIndicator();
-        errorPopup.showMessage(Constants.INSTANCE.DataSetError(dataSet.getUUID(), error.getMessage()));
-        GWT.log("DataSet with UUID [ " + dataSet.getUUID() + " ] error: ", error.getThrowable());
+        errorCallback.error(null,
+                            error.getThrowable());
+        GWT.log("DataSet with UUID [ " + UUID + " ] error: ",
+                error.getThrowable());
         return false;
     }
-
 }

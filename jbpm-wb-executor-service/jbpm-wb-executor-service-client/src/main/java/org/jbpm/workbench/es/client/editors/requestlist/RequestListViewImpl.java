@@ -47,23 +47,23 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.util.ButtonActionCell;
+import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.jbpm.workbench.es.model.events.RequestChangedEvent;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
-import org.jbpm.workbench.common.client.util.ButtonActionCell;
-import org.jbpm.workbench.common.client.util.DateUtils;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.dashbuilder.dataset.sort.SortOrder.*;
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 
 @Dependent
@@ -489,6 +489,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         builder.tableOrderDefault( COLUMN_TIMESTAMP, DESCENDING );
 
         FilterSettings tableSettings = builder.buildSettings();
+        tableSettings.setUUID( REQUEST_LIST_DATASET );
         tableSettings.setKey( key );
         tableSettings.setTableName( tabName );
         tableSettings.setTableDescription( tabDesc );
