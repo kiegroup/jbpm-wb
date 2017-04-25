@@ -34,7 +34,7 @@ import org.jbpm.workbench.common.model.PortableQueryFilter;
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;

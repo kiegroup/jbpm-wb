@@ -42,10 +42,11 @@ public class ProcessInstanceSummary extends GenericSummary {
     private Map<String, String> domainData = new HashMap<String, String>();
     private List<UserTaskSummary> activeTasks;
     private Date lastModificationDate;
+    private int errorCount;
     
     public ProcessInstanceSummary(long processInstanceId, String processId, String deploymentId, String processName, String processVersion,
             int state, Date startTime, Date endTime, String initiator,String processInstanceDescription, String correlationKey, Long parentId,
-            Date lastModificationDate
+            Date lastModificationDate, int errorCount
      ) {
         super();
         this.id = processInstanceId;
@@ -63,6 +64,7 @@ public class ProcessInstanceSummary extends GenericSummary {
         this.correlationKey = correlationKey;
         this.parentId = parentId;
         this.lastModificationDate = lastModificationDate;
+        this.errorCount = errorCount;
     }
 
     public ProcessInstanceSummary() {
@@ -191,4 +193,13 @@ public class ProcessInstanceSummary extends GenericSummary {
     public void setLastModificationDate(Date lastModificationDate){
         this.lastModificationDate = lastModificationDate;
     }
+    
+    public int getErrorCount(){
+        return this.errorCount;
+    }
+    
+    public void setErrorCount(int errorCount){
+        this.errorCount = errorCount;
+    }
+    
 }

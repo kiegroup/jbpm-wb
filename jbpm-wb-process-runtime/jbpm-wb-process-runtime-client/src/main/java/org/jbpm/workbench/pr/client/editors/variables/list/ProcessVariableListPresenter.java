@@ -34,7 +34,7 @@ import org.jbpm.workbench.common.client.list.ListView;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.jbpm.workbench.common.model.PortableQueryFilter;
 import org.jbpm.workbench.common.client.list.AbstractListPresenter;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.service.ProcessVariablesService;
 import org.uberfire.ext.widgets.common.client.callbacks.HasBusyIndicatorDefaultErrorCallback;

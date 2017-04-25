@@ -30,7 +30,7 @@ import org.jbpm.workbench.pr.client.editors.documents.list.ProcessDocumentListPr
 import org.jbpm.workbench.pr.client.editors.instance.details.ProcessInstanceDetailsPresenter;
 import org.jbpm.workbench.pr.client.editors.instance.log.RuntimeLogPresenter;
 import org.jbpm.workbench.pr.client.editors.variables.list.ProcessVariableListPresenter;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
 import org.jbpm.workbench.pr.service.ProcessService;

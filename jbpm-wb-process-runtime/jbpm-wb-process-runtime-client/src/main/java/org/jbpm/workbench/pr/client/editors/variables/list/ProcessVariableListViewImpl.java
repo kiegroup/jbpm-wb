@@ -43,7 +43,7 @@ import org.jbpm.workbench.common.client.util.ButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.pr.client.editors.variables.edit.VariableEditPopup;
 import org.jbpm.workbench.pr.client.editors.variables.history.VariableHistoryPopup;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
 import org.kie.api.runtime.process.ProcessInstance;

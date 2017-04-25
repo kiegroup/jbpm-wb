@@ -31,7 +31,7 @@ import org.jbpm.workbench.pr.model.NodeInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.UserTaskSummary;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstanceStyleEvent;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;

@@ -40,7 +40,7 @@ import org.gwtbootstrap3.client.ui.Pagination;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.gwt.DataGrid;
 import org.jbpm.workbench.common.client.util.DateUtils;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.client.util.DataGridUtils;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;

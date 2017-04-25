@@ -45,7 +45,7 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.forms.client.display.process.QuickNewProcessInstancePopup;
 import org.jbpm.workbench.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.client.perspectives.ProcessInstanceListPerspective;
 import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
@@ -273,7 +273,9 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                 dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESS_INSTANCE_DESCRIPTION, i ),
                 dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_CORRELATION_KEY, i ),
                 dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENT_PROCESS_INSTANCE_ID, i ),
-                dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_LAST_MODIFICATION_DATE, i ) );
+                dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_LAST_MODIFICATION_DATE, i ),
+                dataSetQueryHelper.getColumnIntValue( dataSet, COLUMN_ERROR_COUNT, i )
+                );
     }
 
 

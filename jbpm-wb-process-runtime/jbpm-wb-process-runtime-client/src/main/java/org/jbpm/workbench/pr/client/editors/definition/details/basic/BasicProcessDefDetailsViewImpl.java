@@ -20,7 +20,7 @@ import javax.enterprise.context.Dependent;
 
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.pr.client.editors.definition.details.BaseProcessDefDetailsViewImpl;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 
 import com.google.gwt.core.client.GWT;
 

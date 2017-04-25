@@ -61,13 +61,19 @@ public class DataSetDefsBootstrap {
                             "log.correlationKey, " +
                             "log.externalId, " +
                             "log.processInstanceDescription, " +
-                            "COALESCE(info.lastModificationDate,log.end_date) as lastModificationDate " +
-                        "from " +
-                            "ProcessInstanceLog log " +
-                        "left join " +
-                            "ProcessInstanceInfo info " +
-                        "on " +
-                            "info.InstanceId=log.processInstanceId"
+                            "COALESCE(info.lastModificationDate,log.end_date) as lastModificationDate, " +
+                            "COALESCE(" +
+                                "(select COUNT(errInfo.id) " +
+                                    "from ExecutionErrorInfo errInfo " +
+                                    "where errInfo.process_inst_id=log.processInstanceId and errInfo.error_ack!=TRUE " +
+                                    "group by errInfo.process_inst_id)" +
+                            ",0) as " + COLUMN_ERROR_COUNT + " " +
+                       "from " +
+                           "ProcessInstanceLog log " +
+                       "left join " +
+                           "ProcessInstanceInfo info " +
+                       "on " +
+                           "info.InstanceId=log.processInstanceId "
                  , false)
                 .number(COLUMN_PROCESS_INSTANCE_ID)
                 .label(COLUMN_PROCESS_ID)
@@ -84,6 +90,7 @@ public class DataSetDefsBootstrap {
                 .label(COLUMN_EXTERNAL_ID)
                 .label(COLUMN_PROCESS_INSTANCE_DESCRIPTION)
                 .date(COLUMN_LAST_MODIFICATION_DATE)
+                .number(COLUMN_ERROR_COUNT)
                 .buildDef();
 
         DataSetDef processWithVariablesDef = DataSetDefFactory.newSQLDataSetDef()

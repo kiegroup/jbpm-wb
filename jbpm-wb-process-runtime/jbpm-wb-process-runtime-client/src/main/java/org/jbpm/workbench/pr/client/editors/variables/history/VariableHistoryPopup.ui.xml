@@ -21,7 +21,7 @@
              xmlns:uf='urn:import:org.uberfire.ext.widgets.table.client'>
 
     <ui:with field="i18n"
-             type="org.jbpm.workbench.pr.client.i18n.Constants"/>
+             type="org.jbpm.workbench.pr.client.resources.i18n.Constants"/>
 
 
     <b:Container fluid="true">

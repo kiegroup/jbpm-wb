@@ -25,7 +25,7 @@ import com.google.gwt.user.client.ui.HTML;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 
 @Dependent
 @Templated(value = "ProcessInstanceDetailsViewImpl.html")

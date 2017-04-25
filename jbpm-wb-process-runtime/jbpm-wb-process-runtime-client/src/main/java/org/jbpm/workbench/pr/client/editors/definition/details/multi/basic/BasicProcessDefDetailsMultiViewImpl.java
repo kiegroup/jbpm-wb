@@ -28,7 +28,7 @@ import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.gwtbootstrap3.client.ui.TabPane;
 import org.jbpm.workbench.pr.client.editors.definition.details.multi.BaseProcessDefDetailsMultiViewImpl;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 
 @Dependent
 public class BasicProcessDefDetailsMultiViewImpl extends BaseProcessDefDetailsMultiViewImpl

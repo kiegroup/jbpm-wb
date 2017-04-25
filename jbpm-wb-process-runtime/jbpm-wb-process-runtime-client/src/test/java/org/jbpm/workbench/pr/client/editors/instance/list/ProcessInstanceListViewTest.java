@@ -47,7 +47,7 @@ import static org.mockito.Mockito.*;
 public class ProcessInstanceListViewTest {
 
     @Mock
-    protected ExtendedPagedTable currentListGrid;
+    protected ExtendedPagedTable<ProcessInstanceSummary> currentListGrid;
 
     @Mock
     protected GridPreferencesStore gridPreferencesStore;
@@ -100,7 +100,7 @@ public class ProcessInstanceListViewTest {
         view.initDefaultFilters(new GridGlobalPreferences("testGrid", new ArrayList<String>(), new ArrayList<String>()), null);
 
         verify(filterPagedTable, times(3)).addTab((ExtendedPagedTable) any(), anyString(), (Command) any());
-        verify(filterPagedTable, times(3)).saveNewTabSettings(anyString(), (HashMap) any());
+        verify(filterPagedTable, times(3)).saveNewTabSettings(anyString(), (HashMap<String, Object>) any());
         verify(presenter).setAddingDefaultFilters(true);
         verify(presenter).setAddingDefaultFilters(false);
 
@@ -124,7 +124,7 @@ public class ProcessInstanceListViewTest {
         displayedInstances.add(new ProcessInstanceSummary());
 
         when(presenter.getDisplayedProcessInstances()).thenReturn(displayedInstances);
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
                 final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[0];
@@ -147,11 +147,11 @@ public class ProcessInstanceListViewTest {
     public void testColumnNumber() {
         when(gridPreferencesStore.getColumnPreferences()).thenReturn(new ArrayList<GridColumnPreference>());
         when(currentListGrid.getGridPreferencesStore()).thenReturn(gridPreferencesStore);
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
                 final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[0];
-                assertTrue(columns.size() == 11);
+                assertEquals(12, columns.size());
                 return null;
             }
         }).when(currentListGrid).addColumns(anyList());

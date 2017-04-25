@@ -37,7 +37,7 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.AbstractListView;
 import org.jbpm.workbench.common.client.util.ButtonActionCell;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
