@@ -16,6 +16,7 @@
 package org.jbpm.workbench.common.client.list;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
@@ -46,6 +47,7 @@ import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
+import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
@@ -134,11 +136,10 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                 ArrayList<String> existingGrids = multiGridPreferencesStore.getGridsId();
 
                 if ( existingGrids != null && existingGrids.size() > 0 ) {
-                    String key;
                     resetDefaultFilterTitleAndDescription();
                     presenter.setAddingDefaultFilters( true );
                     for ( int i = 0; i < existingGrids.size(); i++ ) {
-                        key = existingGrids.get( i );
+                        String key = existingGrids.get( i );
                         final ExtendedPagedTable<T> extendedPagedTable = loadGridInstance( preferences, key );
                         currentListGrid = extendedPagedTable;
                         extendedPagedTable.setDataProvider( presenter.getDataProvider());
@@ -329,7 +330,18 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         this.preferencesService = preferencesService;
     }
 
-    public void resetDefaultFilterTitleAndDescription(){
+    public abstract void resetDefaultFilterTitleAndDescription();
+
+    protected void saveTabSettings(final String key, final String name, final String description){
+        final HashMap<String, Object> tabSettingsValues = filterPagedTable.getMultiGridPreferencesStore().getGridSettings(key);
+        if (tabSettingsValues != null) {
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM,
+                                  name);
+            tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM,
+                                  description);
+            filterPagedTable.saveTabSettings(key,
+                                             tabSettingsValues);
+        }
     }
 
     public FilterPagedTable<T> getFilterPagedTable() {
