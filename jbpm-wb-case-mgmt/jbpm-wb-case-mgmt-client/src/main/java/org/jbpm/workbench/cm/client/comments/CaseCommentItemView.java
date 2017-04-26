@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.TakesValue;
 
 import org.jboss.errai.common.client.api.IsElement;
+import org.jboss.errai.common.client.dom.Button;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.Span;
@@ -84,6 +85,10 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
     Div actions;
 
     @Inject
+    @DataField("actions-button")
+    Button actionsButton;
+
+    @Inject
     @DataField("actions-items")
     UnorderedList actionsItems;
 
@@ -141,7 +146,7 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
     }
 
     public void addAction(final CaseCommentsPresenter.CaseCommentAction action) {
-        removeCSSClass(actions, "hidden");
+        removeCSSClass(actionsButton, "disabled");
 
         final HTMLElement a = getDocument().createElement("a");
         a.setTextContent(action.label());
