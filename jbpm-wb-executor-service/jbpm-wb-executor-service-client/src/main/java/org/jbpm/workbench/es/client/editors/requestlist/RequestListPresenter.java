@@ -25,7 +25,6 @@ import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.filter.ColumnFilter;
@@ -33,6 +32,10 @@ import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
+import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
+import org.jbpm.workbench.common.client.list.MultiGridView;
+import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.es.client.editors.jobdetails.JobDetailsPopup;
@@ -41,19 +44,11 @@ import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.jbpm.workbench.es.model.events.RequestChangedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
-import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
-import org.jbpm.workbench.common.client.list.AbstractListView.ListView;
-import org.jbpm.workbench.common.client.list.AbstractScreenListPresenter;
-import org.jbpm.workbench.common.client.events.SearchEvent;
-import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
-import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
-import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
@@ -64,22 +59,13 @@ import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 
 @Dependent
 @WorkbenchScreen(identifier = "Requests List")
-public class RequestListPresenter extends AbstractScreenListPresenter<RequestSummary> implements RefreshSelectorMenuBuilder.SupportsRefreshInterval {
+public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSummary, RequestListPresenter.RequestListView> {
 
-    public interface RequestListView extends ListView<RequestSummary, RequestListPresenter> {
-
-        int getRefreshValue();
-
-        void saveRefreshValue( int newValue );
-
-        void applyFilterOnPresenter( String key );
+    public interface RequestListView extends MultiGridView<RequestSummary, RequestListPresenter> {
 
     }
 
     private Constants constants = Constants.INSTANCE;
-
-    @Inject
-    private RequestListView view;
 
     @Inject
     private Caller<ExecutorService> executorServices;
@@ -88,12 +74,7 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     private Event<RequestChangedEvent> requestChangedEvent;
 
     @Inject
-    DataSetQueryHelper dataSetQueryHelper;
-
-    @Inject
     private QuickNewJobPopup quickNewJobPopup;
-
-    private RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder(this);
 
     @Inject
     private ErrorPopupPresenter errorPopup;
@@ -118,21 +99,6 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.RequestsListTitle();
-    }
-
-    @WorkbenchPartView
-    public UberView<RequestListPresenter> getView() {
-        return view;
-    }
-
-    public void filterGrid( FilterSettings tableSettings ) {
-        dataSetQueryHelper.setCurrentTableSettings( tableSettings );
-        refreshGrid();
-    }
-
-    @Override
-    protected ListView getListView() {
-        return view;
     }
 
     @Override
@@ -217,10 +183,6 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
         return filters;
     }
 
-    public AsyncDataProvider<RequestSummary> getDataProvider() {
-        return dataProvider;
-    }
-
     public void cancelRequest( final Long requestId ) {
         executorServices.call( new RemoteCallback<Void>() {
             @Override
@@ -265,26 +227,12 @@ public class RequestListPresenter extends AbstractScreenListPresenter<RequestSum
                 .build();
     }
 
-    @Override
-    public void onGridPreferencesStoreLoaded() {
-        refreshSelectorMenuBuilder.loadOptions( view.getRefreshValue() );
-    }
-
-
-    @Override
-    protected void onSearchEvent( @Observes SearchEvent searchEvent ) {
-        textSearchStr = searchEvent.getFilter();
-        view.applyFilterOnPresenter( dataSetQueryHelper.getCurrentTableSettings().getKey() );
-    }
-
-    @Override
-    public void onUpdateRefreshInterval(boolean enableAutoRefresh, int newInterval) {
-        super.onUpdateRefreshInterval(enableAutoRefresh, newInterval);
-        view.saveRefreshValue(newInterval);
-    }
-
     public void showJobDetails(final RequestSummary job){
         jobDetailsPopup.show( selectedServerTemplate, String.valueOf( job.getJobId() ) );
+    }
+
+    public void requestCreated( @Observes RequestChangedEvent event ) {
+        refreshGrid();
     }
 
 }

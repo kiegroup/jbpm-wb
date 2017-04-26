@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.cell.client.ActionCell.Delegate;
@@ -54,7 +53,6 @@ import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
-import org.jbpm.workbench.es.model.events.RequestChangedEvent;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
@@ -130,10 +128,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         } );
 
         super.init( presenter, new GridGlobalPreferences( REQUEST_LIST_PREFIX, initColumns, bannedColumns ), button );
-    }
-
-    public void requestCreated( @Observes RequestChangedEvent event ) {
-        presenter.refreshGrid();
     }
 
     @Override
@@ -412,19 +406,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
     }
 
-    public void applyFilterOnPresenter( HashMap<String, Object> params ) {
-
-        String tableSettingsJSON = (String) params.get( FILTER_TABLE_SETTINGS );
-        FilterSettings tableSettings = dataSetEditorManager.getStrToTableSettings( tableSettingsJSON );
-        presenter.filterGrid( tableSettings );
-
-    }
-
-    public void applyFilterOnPresenter( String key ) {
-        initSelectionModel();
-        applyFilterOnPresenter( filterPagedTable.getMultiGridPreferencesStore().getGridSettings( key ) );
-    }
-
     public FilterSettings createTableSettingsPrototype() {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
@@ -449,14 +430,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
         return builder.buildSettings();
 
-    }
-
-    public int getRefreshValue() {
-        return getMultiGridPreferencesStore().getRefreshInterval();
-    }
-
-    public void saveRefreshValue( int newValue ) {
-        filterPagedTable.saveNewRefreshInterval( newValue );
     }
 
     @Override

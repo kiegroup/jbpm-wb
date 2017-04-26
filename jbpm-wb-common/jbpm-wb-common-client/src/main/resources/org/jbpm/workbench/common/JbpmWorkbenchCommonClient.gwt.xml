@@ -39,7 +39,9 @@
   <inherits name="org.kie.server.api.KieServerAPI"/>
 
   <inherits name="org.kie.workbench.common.workbench.KieDefaultWorkbenchClient"/>
-  
+
+  <inherits name="org.jbpm.workbench.df.JbpmWorkbenchDataFiltersClient"/>
+
   <source path="client"/>
   <source path="shared"/>
 

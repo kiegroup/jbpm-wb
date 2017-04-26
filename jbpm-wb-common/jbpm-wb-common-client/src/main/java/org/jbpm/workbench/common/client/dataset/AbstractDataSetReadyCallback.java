@@ -19,7 +19,7 @@ package org.jbpm.workbench.common.client.dataset;
 import com.google.gwt.core.client.GWT;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
-import org.jbpm.workbench.common.client.list.AbstractListView;
+import org.jbpm.workbench.common.client.list.ListView;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
@@ -30,12 +30,12 @@ public abstract class AbstractDataSetReadyCallback implements DataSetReadyCallba
 
     private ErrorPopupPresenter errorPopup;
 
-    private AbstractListView.BasicListView view;
+    private ListView view;
 
     private String UUID;
 
     public AbstractDataSetReadyCallback(final ErrorPopupPresenter errorPopup,
-                                        final AbstractListView.BasicListView view,
+                                        final ListView view,
                                         final String UUID) {
         this(errorPopup,
              view,
@@ -44,7 +44,7 @@ public abstract class AbstractDataSetReadyCallback implements DataSetReadyCallba
     }
 
     public AbstractDataSetReadyCallback(final ErrorPopupPresenter errorPopup,
-                                        final AbstractListView.BasicListView view,
+                                        final ListView view,
                                         final String UUID,
                                         final DefaultWorkbenchErrorCallback errorCallback) {
         this.errorPopup = errorPopup;

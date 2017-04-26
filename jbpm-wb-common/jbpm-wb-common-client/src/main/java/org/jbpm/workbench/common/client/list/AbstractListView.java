@@ -18,7 +18,6 @@ package org.jbpm.workbench.common.client.list;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
@@ -28,13 +27,11 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.resources.CommonResources;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
-import org.uberfire.ext.widgets.common.client.common.HasBusyIndicator;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import javax.enterprise.event.Event;
@@ -84,24 +81,6 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
     protected Column actionsColumn;
 
     protected DefaultSelectionEventManager<T> noActionColumnManager;
-
-    public interface BasicListView<T extends GenericSummary> extends IsWidget, HasBusyIndicator {
-
-        void showBusyIndicator( String message );
-
-        void hideBusyIndicator();
-
-        void displayNotification( String text );
-
-        void showRestoreDefaultFilterConfirmationPopup();
-
-        ExtendedPagedTable<T> getListGrid();
-    }
-
-    public interface ListView<T extends GenericSummary, V> extends BasicListView<T>,
-            UberView<V> {
-
-    }
 
     public void init( final V presenter,
                       final GridGlobalPreferences preferences ) {

@@ -30,10 +30,10 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jbpm.workbench.common.client.list.ListView;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.jbpm.workbench.common.model.PortableQueryFilter;
 import org.jbpm.workbench.common.client.list.AbstractListPresenter;
-import org.jbpm.workbench.common.client.list.AbstractListView;
 import org.jbpm.workbench.pr.client.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.service.ProcessVariablesService;
@@ -46,7 +46,7 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
 
     private Constants constants = Constants.INSTANCE;
 
-    public interface ProcessVariableListView extends AbstractListView.ListView<ProcessVariableSummary, ProcessVariableListPresenter> {
+    public interface ProcessVariableListView extends ListView<ProcessVariableSummary, ProcessVariableListPresenter> {
 
     }
 
@@ -101,7 +101,7 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
     }
 
     @Override
-    protected AbstractListView.ListView getListView() {
+    protected ListView getListView() {
         return view;
     }
 

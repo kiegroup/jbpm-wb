@@ -77,7 +77,7 @@ public abstract class AbstractTasksListGridPresenterTest {
     DataSetQueryHelper dataSetQueryHelper;
 
     @Mock
-    DataSetQueryHelper dataSetDomainDataQueryHelperMock;
+    DataSetQueryHelper dataSetQueryHelperDomainSpecific;
 
     @Mock
     private ExtendedPagedTable<TaskSummary> extendedPagedTable;
@@ -143,7 +143,7 @@ public abstract class AbstractTasksListGridPresenterTest {
                 ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSetTaskVarMock);
                 return null;
             }
-        }).when(dataSetDomainDataQueryHelperMock).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        }).when(dataSetQueryHelperDomainSpecific).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
     }
 
     protected abstract AbstractTasksListGridPresenter getPresenter();
@@ -156,7 +156,7 @@ public abstract class AbstractTasksListGridPresenterTest {
         verify(dataSetQueryHelper).setLastSortOrder(SortOrder.ASCENDING);
         verify(dataSetQueryHelper).setLastOrderedColumn(COLUMN_CREATED_ON);
         verify(dataSetQueryHelper).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
-        verify(dataSetDomainDataQueryHelperMock, never()).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelperDomainSpecific, never()).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
     }
 
     @Test
@@ -209,15 +209,15 @@ public abstract class AbstractTasksListGridPresenterTest {
         when(dataSetQueryHelper.getColumnLongValue(dataSetMock, COLUMN_TASK_ID, 0)).thenReturn(Long.valueOf(1));
 
         when(dataSetTaskVarMock.getRowCount()).thenReturn(2); //two domain variables associated
-        when(dataSetDomainDataQueryHelperMock.getColumnLongValue(dataSetTaskVarMock, COLUMN_TASK_ID, 0)).thenReturn(Long.valueOf(1));
+        when(dataSetQueryHelperDomainSpecific.getColumnLongValue(dataSetTaskVarMock, COLUMN_TASK_ID, 0)).thenReturn(Long.valueOf(1));
         String taskVariable1 = "var1";
-        when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_NAME, 0)).thenReturn(taskVariable1);
-        when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_VALUE, 0)).thenReturn("value1");
+        when(dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_NAME, 0)).thenReturn(taskVariable1);
+        when(dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_VALUE, 0)).thenReturn("value1");
 
-        when(dataSetDomainDataQueryHelperMock.getColumnLongValue(dataSetTaskVarMock, COLUMN_TASK_ID, 1)).thenReturn(Long.valueOf(1));
+        when(dataSetQueryHelperDomainSpecific.getColumnLongValue(dataSetTaskVarMock, COLUMN_TASK_ID, 1)).thenReturn(Long.valueOf(1));
         String taskVariable2 = "var2";
-        when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_NAME, 1)).thenReturn(taskVariable2);
-        when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_VALUE, 1)).thenReturn("value2");
+        when(dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_NAME, 1)).thenReturn(taskVariable2);
+        when(dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_VALUE, 1)).thenReturn("value2");
 
         Set<String> expectedColumns = new HashSet<String>();
         expectedColumns.add(taskVariable1);
@@ -231,13 +231,13 @@ public abstract class AbstractTasksListGridPresenterTest {
         assertEquals(expectedColumns, argument.getValue());
 
         verify(dataSetQueryHelper).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
-        verify(dataSetDomainDataQueryHelperMock).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelperDomainSpecific).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
 
         when(dataSetTaskVarMock.getRowCount()).thenReturn(1); //one domain variables associated
-        when(dataSetDomainDataQueryHelperMock.getColumnLongValue(dataSetTaskVarMock, COLUMN_TASK_ID, 0)).thenReturn(Long.valueOf(1));
+        when(dataSetQueryHelperDomainSpecific.getColumnLongValue(dataSetTaskVarMock, COLUMN_TASK_ID, 0)).thenReturn(Long.valueOf(1));
         taskVariable1 = "varTest1";
-        when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_NAME, 0)).thenReturn(taskVariable1);
-        when(dataSetDomainDataQueryHelperMock.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_VALUE, 0)).thenReturn("value1");
+        when(dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_NAME, 0)).thenReturn(taskVariable1);
+        when(dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSetTaskVarMock, COLUMN_TASK_VARIABLE_VALUE, 0)).thenReturn("value1");
 
         expectedColumns = Collections.singleton(taskVariable1);
 
@@ -248,7 +248,7 @@ public abstract class AbstractTasksListGridPresenterTest {
 
         assertEquals(expectedColumns, argument.getValue());
         verify(dataSetQueryHelper, times(2)).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
-        verify(dataSetDomainDataQueryHelperMock, times(2)).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelperDomainSpecific, times(2)).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
     }
 
     @Test

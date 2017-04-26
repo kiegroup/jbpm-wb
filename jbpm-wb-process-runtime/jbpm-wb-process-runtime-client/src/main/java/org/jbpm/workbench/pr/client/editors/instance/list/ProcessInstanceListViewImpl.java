@@ -565,14 +565,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
     }
 
-    public void applyFilterOnPresenter( HashMap<String, Object> params ) {
-
-        String tableSettingsJSON = (String) params.get( FILTER_TABLE_SETTINGS );
-        FilterSettings tableSettings = dataSetEditorManager.getStrToTableSettings( tableSettingsJSON );
-        presenter.filterGrid(tableSettings);
-
-    }
-
     @Override
     public FilterSettings getVariablesTableSettings( String processName ) {
         String tableSettingsJSON = "{\n"
@@ -655,11 +647,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         return dataSetEditorManager.getStrToTableSettings( tableSettingsJSON );
     }
 
-    public void applyFilterOnPresenter( String key ) {
-        initSelectionModel();
-        applyFilterOnPresenter( filterPagedTable.getMultiGridPreferencesStore().getGridSettings( key ) );
-    }
-
     /*-------------------------------------------------*/
     /*---              DashBuilder                   --*/
     /*-------------------------------------------------*/
@@ -677,14 +664,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         filterSettings.setUUID( PROCESS_INSTANCE_DATASET );
         return filterSettings;
 
-    }
-
-    public int getRefreshValue() {
-        return getMultiGridPreferencesStore().getRefreshInterval();
-    }
-
-    public void saveRefreshValue( int newValue ) {
-        filterPagedTable.saveNewRefreshInterval( newValue );
     }
 
     @Override
