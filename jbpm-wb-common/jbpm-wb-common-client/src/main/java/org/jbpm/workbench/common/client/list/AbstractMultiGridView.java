@@ -17,9 +17,12 @@ package org.jbpm.workbench.common.client.list;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.Function;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.cell.client.NumberCell;
+import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -350,5 +353,29 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     public void setFilterPagedTable(FilterPagedTable<T> filterPagedTable) {
         this.filterPagedTable = filterPagedTable;
+    }
+
+    public Column<T, String> createTextColumn(final String columnId, final Function<T, String> valueFunction) {
+        Column<T, String> column = new Column<T, String>( new TextCell() ) {
+            @Override
+            public String getValue( T domain ) {
+                return valueFunction.apply( domain );
+            }
+        };
+        column.setSortable( true );
+        column.setDataStoreName( columnId );
+        return column;
+    }
+
+    public Column<T, Number> createNumberColumn(final String columnId, final Function<T, Number> valueFunction) {
+        Column<T, Number> column = new Column<T, Number>( new NumberCell() ) {
+            @Override
+            public Number getValue( T domain ) {
+                return valueFunction.apply( domain );
+            }
+        };
+        column.setSortable( true );
+        column.setDataStoreName( columnId );
+        return column;
     }
 }
