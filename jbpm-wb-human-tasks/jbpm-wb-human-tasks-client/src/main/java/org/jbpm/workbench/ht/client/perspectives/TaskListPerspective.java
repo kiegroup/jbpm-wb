@@ -18,6 +18,7 @@ package org.jbpm.workbench.ht.client.perspectives;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
+import org.jbpm.workbench.ht.client.editors.taskslist.TaskListPresenter;
 import org.kie.workbench.common.workbench.client.PerspectiveIds;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -31,14 +32,14 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-@WorkbenchPerspective( identifier = PerspectiveIds.TASKS )
-public class DataSetTasksListPerspective extends AbstractPerspective {
+@WorkbenchPerspective(identifier = PerspectiveIds.TASKS)
+public class TaskListPerspective extends AbstractPerspective {
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( ClosableSimpleWorkbenchPanelPresenter.class.getName() );
-        p.setName( PerspectiveIds.TASKS );
-        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "DataSet Tasks List" ) ) );
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(ClosableSimpleWorkbenchPanelPresenter.class.getName());
+        p.setName(PerspectiveIds.TASKS);
+        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(TaskListPresenter.SCREEN_ID)));
         return p;
     }
 

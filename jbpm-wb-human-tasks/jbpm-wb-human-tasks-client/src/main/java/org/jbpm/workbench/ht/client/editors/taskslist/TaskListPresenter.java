@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.ht.client.editors.taskslist.grid.dash;
+package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import javax.enterprise.context.Dependent;
 
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
-import org.jbpm.workbench.ht.client.editors.taskslist.grid.AbstractTasksListGridPresenter;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
@@ -26,10 +25,10 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
-@WorkbenchScreen(identifier = DataSetTasksListGridPresenter.SCREEN_ID)
-public class DataSetTasksListGridPresenter extends AbstractTasksListGridPresenter {
+@WorkbenchScreen(identifier = TaskListPresenter.SCREEN_ID)
+public class TaskListPresenter extends AbstractTaskListPresenter {
 
-    public static final String SCREEN_ID = "DataSet Tasks List";
+    public static final String SCREEN_ID = "Tasks List";
 
     @WorkbenchMenu
     @Override
@@ -41,5 +40,4 @@ public class DataSetTasksListGridPresenter extends AbstractTasksListGridPresente
                 .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
                 .build();
     }
-
 }

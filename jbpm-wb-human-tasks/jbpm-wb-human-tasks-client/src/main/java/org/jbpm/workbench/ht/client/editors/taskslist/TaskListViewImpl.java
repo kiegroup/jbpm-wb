@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.ht.client.editors.taskslist.grid.dash;
+package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +52,6 @@ import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
-import org.jbpm.workbench.ht.client.editors.taskslist.grid.AbstractTasksListGridPresenter;
 import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
@@ -67,8 +66,8 @@ import static org.dashbuilder.dataset.sort.SortOrder.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Dependent
-public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSummary, DataSetTasksListGridPresenter>
-        implements AbstractTasksListGridPresenter.DataSetTaskListView<DataSetTasksListGridPresenter> {
+public class TaskListViewImpl extends AbstractMultiGridView<TaskSummary, TaskListPresenter>
+        implements AbstractTaskListPresenter.TaskListView<TaskListPresenter> {
 
     public static final String DATA_SET_TASK_LIST_PREFIX = "DataSetTaskListGrid";
     public static final String COL_ID_ACTIONS = "actions";
@@ -84,7 +83,7 @@ public class DataSetTasksListGridViewImpl extends AbstractMultiGridView<TaskSumm
     private DataSetEditorManager dataSetEditorManager;
 
     @Override
-    public void init( final DataSetTasksListGridPresenter presenter ) {
+    public void init( final TaskListPresenter presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
         bannedColumns.add( COLUMN_NAME );
         bannedColumns.add( COL_ID_ACTIONS );

@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.ht.client.editors.taskslist.grid.dash;
+package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jbpm.workbench.ht.client.editors.taskslist.grid.AbstractTasksListGridPresenterTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -25,13 +24,13 @@ import org.uberfire.workbench.model.menu.Menus;
 import static org.junit.Assert.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class DataSetTasksListGridPresenterTest extends AbstractTasksListGridPresenterTest {
+public class TaskListPresenterTest extends AbstractTaskListPresenterTest {
 
     @InjectMocks
-    protected DataSetTasksListGridPresenter presenter;
+    protected TaskListPresenter presenter;
 
     @Override
-    public DataSetTasksListGridPresenter getPresenter() {
+    public TaskListPresenter getPresenter() {
         return presenter;
     }
 
