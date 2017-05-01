@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.ht.client.editors.taskslist.grid;
+package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -60,9 +60,9 @@ import org.uberfire.workbench.model.menu.Menus;
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
-public abstract class AbstractTasksListGridPresenter extends AbstractMultiGridPresenter<TaskSummary, AbstractTasksListGridPresenter.DataSetTaskListView> {
+public abstract class AbstractTaskListPresenter extends AbstractMultiGridPresenter<TaskSummary, AbstractTaskListPresenter.TaskListView> {
 
-    public interface DataSetTaskListView<T extends AbstractTasksListGridPresenter> extends MultiGridView<TaskSummary, T> {
+    public interface TaskListView<T extends AbstractTaskListPresenter> extends MultiGridView<TaskSummary, T> {
 
         void addDomainSpecifColumns(ExtendedPagedTable<TaskSummary> extendedPagedTable, Set<String> columns);
 

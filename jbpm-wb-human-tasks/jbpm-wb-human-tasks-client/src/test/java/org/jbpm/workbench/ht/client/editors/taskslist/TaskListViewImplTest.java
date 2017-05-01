@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.ht.client.editors.taskslist.grid.dash;
+package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +33,8 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.ht.client.editors.taskslist.TaskListPresenter;
+import org.jbpm.workbench.ht.client.editors.taskslist.TaskListViewImpl;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +59,7 @@ import static org.mockito.Mockito.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class DataSetTasksListGridViewTest {
+public class TaskListViewImplTest {
 
     private CallerMock<UserPreferencesService> callerMockUserPreferencesService;
 
@@ -83,10 +85,10 @@ public class DataSetTasksListGridViewTest {
     protected Button mockButton;
 
     @InjectMocks
-    private DataSetTasksListGridViewImpl view;
+    private TaskListViewImpl view;
 
     @Mock
-    private DataSetTasksListGridPresenter presenter;
+    private TaskListPresenter presenter;
 
     @Mock
     public User identity;
@@ -243,7 +245,7 @@ public class DataSetTasksListGridViewTest {
         assertEquals(COLUMN_PROCESS_ID,columnPreferences.get(1).getName());
         assertEquals(COLUMN_STATUS,columnPreferences.get(2).getName());
         assertEquals(COLUMN_CREATED_ON,columnPreferences.get(3).getName());
-        assertEquals(DataSetTasksListGridViewImpl.COL_ID_ACTIONS,columnPreferences.get(4).getName());
+        assertEquals(TaskListViewImpl.COL_ID_ACTIONS, columnPreferences.get(4).getName());
     }
 
 }

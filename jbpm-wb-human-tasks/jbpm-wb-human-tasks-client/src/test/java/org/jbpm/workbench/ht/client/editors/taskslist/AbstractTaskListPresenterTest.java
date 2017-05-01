@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.ht.client.editors.taskslist.grid;
+package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,7 +43,8 @@ import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
-import org.jbpm.workbench.ht.client.editors.taskslist.grid.dash.DataSetTasksListGridViewImpl;
+import org.jbpm.workbench.ht.client.editors.taskslist.AbstractTaskListPresenter;
+import org.jbpm.workbench.ht.client.editors.taskslist.TaskListViewImpl;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
@@ -65,13 +66,13 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
-public abstract class AbstractTasksListGridPresenterTest {
+public abstract class AbstractTaskListPresenterTest {
 
     private static final Long TASK_ID = 1L;
     private static final String TASK_DEPLOYMENT_ID = "deploymentId";
 
     @Mock
-    private DataSetTasksListGridViewImpl viewMock;
+    private TaskListViewImpl viewMock;
 
     @Mock
     DataSetQueryHelper dataSetQueryHelper;
@@ -119,7 +120,7 @@ public abstract class AbstractTasksListGridPresenterTest {
         when(filterSettings.getDataSetLookup()).thenReturn(dataSetLookup);
 
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
-        when(viewMock.getVariablesTableSettings(anyString())).thenReturn(new DataSetTasksListGridViewImpl().getVariablesTableSettings("taskName"));
+        when(viewMock.getVariablesTableSettings(anyString())).thenReturn(new TaskListViewImpl().getVariablesTableSettings("taskName"));
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
         when(filterSettings.getKey()).thenReturn("key");
@@ -146,7 +147,7 @@ public abstract class AbstractTasksListGridPresenterTest {
         }).when(dataSetQueryHelperDomainSpecific).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
     }
 
-    protected abstract AbstractTasksListGridPresenter getPresenter();
+    protected abstract AbstractTaskListPresenter getPresenter();
 
     @Test
     public void getDataTest() {
