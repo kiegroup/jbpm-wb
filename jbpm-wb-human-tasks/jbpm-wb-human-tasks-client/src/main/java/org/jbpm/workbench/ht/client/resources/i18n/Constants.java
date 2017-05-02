@@ -65,10 +65,6 @@ public interface Constants extends Messages {
 
     String Due_On();
 
-    String Parent();
-
-    String Complete();
-
     String Open();
 
     String Release();
@@ -76,8 +72,6 @@ public interface Constants extends Messages {
     String Claim();
 
     String Work();
-
-    String Start();
 
     String Details();
 
@@ -121,13 +115,9 @@ public interface Constants extends Messages {
 
     String Task_Name();
 
-    String Quick_Task();
-
     String Description();
 
     String Comments();
-
-    String Filters();
 
     String Process_Context();
 
@@ -138,8 +128,6 @@ public interface Constants extends Messages {
     String Advanced();
 
     String Basic();
-
-    String Refresh();
 
     String Add_User();
 
@@ -165,11 +153,7 @@ public interface Constants extends Messages {
 
     String No_Potential_Owners();
 
-    String Save();
-
     String Delete();
-
-    String Calendar();
 
     String Logs();
 
@@ -193,8 +177,6 @@ public interface Constants extends Messages {
 
     String No_Actual_Owner();
 
-    String Loading();
-
     String DelegationUserInputRequired();
 
     String DelegationUnable();
@@ -203,33 +185,13 @@ public interface Constants extends Messages {
 
     String TaskSuccessfullyDelegated();
 
-    String TaskCreatedWithId(String id);
-
     String High();
 
     String Medium();
 
     String Low();
 
-    String Close();
-
-    String Created();
-
-    String Ready();
-
-    String Reserved();
-
-    String InProgress();
-
-    String Failed();
-
-    String Error();
-
-    String Obsolete();
-
     String Completed();
-
-    String Administrator();
 
     String Task_Form();
 
@@ -238,8 +200,6 @@ public interface Constants extends Messages {
     String Task_Form_DeploymentId();
 
     String New_FilteredList();
-
-    String Administrators();
 
     String UnexpectedError(String errorMessage);
 
