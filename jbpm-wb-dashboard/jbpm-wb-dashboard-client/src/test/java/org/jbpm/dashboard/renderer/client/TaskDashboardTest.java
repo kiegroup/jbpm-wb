@@ -20,10 +20,14 @@ import javax.enterprise.event.Event;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.displayer.DisplayerSettings;
+import org.dashbuilder.displayer.client.AbstractDisplayer;
 import org.dashbuilder.displayer.client.Displayer;
+import org.dashbuilder.displayer.client.DisplayerListener;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.dashboard.renderer.client.panel.DashboardKpis;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
@@ -69,6 +73,9 @@ public class TaskDashboardTest extends AbstractDashboardTest {
     @Mock
     Event<NotificationEvent> notificationEvent;
 
+    @Mock
+    DisplayerListener totalMetricListener;
+
     TaskDashboard presenter;
     DataSet dataSet;
 
@@ -89,6 +96,14 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         return presenter;
     }
 
+    @Override
+    public AbstractDisplayer createNewDisplayer(DisplayerSettings settings) {
+        AbstractDisplayer displayer = super.createNewDisplayer(settings);
+        if (DashboardKpis.TOTAL_TASKS_METRIC.equals(settings.getUUID())) {
+            displayer.addListener(totalMetricListener);
+        }
+        return displayer;
+    }
     @Before
     public void init() throws Exception {
         super.init();
@@ -160,6 +175,11 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         assertEquals(presenter.getTotalMetric().isFilterOn(), true);
     }
 
+    @Test
+    public void test_JBPM_5834_Fix() {
+        assertEquals(presenter.getTotalMetric().isFilterOn(), true);
+        verify(totalMetricListener, never()).onFilterEnabled(any(), any(DataSetFilter.class));
+    }
     @Test
     public void testShowInstances() {
         reset(displayerListener);

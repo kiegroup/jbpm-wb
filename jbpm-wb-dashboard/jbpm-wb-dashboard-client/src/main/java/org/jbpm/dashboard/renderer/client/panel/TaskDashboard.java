@@ -50,7 +50,6 @@ import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
-import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import static org.jbpm.dashboard.renderer.model.DashboardData.*;
@@ -165,7 +164,7 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
                 tasksByStatus = createDisplayer(DashboardKpis.tasksByStatus(i18n)),
                 tasksTable = createTableDisplayer(DashboardKpis.tasksTable(i18n), COLUMN_TASK_DURATION, new DurationFormatter(COLUMN_TASK_CREATED_DATE, COLUMN_TASK_END_DATE)));
 
-        totalMetric.filterApply();
+        totalMetric.setFilterOn(true);
         selectedMetric = totalMetric;
 
         metricsGroup.add(totalMetric);
@@ -193,21 +192,7 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
         displayerCoordinator.addDisplayers(chartsGroup);
         displayerCoordinator.addNotificationVeto(metricsGroup);
         displayerCoordinator.addListener(dashboardListener);
-
-        displayerCoordinator.drawAll(
-                // On success
-                new Command() {
-                    public void execute() {
-                        view.hideLoading();
-                    }
-                },
-                // On Failure
-                new Command() {
-                    public void execute() {
-                        view.hideLoading();
-                    }
-                }
-        );
+        displayerCoordinator.drawAll(()->view.hideLoading(), ()->view.hideLoading());
     }
 
     public MetricDisplayer getTotalMetric() {
