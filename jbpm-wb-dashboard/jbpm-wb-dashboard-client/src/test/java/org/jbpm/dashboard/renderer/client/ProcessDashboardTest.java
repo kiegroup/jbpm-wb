@@ -20,8 +20,12 @@ import javax.enterprise.event.Event;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.displayer.DisplayerSettings;
+import org.dashbuilder.displayer.client.AbstractDisplayer;
 import org.dashbuilder.displayer.client.Displayer;
+import org.dashbuilder.displayer.client.DisplayerListener;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
+import org.jbpm.dashboard.renderer.client.panel.DashboardKpis;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.dashboard.renderer.client.panel.AbstractDashboard;
 import org.jbpm.dashboard.renderer.client.panel.ProcessDashboard;
@@ -54,6 +58,9 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
     @Mock
     Event<ProcessDashboardFocusEvent> processDashboardFocusEvent;
 
+    @Mock
+    DisplayerListener totalMetricListener;
+
     ProcessDashboard presenter;
     DataSet dataSet;
 
@@ -72,6 +79,15 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
     @Override
     protected AbstractDashboard getPresenter() {
         return presenter;
+    }
+
+    @Override
+    public AbstractDisplayer createNewDisplayer(DisplayerSettings settings) {
+        AbstractDisplayer displayer = super.createNewDisplayer(settings);
+        if (DashboardKpis.TOTAL_PROCESSES_METRIC.equals(settings.getUUID())) {
+            displayer.addListener(totalMetricListener);
+        }
+        return displayer;
     }
 
     @Before
@@ -129,6 +145,12 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
     @Test
     public void test_JBPM_4851_Fix() {
         assertEquals(presenter.getTotalMetric().isFilterOn(), true);
+    }
+
+    @Test
+    public void test_JBPM_5834_Fix() {
+        assertEquals(presenter.getTotalMetric().isFilterOn(), true);
+        verify(totalMetricListener, never()).onFilterEnabled(any(), any(DataSetFilter.class));
     }
 
     @Test
