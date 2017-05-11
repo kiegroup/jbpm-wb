@@ -38,6 +38,9 @@ public class DashboardKpis {
         public static final String BG_COLOR = "FFFFFF";
         public static int metricJsCounter = 1;
 
+        public static final String TOTAL_PROCESSES_METRIC = "totalProcessesMetric";
+        public static final String TOTAL_TASKS_METRIC = "totalTasksMetric";
+
         public static final String METRIC_HTML = "<div id=\"${this}\" class=\"card-pf card-pf-accented card-pf-aggregate-status\"" +
                 " style=\"background-color:${bgColor}; width:${width}px; height:${height}px;" +
                 " margin-top:${marginTop}px; margin-right:${marginRight}px; margin-bottom:${marginBottom}px; margin-left:${marginLeft}px;\">\n" +
@@ -97,6 +100,7 @@ public class DashboardKpis {
 
         public static DisplayerSettings processTotal(DashboardI18n i18n) {
                 return DisplayerSettingsFactory.newMetricSettings()
+                        .uuid(TOTAL_PROCESSES_METRIC)
                         .title(i18n.totalProcesses())
                         .titleVisible(true)
                         .dataset(DATASET_PROCESS_INSTANCES)
@@ -346,6 +350,7 @@ public class DashboardKpis {
 
         public static DisplayerSettings tasksTotal(DashboardI18n i18n) {
                 return DisplayerSettingsFactory.newMetricSettings()
+                        .uuid(TOTAL_TASKS_METRIC)
                         .title(i18n.totalTasks())
                         .titleVisible(true)
                         .dataset(DATASET_HUMAN_TASKS)

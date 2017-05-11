@@ -45,7 +45,6 @@ import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
-import org.uberfire.mvp.Command;
 
 import static org.jbpm.dashboard.renderer.model.DashboardData.*;
 
@@ -137,7 +136,7 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
                 processesByVersion = createDisplayer(DashboardKpis.processesByVersion(i18n)),
                 processesTable = createTableDisplayer(DashboardKpis.processesTable(i18n), COLUMN_PROCESS_DURATION, new DurationFormatter(COLUMN_PROCESS_START_DATE, COLUMN_PROCESS_END_DATE)));
 
-        totalMetric.filterApply();
+        totalMetric.setFilterOn(true);
         selectedMetric = totalMetric;
 
         metricsGroup.add(totalMetric);
@@ -159,21 +158,7 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
         displayerCoordinator.addDisplayers(chartsGroup);
         displayerCoordinator.addNotificationVeto(metricsGroup);
         displayerCoordinator.addListener(dashboardListener);
-
-        displayerCoordinator.drawAll(
-                // On success
-                new Command() {
-                    public void execute() {
-                        view.hideLoading();
-                    }
-                },
-                // On Failure
-                new Command() {
-                    public void execute() {
-                        view.hideLoading();
-                    }
-                }
-        );
+        displayerCoordinator.drawAll(()->view.hideLoading(), ()->view.hideLoading());
     }
 
     public MetricDisplayer getTotalMetric() {
