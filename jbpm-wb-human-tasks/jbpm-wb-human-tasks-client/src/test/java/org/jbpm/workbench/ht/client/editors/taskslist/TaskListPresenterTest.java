@@ -16,12 +16,8 @@
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.uberfire.workbench.model.menu.Menus;
-
-import static org.junit.Assert.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskListPresenterTest extends AbstractTaskListPresenterTest {
@@ -32,13 +28,6 @@ public class TaskListPresenterTest extends AbstractTaskListPresenterTest {
     @Override
     public TaskListPresenter getPresenter() {
         return presenter;
-    }
-
-    @Test
-    public void testMenus() {
-        final Menus menus = presenter.getMenus();
-
-        assertEquals(4, menus.getItems().size());
     }
 
 }

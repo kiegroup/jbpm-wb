@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -40,10 +41,11 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.Group;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.MultiGridView;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.NewTaskEvent;
@@ -51,16 +53,17 @@ import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
-import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
+import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
-public abstract class AbstractTaskListPresenter extends AbstractMultiGridPresenter<TaskSummary, AbstractTaskListPresenter.TaskListView> {
+public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresenter.TaskListView> extends AbstractMultiGridPresenter<TaskSummary, V> {
 
     public interface TaskListView<T extends AbstractTaskListPresenter> extends MultiGridView<TaskSummary, T> {
 
@@ -72,7 +75,7 @@ public abstract class AbstractTaskListPresenter extends AbstractMultiGridPresent
 
     }
 
-    private Constants constants = Constants.INSTANCE;
+    protected Constants constants = Constants.INSTANCE;
 
     private Caller<TaskService> taskService;
 
@@ -83,6 +86,7 @@ public abstract class AbstractTaskListPresenter extends AbstractMultiGridPresent
 
     @Inject
     private Event<TaskSelectionEvent> taskSelected;
+
 
     @Override
     public void getData(final Range visibleRange) {
@@ -293,11 +297,6 @@ public abstract class AbstractTaskListPresenter extends AbstractMultiGridPresent
                 HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet.getUUID()));
     }
 
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.Tasks_List();
-    }
-
     public void releaseTask(final TaskSummary task) {
         taskService.call(
                 new RemoteCallback<Void>() {
@@ -322,8 +321,15 @@ public abstract class AbstractTaskListPresenter extends AbstractMultiGridPresent
         ).claimTask(selectedServerTemplate, task.getDeploymentId(), task.getTaskId());
         taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, task.getDeploymentId(),task.getTaskId(), task.getTaskName() ) );
     }
-
-    public abstract Menus getMenus();
+    
+    public Menus getMenus(){ //To be used by subclass methods annotated with @WorkbenchMenu
+        return MenuFactory
+            .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder).endMenu()
+            .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
+            .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()
+            .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
+            .build();
+    }
 
     public void selectTask(final TaskSummary summary, final Boolean close) {
         final DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Task Details Multi" );
