@@ -36,22 +36,19 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
-import org.jbpm.workbench.cm.client.util.ErrorPopup;
 import org.kie.server.api.exception.KieServicesHttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.views.pfly.menu.UserMenu;
+import org.uberfire.client.views.pfly.widgets.ErrorPopup;
 import org.uberfire.client.workbench.events.ApplicationReadyEvent;
 import org.uberfire.client.workbench.widgets.menu.UtilityMenuBar;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.jbpm.workbench.cm.client.resources.i18n.ShowcaseConstants.KIE_SERVER_ERROR_401;
-import static org.jbpm.workbench.cm.client.resources.i18n.ShowcaseConstants.KIE_SERVER_ERROR_403;
-import static org.jbpm.workbench.cm.client.resources.i18n.ShowcaseConstants.LOG_OUT;
-import static org.jbpm.workbench.cm.client.resources.i18n.ShowcaseConstants.ROLE;
+import static org.jbpm.workbench.cm.client.resources.i18n.ShowcaseConstants.*;
 
 @Bundle("resources/i18n/ShowcaseConstants.properties")
 @EntryPoint
@@ -142,14 +139,14 @@ public class ShowcaseEntryPoint {
         if (t instanceof KieServicesHttpException) {
             final KieServicesHttpException kieException = (KieServicesHttpException) t;
             if (kieException.getHttpCode() == 401) {
-                errorPopup.showGenericError(translationService.format(KIE_SERVER_ERROR_401));
+                errorPopup.showError(translationService.format(KIE_SERVER_ERROR_401));
             } else if (kieException.getHttpCode() == 403) {
-                errorPopup.showGenericError(translationService.format(KIE_SERVER_ERROR_403));
+                errorPopup.showError(translationService.format(KIE_SERVER_ERROR_403));
             } else {
-                errorPopup.showGenericError(kieException.getExceptionMessage());
+                errorPopup.showError(translationService.format(GENERIC_EXCEPTION, kieException.getExceptionMessage()));
             }
         } else {
-            errorPopup.showGenericError(t.getMessage());
+            errorPopup.showError(translationService.format(GENERIC_EXCEPTION, t.getMessage()));
         }
         LOGGER.error("Uncaught exception encountered",
                      t);

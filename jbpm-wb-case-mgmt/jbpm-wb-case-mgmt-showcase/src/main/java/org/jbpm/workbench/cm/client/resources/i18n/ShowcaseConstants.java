@@ -34,4 +34,7 @@ public interface ShowcaseConstants {
 
     @TranslationKey(defaultValue = "")
     String KIE_SERVER_ERROR_401 = "KieServerError401";
+
+    @TranslationKey(defaultValue = "")
+    String GENERIC_EXCEPTION = "GenericException";
 }

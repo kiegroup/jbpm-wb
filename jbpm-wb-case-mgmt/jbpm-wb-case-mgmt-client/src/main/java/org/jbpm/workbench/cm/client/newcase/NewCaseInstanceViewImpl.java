@@ -41,15 +41,9 @@ import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.cm.client.resources.i18n.Constants;
 import org.jbpm.workbench.cm.client.util.AbstractView;
-import org.jbpm.workbench.cm.client.util.FormGroup;
-import org.jbpm.workbench.cm.client.util.FormLabel;
-import org.jbpm.workbench.cm.client.util.InlineNotification;
-import org.jbpm.workbench.cm.client.util.Modal;
-import org.jbpm.workbench.cm.client.util.Popover;
-import org.jbpm.workbench.cm.client.util.Select;
-import org.jbpm.workbench.cm.client.util.ValidationState;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
+import org.uberfire.client.views.pfly.widgets.*;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Collections.emptyList;

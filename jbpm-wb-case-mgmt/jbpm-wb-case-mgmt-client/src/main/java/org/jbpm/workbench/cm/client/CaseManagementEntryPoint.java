@@ -16,8 +16,6 @@
 
 package org.jbpm.workbench.cm.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.ScriptInjector;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
@@ -30,8 +28,7 @@ public class CaseManagementEntryPoint {
     @AfterInitialization
     public void init() {
         PatternFlyBootstrapper.ensurejQueryIsAvailable();
-        ScriptInjector.fromUrl(GWT.getModuleBaseURL() + "js/bootstrap-select.min.js")
-                .setWindow(ScriptInjector.TOP_WINDOW).inject();
+        PatternFlyBootstrapper.ensureBootstrapSelectIsAvailable();
     }
 
 }

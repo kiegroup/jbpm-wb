@@ -36,9 +36,9 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.cm.client.util.AbstractView;
 import org.jbpm.workbench.cm.client.util.CaseStatusConverter;
 import org.jbpm.workbench.cm.util.CaseStatus;
-import org.jbpm.workbench.cm.client.util.Select;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.workbench.cm.util.CaseInstanceSortBy;
+import org.uberfire.client.views.pfly.widgets.Select;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toMap;

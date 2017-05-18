@@ -164,6 +164,4 @@ public interface Constants {
     @TranslationKey(defaultValue = "")
     String INVALID_ROLE_ASSIGNMENT = "InvalidRoleAssignment";
 
-    @TranslationKey(defaultValue = "")
-    String GENERIC_EXCEPTION = "GenericException";
 }

@@ -40,8 +40,8 @@ import org.jbpm.workbench.cm.client.events.CaseRoleAssignmentListLoadEvent;
 import org.jbpm.workbench.cm.client.events.CaseRoleAssignmentListOpenEvent;
 import org.jbpm.workbench.cm.client.roles.util.ItemsLine;
 import org.jbpm.workbench.cm.client.util.AbstractView;
-import org.jbpm.workbench.cm.client.util.ConfirmPopup;
 import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
+import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
 
 import static org.jboss.errai.common.client.dom.DOMUtil.addCSSClass;
 import static org.jboss.errai.common.client.dom.DOMUtil.removeCSSClass;

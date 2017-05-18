@@ -42,11 +42,11 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import org.jbpm.workbench.cm.client.events.CaseCommentEditEvent;
 import org.jbpm.workbench.cm.client.util.AbstractView;
-import org.jbpm.workbench.cm.client.util.ConfirmPopup;
 import org.jbpm.workbench.cm.client.util.DateConverter;
-import org.jbpm.workbench.cm.client.util.FormGroup;
-import org.jbpm.workbench.cm.client.util.ValidationState;
 import org.jbpm.workbench.cm.model.CaseCommentSummary;
+import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
+import org.uberfire.client.views.pfly.widgets.FormGroup;
+import org.uberfire.client.views.pfly.widgets.ValidationState;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
