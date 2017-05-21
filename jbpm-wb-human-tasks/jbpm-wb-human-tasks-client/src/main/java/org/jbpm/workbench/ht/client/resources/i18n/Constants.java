@@ -75,6 +75,10 @@ public interface Constants extends Messages {
 
     String Work();
 
+    String Suspend();
+    
+    String Resume();
+
     String Details();
 
     String Actions();
@@ -208,6 +212,10 @@ public interface Constants extends Messages {
     String TaskReleased(String taskId);
 
     String TaskClaimed(String taskId);
+    
+    String TaskResumed(String taskId);
+    
+    String TaskSuspended(String taskId);
 
     String TaskSuccessfullyForwarded();
 

@@ -34,6 +34,8 @@ import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 
+import static org.jbpm.workbench.common.client.util.TaskUtils.*;
+
 @Dependent
 public class TaskDetailsPresenter {
 
@@ -129,7 +131,7 @@ public class TaskDetailsPresenter {
                     setReadOnlyTaskDetail();
                     return;
                 }
-                if (details.getStatus().equals("Completed")) {
+                if (details.getStatus().equals(TASK_STATUS_COMPLETED)) {
                     setReadOnlyTaskDetail();
                 }
                 view.setTaskDescription(details.getDescription());
