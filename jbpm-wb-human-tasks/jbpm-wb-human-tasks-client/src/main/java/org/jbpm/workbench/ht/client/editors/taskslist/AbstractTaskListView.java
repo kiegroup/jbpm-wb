@@ -198,13 +198,14 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
 
                     @Override
                     public DefaultSelectionEventManager.SelectAction translateSelectionEvent( CellPreviewEvent<TaskSummary> event ) {
+                        DefaultSelectionEventManager.SelectAction ret = DefaultSelectionEventManager.SelectAction.DEFAULT;
                         NativeEvent nativeEvent = event.getNativeEvent();
                         if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) &&
                             // Ignore if the event didn't occur in the correct column.
-                            extendedPagedTable.getColumnIndex( actionsColumn ) == event.getColumn() ) {
-                                return DefaultSelectionEventManager.SelectAction.IGNORE;
+                            extendedPagedTable.isSelectionIgnoreColumn( event.getColumn() ) ) {
+                            ret = DefaultSelectionEventManager.SelectAction.IGNORE;
                         }
-                        return DefaultSelectionEventManager.SelectAction.DEFAULT;
+                        return ret;
                     }
                 } );
         extendedPagedTable.setSelectionModel( selectionModel, noActionColumnManager );
@@ -214,7 +215,9 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
     @Override
     public void initColumns( ExtendedPagedTable<TaskSummary>  extendedPagedTable ) {
         initCellPreview( extendedPagedTable );
-        actionsColumn = initActionsColumn();
+
+        Column actionsColumn = initActionsColumn();
+        extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
 
         List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
         columnMetas.add(new ColumnMeta<>(

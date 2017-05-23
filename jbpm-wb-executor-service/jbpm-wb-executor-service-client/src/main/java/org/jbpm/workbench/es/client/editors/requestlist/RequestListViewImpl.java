@@ -132,7 +132,9 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
     @Override
     public void initColumns( ExtendedPagedTable extendedPagedTable ) {
-        actionsColumn = initActionsColumn();
+        Column actionsColumn = initActionsColumn();
+        extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
+        
         final List<ColumnMeta<RequestSummary>> columnMetas = new ArrayList<ColumnMeta<RequestSummary>>();
         columnMetas.add(new ColumnMeta<>(createNumberColumn(COLUMN_ID,
                                                             req -> req.getJobId()),
@@ -202,11 +204,12 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
                     @Override
                     public DefaultSelectionEventManager.SelectAction translateSelectionEvent( CellPreviewEvent<RequestSummary> event ) {
+                        DefaultSelectionEventManager.SelectAction ret = DefaultSelectionEventManager.SelectAction.DEFAULT;
                         NativeEvent nativeEvent = event.getNativeEvent();
                         if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) ) {
                             // Ignore if the event didn't occur in the correct column.
-                            if ( extendedPagedTable.getColumnIndex( actionsColumn ) == event.getColumn() ) {
-                                return DefaultSelectionEventManager.SelectAction.IGNORE;
+                            if ( extendedPagedTable.isSelectionIgnoreColumn( event.getColumn() ) ) {
+                                ret = DefaultSelectionEventManager.SelectAction.IGNORE;
                             }
                             //Extension for checkboxes
                             Element target = nativeEvent.getEventTarget().cast();
@@ -221,12 +224,12 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                                         selectedRequestSummary.remove( event.getValue() );
                                         input.setChecked( false );
                                     }
-                                    return DefaultSelectionEventManager.SelectAction.IGNORE;
+                                    ret = DefaultSelectionEventManager.SelectAction.IGNORE;
                                 }
                             }
                         }
 
-                        return DefaultSelectionEventManager.SelectAction.DEFAULT;
+                        return ret;
                     }
 
                 } );

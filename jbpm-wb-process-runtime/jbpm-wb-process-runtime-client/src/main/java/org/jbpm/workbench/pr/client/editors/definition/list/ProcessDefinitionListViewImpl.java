@@ -89,7 +89,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
                 presenter.selectProcessDefinition(selectedItem, close);
             }
         });
-
+        final ExtendedPagedTable<ProcessSummary> extendedPagedTable = getListGrid();
         noActionColumnManager = DefaultSelectionEventManager
                 .createCustomManager(new DefaultSelectionEventManager.EventTranslator<ProcessSummary>() {
 
@@ -100,13 +100,14 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
 
                     @Override
                     public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<ProcessSummary> event) {
+                        DefaultSelectionEventManager.SelectAction ret = DefaultSelectionEventManager.SelectAction.DEFAULT;
                         NativeEvent nativeEvent = event.getNativeEvent();
                         if (BrowserEvents.CLICK.equals(nativeEvent.getType()) &&
                             // Ignore if the event didn't occur in the correct column.
-                            listGrid.getColumnIndex(actionsColumn) == event.getColumn()) {
-                                return DefaultSelectionEventManager.SelectAction.IGNORE;
+                            extendedPagedTable.isSelectionIgnoreColumn(event.getColumn())) {
+                            ret = DefaultSelectionEventManager.SelectAction.IGNORE;
                         }
-                        return DefaultSelectionEventManager.SelectAction.DEFAULT;
+                        return ret;
                     }
 
                 });
@@ -124,7 +125,9 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         Column processNameColumn = initProcessNameColumn();
         Column versionColumn = initVersionColumn();
         Column projectColumn = initProjectColumn();
-        actionsColumn = initActionsColumn();
+        Column actionsColumn = initActionsColumn();
+
+        extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
 
         List<ColumnMeta<ProcessSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessSummary>>();
         columnMetas.add(new ColumnMeta<ProcessSummary>(processNameColumn, constants.Name()));

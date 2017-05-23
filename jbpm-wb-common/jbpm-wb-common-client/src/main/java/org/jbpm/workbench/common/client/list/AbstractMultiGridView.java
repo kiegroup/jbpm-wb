@@ -109,8 +109,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     protected int selectedRow = -1;
 
-    protected Column actionsColumn;
-
     protected DefaultSelectionEventManager<T> noActionColumnManager;
 
     public GridGlobalPreferences currentGlobalPreferences;
@@ -399,5 +397,5 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public void saveRefreshValue( int newValue ) {
         filterPagedTable.saveNewRefreshInterval( newValue );
     }
-
+    
 }
