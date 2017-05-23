@@ -69,7 +69,8 @@ public class TaskUtils {
                 status = ImmutableList.of(TASK_STATUS_INPROGRESS, TASK_STATUS_CREATED, TASK_STATUS_RESERVED);
                 break;
             case ADMIN:
-                status = ImmutableList.of(TASK_STATUS_READY, TASK_STATUS_INPROGRESS, TASK_STATUS_CREATED, TASK_STATUS_RESERVED);
+                status = ImmutableList.of(TASK_STATUS_READY, TASK_STATUS_INPROGRESS, TASK_STATUS_CREATED,
+                        TASK_STATUS_RESERVED, TASK_STATUS_SUSPENDED);
                 break;
             default:
                 throw new IllegalStateException("Unrecognized view type '" + type + "'!");

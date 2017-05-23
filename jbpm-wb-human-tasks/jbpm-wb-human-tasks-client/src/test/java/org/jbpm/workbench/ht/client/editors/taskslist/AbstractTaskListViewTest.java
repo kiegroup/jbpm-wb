@@ -30,7 +30,6 @@ import com.google.gwt.view.client.AsyncDataProvider;
 
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.filter.ColumnFilter;
@@ -39,15 +38,16 @@ import org.gwtbootstrap3.client.ui.Button;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.ButtonActionCell;
+import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.workbench.ht.client.editors.taskslist.AbstractTaskListView.ConditionalActionHasCell;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.internal.util.MockUtil;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
@@ -68,9 +68,9 @@ import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 public abstract class AbstractTaskListViewTest {
     
     public static final String TEST_USER_ID = "testUser";
-    public static final String[] TASK_STATUS_LIST =  new String[]{
-            TASK_STATUS_COMPLETED, TASK_STATUS_CREATED, TASK_STATUS_ERROR, TASK_STATUS_EXITED, TASK_STATUS_FAILED,
-            TASK_STATUS_INPROGRESS, TASK_STATUS_OBSOLETE, TASK_STATUS_READY, TASK_STATUS_RESERVED, TASK_STATUS_SUSPENDED };
+    public static final List<String> TASK_STATUS_LIST = TaskUtils.getStatusByType(TaskType.ALL);
+    public static final String[] POSITIVE_POTENTIAL_OWNERS = new String[]{ "otheruser1", "otheruser2", "otheruser3", TEST_USER_ID };
+    public static final String[] NEGATIVE_POTENTIAL_OWNERS = new String[]{ "otheruser1", "otheruser2", "otheruser3", "otheruser4" };
 
     protected CallerMock<UserPreferencesService> callerMockUserPreferencesService;
 
@@ -117,9 +117,6 @@ public abstract class AbstractTaskListViewTest {
     public abstract String getDataSetId();
     
     public abstract int getExpectedDefaultTabFilterCount();
-    
-    private String[] positivePotOwners = new String[]{ "otheruser1", "otheruser2", "otheruser3", TEST_USER_ID };
-    private String[] negativePotOwners = new String[]{ "otheruser1", "otheruser2", "otheruser3", "otheruser4" };
 
     @Before
     public void setupMocks() {
@@ -286,7 +283,7 @@ public abstract class AbstractTaskListViewTest {
     
     @Test
     public void testResumeActionHasCell(){
-        AbstractTaskListView.ResumeActionHasCell resumeCell = new AbstractTaskListView.ResumeActionHasCell(identity, "", cellDelegate);
+        ConditionalActionHasCell resumeCell = new ConditionalActionHasCell("", cellDelegate, getView().getResumeActionCondition());
 
         //Status test
         for(String taskStatus : TASK_STATUS_LIST){
@@ -294,36 +291,31 @@ public abstract class AbstractTaskListViewTest {
             
             //Actual owner
             runActionHasCellTest(taskStatus, TEST_USER_ID, null, resumeCell, shouldRender);
-            runActionHasCellTest(taskStatus, "otheruser", null, resumeCell, false);
-            runActionHasCellTest(taskStatus, null, null, resumeCell, false);
+            runActionHasCellTest(taskStatus, "otheruser", null, resumeCell, shouldRender);
+            runActionHasCellTest(taskStatus, null, null, resumeCell, shouldRender);
             
             //Potential owners
-            runActionHasCellTest(taskStatus, null, positivePotOwners, resumeCell, shouldRender);
-            runActionHasCellTest(taskStatus, "otheruser", positivePotOwners, resumeCell, shouldRender);
-            runActionHasCellTest(taskStatus, null, negativePotOwners, resumeCell, false);
-            runActionHasCellTest(taskStatus, "otheruser", negativePotOwners, resumeCell, false);
+            runActionHasCellTest(taskStatus, null, POSITIVE_POTENTIAL_OWNERS, resumeCell, shouldRender);
+            runActionHasCellTest(taskStatus, "otheruser", POSITIVE_POTENTIAL_OWNERS, resumeCell, shouldRender);
+            runActionHasCellTest(taskStatus, null, NEGATIVE_POTENTIAL_OWNERS, resumeCell, shouldRender);
+            runActionHasCellTest(taskStatus, "otheruser", NEGATIVE_POTENTIAL_OWNERS, resumeCell, shouldRender);
         }
     }
     
     @Test
     public void testSuspendActionHasCell(){
-        AbstractTaskListView.SuspendActionHasCell suspendCell = new AbstractTaskListView.SuspendActionHasCell(identity, "", cellDelegate);
+        ConditionalActionHasCell suspendCell = new ConditionalActionHasCell("", cellDelegate, getView().getSuspendActionCondition());
 
         //Actual owner vs status tests
         for(String taskStatus : TASK_STATUS_LIST){
-            boolean shouldRender = (taskStatus == TASK_STATUS_RESERVED || taskStatus == TASK_STATUS_INPROGRESS);
+            boolean shouldRender = (taskStatus == TASK_STATUS_RESERVED || taskStatus == TASK_STATUS_INPROGRESS || taskStatus == TASK_STATUS_READY);
             runActionHasCellTest(taskStatus, TEST_USER_ID, null, suspendCell, shouldRender);
-            runActionHasCellTest(taskStatus, "otheruser", null, suspendCell, false);
-            runActionHasCellTest(taskStatus, null, null, suspendCell, false);
-        }
-        
-        //Potential owners vs status tests
-        for(String taskStatus : TASK_STATUS_LIST){
-            boolean shouldRender = (taskStatus == TASK_STATUS_READY);
-            runActionHasCellTest(taskStatus, null, positivePotOwners, suspendCell, shouldRender);
-            runActionHasCellTest(taskStatus, "otheruser", positivePotOwners, suspendCell, shouldRender);
-            runActionHasCellTest(taskStatus, null, negativePotOwners, suspendCell, false);
-            runActionHasCellTest(taskStatus, "otheruser", negativePotOwners, suspendCell, false);
+            runActionHasCellTest(taskStatus, "otheruser", null, suspendCell, shouldRender);
+            runActionHasCellTest(taskStatus, null, null, suspendCell, shouldRender);
+            runActionHasCellTest(taskStatus, null, POSITIVE_POTENTIAL_OWNERS, suspendCell, shouldRender);
+            runActionHasCellTest(taskStatus, "otheruser", POSITIVE_POTENTIAL_OWNERS, suspendCell, shouldRender);
+            runActionHasCellTest(taskStatus, null, NEGATIVE_POTENTIAL_OWNERS, suspendCell, shouldRender);
+            runActionHasCellTest(taskStatus, "otheruser", NEGATIVE_POTENTIAL_OWNERS, suspendCell, shouldRender);
         }
     }
     
@@ -342,9 +334,9 @@ public abstract class AbstractTaskListViewTest {
             verify(cellHtmlBuilder, times(isRenderExpected ? 1 : 0)).append(any());
             return null;
         }).when(cellMock).render(any(), any(), eq(cellHtmlBuilder));
-        
+
         cellMock.render(cellContext, testTask, cellHtmlBuilder);
-        
+
         verify(cellMock).render(cellContext, testTask, cellHtmlBuilder);
     }
     

@@ -22,11 +22,11 @@ import javax.enterprise.context.Dependent;
 import org.gwtbootstrap3.client.ui.Button;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
-import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Dependent
@@ -61,28 +61,28 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
                          TAB_ACTIVE,
                          Constants.INSTANCE.Active(),
                          Constants.INSTANCE.FilterActive(),
-                         TaskUtils.getStatusByType(TaskUtils.TaskType.ACTIVE));
+                         getStatusByType(TaskType.ACTIVE));
 
         //Filter status Personal
         initPersonalTabFilter(preferences,
                               TAB_PERSONAL,
                               Constants.INSTANCE.Personal(),
                               Constants.INSTANCE.FilterPersonal(),
-                              TaskUtils.getStatusByType(TaskUtils.TaskType.PERSONAL));
+                              getStatusByType(TaskType.PERSONAL));
 
         //Filter status Group
         initGroupTabFilter(preferences,
                            TAB_GROUP,
                            Constants.INSTANCE.Group(),
                            Constants.INSTANCE.FilterGroup(),
-                           TaskUtils.getStatusByType(TaskUtils.TaskType.GROUP));
+                           getStatusByType(TaskType.GROUP));
 
         //Filter status All
         initOwnTabFilter(preferences,
                          TAB_ALL,
                          Constants.INSTANCE.All(),
                          Constants.INSTANCE.FilterAll(),
-                         TaskUtils.getStatusByType(TaskUtils.TaskType.ALL));
+                         getStatusByType(TaskType.ALL));
 
         filterPagedTable.addAddTableButton( createTabButton );
         selectFirstTabAndEnableQueries(TAB_ACTIVE);
@@ -166,6 +166,32 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
     @Override
     public String getDatasetTaskListPrefix() {
         return DATA_SET_TASK_LIST_PREFIX;
+    }
+    
+    @Override
+    protected ConditionalActionHasCell.ActionCellRenderCondition getSuspendActionCondition(){
+        return task -> {
+            String taskStatus = task.getStatus();
+            String actualOwner = task.getActualOwner();
+            String currentId = identity.getIdentifier();
+            List<String> potOwners = task.getPotOwnersString();
+            return ((actualOwner != null && actualOwner.equals(currentId) &&
+                    (taskStatus.equals(TASK_STATUS_RESERVED) || taskStatus.equals(TASK_STATUS_INPROGRESS))) 
+                || (potOwners != null && potOwners.contains(currentId)
+                    && taskStatus.equals(TASK_STATUS_READY)));
+        };
+    }
+    
+    @Override
+    protected ConditionalActionHasCell.ActionCellRenderCondition getResumeActionCondition(){
+        return task -> {
+            String taskStatus = task.getStatus();
+            String actualOwner = task.getActualOwner();
+            String currentId = identity.getIdentifier();
+            List<String> potOwners = task.getPotOwnersString();
+            return (taskStatus.equals(TASK_STATUS_SUSPENDED) && ((actualOwner != null && actualOwner.equals(currentId)) 
+                || (potOwners != null && potOwners.contains(currentId))));
+        };
     }
 
 }
