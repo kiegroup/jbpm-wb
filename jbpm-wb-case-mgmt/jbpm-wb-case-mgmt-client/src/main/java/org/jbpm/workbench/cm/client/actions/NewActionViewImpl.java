@@ -31,14 +31,10 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
-import org.jbpm.workbench.cm.client.util.FormGroup;
-import org.jbpm.workbench.cm.client.util.FormLabel;
-import org.jbpm.workbench.cm.client.util.Modal;
-import org.jbpm.workbench.cm.client.util.Select;
-import org.jbpm.workbench.cm.client.util.ValidationState;
 import org.jbpm.workbench.cm.model.CaseStageSummary;
 import org.jbpm.workbench.cm.util.CaseActionType;
 import org.jbpm.workbench.cm.util.CaseStageStatus;
+import org.uberfire.client.views.pfly.widgets.*;
 import org.uberfire.mvp.Command;
 
 import static com.google.common.base.Strings.*;

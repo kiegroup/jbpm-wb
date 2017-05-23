@@ -35,6 +35,4 @@
 
   <source path='client'/>
 
-  <public path="static"/>
-
 </module>

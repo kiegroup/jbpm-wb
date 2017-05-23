@@ -36,13 +36,8 @@ import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.cm.client.util.AbstractView;
 import org.jbpm.workbench.cm.client.util.CommaListValuesConverter;
-import org.jbpm.workbench.cm.client.util.FormGroup;
-import org.jbpm.workbench.cm.client.util.FormLabel;
-import org.jbpm.workbench.cm.client.util.InlineNotification;
-import org.jbpm.workbench.cm.client.util.Modal;
-import org.jbpm.workbench.cm.client.util.Popover;
-import org.jbpm.workbench.cm.client.util.ValidationState;
 import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
+import org.uberfire.client.views.pfly.widgets.*;
 import org.uberfire.mvp.Command;
 
 import static org.jboss.errai.common.client.dom.DOMUtil.*;

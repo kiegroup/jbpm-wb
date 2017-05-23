@@ -42,14 +42,13 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import org.jbpm.workbench.cm.client.pagination.PaginationViewImpl;
 import org.jbpm.workbench.cm.client.util.AbstractView;
-import org.jbpm.workbench.cm.client.util.FormGroup;
-import org.jbpm.workbench.cm.client.util.ValidationState;
 import org.jbpm.workbench.cm.model.CaseCommentSummary;
+import org.uberfire.client.views.pfly.widgets.FormGroup;
+import org.uberfire.client.views.pfly.widgets.ValidationState;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
 import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
-
 
 @Dependent
 @Templated

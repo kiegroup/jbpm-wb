@@ -40,8 +40,8 @@ import org.jbpm.workbench.cm.client.events.CaseRoleAssignmentListLoadEvent;
 import org.jbpm.workbench.cm.client.pagination.PaginationViewImpl;
 import org.jbpm.workbench.cm.client.util.AbstractView;
 import org.jbpm.workbench.cm.client.util.CaseRolesAssignmentFilterBy;
-import org.jbpm.workbench.cm.client.util.Select;
 import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
+import org.uberfire.client.views.pfly.widgets.Select;
 
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
 import static org.jbpm.workbench.cm.client.resources.i18n.Constants.TOTAL_NUMBER_OF_ROLES;
