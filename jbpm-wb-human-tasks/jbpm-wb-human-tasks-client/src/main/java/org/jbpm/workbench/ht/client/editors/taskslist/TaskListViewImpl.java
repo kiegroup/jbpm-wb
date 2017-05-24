@@ -51,10 +51,10 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
     }
 
     @Override
-    public void initDefaultFilters( GridGlobalPreferences preferences,
-                                    Button createTabButton ) {
-
-        presenter.setAddingDefaultFilters( true );
+    public void initDefaultFilters(final GridGlobalPreferences preferences,
+                                   final Button createTabButton) {
+        super.initDefaultFilters(preferences,
+                                 createTabButton);
 
         //Filter status Active
         initOwnTabFilter(preferences,
@@ -85,7 +85,7 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
                          getStatusByType(TaskType.ALL));
 
         filterPagedTable.addAddTableButton( createTabButton );
-        selectFirstTabAndEnableQueries(TAB_ACTIVE);
+        selectFirstTabAndEnableQueries();
     }
 
     private void initGroupTabFilter( GridGlobalPreferences preferences,
@@ -149,6 +149,7 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
 
     @Override
     public void resetDefaultFilterTitleAndDescription() {
+        super.resetDefaultFilterTitleAndDescription();
         saveTabSettings(TAB_ACTIVE,
                         constants.Active(),
                         constants.FilterActive());
@@ -164,7 +165,7 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
     }
 
     @Override
-    public String getDatasetTaskListPrefix() {
+    public String getDataSetTaskListPrefix() {
         return DATA_SET_TASK_LIST_PREFIX;
     }
     

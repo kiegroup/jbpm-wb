@@ -17,7 +17,9 @@
 package org.jbpm.workbench.es.client.editors.requestlist;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -38,6 +40,7 @@ import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.workbench.es.util.RequestStatus;
 import org.jbpm.workbench.es.client.editors.jobdetails.JobDetailsPopup;
 import org.jbpm.workbench.es.client.editors.quicknewjob.QuickNewJobPopup;
 import org.jbpm.workbench.es.client.i18n.Constants;
@@ -53,8 +56,7 @@ import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.OR;
-import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
+import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 
 @Dependent
@@ -235,4 +237,77 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         refreshGrid();
     }
 
+    @Override
+    public void setupAdvanceSearchView() {
+        view.addNumericFilter(constants.Id(),
+                              constants.FilterByProcessInstanceId(),
+                              v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                                                                    v)),
+                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                                                                       v))
+        );
+
+        view.addTextFilter(constants.BusinessKey(),
+                           constants.FilterByBusinessKey(),
+                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_BUSINESSKEY,
+                                                                 v)),
+                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_BUSINESSKEY,
+                                                                    v))
+        );
+
+        view.addTextFilter(constants.Type(),
+                           constants.FilterByType(),
+                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_COMMANDNAME,
+                                                                 v)),
+                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_COMMANDNAME,
+                                                                    v))
+        );
+
+        view.addTextFilter(constants.Process_Description(),
+                           constants.FilterByProcessDescription(),
+                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                                 v)),
+                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                                    v))
+        );
+
+        final Map<String, String> status = new HashMap<>();
+        status.put(RequestStatus.CANCELLED.name(),
+                   constants.Cancelled());
+        status.put(RequestStatus.DONE.name(),
+                   constants.Completed());
+        status.put(RequestStatus.ERROR.name(),
+                   constants.Error());
+        status.put(RequestStatus.QUEUED.name(),
+                   constants.Queued());
+        status.put(RequestStatus.RETRYING.name(),
+                   constants.Retrying());
+        status.put(RequestStatus.RUNNING.name(),
+                   constants.Running());
+
+        view.addSelectFilter(constants.Status(),
+                             status,
+                             false,
+                             v -> addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
+                                                                   v)),
+                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
+                                                                      v))
+        );
+
+        //TODO Missing process id and creation date
+
+        final FilterSettings settings = view.getAdvancedSearchFilterSettings();
+        final DataSetFilter filter = new DataSetFilter();
+        filter.addFilterColumn(equalsTo(COLUMN_STATUS,
+                                        RequestStatus.RUNNING.name()));
+        settings.getDataSetLookup().addOperation(filter);
+        view.saveAdvancedSearchFilterSettings(settings);
+
+        view.addActiveFilter(constants.Status(),
+                             constants.Running(),
+                             RequestStatus.RUNNING.name(),
+                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
+                                                                      v))
+        );
+    }
 }

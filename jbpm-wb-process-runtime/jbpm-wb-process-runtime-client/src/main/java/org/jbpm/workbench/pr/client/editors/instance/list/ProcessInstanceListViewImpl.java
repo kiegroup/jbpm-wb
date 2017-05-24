@@ -20,18 +20,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
 import javax.enterprise.context.Dependent;
 
+import com.google.gwt.cell.client.*;
 import com.google.gwt.cell.client.ActionCell.Delegate;
-import com.google.gwt.cell.client.AbstractCell;
-import com.google.gwt.cell.client.CheckboxCell;
-import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.HasCell;
-import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.cell.client.ValueUpdater;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -68,7 +62,6 @@ import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 
@@ -541,10 +534,12 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         return checkColMeta;
     }
 
-    public void initDefaultFilters( GridGlobalPreferences preferences,
-                                    Button createTabButton ) {
+    @Override
+    public void initDefaultFilters(final GridGlobalPreferences preferences,
+                                   final Button createTabButton) {
+        super.initDefaultFilters(preferences,
+                                 createTabButton);
 
-        presenter.setAddingDefaultFilters( true );
         //Filter status Active
         initGenericTabFilter(preferences,
                              TAB_ACTIVE,
@@ -567,7 +562,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                              ProcessInstance.STATE_ABORTED);
 
         filterPagedTable.addAddTableButton( createTabButton );
-        selectFirstTabAndEnableQueries(TAB_ACTIVE);
+        selectFirstTabAndEnableQueries();
     }
 
     private void initGenericTabFilter( GridGlobalPreferences preferences,
@@ -593,26 +588,9 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         tableSettings.setTableDescription( tabDesc );
         tableSettings.setUUID( PROCESS_INSTANCE_DATASET );
 
-        HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
-
-        tabSettingsValues.put( FILTER_TABLE_SETTINGS, dataSetEditorManager.getTableSettingsToStr( tableSettings ) );
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName() );
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription() );
-
-        filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
-
-        final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
-        currentListGrid = extendedPagedTable;
-        extendedPagedTable.setDataProvider( presenter.getDataProvider() );
-
-        filterPagedTable.addTab( extendedPagedTable, key, new Command() {
-            @Override
-            public void execute() {
-                currentListGrid = extendedPagedTable;
-                applyFilterOnPresenter( key );
-            }
-        } );
-
+        addNewTab(key,
+                  preferences,
+                  tableSettings);
     }
 
     @Override
@@ -700,6 +678,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     /*-------------------------------------------------*/
     /*---              DashBuilder                   --*/
     /*-------------------------------------------------*/
+    @Override
     public FilterSettings createTableSettingsPrototype() {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
@@ -717,6 +696,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
     @Override
     public void resetDefaultFilterTitleAndDescription(){
+        super.resetDefaultFilterTitleAndDescription();
         saveTabSettings(TAB_ACTIVE,
                         constants.Active(),
                         constants.FilterActive());

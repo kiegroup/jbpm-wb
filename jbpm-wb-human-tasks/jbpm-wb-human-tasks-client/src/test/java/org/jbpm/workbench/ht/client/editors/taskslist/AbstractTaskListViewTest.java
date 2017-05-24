@@ -261,6 +261,7 @@ public abstract class AbstractTaskListViewTest {
         getView().resetDefaultFilterTitleAndDescription();
         int filterCount = getExpectedDefaultTabFilterCount();
         verify(filterPagedTableMock, times(filterCount)).getMultiGridPreferencesStore();
+        verify(filterPagedTableMock, times(1)).saveTabSettings(eq(AbstractTaskListView.TAB_SEARCH), any(HashMap.class));
         verify(filterPagedTableMock, times(filterCount)).saveTabSettings(anyString(), any(HashMap.class));
     }
 

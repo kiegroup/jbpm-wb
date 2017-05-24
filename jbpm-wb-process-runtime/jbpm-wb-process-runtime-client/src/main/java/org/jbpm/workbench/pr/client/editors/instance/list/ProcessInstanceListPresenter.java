@@ -15,16 +15,14 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import java.util.*;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
@@ -45,8 +43,8 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.forms.client.display.process.QuickNewProcessInstancePopup;
 import org.jbpm.workbench.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
-import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.client.perspectives.ProcessInstanceListPerspective;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
@@ -68,9 +66,6 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
-import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.view.client.Range;
-
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
@@ -88,6 +83,8 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                      Set<String> columns );
 
     }
+
+    private final Constants constants = Constants.INSTANCE;
 
     @Inject
     private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
@@ -195,7 +192,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                     myProcessInstancesFromDataSet.clear();
                     for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
                         myProcessInstancesFromDataSet.add( createProcessInstanceSummaryFromDataSet( dataSet, i ) );
-
                     }
                     List<DataSetOp> ops = tableSettings.getDataSetLookup().getOperationList();
                     String filterValue = isFilteredByProcessId( ops );
@@ -246,7 +242,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     }
 
     public void getDomainSpecifDataForProcessInstances( final int startRange, String filterValue, boolean lastPage ) {
-
         FilterSettings variablesTableSettings = view.getVariablesTableSettings( filterValue );
         variablesTableSettings.setServerTemplateId( selectedServerTemplate );
         variablesTableSettings.setTablePageSize( -1 );
@@ -256,7 +251,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         dataSetQueryHelperDomainSpecific.setLastOrderedColumn( PROCESS_INSTANCE_ID );
         dataSetQueryHelperDomainSpecific.setLastSortOrder( SortOrder.ASCENDING );
         dataSetQueryHelperDomainSpecific.lookupDataSet( 0, createDataSetDomainSpecificCallback( startRange, variablesTableSettings,  lastPage ) );
-
     }
 
     protected ProcessInstanceSummary createProcessInstanceSummaryFromDataSet( DataSet dataSet, int i ) {
@@ -287,6 +281,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         refreshGrid();
     }
 
+    @Override
     @OnOpen
     public void onOpen() {
         this.textSearchStr = place.getParameter(ProcessInstanceListPerspective.PROCESS_ID, "");
@@ -438,4 +433,78 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     public void setProcessService(final Caller<ProcessService> processService) {
         this.processService = processService;
     }
+
+    @Override
+    public void setupAdvanceSearchView() {
+        view.addNumericFilter(constants.Id(),
+                              constants.FilterByProcessInstanceId(),
+                              v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                                                                    v)),
+                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                                                                       v))
+        );
+
+        view.addTextFilter(constants.Initiator(),
+                           constants.FilterByInitiator(),
+                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_IDENTITY,
+                                                                 v)),
+                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_IDENTITY,
+                                                                    v))
+        );
+
+        view.addTextFilter(constants.Correlation_Key(),
+                           constants.FilterByCorrelationKey(),
+                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_CORRELATION_KEY,
+                                                                 v)),
+                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_CORRELATION_KEY,
+                                                                    v))
+        );
+
+        view.addTextFilter(constants.Process_Instance_Description(),
+                           constants.FilterByDescription(),
+                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                                 v)),
+                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                                    v))
+        );
+
+        final Map<String, String> states = new HashMap<>();
+        states.put(String.valueOf(ProcessInstance.STATE_ACTIVE),
+                   constants.Active());
+        states.put(String.valueOf(ProcessInstance.STATE_ABORTED),
+                   constants.Aborted());
+        states.put(String.valueOf(ProcessInstance.STATE_COMPLETED),
+                   constants.Completed());
+        states.put(String.valueOf(ProcessInstance.STATE_PENDING),
+                   constants.Pending());
+        states.put(String.valueOf(ProcessInstance.STATE_SUSPENDED),
+                   constants.Suspended());
+        view.addSelectFilter(constants.State(),
+                             states,
+                             false,
+                             v -> addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
+                                                                   v)),
+                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
+                                                                      v))
+        );
+
+        //TODO missing process definitions
+
+        //TODO missing creation date
+
+        final FilterSettings settings = view.getAdvancedSearchFilterSettings();
+        final DataSetFilter filter = new DataSetFilter();
+        filter.addFilterColumn(equalsTo(COLUMN_STATUS,
+                                        String.valueOf(ProcessInstance.STATE_ACTIVE)));
+        settings.getDataSetLookup().addOperation(filter);
+        view.saveAdvancedSearchFilterSettings(settings);
+
+        view.addActiveFilter(constants.State(),
+                             constants.Active(),
+                             String.valueOf(ProcessInstance.STATE_ACTIVE),
+                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
+                                                                      v))
+        );
+    }
+
 }

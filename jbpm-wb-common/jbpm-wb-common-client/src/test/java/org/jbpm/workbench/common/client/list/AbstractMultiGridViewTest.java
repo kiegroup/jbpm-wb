@@ -21,13 +21,16 @@ import java.util.ArrayList;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-
+import com.google.gwtmockito.WithClassesToStub;
 import org.gwtbootstrap3.client.ui.Button;
 import org.jbpm.workbench.common.model.GenericSummary;
+import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
@@ -35,11 +38,13 @@ import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 import org.uberfire.mocks.CallerMock;
 
+import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 
 @RunWith(GwtMockitoTestRunner.class)
+@WithClassesToStub(AdvancedSearchTable.class)
 public class AbstractMultiGridViewTest {
 
     private static final String TEST_KEY = "TEST";
@@ -48,6 +53,7 @@ public class AbstractMultiGridViewTest {
 
     private static final String TEST_KEY_GRID2 = "TEST_2";
 
+    @Spy
     private AbstractMultiGridView testListView;
 
     @Mock
@@ -63,22 +69,27 @@ public class AbstractMultiGridViewTest {
 
     @Mock
     private MultiGridPreferencesStore multiGridPreferencesStore;
-    
+
     @Mock
     AsyncDataProvider dataProviderMock;
 
     @Mock
     protected FilterPagedTable filterPagedTable;
-    
-    
+
+    @Mock
+    protected FilterSettings filterSettings;
+
+    @Mock
+    protected DataSetEditorManager dataSetEditorManager;
+
     @Before
     public void setupMocks() {
-        testListView = spy(AbstractMultiGridView.class);
         callerMockUserPreferencesService = new CallerMock<UserPreferencesService>(userPreferencesServiceMock);
         testListView.setPreferencesService(callerMockUserPreferencesService);
+        testListView.setDataSetEditorManager(dataSetEditorManager);
         when(userPreferencesServiceMock.loadUserPreferences(TEST_KEY, UserPreferencesType.MULTIGRIDPREFERENCES)).thenReturn(multiGridPreferencesStore);
         when(presenter.getDataProvider()).thenReturn(dataProviderMock);
-
+        when(testListView.createTableSettingsPrototype()).thenReturn(filterSettings);
     }
 
     @Test
@@ -87,6 +98,7 @@ public class AbstractMultiGridViewTest {
         when(multiGridPreferencesStore.getGridsId()).thenReturn(new ArrayList<String>());
         GridGlobalPreferences ggp = new GridGlobalPreferences(TEST_KEY, new ArrayList(), new ArrayList<String>());
         testListView.init(presenter, ggp, mockButton);
+
         verify(userPreferencesServiceMock).loadUserPreferences(TEST_KEY, UserPreferencesType.MULTIGRIDPREFERENCES);
         verify(testListView).initDefaultFilters(ggp, mockButton);
     }
@@ -112,36 +124,30 @@ public class AbstractMultiGridViewTest {
 
         verify(presenter).setAddingDefaultFilters(false);
 
-        ExtendedPagedTable listGrid1 = new ExtendedPagedTable(10, ggp);
-        ExtendedPagedTable listGrid2 = new ExtendedPagedTable(10, ggp);
-        when(testListView.loadGridInstance(ggp, TEST_KEY_GRID1)).thenReturn(listGrid1);
-        when(testListView.loadGridInstance(ggp, TEST_KEY_GRID2)).thenReturn(listGrid2);
         verify(multiGridPreferencesStore).setSelectedGrid(selectedGrid);
         verify(userPreferencesServiceMock).saveUserPreferences(multiGridPreferencesStore);
-
     }
 
     @Test
     public void validKeyForAdditionalFilterIncludesUserDefinedTest() {
         testListView.setFilterPagedTable(filterPagedTable);
         testListView.getValidKeyForAdditionalListGrid(TEST_KEY);
-        verify(filterPagedTable).getValidKeyForAdditionalListGrid(TEST_KEY + AbstractMultiGridView.USER_DEFINED);
 
+        verify(filterPagedTable).getValidKeyForAdditionalListGrid(TEST_KEY + AbstractMultiGridView.USER_DEFINED);
     }
 
     @Test
     public void selectFirstTabAndEnableQueriesTest() {
         GridGlobalPreferences ggp = new GridGlobalPreferences(TEST_KEY, new ArrayList(), new ArrayList<String>());
         testListView.init(presenter,ggp, mockButton);
-        testListView.selectFirstTabAndEnableQueries("defaultKey");
+        testListView.selectFirstTabAndEnableQueries();
 
         verify(presenter).setAddingDefaultFilters(false);
-
     }
 
     @Test
     public void selectionIgnoreColumnTest(){
-        ExtendedPagedTable<GenericSummary> extPagedTable = new ExtendedPagedTable<GenericSummary>(10, new GridGlobalPreferences());
+        ExtendedPagedTable<GenericSummary> extPagedTable = new ExtendedPagedTable<GenericSummary>(new GridGlobalPreferences());
         Column testCol = testListView.createTextColumn("testCol", (val -> val));
 
         extPagedTable.addSelectionIgnoreColumn(testCol);
@@ -152,6 +158,29 @@ public class AbstractMultiGridViewTest {
         assertFalse(extPagedTable.isSelectionIgnoreColumn(extPagedTable.getColumnIndex(testCol)));
         extPagedTable.addSelectionIgnoreColumn(testCol);
         assertTrue(extPagedTable.isSelectionIgnoreColumn(extPagedTable.getColumnIndex(testCol)));
+    }
 
+    @Test
+    public void testCreateExtendedPagedTable() {
+        GridGlobalPreferences ggp = new GridGlobalPreferences(TEST_KEY,
+                                                              new ArrayList(),
+                                                              new ArrayList<String>());
+        testListView.init(presenter,
+                          ggp,
+                          mockButton);
+
+        reset(presenter);
+
+        ExtendedPagedTable table = testListView.createExtendedPagedTable(new GridGlobalPreferences(),
+                                                                         "");
+        assertFalse(table instanceof AdvancedSearchTable);
+        verify(presenter,
+               never()).setupAdvanceSearchView();
+
+        table = testListView.createExtendedPagedTable(new GridGlobalPreferences(),
+                                                      TAB_SEARCH);
+        assertTrue(table instanceof AdvancedSearchTable);
+        verify(presenter,
+               times(1)).setupAdvanceSearchView();
     }
 }

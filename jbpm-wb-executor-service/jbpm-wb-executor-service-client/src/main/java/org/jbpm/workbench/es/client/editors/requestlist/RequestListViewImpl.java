@@ -18,7 +18,6 @@ package org.jbpm.workbench.es.client.editors.requestlist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,11 +52,10 @@ import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
-import org.jbpm.workbench.es.util.RequestStatus;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
+import org.jbpm.workbench.es.util.RequestStatus;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 
@@ -301,10 +299,11 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
     }
 
-    public void initDefaultFilters( GridGlobalPreferences preferences,
-                                    Button createTabButton ) {
-
-        presenter.setAddingDefaultFilters( true );
+    @Override
+    public void initDefaultFilters(final GridGlobalPreferences preferences,
+                                   final Button createTabButton) {
+        super.initDefaultFilters(preferences,
+                                 createTabButton);
 
         initTabFilter(preferences,
                       TAB_ALL,
@@ -344,7 +343,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
         filterPagedTable.addAddTableButton( createTabButton );
 
-        selectFirstTabAndEnableQueries(TAB_ALL);
+        selectFirstTabAndEnableQueries();
     }
 
     private void initTabFilter( GridGlobalPreferences preferences,
@@ -380,28 +379,10 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         tableSettings.setTableName( tabName );
         tableSettings.setTableDescription( tabDesc );
 
-        HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
-
-        tabSettingsValues.put( FILTER_TABLE_SETTINGS, dataSetEditorManager.getTableSettingsToStr( tableSettings ) );
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName() );
-        tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription() );
-
-        filterPagedTable.saveNewTabSettings( key, tabSettingsValues );
-
-        final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, preferences.getInitialColumns(), preferences.getBannedColumns() ), key );
-        currentListGrid = extendedPagedTable;
-        extendedPagedTable.setDataProvider( presenter.getDataProvider() );
-
-        filterPagedTable.addTab( extendedPagedTable, key, new Command() {
-            @Override
-            public void execute() {
-                currentListGrid = extendedPagedTable;
-                applyFilterOnPresenter( key );
-            }
-        } );
-
+        addNewTab(key, preferences, tableSettings);
     }
 
+    @Override
     public FilterSettings createTableSettingsPrototype() {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
@@ -429,6 +410,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
     @Override
     public void resetDefaultFilterTitleAndDescription() {
+        super.resetDefaultFilterTitleAndDescription();
         saveTabSettings(TAB_ALL,
                         constants.All(),
                         constants.FilterAll());

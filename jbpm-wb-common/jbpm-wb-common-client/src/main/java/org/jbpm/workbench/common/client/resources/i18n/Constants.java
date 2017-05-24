@@ -32,7 +32,6 @@ public interface Constants extends Messages {
 
     Constants INSTANCE = GWT.create(Constants.class);
 
-
     String Actions();
 
     String Refresh();
@@ -66,5 +65,9 @@ public interface Constants extends Messages {
     String DataSetError(String dataSet, String errorMessage);
 
     String ServerTemplates();
+
+    String Search();
+
+    String SearchResults();
 
 }

@@ -21,7 +21,9 @@ import java.util.List;
 
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import com.google.gwtmockito.WithClassesToStub;
 import org.gwtbootstrap3.client.ui.Button;
+import org.jbpm.workbench.common.client.list.AdvancedSearchTable;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.es.model.RequestSummary;
@@ -47,6 +49,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
+@WithClassesToStub(AdvancedSearchTable.class)
 public class RequestListViewImplTest {
 
     @Mock
@@ -110,8 +113,9 @@ public class RequestListViewImplTest {
         when(filterPagedTableMock.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStoreMock);
         view.resetDefaultFilterTitleAndDescription();
 
-        verify(filterPagedTableMock, times(7)).getMultiGridPreferencesStore();
-        verify(filterPagedTableMock, times(7)).saveTabSettings(anyString(), any(HashMap.class));
+        verify(filterPagedTableMock, times(8)).getMultiGridPreferencesStore();
+        verify(filterPagedTableMock, times(8)).saveTabSettings(anyString(), any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.TAB_SEARCH), any(HashMap.class));
         verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_0"), any(HashMap.class));
         verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_1"), any(HashMap.class));
         verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_2"), any(HashMap.class));
@@ -162,11 +166,10 @@ public class RequestListViewImplTest {
         when(presenter.getDataProvider()).thenReturn(dataProvider);
         view.initDefaultFilters(new GridGlobalPreferences(), mockButton);
 
-        verify(filterPagedTableMock, times(7)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
+        verify(filterPagedTableMock, times(8)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
         verify(filterPagedTableMock).addAddTableButton(mockButton);
         verify(presenter).setAddingDefaultFilters(true);
         verify(presenter).setAddingDefaultFilters(false);
     }
-
 
 }

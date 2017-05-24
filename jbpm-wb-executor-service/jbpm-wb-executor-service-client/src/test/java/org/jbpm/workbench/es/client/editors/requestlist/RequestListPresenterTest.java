@@ -22,22 +22,29 @@ import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.common.client.util.DateUtils;
+import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.jbpm.workbench.es.model.events.RequestChangedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
+import org.jbpm.workbench.es.util.RequestStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.ParameterizedCommand;
 
 import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
 import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
@@ -61,6 +68,9 @@ public class RequestListPresenterTest {
     @Mock
     private DataSetQueryHelper dataSetQueryHelper;
 
+    @Spy
+    private DataSetLookup dataSetLookup;
+
     @Mock
     private ExtendedPagedTable<RequestSummary> extendedPagedTable;
 
@@ -77,12 +87,13 @@ public class RequestListPresenterTest {
         callerMockExecutorService = new CallerMock<ExecutorService>(executorServiceMock);
 
         filterSettings = createTableSettingsPrototype();
+        filterSettings.setDataSetLookup(dataSetLookup);
 
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(extendedPagedTable.getColumnSortList()).thenReturn(null);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
-
+        when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
 
         presenter = new RequestListPresenter(viewMock,
                 callerMockExecutorService, dataSetQueryHelper, requestChangedEvent);
@@ -222,6 +233,23 @@ public class RequestListPresenterTest {
         builder.tableWidth(1000);
 
         return builder.buildSettings();
+    }
+
+    @Test
+    public void testAdvancedSearchDefaultActiveFilter(){
+        presenter.setupAdvanceSearchView();
+
+        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Status()),
+                                         eq(Constants.INSTANCE.Running()),
+                                         eq(RequestStatus.RUNNING.name()),
+                                         any(ParameterizedCommand.class));
+
+        final ArgumentCaptor<DataSetFilter> captor = ArgumentCaptor.forClass(DataSetFilter.class);
+        verify(dataSetLookup).addOperation(captor.capture());
+
+        final DataSetFilter filter = captor.getValue();
+        assertEquals(1, filter.getColumnFilterList().size());
+        assertEquals(COLUMN_STATUS, filter.getColumnFilterList().get(0).getColumnId());
     }
 
 }

@@ -19,7 +19,10 @@ package org.jbpm.workbench.ht.client.editors.taskslist;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -406,4 +409,74 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         this.taskService = taskService;
     }
 
+    @Override
+    public void setupAdvanceSearchView() {
+        view.addNumericFilter(constants.Id(),
+                              constants.FilterByTaskId(),
+                              v -> addAdvancedSearchFilter(equalsTo(COLUMN_TASK_ID,
+                                                                    v)),
+                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_TASK_ID,
+                                                                       v))
+        );
+
+        view.addTextFilter(constants.Task(),
+                           constants.FilterByTaskName(),
+                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_NAME,
+                                                                 v)),
+                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_NAME,
+                                                                    v))
+        );
+
+        final Map<String, String> status = getStatusByType(TaskType.ALL).stream().sorted().collect(Collectors.toMap(Function.identity(),
+                                                                                                                    Function.identity()));
+        view.addSelectFilter(constants.Status(),
+                             status,
+                             false,
+                             v -> addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
+                                                                   v)),
+                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
+                                                                      v))
+        );
+
+        view.addTextFilter(constants.Process_Instance_Correlation_Key(),
+                           constants.FilterByCorrelationKey(),
+                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
+                                                                 v)),
+                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
+                                                                    v))
+        );
+
+        view.addTextFilter(constants.Actual_Owner(),
+                           constants.FilterByActualOwner(),
+                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_ACTUAL_OWNER,
+                                                                 v)),
+                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ACTUAL_OWNER,
+                                                                    v))
+        );
+
+        view.addTextFilter(constants.Process_Instance_Description(),
+                           constants.FilterByProcessInstanceDescription(),
+                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                                 v)),
+                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                                    v))
+        );
+
+        //TODO missing creation date
+
+        final FilterSettings settings = view.getAdvancedSearchFilterSettings();
+        final DataSetFilter filter = new DataSetFilter();
+        filter.addFilterColumn(equalsTo(COLUMN_STATUS,
+                                        TASK_STATUS_READY));
+        settings.getDataSetLookup().addOperation(filter);
+        view.saveAdvancedSearchFilterSettings(settings);
+
+        view.addActiveFilter(constants.Status(),
+                             TASK_STATUS_READY,
+                             TASK_STATUS_READY,
+                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
+                                                                      v))
+        );
+
+    }
 }
