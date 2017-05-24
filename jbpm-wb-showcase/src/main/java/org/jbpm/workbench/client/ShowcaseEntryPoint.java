@@ -15,7 +15,7 @@
  */
 package org.jbpm.workbench.client;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -29,7 +29,6 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.client.i18n.Constants;
 import org.jbpm.workbench.client.perspectives.ProcessAdminSettingsPerspective;
-import org.jbpm.workbench.client.perspectives.ProjectAuthoringPerspective;
 import org.jbpm.workbench.client.perspectives.TaskAdminSettingsPerspective;
 import org.kie.workbench.common.screens.search.client.menu.SearchMenuBuilder;
 import org.kie.workbench.common.services.shared.service.PlaceManagerActivityService;
@@ -67,7 +66,9 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
                               final User identity,
                               final DefaultWorkbenchFeaturesMenusHelper menusHelper,
                               final WorkbenchMenuBarPresenter menuBar) {
-        super(appConfigService, pmas, activityBeansCache);
+        super(appConfigService,
+              pmas,
+              activityBeansCache);
         this.iocManager = iocManager;
         this.identity = identity;
         this.menusHelper = menusHelper;
@@ -86,7 +87,6 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
                 .newTopLevelMenu(constants.Work()).withItems(getWorkViews()).endMenu()
                 .newTopLevelMenu(constants.Dashboards()).withItems(getDashboardsViews()).endMenu()
                 .newTopLevelMenu(constants.Extensions()).withItems(menusHelper.getExtensionsViews()).endMenu()
-                .newTopLevelMenu(constants.Experimental()).withItems(getExperimentalViews()).endMenu()
                 .newTopLevelCustomMenu(iocManager.lookupBean(SearchMenuBuilder.class).getInstance()).endMenu()
                 .build();
 
@@ -99,58 +99,41 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
     }
 
     protected List<? extends MenuItem> getAuthoringViews() {
-        final List<MenuItem> result = new ArrayList<>(1);
-
-        result.add(MenuFactory.newSimpleItem(constants.Process_Authoring()).perspective(ProjectAuthoringPerspective.PERSPECTIVE_ID).endMenu().build().getItems().get(0));
-
-        return result;
+        return Arrays.asList(
+                MenuFactory.newSimpleItem(constants.Project_Authoring()).perspective(LIBRARY).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(constants.artifactRepository()).perspective(GUVNOR_M2REPO).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(constants.Administration()).perspective(ADMINISTRATION).endMenu().build().getItems().get(0)
+        );
     }
 
     protected List<? extends MenuItem> getProcessManagementViews() {
-        final List<MenuItem> result = new ArrayList<>(3);
-
-        result.add(MenuFactory.newSimpleItem(constants.Process_Definitions()).perspective(PROCESS_DEFINITIONS).endMenu().build().getItems().get(0));
-        result.add(MenuFactory.newSimpleItem(constants.Process_Instances()).perspective(PROCESS_INSTANCES).endMenu().build().getItems().get(0));
-        result.add(MenuFactory.newSimpleItem(constants.Process_Instances_Admin()).perspective(ProcessAdminSettingsPerspective.PERSPECTIVE_ID).endMenu().build().getItems().get(0));
-        result.add(MenuFactory.newSimpleItem(constants.Tasks_Admin()).perspective(TASKS_ADMIN).endMenu().build().getItems().get(0));
-
-        return result;
-    }
-
-    protected List<? extends MenuItem> getExperimentalViews() {
-        final List<MenuItem> result = new ArrayList<>(3);
-
-        result.add(MenuFactory.newSimpleItem(constants.Grid_Base_Test()).perspective("Grid Base Test").endMenu().build().getItems().get(0));
-        result.add(MenuFactory.newSimpleItem(constants.Logs()).perspective("Logs").endMenu().build().getItems().get(0));
-
-        return result;
+        return Arrays.asList(
+                MenuFactory.newSimpleItem(constants.Process_Definitions()).perspective(PROCESS_DEFINITIONS).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(constants.Process_Instances()).perspective(PROCESS_INSTANCES).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(constants.Process_Instances_Admin()).perspective(ProcessAdminSettingsPerspective.PERSPECTIVE_ID).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(constants.Tasks_Admin()).perspective(TASKS_ADMIN).endMenu().build().getItems().get(0)
+        );
     }
 
     protected List<? extends MenuItem> getDeploymentViews() {
-        final List<MenuItem> result = new ArrayList<>(2);
-
-        result.add(MenuFactory.newSimpleItem(constants.Execution_Servers()).place(new DefaultPlaceRequest(SERVER_MANAGEMENT)).endMenu().build().getItems().get(0));
-        result.add(MenuFactory.newSimpleItem(constants.Jobs()).perspective(JOBS).endMenu().build().getItems().get(0));
-
-        return result;
+        return Arrays.asList(
+                MenuFactory.newSimpleItem(constants.Execution_Servers()).place(new DefaultPlaceRequest(SERVER_MANAGEMENT)).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(constants.Jobs()).perspective(JOBS).endMenu().build().getItems().get(0)
+        );
     }
 
     protected List<? extends MenuItem> getWorkViews() {
-        final List<MenuItem> result = new ArrayList<>(4);
-
-        result.add(MenuFactory.newSimpleItem(constants.Tasks_List()).perspective(TASKS).endMenu().build().getItems().get(0));
-        result.add(MenuFactory.newSimpleItem(constants.Tasks_List_Admin()).perspective(TaskAdminSettingsPerspective.PERSPECTIVE_ID).endMenu().build().getItems().get(0));
-        result.add(MenuFactory.newSimpleItem(constants.Data_Sets()).perspective(DATASET_AUTHORING).endMenu().build().getItems().get(0));
-
-        return result;
+        return Arrays.asList(
+                MenuFactory.newSimpleItem(constants.Tasks_List()).perspective(TASKS).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(constants.Tasks_List_Admin()).perspective(TaskAdminSettingsPerspective.PERSPECTIVE_ID).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(constants.Data_Sets()).perspective(DATASET_AUTHORING).endMenu().build().getItems().get(0)
+        );
     }
 
     protected List<? extends MenuItem> getDashboardsViews() {
-        final List<MenuItem> result = new ArrayList<>(1);
-
-        result.add(MenuFactory.newSimpleItem(constants.Process_Dashboard()).perspective(PROCESS_DASHBOARD).endMenu().build().getItems().get(0));
-
-        return result;
+        return Arrays.asList(
+                MenuFactory.newSimpleItem(constants.Process_Dashboard()).perspective(PROCESS_DASHBOARD).endMenu().build().getItems().get(0)
+        );
     }
 
     @Produces

@@ -43,7 +43,7 @@ public interface Constants extends Messages {
 
     String Business_Dashboard();
 
-    String Process_Authoring();
+    String Project_Authoring();
 
     String Authoring();
 
@@ -85,8 +85,6 @@ public interface Constants extends Messages {
 
     String Asset_Management();
 
-    String Logs();
-
     String DeploymentDescriptor();
 
     String Groups();
@@ -98,10 +96,6 @@ public interface Constants extends Messages {
     String Case_Management();
 
     String Cases();
-
-    String Grid_Base_Test();
-
-    String Documents();
 
     String Data_Sets();
 
@@ -130,5 +124,31 @@ public interface Constants extends Messages {
     String Improve_Text();
 
     String ActionNotImplementedYet();
+
+    String Administration();
+
+    String artifactRepository();
+
+    String repositories();
+
+    String listRepositories();
+
+    String cloneRepository();
+
+    String newRepository();
+
+    String MenuOrganizationalUnits();
+
+    String MenuManageOrganizationalUnits();
+
+    String Repository();
+
+    String logoBannerError();
+
+    String assetSearch();
+
+    String Examples();
+
+    String Messages();
 
 }
