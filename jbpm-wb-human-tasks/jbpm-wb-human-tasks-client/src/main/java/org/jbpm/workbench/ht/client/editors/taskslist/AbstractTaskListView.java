@@ -305,13 +305,13 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
             presenter.releaseTask(task);
         }));
 
-        cells.add(new SuspendActionHasCell(identity, constants.Suspend(), task -> {
+        cells.add(new ConditionalActionHasCell(constants.Suspend(), task -> {
             presenter.suspendTask(task);
-        }));
+        }, getSuspendActionCondition()));
 
-        cells.add(new ResumeActionHasCell(identity, constants.Resume(), task -> {
+        cells.add(new ConditionalActionHasCell(constants.Resume(), task -> {
             presenter.resumeTask(task);
-        }));
+        }, getResumeActionCondition()));
 
         cells.add(new CompleteActionHasCell(constants.Open(), task -> {
             selectedRow = -1;
@@ -328,6 +328,22 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
         actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
 
+    }
+    
+    protected ConditionalActionHasCell.ActionCellRenderCondition getSuspendActionCondition(){
+        return task -> {
+            String taskStatus = task.getStatus();
+            return (taskStatus.equals(TASK_STATUS_RESERVED) ||
+                    taskStatus.equals(TASK_STATUS_INPROGRESS) ||
+                    taskStatus.equals(TASK_STATUS_READY));
+        };
+    }
+    
+    protected ConditionalActionHasCell.ActionCellRenderCondition getResumeActionCondition(){
+        return task -> {
+            String taskStatus = task.getStatus();
+            return taskStatus.equals(TASK_STATUS_SUSPENDED);
+        };
     }
 
     protected static class CompleteActionHasCell extends ButtonActionCell<TaskSummary> {
@@ -376,48 +392,23 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
         }
     }
 
-    protected static class ResumeActionHasCell extends ButtonActionCell<TaskSummary> {
+    protected static class ConditionalActionHasCell extends ButtonActionCell<TaskSummary> {
         
-        private final User identity;
+        protected interface ActionCellRenderCondition{
+            boolean shouldRender(final TaskSummary t);
+        }
+        
+        private final ActionCellRenderCondition cond;
 
-        public ResumeActionHasCell( final User identity, final String text, final ActionCell.Delegate<TaskSummary> delegate ) {
-            super( text, delegate );
-            this.identity = identity;
+        public ConditionalActionHasCell(final String text, final ActionCell.Delegate<TaskSummary> delegate, final ActionCellRenderCondition cond) {
+            super(text, delegate);
+            this.cond = cond;
         }
 
         @Override
-        public void render( final Cell.Context context, final TaskSummary value, final SafeHtmlBuilder sb ) {
-            String taskStatus = value.getStatus();
-            String actualOwner = value.getActualOwner();
-            String currentId = identity.getIdentifier();
-            List<String> potOwners =  value.getPotOwnersString();
-            if ( taskStatus.equals( TASK_STATUS_SUSPENDED ) && ( ( actualOwner != null && actualOwner.equals( currentId ) ) 
-                || ( potOwners != null && potOwners.contains( currentId ) ) ) ){
-                super.render( context, value, sb );
-            }
-        }
-    }
-
-    protected static class SuspendActionHasCell extends ButtonActionCell<TaskSummary> {
-        
-        private final User identity;
-
-        public SuspendActionHasCell( final User identity, final String text, final ActionCell.Delegate<TaskSummary> delegate ) {
-            super( text, delegate );
-            this.identity = identity;
-        }
-
-        @Override
-        public void render( final Cell.Context context, final TaskSummary value, final SafeHtmlBuilder sb ) {
-            String taskStatus = value.getStatus();
-            String actualOwner = value.getActualOwner();
-            String currentId = identity.getIdentifier();
-            List<String> potOwners =  value.getPotOwnersString();
-            if ( ( actualOwner != null && actualOwner.equals( currentId ) &&
-                    ( taskStatus.equals( TASK_STATUS_RESERVED ) || taskStatus.equals( TASK_STATUS_INPROGRESS ) ) ) 
-                || ( potOwners != null && potOwners.contains(currentId)
-                    && taskStatus.equals( TASK_STATUS_READY ) ) ){
-                super.render( context, value, sb );
+        public void render(final Cell.Context context, final TaskSummary value, final SafeHtmlBuilder sb) {
+            if(cond.shouldRender(value)){
+                super.render(context, value, sb);
             }
         }
     }
