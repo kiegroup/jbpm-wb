@@ -45,7 +45,7 @@ import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.AbstractListView;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.DocumentSummary;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;

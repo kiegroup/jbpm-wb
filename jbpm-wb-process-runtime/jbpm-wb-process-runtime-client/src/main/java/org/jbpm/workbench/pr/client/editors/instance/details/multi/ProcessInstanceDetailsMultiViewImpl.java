@@ -38,7 +38,7 @@ import org.gwtbootstrap3.client.ui.TabPane;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 
 @Dependent
 public class ProcessInstanceDetailsMultiViewImpl extends Composite

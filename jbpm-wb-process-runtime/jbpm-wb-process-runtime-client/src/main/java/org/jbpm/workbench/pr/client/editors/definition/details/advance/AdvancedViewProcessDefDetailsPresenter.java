@@ -31,7 +31,7 @@ import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.model.TaskDefSummary;
 import org.jbpm.workbench.pr.client.editors.definition.details.BaseProcessDefDetailsPresenter;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 
 

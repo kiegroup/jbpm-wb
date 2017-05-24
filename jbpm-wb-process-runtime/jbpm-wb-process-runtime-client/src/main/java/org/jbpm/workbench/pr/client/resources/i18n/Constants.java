@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.pr.client.i18n;
+package org.jbpm.workbench.pr.client.resources.i18n;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Messages;
@@ -206,6 +206,8 @@ public interface Constants extends Messages {
     String Services();
 
     String Id();
+    
+    String Errors();
 
     String Logs();
 
@@ -306,4 +308,9 @@ public interface Constants extends Messages {
     String ProcessInstanceNeedsToBeActiveInOrderToBeAborted();
 
     String SelectServerTemplate();
+    
+    String ErrorCountNumber(int errCount);
+    
+    String ErrorCountViewLink();
+    
 }

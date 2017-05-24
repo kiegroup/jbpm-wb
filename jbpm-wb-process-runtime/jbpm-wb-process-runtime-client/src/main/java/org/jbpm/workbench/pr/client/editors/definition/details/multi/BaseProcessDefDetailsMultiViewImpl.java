@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 
 public abstract class BaseProcessDefDetailsMultiViewImpl extends Composite
         implements BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView {

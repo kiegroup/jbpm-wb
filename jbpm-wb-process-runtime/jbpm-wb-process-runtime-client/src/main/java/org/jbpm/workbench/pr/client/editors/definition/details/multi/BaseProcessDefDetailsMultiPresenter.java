@@ -27,7 +27,7 @@ import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplay
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
 import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramUtil;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.client.perspectives.ProcessInstanceListPerspective;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;

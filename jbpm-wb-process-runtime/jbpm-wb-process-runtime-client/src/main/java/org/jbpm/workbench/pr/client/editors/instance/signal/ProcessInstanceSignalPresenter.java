@@ -27,7 +27,7 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;

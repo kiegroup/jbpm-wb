@@ -20,15 +20,18 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.cell.client.ActionCell.Delegate;
+import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.cell.client.ValueUpdater;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -36,8 +39,10 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.Header;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
@@ -57,7 +62,9 @@ import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
-import org.jbpm.workbench.pr.client.i18n.Constants;
+import org.jbpm.workbench.pr.client.resources.ProcessRuntimeResources;
+import org.jbpm.workbench.pr.client.resources.css.ProcessRuntimeCSS;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
@@ -83,9 +90,9 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     private final Constants constants = Constants.INSTANCE;
 
     @Inject
-    protected DataSetEditorManager dataSetEditorManager;
+    private DataSetEditorManager dataSetEditorManager;
 
-    private Column actionsColumn;
+    private List<Column<ProcessInstanceSummary, ?>> ignoreSelectionColumns = new ArrayList<Column<ProcessInstanceSummary, ?>>();
 
     private AnchorListItem bulkAbortNavLink;
     private AnchorListItem bulkSignalNavLink;
@@ -115,6 +122,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         initColumns.add(COLUMN_PROCESS_INSTANCE_DESCRIPTION);
         initColumns.add(COLUMN_PROCESS_VERSION);
         initColumns.add(COLUMN_LAST_MODIFICATION_DATE);
+        initColumns.add(COLUMN_ERROR_COUNT);
         initColumns.add(COL_ID_ACTIONS);
 
         final Button button = new Button();
@@ -167,12 +175,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             public void onSelectionChange(SelectionChangeEvent event) {
 
                 boolean close = false;
-                if (selectedRow == -1) {
-                    extendedPagedTable.setRowStyles(selectedStyles);
-                    selectedRow = extendedPagedTable.getKeyboardSelectedRow();
-                    extendedPagedTable.redraw();
-
-                } else if (extendedPagedTable.getKeyboardSelectedRow() != selectedRow) {
+                if (selectedRow == -1 || extendedPagedTable.getKeyboardSelectedRow() != selectedRow) {
                     extendedPagedTable.setRowStyles(selectedStyles);
                     selectedRow = extendedPagedTable.getKeyboardSelectedRow();
                     extendedPagedTable.redraw();
@@ -196,33 +199,34 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
                     @Override
                     public DefaultSelectionEventManager.SelectAction translateSelectionEvent( CellPreviewEvent<ProcessInstanceSummary> event ) {
+                        DefaultSelectionEventManager.SelectAction ret = DefaultSelectionEventManager.SelectAction.DEFAULT;
                         NativeEvent nativeEvent = event.getNativeEvent();
                         if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) ) {
                             // Ignore if the event didn't occur in the correct column.
-                            if ( extendedPagedTable.getColumnIndex( actionsColumn ) == event.getColumn() ) {
-                                return DefaultSelectionEventManager.SelectAction.IGNORE;
-                            }
-                            //Extension for checkboxes
-                            Element target = nativeEvent.getEventTarget().cast();
-                            if ( "input".equals( target.getTagName().toLowerCase() ) ) {
-                                final InputElement input = target.cast();
-                                if ( "checkbox".equals( input.getType().toLowerCase() ) ) {
-                                    // Synchronize the checkbox with the current selection state.
-                                    if ( !selectedProcessInstances.contains( event.getValue() ) ) {
-                                        selectedProcessInstances.add( event.getValue() );
-                                        input.setChecked( true );
-                                    } else {
-                                        selectedProcessInstances.remove( event.getValue() );
-                                        input.setChecked( false );
+                            if ( isSelectionIgnoreColumn( event.getColumn() ) ){
+                                ret = DefaultSelectionEventManager.SelectAction.IGNORE;
+                            }else{
+                                //Extension for checkboxes
+                                Element target = nativeEvent.getEventTarget().cast();
+                                if ( "input".equals( target.getTagName().toLowerCase() ) ) {
+                                    final InputElement input = target.cast();
+                                    if ( "checkbox".equals( input.getType().toLowerCase() ) ) {
+                                        // Synchronize the checkbox with the current selection state.
+                                        if ( !selectedProcessInstances.contains( event.getValue() ) ) {
+                                            selectedProcessInstances.add( event.getValue() );
+                                            input.setChecked( true );
+                                        } else {
+                                            selectedProcessInstances.remove( event.getValue() );
+                                            input.setChecked( false );
+                                        }
+                                        getListGrid().redraw();
+                                        controlBulkOperations();
+                                        ret = DefaultSelectionEventManager.SelectAction.IGNORE;
                                     }
-                                    getListGrid().redraw();
-                                    controlBulkOperations();
-                                    return DefaultSelectionEventManager.SelectAction.IGNORE;
                                 }
                             }
                         }
-
-                        return DefaultSelectionEventManager.SelectAction.DEFAULT;
+                        return ret;
                     }
 
                 } );
@@ -234,8 +238,11 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     @Override
     public void initColumns( ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
         final ColumnMeta checkColumnMeta = initChecksColumn();
-
-        actionsColumn = initActionsColumn();
+        Column<ProcessInstanceSummary, ?> actionsColumn = initActionsColumn();
+        Column<ProcessInstanceSummary, ?> errorCountColumn = initErrorCountColumn();
+        
+        ignoreSelectionColumns.add(actionsColumn);
+        ignoreSelectionColumns.add(errorCountColumn);
 
         final List<ColumnMeta<ProcessInstanceSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessInstanceSummary>>();
 
@@ -282,8 +289,8 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_CORRELATION_KEY,
                                                           process -> process.getCorrelationKey()),
                                          constants.Correlation_Key()));
-        columnMetas.add(new ColumnMeta<>(initActionsColumn(),
-                                         constants.Actions()));
+        columnMetas.add(new ColumnMeta<>(errorCountColumn, constants.Errors()));
+        columnMetas.add(new ColumnMeta<>(actionsColumn, constants.Actions()));
 
         List<GridColumnPreference> columPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
 
@@ -299,10 +306,22 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             }
         }
         extendedPagedTable.addColumns(columnMetas);
-        extendedPagedTable.setColumnWidth(checkColumnMeta.getColumn(),
-                                          37,
-                                          Style.Unit.PX);
+        extendedPagedTable.setColumnWidth(checkColumnMeta.getColumn(), 38, Style.Unit.PX);
+        extendedPagedTable.setColumnWidth(errorCountColumn, 65, Style.Unit.PX);
+        
         extendedPagedTable.storeColumnToPreferences();
+    }
+    
+    private boolean isSelectionIgnoreColumn(int colIx){
+        boolean ret = false;
+        ExtendedPagedTable extendedPagedTable = getListGrid();
+        for(Column<ProcessInstanceSummary, ?> col : ignoreSelectionColumns){
+            if(extendedPagedTable.getColumnIndex(col) == colIx){
+                ret = true;
+                break;
+            }
+        }
+        return ret;
     }
 
     private boolean isColumnAdded( List<ColumnMeta<ProcessInstanceSummary>> columnMetas,
@@ -421,8 +440,56 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
         controlBulkOperations();
     }
+    
+    private Column<ProcessInstanceSummary, ProcessInstanceSummary> initErrorCountColumn() {
+        
+        Column<ProcessInstanceSummary, ProcessInstanceSummary> column = new Column<ProcessInstanceSummary, ProcessInstanceSummary>(
+                new AbstractCell<ProcessInstanceSummary>(){
 
-    private Column initActionsColumn() {
+            @Override
+            public void render(Context context, ProcessInstanceSummary value, SafeHtmlBuilder sb) {
+                int errCount =  value != null ? value.getErrorCount() : 0;
+                ProcessRuntimeCSS css = ProcessRuntimeResources.INSTANCE.css();
+                String badgeHtml = null;
+                if(errCount > 0){
+                    //TODO: set link URL to correct error view perspective path
+                    String linkToErrorView = "#Error View?processInstanceId=" + value.getProcessInstanceId();
+                    String elementId = DOM.createUniqueId();
+                    String popoverAttrs = "data-toggle=\"popover\" data-html=\"true\" data-placement=\"right\"" +
+                            " data-content=\"" + constants.ErrorCountNumber(errCount) + " | <a href='" + linkToErrorView +
+                            "' title='" + constants.ErrorCountViewLink() + "'>" + constants.ErrorCountViewLink() + "</a>\"" +
+                            " data-container=\"body\" data-trigger=\"hover focus\"";
+                    badgeHtml = "<a id=\"" + elementId + "\" href=\"#\" class=\"badge " + css.processInstanceErrorCount() +
+                            " " + css.processInstanceErrorCountPresent() + "\" " + popoverAttrs + ">" + errCount + "</a>";
+                    Scheduler.get().scheduleDeferred(() -> initPopover(elementId));
+                }else{
+                    badgeHtml = "<span class=\"badge " +  css.processInstanceErrorCount() + "\">" + errCount + "</span>";
+                }
+                sb.appendHtmlConstant(badgeHtml);
+            }
+
+        }){
+
+            @Override
+            public ProcessInstanceSummary getValue(ProcessInstanceSummary process) {
+                return process;
+            }
+
+        };
+
+        column.setSortable(true);
+        column.setDataStoreName(COLUMN_ERROR_COUNT);
+        return column;
+    }
+    
+    private native void initPopover(final String uid) /*-{
+        $wnd.jQuery(document).ready(function() {
+            var jQueryId = "#" + uid;
+            $wnd.jQuery(jQueryId).popover();
+        });
+    }-*/;    
+
+    private Column<ProcessInstanceSummary, ProcessInstanceSummary> initActionsColumn() {
         List<HasCell<ProcessInstanceSummary, ?>> cells = new LinkedList<HasCell<ProcessInstanceSummary, ?>>();
 
         cells.add(new ProcessInstanceSummaryActionCell(constants.Signal(), new Delegate<ProcessInstanceSummary>() {
@@ -442,8 +509,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         } ) );
 
         CompositeCell<ProcessInstanceSummary> cell = new CompositeCell<ProcessInstanceSummary>( cells );
-        Column<ProcessInstanceSummary, ProcessInstanceSummary> actionsColumn = new Column<ProcessInstanceSummary, ProcessInstanceSummary>(
-                cell ) {
+        Column<ProcessInstanceSummary, ProcessInstanceSummary> actionsColumn = new Column<ProcessInstanceSummary, ProcessInstanceSummary>( cell ) {
             @Override
             public ProcessInstanceSummary getValue( ProcessInstanceSummary object ) {
                 return object;

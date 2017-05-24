@@ -317,7 +317,7 @@ public class ProcessInstanceListPresenterTest {
     public static ProcessInstanceSummary createProcessInstanceSummary(int key, int status) {
         return new ProcessInstanceSummary(key, "procTest", "test.0.1", "Test Proc", "1.0",
                 status, new Date(), new Date(), "intiatior", "procTestInstanceDesc", "cKey",
-                Long.valueOf(0), new Date());
+                Long.valueOf(0), new Date(), 0);
     }
 
     @Test
@@ -403,6 +403,7 @@ public class ProcessInstanceListPresenterTest {
         final String TEST_CORREL_KEY = "TEST_CORREL_KEY";
         final Long TEST_PARENT_PROC_INST_ID = Long.valueOf(66);
         final Date TEST_LAST_MODIF_DATE = new Date();
+        final int TEST_ERROR_COUNT = 66;
 
         when(dataSetQueryHelper.getColumnLongValue(dataSetProcessVar, COLUMN_PROCESS_INSTANCE_ID, 0)).thenReturn(TEST_PROC_INST_ID);
         when(dataSetQueryHelper.getColumnStringValue(dataSetProcessVar, COLUMN_PROCESS_ID, 0)).thenReturn(TEST_PROC_ID);
@@ -417,6 +418,7 @@ public class ProcessInstanceListPresenterTest {
         when(dataSetQueryHelper.getColumnStringValue(dataSetProcessVar, COLUMN_CORRELATION_KEY, 0)).thenReturn(TEST_CORREL_KEY);
         when(dataSetQueryHelper.getColumnLongValue(dataSetProcessVar, COLUMN_PARENT_PROCESS_INSTANCE_ID, 0)).thenReturn(TEST_PARENT_PROC_INST_ID);
         when(dataSetQueryHelper.getColumnDateValue(dataSetProcessVar, COLUMN_LAST_MODIFICATION_DATE, 0)).thenReturn(TEST_LAST_MODIF_DATE);
+        when(dataSetQueryHelper.getColumnIntValue(dataSetProcessVar, COLUMN_ERROR_COUNT, 0)).thenReturn(TEST_ERROR_COUNT);
 
         ProcessInstanceSummary pis = presenter.createProcessInstanceSummaryFromDataSet(dataSetProcessVar, 0);
 
@@ -433,6 +435,7 @@ public class ProcessInstanceListPresenterTest {
         assertEquals(TEST_CORREL_KEY, pis.getCorrelationKey());
         assertEquals(TEST_PARENT_PROC_INST_ID, pis.getParentId());
         assertEquals(TEST_LAST_MODIF_DATE, pis.getLastModificationDate());
+        assertEquals(TEST_ERROR_COUNT, pis.getErrorCount());
     }
 
 }
