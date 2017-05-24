@@ -44,7 +44,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class ProcessInstanceListViewTest {
+public class ProcessInstanceListViewImplTest {
 
     @Mock
     protected ExtendedPagedTable<ProcessInstanceSummary> currentListGrid;
@@ -96,14 +96,12 @@ public class ProcessInstanceListViewTest {
 
     @Test
     public void testInitDefaultFilters() {
-
         view.initDefaultFilters(new GridGlobalPreferences("testGrid", new ArrayList<String>(), new ArrayList<String>()), null);
 
-        verify(filterPagedTable, times(3)).addTab((ExtendedPagedTable) any(), anyString(), (Command) any());
-        verify(filterPagedTable, times(3)).saveNewTabSettings(anyString(), (HashMap<String, Object>) any());
+        verify(filterPagedTable, times(3)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
+        verify(filterPagedTable, times(3)).saveNewTabSettings(anyString(), any(HashMap.class));
         verify(presenter).setAddingDefaultFilters(true);
         verify(presenter).setAddingDefaultFilters(false);
-
     }
 
     @Test
@@ -111,7 +109,9 @@ public class ProcessInstanceListViewTest {
         view.resetDefaultFilterTitleAndDescription();
 
         verify(filterPagedTable, times(3)).getMultiGridPreferencesStore();
-        verify(filterPagedTable, times(3)).saveTabSettings(anyString(), any(HashMap.class));
+        verify(filterPagedTable).saveTabSettings(eq(ProcessInstanceListViewImpl.TAB_ACTIVE), any(HashMap.class));
+        verify(filterPagedTable).saveTabSettings(eq(ProcessInstanceListViewImpl.TAB_COMPLETED), any(HashMap.class));
+        verify(filterPagedTable).saveTabSettings(eq(ProcessInstanceListViewImpl.TAB_ABORTED), any(HashMap.class));
     }
 
     @Test
@@ -160,6 +160,5 @@ public class ProcessInstanceListViewTest {
 
         verify(currentListGrid).addColumns(anyList());
     }
-    
 
 }
