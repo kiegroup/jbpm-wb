@@ -19,7 +19,6 @@ import java.util.Collection;
 
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
-import com.google.gwt.view.client.ProvidesKey;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.PagedTable;
@@ -27,23 +26,25 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> {
 
-    public ExtendedPagedTable( int pageSize,
-                               GridGlobalPreferences gridPreferences ) {
-        super( pageSize, new ProvidesKey<T>() {
+    public ExtendedPagedTable(GridGlobalPreferences gridPreferences) {
+        super(DEFAULT_PAGE_SIZE,
+              (T item) -> (item == null) ? null : item.getId(),
+              gridPreferences,
+              true);
 
-            @Override
-            public Object getKey( T item ) {
-                return ( item == null ) ? null : item.getId();
-            }
-        }, gridPreferences, true );
+        dataGrid.addColumnSortHandler(new AsyncHandler(dataGrid));
 
-        dataGrid.addColumnSortHandler( new AsyncHandler( dataGrid ) );
+        setShowLastPagerButton(false);
+        setShowFastFordwardPagerButton(false);
+        createPageSizesListBox(5,
+                               20,
+                               5);
     }
 
-    public void setTooltip( int row,
-                            int column,
-                            String description ) {
-        dataGrid.getRowElement( row ).getCells().getItem( column ).setTitle( description );
+    public void setTooltip(int row,
+                           int column,
+                           String description) {
+        dataGrid.getRowElement(row).getCells().getItem(column).setTitle(description);
     }
 
     public int getKeyboardSelectedColumn() {
@@ -58,16 +59,15 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
         return dataGrid.getColumnCount();
     }
 
-    public void removeColumn( Column<T, ?> col ) {
-        dataGrid.removeColumn( col );
+    public void removeColumn(Column<T, ?> col) {
+        dataGrid.removeColumn(col);
     }
 
-    public void removeColumnMeta( ColumnMeta<T> columnMeta ) {
-        columnPicker.removeColumn( columnMeta );
+    public void removeColumnMeta(ColumnMeta<T> columnMeta) {
+        columnPicker.removeColumn(columnMeta);
     }
 
     public Collection<ColumnMeta<T>> getColumnMetaList() {
         return columnPicker.getColumnMetaList();
     }
-
 }

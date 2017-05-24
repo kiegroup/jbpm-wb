@@ -159,4 +159,12 @@ public interface Constants extends Messages {
 
     String SelectServerTemplate();
 
+    String FilterByProcessInstanceId();
+
+    String FilterByType();
+
+    String FilterByBusinessKey();
+
+    String FilterByProcessDescription();
+
 }

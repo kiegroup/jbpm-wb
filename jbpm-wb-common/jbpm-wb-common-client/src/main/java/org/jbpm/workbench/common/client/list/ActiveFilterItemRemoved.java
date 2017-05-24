@@ -16,19 +16,15 @@
 
 package org.jbpm.workbench.common.client.list;
 
-import org.jbpm.workbench.common.model.GenericSummary;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
+public class ActiveFilterItemRemoved {
 
-public interface MultiGridView<T extends GenericSummary, V> extends ListView<T, V>,
-                                                                    AdvancedSearchFiltersView {
+    private ActiveFilterItem activeFilterItem;
 
-    int getRefreshValue();
+    public ActiveFilterItemRemoved(final ActiveFilterItem activeFilterItem) {
+        this.activeFilterItem = activeFilterItem;
+    }
 
-    void saveRefreshValue(int newValue);
-
-    void applyFilterOnPresenter(String key);
-
-    FilterSettings getAdvancedSearchFilterSettings();
-
-    void saveAdvancedSearchFilterSettings(final FilterSettings settings);
+    public ActiveFilterItem getActiveFilterItem() {
+        return activeFilterItem;
+    }
 }

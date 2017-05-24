@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 
-import org.gwtbootstrap3.client.ui.Button;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
@@ -51,10 +50,8 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
     }
 
     @Override
-    public void initDefaultFilters( GridGlobalPreferences preferences,
-                                    Button createTabButton ) {
-
-        presenter.setAddingDefaultFilters( true );
+    public void initDefaultFilters( GridGlobalPreferences preferences ) {
+        super.initDefaultFilters(preferences);
 
         //Filter status Active
         initOwnTabFilter(preferences,
@@ -84,8 +81,6 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
                          Constants.INSTANCE.FilterAll(),
                          getStatusByType(TaskType.ALL));
 
-        filterPagedTable.addAddTableButton( createTabButton );
-        selectFirstTabAndEnableQueries(TAB_ACTIVE);
     }
 
     private void initGroupTabFilter( GridGlobalPreferences preferences,
@@ -149,6 +144,7 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
 
     @Override
     public void resetDefaultFilterTitleAndDescription() {
+        super.resetDefaultFilterTitleAndDescription();
         saveTabSettings(TAB_ACTIVE,
                         constants.Active(),
                         constants.FilterActive());
@@ -164,7 +160,7 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
     }
 
     @Override
-    public String getDatasetTaskListPrefix() {
+    public String getDataSetTaskListPrefix() {
         return DATA_SET_TASK_LIST_PREFIX;
     }
     

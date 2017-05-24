@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
 import javax.inject.Inject;
 
 import com.google.gwt.cell.client.ActionCell;
@@ -43,20 +42,19 @@ import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.resources.CommonResources;
+import org.jbpm.workbench.common.client.util.ButtonActionCell;
+import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
-import org.jbpm.workbench.common.client.util.ButtonActionCell;
-import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 
@@ -75,13 +73,8 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
     @Inject
     private DataSetEditorManager dataSetEditorManager;
     
-    public abstract void resetDefaultFilterTitleAndDescription();
+    public abstract String getDataSetTaskListPrefix();
     
-    public abstract String getDatasetTaskListPrefix();
-    
-    public abstract FilterSettings createTableSettingsPrototype();
-
-
     @Override
     public void init( final P presenter ) {
         final List<String> bannedColumns = new ArrayList<String>();
@@ -98,7 +91,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
         button.setSize( ButtonSize.SMALL );
         button.addClickHandler( new ClickHandler() {
             public void onClick( ClickEvent event ) {
-                final String key = getValidKeyForAdditionalListGrid( getDatasetTaskListPrefix() + "_" );
+                final String key = getValidKeyForAdditionalListGrid(getDataSetTaskListPrefix() + "_" );
 
                 Command addNewGrid = new Command() {
                     @Override
@@ -125,7 +118,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
 
             }
         } );
-        super.init( presenter, new GridGlobalPreferences( getDatasetTaskListPrefix(), initColumns, bannedColumns ), button );
+        super.init(presenter, new GridGlobalPreferences(getDataSetTaskListPrefix(), initColumns, bannedColumns ), button );
     }
 
     public void initSelectionModel() {
@@ -164,7 +157,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
 
         extendedPagedTable.setEmptyTableCaption( constants.No_Tasks_Found() );
 
-        selectionModel = new NoSelectionModel<TaskSummary>();
+        NoSelectionModel<TaskSummary> selectionModel = new NoSelectionModel<TaskSummary>();
         selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
             @Override
             public void onSelectionChange( SelectionChangeEvent event ) {
@@ -188,7 +181,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
             }
         } );
 
-        noActionColumnManager = DefaultSelectionEventManager
+        DefaultSelectionEventManager<TaskSummary> noActionColumnManager = DefaultSelectionEventManager
                 .createCustomManager( new DefaultSelectionEventManager.EventTranslator<TaskSummary>() {
 
                     @Override
@@ -268,6 +261,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
         }
 
         extendedPagedTable.addColumns( columnMetas );
+        extendedPagedTable.storeColumnToPreferences();
     }
 
     private void initCellPreview( final ExtendedPagedTable<TaskSummary> extendedPagedTable ) {
@@ -445,25 +439,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
         tableSettings.setTableName(tabName);
         tableSettings.setTableDescription(tabDesc);
 
-        HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
-
-        tabSettingsValues.put(FILTER_TABLE_SETTINGS, dataSetEditorManager.getTableSettingsToStr(tableSettings));
-        tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName());
-        tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription());
-
-        filterPagedTable.saveNewTabSettings(key, tabSettingsValues);
-
-        final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance(new GridGlobalPreferences(key, preferences.getInitialColumns(), preferences.getBannedColumns()), key);
-        currentListGrid = extendedPagedTable;
-        extendedPagedTable.setDataProvider(presenter.getDataProvider());
-
-        filterPagedTable.addTab(extendedPagedTable, key, new Command() {
-            @Override
-            public void execute() {
-                currentListGrid = extendedPagedTable;
-                applyFilterOnPresenter(key);
-            }
-        });
+        addNewTab(key, preferences, tableSettings);
     }
 
     private boolean isColumnAdded( List<ColumnMeta<TaskSummary>> columnMetas,
@@ -546,7 +522,8 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
 
     @Override
     public void setSelectedTask(final TaskSummary selectedTask) {
-        selectionModel.setSelected( selectedTask, true );
+        getListGrid().getSelectionModel().setSelected(selectedTask,
+                                                      true);
     }
 
 }

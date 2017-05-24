@@ -178,7 +178,7 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
             });
 
             Scheduler.get().scheduleDeferred( () -> processDefinitionsListBox.refresh() );
-        }).getProcesses(serverTemplateId, 0, 1000, "", true );
+        }).getProcesses(serverTemplateId, 0, Integer.MAX_VALUE, "", true );
 
     }
 

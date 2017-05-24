@@ -27,11 +27,11 @@ import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import org.jbpm.workbench.common.client.events.SearchEvent;
+import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.model.QueryFilter;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
-import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.uberfire.lifecycle.OnClose;
 import org.uberfire.paging.PageResponse;
 
@@ -154,8 +154,9 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
     }
 
     public void refreshGrid() {
-        if(getListView().getListGrid()!=null) {
-            getListView().getListGrid().setVisibleRangeAndClearData(getListView().getListGrid().getVisibleRange(), true);
+        if (getListView().getListGrid() != null) {
+            getListView().getListGrid().setVisibleRangeAndClearData(getListView().getListGrid().getVisibleRange(),
+                                                                    true);
         }
     }
 

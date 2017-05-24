@@ -228,4 +228,14 @@ public interface Constants extends Messages {
     String CommentDeleted();
 
     String TaskDetailsUpdatedForTaskId(Long taskId);
+
+    String FilterByTaskId();
+
+    String FilterByTaskName();
+
+    String FilterByCorrelationKey();
+
+    String FilterByActualOwner();
+
+    String FilterByProcessInstanceDescription();
 }

@@ -22,8 +22,10 @@ import java.util.List;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
+import com.google.gwtmockito.WithClassesToStub;
+import org.jbpm.workbench.common.client.list.AdvancedSearchTable;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +46,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class ProcessInstanceListViewTest {
+@WithClassesToStub(AdvancedSearchTable.class)
+public class ProcessInstanceListViewImplTest {
 
     @Mock
     protected ExtendedPagedTable<ProcessInstanceSummary> currentListGrid;
@@ -96,22 +99,23 @@ public class ProcessInstanceListViewTest {
 
     @Test
     public void testInitDefaultFilters() {
+        view.initDefaultFilters(new GridGlobalPreferences("testGrid", new ArrayList<String>(), new ArrayList<String>()));
 
-        view.initDefaultFilters(new GridGlobalPreferences("testGrid", new ArrayList<String>(), new ArrayList<String>()), null);
-
-        verify(filterPagedTable, times(3)).addTab((ExtendedPagedTable) any(), anyString(), (Command) any());
-        verify(filterPagedTable, times(3)).saveNewTabSettings(anyString(), (HashMap<String, Object>) any());
+        verify(filterPagedTable, times(4)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
+        verify(filterPagedTable, times(4)).saveNewTabSettings(anyString(), (HashMap<String, Object>) any());
         verify(presenter).setAddingDefaultFilters(true);
-        verify(presenter).setAddingDefaultFilters(false);
-
+        verify(presenter).setupAdvanceSearchView();
     }
 
     @Test
     public void setDefaultFilterTitleAndDescriptionTest() {
         view.resetDefaultFilterTitleAndDescription();
 
-        verify(filterPagedTable, times(3)).getMultiGridPreferencesStore();
-        verify(filterPagedTable, times(3)).saveTabSettings(anyString(), any(HashMap.class));
+        verify(filterPagedTable, times(4)).getMultiGridPreferencesStore();
+        verify(filterPagedTable).saveTabSettings(eq(ProcessInstanceListViewImpl.TAB_SEARCH), any(HashMap.class));
+        verify(filterPagedTable).saveTabSettings(eq(ProcessInstanceListViewImpl.TAB_ACTIVE), any(HashMap.class));
+        verify(filterPagedTable).saveTabSettings(eq(ProcessInstanceListViewImpl.TAB_COMPLETED), any(HashMap.class));
+        verify(filterPagedTable).saveTabSettings(eq(ProcessInstanceListViewImpl.TAB_ABORTED), any(HashMap.class));
     }
 
     @Test
@@ -160,6 +164,5 @@ public class ProcessInstanceListViewTest {
 
         verify(currentListGrid).addColumns(anyList());
     }
-    
 
 }

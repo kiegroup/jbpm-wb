@@ -15,12 +15,7 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import com.google.gwt.dev.util.collect.HashSet;
 import com.google.gwt.view.client.Range;
@@ -34,12 +29,13 @@ import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
-import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
+import org.jbpm.workbench.common.client.events.SearchEvent;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
+import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,13 +44,16 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mocks.CallerMock;
+import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.mvp.PlaceRequest;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -91,6 +90,9 @@ public class ProcessInstanceListPresenterTest {
     @Mock
     private FilterSettings filterSettings;
 
+    @Spy
+    private DataSetLookup dataSetLookup;
+
     private ArrayList<ProcessInstanceSummary> processInstanceSummaries;
 
     @InjectMocks
@@ -103,11 +105,12 @@ public class ProcessInstanceListPresenterTest {
 
         processInstanceSummaries = createProcessInstanceSummaryList(5);
 
-        when(filterSettings.getDataSetLookup()).thenReturn(new DataSetLookup());
+        when(filterSettings.getDataSetLookup()).thenReturn(dataSetLookup);
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
         when(viewMock.getVariablesTableSettings("testProc")).thenReturn(filterSettings);
+        when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
         when(filterSettings.getKey()).thenReturn("key");
 
         doAnswer(new Answer() {
@@ -436,6 +439,23 @@ public class ProcessInstanceListPresenterTest {
         assertEquals(TEST_PARENT_PROC_INST_ID, pis.getParentId());
         assertEquals(TEST_LAST_MODIF_DATE, pis.getLastModificationDate());
         assertEquals(TEST_ERROR_COUNT, pis.getErrorCount());
+    }
+
+    @Test
+    public void testAdvancedSearchDefaultActiveFilter(){
+        presenter.setupAdvanceSearchView();
+
+        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.State()),
+                                         eq(Constants.INSTANCE.Active()),
+                                         eq(String.valueOf(ProcessInstance.STATE_ACTIVE)),
+                                         any(ParameterizedCommand.class));
+
+        final ArgumentCaptor<DataSetFilter> captor = ArgumentCaptor.forClass(DataSetFilter.class);
+        verify(dataSetLookup).addOperation(captor.capture());
+
+        final DataSetFilter filter = captor.getValue();
+        assertEquals(1, filter.getColumnFilterList().size());
+        assertEquals(COLUMN_STATUS, filter.getColumnFilterList().get(0).getColumnId());
     }
 
 }
