@@ -18,10 +18,12 @@ package org.jbpm.workbench.common.client.list;
 
 import java.util.ArrayList;
 
-
+import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+
 import org.gwtbootstrap3.client.ui.Button;
+import org.jbpm.workbench.common.model.GenericSummary;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +35,7 @@ import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 import org.uberfire.mocks.CallerMock;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 
@@ -47,7 +50,6 @@ public class AbstractMultiGridViewTest {
 
     private AbstractMultiGridView testListView;
 
-
     @Mock
     private AbstractMultiGridPresenter presenter;
 
@@ -61,14 +63,14 @@ public class AbstractMultiGridViewTest {
 
     @Mock
     private MultiGridPreferencesStore multiGridPreferencesStore;
-
+    
     @Mock
     AsyncDataProvider dataProviderMock;
 
     @Mock
     protected FilterPagedTable filterPagedTable;
-
-
+    
+    
     @Before
     public void setupMocks() {
         testListView = spy(AbstractMultiGridView.class);
@@ -128,12 +130,28 @@ public class AbstractMultiGridViewTest {
     }
 
     @Test
-    public void selectFirstTabAndEnableQueries() {
+    public void selectFirstTabAndEnableQueriesTest() {
         GridGlobalPreferences ggp = new GridGlobalPreferences(TEST_KEY, new ArrayList(), new ArrayList<String>());
-        testListView.init(presenter,ggp,mockButton);
+        testListView.init(presenter,ggp, mockButton);
         testListView.selectFirstTabAndEnableQueries("defaultKey");
 
         verify(presenter).setAddingDefaultFilters(false);
+
+    }
+
+    @Test
+    public void selectionIgnoreColumnTest(){
+        ExtendedPagedTable<GenericSummary> extPagedTable = new ExtendedPagedTable<GenericSummary>(10, new GridGlobalPreferences());
+        Column testCol = testListView.createTextColumn("testCol", (val -> val));
+
+        extPagedTable.addSelectionIgnoreColumn(testCol);
+        assertFalse(extPagedTable.isSelectionIgnoreColumn(extPagedTable.getColumnIndex(testCol)));
+        assertTrue(extPagedTable.removeSelectionIgnoreColumn(testCol));
+        
+        extPagedTable.addColumn(testCol, "");
+        assertFalse(extPagedTable.isSelectionIgnoreColumn(extPagedTable.getColumnIndex(testCol)));
+        extPagedTable.addSelectionIgnoreColumn(testCol);
+        assertTrue(extPagedTable.isSelectionIgnoreColumn(extPagedTable.getColumnIndex(testCol)));
 
     }
 }

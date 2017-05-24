@@ -15,7 +15,6 @@
  */
 package org.jbpm.workbench.common.client.list;
 
-import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RequiresResize;
@@ -77,8 +76,6 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
     protected T selectedItem;
 
     protected int selectedRow = -1;
-
-    protected Column actionsColumn;
 
     protected DefaultSelectionEventManager<T> noActionColumnManager;
 

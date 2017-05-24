@@ -15,7 +15,9 @@
  */
 package org.jbpm.workbench.common.client.list;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
@@ -26,6 +28,8 @@ import org.uberfire.ext.widgets.common.client.tables.PagedTable;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> {
+    
+    private List<Column<T, ?>> ignoreSelectionColumns = new ArrayList<Column<T, ?>>();
 
     public ExtendedPagedTable( int pageSize,
                                GridGlobalPreferences gridPreferences ) {
@@ -68,6 +72,20 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
 
     public Collection<ColumnMeta<T>> getColumnMetaList() {
         return columnPicker.getColumnMetaList();
+    }
+    
+    public void addSelectionIgnoreColumn(Column<T, ?> column){
+        if(!ignoreSelectionColumns.contains(column)){
+            ignoreSelectionColumns.add(column);
+        }
+    }
+    
+    public boolean removeSelectionIgnoreColumn(Column<T, ?> column){
+        return ignoreSelectionColumns.remove(column);
+    }
+    
+    public boolean isSelectionIgnoreColumn(int colIx){
+        return (colIx >= 0 && ignoreSelectionColumns.stream().anyMatch(col -> (getColumnIndex(col) == colIx)));
     }
 
 }

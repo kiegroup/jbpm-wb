@@ -92,8 +92,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     @Inject
     private DataSetEditorManager dataSetEditorManager;
 
-    private List<Column<ProcessInstanceSummary, ?>> ignoreSelectionColumns = new ArrayList<Column<ProcessInstanceSummary, ?>>();
-
     private AnchorListItem bulkAbortNavLink;
     private AnchorListItem bulkSignalNavLink;
 
@@ -203,26 +201,25 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                         NativeEvent nativeEvent = event.getNativeEvent();
                         if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) ) {
                             // Ignore if the event didn't occur in the correct column.
-                            if ( isSelectionIgnoreColumn( event.getColumn() ) ){
+                            if ( extendedPagedTable.isSelectionIgnoreColumn( event.getColumn() ) ) {
                                 ret = DefaultSelectionEventManager.SelectAction.IGNORE;
-                            }else{
-                                //Extension for checkboxes
-                                Element target = nativeEvent.getEventTarget().cast();
-                                if ( "input".equals( target.getTagName().toLowerCase() ) ) {
-                                    final InputElement input = target.cast();
-                                    if ( "checkbox".equals( input.getType().toLowerCase() ) ) {
-                                        // Synchronize the checkbox with the current selection state.
-                                        if ( !selectedProcessInstances.contains( event.getValue() ) ) {
-                                            selectedProcessInstances.add( event.getValue() );
-                                            input.setChecked( true );
-                                        } else {
-                                            selectedProcessInstances.remove( event.getValue() );
-                                            input.setChecked( false );
-                                        }
-                                        getListGrid().redraw();
-                                        controlBulkOperations();
-                                        ret = DefaultSelectionEventManager.SelectAction.IGNORE;
+                            }
+                            //Extension for checkboxes
+                            Element target = nativeEvent.getEventTarget().cast();
+                            if ( "input".equals( target.getTagName().toLowerCase() ) ) {
+                                final InputElement input = target.cast();
+                                if ( "checkbox".equals( input.getType().toLowerCase() ) ) {
+                                    // Synchronize the checkbox with the current selection state.
+                                    if ( !selectedProcessInstances.contains( event.getValue() ) ) {
+                                        selectedProcessInstances.add( event.getValue() );
+                                        input.setChecked( true );
+                                    } else {
+                                        selectedProcessInstances.remove( event.getValue() );
+                                        input.setChecked( false );
                                     }
+                                    getListGrid().redraw();
+                                    controlBulkOperations();
+                                    ret = DefaultSelectionEventManager.SelectAction.IGNORE;
                                 }
                             }
                         }
@@ -238,11 +235,11 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     @Override
     public void initColumns( ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
         final ColumnMeta checkColumnMeta = initChecksColumn();
+
         Column<ProcessInstanceSummary, ?> actionsColumn = initActionsColumn();
         Column<ProcessInstanceSummary, ?> errorCountColumn = initErrorCountColumn();
-        
-        ignoreSelectionColumns.add(actionsColumn);
-        ignoreSelectionColumns.add(errorCountColumn);
+        extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
+        extendedPagedTable.addSelectionIgnoreColumn(errorCountColumn);
 
         final List<ColumnMeta<ProcessInstanceSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessInstanceSummary>>();
 
@@ -312,18 +309,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         extendedPagedTable.storeColumnToPreferences();
     }
     
-    private boolean isSelectionIgnoreColumn(int colIx){
-        boolean ret = false;
-        ExtendedPagedTable extendedPagedTable = getListGrid();
-        for(Column<ProcessInstanceSummary, ?> col : ignoreSelectionColumns){
-            if(extendedPagedTable.getColumnIndex(col) == colIx){
-                ret = true;
-                break;
-            }
-        }
-        return ret;
-    }
-
     private boolean isColumnAdded( List<ColumnMeta<ProcessInstanceSummary>> columnMetas,
                                    String caption ) {
         if ( caption != null ) {
