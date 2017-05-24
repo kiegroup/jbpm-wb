@@ -22,9 +22,10 @@ import java.util.List;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.gwtbootstrap3.client.ui.Button;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.es.model.RequestSummary;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -35,15 +36,18 @@ import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
+import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
-import org.uberfire.mvp.Command;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
+import org.uberfire.mocks.CallerMock;
+import org.uberfire.mvp.Command;
 
+import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-@RunWith( GwtMockitoTestRunner.class )
-public class RequestListViewTest {
+@RunWith(GwtMockitoTestRunner.class)
+public class RequestListViewImplTest {
 
     @Mock
     protected ExtendedPagedTable<RequestSummary> currentListGrid;
@@ -69,8 +73,19 @@ public class RequestListViewTest {
     @Mock
     private AsyncDataProvider dataProvider;
 
+    @Mock
+    protected UserPreferencesService userPreferencesService;
+
     @InjectMocks
     private RequestListViewImpl view;
+
+    @Before
+    public void setup(){
+        when(presenter.getDataProvider()).thenReturn(mock(AsyncDataProvider.class));
+
+        final CallerMock<UserPreferencesService> caller = new CallerMock<>(userPreferencesService);
+        view.setPreferencesService(caller);
+    }
 
     @Test
     public void testDataStoreNameIsSet() {
@@ -125,6 +140,21 @@ public class RequestListViewTest {
         view.initColumns(currentListGrid);
 
         verify( currentListGrid ).addColumns(anyList());
+    }
+
+    @Test
+    public void initialColumnsTest() {
+        view.init(presenter);
+
+        List<GridColumnPreference> columnPreferences = view.getListGrid().getGridPreferencesStore().getColumnPreferences();
+        assertEquals(COLUMN_ID,
+                     columnPreferences.get(0).getName());
+        assertEquals(COLUMN_BUSINESSKEY,
+                     columnPreferences.get(1).getName());
+        assertEquals(COLUMN_COMMANDNAME,
+                     columnPreferences.get(2).getName());
+        assertEquals(RequestListViewImpl.COL_ID_ACTIONS,
+                     columnPreferences.get(3).getName());
     }
 
     @Test

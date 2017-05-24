@@ -17,9 +17,11 @@
 package org.jbpm.workbench.es.client.editors.requestlist;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -51,6 +53,7 @@ import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
+import org.jbpm.workbench.es.util.RequestStatus;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
@@ -238,44 +241,34 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
     private Column<RequestSummary, RequestSummary> initActionsColumn() {
         List<HasCell<RequestSummary, ?>> cells = new LinkedList<HasCell<RequestSummary, ?>>();
-        List<String> allStatuses = new ArrayList<String>();
-        allStatuses.add( "QUEUED" );
-        allStatuses.add( "DONE" );
-        allStatuses.add( "CANCELLED" );
-        allStatuses.add( "ERROR" );
-        allStatuses.add( "RETRYING" );
-        allStatuses.add( "RUNNING" );
-        cells.add( new ActionHasCell( constants.Details(), allStatuses, new Delegate<RequestSummary>() {
-            @Override
-            public void execute( RequestSummary job ) {
-                presenter.showJobDetails( job );
-            }
-        } ) );
 
-        List<String> activeStatuses = new ArrayList<String>();
-        activeStatuses.add( "QUEUED" );
-        activeStatuses.add( "RETRYING" );
-        activeStatuses.add( "RUNNING" );
-        cells.add( new ActionHasCell( constants.Cancel(), activeStatuses, new Delegate<RequestSummary>() {
-            @Override
-            public void execute( RequestSummary job ) {
-                if ( Window.confirm( constants.CancelJob() ) ) {
-                    presenter.cancelRequest( job.getJobId() );
-                }
-            }
-        } ) );
+        cells.add(new ActionHasCell(constants.Details(),
+                                    job -> presenter.showJobDetails(job),
+                                    RequestStatus.QUEUED,
+                                    RequestStatus.DONE,
+                                    RequestStatus.CANCELLED,
+                                    RequestStatus.ERROR,
+                                    RequestStatus.RETRYING,
+                                    RequestStatus.RUNNING));
 
-        List<String> requeueStatuses = new ArrayList<String>();
-        requeueStatuses.add( "ERROR" );
-        requeueStatuses.add( "RUNNING" );
-        cells.add( new ActionHasCell( constants.Requeue(), requeueStatuses, new Delegate<RequestSummary>() {
-            @Override
-            public void execute( RequestSummary job ) {
-                if ( Window.confirm( constants.RequeueJob() ) ) {
-                    presenter.requeueRequest( job.getJobId() );
-                }
-            }
-        } ) );
+        cells.add(new ActionHasCell(constants.Cancel(),
+                                    job -> {
+                                        if (Window.confirm(constants.CancelJob())) {
+                                            presenter.cancelRequest(job.getJobId());
+                                        }
+                                    },
+                                    RequestStatus.QUEUED,
+                                    RequestStatus.RETRYING,
+                                    RequestStatus.RUNNING));
+
+        cells.add(new ActionHasCell(constants.Requeue(),
+                                    job -> {
+                                        if (Window.confirm(constants.RequeueJob())) {
+                                            presenter.requeueRequest(job.getJobId());
+                                        }
+                                    },
+                                    RequestStatus.ERROR,
+                                    RequestStatus.RUNNING));
 
         CompositeCell<RequestSummary> cell = new CompositeCell<RequestSummary>( cells );
         Column<RequestSummary, RequestSummary> actionsColumn = new Column<RequestSummary, RequestSummary>( cell ) {
@@ -293,10 +286,10 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         private final List<String> availableStatuses;
 
         public ActionHasCell( final String text,
-                              List<String> availableStatusesList,
-                              Delegate<RequestSummary> delegate ) {
+                              final Delegate<RequestSummary> delegate,
+                              final RequestStatus... status ) {
             super( text, delegate );
-            this.availableStatuses = availableStatusesList;
+            this.availableStatuses = Arrays.stream(status).map(s -> s.name()).collect(Collectors.toList());
         }
 
         @Override
@@ -322,32 +315,32 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                       TAB_QUEUED,
                       constants.Queued(),
                       constants.FilterQueued(),
-                      "QUEUED");
+                      RequestStatus.QUEUED);
         initTabFilter(preferences,
                       TAB_RUNNING,
                       constants.Running(),
                       constants.FilterRunning(),
-                      "RUNNING");
+                      RequestStatus.RUNNING);
         initTabFilter(preferences,
                       TAB_RETRYING,
                       constants.Retrying(),
                       constants.FilterRetrying(),
-                      "RETRYING");
+                      RequestStatus.RETRYING);
         initTabFilter(preferences,
                       TAB_ERROR,
                       constants.Error(),
                       constants.FilterError(),
-                      "ERROR");
+                      RequestStatus.ERROR);
         initTabFilter(preferences,
                       TAB_COMPLETED,
                       constants.Completed(),
                       constants.FilterCompleted(),
-                      "DONE");
+                      RequestStatus.DONE);
         initTabFilter(preferences,
                       TAB_CANCELLED,
                       constants.Cancelled(),
                       constants.FilterCancelled(),
-                      "CANCELLED");
+                      RequestStatus.CANCELLED);
 
         filterPagedTable.addAddTableButton( createTabButton );
 
@@ -358,12 +351,12 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                                 final String key,
                                 String tabName,
                                 String tabDesc,
-                                String status ) {
+                                RequestStatus status ) {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
         builder.dataset( REQUEST_LIST_DATASET );
         if ( status != null ) {
-            builder.filter( equalsTo( COLUMN_STATUS, status ) );
+            builder.filter( equalsTo( COLUMN_STATUS, status.name() ) );
         }
         builder.setColumn( COLUMN_ID, constants.Id() );
         builder.setColumn( COLUMN_TIMESTAMP, constants.Time(), DateUtils.getDateTimeFormatMask() );
@@ -432,7 +425,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         builder.tableWidth( 1000 );
 
         return builder.buildSettings();
-
     }
 
     @Override
