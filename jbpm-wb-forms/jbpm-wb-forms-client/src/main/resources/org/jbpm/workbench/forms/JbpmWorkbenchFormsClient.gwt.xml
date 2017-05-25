@@ -38,7 +38,7 @@
 
   <inherits name="org.kie.workbench.common.forms.dynamic.DynamicFormsAPI"/>
 
-  <inherits name="org.gwtbootstrap3.extras.select.Select"/>
+  <inherits name="org.gwtbootstrap3.extras.select.SelectNoResources"/>
 
   <source path="client"/>
 
