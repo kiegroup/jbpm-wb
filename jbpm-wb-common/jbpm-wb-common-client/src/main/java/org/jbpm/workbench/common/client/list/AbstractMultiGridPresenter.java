@@ -19,6 +19,8 @@ package org.jbpm.workbench.common.client.list;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
@@ -75,6 +77,28 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
     @WorkbenchPartView
     public UberView<T> getView() {
         return view;
+    }
+
+    public abstract void setupAdvanceSearchView();
+
+    protected void addAdvancedSearchFilter(final ColumnFilter columnFilter) {
+        final FilterSettings settings = view.getAdvancedSearchFilterSettings();
+        if (settings.getDataSetLookup().getFirstFilterOp() != null) {
+            settings.getDataSetLookup().getFirstFilterOp().addFilterColumn(columnFilter);
+        } else {
+            final DataSetFilter filter = new DataSetFilter();
+            filter.addFilterColumn(columnFilter);
+            settings.getDataSetLookup().addOperation(filter);
+        }
+        view.saveAdvancedSearchFilterSettings(settings);
+        filterGrid(settings);
+    }
+
+    protected void removeAdvancedSearchFilter(final ColumnFilter columnFilter) {
+        final FilterSettings settings = view.getAdvancedSearchFilterSettings();
+        settings.getDataSetLookup().getFirstFilterOp().getColumnFilterList().remove(columnFilter);
+        view.saveAdvancedSearchFilterSettings(settings);
+        filterGrid(settings);
     }
 
 }

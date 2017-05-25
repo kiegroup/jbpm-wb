@@ -83,7 +83,7 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
                       final GridGlobalPreferences preferences ) {
         this.presenter = presenter;
         
-        listGrid = new ExtendedPagedTable<T>( 10, preferences );
+        listGrid = new ExtendedPagedTable<T>( preferences );
         listGrid.setShowLastPagerButton( true );
         listGrid.setShowFastFordwardPagerButton( true );
         initWidget( listGrid );

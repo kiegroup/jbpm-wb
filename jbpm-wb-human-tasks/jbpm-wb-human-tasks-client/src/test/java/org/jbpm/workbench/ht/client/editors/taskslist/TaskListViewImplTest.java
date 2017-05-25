@@ -16,8 +16,8 @@
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jbpm.workbench.ht.client.editors.taskslist.TaskListPresenter;
-import org.jbpm.workbench.ht.client.editors.taskslist.TaskListViewImpl;
+import com.google.gwtmockito.WithClassesToStub;
+import org.jbpm.workbench.common.client.list.AdvancedSearchTable;
 import org.jbpm.workbench.ht.client.editors.taskslist.AbstractTaskListView.ConditionalActionHasCell;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +28,7 @@ import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @RunWith(GwtMockitoTestRunner.class)
+@WithClassesToStub(AdvancedSearchTable.class)
 public class TaskListViewImplTest extends AbstractTaskListViewTest {
 
     @InjectMocks
@@ -53,7 +54,7 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
 
     @Override
     public int getExpectedDefaultTabFilterCount(){
-        return 4;
+        return 5;
     }
     
     @Test

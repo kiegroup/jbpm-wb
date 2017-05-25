@@ -56,7 +56,6 @@ import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 
@@ -75,12 +74,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
     @Inject
     private DataSetEditorManager dataSetEditorManager;
     
-    public abstract void resetDefaultFilterTitleAndDescription();
-    
-    public abstract String getDatasetTaskListPrefix();
-    
-    public abstract FilterSettings createTableSettingsPrototype();
-
+    public abstract String getDataSetTaskListPrefix();
 
     @Override
     public void init( final P presenter ) {
@@ -98,7 +92,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
         button.setSize( ButtonSize.SMALL );
         button.addClickHandler( new ClickHandler() {
             public void onClick( ClickEvent event ) {
-                final String key = getValidKeyForAdditionalListGrid( getDatasetTaskListPrefix() + "_" );
+                final String key = getValidKeyForAdditionalListGrid(getDataSetTaskListPrefix() + "_" );
 
                 Command addNewGrid = new Command() {
                     @Override
@@ -125,7 +119,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
 
             }
         } );
-        super.init( presenter, new GridGlobalPreferences( getDatasetTaskListPrefix(), initColumns, bannedColumns ), button );
+        super.init(presenter, new GridGlobalPreferences(getDataSetTaskListPrefix(), initColumns, bannedColumns ), button );
     }
 
     public void initSelectionModel() {
@@ -448,25 +442,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
         tableSettings.setTableName(tabName);
         tableSettings.setTableDescription(tabDesc);
 
-        HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
-
-        tabSettingsValues.put(FILTER_TABLE_SETTINGS, dataSetEditorManager.getTableSettingsToStr(tableSettings));
-        tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM, tableSettings.getTableName());
-        tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM, tableSettings.getTableDescription());
-
-        filterPagedTable.saveNewTabSettings(key, tabSettingsValues);
-
-        final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance(new GridGlobalPreferences(key, preferences.getInitialColumns(), preferences.getBannedColumns()), key);
-        currentListGrid = extendedPagedTable;
-        extendedPagedTable.setDataProvider(presenter.getDataProvider());
-
-        filterPagedTable.addTab(extendedPagedTable, key, new Command() {
-            @Override
-            public void execute() {
-                currentListGrid = extendedPagedTable;
-                applyFilterOnPresenter(key);
-            }
-        });
+        addNewTab(key, preferences, tableSettings);
     }
 
     private boolean isColumnAdded( List<ColumnMeta<TaskSummary>> columnMetas,
