@@ -47,7 +47,9 @@ import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
@@ -72,8 +74,6 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     public interface TaskListView<T extends AbstractTaskListPresenter> extends MultiGridView<TaskSummary, T> {
 
         void addDomainSpecifColumns(ExtendedPagedTable<TaskSummary> extendedPagedTable, Set<String> columns);
-
-        FilterSettings getVariablesTableSettings(String processName);
 
         void setSelectedTask(TaskSummary selectedTask);
 
@@ -230,7 +230,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     public void getDomainSpecifDataForTasks(final int startRange, String filterValue, final List<TaskSummary> myTasksFromDataSet, boolean lastPageExactCount) {
 
-        FilterSettings variablesTableSettings = view.getVariablesTableSettings(filterValue);
+        FilterSettings variablesTableSettings = getVariablesTableSettings(filterValue);
         variablesTableSettings.setTablePageSize(-1);
         variablesTableSettings.setServerTemplateId(selectedServerTemplate);
 
@@ -477,6 +477,50 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
                                                                       v))
         );
+
+    }
+
+    protected void addCommonColumnSettings(FilterSettingsBuilderHelper builder) {
+        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), DateUtils.getDateTimeFormatMask());
+        builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner());
+        builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy());
+        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), DateUtils.getDateTimeFormatMask());
+        builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId());
+        builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
+        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), DateUtils.getDateTimeFormatMask());
+        builder.setColumn(COLUMN_NAME, constants.Task());
+        builder.setColumn(COLUMN_PARENT_ID, constants.ParentId());
+        builder.setColumn(COLUMN_PRIORITY, constants.Priority());
+        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Id());
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id());
+        builder.setColumn(COLUMN_PROCESS_SESSION_ID, constants.ProcessSessionId());
+        builder.setColumn(COLUMN_STATUS, constants.Status());
+        builder.setColumn(COLUMN_TASK_ID, constants.Id());
+        builder.setColumn(COLUMN_WORK_ITEM_ID, constants.WorkItemId());
+        builder.setColumn(COLUMN_LAST_MODIFICATION_DATE, constants.Last_Modification_Date());
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY, constants.Process_Instance_Correlation_Key());
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION, constants.Process_Instance_Description());
+
+        builder.filterOn(true, true, true);
+        builder.tableOrderEnabled(true);
+        builder.tableOrderDefault(COLUMN_CREATED_ON, SortOrder.DESCENDING);
+    }
+
+    public FilterSettings getVariablesTableSettings( String taskName ) {
+        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
+        builder.initBuilder();
+
+        builder.dataset(HUMAN_TASKS_WITH_VARIABLES_DATASET);
+        builder.filter(equalsTo(COLUMN_TASK_VARIABLE_TASK_NAME, taskName));
+
+        builder.filterOn(true, true, true);
+        builder.tableOrderEnabled(true);
+        builder.tableOrderDefault(COLUMN_TASK_ID, SortOrder.ASCENDING);
+
+        FilterSettings varTableSettings =builder.buildSettings();
+        varTableSettings.setTablePageSize(-1);
+
+        return varTableSettings;
 
     }
 }

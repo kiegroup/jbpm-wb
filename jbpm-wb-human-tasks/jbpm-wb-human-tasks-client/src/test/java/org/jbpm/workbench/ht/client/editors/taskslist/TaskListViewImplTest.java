@@ -18,7 +18,9 @@ package org.jbpm.workbench.ht.client.editors.taskslist;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.gwtmockito.WithClassesToStub;
 import org.jbpm.workbench.common.client.list.AdvancedSearchTable;
+import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.ht.client.editors.taskslist.AbstractTaskListView.ConditionalActionHasCell;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,6 +28,8 @@ import org.mockito.Mock;
 
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(GwtMockitoTestRunner.class)
 @WithClassesToStub(AdvancedSearchTable.class)
@@ -48,15 +52,18 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
     }
 
     @Override
-    public String getDataSetId(){
-        return HUMAN_TASKS_WITH_USER_DATASET;
-    }
-
-    @Override
     public int getExpectedDefaultTabFilterCount(){
         return 5;
     }
-    
+
+    @Before
+    public void setup() {
+        when(presenter.createActiveTabSettings()).thenReturn(filterSettings);
+        when(presenter.createAllTabSettings()).thenReturn(filterSettings);
+        when(presenter.createGroupTabSettings()).thenReturn(filterSettings);
+        when(presenter.createPersonalTabSettings()).thenReturn(filterSettings);
+    }
+
     @Test
     @Override
     public void testResumeActionHasCell(){

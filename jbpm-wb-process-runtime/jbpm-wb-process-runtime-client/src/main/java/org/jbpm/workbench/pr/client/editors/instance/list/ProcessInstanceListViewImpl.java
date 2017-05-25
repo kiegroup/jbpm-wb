@@ -54,7 +54,6 @@ import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.pr.client.resources.ProcessRuntimeResources;
 import org.jbpm.workbench.pr.client.resources.css.ProcessRuntimeCSS;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
@@ -65,8 +64,6 @@ import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
-import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
@@ -139,7 +136,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
                     }
                 };
-                FilterSettings tableSettings = createTableSettingsPrototype();
+                FilterSettings tableSettings = presenter.createTableSettingsPrototype();
                 tableSettings.setKey( key );
                 dataSetEditorManager.showTableSettingsEditor( filterPagedTable, constants.New_Process_InstanceList(), tableSettings, addNewGrid );
 
@@ -541,157 +538,43 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                  createTabButton);
 
         //Filter status Active
-        initGenericTabFilter(preferences,
+        initGenericTabFilter(presenter.createActiveTabSettings(),
                              TAB_ACTIVE,
                              constants.Active(),
                              constants.FilterActive(),
-                             ProcessInstance.STATE_ACTIVE);
+                             preferences);
 
         //Filter status completed
-        initGenericTabFilter(preferences,
+        initGenericTabFilter(presenter.createCompletedTabSettings(),
                              TAB_COMPLETED,
                              constants.Completed(),
                              constants.FilterCompleted(),
-                             ProcessInstance.STATE_COMPLETED);
+                             preferences);
 
-        //Filter status completed
-        initGenericTabFilter(preferences,
+        //Filter status aborted
+        initGenericTabFilter(presenter.createAbortedTabSettings(),
                              TAB_ABORTED,
                              constants.Aborted(),
                              constants.FilterAborted(),
-                             ProcessInstance.STATE_ABORTED);
+                             preferences);
 
         filterPagedTable.addAddTableButton( createTabButton );
         selectFirstTabAndEnableQueries();
     }
 
-    private void initGenericTabFilter( GridGlobalPreferences preferences,
+    private void initGenericTabFilter( FilterSettings tableSettings,
                                        final String key,
                                        String tabName,
                                        String tabDesc,
-                                       Integer state ) {
+                                       GridGlobalPreferences preferences ) {
 
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset( PROCESS_INSTANCE_DATASET );
-
-        builder.filter( equalsTo( COLUMN_STATUS, state ) );
-
-        builder.filterOn( true, true, true );
-        builder.tableOrderEnabled( true );
-        builder.tableOrderDefault( COLUMN_START, DESCENDING );
-
-        FilterSettings tableSettings = builder.buildSettings();
         tableSettings.setKey( key );
         tableSettings.setTableName( tabName );
         tableSettings.setTableDescription( tabDesc );
         tableSettings.setUUID( PROCESS_INSTANCE_DATASET );
 
-        addNewTab(key,
-                  preferences,
+        addNewTab(preferences,
                   tableSettings);
-    }
-
-    @Override
-    public FilterSettings getVariablesTableSettings( String processName ) {
-        String tableSettingsJSON = "{\n"
-                + "    \"type\": \"TABLE\",\n"
-                + "    \"filter\": {\n"
-                + "        \"enabled\": \"true\",\n"
-                + "        \"selfapply\": \"true\",\n"
-                + "        \"notification\": \"true\",\n"
-                + "        \"listening\": \"true\"\n"
-                + "    },\n"
-                + "    \"table\": {\n"
-                + "        \"sort\": {\n"
-                + "            \"enabled\": \"true\",\n"
-                + "            \"columnId\": \"" + PROCESS_INSTANCE_ID + "\",\n"
-                + "            \"order\": \"ASCENDING\"\n"
-                + "        }\n"
-                + "    },\n"
-                + "    \"dataSetLookup\": {\n"
-                + "        \"dataSetUuid\": \"jbpmProcessInstancesWithVariables\",\n"
-                + "        \"rowCount\": \"-1\",\n"
-                + "        \"rowOffset\": \"0\",\n";
-        if ( processName != null ) {
-            tableSettingsJSON += "        \"filterOps\":[{\"columnId\":\"" + PROCESS_NAME + "\", \"functionType\":\"EQUALS_TO\", \"terms\":[\"" + processName + "\"]}],";
-        }
-        tableSettingsJSON += "        \"groupOps\": [\n"
-                + "            {\n"
-                + "                \"groupFunctions\": [\n"
-                + "                    {\n"
-                + "                        \"sourceId\": \"" + PROCESS_INSTANCE_ID + "\",\n"
-                + "                        \"columnId\": \"" + PROCESS_INSTANCE_ID + "\"\n"
-                + "                    },\n"
-                + "                    {\n"
-                + "                        \"sourceId\": \"" + PROCESS_NAME + "\",\n"
-                + "                        \"columnId\": \"" + PROCESS_NAME + "\"\n"
-                + "                    },\n"
-                + "                    {\n"
-                + "                        \"sourceId\": \"" + VARIABLE_ID + "\",\n"
-                + "                        \"columnId\": \"" + VARIABLE_ID + "\"\n"
-                + "                    },\n"
-                + "                    {\n"
-                + "                        \"sourceId\": \"" + VARIABLE_NAME + "\",\n"
-                + "                        \"columnId\": \"" + VARIABLE_NAME + "\"\n"
-                + "                    },\n"
-                + "                    {\n"
-                + "                        \"sourceId\": \"" + VARIABLE_VALUE + "\",\n"
-                + "                        \"columnId\": \"" + VARIABLE_VALUE +  "\"\n"
-                + "                    }\n"
-                + "                ],\n"
-                + "                \"join\": \"false\"\n"
-                + "            }\n"
-                + "        ]\n"
-                + "    },\n"
-                + "    \"columns\": [\n"
-                + "        {\n"
-                + "            \"id\": \"" + PROCESS_INSTANCE_ID + "\",\n"
-                + "            \"name\": \"processInstanceId\"\n"
-                + "        },\n"
-                + "        {\n"
-                + "            \"id\": \""  + PROCESS_NAME + "\",\n"
-                + "            \"name\": \"processName\"\n"
-                + "        },\n"
-                + "        {\n"
-                + "            \"id\": \"" + VARIABLE_ID + "\",\n"
-                + "            \"name\": \"variableID\"\n"
-                + "        },\n"
-                + "        {\n"
-                + "            \"id\": \"" + VARIABLE_NAME + "\",\n"
-                + "            \"name\": \"variableName\"\n"
-                + "        },\n"
-                + "        {\n"
-                + "            \"id\": \"" + VARIABLE_VALUE + "\",\n"
-                + "            \"name\": \"variableValue\"\n"
-                + "        }\n"
-                + "    ],\n"
-                + "    \"tableName\": \"Filtered\",\n"
-                + "    \"tableDescription\": \"Filtered Desc\",\n"
-                + "    \"tableEditEnabled\": \"false\"\n"
-                + "}";
-
-        return dataSetEditorManager.getStrToTableSettings( tableSettingsJSON );
-    }
-
-    /*-------------------------------------------------*/
-    /*---              DashBuilder                   --*/
-    /*-------------------------------------------------*/
-    @Override
-    public FilterSettings createTableSettingsPrototype() {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset( PROCESS_INSTANCE_DATASET );
-        builder.filterOn( true, true, true );
-        builder.tableOrderEnabled( true );
-        builder.tableOrderDefault( COLUMN_START, DESCENDING );
-        builder.tableWidth( 1000 );
-
-        final FilterSettings filterSettings = builder.buildSettings();
-        filterSettings.setUUID( PROCESS_INSTANCE_DATASET );
-        return filterSettings;
     }
 
     @Override

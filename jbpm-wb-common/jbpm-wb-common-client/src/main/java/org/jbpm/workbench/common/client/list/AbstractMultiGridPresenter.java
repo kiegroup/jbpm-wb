@@ -79,6 +79,8 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
         return view;
     }
 
+    public abstract FilterSettings createTableSettingsPrototype();
+
     public abstract void setupAdvanceSearchView();
 
     protected void addAdvancedSearchFilter(final ColumnFilter columnFilter) {

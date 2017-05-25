@@ -48,6 +48,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
@@ -64,6 +65,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
+import static org.mockito.Mockito.when;
 
 public abstract class AbstractTaskListViewTest {
     
@@ -109,18 +111,20 @@ public abstract class AbstractTaskListViewTest {
 
     @Mock @SuppressWarnings("unused")
     protected DataSetEditorManager dataSetEditorManagerMock;
+
+    @Spy
+    protected FilterSettings filterSettings;
     
     public abstract AbstractTaskListView getView();
     
     public abstract AbstractTaskListPresenter getPresenter();
-    
-    public abstract String getDataSetId();
     
     public abstract int getExpectedDefaultTabFilterCount();
 
     @Before
     public void setupMocks() {
         when(getPresenter().getDataProvider()).thenReturn(mock(AsyncDataProvider.class));
+        when(getPresenter().createTableSettingsPrototype()).thenReturn(filterSettings);
 
         when(filterPagedTableMock.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStoreMock);
         when(currentListGrid.getGridPreferencesStore()).thenReturn(new GridPreferencesStore());
@@ -146,37 +150,6 @@ public abstract class AbstractTaskListViewTest {
         getView().initColumns(currentListGrid);
 
         verify( currentListGrid ).addColumns( anyList() );
-    }
-
-    @Test
-    public void testIsNullTableSettingsPrototype(){
-        AbstractTaskListView view = getView();
-        when(identity.getIdentifier()).thenReturn("user");
-        view.setIdentity(identity);
-        FilterSettings filterSettings = view.createTableSettingsPrototype();
-        List <DataSetOp> ops = filterSettings.getDataSetLookup().getOperationList();
-        for(DataSetOp op : ops){
-            if(op.getType().equals(DataSetOpType.FILTER)){
-                List<ColumnFilter> columnFilters = ((DataSetFilter)op).getColumnFilterList();
-                for(ColumnFilter columnFilter : columnFilters){
-                    assertTrue((columnFilter).toString().contains(COLUMN_ACTUAL_OWNER + " is_null"));
-                }
-            }
-        }
-    }
-
-    @Test
-    public void getVariablesTableSettingsTest(){
-        FilterSettings filterSettings = getView().getVariablesTableSettings("Test");
-        List <DataSetOp> ops = filterSettings.getDataSetLookup().getOperationList();
-        for(DataSetOp op : ops){
-            if(op.getType().equals(DataSetOpType.FILTER)){
-                List<ColumnFilter> columnFilters = ((DataSetFilter)op).getColumnFilterList();
-                for(ColumnFilter columnFilter : columnFilters){
-                    assertTrue((columnFilter).toString().contains(COLUMN_TASK_VARIABLE_TASK_NAME + " = Test"));
-                }
-            }
-        }
     }
 
     @Test
@@ -275,11 +248,6 @@ public abstract class AbstractTaskListViewTest {
         assertEquals(COLUMN_STATUS, columnPreferences.get(2).getName());
         assertEquals(COLUMN_CREATED_ON, columnPreferences.get(3).getName());
         assertEquals(AbstractTaskListView.COL_ID_ACTIONS, columnPreferences.get(4).getName());
-    }
-    
-    @Test
-    public void testDatasetName(){
-        assertEquals(getDataSetId(), getView().createTableSettingsPrototype().getDataSetLookup().getDataSetUUID());
     }
     
     @Test

@@ -18,11 +18,16 @@ package org.jbpm.workbench.ht.client.editors.taskslist;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.gwtmockito.WithClassesToStub;
 import org.jbpm.workbench.common.client.list.AdvancedSearchTable;
+import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(GwtMockitoTestRunner.class)
 @WithClassesToStub(AdvancedSearchTable.class)
@@ -45,13 +50,13 @@ public class TaskAdminListViewImplTest extends AbstractTaskListViewTest {
     }
 
     @Override
-    public String getDataSetId(){
-        return HUMAN_TASKS_WITH_ADMIN_DATASET;
-    }
-    
-    @Override
     public int getExpectedDefaultTabFilterCount(){
         return 2;
+    }
+
+    @Before
+    public void setup() {
+        when(presenter.createAdminTabSettings()).thenReturn(filterSettings);
     }
 
 }

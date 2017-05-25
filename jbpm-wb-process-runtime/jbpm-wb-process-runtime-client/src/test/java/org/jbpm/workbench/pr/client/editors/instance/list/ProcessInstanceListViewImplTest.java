@@ -25,6 +25,7 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.gwtmockito.WithClassesToStub;
 import org.jbpm.workbench.common.client.list.AdvancedSearchTable;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.junit.Before;
@@ -32,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
@@ -67,12 +69,19 @@ public class ProcessInstanceListViewImplTest {
     @Mock
     protected ProcessInstanceListPresenter presenter;
 
+    @Spy
+    private FilterSettings filterSettings;
+
     @InjectMocks
     private ProcessInstanceListViewImpl view;
 
     @Before
     public void setupMocks() {
         when(presenter.getDataProvider()).thenReturn(mock(AsyncDataProvider.class));
+        when(presenter.createTableSettingsPrototype()).thenReturn(filterSettings);
+        when(presenter.createActiveTabSettings()).thenReturn(filterSettings);
+        when(presenter.createCompletedTabSettings()).thenReturn(filterSettings);
+        when(presenter.createAbortedTabSettings()).thenReturn(filterSettings);
         when(filterPagedTable.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStore);
     }
 

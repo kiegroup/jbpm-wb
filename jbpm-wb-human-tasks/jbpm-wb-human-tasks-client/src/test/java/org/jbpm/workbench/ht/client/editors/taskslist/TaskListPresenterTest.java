@@ -19,6 +19,8 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 
+import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_USER_DATASET;
+
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskListPresenterTest extends AbstractTaskListPresenterTest {
 
@@ -30,4 +32,8 @@ public class TaskListPresenterTest extends AbstractTaskListPresenterTest {
         return presenter;
     }
 
+    @Override
+    public String getDataSetId(){
+        return HUMAN_TASKS_WITH_USER_DATASET;
+    }
 }

@@ -38,7 +38,9 @@ import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
+import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.es.util.RequestStatus;
 import org.jbpm.workbench.es.client.editors.jobdetails.JobDetailsPopup;
@@ -309,5 +311,85 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
                                                                       v))
         );
+    }
+
+    @Override
+    public FilterSettings createTableSettingsPrototype() {
+        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
+        builder.initBuilder();
+
+        builder.dataset( REQUEST_LIST_DATASET );
+        builder.setColumn( COLUMN_ID, constants.Id() );
+        builder.setColumn(COLUMN_TIMESTAMP, constants.Time(), DateUtils.getDateTimeFormatMask() );
+        builder.setColumn( COLUMN_STATUS, constants.Status() );
+        builder.setColumn( COLUMN_COMMANDNAME, constants.CommandName(), DateUtils.getDateTimeFormatMask() );
+        builder.setColumn( COLUMN_MESSAGE, constants.Message() );
+        builder.setColumn( COLUMN_BUSINESSKEY, constants.Key() );
+        builder.setColumn( COLUMN_RETRIES, constants.Retries() );
+        builder.setColumn( COLUMN_EXECUTIONS, constants.Executions() );
+        builder.setColumn( COLUMN_PROCESS_NAME, constants.Process_Name() );
+        builder.setColumn( COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
+        builder.setColumn( COLUMN_PROCESS_INSTANCE_DESCRIPTION, constants.Process_Description() );
+
+        builder.filterOn( true, true, true );
+        builder.tableOrderEnabled( true );
+        builder.tableOrderDefault( COLUMN_TIMESTAMP, SortOrder.DESCENDING );
+        builder.tableWidth( 1000 );
+
+        return builder.buildSettings();
+    }
+
+    private FilterSettings createStatusSettings(final RequestStatus status) {
+        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
+        builder.initBuilder();
+        builder.dataset( REQUEST_LIST_DATASET );
+        if ( status != null ) {
+            builder.filter( equalsTo( COLUMN_STATUS, status.name() ) );
+        }
+        builder.setColumn( COLUMN_ID, constants.Id() );
+        builder.setColumn( COLUMN_TIMESTAMP, constants.Time(), DateUtils.getDateTimeFormatMask() );
+        builder.setColumn( COLUMN_STATUS, constants.Status() );
+        builder.setColumn( COLUMN_COMMANDNAME, constants.CommandName() );
+        builder.setColumn( COLUMN_MESSAGE, constants.Message() );
+        builder.setColumn( COLUMN_BUSINESSKEY, constants.Key() );
+        builder.setColumn( COLUMN_RETRIES, constants.Retries() );
+        builder.setColumn( COLUMN_EXECUTIONS, constants.Executions() );
+        builder.setColumn( COLUMN_PROCESS_NAME, constants.Process_Name() );
+        builder.setColumn( COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
+        builder.setColumn( COLUMN_PROCESS_INSTANCE_DESCRIPTION, constants.Process_Description() );
+
+        builder.filterOn( true, true, true );
+        builder.tableOrderEnabled( true );
+        builder.tableOrderDefault( COLUMN_TIMESTAMP, SortOrder.DESCENDING );
+
+        return builder.buildSettings();
+    }
+
+    public FilterSettings createAllTabSettings() {
+        return createStatusSettings(null);
+    }
+
+    public FilterSettings createQueuedTabSettings() {
+        return createStatusSettings(RequestStatus.QUEUED);
+    }
+
+    public FilterSettings createRunningTabSettings() {
+        return createStatusSettings(RequestStatus.RUNNING);
+    }
+
+    public FilterSettings createRetryingTabSettings() {
+        return createStatusSettings(RequestStatus.RETRYING);
+    }
+
+    public FilterSettings createErrorTabSettings() {
+        return createStatusSettings(RequestStatus.ERROR);
+    }
+
+    public FilterSettings createCompletedTabSettings() {
+        return createStatusSettings(RequestStatus.DONE);
+    }
+
+    public FilterSettings createCancelledTabSettings() {
+        return createStatusSettings(RequestStatus.CANCELLED);
     }
 }
