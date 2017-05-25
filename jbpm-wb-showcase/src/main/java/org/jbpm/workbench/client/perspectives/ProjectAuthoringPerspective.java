@@ -16,9 +16,13 @@
 
 package org.jbpm.workbench.client.perspectives;
 
+import org.jbpm.workbench.client.i18n.Constants;
 import org.kie.workbench.common.screens.examples.client.wizard.ExamplesWizard;
+import org.kie.workbench.common.screens.examples.service.ExamplesService;
+import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcesMenu;
 import org.kie.workbench.common.widgets.client.menu.RepositoryMenu;
+import org.kie.workbench.common.workbench.client.PerspectiveIds;
 import org.kie.workbench.common.workbench.client.docks.AuthoringWorkbenchDocks;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -30,6 +34,7 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.MenuPosition;
 import org.uberfire.workbench.model.menu.Menus;
 
 import javax.annotation.PostConstruct;
@@ -37,16 +42,16 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 @ApplicationScoped
-@WorkbenchPerspective(identifier = ProjectAuthoringPerspective.PERSPECTIVE_ID)
+@WorkbenchPerspective(identifier = PerspectiveIds.AUTHORING, isTransient = false)
 public class ProjectAuthoringPerspective {
 
-    public static final String PERSPECTIVE_ID = "Authoring";
-
-    @Inject
-    private PlaceManager placeManager;
+    private Constants constants = Constants.INSTANCE;
 
     @Inject
     private NewResourcesMenu newResourcesMenu;
+
+    @Inject
+    private PlaceManager placeManager;
 
     @Inject
     private RepositoryMenu repositoryMenu;
@@ -59,21 +64,30 @@ public class ProjectAuthoringPerspective {
 
     @PostConstruct
     public void setup() {
-        docks.setup("Authoring", new DefaultPlaceRequest("org.kie.guvnor.explorer"));
+        docks.setup(PerspectiveIds.AUTHORING, new DefaultPlaceRequest("org.kie.guvnor.explorer" ) );
     }
-
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(MultiListWorkbenchPanelPresenter.class.getName());
-        p.setName("Project Authoring Perspective");
-        return p;
+        PerspectiveDefinitionImpl perspective = new PerspectiveDefinitionImpl( MultiListWorkbenchPanelPresenter.class.getName() );
+        perspective.setName( constants.Project_Authoring() );
+
+        return perspective;
     }
 
     @WorkbenchMenu
     public Menus getMenus() {
+        if ( !ApplicationPreferences.isProductized() && ApplicationPreferences.getBooleanPref(ExamplesService.EXAMPLES_SYSTEM_PROPERTY ) ) {
+            return buildMenuBarWithExamples();
+
+        } else {
+            return buildMenuBarWithoutExamples();
+        }
+    }
+
+    private Menus buildMenuBarWithExamples() {
         return MenuFactory
-                .newTopLevelMenu( "Examples" )
+                .newTopLevelMenu( constants.Examples() )
                 .respondsWith( new Command() {
                     @Override
                     public void execute() {
@@ -81,24 +95,51 @@ public class ProjectAuthoringPerspective {
                     }
                 } )
                 .endMenu()
-
-                .newTopLevelMenu("Projects")
-                .respondsWith(new Command() {
+                .newTopLevelMenu( constants.newItem() )
+                .withItems( newResourcesMenu.getMenuItems() )
+                .endMenu()
+                .newTopLevelMenu( constants.Repository() )
+                .withItems( repositoryMenu.getMenuItems() )
+                .endMenu()
+                .newTopLevelMenu( constants.assetSearch() ).position(MenuPosition.RIGHT ).respondsWith(new Command() {
                     @Override
                     public void execute() {
-                        placeManager.goTo("org.kie.guvnor.explorer");
+                        placeManager.goTo( "FindForm" );
                     }
-                })
+                } )
                 .endMenu()
-
-                .newTopLevelMenu("New")
-                .withItems(newResourcesMenu.getMenuItems())
+                .newTopLevelMenu( constants.Messages() ).position( MenuPosition.RIGHT ).respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        placeManager.goTo( "org.kie.workbench.common.screens.messageconsole.MessageConsole" );
+                    }
+                } )
                 .endMenu()
+                .build();
+    }
 
-                .newTopLevelMenu("Repository")
-                .withItems(repositoryMenu.getMenuItems())
+    private Menus buildMenuBarWithoutExamples() {
+        return MenuFactory
+                .newTopLevelMenu( constants.newItem() )
+                .withItems( newResourcesMenu.getMenuItems() )
                 .endMenu()
-
+                .newTopLevelMenu( constants.Repository() )
+                .withItems( repositoryMenu.getMenuItems() )
+                .endMenu()
+                .newTopLevelMenu( constants.assetSearch() ).position( MenuPosition.RIGHT ).respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        placeManager.goTo( "FindForm" );
+                    }
+                } )
+                .endMenu()
+                .newTopLevelMenu( constants.Messages() ).position( MenuPosition.RIGHT ).respondsWith( new Command() {
+                    @Override
+                    public void execute() {
+                        placeManager.goTo( "org.kie.workbench.common.screens.messageconsole.MessageConsole" );
+                    }
+                } )
+                .endMenu()
                 .build();
     }
 

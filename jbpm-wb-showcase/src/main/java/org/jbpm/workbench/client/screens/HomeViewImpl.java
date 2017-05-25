@@ -29,7 +29,6 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.client.i18n.Constants;
-import org.jbpm.workbench.client.perspectives.ProjectAuthoringPerspective;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -197,7 +196,7 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
         improveLabel.setTextContent( constants.Improve() );
         improveTextLabel.setTextContent( constants.Improve_Text() );
 
-        modelProcessAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(ProjectAuthoringPerspective.PERSPECTIVE_ID)));
+        modelProcessAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(LIBRARY)));
 
         workTaskListAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(TASKS)));
 
