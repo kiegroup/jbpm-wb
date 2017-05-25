@@ -30,6 +30,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetOp;
+import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
@@ -93,7 +94,7 @@ public abstract class AbstractTaskListPresenterTest {
     @Mock
     private DataSet dataSetTaskVarMock;
 
-    @Mock
+    @Spy
     private FilterSettings filterSettings;
 
     @Mock
@@ -113,6 +114,8 @@ public abstract class AbstractTaskListPresenterTest {
     @Spy
     private Event<TaskSelectionEvent> taskSelected = new EventSourceMock<TaskSelectionEvent>();
 
+    public abstract String getDataSetId();
+
     @Before
     public void setupMocks() {
         callerMockRemoteTaskService = new CallerMock<TaskService>(taskService);
@@ -126,7 +129,6 @@ public abstract class AbstractTaskListPresenterTest {
         when(filterSettings.getDataSetLookup()).thenReturn(dataSetLookup);
 
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
-        when(viewMock.getVariablesTableSettings(anyString())).thenReturn(new TaskListViewImpl().getVariablesTableSettings("taskName"));
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
         when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
@@ -435,6 +437,41 @@ public abstract class AbstractTaskListPresenterTest {
                      filter.getColumnFilterList().size());
         assertEquals(COLUMN_STATUS,
                      filter.getColumnFilterList().get(0).getColumnId());
+    }
+
+    @Test
+    public void testIsNullTableSettingsPrototype(){
+        when(identity.getIdentifier()).thenReturn("user");
+        getPresenter().setIdentity(identity);
+        FilterSettings filterSettings = getPresenter().createTableSettingsPrototype();
+        List <DataSetOp> ops = filterSettings.getDataSetLookup().getOperationList();
+        for(DataSetOp op : ops){
+            if(op.getType().equals(DataSetOpType.FILTER)){
+                List<ColumnFilter> columnFilters = ((DataSetFilter)op).getColumnFilterList();
+                for(ColumnFilter columnFilter : columnFilters){
+                    assertTrue((columnFilter).toString().contains(COLUMN_ACTUAL_OWNER + " is_null"));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void getVariablesTableSettingsTest(){
+        FilterSettings filterSettings = getPresenter().getVariablesTableSettings("Test");
+        List <DataSetOp> ops = filterSettings.getDataSetLookup().getOperationList();
+        for(DataSetOp op : ops){
+            if(op.getType().equals(DataSetOpType.FILTER)){
+                List<ColumnFilter> columnFilters = ((DataSetFilter)op).getColumnFilterList();
+                for(ColumnFilter columnFilter : columnFilters){
+                    assertTrue((columnFilter).toString().contains(COLUMN_TASK_VARIABLE_TASK_NAME + " = Test"));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testDatasetName(){
+        assertEquals(getDataSetId(), getPresenter().createTableSettingsPrototype().getDataSetLookup().getDataSetUUID());
     }
 
 }

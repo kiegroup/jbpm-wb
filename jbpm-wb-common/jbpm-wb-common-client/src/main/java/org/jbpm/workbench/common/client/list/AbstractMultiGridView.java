@@ -329,17 +329,15 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         presenter.setAddingDefaultFilters(true);
 
         //Search Tab
-        final FilterSettings settings = createTableSettingsPrototype();
+        final FilterSettings settings = presenter.createTableSettingsPrototype();
         settings.setTableName(constants.Search());
         settings.setTableDescription(constants.SearchResults());
         settings.setKey(TAB_SEARCH);
-        addNewTab(TAB_SEARCH,
-                  preferences,
+        addNewTab(preferences,
                   settings);
     }
 
-    public void addNewTab(final String key,
-                          final GridGlobalPreferences preferences,
+    public void addNewTab(final GridGlobalPreferences preferences,
                           final FilterSettings tableSettings) {
         final HashMap<String, Object> tabSettingsValues = new HashMap<>();
 
@@ -350,24 +348,22 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM,
                               tableSettings.getTableDescription());
 
-        filterPagedTable.saveNewTabSettings(key,
+        filterPagedTable.saveNewTabSettings(tableSettings.getKey(),
                                             tabSettingsValues);
 
         final ExtendedPagedTable<T> extendedPagedTable = createGridInstance(preferences,
-                                                                            key);
+                                                                            tableSettings.getKey());
         currentListGrid = extendedPagedTable;
         extendedPagedTable.setDataProvider(presenter.getDataProvider());
 
         filterPagedTable.addTab(extendedPagedTable,
-                                key,
+                                tableSettings.getKey(),
                                 () -> {
                                     currentListGrid = extendedPagedTable;
-                                    applyFilterOnPresenter(key);
+                                    applyFilterOnPresenter(tableSettings.getKey());
                                 }
         );
     }
-
-    public abstract FilterSettings createTableSettingsPrototype();
 
     public void selectFirstTabAndEnableQueries() {
         presenter.setAddingDefaultFilters(false);

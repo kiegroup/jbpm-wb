@@ -76,7 +76,7 @@ public class AbstractMultiGridViewTest {
     @Mock
     protected FilterPagedTable filterPagedTable;
 
-    @Mock
+    @Spy
     protected FilterSettings filterSettings;
 
     @Mock
@@ -89,7 +89,7 @@ public class AbstractMultiGridViewTest {
         testListView.setDataSetEditorManager(dataSetEditorManager);
         when(userPreferencesServiceMock.loadUserPreferences(TEST_KEY, UserPreferencesType.MULTIGRIDPREFERENCES)).thenReturn(multiGridPreferencesStore);
         when(presenter.getDataProvider()).thenReturn(dataProviderMock);
-        when(testListView.createTableSettingsPrototype()).thenReturn(filterSettings);
+        when(presenter.createTableSettingsPrototype()).thenReturn(filterSettings);
     }
 
     @Test

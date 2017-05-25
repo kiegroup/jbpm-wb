@@ -15,19 +15,14 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 
 import org.gwtbootstrap3.client.ui.Button;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
-import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Dependent
 public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
@@ -37,18 +32,6 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
     private static final String TAB_GROUP = DATA_SET_TASK_LIST_PREFIX + "_2";
     private static final String TAB_PERSONAL = DATA_SET_TASK_LIST_PREFIX + "_1";
     private static final String TAB_ACTIVE = DATA_SET_TASK_LIST_PREFIX + "_0";
-    
-    @Override
-    public FilterSettings createTableSettingsPrototype() {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-        builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
-        builder.group(COLUMN_TASK_ID);
-
-        addCommonColumnSettings(builder);
-
-        return builder.buildSettings();
-    }
 
     @Override
     public void initDefaultFilters(final GridGlobalPreferences preferences,
@@ -57,94 +40,35 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
                                  createTabButton);
 
         //Filter status Active
-        initOwnTabFilter(preferences,
-                         TAB_ACTIVE,
-                         Constants.INSTANCE.Active(),
-                         Constants.INSTANCE.FilterActive(),
-                         getStatusByType(TaskType.ACTIVE));
+        initFilterTab(presenter.createActiveTabSettings(),
+                      TAB_ACTIVE,
+                      Constants.INSTANCE.Active(),
+                      Constants.INSTANCE.FilterActive(),
+                      preferences);
 
         //Filter status Personal
-        initPersonalTabFilter(preferences,
-                              TAB_PERSONAL,
-                              Constants.INSTANCE.Personal(),
-                              Constants.INSTANCE.FilterPersonal(),
-                              getStatusByType(TaskType.PERSONAL));
+        initFilterTab(presenter.createPersonalTabSettings(),
+                      TAB_PERSONAL,
+                      Constants.INSTANCE.Personal(),
+                      Constants.INSTANCE.FilterPersonal(),
+                      preferences);
 
         //Filter status Group
-        initGroupTabFilter(preferences,
-                           TAB_GROUP,
-                           Constants.INSTANCE.Group(),
-                           Constants.INSTANCE.FilterGroup(),
-                           getStatusByType(TaskType.GROUP));
+        initFilterTab(presenter.createGroupTabSettings(),
+                      TAB_GROUP,
+                      Constants.INSTANCE.Group(),
+                      Constants.INSTANCE.FilterGroup(),
+                      preferences);
 
         //Filter status All
-        initOwnTabFilter(preferences,
-                         TAB_ALL,
-                         Constants.INSTANCE.All(),
-                         Constants.INSTANCE.FilterAll(),
-                         getStatusByType(TaskType.ALL));
+        initFilterTab(presenter.createAllTabSettings(),
+                      TAB_ALL,
+                      Constants.INSTANCE.All(),
+                      Constants.INSTANCE.FilterAll(),
+                      preferences);
 
-        filterPagedTable.addAddTableButton( createTabButton );
+        filterPagedTable.addAddTableButton(createTabButton);
         selectFirstTabAndEnableQueries();
-    }
-
-    private void initGroupTabFilter( GridGlobalPreferences preferences,
-                                     final String key,
-                                     String tabName,
-                                     String tabDesc,
-                                     List<String> states ) {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
-        List<Comparable> names = new ArrayList<>(states);
-        builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names ) );
-
-        builder.filter(COLUMN_ACTUAL_OWNER, OR(equalsTo(""), isNull()) );
-
-        builder.group(COLUMN_TASK_ID);
-
-        addCommonColumnSettings(builder);
-
-        initFilterTab(builder , key, tabName, tabDesc, preferences);
-    }
-
-    private void initPersonalTabFilter( GridGlobalPreferences preferences,
-                                        final String key,
-                                        String tabName,
-                                        String tabDesc,
-                                        List<String> states ) {
-
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset( HUMAN_TASKS_DATASET );
-        List<Comparable> names = new ArrayList<>(states);
-        builder.filter( equalsTo( COLUMN_STATUS, names ) );
-        builder.filter( equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier() ) );
-
-        addCommonColumnSettings(builder);
-
-        initFilterTab(builder, key, tabName, tabDesc, preferences );
-    }
-
-    private void initOwnTabFilter( GridGlobalPreferences preferences,
-                                   final String key,
-                                   String tabName,
-                                   String tabDesc,
-                                   List<String> states ) {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
-        List<Comparable> names = new ArrayList<>(states);
-        builder.filter( COLUMN_STATUS, equalsTo( COLUMN_STATUS, names ) );
-
-        builder.group(COLUMN_TASK_ID);
-
-        addCommonColumnSettings(builder);
-
-        initFilterTab(builder, key, tabName, tabDesc, preferences );
     }
 
     @Override
@@ -168,31 +92,30 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
     public String getDataSetTaskListPrefix() {
         return DATA_SET_TASK_LIST_PREFIX;
     }
-    
+
     @Override
-    protected ConditionalActionHasCell.ActionCellRenderCondition getSuspendActionCondition(){
+    protected ConditionalActionHasCell.ActionCellRenderCondition getSuspendActionCondition() {
         return task -> {
             String taskStatus = task.getStatus();
             String actualOwner = task.getActualOwner();
             String currentId = identity.getIdentifier();
             List<String> potOwners = task.getPotOwnersString();
             return ((actualOwner != null && actualOwner.equals(currentId) &&
-                    (taskStatus.equals(TASK_STATUS_RESERVED) || taskStatus.equals(TASK_STATUS_INPROGRESS))) 
-                || (potOwners != null && potOwners.contains(currentId)
+                    (taskStatus.equals(TASK_STATUS_RESERVED) || taskStatus.equals(TASK_STATUS_INPROGRESS)))
+                    || (potOwners != null && potOwners.contains(currentId)
                     && taskStatus.equals(TASK_STATUS_READY)));
         };
     }
-    
+
     @Override
-    protected ConditionalActionHasCell.ActionCellRenderCondition getResumeActionCondition(){
+    protected ConditionalActionHasCell.ActionCellRenderCondition getResumeActionCondition() {
         return task -> {
             String taskStatus = task.getStatus();
             String actualOwner = task.getActualOwner();
             String currentId = identity.getIdentifier();
             List<String> potOwners = task.getPotOwnersString();
-            return (taskStatus.equals(TASK_STATUS_SUSPENDED) && ((actualOwner != null && actualOwner.equals(currentId)) 
-                || (potOwners != null && potOwners.contains(currentId))));
+            return (taskStatus.equals(TASK_STATUS_SUSPENDED) && ((actualOwner != null && actualOwner.equals(currentId))
+                    || (potOwners != null && potOwners.contains(currentId))));
         };
     }
-
 }

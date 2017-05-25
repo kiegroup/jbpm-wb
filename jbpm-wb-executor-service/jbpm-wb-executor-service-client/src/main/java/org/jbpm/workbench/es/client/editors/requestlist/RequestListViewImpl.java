@@ -50,7 +50,6 @@ import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.ButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
@@ -59,8 +58,6 @@ import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
-import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 
 @Dependent
@@ -121,7 +118,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
                     }
                 };
-                FilterSettings tableSettings = createTableSettingsPrototype();
+                FilterSettings tableSettings = presenter.createTableSettingsPrototype();
                 tableSettings.setKey( key );
                 dataSetEditorManager.showTableSettingsEditor( filterPagedTable, constants.New_JobList(), tableSettings, addNewGrid );
 
@@ -305,107 +302,58 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         super.initDefaultFilters(preferences,
                                  createTabButton);
 
-        initTabFilter(preferences,
+        initTabFilter(presenter.createAllTabSettings(),
                       TAB_ALL,
                       constants.All(),
                       constants.FilterAll(),
-                      null);
-        initTabFilter(preferences,
+                      preferences);
+        initTabFilter(presenter.createQueuedTabSettings(),
                       TAB_QUEUED,
                       constants.Queued(),
                       constants.FilterQueued(),
-                      RequestStatus.QUEUED);
-        initTabFilter(preferences,
+                      preferences);
+        initTabFilter(presenter.createRunningTabSettings(),
                       TAB_RUNNING,
                       constants.Running(),
                       constants.FilterRunning(),
-                      RequestStatus.RUNNING);
-        initTabFilter(preferences,
+                      preferences);
+        initTabFilter(presenter.createRetryingTabSettings(),
                       TAB_RETRYING,
                       constants.Retrying(),
                       constants.FilterRetrying(),
-                      RequestStatus.RETRYING);
-        initTabFilter(preferences,
+                      preferences);
+        initTabFilter(presenter.createErrorTabSettings(),
                       TAB_ERROR,
                       constants.Error(),
                       constants.FilterError(),
-                      RequestStatus.ERROR);
-        initTabFilter(preferences,
+                      preferences);
+        initTabFilter(presenter.createCompletedTabSettings(),
                       TAB_COMPLETED,
                       constants.Completed(),
                       constants.FilterCompleted(),
-                      RequestStatus.DONE);
-        initTabFilter(preferences,
+                      preferences);
+        initTabFilter(presenter.createCancelledTabSettings(),
                       TAB_CANCELLED,
                       constants.Cancelled(),
                       constants.FilterCancelled(),
-                      RequestStatus.CANCELLED);
+                      preferences);
 
         filterPagedTable.addAddTableButton( createTabButton );
 
         selectFirstTabAndEnableQueries();
     }
 
-    private void initTabFilter( GridGlobalPreferences preferences,
+    private void initTabFilter( FilterSettings tableSettings,
                                 final String key,
                                 String tabName,
                                 String tabDesc,
-                                RequestStatus status ) {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-        builder.dataset( REQUEST_LIST_DATASET );
-        if ( status != null ) {
-            builder.filter( equalsTo( COLUMN_STATUS, status.name() ) );
-        }
-        builder.setColumn( COLUMN_ID, constants.Id() );
-        builder.setColumn( COLUMN_TIMESTAMP, constants.Time(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn( COLUMN_STATUS, constants.Status() );
-        builder.setColumn( COLUMN_COMMANDNAME, constants.CommandName() );
-        builder.setColumn( COLUMN_MESSAGE, constants.Message() );
-        builder.setColumn( COLUMN_BUSINESSKEY, constants.Key() );
-        builder.setColumn( COLUMN_RETRIES, constants.Retries() );
-        builder.setColumn( COLUMN_EXECUTIONS, constants.Executions() );
-        builder.setColumn( COLUMN_PROCESS_NAME, constants.Process_Name() );
-        builder.setColumn( COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
-        builder.setColumn( COLUMN_PROCESS_INSTANCE_DESCRIPTION, constants.Process_Description() );
-
-        builder.filterOn( true, true, true );
-        builder.tableOrderEnabled( true );
-        builder.tableOrderDefault( COLUMN_TIMESTAMP, DESCENDING );
-
-        FilterSettings tableSettings = builder.buildSettings();
+                                GridGlobalPreferences preferences ) {
         tableSettings.setUUID( REQUEST_LIST_DATASET );
         tableSettings.setKey( key );
         tableSettings.setTableName( tabName );
         tableSettings.setTableDescription( tabDesc );
 
-        addNewTab(key, preferences, tableSettings);
-    }
-
-    @Override
-    public FilterSettings createTableSettingsPrototype() {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset( REQUEST_LIST_DATASET );
-        builder.setColumn( COLUMN_ID, constants.Id() );
-        builder.setColumn( COLUMN_TIMESTAMP, constants.Time(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn( COLUMN_STATUS, constants.Status() );
-        builder.setColumn( COLUMN_COMMANDNAME, constants.CommandName(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn( COLUMN_MESSAGE, constants.Message() );
-        builder.setColumn( COLUMN_BUSINESSKEY, constants.Key() );
-        builder.setColumn( COLUMN_RETRIES, constants.Retries() );
-        builder.setColumn( COLUMN_EXECUTIONS, constants.Executions() );
-        builder.setColumn( COLUMN_PROCESS_NAME, constants.Process_Name() );
-        builder.setColumn( COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
-        builder.setColumn( COLUMN_PROCESS_INSTANCE_DESCRIPTION, constants.Process_Description() );
-
-        builder.filterOn( true, true, true );
-        builder.tableOrderEnabled( true );
-        builder.tableOrderDefault( COLUMN_TIMESTAMP, DESCENDING );
-        builder.tableWidth( 1000 );
-
-        return builder.buildSettings();
+        addNewTab(preferences, tableSettings);
     }
 
     @Override

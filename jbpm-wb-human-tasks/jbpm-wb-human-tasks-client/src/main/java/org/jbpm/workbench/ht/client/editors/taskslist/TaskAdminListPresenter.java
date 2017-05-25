@@ -15,12 +15,20 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.enterprise.context.Dependent;
 
+import org.jbpm.workbench.common.client.util.TaskUtils;
+import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.workbench.model.menu.Menus;
+
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Dependent
 @WorkbenchScreen(identifier = TaskAdminListPresenter.SCREEN_ID)
@@ -38,4 +46,34 @@ public class TaskAdminListPresenter extends AbstractTaskListPresenter<TaskAdminL
         return super.getMenus();
     }
 
+    @Override
+    public FilterSettings createTableSettingsPrototype() {
+        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
+        builder.initBuilder();
+
+        builder.dataset(HUMAN_TASKS_WITH_ADMIN_DATASET);
+        builder.group(COLUMN_TASK_ID);
+
+        addCommonColumnSettings(builder);
+
+        return builder.buildSettings();
+    }
+
+    public FilterSettings createAdminTabSettings(){
+        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
+        builder.initBuilder();
+
+        builder.dataset(HUMAN_TASKS_WITH_ADMIN_DATASET);
+
+        //Filter status Admin
+        final List<Comparable> states = new ArrayList<>(TaskUtils.getStatusByType(TaskUtils.TaskType.ADMIN));
+        builder.filter(COLUMN_STATUS,
+                       equalsTo(COLUMN_STATUS,
+                                states));
+
+        builder.group(COLUMN_TASK_ID);
+
+        addCommonColumnSettings(builder);
+        return builder.buildSettings();
+    }
 }
