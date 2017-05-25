@@ -19,6 +19,7 @@ package org.jbpm.workbench.forms.client;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jbpm.workbench.forms.client.resources.AppResources;
+import org.uberfire.client.views.pfly.sys.PatternFlyBootstrapper;
 
 @EntryPoint
 public class GenericFormsClientEntryPoint {
@@ -26,6 +27,7 @@ public class GenericFormsClientEntryPoint {
     @AfterInitialization
     public void startApp() {
         AppResources.INSTANCE.style().ensureInjected();
+        PatternFlyBootstrapper.ensureBootstrapSelectIsAvailable();
     }
 
 }
