@@ -16,6 +16,7 @@
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 
@@ -28,6 +29,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.jbpm.workbench.common.client.util.TaskUtils.TASK_STATUS_READY;
 import static org.jbpm.workbench.common.client.util.TaskUtils.getStatusByType;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
@@ -49,14 +51,7 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
 
     @Override
     public FilterSettings createTableSettingsPrototype() {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-        builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
-        builder.group(COLUMN_TASK_ID);
-
-        addCommonColumnSettings(builder);
-
-        return builder.buildSettings();
+        return createStatusSettings(HUMAN_TASKS_WITH_USER_DATASET, null);
     }
 
     public FilterSettings createGroupTabSettings() {
@@ -96,27 +91,16 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
         return builder.buildSettings();
     }
 
-    private FilterSettings createStatusSettings(final List<Comparable> status) {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
-        builder.filter(COLUMN_STATUS,
-                       equalsTo(COLUMN_STATUS,
-                                status));
-
-        builder.group(COLUMN_TASK_ID);
-
-        addCommonColumnSettings(builder);
-
-        return builder.buildSettings();
-    }
-
     public FilterSettings createAllTabSettings() {
-        return createStatusSettings(new ArrayList<>(getStatusByType(TaskUtils.TaskType.ALL)));
+        return createStatusSettings(HUMAN_TASKS_WITH_USER_DATASET, new ArrayList<>(getStatusByType(TaskUtils.TaskType.ALL)));
     }
 
     public FilterSettings createActiveTabSettings() {
-        return createStatusSettings(new ArrayList<>(getStatusByType(TaskUtils.TaskType.ACTIVE)));
+        return createStatusSettings(HUMAN_TASKS_WITH_USER_DATASET, new ArrayList<>(getStatusByType(TaskUtils.TaskType.ACTIVE)));
+    }
+
+    @Override
+    public FilterSettings createSearchTabSettings() {
+        return createStatusSettings(HUMAN_TASKS_WITH_USER_DATASET, Collections.singletonList(TASK_STATUS_READY));
     }
 }

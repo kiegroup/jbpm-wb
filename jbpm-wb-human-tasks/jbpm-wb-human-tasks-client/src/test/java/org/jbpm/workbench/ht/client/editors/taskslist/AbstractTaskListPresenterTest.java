@@ -443,21 +443,12 @@ public abstract class AbstractTaskListPresenterTest {
 
     @Test
     public void testAdvancedSearchDefaultActiveFilter() {
-        getPresenter().setupAdvanceSearchView();
+        getPresenter().setupAdvancedSearchView();
 
         verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Status()),
                                          eq(TASK_STATUS_READY),
                                          eq(TASK_STATUS_READY),
                                          any(ParameterizedCommand.class));
-
-        final ArgumentCaptor<DataSetFilter> captor = ArgumentCaptor.forClass(DataSetFilter.class);
-        verify(dataSetLookup).addOperation(captor.capture());
-
-        final DataSetFilter filter = captor.getValue();
-        assertEquals(1,
-                     filter.getColumnFilterList().size());
-        assertEquals(COLUMN_STATUS,
-                     filter.getColumnFilterList().get(0).getColumnId());
     }
 
     @Test

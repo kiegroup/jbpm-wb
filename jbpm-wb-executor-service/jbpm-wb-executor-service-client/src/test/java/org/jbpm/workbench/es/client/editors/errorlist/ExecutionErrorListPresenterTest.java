@@ -18,19 +18,13 @@ package org.jbpm.workbench.es.client.editors.errorlist;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.dashbuilder.dataset.DataSet;
-import org.dashbuilder.dataset.filter.ColumnFilter;
-import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
-import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 import org.jbpm.workbench.es.model.events.ExecErrorChangedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
@@ -40,32 +34,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 
 import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
-import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
-import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.COLUMN_ACTIVITY_ID;
-import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.COLUMN_ACTIVITY_NAME;
-import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.COLUMN_DEPLOYMENT_ID;
-import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.COLUMN_ERROR_ACK;
-import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.COLUMN_ERROR_ACK_AT;
-import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.COLUMN_ERROR_ACK_BY;
-import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.COLUMN_ERROR_DATE;
-import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.COLUMN_ERROR_ID;
-import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.COLUMN_ERROR_MSG;
-import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.COLUMN_ERROR_TYPE;
-import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.COLUMN_JOB_ID;
-import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.COLUMN_PROCESS_ID;
-import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.COLUMN_PROCESS_INST_ID;
-import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.EXECUTION_ERROR_LIST_DATASET;
+import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class ExecutionErrorListPresenterTest {
-
-    private static final Long ERROR_ID = 1L;
 
     private CallerMock<ExecutorService> callerMockExecutorService;
 
@@ -84,6 +63,7 @@ public class ExecutionErrorListPresenterTest {
     @Mock
     private EventSourceMock<ExecErrorChangedEvent> execErrorChangedEvent;
 
+    @Spy
     private FilterSettings filterSettings;
 
     @InjectMocks
@@ -111,8 +91,6 @@ public class ExecutionErrorListPresenterTest {
     public void setupMocks() {
         callerMockExecutorService = new CallerMock<>(executorServiceMock);
 
-        filterSettings = createTableSettingsPrototype();
-
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(extendedPagedTable.getColumnSortList()).thenReturn(null);
@@ -132,29 +110,7 @@ public class ExecutionErrorListPresenterTest {
     }
 
     @Test
-    public void testEmptySearchString() {
-        final SearchEvent searchEvent = new SearchEvent("");
-
-        presenter.onSearchEvent(searchEvent);
-
-        verify(viewMock).applyFilterOnPresenter(anyString());
-        assertEquals(searchEvent.getFilter(),
-                     presenter.getTextSearchStr());
-    }
-
-    @Test
-    public void testSearchString() {
-        final SearchEvent searchEvent = new SearchEvent(RandomStringUtils.random(10));
-
-        presenter.onSearchEvent(searchEvent);
-
-        verify(viewMock).applyFilterOnPresenter(anyString());
-        assertEquals(searchEvent.getFilter(),
-                     presenter.getTextSearchStr());
-    }
-
-    @Test
-    public void ackowledgeErrorTest() {
+    public void acknowledgeErrorTest() {
         final String errorId = "errorId";
         final String deploymentId = "deploymentId";
 
@@ -167,7 +123,7 @@ public class ExecutionErrorListPresenterTest {
     }
 
     @Test
-    public void bulkAckowledgeTest() {
+    public void bulkAcknowledgeTest() {
         String error1_ID = "error1";
         String error2_ID = "error2";
         String error3_ID = "error3";
@@ -281,47 +237,4 @@ public class ExecutionErrorListPresenterTest {
                      es.getJobId());
     }
 
-    public FilterSettings createTableSettingsPrototype() {
-        final Constants constants = Constants.INSTANCE;
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-        builder.dataset(EXECUTION_ERROR_LIST_DATASET);
-
-        builder.setColumn(COLUMN_ERROR_ACK,
-                          constants.Ack());
-        builder.setColumn(COLUMN_ERROR_ACK_AT,
-                          constants.AckAt());
-        builder.setColumn(COLUMN_ERROR_ACK_BY,
-                          constants.AckBy());
-        builder.setColumn(COLUMN_ACTIVITY_ID,
-                          constants.ActivityId());
-        builder.setColumn(COLUMN_ACTIVITY_NAME,
-                          constants.ActivityName());
-        builder.setColumn(COLUMN_DEPLOYMENT_ID,
-                          constants.DeploymentId());
-        builder.setColumn(COLUMN_ERROR_DATE,
-                          constants.Date());
-        builder.setColumn(COLUMN_ERROR_ID,
-                          constants.Id());
-        builder.setColumn(COLUMN_ERROR_MSG,
-                          constants.Message());
-        builder.setColumn(COLUMN_JOB_ID,
-                          constants.JobId());
-        builder.setColumn(COLUMN_PROCESS_ID,
-                          constants.ProcessId());
-        builder.setColumn(COLUMN_PROCESS_INST_ID,
-                          constants.Process_Instance_Id());
-        builder.setColumn(COLUMN_ERROR_TYPE,
-                          constants.Type());
-
-        builder.filterOn(true,
-                         true,
-                         true);
-        builder.tableOrderEnabled(true);
-        builder.tableOrderDefault(COLUMN_ERROR_DATE,
-                                  DESCENDING);
-        builder.tableWidth(1000);
-
-        return builder.buildSettings();
-    }
 }
