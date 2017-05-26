@@ -62,8 +62,11 @@ import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
+import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
 import static org.jbpm.workbench.common.client.util.TaskUtils.TASK_STATUS_READY;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.COLUMN_PROCESS_ID;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.COLUMN_PROCESS_INSTANCE_ID;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -223,6 +226,24 @@ public abstract class AbstractTaskListPresenterTest {
 
         final String filterTaskName = getPresenter().isFilteredByTaskName(Collections.<DataSetOp>singletonList(filter));
         assertNull(filterTaskName);
+    }
+
+    @Test
+    public void testSkipDomainSpecificColumnsForSearchTab() {
+        getPresenter().setAddingDefaultFilters(false);
+        final DataSetFilter filter = new DataSetFilter();
+        filter.addFilterColumn(equalsTo(COLUMN_NAME, "taskName"));
+        filterSettings.getDataSetLookup().addOperation(filter);
+        filterSettings.setKey(TAB_SEARCH);
+        when(filterSettings.getKey()).thenReturn(TAB_SEARCH);
+
+        when(dataSetMock.getRowCount()).thenReturn(1);//1 process instance
+        when(dataSetQueryHelper.getColumnLongValue(dataSetMock, COLUMN_TASK_ID, 0)).thenReturn(Long.valueOf(1));
+
+        getPresenter().getData(new Range(0, 5));
+
+        verifyZeroInteractions(dataSetQueryHelperDomainSpecific);
+        verify(viewMock, times(2)).hideBusyIndicator();
     }
 
     @Test

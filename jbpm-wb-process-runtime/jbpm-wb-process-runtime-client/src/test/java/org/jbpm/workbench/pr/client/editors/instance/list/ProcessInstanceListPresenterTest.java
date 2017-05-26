@@ -55,6 +55,7 @@ import org.uberfire.mvp.PlaceRequest;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
+import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -251,6 +252,24 @@ public class ProcessInstanceListPresenterTest {
 
         assertEquals(ProcessInstanceSignalPresenter.SIGNAL_PROCESS_POPUP, placeRequest.getValue().getIdentifier());
         assertEquals(StringUtils.join(pIds, ","), placeRequest.getValue().getParameter("processInstanceId", null));
+    }
+
+    @Test
+    public void testSkipDomainSpecificColumnsForSearchTab() {
+        presenter.setAddingDefaultFilters(false);
+        final DataSetFilter filter = new DataSetFilter();
+        filter.addFilterColumn(equalsTo(COLUMN_PROCESS_ID, "testProc"));
+        filterSettings.getDataSetLookup().addOperation(filter);
+        filterSettings.setKey(TAB_SEARCH);
+        when(filterSettings.getKey()).thenReturn(TAB_SEARCH);
+
+        when(dataSet.getRowCount()).thenReturn(1);//1 process instance
+        when(dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESS_INSTANCE_ID, 0)).thenReturn(Long.valueOf(1));
+
+        presenter.getData(new Range(0, 5));
+
+        verifyZeroInteractions(dataSetQueryHelperDomainSpecific);
+        verify(viewMock, times(2)).hideBusyIndicator();
     }
 
     @Test
