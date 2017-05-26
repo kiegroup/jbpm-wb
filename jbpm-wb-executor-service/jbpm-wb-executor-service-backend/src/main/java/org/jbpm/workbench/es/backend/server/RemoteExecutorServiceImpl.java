@@ -23,18 +23,22 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.jbpm.workbench.es.model.RequestDetails;
 import org.jbpm.workbench.es.service.ExecutorService;
+import org.kie.server.api.model.admin.ExecutionErrorInstance;
 import org.kie.server.api.model.instance.JobRequestInstance;
 import org.kie.server.api.model.instance.RequestInfoInstance;
 import org.kie.server.client.JobServicesClient;
+import org.kie.server.client.admin.ProcessAdminServicesClient;
 
 import static java.util.Optional.ofNullable;
 
 @Service
 @ApplicationScoped
 public class RemoteExecutorServiceImpl extends AbstractKieServerService implements ExecutorService {
+
 
     @Override
     public RequestDetails getRequestDetails(String serverTemplateId, Long requestId) {
@@ -70,6 +74,27 @@ public class RemoteExecutorServiceImpl extends AbstractKieServerService implemen
     public void requeueRequest(String serverTemplateId, Long requestId) {
         JobServicesClient jobClient = getClient(serverTemplateId, JobServicesClient.class);
         jobClient.requeueRequest(requestId);
+    }
+
+    @Override
+    public void acknowledgeError(String serverTemplateId,
+                                 String deploymentId,
+                                 String... errorId) {
+        ProcessAdminServicesClient processAdminServicesClient = getClient(serverTemplateId,
+                                                                          ProcessAdminServicesClient.class);
+        processAdminServicesClient.acknowledgeError(deploymentId,
+                                                    errorId);
+    }
+
+    @Override
+    public ExecutionErrorSummary getError(String serverTemplateId,
+                                          String deploymentId,
+                                          String errorId) {
+        ProcessAdminServicesClient processAdminServicesClient = getClient(serverTemplateId,
+                                                                          ProcessAdminServicesClient.class);
+        Optional<ExecutionErrorInstance> executionErrorInstance = ofNullable(processAdminServicesClient.getError(deploymentId,
+                                                                                                                 errorId));
+        return executionErrorInstance.map(new ExecutionErrorSummaryMapper()).orElse(null);
     }
 
 }

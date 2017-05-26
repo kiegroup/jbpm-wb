@@ -16,23 +16,29 @@
 
 package org.jbpm.workbench.es.backend.server;
 
+import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 import org.jbpm.workbench.ks.integration.KieServerIntegration;
 import org.jbpm.workbench.es.model.RequestDetails;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.api.model.admin.ExecutionErrorInstance;
 import org.kie.server.api.model.instance.RequestInfoInstance;
 import org.kie.server.client.JobServicesClient;
 import org.kie.server.client.KieServicesClient;
+import org.kie.server.client.admin.ProcessAdminServicesClient;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.jbpm.workbench.es.backend.server.RequestDetailsMapperTest.assertRequestDetails;
 import static org.jbpm.workbench.es.backend.server.RequestSummaryMapperTest.newRequestInfoInstance;
+import static org.jbpm.workbench.es.backend.server.ExecutionErrorSummaryMapperTest.createTestError;
+import static org.jbpm.workbench.es.backend.server.ExecutionErrorSummaryMapperTest.assertExecutionErrorSummary;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -44,6 +50,9 @@ public class RemoteExecutorServiceImplTest {
     @Mock
     JobServicesClient jobServicesClient;
 
+    @Mock
+    ProcessAdminServicesClient processAdminServicesClient;
+
     @InjectMocks
     RemoteExecutorServiceImpl executorService;
 
@@ -51,6 +60,7 @@ public class RemoteExecutorServiceImplTest {
     public void init() {
         final KieServicesClient servicesClient = mock(KieServicesClient.class);
         when(servicesClient.getServicesClient(JobServicesClient.class)).thenReturn(jobServicesClient);
+        when(servicesClient.getServicesClient(ProcessAdminServicesClient.class)).thenReturn(processAdminServicesClient);
         when(kieServerIntegration.getServerClient(anyString())).thenReturn(servicesClient);
     }
 
@@ -80,6 +90,43 @@ public class RemoteExecutorServiceImplTest {
     public void testGetRequestDetailsNull() {
         final RequestDetails requestDetails = executorService.getRequestDetails(null, null);
         assertNull(requestDetails);
+    }
+
+    @Test
+    public void testAcknowledgeError() {
+        String serverTemplateId = "testServerTemplateId";
+        String deploymentId = "testDeploymentId";
+        String errorId = "errorId";
+
+        executorService.acknowledgeError(serverTemplateId,
+                                         deploymentId,
+                                         errorId);
+
+        verify(kieServerIntegration).getServerClient(serverTemplateId);
+        verify(processAdminServicesClient).acknowledgeError(deploymentId,
+                                                            errorId);
+    }
+
+    @Test
+    public void testGetExecutionErrorDetails() {
+        final ExecutionErrorInstance errorInstance = createTestError("1");
+        String serverTemplateId = "testServerTemplateId";
+
+        when(processAdminServicesClient.getError(errorInstance.getContainerId(),
+                                                 errorInstance.getErrorId()))
+                .thenReturn(errorInstance);
+
+        final ExecutionErrorSummary errorSummary =
+                executorService.getError(serverTemplateId,
+                                         errorInstance.getContainerId(),
+                                         errorInstance.getErrorId());
+
+        verify(kieServerIntegration).getServerClient(serverTemplateId);
+        verify(processAdminServicesClient).getError(errorInstance.getContainerId(),
+                                                    errorInstance.getErrorId());
+        assertExecutionErrorSummary(errorInstance,
+                                    errorSummary);
+
     }
 
 }

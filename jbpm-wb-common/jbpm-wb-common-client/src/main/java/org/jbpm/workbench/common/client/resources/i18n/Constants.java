@@ -70,4 +70,9 @@ public interface Constants extends Messages {
 
     String SearchResults();
 
+    String Yes();
+
+    String No();
+
+
 }

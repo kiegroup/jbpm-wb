@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 import org.jbpm.workbench.es.model.RequestDetails;
 
 @Remote
@@ -33,4 +34,11 @@ public interface ExecutorService {
 
     void requeueRequest(String serverTemplateId, Long requestId);
 
+    void acknowledgeError(String serverTemplateId,
+                          String deploymentId,
+                          String... errorId);
+
+    ExecutionErrorSummary getError(String serverTemplateId,
+                                   String deploymentId,
+                                   String errorId);
 }

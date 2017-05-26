@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
 
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
+import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 
 @Startup
 @ApplicationScoped
@@ -84,6 +85,50 @@ public class DataSetDefsBootstrap {
         // Register the data set definitions
         dataSetDefRegistry.registerDataSetDef(requestListDef);
         logger.info("Executor service datasets registered");
+
+        DataSetDef executionErrorListDef = DataSetDefFactory.newSQLDataSetDef()
+                .uuid(EXECUTION_ERROR_LIST_DATASET)
+                .name("Error Management")
+                .dataSource(JBPM_DATA_SOURCE)
+                .dbSQL("select "
+                               + "eri.ERROR_ACK, "
+                               + "eri.ERROR_ACK_BY, "
+                               + "eri.ERROR_ACK_AT, "
+                               + "eri.ACTIVITY_ID, "
+                               + "eri.ACTIVITY_NAME, "
+                               + "eri.DEPLOYMENT_ID, "
+                               + "eri.ERROR_DATE, "
+                               + "eri.ERROR_ID, "
+                               + "eri.ERROR_MSG, "
+                               + "eri.JOB_ID, "
+                               + "eri.PROCESS_ID, "
+                               + "eri.PROCESS_INST_ID, "
+                               + "eri.ERROR_TYPE "
+                               + "from "
+                               + "ExecutionErrorInfo eri ",
+                       false)
+                .text(COLUMN_ERROR_ACK)
+                .text(COLUMN_ERROR_ACK_BY)
+                .date(COLUMN_ERROR_ACK_AT)
+                .number(COLUMN_ACTIVITY_ID)
+                .label(COLUMN_ACTIVITY_NAME)
+                .label(COLUMN_DEPLOYMENT_ID)
+                .date(COLUMN_ERROR_DATE)
+                .label(COLUMN_ERROR_ID)
+                .label(COLUMN_ERROR_MSG)
+                .number(COLUMN_JOB_ID)
+                .label(COLUMN_PROCESS_ID)
+                .number(COLUMN_PROCESS_INST_ID)
+                .label(COLUMN_ERROR_TYPE)
+                .buildDef();
+
+        // Hide all these internal data set from end user view
+        executionErrorListDef.setPublic(false);
+        executionErrorListDef.setProvider(KieServerDataSetProvider.TYPE);
+
+        // Register the data set definitions
+        dataSetDefRegistry.registerDataSetDef(executionErrorListDef);
+        logger.info("Error Management dataset registered");
     }
 
 }

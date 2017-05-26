@@ -1,0 +1,52 @@
+/*
+ * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.jbpm.workbench.es.client.perspectives;
+
+import javax.enterprise.context.ApplicationScoped;
+
+import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
+import org.kie.workbench.common.workbench.client.PerspectiveIds;
+import org.uberfire.client.annotations.Perspective;
+import org.uberfire.client.annotations.WorkbenchPerspective;
+import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.PerspectiveDefinition;
+import org.uberfire.workbench.model.impl.PartDefinitionImpl;
+import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
+
+/**
+ * A Perspective to show Execution Errors
+ */
+@ApplicationScoped
+@WorkbenchPerspective(identifier = PerspectiveIds.EXECUTION_ERRORS)
+public class ErrorManagementPerspective extends AbstractPerspective {
+
+    public static final String EXECUTION_ERROR_LIST = "Execution Error List";
+    public static final String EXECUTION_ERROR_DETAILS = "Execution Error Details";
+
+    @Perspective
+    public PerspectiveDefinition getPerspective() {
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(MultiListWorkbenchPanelPresenter.class.getName());
+        p.setName(PerspectiveIds.EXECUTION_ERRORS);
+        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(EXECUTION_ERROR_LIST)));
+        return p;
+    }
+
+    @Override
+    public String getPerspectiveId() {
+        return PerspectiveIds.EXECUTION_ERRORS;
+    }
+}

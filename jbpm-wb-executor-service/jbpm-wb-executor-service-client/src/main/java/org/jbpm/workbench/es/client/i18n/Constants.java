@@ -167,4 +167,60 @@ public interface Constants extends Messages {
 
     String FilterByProcessDescription();
 
+    String FilterByJobId();
+
+    String FilterByErrorId();
+
+    String ExecutionErrorAcknowledged(String executionErrorId);
+
+    String ExecutionErrors();
+
+    String New_ErrorList();
+
+    String Ack();
+
+    String Acknowledge();
+
+    String Acknowledged();
+
+    String AckAt();
+
+    String AckBy();
+
+    String ActivityId();
+
+    String ActivityName();
+
+    String DeploymentId();
+
+    String Date();
+
+    String JobId();
+
+    String ProcessId();
+
+    String ErrorDate();
+
+    String No_Execution_Errors_Found();
+
+    String Bulk_Actions();
+
+    String Bulk_Ack();
+
+    String Bulk_Ack_confirm();
+
+    String Process();
+
+    String Task();
+
+    String DB();
+
+    String Unknown();
+
+    String New();
+
+    String UnacknowledgedErrors();
+
+    String AcknowledgedErrors();
+
 }
