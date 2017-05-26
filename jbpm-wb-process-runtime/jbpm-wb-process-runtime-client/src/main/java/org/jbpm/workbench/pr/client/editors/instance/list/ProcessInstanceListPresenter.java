@@ -442,7 +442,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     }
 
     @Override
-    public void setupAdvanceSearchView() {
+    public void setupAdvancedSearchView() {
         view.addNumericFilter(constants.Id(),
                               constants.FilterByProcessInstanceId(),
                               v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
@@ -499,13 +499,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
         //TODO missing creation date
 
-        final FilterSettings settings = view.getAdvancedSearchFilterSettings();
-        final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_STATUS,
-                                        String.valueOf(ProcessInstance.STATE_ACTIVE)));
-        settings.getDataSetLookup().addOperation(filter);
-        view.saveAdvancedSearchFilterSettings(settings);
-
         view.addActiveFilter(constants.State(),
                              constants.Active(),
                              String.valueOf(ProcessInstance.STATE_ACTIVE),
@@ -546,6 +539,11 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         builder.tableOrderDefault( COLUMN_START, SortOrder.DESCENDING );
 
         return builder.buildSettings();
+    }
+
+    @Override
+    public FilterSettings createSearchTabSettings() {
+        return createStatusSettings(ProcessInstance.STATE_ACTIVE);
     }
 
     public FilterSettings createActiveTabSettings() {

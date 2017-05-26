@@ -16,11 +16,7 @@
 
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.enterprise.event.Event;
@@ -416,7 +412,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     }
 
     @Override
-    public void setupAdvanceSearchView() {
+    public void setupAdvancedSearchView() {
         view.addNumericFilter(constants.Id(),
                               constants.FilterByTaskId(),
                               v -> addAdvancedSearchFilter(equalsTo(COLUMN_TASK_ID,
@@ -470,13 +466,6 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
         //TODO missing creation date
 
-        final FilterSettings settings = view.getAdvancedSearchFilterSettings();
-        final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_STATUS,
-                                        TASK_STATUS_READY));
-        settings.getDataSetLookup().addOperation(filter);
-        view.saveAdvancedSearchFilterSettings(settings);
-
         view.addActiveFilter(constants.Status(),
                              TASK_STATUS_READY,
                              TASK_STATUS_READY,
@@ -484,6 +473,23 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                                                                       v))
         );
 
+    }
+
+    public FilterSettings createStatusSettings(final String dataSetId, final List<Comparable> status){
+        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
+        builder.initBuilder();
+
+        builder.dataset(dataSetId);
+
+        if (status != null){
+            builder.filter(COLUMN_STATUS,
+                           equalsTo(COLUMN_STATUS,
+                                    status));
+        }
+        builder.group(COLUMN_TASK_ID);
+
+        addCommonColumnSettings(builder);
+        return builder.buildSettings();
     }
 
     protected void addCommonColumnSettings(FilterSettingsBuilderHelper builder) {
@@ -527,6 +533,5 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         varTableSettings.setTablePageSize(-1);
 
         return varTableSettings;
-
     }
 }

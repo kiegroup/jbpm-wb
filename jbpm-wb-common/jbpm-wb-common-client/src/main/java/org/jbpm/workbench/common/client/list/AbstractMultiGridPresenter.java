@@ -28,6 +28,7 @@ import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
+import org.uberfire.lifecycle.OnOpen;
 
 public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V extends MultiGridView> extends AbstractScreenListPresenter<T> implements RefreshSelectorMenuBuilder.SupportsRefreshInterval {
 
@@ -81,7 +82,16 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
 
     public abstract FilterSettings createTableSettingsPrototype();
 
-    public abstract void setupAdvanceSearchView();
+    public abstract FilterSettings createSearchTabSettings();
+
+    public abstract void setupAdvancedSearchView();
+
+    @Override
+    @OnOpen
+    public void onOpen() {
+        super.onOpen();
+        setupAdvancedSearchView();
+    }
 
     protected void addAdvancedSearchFilter(final ColumnFilter columnFilter) {
         final FilterSettings settings = view.getAdvancedSearchFilterSettings();
