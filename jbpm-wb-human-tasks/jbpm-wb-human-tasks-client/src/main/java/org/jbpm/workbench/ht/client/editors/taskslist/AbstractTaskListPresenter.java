@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -42,11 +41,11 @@ import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.Group;
+import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
-import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
@@ -66,6 +65,7 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
@@ -181,18 +181,24 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         myTasksFromDataSet.add(createTaskSummaryFromDataSet(dataSet, i));
 
                     }
-                    List<DataSetOp> ops = tableSettings.getDataSetLookup().getOperationList();
-                    String filterValue = isFilteredByTaskName(ops); //Add here the check to add the domain data columns taskName?
 
                     boolean lastPageExactCount = false;
                     if( dataSet.getRowCount() < view.getListGrid().getPageSize()) {
                         lastPageExactCount = true;
                     }
 
-                    if (filterValue != null) {
-                        getDomainSpecifDataForTasks(startRange, filterValue, myTasksFromDataSet, lastPageExactCount);
+                    List<DataSetOp> ops = tableSettings.getDataSetLookup().getOperationList();
+                    String filterValue = isFilteredByTaskName(ops); //Add here the check to add the domain data columns taskName?
+                    if (TAB_SEARCH.equals(tableSettings.getKey()) == false && filterValue != null) {
+                        getDomainSpecifDataForTasks(startRange,
+                                                    filterValue,
+                                                    myTasksFromDataSet,
+                                                    lastPageExactCount);
                     } else {
-                        updateDataOnCallback(myTasksFromDataSet, startRange,startRange + myTasksFromDataSet.size(), lastPageExactCount);
+                        updateDataOnCallback(myTasksFromDataSet,
+                                             startRange,
+                                             startRange + myTasksFromDataSet.size(),
+                                             lastPageExactCount);
                     }
 
                 }

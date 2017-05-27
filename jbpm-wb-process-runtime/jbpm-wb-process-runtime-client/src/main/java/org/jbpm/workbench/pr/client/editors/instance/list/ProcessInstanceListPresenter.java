@@ -69,6 +69,7 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
@@ -196,22 +197,25 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                     for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
                         myProcessInstancesFromDataSet.add( createProcessInstanceSummaryFromDataSet( dataSet, i ) );
                     }
-                    List<DataSetOp> ops = tableSettings.getDataSetLookup().getOperationList();
-                    String filterValue = isFilteredByProcessId( ops );
 
-                    boolean lastPage=false;
+                    boolean lastPage = false;
                     if( dataSet.getRowCount() < view.getListGrid().getPageSize()) {
-                        lastPage=true;
+                        lastPage = true;
                     }
 
-                    if ( filterValue != null ) {
-                        getDomainSpecifDataForProcessInstances( startRange, filterValue, lastPage );
+                    final String filterValue = isFilteredByProcessId(tableSettings.getDataSetLookup().getOperationList());
+                    if(TAB_SEARCH.equals(tableSettings.getKey()) == false && filterValue != null) {
+                        getDomainSpecifDataForProcessInstances(startRange,
+                                                               filterValue,
+                                                               lastPage);
                     } else {
-                        updateDataOnCallback(myProcessInstancesFromDataSet, startRange, startRange+myProcessInstancesFromDataSet.size(), lastPage);
+                        updateDataOnCallback(myProcessInstancesFromDataSet,
+                                             startRange,
+                                             startRange + myProcessInstancesFromDataSet.size(),
+                                             lastPage);
                     }
 
                 }
-
                 view.hideBusyIndicator();
             }
 
