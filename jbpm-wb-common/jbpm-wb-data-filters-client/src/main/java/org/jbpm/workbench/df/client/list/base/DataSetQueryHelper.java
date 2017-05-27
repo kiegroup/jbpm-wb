@@ -31,6 +31,7 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.Date;
+import java.util.Optional;
 
 @Dependent
 public class DataSetQueryHelper<T> {
@@ -98,14 +99,6 @@ public class DataSetQueryHelper<T> {
         }
     }
 
-    public void setLastOrderedColumn(String lastOrderedColumn){
-        this.lastOrderedColumn = lastOrderedColumn;
-    }
-
-    public void setLastSortOrder(SortOrder lastSortOrder){
-        this.lastSortOrder = lastSortOrder;
-    }
-
     public FilterSettings getCurrentTableSettings() {
         return currentTableSetting;
     }
@@ -126,8 +119,16 @@ public class DataSetQueryHelper<T> {
         return lastOrderedColumn;
     }
 
+    public void setLastOrderedColumn(String lastOrderedColumn) {
+        this.lastOrderedColumn = lastOrderedColumn;
+    }
+
     public SortOrder getLastSortOrder() {
         return lastSortOrder;
+    }
+
+    public void setLastSortOrder(SortOrder lastSortOrder) {
+        this.lastSortOrder = lastSortOrder;
     }
 
     public DataSet getDataSet() {
@@ -162,6 +163,12 @@ public class DataSetQueryHelper<T> {
         } catch ( Exception e ){
             return null;
         }
+    }
+
+    public Boolean getColumnBooleanValue(DataSet currentDataSet,
+                                         String columnId,
+                                         int index) {
+        return Optional.ofNullable(Boolean.valueOf((String) currentDataSet.getColumnById(columnId).getValues().get(index))).orElse(null);
     }
 
     public int getColumnIntValue(DataSet currentDataSet,String columnId, int index){

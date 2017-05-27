@@ -29,7 +29,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
-
+import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DataSetDefsBootstrapTest {
@@ -44,10 +44,14 @@ public class DataSetDefsBootstrapTest {
     public void registerDataSetDefinitionsTest() {
         dataSetsBootstrap.registerDataSetDefinitions();
         ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
-        verify(dataSetDefRegistryMock, times(1)).registerDataSetDef(argument.capture());
+        verify(dataSetDefRegistryMock,
+               times(2)).registerDataSetDef(argument.capture());
 
         List<DataSetDef> dataSetDefList = argument.getAllValues();
-        assertEquals(dataSetDefList.size(), 1);
+        assertEquals(dataSetDefList.size(),
+                     2);
         assertEquals(dataSetDefList.get(0).getUUID(), REQUEST_LIST_DATASET);
+        assertEquals(dataSetDefList.get(1).getUUID(),
+                     EXECUTION_ERROR_LIST_DATASET);
     }
 }

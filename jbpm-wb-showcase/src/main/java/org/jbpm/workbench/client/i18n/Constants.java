@@ -77,6 +77,8 @@ public interface Constants extends Messages {
 
     String Jobs();
 
+    String ExecutionErrors();
+
     String Pagination_For_Tables();
 
     String Experimental_Grid();
