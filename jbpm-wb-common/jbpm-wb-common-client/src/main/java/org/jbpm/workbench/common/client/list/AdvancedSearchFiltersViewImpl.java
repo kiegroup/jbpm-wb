@@ -17,6 +17,7 @@
 package org.jbpm.workbench.common.client.list;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -25,6 +26,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Composite;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.jboss.errai.common.client.dom.*;
@@ -32,12 +34,17 @@ import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.*;
 import org.jbpm.workbench.common.client.dataset.DataSetAwareSelect;
+import org.jbpm.workbench.common.client.resources.i18n.Constants;
+import org.jbpm.workbench.common.client.util.DateRange;
+import org.jbpm.workbench.common.client.util.UTCDateBox;
 import org.uberfire.client.views.pfly.widgets.Select;
 
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
 import static org.jboss.errai.common.client.dom.Window.getDocument;
+import static org.jbpm.workbench.common.client.util.DateUtils.getDateTimeStr;
 
 @Dependent
 @Templated
@@ -78,6 +85,9 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
 
     @Inject
     private ManagedInstance<DataSetAwareSelect> dataSetSelectProvider;
+
+    @Inject
+    private TranslationService translationService;
 
     @PostConstruct
     public void init() {
@@ -132,7 +142,77 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
         select.setTextColumnId(textColumnId);
         select.setValueColumnId(valueColumnId);
         select.setTableKey(tableKey);
-        setupSelect(label, false, select.getSelect(), addCallback, removeCallback);
+        setupSelect(label,
+                    false,
+                    select.getSelect(),
+                    addCallback,
+                    removeCallback);
+    }
+
+    @Override
+    public void addDateRangeFilter(final String label,
+                                   final Consumer<DateRange> addCallback,
+                                   final Consumer<DateRange> removeCallback) {
+        final UTCDateBox fromDate = GWT.create(UTCDateBox.class);
+        final UTCDateBox toDate = GWT.create(UTCDateBox.class);
+        fromDate.addValueChangeHandler(e -> onDateValueChange(label,
+                                                              fromDate,
+                                                              toDate,
+                                                              addCallback,
+                                                              removeCallback));
+        toDate.addValueChangeHandler(e -> onDateValueChange(label,
+                                                            fromDate,
+                                                            toDate,
+                                                            addCallback,
+                                                            removeCallback));
+
+        final Div div = (Div) getDocument().createElement("div");
+        div.setAttribute("data-filter",
+                         label);
+        div.getClassList().add("input-group");
+        div.getClassList().add("filter-control");
+        div.getClassList().add("hidden");
+        appendWidgetToElement(div,
+                              fromDate);
+        final Div divTo = (Div) getDocument().createElement("div");
+        divTo.getClassList().add("input-group-addon");
+        divTo.setTextContent("to");
+        div.appendChild(divTo);
+        appendWidgetToElement(div,
+                              toDate);
+        filtersInput.appendChild(div);
+        if (filterText.getTextContent().isEmpty()) {
+            setCurrentFilter(label);
+        }
+        createFilterOption(label);
+    }
+
+    protected void onDateValueChange(final String label,
+                                     final UTCDateBox fromDate,
+                                     final UTCDateBox toDate,
+                                     final Consumer<DateRange> addCallback,
+                                     final Consumer<DateRange> removeCallback) {
+        if (toDate.getValue() == null || fromDate.getValue() == null) {
+            return;
+        }
+        final Date toDateValue = UTCDateBox.utc2date(toDate.getValue());
+
+        final Date fromDateValue = UTCDateBox.utc2date(fromDate.getValue());
+        final DateRange dateRange = new DateRange(fromDateValue,
+                                                  toDateValue);
+        addActiveFilter(label,
+                        translationService.format(Constants.FROM)
+                                + " " +
+                                getDateTimeStr(fromDateValue)
+                                + " " +
+                                translationService.format(Constants.TO)
+                                + " " +
+                                getDateTimeStr(toDateValue),
+                        dateRange,
+                        removeCallback);
+        toDate.setValue(null);
+        fromDate.setValue(null);
+        addCallback.accept(dateRange);
     }
 
     @Override
@@ -144,7 +224,11 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
         final Select select = selectProvider.get();
         options.forEach((k, v) -> select.addOption(v,
                                                    k));
-        setupSelect(label, liveSearch, select, addCallback, removeCallback);
+        setupSelect(label,
+                    liveSearch,
+                    select,
+                    addCallback,
+                    removeCallback);
     }
 
     private void setupSelect(final String label,
@@ -166,7 +250,7 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                                      final OptionsCollection options = select.getOptions();
                                                      for (int i = 0; i < options.getLength(); i++) {
                                                          final Option item = (Option) options.item(i);
-                                                         if(item.getSelected()){
+                                                         if (item.getSelected()) {
                                                              addActiveFilter(label,
                                                                              item.getText(),
                                                                              select.getValue(),

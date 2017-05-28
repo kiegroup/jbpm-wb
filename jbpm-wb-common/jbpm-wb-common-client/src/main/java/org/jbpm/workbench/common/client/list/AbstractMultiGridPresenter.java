@@ -108,9 +108,11 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
 
     protected void removeAdvancedSearchFilter(final ColumnFilter columnFilter) {
         final FilterSettings settings = view.getAdvancedSearchFilterSettings();
-        settings.getDataSetLookup().getFirstFilterOp().getColumnFilterList().remove(columnFilter);
-        view.saveAdvancedSearchFilterSettings(settings);
-        filterGrid(settings);
+        if (settings.getDataSetLookup().getFirstFilterOp() != null) {
+            settings.getDataSetLookup().getFirstFilterOp().getColumnFilterList().remove(columnFilter);
+            view.saveAdvancedSearchFilterSettings(settings);
+            filterGrid(settings);
+        }
     }
 
 }

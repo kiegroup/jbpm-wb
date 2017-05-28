@@ -515,7 +515,23 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                     v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_NAME,
                                                                              v)));
 
-        //TODO missing creation date
+        view.addDateRangeFilter(constants.Start_Date(),
+                                v -> addAdvancedSearchFilter(between(COLUMN_START,
+                                                                     v.getStartDate(),
+                                                                     v.getEndDate())),
+                                v -> removeAdvancedSearchFilter(between(COLUMN_START,
+                                                                        v.getStartDate(),
+                                                                        v.getEndDate()))
+        );
+
+        view.addDateRangeFilter(constants.Last_Modification_Date(),
+                                v -> addAdvancedSearchFilter(between(COLUMN_LAST_MODIFICATION_DATE,
+                                                                     v.getStartDate(),
+                                                                     v.getEndDate())),
+                                v -> removeAdvancedSearchFilter(between(COLUMN_LAST_MODIFICATION_DATE,
+                                                                        v.getStartDate(),
+                                                                        v.getEndDate()))
+        );
 
         view.addActiveFilter(constants.State(),
                              constants.Active(),

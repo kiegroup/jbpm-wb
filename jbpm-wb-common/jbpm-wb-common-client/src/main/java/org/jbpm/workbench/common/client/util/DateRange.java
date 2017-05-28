@@ -22,15 +22,14 @@ import java.util.Date;
  * Represent range of dates, with start date and end date (including).
  */
 public class DateRange {
+
     private final Date startDate;
     private final Date endDate;
-    private final int  daysInBetween;
 
-    public DateRange(Date startDate, Date endDate, int daysInBetween) {
+    public DateRange(Date startDate, Date endDate) {
         super();
         this.startDate = startDate;
         this.endDate = endDate;
-        this.daysInBetween = daysInBetween;
     }
 
     public Date getStartDate() {
@@ -41,16 +40,14 @@ public class DateRange {
         return new Date(endDate.getTime());
     }
 
-    public int getDaysInBetween() {
-        return daysInBetween;
-    }
-
     @Override
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
         int hash = 7;
         hash = 23 * hash + (this.startDate != null ? this.startDate.hashCode() : 0);
+        hash = ~~hash;
         hash = 23 * hash + (this.endDate != null ? this.endDate.hashCode() : 0);
-        hash = 23 * hash + this.daysInBetween;
+        hash = ~~hash;
         return hash;
     }
 
@@ -69,9 +66,6 @@ public class DateRange {
         if (this.endDate != other.endDate && (this.endDate == null || !this.endDate.equals(other.endDate))) {
             return false;
         }
-        if (this.daysInBetween != other.daysInBetween) {
-            return false;
-        }
         return true;
     }
     
@@ -84,8 +78,6 @@ public class DateRange {
         builder.append(startDate);
         builder.append(", endDate=");
         builder.append(endDate);
-        builder.append(", daysInBetween=");
-        builder.append(daysInBetween);
         builder.append("]");
         return builder.toString();
     }

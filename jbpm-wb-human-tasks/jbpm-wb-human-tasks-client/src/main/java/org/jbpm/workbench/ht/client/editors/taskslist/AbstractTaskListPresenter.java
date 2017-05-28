@@ -16,7 +16,11 @@
 
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.enterprise.event.Event;
@@ -465,7 +469,14 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                                                                     v))
         );
 
-        //TODO missing creation date
+        view.addDateRangeFilter(constants.Created_On(),
+                                v -> addAdvancedSearchFilter(between(COLUMN_CREATED_ON,
+                                                                     v.getStartDate(),
+                                                                     v.getEndDate())),
+                                v -> removeAdvancedSearchFilter(between(COLUMN_CREATED_ON,
+                                                                        v.getStartDate(),
+                                                                        v.getEndDate()))
+        );
 
         view.addActiveFilter(constants.Status(),
                              TASK_STATUS_READY,

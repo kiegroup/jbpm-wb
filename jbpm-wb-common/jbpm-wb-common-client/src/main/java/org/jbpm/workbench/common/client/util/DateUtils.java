@@ -82,7 +82,7 @@ public class DateUtils {
         CalendarUtil.addDaysToDate(startDate, -daysAfterMonday);
         Date endDate = new Date(startDate.getTime());
         CalendarUtil.addDaysToDate(endDate, nrOfDaysTotal - 1);
-        return new DateRange(startDate, endDate, CalendarUtil.getDaysBetween(startDate, endDate));
+        return new DateRange(startDate, endDate);
     }
 
     /**
@@ -105,7 +105,7 @@ public class DateUtils {
         CalendarUtil.addDaysToDate(endDate, -1);
         endDate.setHours(0);
 
-        return new DateRange(startDate, endDate, CalendarUtil.getDaysBetween(startDate, endDate));
+        return new DateRange(startDate, endDate);
     }
 
     /**

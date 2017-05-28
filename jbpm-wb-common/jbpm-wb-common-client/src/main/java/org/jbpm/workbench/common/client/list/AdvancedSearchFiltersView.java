@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.dashbuilder.dataset.DataSetLookup;
+import org.jbpm.workbench.common.client.util.DateRange;
 
 public interface AdvancedSearchFiltersView {
 
@@ -32,6 +33,10 @@ public interface AdvancedSearchFiltersView {
                           String placeholder,
                           Consumer<String> addCallback,
                           Consumer<String> removeCallback);
+
+    void addDateRangeFilter(String label,
+                            Consumer<DateRange> addCallback,
+                            Consumer<DateRange> removeCallback);
 
     void addSelectFilter(String label,
                          Map<String, String> options,
