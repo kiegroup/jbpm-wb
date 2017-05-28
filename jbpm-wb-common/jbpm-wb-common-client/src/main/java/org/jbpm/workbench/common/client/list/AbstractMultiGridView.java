@@ -16,8 +16,11 @@
 package org.jbpm.workbench.common.client.list;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -41,6 +44,7 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.resources.CommonResources;
 import org.jbpm.workbench.common.client.resources.css.CommonCSS;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
+import org.jbpm.workbench.common.client.util.DateRange;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
@@ -55,7 +59,6 @@ import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.mvp.Command;
-import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.workbench.events.NotificationEvent;
 
 public abstract class AbstractMultiGridView<T extends GenericSummary, V extends AbstractMultiGridPresenter>
@@ -474,8 +477,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     @Override
     public void addTextFilter(String label,
                               String placeholder,
-                              ParameterizedCommand<String> addCallback,
-                              ParameterizedCommand<String> removeCallback) {
+                              Consumer<String> addCallback,
+                              Consumer<String> removeCallback) {
         advancedSearchFiltersView.addTextFilter(label,
                                                 placeholder,
                                                 addCallback,
@@ -485,8 +488,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     @Override
     public void addNumericFilter(String label,
                                  String placeholder,
-                                 ParameterizedCommand<String> addCallback,
-                                 ParameterizedCommand<String> removeCallback) {
+                                 Consumer<String> addCallback,
+                                 Consumer<String> removeCallback) {
         advancedSearchFiltersView.addNumericFilter(label,
                                                    placeholder,
                                                    addCallback,
@@ -497,8 +500,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public void addSelectFilter(String label,
                                 Map<String, String> options,
                                 Boolean liveSearch,
-                                ParameterizedCommand<String> addCallback,
-                                ParameterizedCommand<String> removeCallback) {
+                                Consumer<String> addCallback,
+                                Consumer<String> removeCallback) {
         advancedSearchFiltersView.addSelectFilter(label,
                                                   options,
                                                   liveSearch,
@@ -507,14 +510,24 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     @Override
-    public void addActiveFilter(String labelKey,
+    public <T extends Object> void addActiveFilter(String labelKey,
                                 String labelValue,
-                                String value,
-                                ParameterizedCommand<String> removeCallback) {
+                                T value,
+                                Consumer<T> removeCallback) {
         advancedSearchFiltersView.addActiveFilter(labelKey,
                                                   labelValue,
                                                   value,
                                                   removeCallback);
     }
+
+    @Override
+    public void addDateRangeFilter(String label,
+                                   Consumer<DateRange> addCallback,
+                                   Consumer<DateRange> removeCallback) {
+        advancedSearchFiltersView.addDateRangeFilter(label,
+                                                     addCallback,
+                                                     removeCallback);
+    }
+
 
 }

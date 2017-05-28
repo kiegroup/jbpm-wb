@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.date.TimeFrame;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
@@ -53,9 +54,11 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.dashbuilder.dataset.filter.FilterFactory.timeFrame;
 import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
 import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
+import static org.jbpm.workbench.es.model.RequestDataSetConstants.COLUMN_TIMESTAMP;
 
 @Dependent
 @WorkbenchScreen(identifier = ErrorManagementPerspective.EXECUTION_ERROR_LIST)
@@ -302,6 +305,19 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                                                                    v)),
                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
                                                                       v))
+        );
+
+        view.addDateRangeFilter(this.constants.ErrorDate(),
+                                v -> {
+                                    final TimeFrame timeFrame = getTimeFrame(v);
+                                    addAdvancedSearchFilter(timeFrame(COLUMN_ERROR_DATE,
+                                                                      timeFrame.toString()));
+                                },
+                                v -> {
+                                    final TimeFrame timeFrame = getTimeFrame(v);
+                                    removeAdvancedSearchFilter(timeFrame(COLUMN_ERROR_DATE,
+                                                                         timeFrame.toString()));
+                                }
         );
 
         view.addActiveFilter(

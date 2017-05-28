@@ -29,6 +29,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.date.TimeFrame;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
@@ -295,9 +296,20 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                                                                       v))
         );
 
-        //TODO Missing process id and creation date
+        //TODO Missing process id
 
-        //TODO Missing creation date
+        view.addDateRangeFilter(constants.Due_On(),
+                                v -> {
+                                    final TimeFrame timeFrame = getTimeFrame(v);
+                                    addAdvancedSearchFilter(timeFrame(COLUMN_TIMESTAMP,
+                                                                      timeFrame.toString()));
+                                },
+                                v -> {
+                                    final TimeFrame timeFrame = getTimeFrame(v);
+                                    removeAdvancedSearchFilter(timeFrame(COLUMN_TIMESTAMP,
+                                                                         timeFrame.toString()));
+                                }
+        );
 
         view.addActiveFilter(constants.Status(),
                              constants.Running(),

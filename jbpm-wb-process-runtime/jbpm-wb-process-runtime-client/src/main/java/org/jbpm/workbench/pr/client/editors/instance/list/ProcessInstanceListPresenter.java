@@ -27,6 +27,7 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.dataset.date.TimeFrame;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionType;
@@ -497,7 +498,31 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
         //TODO missing process definitions
 
-        //TODO missing creation date
+        view.addDateRangeFilter(constants.Start_Date(),
+                                v -> {
+                                    final TimeFrame timeFrame = getTimeFrame(v);
+                                    addAdvancedSearchFilter(timeFrame(COLUMN_START,
+                                                                      timeFrame.toString()));
+                                },
+                                v -> {
+                                    final TimeFrame timeFrame = getTimeFrame(v);
+                                    removeAdvancedSearchFilter(timeFrame(COLUMN_START,
+                                                                         timeFrame.toString()));
+                                }
+        );
+
+        view.addDateRangeFilter(constants.Last_Modification_Date(),
+                                v -> {
+                                    final TimeFrame timeFrame = getTimeFrame(v);
+                                    addAdvancedSearchFilter(timeFrame(COLUMN_LAST_MODIFICATION_DATE,
+                                                                      timeFrame.toString()));
+                                },
+                                v -> {
+                                    final TimeFrame timeFrame = getTimeFrame(v);
+                                    removeAdvancedSearchFilter(timeFrame(COLUMN_LAST_MODIFICATION_DATE,
+                                                                         timeFrame.toString()));
+                                }
+        );
 
         view.addActiveFilter(constants.State(),
                              constants.Active(),

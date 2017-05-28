@@ -19,9 +19,13 @@ package org.jbpm.workbench.common.client.list;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.dashbuilder.dataset.date.TimeFrame;
+import org.dashbuilder.dataset.date.TimeInstant;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.dataset.group.DateIntervalType;
 import org.jbpm.workbench.common.client.events.SearchEvent;
+import org.jbpm.workbench.common.client.util.DateRange;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
@@ -108,9 +112,25 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
 
     protected void removeAdvancedSearchFilter(final ColumnFilter columnFilter) {
         final FilterSettings settings = view.getAdvancedSearchFilterSettings();
-        settings.getDataSetLookup().getFirstFilterOp().getColumnFilterList().remove(columnFilter);
-        view.saveAdvancedSearchFilterSettings(settings);
-        filterGrid(settings);
+        if (settings.getDataSetLookup().getFirstFilterOp() != null) {
+            settings.getDataSetLookup().getFirstFilterOp().getColumnFilterList().remove(columnFilter);
+            view.saveAdvancedSearchFilterSettings(settings);
+            filterGrid(settings);
+        }
+    }
+
+    protected TimeFrame getTimeFrame(final DateRange dateRange) {
+        final TimeInstant from = new TimeInstant();
+        from.setIntervalType(DateIntervalType.SECOND);
+        from.setTimeMode(TimeInstant.TimeMode.BEGIN);
+        from.setStartTime(dateRange.getStartDate());
+
+        final TimeInstant to = new TimeInstant();
+        to.setIntervalType(DateIntervalType.SECOND);
+        to.setTimeMode(TimeInstant.TimeMode.END);
+        to.setStartTime(dateRange.getEndDate());
+
+        return new TimeFrame(from, to);
     }
 
 }
