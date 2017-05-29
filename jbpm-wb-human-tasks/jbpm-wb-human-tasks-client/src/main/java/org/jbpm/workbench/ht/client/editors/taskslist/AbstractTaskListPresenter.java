@@ -27,16 +27,20 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.dataset.date.TimeFrame;
+import org.dashbuilder.dataset.date.TimeInstant;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionType;
 import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.dataset.group.DateIntervalType;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -416,7 +420,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     }
 
     @Override
-    public void setupAdvanceSearchView() {
+    public void setupAdvancedSearchView() {
         view.addNumericFilter(constants.Id(),
                               constants.FilterByTaskId(),
                               v -> addAdvancedSearchFilter(equalsTo(COLUMN_TASK_ID,
@@ -468,14 +472,18 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                                                                     v))
         );
 
-        //TODO missing creation date
-
-        final FilterSettings settings = view.getAdvancedSearchFilterSettings();
-        final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_STATUS,
-                                        TASK_STATUS_READY));
-        settings.getDataSetLookup().addOperation(filter);
-        view.saveAdvancedSearchFilterSettings(settings);
+        view.addDateRangeFilter(constants.Created_On(),
+                                v -> {
+                                    final TimeFrame timeFrame = getTimeFrame(v);
+                                    addAdvancedSearchFilter(timeFrame(COLUMN_CREATED_ON,
+                                                                      timeFrame.toString()));
+                                },
+                                v -> {
+                                    final TimeFrame timeFrame = getTimeFrame(v);
+                                    removeAdvancedSearchFilter(timeFrame(COLUMN_CREATED_ON,
+                                                                         timeFrame.toString()));
+                                }
+        );
 
         view.addActiveFilter(constants.Status(),
                              TASK_STATUS_READY,
@@ -484,6 +492,23 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                                                                       v))
         );
 
+    }
+
+    public FilterSettings createStatusSettings(final String dataSetId, final List<Comparable> status){
+        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
+        builder.initBuilder();
+
+        builder.dataset(dataSetId);
+
+        if (status != null){
+            builder.filter(COLUMN_STATUS,
+                           equalsTo(COLUMN_STATUS,
+                                    status));
+        }
+        builder.group(COLUMN_TASK_ID);
+
+        addCommonColumnSettings(builder);
+        return builder.buildSettings();
     }
 
     protected void addCommonColumnSettings(FilterSettingsBuilderHelper builder) {
@@ -527,6 +552,5 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         varTableSettings.setTablePageSize(-1);
 
         return varTableSettings;
-
     }
 }

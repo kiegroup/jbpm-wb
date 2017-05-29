@@ -17,23 +17,15 @@
 package org.jbpm.workbench.common.client.list;
 
 import com.google.gwt.dom.client.Style;
-import org.jboss.errai.ioc.client.container.IOC;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 
 public class AdvancedSearchTable<T extends GenericSummary> extends ExtendedPagedTable<T> {
 
-    private AdvancedSearchFiltersViewImpl advancedSearchFiltersView;
-
     public AdvancedSearchTable(final GridGlobalPreferences gridPreferences) {
         super(gridPreferences);
-        advancedSearchFiltersView = IOC.getBeanManager().lookupBean(AdvancedSearchFiltersViewImpl.class).getInstance();
-        topToolbar.add(advancedSearchFiltersView);
         this.getElement().getStyle().setPaddingTop(0,
                                                    Style.Unit.PX);
     }
 
-    public AdvancedSearchFiltersViewImpl getAdvancedSearchFiltersView() {
-        return advancedSearchFiltersView;
-    }
 }

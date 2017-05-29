@@ -34,7 +34,7 @@ import java.util.Date;
 import java.util.Optional;
 
 @Dependent
-public class DataSetQueryHelper<T> {
+public class DataSetQueryHelper {
 
     protected FilterSettings currentTableSetting;
 

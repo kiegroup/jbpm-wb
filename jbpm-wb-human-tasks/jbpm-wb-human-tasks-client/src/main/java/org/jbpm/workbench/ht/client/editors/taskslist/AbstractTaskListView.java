@@ -27,7 +27,6 @@ import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -39,9 +38,6 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.resources.CommonResources;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
@@ -58,8 +54,6 @@ import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.dashbuilder.dataset.sort.SortOrder.*;
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
@@ -86,10 +80,8 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
         initColumns.add( COLUMN_STATUS );
         initColumns.add( COLUMN_CREATED_ON );
         initColumns.add( COL_ID_ACTIONS );
-        final Button button = GWT.create(Button.class);
-        button.setIcon( IconType.PLUS );
-        button.setSize( ButtonSize.SMALL );
-        button.addClickHandler( new ClickHandler() {
+
+        createTabButton.addClickHandler( new ClickHandler() {
             public void onClick( ClickEvent event ) {
                 final String key = getValidKeyForAdditionalListGrid(getDataSetTaskListPrefix() + "_" );
 
@@ -101,7 +93,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
 
                         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
-                        filterPagedTable.createNewTab( extendedPagedTable, key, button, new Command() {
+                        filterPagedTable.createNewTab( extendedPagedTable, key, createTabButton, new Command() {
                             @Override
                             public void execute() {
                                 currentListGrid = extendedPagedTable;
@@ -118,11 +110,11 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
 
             }
         } );
-        super.init(presenter, new GridGlobalPreferences(getDataSetTaskListPrefix(), initColumns, bannedColumns ), button );
+        super.init(presenter, new GridGlobalPreferences(getDataSetTaskListPrefix(), initColumns, bannedColumns ) );
     }
 
-    public void initSelectionModel() {
-        final ExtendedPagedTable<TaskSummary> extendedPagedTable = getListGrid();
+    @Override
+    public void initSelectionModel(ExtendedPagedTable<TaskSummary> extendedPagedTable) {
         selectedStyles = new RowStyles<TaskSummary>() {
 
             @Override
@@ -157,7 +149,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
 
         extendedPagedTable.setEmptyTableCaption( constants.No_Tasks_Found() );
 
-        selectionModel = new NoSelectionModel<TaskSummary>();
+        NoSelectionModel<TaskSummary> selectionModel = new NoSelectionModel<TaskSummary>();
         selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
             @Override
             public void onSelectionChange( SelectionChangeEvent event ) {
@@ -181,7 +173,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
             }
         } );
 
-        noActionColumnManager = DefaultSelectionEventManager
+        DefaultSelectionEventManager<TaskSummary> noActionColumnManager = DefaultSelectionEventManager
                 .createCustomManager( new DefaultSelectionEventManager.EventTranslator<TaskSummary>() {
 
                     @Override
@@ -478,7 +470,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
 
     @Override
     public void setSelectedTask(final TaskSummary selectedTask) {
-        selectionModel.setSelected( selectedTask, true );
+        currentListGrid.getSelectionModel().setSelected( selectedTask, true );
     }
 
 }

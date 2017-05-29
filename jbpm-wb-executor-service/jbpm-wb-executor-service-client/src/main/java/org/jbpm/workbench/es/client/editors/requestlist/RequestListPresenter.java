@@ -29,6 +29,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.date.TimeFrame;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
@@ -42,13 +43,13 @@ import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
-import org.jbpm.workbench.es.util.RequestStatus;
 import org.jbpm.workbench.es.client.editors.jobdetails.JobDetailsPopup;
 import org.jbpm.workbench.es.client.editors.quicknewjob.QuickNewJobPopup;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.jbpm.workbench.es.model.events.RequestChangedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
+import org.jbpm.workbench.es.util.RequestStatus;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -140,7 +141,6 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                             List<RequestSummary> myRequestSumaryFromDataSet = new ArrayList<RequestSummary>();
 
                             for (int i = 0; i < dataSet.getRowCount(); i++) {
-
                                 myRequestSumaryFromDataSet.add(getRequestSummary(dataSet, i));
                             }
                             boolean lastPageExactCount=false;
@@ -240,7 +240,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     }
 
     @Override
-    public void setupAdvanceSearchView() {
+    public void setupAdvancedSearchView() {
         view.addNumericFilter(constants.Id(),
                               constants.FilterByProcessInstanceId(),
                               v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
@@ -296,14 +296,20 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                                                                       v))
         );
 
-        //TODO Missing process id and creation date
+        //TODO Missing process id
 
-        final FilterSettings settings = view.getAdvancedSearchFilterSettings();
-        final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_STATUS,
-                                        RequestStatus.RUNNING.name()));
-        settings.getDataSetLookup().addOperation(filter);
-        view.saveAdvancedSearchFilterSettings(settings);
+        view.addDateRangeFilter(constants.Due_On(),
+                                v -> {
+                                    final TimeFrame timeFrame = getTimeFrame(v);
+                                    addAdvancedSearchFilter(timeFrame(COLUMN_TIMESTAMP,
+                                                                      timeFrame.toString()));
+                                },
+                                v -> {
+                                    final TimeFrame timeFrame = getTimeFrame(v);
+                                    removeAdvancedSearchFilter(timeFrame(COLUMN_TIMESTAMP,
+                                                                         timeFrame.toString()));
+                                }
+        );
 
         view.addActiveFilter(constants.Status(),
                              constants.Running(),
@@ -315,28 +321,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
 
     @Override
     public FilterSettings createTableSettingsPrototype() {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset( REQUEST_LIST_DATASET );
-        builder.setColumn( COLUMN_ID, constants.Id() );
-        builder.setColumn(COLUMN_TIMESTAMP, constants.Time(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn( COLUMN_STATUS, constants.Status() );
-        builder.setColumn( COLUMN_COMMANDNAME, constants.CommandName(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn( COLUMN_MESSAGE, constants.Message() );
-        builder.setColumn( COLUMN_BUSINESSKEY, constants.Key() );
-        builder.setColumn( COLUMN_RETRIES, constants.Retries() );
-        builder.setColumn( COLUMN_EXECUTIONS, constants.Executions() );
-        builder.setColumn( COLUMN_PROCESS_NAME, constants.Process_Name() );
-        builder.setColumn( COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
-        builder.setColumn( COLUMN_PROCESS_INSTANCE_DESCRIPTION, constants.Process_Description() );
-
-        builder.filterOn( true, true, true );
-        builder.tableOrderEnabled( true );
-        builder.tableOrderDefault( COLUMN_TIMESTAMP, SortOrder.DESCENDING );
-        builder.tableWidth( 1000 );
-
-        return builder.buildSettings();
+        return createStatusSettings(null);
     }
 
     private FilterSettings createStatusSettings(final RequestStatus status) {
@@ -361,8 +346,12 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         builder.filterOn( true, true, true );
         builder.tableOrderEnabled( true );
         builder.tableOrderDefault( COLUMN_TIMESTAMP, SortOrder.DESCENDING );
-
         return builder.buildSettings();
+    }
+
+    @Override
+    public FilterSettings createSearchTabSettings() {
+        return createStatusSettings(RequestStatus.RUNNING);
     }
 
     public FilterSettings createAllTabSettings() {

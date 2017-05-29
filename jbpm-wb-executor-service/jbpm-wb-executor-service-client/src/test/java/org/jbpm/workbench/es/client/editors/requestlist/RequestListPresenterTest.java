@@ -17,6 +17,7 @@ package org.jbpm.workbench.es.client.editors.requestlist;
 
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
@@ -24,13 +25,10 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.filter.ColumnFilter;
-import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.events.SearchEvent;
-import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.jbpm.workbench.es.model.events.RequestChangedEvent;
@@ -39,15 +37,12 @@ import org.jbpm.workbench.es.util.RequestStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
-import org.uberfire.mvp.ParameterizedCommand;
 
 import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
-import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -77,6 +72,7 @@ public class RequestListPresenterTest {
     @Mock
     private EventSourceMock<RequestChangedEvent> requestChangedEvent;
 
+    @Spy
     private FilterSettings filterSettings;
 
     private RequestListPresenter presenter;
@@ -86,7 +82,6 @@ public class RequestListPresenterTest {
         //Mock that actually calls the callbacks
         callerMockExecutorService = new CallerMock<ExecutorService>(executorServiceMock);
 
-        filterSettings = createTableSettingsPrototype();
         filterSettings.setDataSetLookup(dataSetLookup);
 
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
@@ -213,43 +208,15 @@ public class RequestListPresenterTest {
         assertEquals(processInstanceDescription, rs.getProcessInstanceDescription());
     }
 
-    private FilterSettings createTableSettingsPrototype() {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(REQUEST_LIST_DATASET);
-        builder.setColumn(COLUMN_ID, "id");
-        builder.setColumn(COLUMN_TIMESTAMP, "time", DateUtils.getDateTimeFormatMask());
-        builder.setColumn(COLUMN_STATUS, "status");
-        builder.setColumn(COLUMN_COMMANDNAME, "commandName");
-        builder.setColumn(COLUMN_MESSAGE, "status");
-        builder.setColumn(COLUMN_BUSINESSKEY, "key");
-        builder.setColumn(COLUMN_RETRIES, "retries");
-        builder.setColumn(COLUMN_EXECUTIONS, "executions");
-
-        builder.filterOn(true, true, true);
-        builder.tableOrderEnabled(true);
-        builder.tableOrderDefault(COLUMN_TIMESTAMP, DESCENDING);
-        builder.tableWidth(1000);
-
-        return builder.buildSettings();
-    }
-
     @Test
     public void testAdvancedSearchDefaultActiveFilter(){
-        presenter.setupAdvanceSearchView();
+        presenter.setupAdvancedSearchView();
 
         verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Status()),
                                          eq(Constants.INSTANCE.Running()),
                                          eq(RequestStatus.RUNNING.name()),
-                                         any(ParameterizedCommand.class));
+                                         any(Consumer.class));
 
-        final ArgumentCaptor<DataSetFilter> captor = ArgumentCaptor.forClass(DataSetFilter.class);
-        verify(dataSetLookup).addOperation(captor.capture());
-
-        final DataSetFilter filter = captor.getValue();
-        assertEquals(1, filter.getColumnFilterList().size());
-        assertEquals(COLUMN_STATUS, filter.getColumnFilterList().get(0).getColumnId());
     }
 
 }

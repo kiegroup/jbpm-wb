@@ -107,17 +107,17 @@ public class GwtTestDateUtils extends GWTTestCase {
     public void testIsDateInRange() {
         // single day in range
         Date date = createDate("2013-05-15");
-        DateRange dateRange = new DateRange(createDate("2013-05-15"), createDate("2013-05-15"), 0);
+        DateRange dateRange = new DateRange(createDate("2013-05-15"), createDate("2013-05-15"));
         assertTrue(DateUtils.isDateInRange(date, dateRange));
 
         // start date same as specified
         date = createDate("2013-05-15");
-        dateRange = new DateRange(createDate("2013-05-15"), createDate("2014-05-19"), 0);
+        dateRange = new DateRange(createDate("2013-05-15"), createDate("2014-05-19"));
         assertTrue(DateUtils.isDateInRange(date, dateRange));
 
         // end date same as specified
         date = createDate("2013-05-15");
-        dateRange = new DateRange(createDate("2013-05-13"), createDate("2013-05-15"), 0);
+        dateRange = new DateRange(createDate("2013-05-13"), createDate("2013-05-15"));
         assertTrue(DateUtils.isDateInRange(date, dateRange));
     }
 

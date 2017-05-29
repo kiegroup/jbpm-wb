@@ -16,8 +16,11 @@
 package org.jbpm.workbench.common.client.list;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -31,17 +34,17 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.view.client.DefaultSelectionEventManager;
-import com.google.gwt.view.client.NoSelectionModel;
 import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.resources.CommonResources;
 import org.jbpm.workbench.common.client.resources.css.CommonCSS;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
+import org.jbpm.workbench.common.client.util.DateRange;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
@@ -56,11 +59,10 @@ import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.mvp.Command;
-import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.workbench.events.NotificationEvent;
 
 public abstract class AbstractMultiGridView<T extends GenericSummary, V extends AbstractMultiGridPresenter>
-        extends Composite implements RequiresResize, MultiGridView<T, V> {
+        extends Composite implements MultiGridView<T, V> {
 
     public static final String TAB_SEARCH = "base";
     public static final String FILTER_TABLE_SETTINGS = "tableSettings";
@@ -88,12 +90,15 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     private Caller<UserPreferencesService> preferencesService;
 
+    @Inject
+    protected AdvancedSearchFiltersViewImpl advancedSearchFiltersView;
+
     @UiField
     org.gwtbootstrap3.client.ui.Column column;
 
     protected V presenter;
 
-    protected FilterPagedTable<T> filterPagedTable;
+    protected FilterPagedTable<T> filterPagedTable = GWT.create(FilterPagedTable.class);
 
     protected ExtendedPagedTable<T> currentListGrid;
 
@@ -109,34 +114,26 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         }
     };
 
-    protected NoSelectionModel<T> selectionModel;
-
     protected T selectedItem;
 
     protected int selectedRow = -1;
 
-    protected DefaultSelectionEventManager<T> noActionColumnManager;
-
     public GridGlobalPreferences currentGlobalPreferences;
-    public Button createTabButton;
 
-    protected AdvancedSearchTable<T> advancedSearchTable;
+    public Button createTabButton = GWT.create(Button.class);
 
     public AbstractMultiGridView() {
         initWidget( uiBinder.createAndBindUi( this ) );
+        column.add( filterPagedTable.makeWidget() );
+        createTabButton.setIcon(IconType.PLUS);
+        createTabButton.setSize(ButtonSize.SMALL);
     }
 
-    public void init( final V presenter,
-            final GridGlobalPreferences preferences,
-            final Button createNewGridButton ) {
+    public void init(final V presenter,
+                     final GridGlobalPreferences preferences) {
         this.presenter = presenter;
         this.currentGlobalPreferences = preferences;
-        this.createTabButton = createNewGridButton;
 
-        filterPagedTable = GWT.create(FilterPagedTable.class);
-        column.add( filterPagedTable.makeWidget() );
-
-        filterPagedTable.setPreferencesService( preferencesService );
         preferencesService.call( new RemoteCallback<MultiGridPreferencesStore>() {
 
             @Override
@@ -153,24 +150,23 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                     resetDefaultFilterTitleAndDescription();
                     presenter.setAddingDefaultFilters( true );
                     for ( int i = 0; i < existingGrids.size(); i++ ) {
-                        String key = existingGrids.get( i );
+                        final String key = existingGrids.get( i );
                         final ExtendedPagedTable<T> extendedPagedTable = loadGridInstance( preferences, key );
                         currentListGrid = extendedPagedTable;
                         extendedPagedTable.setDataProvider( presenter.getDataProvider());
-                        final String filterKey = key;
-                        filterPagedTable.addTab( extendedPagedTable, key, new Command() {
-                            @Override
-                            public void execute() {
-                                currentListGrid = extendedPagedTable;
-                                applyFilterOnPresenter( filterKey );
-                            }
-                        } );
+                        filterPagedTable.addTab(extendedPagedTable,
+                                                key,
+                                                () -> {
+                                                    currentListGrid = extendedPagedTable;
+                                                    applyFilterOnPresenter(key);
+                                                },
+                                                false);
                         if ( currentListGrid != null && key.equals( selectedGridId ) ) {
                             currentListGrid = extendedPagedTable;
                         }
                     }
 
-                    filterPagedTable.addAddTableButton( createNewGridButton );
+                    filterPagedTable.addAddTableButton( createTabButton );
                     presenter.setAddingDefaultFilters( false );
                     if ( selectedGridId != null ) {
                         multiGridPreferencesStore.setSelectedGrid( selectedGridId );
@@ -179,17 +175,11 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                     }
 
                 } else {
-                    initDefaultFilters( preferences, createNewGridButton );
+                    initDefaultFilters( preferences, createTabButton );
                 }
-                initSelectionModel();
             }
 
         } ).loadUserPreferences( preferences.getKey(), UserPreferencesType.MULTIGRIDPREFERENCES );
-    }
-
-    @Override
-    public void onResize() {
-
     }
 
     public void displayNotification( String text ) {
@@ -254,6 +244,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         newListGrid.setGridPreferencesStore( new GridPreferencesStore( preferences ) );
         initColumns( newListGrid );
         initGenericToolBar( newListGrid );
+        initSelectionModel( newListGrid );
         newListGrid.loadPageSizePreferences();
         newListGrid.createPageSizesListBox(5, 20, 5);
 
@@ -266,8 +257,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     protected AdvancedSearchTable<T> createAdvancedSearchTable(final GridGlobalPreferences preferences) {
-        advancedSearchTable = new AdvancedSearchTable<T>(preferences);
-        presenter.setupAdvanceSearchView();
+        final AdvancedSearchTable advancedSearchTable = new AdvancedSearchTable<T>(preferences);
+        advancedSearchTable.getTopToolbar().add(advancedSearchFiltersView);
         return advancedSearchTable;
     }
 
@@ -289,6 +280,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                 }
                 initColumns( newListGrid );
                 initGenericToolBar( newListGrid );
+                initSelectionModel( newListGrid );
                 newListGrid.loadPageSizePreferences();
                 newListGrid.createPageSizesListBox(5, 20, 5);
             }
@@ -315,7 +307,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
      */
     public abstract void initColumns( ExtendedPagedTable<T> extendedPagedTable );
 
-    public abstract void initSelectionModel();
+    public abstract void initSelectionModel( ExtendedPagedTable<T> extendedPagedTable );
 
     public MultiGridPreferencesStore getMultiGridPreferencesStore() {
         if ( filterPagedTable != null ) {
@@ -329,7 +321,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         presenter.setAddingDefaultFilters(true);
 
         //Search Tab
-        final FilterSettings settings = presenter.createTableSettingsPrototype();
+        final FilterSettings settings = presenter.createSearchTabSettings();
         settings.setTableName(constants.Search());
         settings.setTableDescription(constants.SearchResults());
         settings.setKey(TAB_SEARCH);
@@ -361,7 +353,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                 () -> {
                                     currentListGrid = extendedPagedTable;
                                     applyFilterOnPresenter(tableSettings.getKey());
-                                }
+                                },
+                                false
         );
     }
 
@@ -381,7 +374,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     public void applyFilterOnPresenter(final FilterSettings filterSettings) {
-        initSelectionModel();
         presenter.filterGrid(filterSettings);
     }
 
@@ -416,6 +408,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     @Inject
     public void setPreferencesService(final Caller<UserPreferencesService> preferencesService){
         this.preferencesService = preferencesService;
+        this.filterPagedTable.setPreferencesService(preferencesService);
     }
 
     @Inject
@@ -484,42 +477,57 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     @Override
     public void addTextFilter(String label,
                               String placeholder,
-                              ParameterizedCommand<String> addCallback,
-                              ParameterizedCommand<String> removeCallback) {
-        if(advancedSearchTable != null){
-            advancedSearchTable.getAdvancedSearchFiltersView().addTextFilter(label, placeholder, addCallback, removeCallback);
-        }
+                              Consumer<String> addCallback,
+                              Consumer<String> removeCallback) {
+        advancedSearchFiltersView.addTextFilter(label,
+                                                placeholder,
+                                                addCallback,
+                                                removeCallback);
     }
 
     @Override
     public void addNumericFilter(String label,
                                  String placeholder,
-                                 ParameterizedCommand<String> addCallback,
-                                 ParameterizedCommand<String> removeCallback) {
-        if(advancedSearchTable != null){
-            advancedSearchTable.getAdvancedSearchFiltersView().addNumericFilter(label, placeholder, addCallback, removeCallback);
-        }
+                                 Consumer<String> addCallback,
+                                 Consumer<String> removeCallback) {
+        advancedSearchFiltersView.addNumericFilter(label,
+                                                   placeholder,
+                                                   addCallback,
+                                                   removeCallback);
     }
 
     @Override
     public void addSelectFilter(String label,
                                 Map<String, String> options,
                                 Boolean liveSearch,
-                                ParameterizedCommand<String> addCallback,
-                                ParameterizedCommand<String> removeCallback) {
-        if(advancedSearchTable != null){
-            advancedSearchTable.getAdvancedSearchFiltersView().addSelectFilter(label, options, liveSearch, addCallback, removeCallback);
-        }
+                                Consumer<String> addCallback,
+                                Consumer<String> removeCallback) {
+        advancedSearchFiltersView.addSelectFilter(label,
+                                                  options,
+                                                  liveSearch,
+                                                  addCallback,
+                                                  removeCallback);
     }
 
     @Override
-    public void addActiveFilter(String labelKey,
+    public <T extends Object> void addActiveFilter(String labelKey,
                                 String labelValue,
-                                String value,
-                                ParameterizedCommand<String> removeCallback) {
-        if(advancedSearchTable != null){
-            advancedSearchTable.getAdvancedSearchFiltersView().addActiveFilter(labelKey, labelValue, value, removeCallback);
-        }
+                                T value,
+                                Consumer<T> removeCallback) {
+        advancedSearchFiltersView.addActiveFilter(labelKey,
+                                                  labelValue,
+                                                  value,
+                                                  removeCallback);
     }
+
+    @Override
+    public void addDateRangeFilter(String label,
+                                   Consumer<DateRange> addCallback,
+                                   Consumer<DateRange> removeCallback) {
+        advancedSearchFiltersView.addDateRangeFilter(label,
+                                                     addCallback,
+                                                     removeCallback);
+    }
+
 
 }

@@ -125,6 +125,7 @@ public abstract class AbstractTaskListViewTest {
     public void setupMocks() {
         when(getPresenter().getDataProvider()).thenReturn(mock(AsyncDataProvider.class));
         when(getPresenter().createTableSettingsPrototype()).thenReturn(filterSettings);
+        when(getPresenter().createSearchTabSettings()).thenReturn(filterSettings);
 
         when(filterPagedTableMock.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStoreMock);
         when(currentListGrid.getGridPreferencesStore()).thenReturn(new GridPreferencesStore());
@@ -201,7 +202,7 @@ public abstract class AbstractTaskListViewTest {
         getView().initDefaultFilters(new GridGlobalPreferences(), mockButton);
 
         verify(filterPagedTableMock, times(getExpectedDefaultTabFilterCount()))
-            .addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
+            .addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class), eq(false));
         verify(filterPagedTableMock).addAddTableButton(mockButton);
         verify(presenter).setAddingDefaultFilters(true);
         verify(presenter).setAddingDefaultFilters(false);

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.gwtmockito.WithClassesToStub;
 import org.gwtbootstrap3.client.ui.Button;
@@ -44,7 +45,6 @@ import static org.mockito.Mockito.*;
 
 
 @RunWith(GwtMockitoTestRunner.class)
-@WithClassesToStub(AdvancedSearchTable.class)
 public class AbstractMultiGridViewTest {
 
     private static final String TEST_KEY = "TEST";
@@ -59,7 +59,7 @@ public class AbstractMultiGridViewTest {
     @Mock
     private AbstractMultiGridPresenter presenter;
 
-    @Mock
+    @GwtMock
     protected Button mockButton;
 
     private CallerMock<UserPreferencesService> callerMockUserPreferencesService;
@@ -90,6 +90,7 @@ public class AbstractMultiGridViewTest {
         when(userPreferencesServiceMock.loadUserPreferences(TEST_KEY, UserPreferencesType.MULTIGRIDPREFERENCES)).thenReturn(multiGridPreferencesStore);
         when(presenter.getDataProvider()).thenReturn(dataProviderMock);
         when(presenter.createTableSettingsPrototype()).thenReturn(filterSettings);
+        when(presenter.createSearchTabSettings()).thenReturn(filterSettings);
     }
 
     @Test
@@ -97,7 +98,7 @@ public class AbstractMultiGridViewTest {
         when(multiGridPreferencesStore.getSelectedGrid()).thenReturn("");
         when(multiGridPreferencesStore.getGridsId()).thenReturn(new ArrayList<String>());
         GridGlobalPreferences ggp = new GridGlobalPreferences(TEST_KEY, new ArrayList(), new ArrayList<String>());
-        testListView.init(presenter, ggp, mockButton);
+        testListView.init(presenter, ggp);
 
         verify(userPreferencesServiceMock).loadUserPreferences(TEST_KEY, UserPreferencesType.MULTIGRIDPREFERENCES);
         verify(testListView).initDefaultFilters(ggp, mockButton);
@@ -114,7 +115,7 @@ public class AbstractMultiGridViewTest {
         when(multiGridPreferencesStore.getSelectedGrid()).thenReturn(selectedGrid);
         when(multiGridPreferencesStore.getGridsId()).thenReturn(existingFilters);
         GridGlobalPreferences ggp = new GridGlobalPreferences(TEST_KEY, new ArrayList(), new ArrayList<String>());
-        testListView.init(presenter, ggp, mockButton);
+        testListView.init(presenter, ggp);
 
         verify(userPreferencesServiceMock).loadUserPreferences(TEST_KEY, UserPreferencesType.MULTIGRIDPREFERENCES);
         verify(testListView).resetDefaultFilterTitleAndDescription();
@@ -139,7 +140,7 @@ public class AbstractMultiGridViewTest {
     @Test
     public void selectFirstTabAndEnableQueriesTest() {
         GridGlobalPreferences ggp = new GridGlobalPreferences(TEST_KEY, new ArrayList(), new ArrayList<String>());
-        testListView.init(presenter,ggp, mockButton);
+        testListView.init(presenter,ggp);
         testListView.selectFirstTabAndEnableQueries();
 
         verify(presenter).setAddingDefaultFilters(false);
@@ -166,21 +167,16 @@ public class AbstractMultiGridViewTest {
                                                               new ArrayList(),
                                                               new ArrayList<String>());
         testListView.init(presenter,
-                          ggp,
-                          mockButton);
+                          ggp);
 
         reset(presenter);
 
         ExtendedPagedTable table = testListView.createExtendedPagedTable(new GridGlobalPreferences(),
                                                                          "");
         assertFalse(table instanceof AdvancedSearchTable);
-        verify(presenter,
-               never()).setupAdvanceSearchView();
 
         table = testListView.createExtendedPagedTable(new GridGlobalPreferences(),
                                                       TAB_SEARCH);
         assertTrue(table instanceof AdvancedSearchTable);
-        verify(presenter,
-               times(1)).setupAdvanceSearchView();
     }
 }

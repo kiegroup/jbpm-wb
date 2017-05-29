@@ -27,6 +27,7 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.dataset.date.TimeFrame;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionType;
@@ -442,7 +443,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     }
 
     @Override
-    public void setupAdvanceSearchView() {
+    public void setupAdvancedSearchView() {
         view.addNumericFilter(constants.Id(),
                               constants.FilterByProcessInstanceId(),
                               v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
@@ -497,14 +498,31 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
         //TODO missing process definitions
 
-        //TODO missing creation date
+        view.addDateRangeFilter(constants.Start_Date(),
+                                v -> {
+                                    final TimeFrame timeFrame = getTimeFrame(v);
+                                    addAdvancedSearchFilter(timeFrame(COLUMN_START,
+                                                                      timeFrame.toString()));
+                                },
+                                v -> {
+                                    final TimeFrame timeFrame = getTimeFrame(v);
+                                    removeAdvancedSearchFilter(timeFrame(COLUMN_START,
+                                                                         timeFrame.toString()));
+                                }
+        );
 
-        final FilterSettings settings = view.getAdvancedSearchFilterSettings();
-        final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_STATUS,
-                                        String.valueOf(ProcessInstance.STATE_ACTIVE)));
-        settings.getDataSetLookup().addOperation(filter);
-        view.saveAdvancedSearchFilterSettings(settings);
+        view.addDateRangeFilter(constants.Last_Modification_Date(),
+                                v -> {
+                                    final TimeFrame timeFrame = getTimeFrame(v);
+                                    addAdvancedSearchFilter(timeFrame(COLUMN_LAST_MODIFICATION_DATE,
+                                                                      timeFrame.toString()));
+                                },
+                                v -> {
+                                    final TimeFrame timeFrame = getTimeFrame(v);
+                                    removeAdvancedSearchFilter(timeFrame(COLUMN_LAST_MODIFICATION_DATE,
+                                                                         timeFrame.toString()));
+                                }
+        );
 
         view.addActiveFilter(constants.State(),
                              constants.Active(),
@@ -546,6 +564,11 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         builder.tableOrderDefault( COLUMN_START, SortOrder.DESCENDING );
 
         return builder.buildSettings();
+    }
+
+    @Override
+    public FilterSettings createSearchTabSettings() {
+        return createStatusSettings(ProcessInstance.STATE_ACTIVE);
     }
 
     public FilterSettings createActiveTabSettings() {

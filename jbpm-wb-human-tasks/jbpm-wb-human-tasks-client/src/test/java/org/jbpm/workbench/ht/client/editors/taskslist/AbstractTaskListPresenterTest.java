@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.enterprise.event.Event;
 
@@ -57,7 +58,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
-import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
@@ -66,7 +66,6 @@ import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SE
 import static org.jbpm.workbench.common.client.util.TaskUtils.TASK_STATUS_READY;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.COLUMN_PROCESS_ID;
-import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.COLUMN_PROCESS_INSTANCE_ID;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -443,21 +442,12 @@ public abstract class AbstractTaskListPresenterTest {
 
     @Test
     public void testAdvancedSearchDefaultActiveFilter() {
-        getPresenter().setupAdvanceSearchView();
+        getPresenter().setupAdvancedSearchView();
 
         verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Status()),
                                          eq(TASK_STATUS_READY),
                                          eq(TASK_STATUS_READY),
-                                         any(ParameterizedCommand.class));
-
-        final ArgumentCaptor<DataSetFilter> captor = ArgumentCaptor.forClass(DataSetFilter.class);
-        verify(dataSetLookup).addOperation(captor.capture());
-
-        final DataSetFilter filter = captor.getValue();
-        assertEquals(1,
-                     filter.getColumnFilterList().size());
-        assertEquals(COLUMN_STATUS,
-                     filter.getColumnFilterList().get(0).getColumnId());
+                                         any(Consumer.class));
     }
 
     @Test

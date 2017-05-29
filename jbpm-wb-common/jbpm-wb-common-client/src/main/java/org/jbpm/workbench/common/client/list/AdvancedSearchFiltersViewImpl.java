@@ -17,25 +17,33 @@
 package org.jbpm.workbench.common.client.list;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.common.client.dom.*;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.*;
+import org.jbpm.workbench.common.client.util.DateRange;
+import org.jbpm.workbench.common.client.util.UTCDateBox;
 import org.uberfire.client.views.pfly.widgets.Select;
-import org.uberfire.mvp.ParameterizedCommand;
 
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
 import static org.jboss.errai.common.client.dom.Window.getDocument;
+import static org.jbpm.workbench.common.client.resources.i18n.Constants.FROM;
+import static org.jbpm.workbench.common.client.resources.i18n.Constants.TO;
+import static org.jbpm.workbench.common.client.util.DateUtils.getDateTimeStr;
 
 @Dependent
 @Templated
@@ -74,6 +82,9 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     @Inject
     private ManagedInstance<Select> selectProvider;
 
+    @Inject
+    private TranslationService translationService;
+
     @PostConstruct
     public void init() {
         activeFiltersList.setModel(new ArrayList<>());
@@ -84,15 +95,15 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                 addCSSClass(removeAll,
                             "hidden");
             }
-            v.getValue().getCallback().execute(v.getValue().getValue());
+            v.getValue().getCallback().accept(v.getValue().getValue());
         });
     }
 
     @Override
     public void addTextFilter(final String label,
                               final String placeholder,
-                              final ParameterizedCommand<String> addCallback,
-                              final ParameterizedCommand<String> removeCallback) {
+                              final Consumer<String> addCallback,
+                              final Consumer<String> removeCallback) {
         createInput("text",
                     label,
                     placeholder,
@@ -104,8 +115,8 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     @Override
     public void addNumericFilter(final String label,
                                  final String placeholder,
-                                 final ParameterizedCommand<String> addCallback,
-                                 final ParameterizedCommand<String> removeCallback) {
+                                 final Consumer<String> addCallback,
+                                 final Consumer<String> removeCallback) {
         createInput("number",
                     label,
                     placeholder,
@@ -115,11 +126,71 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     }
 
     @Override
+    public void addDateRangeFilter(final String label,
+                                   final Consumer<DateRange> addCallback,
+                                   final Consumer<DateRange> removeCallback) {
+        final UTCDateBox fromDate = GWT.create(UTCDateBox.class);
+        final UTCDateBox toDate = GWT.create(UTCDateBox.class);
+        fromDate.addValueChangeHandler(e -> onDateValueChange(label,
+                                                              fromDate,
+                                                              toDate,
+                                                              addCallback,
+                                                              removeCallback));
+        toDate.addValueChangeHandler(e -> onDateValueChange(label,
+                                                            fromDate,
+                                                            toDate,
+                                                            addCallback,
+                                                            removeCallback));
+
+        final Div div = (Div) getDocument().createElement("div");
+        div.setAttribute("data-filter",
+                         label);
+        div.getClassList().add("input-group");
+        div.getClassList().add("filter-control");
+        div.getClassList().add("hidden");
+        appendWidgetToElement(div,
+                              fromDate);
+        final Div divTo = (Div) getDocument().createElement("div");
+        divTo.getClassList().add("input-group-addon");
+        divTo.setTextContent("to");
+        div.appendChild(divTo);
+        appendWidgetToElement(div,
+                              toDate);
+        filtersInput.appendChild(div);
+        if (filterText.getTextContent().isEmpty()) {
+            setCurrentFilter(label);
+        }
+        createFilterOption(label);
+    }
+
+    protected void onDateValueChange(final String label,
+                                   final UTCDateBox fromDate,
+                                   final UTCDateBox toDate,
+                                   final Consumer<DateRange> addCallback,
+                                   final Consumer<DateRange> removeCallback) {
+        if (toDate.getValue() == null || fromDate.getValue() == null) {
+            return;
+        }
+        final Date toDateValue = UTCDateBox.utc2date(toDate.getValue());
+
+        final Date fromDateValue = UTCDateBox.utc2date(fromDate.getValue());
+        final DateRange dateRange = new DateRange(fromDateValue,
+                                                  toDateValue);
+        addActiveFilter(label,
+                        translationService.format(FROM) + " " + getDateTimeStr(fromDateValue) + " " + translationService.format(TO) + " " + getDateTimeStr(toDateValue),
+                        dateRange,
+                        removeCallback);
+        toDate.setValue(null);
+        fromDate.setValue(null);
+        addCallback.accept(dateRange);
+    }
+
+    @Override
     public void addSelectFilter(final String label,
                                 final Map<String, String> options,
                                 final Boolean liveSearch,
-                                final ParameterizedCommand<String> addCallback,
-                                final ParameterizedCommand<String> removeCallback) {
+                                final Consumer<String> addCallback,
+                                final Consumer<String> removeCallback) {
         final Select select = selectProvider.get();
         select.setTitle(label);
         select.setLiveSearch(liveSearch);
@@ -137,7 +208,7 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                                                      options.get(select.getValue()),
                                                                      select.getValue(),
                                                                      removeCallback);
-                                                     addCallback.execute(select.getValue());
+                                                     addCallback.accept(select.getValue());
                                                      select.setValue("");
                                                  }
                                              },
@@ -147,8 +218,8 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     private void createInput(final String type,
                              final String label,
                              final String placeholder,
-                             final ParameterizedCommand<String> addCallback,
-                             final ParameterizedCommand<String> removeCallback) {
+                             final Consumer<String> addCallback,
+                             final Consumer<String> removeCallback) {
         final Input input = (Input) getDocument().createElement("input");
         input.setType(type);
         input.setAttribute("placeholder",
@@ -165,7 +236,7 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                                        input.getValue(),
                                                        input.getValue(),
                                                        removeCallback);
-                                       addCallback.execute(input.getValue());
+                                       addCallback.accept(input.getValue());
                                        input.setValue("");
                                    }
                                },
@@ -212,10 +283,10 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     }
 
     @Override
-    public void addActiveFilter(final String labelKey,
-                                final String labelValue,
-                                final String value,
-                                final ParameterizedCommand<String> removeCallback) {
+    public <T extends Object> void addActiveFilter(final String labelKey,
+                                                   final String labelValue,
+                                                   final T value,
+                                                   final Consumer<T> removeCallback) {
         activeFiltersList.getModel().add(new ActiveFilterItem(labelKey,
                                                               labelValue,
                                                               value,

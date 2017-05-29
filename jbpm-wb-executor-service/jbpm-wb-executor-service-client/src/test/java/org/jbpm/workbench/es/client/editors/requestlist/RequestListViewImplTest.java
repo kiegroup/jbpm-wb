@@ -21,9 +21,7 @@ import java.util.List;
 
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import com.google.gwtmockito.WithClassesToStub;
 import org.gwtbootstrap3.client.ui.Button;
-import org.jbpm.workbench.common.client.list.AdvancedSearchTable;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
@@ -51,7 +49,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-@WithClassesToStub(AdvancedSearchTable.class)
 public class RequestListViewImplTest {
 
     @Mock
@@ -98,6 +95,7 @@ public class RequestListViewImplTest {
         when(presenter.createQueuedTabSettings()).thenReturn(filterSettings);
         when(presenter.createRetryingTabSettings()).thenReturn(filterSettings);
         when(presenter.createRunningTabSettings()).thenReturn(filterSettings);
+        when(presenter.createSearchTabSettings()).thenReturn(filterSettings);
 
         final CallerMock<UserPreferencesService> caller = new CallerMock<>(userPreferencesService);
         view.setPreferencesService(caller);
@@ -179,7 +177,7 @@ public class RequestListViewImplTest {
         when(presenter.getDataProvider()).thenReturn(dataProvider);
         view.initDefaultFilters(new GridGlobalPreferences(), mockButton);
 
-        verify(filterPagedTableMock, times(8)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
+        verify(filterPagedTableMock, times(8)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class), eq(false));
         verify(filterPagedTableMock).addAddTableButton(mockButton);
         verify(presenter).setAddingDefaultFilters(true);
         verify(presenter).setAddingDefaultFilters(false);

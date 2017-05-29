@@ -17,29 +17,34 @@
 package org.jbpm.workbench.common.client.list;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
-import org.uberfire.mvp.ParameterizedCommand;
+import org.jbpm.workbench.common.client.util.DateRange;
 
 public interface AdvancedSearchFiltersView {
 
     void addTextFilter(String label,
                        String placeholder,
-                       ParameterizedCommand<String> addCallback,
-                       ParameterizedCommand<String> removeCallback);
+                       Consumer<String> addCallback,
+                       Consumer<String> removeCallback);
 
     void addNumericFilter(String label,
                           String placeholder,
-                          ParameterizedCommand<String> addCallback,
-                          ParameterizedCommand<String> removeCallback);
+                          Consumer<String> addCallback,
+                          Consumer<String> removeCallback);
+
+    void addDateRangeFilter(String label,
+                            Consumer<DateRange> addCallback,
+                            Consumer<DateRange> removeCallback);
 
     void addSelectFilter(String label,
                          Map<String, String> options,
                          Boolean liveSearch,
-                         ParameterizedCommand<String> addCallback,
-                         ParameterizedCommand<String> removeCallback);
+                         Consumer<String> addCallback,
+                         Consumer<String> removeCallback);
 
-    void addActiveFilter(String labelKey,
-                         String labelValue,
-                         String value,
-                         ParameterizedCommand<String> removeCallback);
+    <T extends Object> void addActiveFilter(String labelKey,
+                                            String labelValue,
+                                            T value,
+                                            Consumer<T> removeCallback);
 }
