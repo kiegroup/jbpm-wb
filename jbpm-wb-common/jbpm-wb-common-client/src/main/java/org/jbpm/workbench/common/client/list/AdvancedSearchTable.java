@@ -17,7 +17,6 @@
 package org.jbpm.workbench.common.client.list;
 
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.HasWidgets;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 
@@ -27,10 +26,6 @@ public class AdvancedSearchTable<T extends GenericSummary> extends ExtendedPaged
         super(gridPreferences);
         this.getElement().getStyle().setPaddingTop(0,
                                                    Style.Unit.PX);
-    }
-
-    public HasWidgets getTopToolbar(){
-        return topToolbar;
     }
 
 }

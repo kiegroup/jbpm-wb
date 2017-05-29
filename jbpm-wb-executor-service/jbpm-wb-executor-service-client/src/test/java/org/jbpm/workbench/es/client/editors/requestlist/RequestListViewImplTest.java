@@ -177,7 +177,7 @@ public class RequestListViewImplTest {
         when(presenter.getDataProvider()).thenReturn(dataProvider);
         view.initDefaultFilters(new GridGlobalPreferences(), mockButton);
 
-        verify(filterPagedTableMock, times(8)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
+        verify(filterPagedTableMock, times(8)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class), eq(false));
         verify(filterPagedTableMock).addAddTableButton(mockButton);
         verify(presenter).setAddingDefaultFilters(true);
     }
