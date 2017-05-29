@@ -100,7 +100,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                                  final String deploymentId,
                                  final String processDefName ) {
 
-        ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(selectedServerTemplate, deploymentId, processDefId, processDefName), processDefName);
+        ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(getSelectedServerTemplate(), deploymentId, processDefId, processDefName), processDefName);
 
         formDisplayPopUp.setTitle(processDefName);
 
@@ -150,7 +150,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                 view.hideBusyIndicator();
                 return true;
             }
-        } ).getProcessesByFilter(selectedServerTemplate, textSearchStr, visibleRange.getStart() / visibleRange.getLength(), visibleRange.getLength(),
+        } ).getProcessesByFilter(getSelectedServerTemplate(), textSearchStr, visibleRange.getStart() / visibleRange.getLength(), visibleRange.getLength(),
                 currentFilter.getOrderBy(), currentFilter.isAscending());
     }
 
@@ -185,7 +185,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     }
 
     private void fireProcessDefSelectionEvent(final ProcessSummary processSummary) {
-        processDefSelected.fire(new ProcessDefSelectionEvent(processSummary.getProcessDefId(), processSummary.getDeploymentId(), selectedServerTemplate, processSummary.getProcessDefName(), processSummary.isDynamic()));
+        processDefSelected.fire(new ProcessDefSelectionEvent(processSummary.getProcessDefId(), processSummary.getDeploymentId(), getSelectedServerTemplate(), processSummary.getProcessDefName(), processSummary.isDynamic()));
     }
 
     public void refreshNewProcessInstance( @Observes NewProcessInstanceEvent newProcessInstance ) {

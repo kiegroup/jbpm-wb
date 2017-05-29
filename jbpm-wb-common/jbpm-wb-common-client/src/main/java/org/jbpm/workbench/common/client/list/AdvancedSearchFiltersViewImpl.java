@@ -19,20 +19,22 @@ package org.jbpm.workbench.common.client.list;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Composite;
+import org.dashbuilder.dataset.DataSetLookup;
 import org.jboss.errai.common.client.dom.*;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ui.shared.api.annotations.*;
+import org.jbpm.workbench.common.client.dataset.DataSetAwareSelect;
 import org.uberfire.client.views.pfly.widgets.Select;
-import org.uberfire.mvp.ParameterizedCommand;
 
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
 import static org.jboss.errai.common.client.dom.Window.getDocument;
@@ -74,6 +76,9 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     @Inject
     private ManagedInstance<Select> selectProvider;
 
+    @Inject
+    private ManagedInstance<DataSetAwareSelect> dataSetSelectProvider;
+
     @PostConstruct
     public void init() {
         activeFiltersList.setModel(new ArrayList<>());
@@ -84,15 +89,15 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                 addCSSClass(removeAll,
                             "hidden");
             }
-            v.getValue().getCallback().execute(v.getValue().getValue());
+            v.getValue().getCallback().accept(v.getValue().getValue());
         });
     }
 
     @Override
     public void addTextFilter(final String label,
                               final String placeholder,
-                              final ParameterizedCommand<String> addCallback,
-                              final ParameterizedCommand<String> removeCallback) {
+                              final Consumer<String> addCallback,
+                              final Consumer<String> removeCallback) {
         createInput("text",
                     label,
                     placeholder,
@@ -104,8 +109,8 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     @Override
     public void addNumericFilter(final String label,
                                  final String placeholder,
-                                 final ParameterizedCommand<String> addCallback,
-                                 final ParameterizedCommand<String> removeCallback) {
+                                 final Consumer<String> addCallback,
+                                 final Consumer<String> removeCallback) {
         createInput("number",
                     label,
                     placeholder,
@@ -115,30 +120,62 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     }
 
     @Override
+    public void addDataSetSelectFilter(final String label,
+                                       final String tableKey,
+                                       final DataSetLookup lookup,
+                                       final String textColumnId,
+                                       final String valueColumnId,
+                                       final Consumer<String> addCallback,
+                                       final Consumer<String> removeCallback) {
+        final DataSetAwareSelect select = dataSetSelectProvider.get();
+        select.setDataSetLookup(lookup);
+        select.setTextColumnId(textColumnId);
+        select.setValueColumnId(valueColumnId);
+        select.setTableKey(tableKey);
+        setupSelect(label, false, select.getSelect(), addCallback, removeCallback);
+    }
+
+    @Override
     public void addSelectFilter(final String label,
                                 final Map<String, String> options,
                                 final Boolean liveSearch,
-                                final ParameterizedCommand<String> addCallback,
-                                final ParameterizedCommand<String> removeCallback) {
+                                final Consumer<String> addCallback,
+                                final Consumer<String> removeCallback) {
         final Select select = selectProvider.get();
+        options.forEach((k, v) -> select.addOption(v,
+                                                   k));
+        setupSelect(label, liveSearch, select, addCallback, removeCallback);
+    }
+
+    private void setupSelect(final String label,
+                             final Boolean liveSearch,
+                             final Select select,
+                             final Consumer<String> addCallback,
+                             final Consumer<String> removeCallback) {
         select.setTitle(label);
         select.setLiveSearch(liveSearch);
         select.setWidth("auto");
         select.getElement().getClassList().add("selectpicker");
         select.getElement().getClassList().add("form-control");
-        options.forEach((k, v) -> select.addOption(v,
-                                                   k));
+
         selectFilters.appendChild(select.getElement());
         select.refresh();
         select.getElement().addEventListener("change",
                                              event -> {
                                                  if (select.getValue().isEmpty() == false) {
-                                                     addActiveFilter(label,
-                                                                     options.get(select.getValue()),
-                                                                     select.getValue(),
-                                                                     removeCallback);
-                                                     addCallback.execute(select.getValue());
-                                                     select.setValue("");
+                                                     final OptionsCollection options = select.getOptions();
+                                                     for (int i = 0; i < options.getLength(); i++) {
+                                                         final Option item = (Option) options.item(i);
+                                                         if(item.getSelected()){
+                                                             addActiveFilter(label,
+                                                                             item.getText(),
+                                                                             select.getValue(),
+                                                                             removeCallback);
+                                                             addCallback.accept(select.getValue());
+                                                             select.setValue("");
+                                                             break;
+                                                         }
+                                                     }
                                                  }
                                              },
                                              false);
@@ -147,8 +184,8 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     private void createInput(final String type,
                              final String label,
                              final String placeholder,
-                             final ParameterizedCommand<String> addCallback,
-                             final ParameterizedCommand<String> removeCallback) {
+                             final Consumer<String> addCallback,
+                             final Consumer<String> removeCallback) {
         final Input input = (Input) getDocument().createElement("input");
         input.setType(type);
         input.setAttribute("placeholder",
@@ -165,7 +202,7 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                                        input.getValue(),
                                                        input.getValue(),
                                                        removeCallback);
-                                       addCallback.execute(input.getValue());
+                                       addCallback.accept(input.getValue());
                                        input.setValue("");
                                    }
                                },
@@ -212,10 +249,10 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     }
 
     @Override
-    public void addActiveFilter(final String labelKey,
-                                final String labelValue,
-                                final String value,
-                                final ParameterizedCommand<String> removeCallback) {
+    public <T extends Object> void addActiveFilter(final String labelKey,
+                                                   final String labelValue,
+                                                   final T value,
+                                                   final Consumer<T> removeCallback) {
         activeFiltersList.getModel().add(new ActiveFilterItem(labelKey,
                                                               labelValue,
                                                               value,

@@ -15,37 +15,40 @@
  */
 package org.jbpm.workbench.df.client.list.base;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.enterprise.event.Event;
 
-import com.google.common.collect.ImmutableList;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.client.DataSetClientServices;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.displayer.client.DataSetHandler;
+import org.jbpm.workbench.df.client.events.DataSetReadyEvent;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.dashbuilder.dataset.sort.SortOrder.*;
-import static org.mockito.Mockito.verify;
+import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DataSetQueryHelperTest {
 
     public static final String COLUMN_1 = "columnOne";
-    public static final String COLUMN_2 = "actualTwo";
 
     @Mock
     protected DataSetLookup dataSetLookup;
 
+    @Spy
     protected FilterSettings currentTableSetting;
 
     @Mock
@@ -54,60 +57,67 @@ public class DataSetQueryHelperTest {
     @Mock
     protected DataSetClientServices dataSetClientServicesMock;
 
+    @Mock
+    protected Event<DataSetReadyEvent> event;
+
+    @InjectMocks
     private DataSetQueryHelper dataSetQueryHelper;
 
     @Before
     public void setUp() throws Exception {
-        currentTableSetting = createTableSettings();
-        dataSetQueryHelper = new DataSetQueryHelper(dataSetClientServicesMock);
         dataSetQueryHelper.setCurrentTableSettings(currentTableSetting);
         dataSetQueryHelper.setDataSetHandler(dataSetHandlerMock);
-
     }
 
     @Test
     public void lookupDataSetTest() throws Exception {
+        currentTableSetting.setTableDefaultSortColumnId(COLUMN_1);
+        currentTableSetting.setTableDefaultSortOrder(DESCENDING);
+
         currentTableSetting.setTablePageSize(5);
-        dataSetQueryHelper.lookupDataSet(0, new DataSetReadyCallback() {
-            @Override public void callback(DataSet dataSet) {
+        dataSetQueryHelper.lookupDataSet(0,
+                                         new DataSetReadyCallback() {
+                                             @Override
+                                             public void callback(DataSet dataSet) {
 
-            }
+                                             }
 
-            @Override public void notFound() {
+                                             @Override
+                                             public void notFound() {
 
-            }
+                                             }
 
-            @Override public boolean onError(ClientRuntimeError error) {
-                return false;
-            }
-        });
-        verify(dataSetHandlerMock).limitDataSetRows(0, 5);
-        verify(dataSetHandlerMock).sort(COLUMN_1,DESCENDING);
+                                             @Override
+                                             public boolean onError(ClientRuntimeError error) {
+                                                 fail(error.getMessage());
+                                                 return false;
+                                             }
+                                         });
+        verify(dataSetHandlerMock).limitDataSetRows(0,
+                                                    5);
+        verify(dataSetHandlerMock).sort(COLUMN_1,
+                                        DESCENDING);
     }
 
-    private FilterSettings createTableSettings(){
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
+    @Test
+    public void testLookupDataSetEvent() throws Exception {
+        DataSetReadyCallback callback = mock(DataSetReadyCallback.class);
 
-        builder.dataset("jbpmHumanTasksWithUser");
-        List<Comparable> names = new ArrayList<Comparable>();
-        List<String> states= ImmutableList.of("Ready","Reserved","InProgress");
-        for(String s : states){
-            names.add(s);
-        }
-        builder.filter(COLUMN_1, equalsTo(COLUMN_1, names));
+        final DataSet dataSet = mock(DataSet.class);
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                ((DataSetReadyCallback) invocation.getArguments()[0]).callback(dataSet);
+                return null;
+            }
+        }).when(dataSetHandlerMock).lookupDataSet(any(DataSetReadyCallback.class));
 
+        dataSetQueryHelper.lookupDataSet(0,
+                                         callback);
 
-        builder.setColumn(COLUMN_1, "Column1", "MMM dd E, yyyy");
-        builder.setColumn(COLUMN_2, "Column2");
-
-        builder.filterOn(true, true, true);
-        builder.tableOrderEnabled(true);
-        builder.tableOrderDefault(COLUMN_1, DESCENDING);
-        return builder.buildSettings();
-
+        final ArgumentCaptor<DataSetReadyEvent> captor = ArgumentCaptor.forClass(DataSetReadyEvent.class);
+        verify(event).fire(captor.capture());
+        assertEquals(currentTableSetting,
+                     captor.getValue().getFilterSettings());
     }
-
-
-
 }

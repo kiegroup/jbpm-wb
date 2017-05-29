@@ -16,6 +16,7 @@
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import com.google.gwt.dev.util.collect.HashSet;
 import com.google.gwt.view.client.Range;
@@ -50,7 +51,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mocks.CallerMock;
-import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.mvp.PlaceRequest;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
@@ -471,7 +471,7 @@ public class ProcessInstanceListPresenterTest {
         verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.State()),
                                          eq(Constants.INSTANCE.Active()),
                                          eq(String.valueOf(ProcessInstance.STATE_ACTIVE)),
-                                         any(ParameterizedCommand.class));
+                                         any(Consumer.class));
     }
 
 }

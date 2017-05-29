@@ -26,6 +26,8 @@ import javax.inject.Inject;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.DataSetLookup;
+import org.dashbuilder.dataset.DataSetLookupFactory;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
@@ -87,13 +89,12 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     @Inject
     private Event<TaskSelectionEvent> taskSelected;
 
-
     @Override
     public void getData(final Range visibleRange) {
         try {
             if (!isAddingDefaultFilters()) {
                 FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
-                currentTableSettings.setServerTemplateId(selectedServerTemplate);
+                currentTableSettings.setServerTemplateId(getSelectedServerTemplate());
                 currentTableSettings.setTablePageSize(view.getListGrid().getPageSize());
                 ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
                 if (columnSortList != null && columnSortList.size() > 0) {
@@ -234,7 +235,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
         FilterSettings variablesTableSettings = getVariablesTableSettings(filterValue);
         variablesTableSettings.setTablePageSize(-1);
-        variablesTableSettings.setServerTemplateId(selectedServerTemplate);
+        variablesTableSettings.setServerTemplateId(getSelectedServerTemplate());
 
         dataSetQueryHelperDomainSpecific.setDataSetHandler(variablesTableSettings);
         dataSetQueryHelperDomainSpecific.setCurrentTableSettings(variablesTableSettings);
@@ -311,8 +312,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         view.displayNotification(constants.TaskReleased(String.valueOf(task.getTaskId())));
                         refreshGrid();
                     }
-                }).releaseTask(selectedServerTemplate, task.getDeploymentId(), task.getTaskId());
-        taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, task.getDeploymentId(), task.getTaskId(), task.getTaskName() ) );
+                }).releaseTask(getSelectedServerTemplate(), task.getDeploymentId(), task.getTaskId());
+        taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), task.getDeploymentId(), task.getTaskId(), task.getTaskName() ) );
     }
 
     public void claimTask(final TaskSummary task) {
@@ -324,8 +325,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         refreshGrid();
                     }
                 }
-        ).claimTask(selectedServerTemplate, task.getDeploymentId(), task.getTaskId());
-        taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, task.getDeploymentId(), task.getTaskId(), task.getTaskName() ) );
+        ).claimTask(getSelectedServerTemplate(), task.getDeploymentId(), task.getTaskId());
+        taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), task.getDeploymentId(), task.getTaskId(), task.getTaskName() ) );
     }
     
     public void resumeTask(final TaskSummary task) {
@@ -337,8 +338,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         refreshGrid();
                     }
                 }
-        ).resumeTask(selectedServerTemplate, task.getDeploymentId(), task.getTaskId());
-        taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, task.getDeploymentId(), task.getTaskId(), task.getTaskName() ) );
+        ).resumeTask(getSelectedServerTemplate(), task.getDeploymentId(), task.getTaskId());
+        taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), task.getDeploymentId(), task.getTaskId(), task.getTaskName() ) );
     }
     
     public void suspendTask(final TaskSummary task) {
@@ -350,8 +351,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         refreshGrid();
                     }
                 }
-        ).suspendTask(selectedServerTemplate, task.getDeploymentId(), task.getTaskId());
-        taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, task.getDeploymentId(), task.getTaskId(), task.getTaskName() ) );
+        ).suspendTask(getSelectedServerTemplate(), task.getDeploymentId(), task.getTaskId());
+        taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), task.getDeploymentId(), task.getTaskId(), task.getTaskName() ) );
     }
     
     public Menus getMenus(){ //To be used by subclass methods annotated with @WorkbenchMenu
@@ -372,9 +373,9 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         }
         if ( status == PlaceStatus.CLOSE ) {
             placeManager.goTo( defaultPlaceRequest );
-            taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, summary.getDeploymentId(), summary.getTaskId(), summary.getTaskName(), summary.isForAdmin(), logOnly ) );
+            taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), summary.getDeploymentId(), summary.getTaskId(), summary.getTaskName(), summary.isForAdmin(), logOnly ) );
         } else if ( status == PlaceStatus.OPEN && !close ) {
-            taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, summary.getDeploymentId(),summary.getTaskId(), summary.getTaskName(), summary.isForAdmin(), logOnly ) );
+            taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), summary.getDeploymentId(),summary.getTaskId(), summary.getTaskName(), summary.isForAdmin(), logOnly ) );
         } else if ( status == PlaceStatus.OPEN && close ) {
             placeManager.closePlace( "Task Details Multi" );
         }
@@ -384,10 +385,10 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         refreshGrid();
         PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( "Task Details Multi" ) );
         if ( status == PlaceStatus.OPEN ) {
-            taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, null, newTask.getNewTaskId(), newTask.getNewTaskName() ) );
+            taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), null, newTask.getNewTaskId(), newTask.getNewTaskName() ) );
         } else {
             placeManager.goTo( "Task Details Multi" );
-            taskSelected.fire( new TaskSelectionEvent( selectedServerTemplate, null, newTask.getNewTaskId(), newTask.getNewTaskName() ) );
+            taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), null, newTask.getNewTaskId(), newTask.getNewTaskName() ) );
         }
 
         view.setSelectedTask(new TaskSummary( newTask.getNewTaskId(), newTask.getNewTaskName() ));
@@ -473,6 +474,25 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                                                                       v))
         );
 
+    }
+
+    protected void addProcessNameFilter(final String dataSetId){
+        final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
+                .dataset(dataSetId)
+                .group(COLUMN_PROCESS_ID)
+                .column(COLUMN_PROCESS_ID)
+                .sort(COLUMN_PROCESS_ID,
+                      SortOrder.ASCENDING)
+                .buildLookup();
+        view.addDataSetSelectFilter(constants.Process_Name(),
+                                    TAB_SEARCH,
+                                    dataSetLookup,
+                                    COLUMN_PROCESS_ID,
+                                    COLUMN_PROCESS_ID,
+                                    v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_ID,
+                                                                          v)),
+                                    v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_ID,
+                                                                             v)));
     }
 
     public FilterSettings createStatusSettings(final String dataSetId, final List<Comparable> status){

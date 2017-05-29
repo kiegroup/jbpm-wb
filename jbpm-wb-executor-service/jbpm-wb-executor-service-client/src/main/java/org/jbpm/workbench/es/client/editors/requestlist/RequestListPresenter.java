@@ -29,6 +29,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.DataSetLookup;
+import org.dashbuilder.dataset.DataSetLookupFactory;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
@@ -36,6 +38,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
+import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.common.client.util.DateUtils;
@@ -110,7 +113,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         try {
             if(!isAddingDefaultFilters()) {
                 FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
-                currentTableSettings.setServerTemplateId(selectedServerTemplate);
+                currentTableSettings.setServerTemplateId(getSelectedServerTemplate());
                 currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
                 ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
                 if ( columnSortList != null && columnSortList.size() > 0 ) {
@@ -193,7 +196,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                 view.displayNotification( constants.RequestCancelled(requestId) );
                 requestChangedEvent.fire( new RequestChangedEvent( requestId ) );
             }
-        } ).cancelRequest( selectedServerTemplate, requestId );
+        } ).cancelRequest( getSelectedServerTemplate(), requestId );
     }
 
     public void requeueRequest( final Long requestId ) {
@@ -203,7 +206,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                 view.displayNotification( constants.RequestCancelled(requestId) );
                 requestChangedEvent.fire( new RequestChangedEvent( requestId ) );
             }
-        } ).requeueRequest( selectedServerTemplate, requestId );
+        } ).requeueRequest( getSelectedServerTemplate(), requestId );
     }
 
     @WorkbenchMenu
@@ -213,6 +216,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                 .respondsWith(new Command() {
                     @Override
                     public void execute() {
+                        final String selectedServerTemplate = getSelectedServerTemplate();
                         if (selectedServerTemplate == null || selectedServerTemplate.trim().isEmpty()) {
                             view.displayNotification(constants.SelectServerTemplate());
                         } else {
@@ -231,7 +235,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     }
 
     public void showJobDetails(final RequestSummary job){
-        jobDetailsPopup.show( selectedServerTemplate, String.valueOf( job.getJobId() ) );
+        jobDetailsPopup.show( getSelectedServerTemplate(), String.valueOf( job.getJobId() ) );
     }
 
     public void requestCreated( @Observes RequestChangedEvent event ) {
@@ -295,7 +299,22 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                                                                       v))
         );
 
-        //TODO Missing process id and creation date
+        final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
+                .dataset(REQUEST_LIST_DATASET)
+                .group(COLUMN_PROCESS_NAME)
+                .column(COLUMN_PROCESS_NAME)
+                .sort(COLUMN_PROCESS_NAME,
+                      SortOrder.ASCENDING)
+                .buildLookup();
+        view.addDataSetSelectFilter(constants.Process_Name(),
+                                    AbstractMultiGridView.TAB_SEARCH,
+                                    dataSetLookup,
+                                    COLUMN_PROCESS_NAME,
+                                    COLUMN_PROCESS_NAME,
+                                    v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_NAME,
+                                                                          v)),
+                                    v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_NAME,
+                                                                             v)));
 
         //TODO Missing creation date
 

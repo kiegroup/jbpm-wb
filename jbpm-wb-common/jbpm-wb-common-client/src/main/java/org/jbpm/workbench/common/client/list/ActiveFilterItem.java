@@ -16,27 +16,28 @@
 
 package org.jbpm.workbench.common.client.list;
 
+import java.util.function.Consumer;
+
 import org.jboss.errai.databinding.client.api.Bindable;
-import org.uberfire.mvp.ParameterizedCommand;
 
 @Bindable
-public class ActiveFilterItem {
+public class ActiveFilterItem<T extends Object> {
 
     private String labelKey;
 
     private String labelValue;
 
-    private String value;
+    private T value;
 
-    private ParameterizedCommand<String> callback;
+    private Consumer<T> callback;
 
     public ActiveFilterItem() {
     }
 
     public ActiveFilterItem(final String labelKey,
                             final String labelValue,
-                            final String value,
-                            final ParameterizedCommand<String> callback) {
+                            final T value,
+                            final Consumer<T> callback) {
         this.labelKey = labelKey;
         this.labelValue = labelValue;
         this.value = value;
@@ -59,19 +60,19 @@ public class ActiveFilterItem {
         this.labelValue = labelValue;
     }
 
-    public String getValue() {
+    public T getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(T value) {
         this.value = value;
     }
 
-    public ParameterizedCommand<String> getCallback() {
+    public Consumer<T> getCallback() {
         return callback;
     }
 
-    public void setCallback(ParameterizedCommand<String> callback) {
+    public void setCallback(Consumer<T> callback) {
         this.callback = callback;
     }
 
