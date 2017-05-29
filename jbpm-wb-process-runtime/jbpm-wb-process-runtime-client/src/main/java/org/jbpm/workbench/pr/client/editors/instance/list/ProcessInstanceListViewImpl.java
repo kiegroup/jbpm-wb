@@ -46,7 +46,6 @@ import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.ButtonGroup;
 import org.gwtbootstrap3.client.ui.DropDownMenu;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
@@ -110,11 +109,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         initColumns.add(COLUMN_ERROR_COUNT);
         initColumns.add(COL_ID_ACTIONS);
 
-        final Button button = GWT.create(Button.class);
-        button.setIcon(IconType.PLUS);
-        button.setSize(ButtonSize.SMALL);
-
-        button.addClickHandler( new ClickHandler() {
+        createTabButton.addClickHandler( new ClickHandler() {
             public void onClick( ClickEvent event ) {
                 final String key = getValidKeyForAdditionalListGrid( PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_" );
 
@@ -126,7 +121,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
                         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
-                        filterPagedTable.createNewTab( extendedPagedTable, key, button, new Command() {
+                        filterPagedTable.createNewTab( extendedPagedTable, key, createTabButton, new Command() {
                             @Override
                             public void execute() {
                                 currentListGrid = extendedPagedTable;
@@ -144,16 +139,15 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             }
         } );
 
-        super.init( presenter, new GridGlobalPreferences( PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX, initColumns, bannedColumns ), button );
+        super.init( presenter, new GridGlobalPreferences( PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX, initColumns, bannedColumns ) );
     }
 
     @Override
-    public void initSelectionModel() {
-        final ExtendedPagedTable extendedPagedTable = getListGrid();
+    public void initSelectionModel(ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption(constants.No_Process_Instances_Found());
         extendedPagedTable.getRightActionsToolbar().clear();
         initBulkActions(extendedPagedTable);
-        selectionModel = new NoSelectionModel<ProcessInstanceSummary>();
+        NoSelectionModel<ProcessInstanceSummary> selectionModel = new NoSelectionModel<ProcessInstanceSummary>();
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             @Override
             public void onSelectionChange(SelectionChangeEvent event) {
@@ -173,7 +167,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             }
         });
 
-        noActionColumnManager = DefaultSelectionEventManager
+        DefaultSelectionEventManager<ProcessInstanceSummary> noActionColumnManager = DefaultSelectionEventManager
                 .createCustomManager( new DefaultSelectionEventManager.EventTranslator<ProcessInstanceSummary>() {
 
                     @Override

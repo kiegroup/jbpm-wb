@@ -28,7 +28,6 @@ import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -43,8 +42,6 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.ButtonActionCell;
@@ -92,10 +89,8 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         initColumns.add( COLUMN_BUSINESSKEY );
         initColumns.add( COLUMN_COMMANDNAME );
         initColumns.add( COL_ID_ACTIONS );
-        final Button button = GWT.create(Button.class);
-        button.setIcon( IconType.PLUS );
-        button.setSize( ButtonSize.SMALL );
-        button.addClickHandler( new ClickHandler() {
+
+        createTabButton.addClickHandler( new ClickHandler() {
             public void onClick( ClickEvent event ) {
                 final String key = getValidKeyForAdditionalListGrid( REQUEST_LIST_PREFIX + "_" );
 
@@ -107,7 +102,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
                         extendedPagedTable.setDataProvider( presenter.getDataProvider() );
 
-                        filterPagedTable.createNewTab( extendedPagedTable, key, button, new Command() {
+                        filterPagedTable.createNewTab( extendedPagedTable, key, createTabButton, new Command() {
                             @Override
                             public void execute() {
                                 currentListGrid = extendedPagedTable;
@@ -125,7 +120,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
             }
         } );
 
-        super.init( presenter, new GridGlobalPreferences( REQUEST_LIST_PREFIX, initColumns, bannedColumns ), button );
+        super.init( presenter, new GridGlobalPreferences( REQUEST_LIST_PREFIX, initColumns, bannedColumns ) );
     }
 
     @Override
@@ -165,11 +160,11 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         extendedPagedTable.addColumns(columnMetas);
     }
 
-    public void initSelectionModel() {
-        final ExtendedPagedTable<RequestSummary> extendedPagedTable = getListGrid();
+    @Override
+    public void initSelectionModel(ExtendedPagedTable<RequestSummary> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption( constants.No_Jobs_Found() );
 
-        selectionModel = new NoSelectionModel<RequestSummary>();
+        NoSelectionModel<RequestSummary> selectionModel = new NoSelectionModel<RequestSummary>();
         selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
             @Override
             public void onSelectionChange( SelectionChangeEvent event ) {
@@ -187,12 +182,12 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         } );
         initNoActionColumnManager( extendedPagedTable );
 
-        extendedPagedTable.setSelectionModel( selectionModel, noActionColumnManager );
+        extendedPagedTable.setSelectionModel( selectionModel, initNoActionColumnManager(extendedPagedTable) );
         extendedPagedTable.setRowStyles( selectedStyles );
     }
 
-    private void initNoActionColumnManager( final ExtendedPagedTable extendedPagedTable ) {
-        noActionColumnManager = DefaultSelectionEventManager
+    private DefaultSelectionEventManager<RequestSummary> initNoActionColumnManager( final ExtendedPagedTable extendedPagedTable ) {
+        return DefaultSelectionEventManager
                 .createCustomManager( new DefaultSelectionEventManager.EventTranslator<RequestSummary>() {
 
                     @Override

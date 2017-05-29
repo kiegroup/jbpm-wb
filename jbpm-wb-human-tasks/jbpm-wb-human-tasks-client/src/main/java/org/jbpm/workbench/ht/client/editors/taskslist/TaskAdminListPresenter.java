@@ -16,18 +16,18 @@
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 import javax.enterprise.context.Dependent;
 
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.jbpm.workbench.common.client.util.TaskUtils.TASK_STATUS_READY;
+import static org.jbpm.workbench.common.client.util.TaskUtils.getStatusByType;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Dependent
@@ -48,32 +48,17 @@ public class TaskAdminListPresenter extends AbstractTaskListPresenter<TaskAdminL
 
     @Override
     public FilterSettings createTableSettingsPrototype() {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(HUMAN_TASKS_WITH_ADMIN_DATASET);
-        builder.group(COLUMN_TASK_ID);
-
-        addCommonColumnSettings(builder);
-
-        return builder.buildSettings();
+        return createStatusSettings(HUMAN_TASKS_WITH_ADMIN_DATASET, null);
     }
 
     public FilterSettings createAdminTabSettings(){
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(HUMAN_TASKS_WITH_ADMIN_DATASET);
-
         //Filter status Admin
-        final List<Comparable> states = new ArrayList<>(TaskUtils.getStatusByType(TaskUtils.TaskType.ADMIN));
-        builder.filter(COLUMN_STATUS,
-                       equalsTo(COLUMN_STATUS,
-                                states));
-
-        builder.group(COLUMN_TASK_ID);
-
-        addCommonColumnSettings(builder);
-        return builder.buildSettings();
+        return createStatusSettings(HUMAN_TASKS_WITH_ADMIN_DATASET, new ArrayList<>(getStatusByType(TaskUtils.TaskType.ADMIN)));
     }
+
+    @Override
+    public FilterSettings createSearchTabSettings() {
+        return createStatusSettings(HUMAN_TASKS_WITH_ADMIN_DATASET, Collections.singletonList(TASK_STATUS_READY));
+    }
+
 }

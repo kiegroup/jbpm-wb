@@ -22,8 +22,6 @@ import java.util.List;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import com.google.gwtmockito.WithClassesToStub;
-import org.jbpm.workbench.common.client.list.AdvancedSearchTable;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
@@ -48,7 +46,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-@WithClassesToStub(AdvancedSearchTable.class)
 public class ProcessInstanceListViewImplTest {
 
     @Mock
@@ -82,6 +79,7 @@ public class ProcessInstanceListViewImplTest {
         when(presenter.createActiveTabSettings()).thenReturn(filterSettings);
         when(presenter.createCompletedTabSettings()).thenReturn(filterSettings);
         when(presenter.createAbortedTabSettings()).thenReturn(filterSettings);
+        when(presenter.createSearchTabSettings()).thenReturn(filterSettings);
         when(filterPagedTable.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStore);
     }
 
@@ -113,8 +111,6 @@ public class ProcessInstanceListViewImplTest {
         verify(filterPagedTable, times(4)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
         verify(filterPagedTable, times(4)).saveNewTabSettings(anyString(), any(HashMap.class));
         verify(presenter).setAddingDefaultFilters(true);
-        verify(presenter).setAddingDefaultFilters(false);
-        verify(presenter).setupAdvanceSearchView();
     }
 
     @Test

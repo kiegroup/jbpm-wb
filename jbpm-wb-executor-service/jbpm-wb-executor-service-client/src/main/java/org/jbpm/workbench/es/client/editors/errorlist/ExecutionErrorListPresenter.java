@@ -37,9 +37,9 @@ import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.client.perspectives.ErrorManagementPerspective;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
+import org.jbpm.workbench.es.model.events.ExecErrorChangedEvent;
 import org.jbpm.workbench.es.model.events.ExecErrorSelectionEvent;
 import org.jbpm.workbench.es.model.events.ExecErrorWithDetailsRequestEvent;
-import org.jbpm.workbench.es.model.events.ExecErrorChangedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
 import org.jbpm.workbench.es.util.ExecutionErrorType;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -52,8 +52,9 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.dashbuilder.dataset.sort.SortOrder.*;
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
+import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 
 @Dependent
@@ -247,7 +248,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     }
 
     @Override
-    public void setupAdvanceSearchView() {
+    public void setupAdvancedSearchView() {
         view.addNumericFilter(constants.Id(),
                               constants.FilterByErrorId(),
                               v -> addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ID,
@@ -286,6 +287,30 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                                                                    v)),
                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_TYPE,
                                                                       v))
+        );
+
+        final Map<String, String> acks = new HashMap<>();
+        final org.jbpm.workbench.common.client.resources.i18n.Constants constants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
+        acks.put(String.valueOf(Boolean.TRUE),
+                 constants.Yes());
+        acks.put(String.valueOf(Boolean.FALSE),
+                 constants.No());
+        view.addSelectFilter(this.constants.Acknowledged(),
+                             acks,
+                             false,
+                             v -> addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
+                                                                   v)),
+                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
+                                                                      v))
+        );
+
+        view.addActiveFilter(
+                this.constants.Acknowledged(),
+                constants.No(),
+                String.valueOf(Boolean.FALSE),
+                v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
+                                                         v))
+
         );
     }
 
@@ -335,11 +360,16 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         return createFilterTabSettings(null);
     }
 
-    public FilterSettings createAcknoledgedTabSettings() {
+    public FilterSettings createAcknowledgedTabSettings() {
         return createFilterTabSettings(Boolean.TRUE);
     }
 
     public FilterSettings createNewTabSettings() {
+        return createFilterTabSettings(Boolean.FALSE);
+    }
+
+    @Override
+    public FilterSettings createSearchTabSettings() {
         return createFilterTabSettings(Boolean.FALSE);
     }
 

@@ -45,17 +45,16 @@ import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.ButtonGroup;
 import org.gwtbootstrap3.client.ui.DropDownMenu;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.util.BooleanConverter;
 import org.jbpm.workbench.common.client.util.ButtonActionCell;
+import org.jbpm.workbench.common.client.util.DateConverter;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.es.client.i18n.Constants;
-import org.jbpm.workbench.common.client.util.BooleanConverter;
-import org.jbpm.workbench.common.client.util.DateConverter;
 import org.jbpm.workbench.es.client.util.ExecutionErrorTypeConverter;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
@@ -116,10 +115,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
         initColumns.add(COLUMN_ERROR_DATE);
         initColumns.add(COLUMN_DEPLOYMENT_ID);
         initColumns.add(COL_ID_ACTIONS);
-        final Button button = GWT.create(Button.class);
-        button.setIcon(IconType.PLUS);
-        button.setSize(ButtonSize.SMALL);
-        button.addClickHandler((ClickEvent event) -> {
+        createTabButton.addClickHandler((ClickEvent event) -> {
             final String key = getValidKeyForAdditionalListGrid(EXECUTION_ERROR_LIST_PREFIX + "_");
 
             Command addNewGrid = () -> {
@@ -134,7 +130,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
 
                 filterPagedTable.createNewTab(extendedPagedTable,
                                               key,
-                                              button,
+                                              createTabButton,
                                               (() -> {
                                                   currentListGrid = extendedPagedTable;
                                                   applyFilterOnPresenter(key);
@@ -152,17 +148,15 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
         super.init(presenter,
                    new GridGlobalPreferences(EXECUTION_ERROR_LIST_PREFIX,
                                              initColumns,
-                                             bannedColumns),
-                   button);
+                                             bannedColumns));
     }
 
     @Override
-    public void initSelectionModel() {
-        final ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable = getListGrid();
+    public void initSelectionModel(final ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption(constants.No_Execution_Errors_Found());
         extendedPagedTable.getRightActionsToolbar().clear();
         initBulkActions(extendedPagedTable);
-        selectionModel = new NoSelectionModel<>();
+        NoSelectionModel<ExecutionErrorSummary> selectionModel = new NoSelectionModel<>();
         selectionModel.addSelectionChangeHandler((SelectionChangeEvent event) -> {
 
             boolean close = false;
@@ -184,7 +178,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                                            close);
         });
 
-        noActionColumnManager = DefaultSelectionEventManager
+        DefaultSelectionEventManager<ExecutionErrorSummary> noActionColumnManager = DefaultSelectionEventManager
                 .createCustomManager(new DefaultSelectionEventManager.EventTranslator<ExecutionErrorSummary>() {
 
                     @Override
@@ -230,21 +224,22 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
     }
 
     private void initBulkActions(final ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable) {
-        bulkAbortNavLink = new AnchorListItem(constants.Bulk_Ack());
+        bulkAbortNavLink = GWT.create(AnchorListItem.class);
+        bulkAbortNavLink.setText(constants.Bulk_Ack());
 
-        final ButtonGroup bulkActions = new ButtonGroup() {{
-            add(new Button(constants.Bulk_Actions()) {{
-                setDataToggle(Toggle.DROPDOWN);
-                getElement().getStyle().setMarginRight(5,
-                                                       Style.Unit.PX);
-            }});
-            add(new DropDownMenu() {{
-                addStyleName(Styles.DROPDOWN_MENU + "-right");
-                getElement().getStyle().setMarginRight(5,
-                                                       Style.Unit.PX);
-                add(bulkAbortNavLink);
-            }});
-        }};
+        final ButtonGroup bulkActions = GWT.create(ButtonGroup.class);
+        final Button bulkButton = GWT.create(Button.class);
+        bulkButton.setText(constants.Bulk_Actions());
+        bulkButton.setDataToggle(Toggle.DROPDOWN);
+        bulkButton.getElement().getStyle().setMarginRight(5,
+                                                         Style.Unit.PX);
+        bulkActions.add(bulkButton);
+        final DropDownMenu bulkDropDown = GWT.create(DropDownMenu.class);
+        bulkDropDown.addStyleName(Styles.DROPDOWN_MENU + "-right");
+        bulkDropDown.getElement().getStyle().setMarginRight(5,
+                                                            Style.Unit.PX);
+        bulkDropDown.add(bulkAbortNavLink);
+        bulkActions.add(bulkDropDown);
         bulkAbortNavLink.setIcon(IconType.BAN);
         bulkAbortNavLink.setIconFixedWidth(true);
         bulkAbortNavLink.addClickHandler((ClickEvent event) -> {
@@ -384,8 +379,6 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
         super.initDefaultFilters(preferences,
                                  createTabButton);
 
-        presenter.setAddingDefaultFilters(true);
-
         initGenericTabFilter(presenter.createAllTabSettings(),
                              TAB_ALL,
                              constants.All(),
@@ -398,7 +391,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                              constants.UnacknowledgedErrors(),
                              preferences);
 
-        initGenericTabFilter(presenter.createAcknoledgedTabSettings(),
+        initGenericTabFilter(presenter.createAcknowledgedTabSettings(),
                              TAB_ACK,
                              constants.Acknowledged(),
                              constants.AcknowledgedErrors(),
