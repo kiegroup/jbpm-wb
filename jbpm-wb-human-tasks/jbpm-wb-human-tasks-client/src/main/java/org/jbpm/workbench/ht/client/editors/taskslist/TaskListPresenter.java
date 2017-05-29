@@ -50,6 +50,12 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
     }
 
     @Override
+    public void setupAdvancedSearchView() {
+        super.setupAdvancedSearchView();
+        addProcessNameFilter(HUMAN_TASKS_WITH_USER_DATASET);
+    }
+
+    @Override
     public FilterSettings createTableSettingsPrototype() {
         return createStatusSettings(HUMAN_TASKS_WITH_USER_DATASET, null);
     }

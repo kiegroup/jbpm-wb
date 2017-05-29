@@ -25,10 +25,12 @@ import org.dashbuilder.dataset.sort.SortOrder;
 
 import org.dashbuilder.displayer.client.DataSetHandler;
 import org.dashbuilder.displayer.client.DataSetHandlerImpl;
+import org.jbpm.workbench.df.client.events.DataSetReadyEvent;
 import org.jbpm.workbench.ks.integration.ConsoleDataSetLookup;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.Optional;
@@ -50,9 +52,13 @@ public class DataSetQueryHelper {
 
     protected DataSetClientServices dataSetClientServices;
 
+    protected Event<DataSetReadyEvent> event;
+
     @Inject
-    public DataSetQueryHelper(DataSetClientServices dataSetClientServices) {
+    public DataSetQueryHelper(DataSetClientServices dataSetClientServices,
+                              Event<DataSetReadyEvent> event) {
         this.dataSetClientServices = dataSetClientServices;
+        this.event = event;
     }
 
     public void lookupDataSet(Integer offset, final DataSetReadyCallback callback) {
@@ -80,6 +86,7 @@ public class DataSetQueryHelper {
                             DataSetQueryHelper.this.dataSet = dataSet;
                             numberOfRows = dataSet.getRowCountNonTrimmed();
                             callback.callback( dataSet );
+                            event.fire(new DataSetReadyEvent(currentTableSetting));
                         }
                         public void notFound() {
                             callback.notFound();
@@ -95,7 +102,6 @@ public class DataSetQueryHelper {
         } catch ( Exception e ) {
             callback.onError(new ClientRuntimeError(e.getMessage()));
             GWT.log("DataSetQueryHelper: lookuDataserError"+e.getMessage());
-
         }
     }
 

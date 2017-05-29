@@ -47,6 +47,12 @@ public class TaskAdminListPresenter extends AbstractTaskListPresenter<TaskAdminL
     }
 
     @Override
+    public void setupAdvancedSearchView() {
+        super.setupAdvancedSearchView();
+        addProcessNameFilter(HUMAN_TASKS_WITH_ADMIN_DATASET);
+    }
+
+    @Override
     public FilterSettings createTableSettingsPrototype() {
         return createStatusSettings(HUMAN_TASKS_WITH_ADMIN_DATASET, null);
     }

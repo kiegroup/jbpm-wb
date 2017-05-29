@@ -78,7 +78,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         try {
             if (!isAddingDefaultFilters()) {
                 FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
-                currentTableSettings.setServerTemplateId(selectedServerTemplate);
+                currentTableSettings.setServerTemplateId(getSelectedServerTemplate());
                 currentTableSettings.setTablePageSize(view.getListGrid().getPageSize());
                 ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
                 if (columnSortList != null && columnSortList.size() > 0) {
@@ -175,11 +175,11 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                                           final String deploymentId) {
         executorServices.call((Void nothing) -> {
             view.displayNotification(Constants.INSTANCE.ExecutionErrorAcknowledged(executionErrorId));
-            execErrorChangedEvent.fire(new ExecErrorChangedEvent(selectedServerTemplate,
+            execErrorChangedEvent.fire(new ExecErrorChangedEvent(getSelectedServerTemplate(),
                                                                  deploymentId,
                                                                  executionErrorId));
             refreshGrid();
-        }).acknowledgeError(selectedServerTemplate,
+        }).acknowledgeError(getSelectedServerTemplate(),
                             deploymentId,
                             executionErrorId);
     }
@@ -223,11 +223,11 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(ErrorManagementPerspective.EXECUTION_ERROR_DETAILS));
         if (status == PlaceStatus.CLOSE) {
             placeManager.goTo(ErrorManagementPerspective.EXECUTION_ERROR_DETAILS);
-            execErrorSelectionEvent.fire(new ExecErrorSelectionEvent(selectedServerTemplate,
+            execErrorSelectionEvent.fire(new ExecErrorSelectionEvent(getSelectedServerTemplate(),
                                                                      summary.getDeploymentId(),
                                                                      summary.getErrorId()));
         } else if (status == PlaceStatus.OPEN && !close) {
-            execErrorSelectionEvent.fire(new ExecErrorSelectionEvent(selectedServerTemplate,
+            execErrorSelectionEvent.fire(new ExecErrorSelectionEvent(getSelectedServerTemplate(),
                                                                      summary.getDeploymentId(),
                                                                      summary.getErrorId()));
         } else if (status == PlaceStatus.OPEN && close) {

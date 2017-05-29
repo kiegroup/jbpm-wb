@@ -24,6 +24,8 @@ import javax.inject.Inject;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.DataSetLookup;
+import org.dashbuilder.dataset.DataSetLookupFactory;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
@@ -111,7 +113,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         try {
             if ( !isAddingDefaultFilters() ) {
                 final FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
-                currentTableSettings.setServerTemplateId( selectedServerTemplate );
+                currentTableSettings.setServerTemplateId( getSelectedServerTemplate() );
                 currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
                 ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
                 if ( columnSortList != null && columnSortList.size() > 0 ) {
@@ -250,7 +252,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     public void getDomainSpecifDataForProcessInstances( final int startRange, String filterValue, boolean lastPage ) {
         FilterSettings variablesTableSettings = getVariablesTableSettings( filterValue );
-        variablesTableSettings.setServerTemplateId( selectedServerTemplate );
+        variablesTableSettings.setServerTemplateId( getSelectedServerTemplate() );
         variablesTableSettings.setTablePageSize( -1 );
 
         dataSetQueryHelperDomainSpecific.setDataSetHandler( variablesTableSettings );
@@ -301,7 +303,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
             public void callback( Void v ) {
                 refreshGrid();
             }
-        } ).abortProcessInstance( selectedServerTemplate, containerId, processInstanceId );
+        } ).abortProcessInstance( getSelectedServerTemplate(), containerId, processInstanceId );
     }
 
     public void abortProcessInstance( List<String> containers, List<Long> processInstanceIds ) {
@@ -310,7 +312,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
             public void callback( Void v ) {
                 refreshGrid();
             }
-        } ).abortProcessInstances( selectedServerTemplate,containers, processInstanceIds );
+        } ).abortProcessInstances( getSelectedServerTemplate(),containers, processInstanceIds );
     }
 
     public void bulkSignal( List<ProcessInstanceSummary> processInstances ) {
@@ -339,7 +341,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest(ProcessInstanceSignalPresenter.SIGNAL_PROCESS_POPUP);
         placeRequestImpl.addParameter( "processInstanceId", processIdsParam.toString() );
         placeRequestImpl.addParameter( "deploymentId", deploymentIdsParam.toString() );
-        placeRequestImpl.addParameter( "serverTemplateId", selectedServerTemplate );
+        placeRequestImpl.addParameter( "serverTemplateId", getSelectedServerTemplate() );
 
         placeManager.goTo( placeRequestImpl );
         view.displayNotification( Constants.INSTANCE.Signaling_Process_Instance() );
@@ -377,6 +379,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                 .respondsWith(new Command() {
                     @Override
                     public void execute() {
+                        final String selectedServerTemplate = getSelectedServerTemplate();
                         if (selectedServerTemplate != null && !selectedServerTemplate.isEmpty()) {
                             newProcessInstancePopup.show(selectedServerTemplate);
                         } else {
@@ -400,7 +403,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Signal Process Popup" );
         placeRequestImpl.addParameter( "processInstanceId", Long.toString( processInstance.getProcessInstanceId() ) );
         placeRequestImpl.addParameter( "deploymentId", processInstance.getDeploymentId() );
-        placeRequestImpl.addParameter( "serverTemplateId", selectedServerTemplate );
+        placeRequestImpl.addParameter( "serverTemplateId", getSelectedServerTemplate() );
 
         placeManager.goTo( placeRequestImpl );
     }
@@ -412,11 +415,11 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
             placeManager.goTo( "Process Instance Details Multi" );
             processInstanceSelected.fire( new ProcessInstanceSelectionEvent( summary.getDeploymentId(),
                     summary.getProcessInstanceId(), summary.getProcessId(),
-                    summary.getProcessName(), summary.getState(), selectedServerTemplate ) );
+                    summary.getProcessName(), summary.getState(), getSelectedServerTemplate() ) );
         } else if ( status == PlaceStatus.OPEN && !close ) {
             processInstanceSelected.fire( new ProcessInstanceSelectionEvent( summary.getDeploymentId(),
                     summary.getProcessInstanceId(), summary.getProcessId(),
-                    summary.getProcessName(), summary.getState(), selectedServerTemplate ) );
+                    summary.getProcessName(), summary.getState(), getSelectedServerTemplate() ) );
         } else if ( status == PlaceStatus.OPEN && close ) {
             placeManager.closePlace( "Process Instance Details Multi" );
         }
@@ -495,7 +498,22 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                                                       v))
         );
 
-        //TODO missing process definitions
+        final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
+                .dataset(PROCESS_INSTANCE_DATASET)
+                .group(COLUMN_PROCESS_NAME)
+                .column(COLUMN_PROCESS_NAME)
+                .sort(COLUMN_PROCESS_NAME,
+                      SortOrder.ASCENDING)
+                .buildLookup();
+        view.addDataSetSelectFilter(constants.Name(),
+                                    TAB_SEARCH,
+                                    dataSetLookup,
+                                    COLUMN_PROCESS_NAME,
+                                    COLUMN_PROCESS_NAME,
+                                    v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_NAME,
+                                                                          v)),
+                                    v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_NAME,
+                                                                             v)));
 
         //TODO missing creation date
 

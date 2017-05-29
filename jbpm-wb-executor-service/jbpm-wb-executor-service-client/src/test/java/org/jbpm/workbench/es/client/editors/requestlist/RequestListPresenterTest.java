@@ -17,6 +17,7 @@ package org.jbpm.workbench.es.client.editors.requestlist;
 
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
@@ -40,7 +41,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
-import org.uberfire.mvp.ParameterizedCommand;
 
 import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
@@ -215,7 +215,7 @@ public class RequestListPresenterTest {
         verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Status()),
                                          eq(Constants.INSTANCE.Running()),
                                          eq(RequestStatus.RUNNING.name()),
-                                         any(ParameterizedCommand.class));
+                                         any(Consumer.class));
 
     }
 

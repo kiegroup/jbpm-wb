@@ -15,6 +15,8 @@
  */
 package org.jbpm.workbench.common.client.list;
 
+import java.util.Optional;
+
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.events.ServerTemplateSelected;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
@@ -34,7 +36,7 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
 
     protected User identity;
 
-    protected String selectedServerTemplate = "";
+    private String selectedServerTemplate = "";
 
     @Inject
     protected PlaceManager placeManager;
@@ -45,14 +47,12 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
 
     @OnOpen
     public void onOpen() {
-        selectedServerTemplate = serverTemplateSelectorMenuBuilder.getSelectedServerTemplate();
-        refreshGrid();
+        setSelectedServerTemplate(serverTemplateSelectorMenuBuilder.getSelectedServerTemplate());
     }
 
     @OnFocus
     public void onFocus() {
-        selectedServerTemplate = serverTemplateSelectorMenuBuilder.getSelectedServerTemplate();
-        refreshGrid();
+        setSelectedServerTemplate(serverTemplateSelectorMenuBuilder.getSelectedServerTemplate());
     }
 
     @OnStartup
@@ -71,8 +71,18 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
     }
 
     public void onServerTemplateSelected(@Observes final ServerTemplateSelected serverTemplateSelected ) {
-        selectedServerTemplate = serverTemplateSelected.getServerTemplateId();
-        refreshGrid();
+        setSelectedServerTemplate(serverTemplateSelected.getServerTemplateId());
     }
 
+    protected void setSelectedServerTemplate(final String selectedServerTemplate) {
+        final String newServerTemplate = Optional.ofNullable(selectedServerTemplate).orElse("").trim();
+        if(this.selectedServerTemplate.equals(newServerTemplate) == false){
+            this.selectedServerTemplate = newServerTemplate;
+            refreshGrid();
+        }
+    }
+
+    public String getSelectedServerTemplate() {
+        return selectedServerTemplate;
+    }
 }
