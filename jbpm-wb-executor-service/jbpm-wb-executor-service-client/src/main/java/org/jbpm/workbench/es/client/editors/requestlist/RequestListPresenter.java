@@ -316,7 +316,14 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                                     v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_NAME,
                                                                              v)));
 
-        //TODO Missing creation date
+        view.addDateRangeFilter(constants.Due_On(),
+                                v -> addAdvancedSearchFilter(between(COLUMN_TIMESTAMP,
+                                                                     v.getStartDate(),
+                                                                     v.getEndDate())),
+                                v -> removeAdvancedSearchFilter(between(COLUMN_TIMESTAMP,
+                                                                        v.getStartDate(),
+                                                                        v.getEndDate()))
+        );
 
         view.addActiveFilter(constants.Status(),
                              constants.Running(),

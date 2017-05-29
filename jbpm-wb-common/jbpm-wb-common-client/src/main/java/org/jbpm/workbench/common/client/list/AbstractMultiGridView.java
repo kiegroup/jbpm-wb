@@ -43,6 +43,7 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.resources.CommonResources;
 import org.jbpm.workbench.common.client.resources.css.CommonCSS;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
+import org.jbpm.workbench.common.client.util.DateRange;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
@@ -533,6 +534,14 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                                          valueColumnId,
                                                          addCallback,
                                                          removeCallback);
+    }
+
+    public void addDateRangeFilter(String label,
+                                   Consumer<DateRange> addCallback,
+                                   Consumer<DateRange> removeCallback) {
+        advancedSearchFiltersView.addDateRangeFilter(label,
+                                                     addCallback,
+                                                     removeCallback);
     }
 
 }

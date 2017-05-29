@@ -52,9 +52,9 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
+import static org.dashbuilder.dataset.filter.FilterFactory.between;
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
-import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
-import static org.dashbuilder.dataset.sort.SortOrder.DESCENDING;
+import static org.dashbuilder.dataset.sort.SortOrder.*;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 
 @Dependent
@@ -302,6 +302,15 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                                                                    v)),
                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
                                                                       v))
+        );
+
+        view.addDateRangeFilter(this.constants.ErrorDate(),
+                                v -> addAdvancedSearchFilter(between(COLUMN_ERROR_DATE,
+                                                                     v.getStartDate(),
+                                                                     v.getEndDate())),
+                                v -> removeAdvancedSearchFilter(between(COLUMN_ERROR_DATE,
+                                                                        v.getStartDate(),
+                                                                        v.getEndDate()))
         );
 
         view.addActiveFilter(
