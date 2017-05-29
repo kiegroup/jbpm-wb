@@ -59,6 +59,7 @@ import org.jbpm.workbench.pr.client.resources.css.ProcessRuntimeCSS;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.workbench.common.workbench.client.PerspectiveIds;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
@@ -426,8 +427,8 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                 ProcessRuntimeCSS css = ProcessRuntimeResources.INSTANCE.css();
                 String badgeHtml = null;
                 if(errCount > 0){
-                    //TODO: set link URL to correct error view perspective path
-                    String linkToErrorView = "#Error View?processInstanceId=" + value.getProcessInstanceId();
+                    //TODO: link to specific process instance ID
+                    String linkToErrorView = "#" + PerspectiveIds.EXECUTION_ERRORS;
                     String elementId = DOM.createUniqueId();
                     String popoverAttrs = "data-toggle=\"popover\" data-html=\"true\" data-placement=\"right\"" +
                             " data-content=\"" + constants.ErrorCountNumber(errCount) + " | <a href='" + linkToErrorView +
