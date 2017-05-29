@@ -108,7 +108,7 @@ public class ProcessInstanceListViewImplTest {
     public void testInitDefaultFilters() {
         view.initDefaultFilters(new GridGlobalPreferences("testGrid", new ArrayList<String>(), new ArrayList<String>()), null);
 
-        verify(filterPagedTable, times(4)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
+        verify(filterPagedTable, times(4)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class), eq(false));
         verify(filterPagedTable, times(4)).saveNewTabSettings(anyString(), any(HashMap.class));
         verify(presenter).setAddingDefaultFilters(true);
     }

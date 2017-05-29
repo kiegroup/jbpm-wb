@@ -156,7 +156,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                                 () -> {
                                                     currentListGrid = extendedPagedTable;
                                                     applyFilterOnPresenter(key);
-                                                });
+                                                },
+                                                false);
                         if ( currentListGrid != null && key.equals( selectedGridId ) ) {
                             currentListGrid = extendedPagedTable;
                         }
@@ -348,7 +349,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                 () -> {
                                     currentListGrid = extendedPagedTable;
                                     applyFilterOnPresenter(tableSettings.getKey());
-                                }
+                                },
+                                false
         );
     }
 

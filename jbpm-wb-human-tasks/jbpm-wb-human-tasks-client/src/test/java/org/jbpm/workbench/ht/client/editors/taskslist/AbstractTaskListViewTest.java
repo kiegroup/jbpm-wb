@@ -202,7 +202,7 @@ public abstract class AbstractTaskListViewTest {
         getView().initDefaultFilters(new GridGlobalPreferences(), mockButton);
 
         verify(filterPagedTableMock, times(getExpectedDefaultTabFilterCount()))
-            .addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class));
+            .addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class), eq(false));
         verify(filterPagedTableMock).addAddTableButton(mockButton);
         verify(presenter).setAddingDefaultFilters(true);
     }
