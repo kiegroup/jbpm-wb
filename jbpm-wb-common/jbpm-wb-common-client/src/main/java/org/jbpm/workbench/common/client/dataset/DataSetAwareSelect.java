@@ -85,13 +85,18 @@ public class DataSetAwareSelect {
                                                     public void callback(final DataSet dataSet) {
                                                         select.refresh(s -> {
                                                             s.removeAllOptions();
-                                                            for (int i = 0; i < dataSet.getRowCount(); i++) {
-                                                                final String text = (String) dataSet.getValueAt(i,
-                                                                                                                textColumnId);
-                                                                final String value = (String) dataSet.getValueAt(i,
-                                                                                                                 valueColumnId);
-                                                                s.addOption(text,
-                                                                            value);
+                                                            if(dataSet.getRowCount() == 0){
+                                                                s.disable();
+                                                            } else {
+                                                                s.enable();
+                                                                for (int i = 0; i < dataSet.getRowCount(); i++) {
+                                                                    final String text = (String) dataSet.getValueAt(i,
+                                                                                                                    textColumnId);
+                                                                    final String value = (String) dataSet.getValueAt(i,
+                                                                                                                     valueColumnId);
+                                                                    s.addOption(text,
+                                                                                value);
+                                                                }
                                                             }
                                                         });
                                                     }
@@ -117,7 +122,10 @@ public class DataSetAwareSelect {
     }
 
     protected void removeOptions() {
-        select.refresh(s -> s.removeAllOptions());
+        select.refresh(s -> {
+            s.removeAllOptions();
+            s.disable();
+        });
     }
 
     public Select getSelect() {
