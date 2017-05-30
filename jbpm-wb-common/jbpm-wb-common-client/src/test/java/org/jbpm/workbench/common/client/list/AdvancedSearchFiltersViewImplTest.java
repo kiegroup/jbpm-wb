@@ -19,7 +19,9 @@ package org.jbpm.workbench.common.client.list;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jboss.errai.common.client.dom.KeyboardEvent;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.util.DateRange;
@@ -48,7 +50,7 @@ public class AdvancedSearchFiltersViewImplTest {
     AdvancedSearchFiltersViewImpl view;
 
     @Before
-    public void setup(){
+    public void setup() {
         when(dataBinder.getModel()).thenReturn(modelList);
     }
 
@@ -101,5 +103,34 @@ public class AdvancedSearchFiltersViewImplTest {
         verify(fromDate).setValue(null);
         verify(toDate).setValue(null);
         verify(addCallback).accept(any(DateRange.class));
+    }
+
+    @Test
+    public void testNumericInput() {
+        testValidKeyCode(KeyCodes.KEY_BACKSPACE);
+        testValidKeyCode(KeyCodes.KEY_NINE);
+        testValidKeyCode(KeyCodes.KEY_NUM_EIGHT);
+        testValidKeyCode(KeyCodes.KEY_NUM_ZERO);
+
+        testInvalidValidKeyCode(KeyCodes.KEY_NUM_MINUS);
+        testInvalidValidKeyCode(KeyCodes.KEY_NUM_PLUS);
+        testInvalidValidKeyCode(KeyCodes.KEY_SPACE);
+        testInvalidValidKeyCode(KeyCodes.KEY_INSERT);
+    }
+
+    protected void testInvalidValidKeyCode(int keyCode) {
+        testKeyCode(keyCode, 1);
+    }
+
+    protected void testKeyCode(int keyCode, int wantedNumberOfInvocations) {
+        final KeyboardEvent event = mock(KeyboardEvent.class);
+        when(event.getKeyCode()).thenReturn(keyCode);
+        view.getNumericInputListener().call(event);
+        verify(event,
+               times(wantedNumberOfInvocations)).preventDefault();
+    }
+
+    protected void testValidKeyCode(int keyCode) {
+        testKeyCode(keyCode, 0);
     }
 }
