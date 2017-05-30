@@ -109,6 +109,7 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                               final String placeholder,
                               final Consumer<String> addCallback,
                               final Consumer<String> removeCallback) {
+        createFilterOption(label);
         createInput(label,
                     placeholder,
                     input -> {
@@ -116,7 +117,6 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                     },
                     addCallback,
                     removeCallback);
-        createFilterOption(label);
     }
 
     @Override
@@ -124,6 +124,7 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                  final String placeholder,
                                  final Consumer<String> addCallback,
                                  final Consumer<String> removeCallback) {
+        createFilterOption(label);
         createInput(label,
                     placeholder,
                     input -> {
@@ -135,7 +136,6 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                     },
                     addCallback,
                     removeCallback);
-        createFilterOption(label);
     }
 
     protected EventListener<KeyboardEvent> getNumericInputListener(){
@@ -200,10 +200,10 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
         appendWidgetToElement(div,
                               toDate);
         filtersInput.appendChild(div);
+        createFilterOption(label);
         if (filterText.getTextContent().isEmpty()) {
             setCurrentFilter(label);
         }
-        createFilterOption(label);
     }
 
     protected void onDateValueChange(final String label,
