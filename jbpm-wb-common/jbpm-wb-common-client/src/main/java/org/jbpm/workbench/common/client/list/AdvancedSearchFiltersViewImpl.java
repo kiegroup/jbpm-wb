@@ -27,6 +27,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.ui.Composite;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.jboss.errai.common.client.dom.*;
@@ -108,9 +109,11 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                               final String placeholder,
                               final Consumer<String> addCallback,
                               final Consumer<String> removeCallback) {
-        createInput("text",
-                    label,
+        createInput(label,
                     placeholder,
+                    input -> {
+                        input.setType("text");
+                    },
                     addCallback,
                     removeCallback);
         createFilterOption(label);
@@ -121,13 +124,29 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                  final String placeholder,
                                  final Consumer<String> addCallback,
                                  final Consumer<String> removeCallback) {
-        createInput("number",
-                    label,
+        createInput(label,
                     placeholder,
+                    input -> {
+                        input.setType("number");
+                        input.setAttribute("min", "0");
+                        input.addEventListener("keypress",
+                                               getNumericInputListener(),
+                                               false);
+                    },
                     addCallback,
                     removeCallback);
         createFilterOption(label);
     }
+
+    protected EventListener<KeyboardEvent> getNumericInputListener(){
+        return (KeyboardEvent e) -> {
+            if (!((e.getKeyCode() >= KeyCodes.KEY_NUM_ZERO && e.getKeyCode() <= KeyCodes.KEY_NUM_NINE) ||
+                    (e.getKeyCode() >= KeyCodes.KEY_ZERO && e.getKeyCode() <= KeyCodes.KEY_NINE) ||
+                    (e.getKeyCode() == KeyCodes.KEY_BACKSPACE))) {
+                e.preventDefault();
+            }
+        };
+    };
 
     @Override
     public void addDataSetSelectFilter(final String label,
@@ -265,13 +284,13 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                              false);
     }
 
-    private void createInput(final String type,
-                             final String label,
+    private void createInput(final String label,
                              final String placeholder,
+                             final Consumer<Input> customizeCallback,
                              final Consumer<String> addCallback,
                              final Consumer<String> removeCallback) {
         final Input input = (Input) getDocument().createElement("input");
-        input.setType(type);
+        customizeCallback.accept(input);
         input.setAttribute("placeholder",
                            placeholder);
         input.setAttribute("data-filter",
