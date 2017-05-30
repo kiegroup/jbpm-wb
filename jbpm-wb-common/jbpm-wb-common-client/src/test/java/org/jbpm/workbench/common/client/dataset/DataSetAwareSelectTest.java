@@ -134,5 +134,48 @@ public class DataSetAwareSelectTest {
                      cdsl.getDataSetUUID());
         verify(select).addOption(columnText,
                                  columnValue);
+        verify(select).enable();
+        verify(select).removeAllOptions();
+    }
+
+
+    @Test
+    public void testLookupEmptyDataSet() throws Exception {
+        final String key = "key";
+        final String serverTemplateId = "test";
+        final String dataUUID = "dataUUID";
+
+        filterSettings.setKey(key);
+        dataSetAwareSelect.setTableKey(key);
+        filterSettings.setServerTemplateId(serverTemplateId);
+        final DataSetLookup lookup = mock(DataSetLookup.class);
+        when(lookup.getDataSetUUID()).thenReturn(dataUUID);
+        dataSetAwareSelect.setDataSetLookup(lookup);
+
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                final DataSet dataSet = mock(DataSet.class);
+                when(dataSet.getRowCount()).thenReturn(0);
+                ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSet);
+                return null;
+            }
+        }).when(dataSetClientServices).lookupDataSet(any(DataSetLookup.class),
+                                                     any(DataSetReadyCallback.class));
+
+        dataSetAwareSelect.onDataSetReady(new DataSetReadyEvent(filterSettings));
+
+        final ArgumentCaptor<DataSetLookup> captor = ArgumentCaptor.forClass(DataSetLookup.class);
+        verify(dataSetClientServices).lookupDataSet(captor.capture(),
+                                                    any(DataSetReadyCallback.class));
+        assertTrue(captor.getValue() instanceof ConsoleDataSetLookup);
+        final ConsoleDataSetLookup cdsl = (ConsoleDataSetLookup) captor.getValue();
+        assertEquals(serverTemplateId,
+                     cdsl.getServerTemplateId());
+        assertEquals(dataUUID,
+                     cdsl.getDataSetUUID());
+        verify(select, never()).addOption(anyString(), anyString());
+        verify(select).disable();
+        verify(select).removeAllOptions();
     }
 }
