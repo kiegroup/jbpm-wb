@@ -456,26 +456,32 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
         view.addTextFilter(constants.Initiator(),
                            constants.FilterByInitiator(),
-                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_IDENTITY,
-                                                                 v)),
-                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_IDENTITY,
-                                                                    v))
+                           v -> addAdvancedSearchFilter(likeTo(COLUMN_IDENTITY,
+                                                                 v,
+                                                                 false)),
+                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_IDENTITY,
+                                                                    v,
+                                                                    false))
         );
 
         view.addTextFilter(constants.Correlation_Key(),
                            constants.FilterByCorrelationKey(),
-                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_CORRELATION_KEY,
-                                                                 v)),
-                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_CORRELATION_KEY,
-                                                                    v))
+                           v -> addAdvancedSearchFilter(likeTo(COLUMN_CORRELATION_KEY,
+                                                               v,
+                                                               false)),
+                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_CORRELATION_KEY,
+                                                                  v,
+                                                                  false))
         );
 
         view.addTextFilter(constants.Process_Instance_Description(),
                            constants.FilterByDescription(),
-                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                                                 v)),
-                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                                                    v))
+                           v -> addAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                               v,
+                                                               false)),
+                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                                  v,
+                                                                  false))
         );
 
         final Map<String, String> states = new HashMap<>();

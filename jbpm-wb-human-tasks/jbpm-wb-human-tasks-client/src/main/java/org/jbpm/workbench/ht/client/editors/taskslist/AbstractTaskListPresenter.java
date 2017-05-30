@@ -428,10 +428,12 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
         view.addTextFilter(constants.Task(),
                            constants.FilterByTaskName(),
-                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_NAME,
-                                                                 v)),
-                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_NAME,
-                                                                    v))
+                           v -> addAdvancedSearchFilter(likeTo(COLUMN_NAME,
+                                                               v,
+                                                               false)),
+                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_NAME,
+                                                                  v,
+                                                                  false))
         );
 
         final Map<String, String> status = getStatusByType(TaskType.ALL).stream().sorted().collect(Collectors.toMap(Function.identity(),
@@ -447,26 +449,32 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
         view.addTextFilter(constants.Process_Instance_Correlation_Key(),
                            constants.FilterByCorrelationKey(),
-                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
-                                                                 v)),
-                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
-                                                                    v))
+                           v -> addAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
+                                                               v,
+                                                               false)),
+                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
+                                                                  v,
+                                                                  false))
         );
 
         view.addTextFilter(constants.Actual_Owner(),
                            constants.FilterByActualOwner(),
-                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_ACTUAL_OWNER,
-                                                                 v)),
-                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ACTUAL_OWNER,
-                                                                    v))
+                           v -> addAdvancedSearchFilter(likeTo(COLUMN_ACTUAL_OWNER,
+                                                               v,
+                                                               false)),
+                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_ACTUAL_OWNER,
+                                                                  v,
+                                                                  false))
         );
 
         view.addTextFilter(constants.Process_Instance_Description(),
                            constants.FilterByProcessInstanceDescription(),
-                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                                                 v)),
-                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                                                    v))
+                           v -> addAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                               v,
+                                                               false)),
+                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                                  v,
+                                                                  false))
         );
 
         view.addDateRangeFilter(constants.Created_On(),

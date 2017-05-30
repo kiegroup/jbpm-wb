@@ -254,26 +254,32 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
 
         view.addTextFilter(constants.BusinessKey(),
                            constants.FilterByBusinessKey(),
-                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_BUSINESSKEY,
-                                                                 v)),
-                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_BUSINESSKEY,
-                                                                    v))
+                           v -> addAdvancedSearchFilter(likeTo(COLUMN_BUSINESSKEY,
+                                                               v,
+                                                               false)),
+                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_BUSINESSKEY,
+                                                                  v,
+                                                                  false))
         );
 
         view.addTextFilter(constants.Type(),
                            constants.FilterByType(),
-                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_COMMANDNAME,
-                                                                 v)),
-                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_COMMANDNAME,
-                                                                    v))
+                           v -> addAdvancedSearchFilter(likeTo(COLUMN_COMMANDNAME,
+                                                               v,
+                                                               false)),
+                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_COMMANDNAME,
+                                                                  v,
+                                                                  false))
         );
 
         view.addTextFilter(constants.Process_Description(),
                            constants.FilterByProcessDescription(),
-                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                                                 v)),
-                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                                                    v))
+                           v -> addAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                               v,
+                                                               false)),
+                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                                  v,
+                                                                  false))
         );
 
         final Map<String, String> status = new HashMap<>();
