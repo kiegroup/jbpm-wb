@@ -112,13 +112,13 @@ public class AdvancedSearchFiltersViewImplTest {
         testValidKeyCode(KeyCodes.KEY_NUM_EIGHT);
         testValidKeyCode(KeyCodes.KEY_NUM_ZERO);
 
-        testInvalidValidKeyCode(KeyCodes.KEY_NUM_MINUS);
-        testInvalidValidKeyCode(KeyCodes.KEY_NUM_PLUS);
-        testInvalidValidKeyCode(KeyCodes.KEY_SPACE);
-        testInvalidValidKeyCode(KeyCodes.KEY_INSERT);
+        testInvalidKeyCode(KeyCodes.KEY_NUM_MINUS);
+        testInvalidKeyCode(KeyCodes.KEY_NUM_PLUS);
+        testInvalidKeyCode(KeyCodes.KEY_SPACE);
+        testInvalidKeyCode(KeyCodes.KEY_INSERT);
     }
 
-    protected void testInvalidValidKeyCode(int keyCode) {
+    protected void testInvalidKeyCode(int keyCode) {
         testKeyCode(keyCode, 1);
     }
 
