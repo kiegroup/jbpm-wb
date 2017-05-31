@@ -35,7 +35,6 @@ import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
-import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.*;
 import org.jbpm.workbench.common.client.dataset.DataSetAwareSelect;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
@@ -51,9 +50,15 @@ import static org.jbpm.workbench.common.client.util.DateUtils.getDateTimeStr;
 @Templated
 public class AdvancedSearchFiltersViewImpl extends Composite implements AdvancedSearchFiltersView {
 
+    private final Constants constants = Constants.INSTANCE;
+
     @Inject
     @DataField("dropdown-filter-text")
     Span filterText;
+
+    @Inject
+    @DataField("active-filters-text")
+    Span activeFiltersText;
 
     @Inject
     @DataField("filters-input")
@@ -87,11 +92,10 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     @Inject
     private ManagedInstance<DataSetAwareSelect> dataSetSelectProvider;
 
-    @Inject
-    private TranslationService translationService;
-
     @PostConstruct
     public void init() {
+        removeAll.setTextContent(constants.ClearAll());
+        activeFiltersText.setTextContent(constants.ActiveFilters());
         activeFiltersList.setModel(new ArrayList<>());
         activeFilters.addComponentCreationHandler(v -> removeCSSClass(removeAll,
                                                                       "hidden"));
@@ -220,11 +224,11 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
         final DateRange dateRange = new DateRange(fromDateValue,
                                                   toDateValue);
         addActiveFilter(label,
-                        translationService.format(Constants.FROM)
+                        constants.From()
                                 + " " +
                                 getDateTimeStr(fromDateValue)
                                 + " " +
-                                translationService.format(Constants.TO)
+                                constants.To()
                                 + " " +
                                 getDateTimeStr(toDateValue),
                         dateRange,
