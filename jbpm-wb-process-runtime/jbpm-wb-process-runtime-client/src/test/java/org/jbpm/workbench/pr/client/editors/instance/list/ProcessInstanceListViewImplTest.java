@@ -19,9 +19,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
@@ -29,11 +33,13 @@ import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.workbench.client.PerspectiveIds;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
@@ -41,6 +47,7 @@ import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
+import org.uberfire.mvp.PlaceRequest;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -68,6 +75,15 @@ public class ProcessInstanceListViewImplTest {
 
     @Spy
     private FilterSettings filterSettings;
+    
+    @Mock
+    private ManagedInstance<ProcessInstanceSummaryErrorPopoverCell> popoverCellInstance;
+    
+    @Mock
+    private PlaceManager placeManager;
+    
+    @InjectMocks
+    ProcessInstanceSummaryErrorPopoverCell popoverCellMock;
 
     @InjectMocks
     private ProcessInstanceListViewImpl view;
@@ -81,6 +97,7 @@ public class ProcessInstanceListViewImplTest {
         when(presenter.createAbortedTabSettings()).thenReturn(filterSettings);
         when(presenter.createSearchTabSettings()).thenReturn(filterSettings);
         when(filterPagedTable.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStore);
+        when(popoverCellInstance.get()).thenReturn(popoverCellMock);
     }
 
     @Test
@@ -151,6 +168,7 @@ public class ProcessInstanceListViewImplTest {
         view.initColumns(currentListGrid);
 
         verify(currentListGrid).addColumns(anyList());
+        verify(popoverCellInstance).get();
     }
     
     @Test
@@ -169,6 +187,23 @@ public class ProcessInstanceListViewImplTest {
         view.initColumns(currentListGrid);
 
         verify(currentListGrid).addColumns(anyList());
+    }
+    
+    @Test
+    public void testErrorCellNavigation(){
+        doAnswer(new Answer<Void>(){
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                PlaceRequest request = invocation.getArgumentAt(0, PlaceRequest.class);
+                assertEquals(PerspectiveIds.EXECUTION_ERRORS, request.getIdentifier());
+                return null;
+            }
+            
+        }).when(placeManager).goTo(any(PlaceRequest.class));
+        
+        popoverCellInstance.get().openErrorView(null);
+        
+        verify(placeManager).goTo(any(PlaceRequest.class));
     }
 
 }
