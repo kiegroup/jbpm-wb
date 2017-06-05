@@ -21,11 +21,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import com.google.gwt.cell.client.*;
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -33,10 +33,8 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.Header;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
@@ -49,16 +47,14 @@ import org.gwtbootstrap3.client.ui.DropDownMenu;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.pr.client.resources.ProcessRuntimeResources;
-import org.jbpm.workbench.pr.client.resources.css.ProcessRuntimeCSS;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.workbench.common.workbench.client.PerspectiveIds;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
@@ -80,6 +76,9 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
     private AnchorListItem bulkAbortNavLink;
     private AnchorListItem bulkSignalNavLink;
+    
+    @Inject
+    private ManagedInstance<ProcessInstanceSummaryErrorPopoverCell> popoverCellInstance;
 
     private void controlBulkOperations() {
         if ( selectedProcessInstances != null && selectedProcessInstances.size() > 0 ) {
@@ -413,31 +412,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     private Column<ProcessInstanceSummary, ProcessInstanceSummary> initErrorCountColumn() {
         
         Column<ProcessInstanceSummary, ProcessInstanceSummary> column = new Column<ProcessInstanceSummary, ProcessInstanceSummary>(
-                new AbstractCell<ProcessInstanceSummary>(){
-
-            @Override
-            public void render(Context context, ProcessInstanceSummary value, SafeHtmlBuilder sb) {
-                int errCount =  value != null ? value.getErrorCount() : 0;
-                ProcessRuntimeCSS css = ProcessRuntimeResources.INSTANCE.css();
-                String badgeHtml = null;
-                if(errCount > 0){
-                    //TODO: link to specific process instance ID
-                    String linkToErrorView = "#" + PerspectiveIds.EXECUTION_ERRORS;
-                    String elementId = DOM.createUniqueId();
-                    String popoverAttrs = "data-toggle=\"popover\" data-html=\"true\" data-placement=\"right\"" +
-                            " data-content=\"" + constants.ErrorCountNumber(errCount) + " | <a href='" + linkToErrorView +
-                            "' title='" + constants.ErrorCountViewLink() + "'>" + constants.ErrorCountViewLink() + "</a>\"" +
-                            " data-container=\"body\" data-trigger=\"hover focus\"";
-                    badgeHtml = "<a id=\"" + elementId + "\" href=\"#\" class=\"badge " + css.processInstanceErrorCount() +
-                            " " + css.processInstanceErrorCountPresent() + "\" " + popoverAttrs + ">" + errCount + "</a>";
-                    Scheduler.get().scheduleDeferred(() -> initPopover(elementId));
-                }else{
-                    badgeHtml = "<span class=\"badge " +  css.processInstanceErrorCount() + "\">" + errCount + "</span>";
-                }
-                sb.appendHtmlConstant(badgeHtml);
-            }
-
-        }){
+                popoverCellInstance.get()){
 
             @Override
             public ProcessInstanceSummary getValue(ProcessInstanceSummary process) {
@@ -451,13 +426,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         return column;
     }
     
-    private native void initPopover(final String uid) /*-{
-        $wnd.jQuery(document).ready(function() {
-            var jQueryId = "#" + uid;
-            $wnd.jQuery(jQueryId).popover();
-        });
-    }-*/;    
-
     private Column<ProcessInstanceSummary, ProcessInstanceSummary> initActionsColumn() {
         List<HasCell<ProcessInstanceSummary, ?>> cells = new LinkedList<HasCell<ProcessInstanceSummary, ?>>();
 
