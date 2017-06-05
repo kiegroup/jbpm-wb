@@ -184,4 +184,27 @@ public class AbstractMultiGridViewTest {
                                                       TAB_SEARCH);
         assertTrue(table instanceof AdvancedSearchTable);
     }
+
+    @Test
+    public void testCreateExtendedPagedTable_PreferenceKeySet() {
+        String filterKey = "filterKey";
+        GridGlobalPreferences ggp = new GridGlobalPreferences(TEST_KEY,
+                                                              new ArrayList(),
+                                                              new ArrayList<String>());
+        testListView.init(presenter,
+                          ggp);
+
+        reset(presenter);
+        ExtendedPagedTable table = testListView.createExtendedPagedTable(ggp,
+                                                                         filterKey);
+
+        assertFalse(table instanceof AdvancedSearchTable);
+        assertEquals( filterKey, table.getGridPreferencesStore().getPreferenceKey());
+
+        table = testListView.createExtendedPagedTable(ggp,
+                                                      TAB_SEARCH);
+
+        assertTrue(table instanceof AdvancedSearchTable);
+        assertEquals(ggp.getKey() + TAB_SEARCH, table.getGridPreferencesStore().getPreferenceKey());
+    }
 }
