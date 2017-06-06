@@ -56,6 +56,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 
 public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements DeploymentDescriptorView {
+    public static final int PAGE_SIZE_UNLIMITED = Integer.MAX_VALUE;
 
     interface DeploymentDescriptorBinder
             extends
@@ -126,7 +127,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     HelpBlock marshalStrategyHelpInline;
 
     @UiField(provided = true)
-    CellTable<ItemObjectModel> marshalStrategyTable = new CellTable<ItemObjectModel>();
+    CellTable<ItemObjectModel> marshalStrategyTable = new CellTable<ItemObjectModel>(PAGE_SIZE_UNLIMITED);
 
     // pkg for tests
     ListDataProvider<ItemObjectModel> marshalStrategyDataProvider = new ListDataProvider<ItemObjectModel>();
@@ -142,7 +143,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     HelpBlock eventListenersHelpInline;
 
     @UiField(provided = true)
-    CellTable<ItemObjectModel> eventListenersTable = new CellTable<ItemObjectModel>();
+    CellTable<ItemObjectModel> eventListenersTable = new CellTable<ItemObjectModel>(PAGE_SIZE_UNLIMITED);
 
     // pkg for tests
     ListDataProvider<ItemObjectModel> eventListenersDataProvider = new ListDataProvider<ItemObjectModel>();
@@ -158,7 +159,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     HelpBlock globalsHelpInline;
 
     @UiField(provided = true)
-    CellTable<ItemObjectModel> globalsTable = new CellTable<ItemObjectModel>();
+    CellTable<ItemObjectModel> globalsTable = new CellTable<ItemObjectModel>(PAGE_SIZE_UNLIMITED);
 
     // pkg for tests
     ListDataProvider<ItemObjectModel> globalsDataProvider = new ListDataProvider<ItemObjectModel>();
@@ -174,7 +175,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     HelpBlock workItemHandlersHelpInline;
 
     @UiField(provided = true)
-    CellTable<ItemObjectModel> workItemHandlersTable = new CellTable<ItemObjectModel>();
+    CellTable<ItemObjectModel> workItemHandlersTable = new CellTable<ItemObjectModel>(PAGE_SIZE_UNLIMITED);
 
     // pkg for tests
     ListDataProvider<ItemObjectModel> workItemHandlersDataProvider = new ListDataProvider<ItemObjectModel>();
@@ -190,7 +191,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     HelpBlock taskEventListenersHelpInline;
 
     @UiField(provided = true)
-    CellTable<ItemObjectModel> taskEventListenersTable = new CellTable<ItemObjectModel>();
+    CellTable<ItemObjectModel> taskEventListenersTable = new CellTable<ItemObjectModel>(PAGE_SIZE_UNLIMITED);
 
     // pkg for tests
     ListDataProvider<ItemObjectModel> taskEventListenersDataProvider = new ListDataProvider<ItemObjectModel>();
@@ -206,7 +207,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     HelpBlock environmentEntriesHelpInline;
 
     @UiField(provided = true)
-    CellTable<ItemObjectModel> environmentEntriesTable = new CellTable<ItemObjectModel>();
+    CellTable<ItemObjectModel> environmentEntriesTable = new CellTable<ItemObjectModel>(PAGE_SIZE_UNLIMITED);
 
     // pkg for tests
     ListDataProvider<ItemObjectModel> environmentEntriesDataProvider = new ListDataProvider<ItemObjectModel>();
@@ -222,7 +223,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     HelpBlock configurationHelpInline;
 
     @UiField(provided = true)
-    CellTable<ItemObjectModel> configurationTable = new CellTable<ItemObjectModel>();
+    CellTable<ItemObjectModel> configurationTable = new CellTable<ItemObjectModel>(PAGE_SIZE_UNLIMITED);
 
     // pkg for tests
     ListDataProvider<ItemObjectModel> configurationDataProvider = new ListDataProvider<ItemObjectModel>();
@@ -238,7 +239,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     HelpBlock requiredRolesHelpInline;
 
     @UiField(provided = true)
-    CellTable<String> requiredRolesTable = new CellTable<String>();
+    CellTable<String> requiredRolesTable = new CellTable<String>(PAGE_SIZE_UNLIMITED);
 
     // pkg for tests
     ListDataProvider<String> requiredRolesDataProvider = new ListDataProvider<String>();
@@ -254,7 +255,7 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     HelpBlock remoteableClassesHelpInline;
 
     @UiField(provided = true)
-    CellTable<String> remoteableClassesTable = new CellTable<String>();
+    CellTable<String> remoteableClassesTable = new CellTable<String>(PAGE_SIZE_UNLIMITED);
 
     // pkg for tests
     ListDataProvider<String> remoteableClassesDataProvider = new ListDataProvider<String>();

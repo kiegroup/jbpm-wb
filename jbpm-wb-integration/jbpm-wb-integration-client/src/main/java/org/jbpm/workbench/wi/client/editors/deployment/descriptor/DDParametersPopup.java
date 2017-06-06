@@ -48,6 +48,8 @@ import org.jbpm.workbench.wi.dd.model.Parameter;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKCancelButtons;
 
+import static org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentDescriptorViewImpl.PAGE_SIZE_UNLIMITED;
+
 public class DDParametersPopup extends BaseModal {
 
     interface DDParametersPopupBinder
@@ -61,8 +63,8 @@ public class DDParametersPopup extends BaseModal {
     @UiField
     FormGroup parametersGroup;
 
-    @UiField
-    CellTable<Parameter> parametersTable;
+    @UiField(provided=true)
+    CellTable<Parameter> parametersTable = new CellTable<>(PAGE_SIZE_UNLIMITED);
 
     @UiField
     HelpBlock parametersHelpInline;
@@ -74,6 +76,7 @@ public class DDParametersPopup extends BaseModal {
     FormLabel parametersLabel;
 
     private Command callbackCommand;
+
     private ListDataProvider<Parameter> parametersDataProvider = new ListDataProvider<Parameter>();
 
     private final Command okCommand = new Command() {
@@ -97,7 +100,6 @@ public class DDParametersPopup extends BaseModal {
 
     public DDParametersPopup() {
         setTitle( Constants.INSTANCE.DDParametersPopupTitle() );
-
         setBody( uiBinder.createAndBindUi( DDParametersPopup.this ) );
         configureParametersTable();
         add( footer );
