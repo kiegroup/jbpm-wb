@@ -233,13 +233,12 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         return filterPagedTable.getValidKeyForAdditionalListGrid( baseName + USER_DEFINED  );
     }
 
-    public ExtendedPagedTable<T> createGridInstance(final GridGlobalPreferences preferences,
+    public ExtendedPagedTable<T> createGridInstance(final GridGlobalPreferences defaultPreferences,
                                                     final String key) {
-        final ExtendedPagedTable<T> newListGrid = createExtendedPagedTable( preferences, key );
+        final ExtendedPagedTable<T> newListGrid = createExtendedPagedTable( defaultPreferences, key );
         newListGrid.setShowLastPagerButton( false );
         newListGrid.setShowFastFordwardPagerButton( false );
         newListGrid.setPreferencesService( preferencesService );
-        newListGrid.setGridPreferencesStore( new GridPreferencesStore( preferences ) );
         initColumns( newListGrid );
         initGenericToolBar( newListGrid );
         initSelectionModel( newListGrid );
@@ -249,9 +248,23 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         return newListGrid;
     }
 
-    protected ExtendedPagedTable<T> createExtendedPagedTable(final GridGlobalPreferences preferences,
+    protected ExtendedPagedTable<T> createExtendedPagedTable(final GridGlobalPreferences defaultPreferences,
                                                              final String key) {
-        return TAB_SEARCH.equals(key) ? createAdvancedSearchTable(preferences) : new ExtendedPagedTable<T>(preferences);
+        GridGlobalPreferences pref;
+        ExtendedPagedTable<T> table ;
+        if(TAB_SEARCH.equals(key)){
+            pref = new GridGlobalPreferences(defaultPreferences.getKey() + key,
+                                      defaultPreferences.getInitialColumns(),
+                                      defaultPreferences.getBannedColumns());
+            table = createAdvancedSearchTable(pref);
+        } else {
+            pref = new GridGlobalPreferences(key,
+                                             defaultPreferences.getInitialColumns(),
+                                             defaultPreferences.getBannedColumns());
+            table = new ExtendedPagedTable<T>(pref);
+        }
+        table.setGridPreferencesStore( new GridPreferencesStore(pref));
+        return table;
     }
 
     protected AdvancedSearchTable<T> createAdvancedSearchTable(final GridGlobalPreferences preferences) {
@@ -271,18 +284,14 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
             @Override
             public void callback( GridPreferencesStore preferencesStore ) {
                 newListGrid.setPreferencesService( preferencesService );
-                if ( preferencesStore == null ) {
-                    newListGrid.setGridPreferencesStore( new GridPreferencesStore( preferences ) );
-                } else {
-                    newListGrid.setGridPreferencesStore( preferencesStore );
-                }
+                newListGrid.setGridPreferencesStore( preferencesStore );
                 initColumns( newListGrid );
                 initGenericToolBar( newListGrid );
                 initSelectionModel( newListGrid );
                 newListGrid.loadPageSizePreferences();
                 newListGrid.createPageSizesListBox(5, 20, 5);
             }
-        } ).loadUserPreferences( key, UserPreferencesType.GRIDPREFERENCES );
+        } ).loadUserPreferences( newListGrid.getGridPreferencesStore().getPreferenceKey(), UserPreferencesType.GRIDPREFERENCES );
 
         return newListGrid;
     }
