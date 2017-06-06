@@ -41,8 +41,8 @@ import org.kie.server.client.ProcessServicesClient;
 import org.kie.server.client.QueryServicesClient;
 import org.ocpsoft.prettytime.PrettyTime;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @ApplicationScoped
@@ -105,7 +105,7 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
             if(nis.getNodeType().equals("HumanTaskNode")){
                 logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(nis.getDate()), "Task '" + nis.getName() + "' was created", "System"));
                 for(TaskEventInstance te : allTaskEventsByProcessInstanceId){
-                    if(te.getWorkItemId() != null && nis.getId() == te.getWorkItemId() &&
+                    if(te.getWorkItemId() != null && te.getWorkItemId().equals(nis.getId()) &&
                         (te.getType().equals("CLAIMED") || te.getType().equals("RELEASED") || te.getType().equals("COMPLETED"))){
                             logs.add(new RuntimeLogSummary(nis.getId(), "- " + prettyDateFormatter.format(te.getLogTime()), "Task '" + nis.getName() +
                                     "' was " + te.getType().toLowerCase() + " by user " + te.getUserId(), "Human"));
@@ -191,7 +191,7 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
                 if(nis.getNodeType().equals("HumanTaskNode")){
                     logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(nis.getDate()), nis.getName() + "("+nis.getNodeType()+")", "System"));
                     for(TaskEventInstance te : allTaskEventsByProcessInstanceId){
-                        if(te.getWorkItemId() != null && nis.getId() == te.getWorkItemId()){
+                        if(te.getWorkItemId() != null && te.getWorkItemId().equals(nis.getId())){
                             if(te.getType().equals("ADDED")){
                                 logs.add(new RuntimeLogSummary(nis.getId(), "- " + prettyDateFormatter.format(te.getLogTime()), te.getUserId() + "->" +te.getType(), "System"));
                             }else{

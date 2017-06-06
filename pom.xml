@@ -50,6 +50,7 @@
 \*\/$
 ]]>
     </checkstyle.header.template>
+    <findbugs.failOnViolation>true</findbugs.failOnViolation>
   </properties>
 
   <modules>

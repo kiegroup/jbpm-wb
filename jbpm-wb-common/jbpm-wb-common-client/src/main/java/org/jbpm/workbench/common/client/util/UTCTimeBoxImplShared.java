@@ -28,22 +28,22 @@ public abstract class UTCTimeBoxImplShared extends Composite implements UTCTimeB
     protected DateTimeFormat timeFormat;
 
     // ----------------------------------------------------------------------
-    
+
     /**
      * Sets the DateTimeFormat for this UTCTimeBox. The HTML5
      * implementation will ignore this.
      */
     @Override
-    public void setTimeFormat(DateTimeFormat timeFormat) { 
+    public void setTimeFormat(DateTimeFormat timeFormat) {
         this.timeFormat = timeFormat;
     }
-    
+
     /**
      * Sets the visible length of the time input. The HTML5
      * implementation will ignore this.
      */
     @Override
-    public void setVisibleLength(int length) {}    
+    public void setVisibleLength(int length) {}
 
     /**
      * Validates the value that has been typed into the text input.
@@ -51,7 +51,7 @@ public abstract class UTCTimeBoxImplShared extends Composite implements UTCTimeB
      */
     @Override
     public void validate() {}
-    
+
 
     /**
      * Sets the time value (as milliseconds since midnight independent
@@ -60,26 +60,28 @@ public abstract class UTCTimeBoxImplShared extends Composite implements UTCTimeB
     @Override
     public final void setValue(Long value) {
         setValue(value, false);
-    }    
-    
+    }
+
     // ----------------------------------------------------------------------
-    
+
     public UTCTimeBoxImplShared() {
         if (fallbackTimeFormats == null) {
-            fallbackTimeFormats = new DateTimeFormat[fallbackFormatStrings.length];
-            for (int i=0; i<fallbackFormatStrings.length; i++) {
-                fallbackTimeFormats[i] = DateTimeFormat.getFormat(fallbackFormatStrings[i]);
+            // Initialize the array fully in local var before assigning to class field to avoid synchronization issues
+            DateTimeFormat[] formats = new DateTimeFormat[fallbackFormatStrings.length];
+            for (int i = 0; i < formats.length; i++) {
+                formats[i] = DateTimeFormat.getFormat(fallbackFormatStrings[i]);
             }
-        }    
+            fallbackTimeFormats = formats;
+        }
     }
-    
+
     // ----------------------------------------------------------------------
     // parsing and formatting
 
     protected final String value2text( Long value ) {
         return formatUsingFormat(value, timeFormat);
     }
-    
+
     protected final Long text2value( String text ) {
 
         if (text == null ){
@@ -94,7 +96,7 @@ public abstract class UTCTimeBoxImplShared extends Composite implements UTCTimeB
             if (text.endsWith("p") || text.endsWith("a")) {
                 text += "m";
             }
-            
+
             Long ret = parseUsingFallbacks(text, timeFormat);
             if (ret == null) {
                 ret = parseUsingFallbacksWithColon(text, timeFormat);
@@ -102,7 +104,7 @@ public abstract class UTCTimeBoxImplShared extends Composite implements UTCTimeB
             return ret;
         }
     }
-    
+
     /**
      * Formats the value provided with the specified DateTimeFormat
      */
@@ -119,7 +121,7 @@ public abstract class UTCTimeBoxImplShared extends Composite implements UTCTimeB
             return fmt.format(date);
         }
     }
-    
+
     /**
      * Attempts to insert a colon so that a value without a colon can
      * be parsed.
@@ -153,13 +155,13 @@ public abstract class UTCTimeBoxImplShared extends Composite implements UTCTimeB
             return null;
         }
     }
-    
+
     protected static final Long parseUsingFormat(String text, DateTimeFormat fmt) {
         Date date = new Date(0);
         int num = fmt.parse(text, 0, date);
         return (num != 0) ? new Long(normalizeInLocalRange(date.getTime() - UTCDateBox.timezoneOffsetMillis(date))) : null;
     }
-    
+
     protected static final Long parseUsingFallbacks(String text, DateTimeFormat primaryTimeFormat) {
         Long ret = parseUsingFormat(text, primaryTimeFormat);
         for (int i = 0; ret == null && i < fallbackTimeFormats.length; i++) {
@@ -172,5 +174,5 @@ public abstract class UTCTimeBoxImplShared extends Composite implements UTCTimeB
         return (time + UTCDateBox.DAY_IN_MS) % UTCDateBox.DAY_IN_MS;
     }
 
-    
+
 }
