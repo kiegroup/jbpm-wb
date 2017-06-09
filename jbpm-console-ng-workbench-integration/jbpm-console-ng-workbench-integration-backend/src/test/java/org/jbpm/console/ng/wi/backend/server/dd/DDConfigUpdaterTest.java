@@ -38,6 +38,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.reset;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DDConfigUpdaterTest {
@@ -225,6 +226,25 @@ public class DDConfigUpdaterTest {
         assertEquals("MyWorkItem", objectModel.getName());
         assertEquals("mvel", objectModel.getResolver());
         assertEquals("new com.myhandlers.MyHandler()", objectModel.getValue());
+    }
+    
+    
+    @Test
+    public void testChangePlaceHolderStrategy() {
+    	
+    	 String customPlaceholderStrategy = "com.foo.CustomPlaceholderStrategy";
+    	 
+    	 when(configUpdaterHelper.getTargetPlaceHolderStategy()).thenReturn(customPlaceholderStrategy);
+    	 when(configUpdaterHelper.buildJPAMarshallingStrategyValue(any(KieProject.class))).thenReturn(customPlaceholderStrategy);
+    	 ddConfigUpdater.processResourceAdd(new ResourceAddedEvent(Mockito.mock(Path.class), "test resource", Mockito.mock(SessionInfo.class)));
+
+         assertNotNull(model.getMarshallingStrategies());
+         assertEquals(1, model.getMarshallingStrategies().size());
+
+         ItemObjectModel objectModel = model.getMarshallingStrategies().get(0);
+         assertNotNull(objectModel);
+         assertEquals(customPlaceholderStrategy, objectModel.getValue());
+         assertEquals("mvel", objectModel.getResolver());
     }
 
 }
