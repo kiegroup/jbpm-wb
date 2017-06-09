@@ -320,5 +320,9 @@ public interface Constants extends Messages {
     String FilterByCorrelationKey();
 
     String FilterByDescription();
+    
+    String HasErrorsYes();
+    
+    String HasErrorsNo();
 
 }
