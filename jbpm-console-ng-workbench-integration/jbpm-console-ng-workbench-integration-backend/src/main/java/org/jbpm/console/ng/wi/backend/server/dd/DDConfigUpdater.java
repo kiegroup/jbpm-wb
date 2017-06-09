@@ -183,7 +183,7 @@ public class DDConfigUpdater {
                     //check if the marshalling strategy is already configured
                     for ( ItemObjectModel itemModel: descriptorModel.getMarshallingStrategies() ) {
                         if ( itemModel.getValue() != null &&
-                                itemModel.getValue().contains( "org.drools.persistence.jpa.marshaller.JPAPlaceholderResolverStrategy" ) ) {
+                        		configUpdaterHelper.matchTargetPlaceHolderStrategy( itemModel.getValue() ) ) {
                             oldMarshallingStrategy = itemModel;
                             break;
                         }

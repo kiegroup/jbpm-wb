@@ -43,14 +43,17 @@ public class DDConfigUpdaterHelper {
 
     private PersistenceDescriptorService pdService;
 
+	private String targetPlaceHolderStategy;
+
     public DDConfigUpdaterHelper() {
-        //Injection required
+    	targetPlaceHolderStategy = "org.drools.persistence.jpa.marshaller.JPAPlaceholderResolverStrategy";
     }
 
     @Inject
     public DDConfigUpdaterHelper( KieProjectService projectService,
             @Named("ioStrategy") IOService ioService,
             PersistenceDescriptorService pdService ) {
+    	this();
         this.projectService = projectService;
         this.pdService = pdService;
         this.ioService = ioService;
@@ -85,7 +88,7 @@ public class DDConfigUpdaterHelper {
     public String buildJPAMarshallingStrategyValue( KieProject kieProject ) {
         PersistenceDescriptorModel pdModel = pdService.load( kieProject );
         if ( pdModel != null ) {
-            return "new org.drools.persistence.jpa.marshaller.JPAPlaceholderResolverStrategy(\"" +  pdModel.getPersistenceUnit().getName() + "\", classLoader)";
+            return "new "+ targetPlaceHolderStategy +"(\"" +  pdModel.getPersistenceUnit().getName() + "\", classLoader)";
         }
         return null;
     }
@@ -102,4 +105,17 @@ public class DDConfigUpdaterHelper {
             ((DeploymentDescriptorImpl )dd ).setMarshallingStrategies( marshallingStrategies );
         }
     }
+
+	public boolean matchTargetPlaceHolderStrategy(String value) {
+		
+		return value!= null && value.contains( getTargetPlaceHolderStategy() );
+	}
+
+	public String getTargetPlaceHolderStategy() {
+		return targetPlaceHolderStategy;
+	}
+
+	public void setTargetPlaceHolderStategy(String targetPlaceHolderStategy) {
+		this.targetPlaceHolderStategy = targetPlaceHolderStategy;
+	}
 }
