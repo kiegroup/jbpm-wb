@@ -27,7 +27,7 @@ import org.guvnor.structure.security.OrganizationalUnitAction;
 import org.guvnor.structure.security.RepositoryAction;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jbpm.workbench.client.i18n.Constants;
-import org.kie.workbench.common.workbench.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;

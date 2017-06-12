@@ -65,8 +65,10 @@ import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 
 @Dependent
-@WorkbenchScreen(identifier = "Requests List")
+@WorkbenchScreen(identifier = RequestListPresenter.SCREEN_ID)
 public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSummary, RequestListPresenter.RequestListView> {
+
+    public static final String SCREEN_ID = "Requests List";
 
     public interface RequestListView extends MultiGridView<RequestSummary, RequestListPresenter> {
 
@@ -331,12 +333,18 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                                                                         v.getEndDate()))
         );
 
+    }
+
+    @Override
+    public void setupDefaultActiveSearchFilters() {
         view.addActiveFilter(constants.Status(),
                              constants.Running(),
                              RequestStatus.RUNNING.name(),
                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
                                                                       v))
         );
+        addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
+                                         RequestStatus.RUNNING));
     }
 
     @Override
@@ -371,7 +379,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
 
     @Override
     public FilterSettings createSearchTabSettings() {
-        return createStatusSettings(RequestStatus.RUNNING);
+        return createTableSettingsPrototype();
     }
 
     public FilterSettings createAllTabSettings() {

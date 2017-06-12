@@ -18,11 +18,9 @@ package org.jbpm.workbench.pr.client.editors.definition.details.multi;
 
 import javax.enterprise.event.Event;
 
-import org.jbpm.workbench.pr.client.perspectives.ProcessInstanceListPerspective;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.junit.Before;
 import org.junit.Test;
-import org.kie.workbench.common.workbench.client.PerspectiveIds;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -31,6 +29,8 @@ import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.PlaceRequest;
 
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
+import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCES;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -67,8 +67,8 @@ public abstract class BaseProcessDefDetailsMultiPresenterTest<T extends BaseProc
         final ArgumentCaptor<PlaceRequest> captor = ArgumentCaptor.forClass(PlaceRequest.class);
         verify(placeManager).goTo(captor.capture());
         final PlaceRequest request = captor.getValue();
-        assertEquals(PerspectiveIds.PROCESS_INSTANCES, request.getIdentifier());
-        assertEquals(process, request.getParameter(ProcessInstanceListPerspective.PROCESS_ID, null));
+        assertEquals(PROCESS_INSTANCES, request.getIdentifier());
+        assertEquals(process, request.getParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID, null));
     }
 
     @Test

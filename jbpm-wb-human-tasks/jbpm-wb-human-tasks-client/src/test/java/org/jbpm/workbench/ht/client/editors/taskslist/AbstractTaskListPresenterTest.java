@@ -441,8 +441,8 @@ public abstract class AbstractTaskListPresenterTest {
     }
 
     @Test
-    public void testAdvancedSearchDefaultActiveFilter() {
-        getPresenter().setupAdvancedSearchView();
+    public void testDefaultActiveSearchFilters() {
+        getPresenter().setupDefaultActiveSearchFilters();
 
         verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Status()),
                                          eq(TASK_STATUS_READY),

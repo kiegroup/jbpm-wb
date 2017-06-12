@@ -17,29 +17,23 @@ package org.jbpm.workbench.pr.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
-import org.kie.workbench.common.workbench.client.PerspectiveIds;
-import org.uberfire.client.annotations.Perspective;
+import org.jbpm.workbench.pr.client.editors.definition.list.ProcessDefinitionListPresenter;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.client.workbench.panels.impl.ClosableSimpleWorkbenchPanelPresenter;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.PerspectiveDefinition;
-import org.uberfire.workbench.model.impl.PartDefinitionImpl;
-import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 /**
- * A Perspective to show File Explorer
+ * A Perspective to show Process Definitions
  */
 @ApplicationScoped
 @WorkbenchPerspective(identifier = PerspectiveIds.PROCESS_DEFINITIONS)
 public class ProcessDefinitionsPerspective extends AbstractPerspective {
 
-    @Perspective
-    public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( ClosableSimpleWorkbenchPanelPresenter.class.getName() );
-        p.setName( PerspectiveIds.PROCESS_DEFINITIONS );
-        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Process Definition List" ) ) );
-        return p;
+    @Override
+    public PlaceRequest getPlaceRequest() {
+        return new DefaultPlaceRequest(ProcessDefinitionListPresenter.SCREEN_ID);
     }
 
     @Override

@@ -486,13 +486,18 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                                                                         v.getEndDate()))
         );
 
+    }
+
+    @Override
+    public void setupDefaultActiveSearchFilters() {
         view.addActiveFilter(constants.Status(),
                              TASK_STATUS_READY,
                              TASK_STATUS_READY,
                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
                                                                       v))
         );
-
+        addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
+                                         TASK_STATUS_READY));
     }
 
     protected void addProcessNameFilter(final String dataSetId){
@@ -572,5 +577,10 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         varTableSettings.setTablePageSize(-1);
 
         return varTableSettings;
+    }
+
+    @Override
+    public FilterSettings createSearchTabSettings() {
+        return createTableSettingsPrototype();
     }
 }

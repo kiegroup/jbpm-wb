@@ -16,11 +16,11 @@
 
 package org.jbpm.workbench.common.client.list;
 
+import java.util.Optional;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.dashbuilder.dataset.filter.ColumnFilter;
-import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
@@ -68,6 +68,16 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
     @Override
     public void onGridPreferencesStoreLoaded() {
         refreshSelectorMenuBuilder.loadOptions( view.getRefreshValue() );
+        clearActiveSearchFilters();
+        setupActiveSearchFilters();
+        view.selectFirstTabAndEnableQueries();
+    }
+
+    public void onRestoreTabs(){
+        view.restoreTabs();
+        clearActiveSearchFilters();
+        setupDefaultActiveSearchFilters();
+        view.selectFirstTabAndEnableQueries();
     }
 
     @Override
@@ -86,6 +96,12 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
 
     public abstract void setupAdvancedSearchView();
 
+    public void setupActiveSearchFilters(){
+        setupDefaultActiveSearchFilters();
+    }
+
+    public abstract void setupDefaultActiveSearchFilters();
+
     @Override
     @OnOpen
     public void onOpen() {
@@ -93,26 +109,32 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
         setupAdvancedSearchView();
     }
 
+    protected void clearActiveSearchFilters() {
+        final FilterSettings settings = view.getAdvancedSearchFilterSettings();
+        settings.removeAllColumnFilters();
+        view.saveAdvancedSearchFilterSettings(settings);
+        view.removeAllActiveFilters();
+    }
+
+
     protected void addAdvancedSearchFilter(final ColumnFilter columnFilter) {
         final FilterSettings settings = view.getAdvancedSearchFilterSettings();
-        if (settings.getDataSetLookup().getFirstFilterOp() != null) {
-            settings.getDataSetLookup().getFirstFilterOp().addFilterColumn(columnFilter);
-        } else {
-            final DataSetFilter filter = new DataSetFilter();
-            filter.addFilterColumn(columnFilter);
-            settings.getDataSetLookup().addOperation(filter);
-        }
+        settings.addColumnFilter(columnFilter);
         view.saveAdvancedSearchFilterSettings(settings);
         filterGrid(settings);
     }
 
     protected void removeAdvancedSearchFilter(final ColumnFilter columnFilter) {
         final FilterSettings settings = view.getAdvancedSearchFilterSettings();
-        if (settings.getDataSetLookup().getFirstFilterOp() != null) {
-            settings.getDataSetLookup().getFirstFilterOp().getColumnFilterList().remove(columnFilter);
+        if (settings.removeColumnFilter(columnFilter)) {
             view.saveAdvancedSearchFilterSettings(settings);
             filterGrid(settings);
         }
+    }
+
+    protected Optional<String> getSearchParameter(final String parameterId) {
+        return Optional.ofNullable(place.getParameter(parameterId,
+                                                      null));
     }
 
 }

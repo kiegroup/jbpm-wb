@@ -17,15 +17,12 @@ package org.jbpm.workbench.es.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
-import org.kie.workbench.common.workbench.client.PerspectiveIds;
-import org.uberfire.client.annotations.Perspective;
+import org.jbpm.workbench.es.client.editors.errorlist.ExecutionErrorListPresenter;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.PerspectiveDefinition;
-import org.uberfire.workbench.model.impl.PartDefinitionImpl;
-import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 /**
  * A Perspective to show Execution Errors
@@ -34,15 +31,9 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 @WorkbenchPerspective(identifier = PerspectiveIds.EXECUTION_ERRORS)
 public class ErrorManagementPerspective extends AbstractPerspective {
 
-    public static final String EXECUTION_ERROR_LIST = "Execution Error List";
-    public static final String EXECUTION_ERROR_DETAILS = "Execution Error Details";
-
-    @Perspective
-    public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(MultiListWorkbenchPanelPresenter.class.getName());
-        p.setName(PerspectiveIds.EXECUTION_ERRORS);
-        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(EXECUTION_ERROR_LIST)));
-        return p;
+    @Override
+    public PlaceRequest getPlaceRequest() {
+        return new DefaultPlaceRequest(ExecutionErrorListPresenter.SCREEN_ID);
     }
 
     @Override

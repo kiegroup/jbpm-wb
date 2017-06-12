@@ -18,7 +18,7 @@ package org.jbpm.dashboard.renderer.client.panel;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
-import org.kie.workbench.common.workbench.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;

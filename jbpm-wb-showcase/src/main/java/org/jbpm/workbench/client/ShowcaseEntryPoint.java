@@ -43,7 +43,7 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.*;
+import static org.jbpm.workbench.common.client.PerspectiveIds.*;
 
 @EntryPoint
 public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {

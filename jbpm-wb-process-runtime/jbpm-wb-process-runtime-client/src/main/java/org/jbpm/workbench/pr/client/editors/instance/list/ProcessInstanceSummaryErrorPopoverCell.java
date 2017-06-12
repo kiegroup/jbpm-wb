@@ -16,13 +16,12 @@
 
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
-import com.google.gwt.cell.client.AbstractCell;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import org.jboss.errai.common.client.dom.Anchor;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.Span;
@@ -31,11 +30,14 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
-import org.kie.workbench.common.workbench.client.PerspectiveIds;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.views.pfly.widgets.Popover;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
+import static org.jbpm.workbench.common.client.PerspectiveIds.EXECUTION_ERRORS;
+
 
 @Dependent
 @Templated(value = "ProcessInstanceSummaryErrorPopoverCell.html", stylesheet = "ProcessInstanceSummaryErrorPopoverCell.css")
@@ -87,13 +89,12 @@ public class ProcessInstanceSummaryErrorPopoverCell extends AbstractCell<Process
         }
         sb.appendHtmlConstant(popoverAnchor.getOuterHTML());
     }
-    
-    public void openErrorView(String pidStr){
-        Long pid = (pidStr != null ? Long.valueOf(pidStr) : null);
-        PlaceRequest request = new DefaultPlaceRequest(PerspectiveIds.EXECUTION_ERRORS);
-        if(pid != null){
-            //TODO: add process instance ID to PlaceRequest when navigation is implemented. E.g.:
-            //request.addParameter(ErrorManagementPerspective.PROCESS_ID, pid);
+
+    public void openErrorView(final String pid) {
+        final PlaceRequest request = new DefaultPlaceRequest(EXECUTION_ERRORS);
+        if (pid != null) {
+            request.addParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
+                                 pid);
         }
         placeManager.goTo(request);
     }

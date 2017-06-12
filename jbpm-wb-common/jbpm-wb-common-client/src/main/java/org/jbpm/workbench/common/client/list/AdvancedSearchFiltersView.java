@@ -56,4 +56,7 @@ public interface AdvancedSearchFiltersView {
                                             String labelValue,
                                             T value,
                                             Consumer<T> removeCallback);
+
+    void removeAllActiveFilters();
+
 }

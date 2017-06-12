@@ -28,10 +28,8 @@ import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
 import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
-import org.jbpm.workbench.pr.client.perspectives.ProcessInstanceListPerspective;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
-import org.kie.workbench.common.workbench.client.PerspectiveIds;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
@@ -42,6 +40,10 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
+
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
+import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCES;
+
 
 public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView> implements RefreshMenuBuilder.SupportsRefresh {
 
@@ -143,8 +145,9 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
     }
 
     public void viewProcessInstances() {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(PerspectiveIds.PROCESS_INSTANCES);
-        placeRequestImpl.addParameter( ProcessInstanceListPerspective.PROCESS_ID, processId );
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(PROCESS_INSTANCES);
+        placeRequestImpl.addParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID,
+                                      processId);
         placeManager.goTo( placeRequestImpl );
     }
 

@@ -113,9 +113,6 @@ public class AbstractMultiGridViewTest {
         existingFilters.add(TEST_KEY_GRID1);
         existingFilters.add(TEST_KEY_GRID2);
 
-        String selectedGrid = TEST_KEY_GRID1;
-
-        when(multiGridPreferencesStore.getSelectedGrid()).thenReturn(selectedGrid);
         when(multiGridPreferencesStore.getGridsId()).thenReturn(existingFilters);
         GridGlobalPreferences ggp = new GridGlobalPreferences(TEST_KEY, new ArrayList(), new ArrayList<String>());
         testListView.init(presenter, ggp);
@@ -127,9 +124,6 @@ public class AbstractMultiGridViewTest {
         verify(testListView).loadGridInstance(ggp, TEST_KEY_GRID2);
 
         verify(presenter).setAddingDefaultFilters(false);
-
-        verify(multiGridPreferencesStore).setSelectedGrid(selectedGrid);
-        verify(userPreferencesServiceMock).saveUserPreferences(multiGridPreferencesStore);
     }
 
     @Test

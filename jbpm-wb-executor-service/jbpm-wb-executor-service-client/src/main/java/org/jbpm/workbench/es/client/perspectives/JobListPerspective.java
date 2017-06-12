@@ -17,15 +17,12 @@ package org.jbpm.workbench.es.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
-import org.kie.workbench.common.workbench.client.PerspectiveIds;
-import org.uberfire.client.annotations.Perspective;
+import org.jbpm.workbench.es.client.editors.requestlist.RequestListPresenter;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.PerspectiveDefinition;
-import org.uberfire.workbench.model.impl.PartDefinitionImpl;
-import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 /**
  * A Perspective to show File Explorer
@@ -34,12 +31,9 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 @WorkbenchPerspective(identifier = PerspectiveIds.JOBS)
 public class JobListPerspective extends AbstractPerspective {
 
-    @Perspective
-    public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl( MultiListWorkbenchPanelPresenter.class.getName() );
-        p.setName( PerspectiveIds.JOBS );
-        p.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "Requests List" ) ) );
-        return p;
+    @Override
+    public PlaceRequest getPlaceRequest() {
+        return new DefaultPlaceRequest(RequestListPresenter.SCREEN_ID);
     }
 
     @Override

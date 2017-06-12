@@ -22,9 +22,9 @@ import javax.inject.Inject;
 
 import org.guvnor.m2repo.client.event.M2RepoSearchEvent;
 import org.jbpm.workbench.client.i18n.Constants;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.kie.workbench.common.widgets.client.search.SearchBehavior;
-import org.kie.workbench.common.workbench.client.PerspectiveIds;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -38,7 +38,7 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
  * A Perspective to show M2_REPO related screen
  */
 @Dependent
-@WorkbenchPerspective(identifier = PerspectiveIds.GUVNOR_M2REPO, isDefault = false)
+@WorkbenchPerspective(identifier = PerspectiveIds.GUVNOR_M2REPO)
 public class M2RepoPerspective {
 
     @Inject
