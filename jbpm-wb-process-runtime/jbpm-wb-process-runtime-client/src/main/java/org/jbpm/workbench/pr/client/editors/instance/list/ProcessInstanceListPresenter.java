@@ -16,6 +16,8 @@
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
 import java.util.*;
+import java.util.function.Function;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -503,6 +505,21 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
                                                                       v))
         );
+
+        final Map<String, String> errorOptions = new HashMap<>();
+        errorOptions.put(String.valueOf(true), constants.HasErrorsYes());
+        errorOptions.put(String.valueOf(false), constants.HasErrorsNo());
+        final Function<String, ColumnFilter> errorFilterGenerator = new Function<String, ColumnFilter>(){
+            @Override
+            public ColumnFilter apply(String hasErrors) {
+                return (Boolean.valueOf(hasErrors) ? greaterThan(COLUMN_ERROR_COUNT, 0) : lowerOrEqualsTo(COLUMN_ERROR_COUNT, 0));
+            }
+        };
+        view.addSelectFilter(constants.Errors(),
+                             errorOptions,
+                             false,
+                             v -> addAdvancedSearchFilter(errorFilterGenerator.apply(v)),
+                             v -> removeAdvancedSearchFilter(errorFilterGenerator.apply(v)));
 
         final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
                 .dataset(PROCESS_INSTANCE_DATASET)
