@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
@@ -48,7 +47,6 @@ import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.ButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.jbpm.workbench.es.util.RequestStatus;
@@ -75,9 +73,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     private static final String TAB_ALL = REQUEST_LIST_PREFIX + "_0";
 
     private List<RequestSummary> selectedRequestSummary = new ArrayList<RequestSummary>();
-
-    @Inject
-    private DataSetEditorManager dataSetEditorManager;
 
     @Override
     public void init( final RequestListPresenter presenter ) {

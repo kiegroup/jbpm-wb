@@ -21,8 +21,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
@@ -41,7 +39,6 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.resources.CommonResources;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.util.ButtonActionCell;
@@ -64,9 +61,6 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
 
     protected final Constants constants = Constants.INSTANCE;
 
-    @Inject
-    private DataSetEditorManager dataSetEditorManager;
-    
     public abstract String getDataSetTaskListPrefix();
 
     @Override

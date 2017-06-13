@@ -45,7 +45,7 @@ import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
-import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
+import org.jbpm.workbench.df.client.filter.FilterSettingsJSONMarshaller;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.forms.client.display.process.QuickNewProcessInstancePopup;
 import org.jbpm.workbench.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
@@ -91,10 +91,10 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     private final Constants constants = Constants.INSTANCE;
 
     @Inject
-    protected DataSetEditorManager dataSetEditorManager;
+    private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
 
     @Inject
-    private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
+    private FilterSettingsJSONMarshaller tableSettingsJSONMarshaller;
 
     @Inject
     private ErrorPopupPresenter errorPopup;
@@ -737,7 +737,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                 + "    \"tableEditEnabled\": \"false\"\n"
                 + "}";
 
-        return dataSetEditorManager.getStrToTableSettings( tableSettingsJSON );
+        return tableSettingsJSONMarshaller.fromJsonString( tableSettingsJSON );
     }
 
 }
