@@ -42,100 +42,103 @@ import org.slf4j.LoggerFactory;
 @Dependent
 public class TaskFormValuesProcessor extends KieWorkbenchFormsValuesProcessor<TaskRenderingSettings> {
 
-    private static final Logger logger = LoggerFactory.getLogger( TaskFormValuesProcessor.class );
+    private static final Logger logger = LoggerFactory.getLogger(TaskFormValuesProcessor.class);
 
     @Inject
-    public TaskFormValuesProcessor( FormDefinitionSerializer formSerializer,
-                                    BackendFormRenderingContextManager contextManager,
-                                    DynamicBPMNFormGenerator dynamicBPMNFormGenerator ) {
-        super( formSerializer, contextManager, dynamicBPMNFormGenerator );
+    public TaskFormValuesProcessor(FormDefinitionSerializer formSerializer,
+                                   BackendFormRenderingContextManager contextManager,
+                                   DynamicBPMNFormGenerator dynamicBPMNFormGenerator) {
+        super(formSerializer,
+              contextManager,
+              dynamicBPMNFormGenerator);
     }
 
     @Override
-    protected String getFormName( TaskRenderingSettings settings ) {
+    protected String getFormName(TaskRenderingSettings settings) {
         return settings.getTask().getFormName();
     }
 
     @Override
-    protected Map<String, Object> getOutputValues( Map<String, Object> values,
-                                                   FormDefinition form,
-                                                   TaskRenderingSettings settings ) {
-        if ( isValid( form ) ) {
+    protected Map<String, Object> getOutputValues(Map<String, Object> values,
+                                                  FormDefinition form,
+                                                  TaskRenderingSettings settings) {
+        if (isValid(form)) {
 
             TaskDefinition task = settings.getTask();
 
             // Removing task inputs
-            task.getTaskInputDefinitions().keySet().forEach( key -> {
-                if ( !task.getTaskOutputDefinitions().containsKey( key ) ) {
-                    values.remove( key );
+            task.getTaskInputDefinitions().keySet().forEach(key -> {
+                if (!task.getTaskOutputDefinitions().containsKey(key)) {
+                    values.remove(key);
                 }
-            } );
+            });
 
             return values;
         }
-        throw new IllegalArgumentException( "Form not valid for task" );
+        throw new IllegalArgumentException("Form not valid for task");
     }
 
     @Override
-    protected void prepareContext( TaskRenderingSettings settings, BackendFormRenderingContext context ) {
-        context.getRenderingContext().setRenderMode( !"InProgress".equals( settings.getTask().getStatus() ) ? RenderMode.READ_ONLY_MODE : RenderMode.EDIT_MODE );
+    protected void prepareContext(TaskRenderingSettings settings,
+                                  BackendFormRenderingContext context) {
+        context.getRenderingContext().setRenderMode(!"InProgress".equals(settings.getTask().getStatus()) ? RenderMode.READ_ONLY_MODE : RenderMode.EDIT_MODE);
     }
 
     @Override
-    protected Map<String, Object> generateRawFormData( TaskRenderingSettings settings,
-                                                       FormDefinition form ) {
+    protected Map<String, Object> generateRawFormData(TaskRenderingSettings settings,
+                                                      FormDefinition form) {
 
         final Map<String, Object> formData = new HashMap<>();
 
-        if ( isValid( form ) ) {
+        if (isValid(form)) {
 
             Map<String, Object> inputs = settings.getInputs();
             Map<String, Object> outputs = settings.getOutputs();
 
-            formData.putAll( inputs );
-            if ( settings.getTask().isOutputIncluded() ) {
-                formData.putAll( outputs );
+            formData.putAll(inputs);
+            if (settings.getTask().isOutputIncluded()) {
+                formData.putAll(outputs);
             }
         }
         return formData;
     }
 
     @Override
-    protected Collection<FormDefinition> generateDefaultFormsForContext( TaskRenderingSettings settings ) {
+    protected Collection<FormDefinition> generateDefaultFormsForContext(TaskRenderingSettings settings) {
         List<JBPMVariable> variables = new ArrayList<>();
 
         TaskDefinition task = settings.getTask();
 
         Map<String, String> taskData = new HashMap<>();
-        taskData.putAll( task.getTaskInputDefinitions() );
-        taskData.putAll( task.getTaskOutputDefinitions() );
+        taskData.putAll(task.getTaskInputDefinitions());
+        taskData.putAll(task.getTaskOutputDefinitions());
 
-        taskData.forEach( ( name, type ) -> {
+        taskData.forEach((name, type) -> {
             // filter not needed variables
-            if ( BPMNVariableUtils.isValidInputName( name )) {
-                variables.add( new JBPMVariable( name, type ) );
+            if (BPMNVariableUtils.isValidInputName(name)) {
+                variables.add(new JBPMVariable(name,
+                                               type));
             }
-        } );
+        });
 
-        TaskFormModel formModel = new TaskFormModel( task.getProcessId(),
-                                                     task.getId().toString(),
-                                                     task.getName(),
-                                                     task.getFormName(),
-                                                     variables );
+        TaskFormModel formModel = new TaskFormModel(task.getProcessId(),
+                                                    task.getFormName(),
+                                                    variables);
 
-        Collection<FormDefinition> forms = dynamicBPMNFormGenerator.generateTaskForms( formModel, settings.getMarshallerContext().getClassloader() );
+        Collection<FormDefinition> forms = dynamicBPMNFormGenerator.generateTaskForms(formModel,
+                                                                                      settings.getMarshallerContext().getClassloader());
 
         // Determinging what variables are only on the input map, so we can set them as readonly
-        taskData.keySet().removeAll( task.getTaskOutputDefinitions().keySet() );
+        taskData.keySet().removeAll(task.getTaskOutputDefinitions().keySet());
 
         boolean done = false;
-        for ( Iterator<FormDefinition> it = forms.iterator(); it.hasNext() && !done; ) {
+        for (Iterator<FormDefinition> it = forms.iterator(); it.hasNext() && !done; ) {
             FormDefinition form = it.next();
 
-            if ( form.getName() .equals( getFormName( settings ) + BPMNVariableUtils.TASK_FORM_SUFFIX ) ) {
-                form.getFields().forEach( field -> {
-                    field.setReadOnly( taskData.containsKey( field.getBinding() ) );
-                } );
+            if (form.getName().equals(getFormName(settings) + BPMNVariableUtils.TASK_FORM_SUFFIX)) {
+                form.getFields().forEach(field -> {
+                    field.setReadOnly(taskData.containsKey(field.getBinding()));
+                });
                 done = true;
             }
         }
@@ -144,7 +147,7 @@ public class TaskFormValuesProcessor extends KieWorkbenchFormsValuesProcessor<Ta
     }
 
     @Override
-    protected boolean isValid( FormDefinition rootForm ) {
+    protected boolean isValid(FormDefinition rootForm) {
         return rootForm != null && rootForm.getModel() instanceof TaskFormModel;
     }
 
