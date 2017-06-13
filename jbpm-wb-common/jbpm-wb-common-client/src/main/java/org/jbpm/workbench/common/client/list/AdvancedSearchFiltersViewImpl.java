@@ -376,6 +376,11 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
 
     @EventHandler("remove-all-filters")
     public void onRemoveAll(@ForEvent("click") Event e) {
+        removeAllActiveFilters();
+    }
+
+    @Override
+    public void removeAllActiveFilters() {
         activeFiltersList.getModel().clear();
     }
 }

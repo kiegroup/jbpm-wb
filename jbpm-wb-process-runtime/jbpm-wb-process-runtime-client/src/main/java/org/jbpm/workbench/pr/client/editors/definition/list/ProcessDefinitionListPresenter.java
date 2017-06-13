@@ -53,8 +53,10 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
-@WorkbenchScreen(identifier = "Process Definition List")
+@WorkbenchScreen(identifier = ProcessDefinitionListPresenter.SCREEN_ID)
 public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<ProcessSummary> {
+
+    public static final String SCREEN_ID = "Process Definition List";
 
     @Inject
     PopupFormDisplayerView formDisplayPopUp;

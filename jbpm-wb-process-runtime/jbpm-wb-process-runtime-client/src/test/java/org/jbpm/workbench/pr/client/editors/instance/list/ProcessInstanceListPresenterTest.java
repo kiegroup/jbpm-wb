@@ -55,6 +55,7 @@ import org.uberfire.mvp.PlaceRequest;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
 import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.junit.Assert.*;
@@ -465,12 +466,41 @@ public class ProcessInstanceListPresenterTest {
     }
 
     @Test
-    public void testAdvancedSearchDefaultActiveFilter(){
-        presenter.setupAdvancedSearchView();
+    public void testDefaultActiveSearchFilters(){
+        presenter.setupDefaultActiveSearchFilters();
 
         verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.State()),
                                          eq(Constants.INSTANCE.Active()),
                                          eq(String.valueOf(ProcessInstance.STATE_ACTIVE)),
+                                         any(Consumer.class));
+    }
+
+    @Test
+    public void testActiveSearchFilters(){
+        final PlaceRequest place = mock(PlaceRequest.class);
+        when(place.getParameter(anyString(), anyString())).thenReturn(null);
+        presenter.onStartup(place);
+
+        presenter.setupActiveSearchFilters();
+
+        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.State()),
+                                         eq(Constants.INSTANCE.Active()),
+                                         eq(String.valueOf(ProcessInstance.STATE_ACTIVE)),
+                                         any(Consumer.class));
+    }
+
+    @Test
+    public void testActiveSearchFiltersProcessDefinitionId(){
+        final PlaceRequest place = mock(PlaceRequest.class);
+        final String processDefinitionId = "defId";
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID, null)).thenReturn(processDefinitionId);
+        presenter.onStartup(place);
+
+        presenter.setupActiveSearchFilters();
+
+        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Process_Definition_Id()),
+                                         eq(processDefinitionId),
+                                         eq(processDefinitionId),
                                          any(Consumer.class));
     }
 

@@ -18,17 +18,19 @@ package org.jbpm.workbench.es.client.editors.errorlist;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.function.Consumer;
 
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.DataSetLookup;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 import org.jbpm.workbench.es.model.events.ExecErrorChangedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
-import org.jbpm.workbench.es.util.ExecutionErrorType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,8 +39,10 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.PlaceRequest;
 
 import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -66,35 +70,23 @@ public class ExecutionErrorListPresenterTest {
     @Spy
     private FilterSettings filterSettings;
 
+    @Spy
+    private DataSetLookup dataSetLookup;
+
     @InjectMocks
     private ExecutionErrorListPresenter presenter;
-
-    private static ExecutionErrorSummary createTestError(int id) {
-        return ExecutionErrorSummary.builder()
-                .errorId(id + "")
-                .error(id + "_stackTrace")
-                .acknowledged(false)
-                .acknowledgedAt(new Date())
-                .acknowledgedBy("testUser")
-                .activityId(Long.valueOf(id + 20))
-                .activityName(id + "_Act_name")
-                .errorDate(new Date())
-                .type(ExecutionErrorType.TASK)
-                .deploymentId(id + "_deployment")
-                .processInstanceId(Long.valueOf(id))
-                .processId(id + "_processId")
-                .jobId(Long.valueOf(id))
-                .message(id + "_message").build();
-    }
 
     @Before
     public void setupMocks() {
         callerMockExecutorService = new CallerMock<>(executorServiceMock);
 
+        filterSettings.setDataSetLookup(dataSetLookup);
+
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(extendedPagedTable.getColumnSortList()).thenReturn(null);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
+        when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
 
         presenter.setExecutorServices(callerMockExecutorService);
     }
@@ -235,6 +227,48 @@ public class ExecutionErrorListPresenterTest {
                      es.getProcessInstanceId());
         assertEquals(jobId,
                      es.getJobId());
+    }
+
+    @Test
+    public void testDefaultActiveSearchFilters(){
+        presenter.setupDefaultActiveSearchFilters();
+
+        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Acknowledged()),
+                                         eq(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No()),
+                                         eq(String.valueOf(Boolean.FALSE)),
+                                         any(Consumer.class));
+
+    }
+
+    @Test
+    public void testActiveSearchFilters(){
+        final PlaceRequest place = mock(PlaceRequest.class);
+        when(place.getParameter(anyString(), anyString())).thenReturn(null);
+        presenter.onStartup(place);
+
+        presenter.setupActiveSearchFilters();
+
+        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Acknowledged()),
+                                         eq(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No()),
+                                         eq(String.valueOf(Boolean.FALSE)),
+                                         any(Consumer.class));
+
+    }
+
+    @Test
+    public void testActiveSearchFiltersProcessInstanceId(){
+        final PlaceRequest place = mock(PlaceRequest.class);
+        final String processInstanceId = "1";
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, null)).thenReturn(processInstanceId);
+        presenter.onStartup(place);
+
+        presenter.setupActiveSearchFilters();
+
+        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Process_Instance_Id()),
+                                         eq(processInstanceId),
+                                         eq(processInstanceId),
+                                         any(Consumer.class));
+
     }
 
 }

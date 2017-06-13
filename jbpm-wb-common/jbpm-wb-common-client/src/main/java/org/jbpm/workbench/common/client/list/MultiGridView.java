@@ -31,4 +31,8 @@ public interface MultiGridView<T extends GenericSummary, V> extends ListView<T, 
     FilterSettings getAdvancedSearchFilterSettings();
 
     void saveAdvancedSearchFilterSettings(final FilterSettings settings);
+
+    void selectFirstTabAndEnableQueries();
+
+    void restoreTabs();
 }

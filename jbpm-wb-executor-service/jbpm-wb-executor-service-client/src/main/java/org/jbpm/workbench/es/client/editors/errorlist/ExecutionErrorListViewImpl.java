@@ -398,7 +398,6 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                              preferences);
 
         filterPagedTable.addAddTableButton(createTabButton);
-        selectFirstTabAndEnableQueries();
     }
 
     private void initGenericTabFilter(FilterSettings tableSettings,

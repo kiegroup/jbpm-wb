@@ -334,8 +334,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                       preferences);
 
         filterPagedTable.addAddTableButton( createTabButton );
-
-        selectFirstTabAndEnableQueries();
     }
 
     private void initTabFilter( FilterSettings tableSettings,

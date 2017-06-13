@@ -49,7 +49,6 @@ import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.forms.client.display.process.QuickNewProcessInstancePopup;
 import org.jbpm.workbench.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
-import org.jbpm.workbench.pr.client.perspectives.ProcessInstanceListPerspective;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
@@ -65,7 +64,6 @@ import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
-import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -75,6 +73,7 @@ import org.uberfire.workbench.model.menu.Menus;
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
 
 @Dependent
 @WorkbenchScreen( identifier = ProcessInstanceListPresenter.SCREEN_ID)
@@ -290,13 +289,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     public void newInstanceCreated( @Observes ProcessInstancesUpdateEvent pis ) {
         refreshGrid();
-    }
-
-    @Override
-    @OnOpen
-    public void onOpen() {
-        this.textSearchStr = place.getParameter(ProcessInstanceListPerspective.PROCESS_ID, "");
-        super.onOpen();
     }
 
     public void abortProcessInstance( String containerId, long processInstanceId ) {
@@ -556,12 +548,38 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                                                         v.getEndDate()))
         );
 
+    }
+
+    @Override
+    public void setupActiveSearchFilters() {
+        final Optional<String> processDefinitionSearch = getSearchParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID);
+        if (processDefinitionSearch.isPresent()) {
+            final String processDefinitionId = processDefinitionSearch.get();
+            view.addActiveFilter(constants.Process_Definition_Id(),
+                                 processDefinitionId,
+                                 processDefinitionId,
+                                 v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_ID,
+                                                                          v))
+            );
+
+            addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_ID,
+                                             processDefinitionId));
+        } else {
+            setupDefaultActiveSearchFilters();
+        }
+    }
+
+    @Override
+    public void setupDefaultActiveSearchFilters() {
         view.addActiveFilter(constants.State(),
                              constants.Active(),
                              String.valueOf(ProcessInstance.STATE_ACTIVE),
                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
                                                                       v))
         );
+
+        addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
+                                         String.valueOf(ProcessInstance.STATE_ACTIVE)));
     }
 
     /*-------------------------------------------------*/
@@ -600,7 +618,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     @Override
     public FilterSettings createSearchTabSettings() {
-        return createStatusSettings(ProcessInstance.STATE_ACTIVE);
+        return createTableSettingsPrototype();
     }
 
     public FilterSettings createActiveTabSettings() {

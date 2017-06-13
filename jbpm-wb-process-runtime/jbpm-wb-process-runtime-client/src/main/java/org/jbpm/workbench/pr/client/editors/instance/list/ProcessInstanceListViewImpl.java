@@ -522,7 +522,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                              preferences);
 
         filterPagedTable.addAddTableButton( createTabButton );
-        selectFirstTabAndEnableQueries();
     }
 
     private void initGenericTabFilter( FilterSettings tableSettings,

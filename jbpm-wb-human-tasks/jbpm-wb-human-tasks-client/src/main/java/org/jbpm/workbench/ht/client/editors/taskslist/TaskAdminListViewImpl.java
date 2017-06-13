@@ -39,7 +39,6 @@ public class TaskAdminListViewImpl extends AbstractTaskListView<TaskAdminListPre
                       preferences);
 
         filterPagedTable.addAddTableButton(createTabButton);
-        selectFirstTabAndEnableQueries();
     }
 
     @Override

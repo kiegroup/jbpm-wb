@@ -16,52 +16,25 @@
 package org.jbpm.workbench.pr.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
 import org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceListPresenter;
-import org.kie.workbench.common.widgets.client.search.SetSearchTextEvent;
-import org.kie.workbench.common.workbench.client.PerspectiveIds;
-import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.client.workbench.panels.impl.ClosableSimpleWorkbenchPanelPresenter;
-import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.PerspectiveDefinition;
-import org.uberfire.workbench.model.impl.PartDefinitionImpl;
-import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 @ApplicationScoped
 @WorkbenchPerspective(identifier = PerspectiveIds.PROCESS_INSTANCES)
 public class ProcessInstanceListPerspective extends AbstractPerspective {
 
-    public static final String PROCESS_ID = "processDefinitionId";
-
-    @Inject
-    private Event<SetSearchTextEvent> setSearchTextEvents;
-
-    private String currentProcessDefinition = "";
-
-    @Perspective
-    public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(ClosableSimpleWorkbenchPanelPresenter.class.getName());
-        p.setName(PerspectiveIds.PROCESS_INSTANCES);
-        final DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest(ProcessInstanceListPresenter.SCREEN_ID);
-        defaultPlaceRequest.addParameter(PROCESS_ID, currentProcessDefinition);
-        p.getRoot().addPart(new PartDefinitionImpl(defaultPlaceRequest));
-        return p;
+    @Override
+    public PlaceRequest getPlaceRequest() {
+        return new DefaultPlaceRequest(ProcessInstanceListPresenter.SCREEN_ID);
     }
 
     @Override
     public String getPerspectiveId() {
         return PerspectiveIds.PROCESS_INSTANCES;
-    }
-
-    @OnStartup
-    public void onStartup(final PlaceRequest place) {
-        this.currentProcessDefinition = place.getParameter(PROCESS_ID, "");
-        setSearchTextEvents.fire(new SetSearchTextEvent(currentProcessDefinition));
     }
 }

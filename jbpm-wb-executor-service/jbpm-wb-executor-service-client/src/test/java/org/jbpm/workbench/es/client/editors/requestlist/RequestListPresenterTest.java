@@ -209,8 +209,8 @@ public class RequestListPresenterTest {
     }
 
     @Test
-    public void testAdvancedSearchDefaultActiveFilter(){
-        presenter.setupAdvancedSearchView();
+    public void testDefaultActiveSearchFilters(){
+        presenter.setupDefaultActiveSearchFilters();
 
         verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Status()),
                                          eq(Constants.INSTANCE.Running()),

@@ -33,7 +33,7 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.events.NotificationEvent;
 
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.*;
+import static org.jbpm.workbench.common.client.PerspectiveIds.*;
 
 @Dependent
 @Templated(value = "HomeViewImpl.html")

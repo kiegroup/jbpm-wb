@@ -140,9 +140,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                 if ( multiGridPreferencesStore == null ) {
                     multiGridPreferencesStore = new MultiGridPreferencesStore( preferences.getKey() );
                 }
-                String selectedGridId = multiGridPreferencesStore.getSelectedGrid();
                 filterPagedTable.setMultiGridPreferencesStore( multiGridPreferencesStore );
-                presenter.onGridPreferencesStoreLoaded();
                 ArrayList<String> existingGrids = multiGridPreferencesStore.getGridsId();
 
                 if ( existingGrids != null && existingGrids.size() > 0 ) {
@@ -151,7 +149,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                     for ( int i = 0; i < existingGrids.size(); i++ ) {
                         final String key = existingGrids.get( i );
                         final ExtendedPagedTable<T> extendedPagedTable = loadGridInstance( preferences, key );
-                        currentListGrid = extendedPagedTable;
                         extendedPagedTable.setDataProvider( presenter.getDataProvider());
                         filterPagedTable.addTab(extendedPagedTable,
                                                 key,
@@ -160,22 +157,14 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                                     applyFilterOnPresenter(key);
                                                 },
                                                 false);
-                        if ( currentListGrid != null && key.equals( selectedGridId ) ) {
-                            currentListGrid = extendedPagedTable;
-                        }
                     }
 
                     filterPagedTable.addAddTableButton( createTabButton );
                     presenter.setAddingDefaultFilters( false );
-                    if ( selectedGridId != null ) {
-                        multiGridPreferencesStore.setSelectedGrid( selectedGridId );
-                        preferencesService.call().saveUserPreferences( multiGridPreferencesStore );
-                        filterPagedTable.setSelectedTab();
-                    }
-
                 } else {
                     initDefaultFilters( preferences, createTabButton );
                 }
+                presenter.onGridPreferencesStoreLoaded();
             }
 
         } ).loadUserPreferences( preferences.getKey(), UserPreferencesType.MULTIGRIDPREFERENCES );
@@ -191,7 +180,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                 new Command() {
                     @Override public void execute() {
                         showBusyIndicator(constants.Loading());
-                        restoreTabs();
+                        presenter.onRestoreTabs();
                     }
                 },
                 null,
@@ -251,11 +240,11 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     protected ExtendedPagedTable<T> createExtendedPagedTable(final GridGlobalPreferences defaultPreferences,
                                                              final String key) {
         GridGlobalPreferences pref;
-        ExtendedPagedTable<T> table ;
-        if(TAB_SEARCH.equals(key)){
+        ExtendedPagedTable<T> table;
+        if (TAB_SEARCH.equals(key)) {
             pref = new GridGlobalPreferences(defaultPreferences.getKey() + key,
-                                      defaultPreferences.getInitialColumns(),
-                                      defaultPreferences.getBannedColumns());
+                                             defaultPreferences.getInitialColumns(),
+                                             defaultPreferences.getBannedColumns());
             table = createAdvancedSearchTable(pref);
         } else {
             pref = new GridGlobalPreferences(key,
@@ -263,7 +252,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                              defaultPreferences.getBannedColumns());
             table = new ExtendedPagedTable<T>(pref);
         }
-        table.setGridPreferencesStore( new GridPreferencesStore(pref));
+        table.setGridPreferencesStore(new GridPreferencesStore(pref));
         return table;
     }
 
@@ -553,4 +542,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                                      removeCallback);
     }
 
+    @Override
+    public void removeAllActiveFilters() {
+        advancedSearchFiltersView.removeAllActiveFilters();
+    }
 }

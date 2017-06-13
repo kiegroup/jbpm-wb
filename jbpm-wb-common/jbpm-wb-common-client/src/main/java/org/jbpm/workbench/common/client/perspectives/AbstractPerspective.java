@@ -22,7 +22,13 @@ import javax.inject.Inject;
 
 import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.kie.workbench.common.widgets.client.search.ContextualSearch;
-import org.kie.workbench.common.widgets.client.search.SearchBehavior;
+import org.uberfire.client.annotations.Perspective;
+import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
+import org.uberfire.lifecycle.OnStartup;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.workbench.model.PerspectiveDefinition;
+import org.uberfire.workbench.model.impl.PartDefinitionImpl;
+import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 public abstract class AbstractPerspective {
 
@@ -32,17 +38,34 @@ public abstract class AbstractPerspective {
     @Inject
     private Event<SearchEvent> searchEvents;
 
+    private PlaceRequest placeRequest;
+
     @PostConstruct
     protected void init() {
-        contextualSearch.setPerspectiveSearchBehavior( getPerspectiveId(), new SearchBehavior() {
-            @Override
-            public void execute( String searchFilter ) {
-                searchEvents.fire( new SearchEvent( searchFilter ) );
-            }
+        contextualSearch.setPerspectiveSearchBehavior(getPerspectiveId(),
+                                                      searchFilter -> searchEvents.fire(new SearchEvent(searchFilter)));
+        placeRequest = getPlaceRequest();
+    }
 
-        } );
+    @Perspective
+    public PerspectiveDefinition getPerspective() {
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(MultiListWorkbenchPanelPresenter.class.getName());
+        p.setName(getPerspectiveId());
+        p.getRoot().addPart(new PartDefinitionImpl(placeRequest));
+        return p;
+    }
+
+    @OnStartup
+    public void onStartup(final PlaceRequest place) {
+        placeRequest.getParameters().clear();
+        for (final String param : place.getParameterNames()) {
+            placeRequest.addParameter(param,
+                                      place.getParameter(param,
+                                                         null));
+        }
     }
 
     public abstract String getPerspectiveId();
 
+    public abstract PlaceRequest getPlaceRequest();
 }

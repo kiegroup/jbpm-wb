@@ -15,12 +15,14 @@
  */
 package org.jbpm.workbench.df.client.filter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.displayer.ColumnSettings;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.DisplayerType;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Custom settings class holding the configuration of any jBPM table displayer
@@ -122,6 +124,30 @@ public class FilterSettings extends DisplayerSettings {
         if ( dataSetLookup != null ) clone.dataSetLookup = dataSetLookup.cloneInstance();
 
         return clone;
+    }
+
+    public void addColumnFilter(final ColumnFilter columnFilter) {
+        if (getDataSetLookup().getFirstFilterOp() != null) {
+            getDataSetLookup().getFirstFilterOp().addFilterColumn(columnFilter);
+        } else {
+            final DataSetFilter filter = new DataSetFilter();
+            filter.addFilterColumn(columnFilter);
+            getDataSetLookup().addOperation(filter);
+        }
+    }
+
+    public boolean removeColumnFilter(final ColumnFilter columnFilter) {
+        if (getDataSetLookup().getFirstFilterOp() != null) {
+            return getDataSetLookup().getFirstFilterOp().getColumnFilterList().remove(columnFilter);
+        } else {
+            return false;
+        }
+    }
+
+    public void removeAllColumnFilters(){
+        if (getDataSetLookup().getFirstFilterOp() != null) {
+            getDataSetLookup().getFirstFilterOp().getColumnFilterList().clear();
+        }
     }
 
 }

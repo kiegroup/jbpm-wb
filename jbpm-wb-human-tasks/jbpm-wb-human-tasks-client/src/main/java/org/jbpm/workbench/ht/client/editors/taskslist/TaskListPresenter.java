@@ -16,7 +16,6 @@
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 
@@ -29,7 +28,6 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.jbpm.workbench.common.client.util.TaskUtils.TASK_STATUS_READY;
 import static org.jbpm.workbench.common.client.util.TaskUtils.getStatusByType;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
@@ -105,8 +103,4 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
         return createStatusSettings(HUMAN_TASKS_WITH_USER_DATASET, new ArrayList<>(getStatusByType(TaskUtils.TaskType.ACTIVE)));
     }
 
-    @Override
-    public FilterSettings createSearchTabSettings() {
-        return createStatusSettings(HUMAN_TASKS_WITH_USER_DATASET, Collections.singletonList(TASK_STATUS_READY));
-    }
 }

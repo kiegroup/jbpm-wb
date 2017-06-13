@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -28,14 +29,15 @@ import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
+import org.jbpm.workbench.es.client.editors.errordetails.ExecutionErrorDetailsPresenter;
 import org.jbpm.workbench.es.client.i18n.Constants;
-import org.jbpm.workbench.es.client.perspectives.ErrorManagementPerspective;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 import org.jbpm.workbench.es.model.events.ExecErrorChangedEvent;
 import org.jbpm.workbench.es.model.events.ExecErrorSelectionEvent;
@@ -58,10 +60,11 @@ import static org.dashbuilder.dataset.sort.SortOrder.*;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 
 @Dependent
-@WorkbenchScreen(identifier = ErrorManagementPerspective.EXECUTION_ERROR_LIST)
+@WorkbenchScreen(identifier = ExecutionErrorListPresenter.SCREEN_ID)
 public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<ExecutionErrorSummary, ExecutionErrorListPresenter.ExecutionErrorListView> {
 
     private final Constants constants = Constants.INSTANCE;
+    public static final String SCREEN_ID = "Execution Error List";
 
     private List<ExecutionErrorSummary> visibleExecutionErrors = new ArrayList<ExecutionErrorSummary>();
     @Inject
@@ -220,9 +223,9 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
 
     public void selectExecutionError(final ExecutionErrorSummary summary,
                                      final Boolean close) {
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(ErrorManagementPerspective.EXECUTION_ERROR_DETAILS));
+        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(ExecutionErrorDetailsPresenter.SCREEN_ID));
         if (status == PlaceStatus.CLOSE) {
-            placeManager.goTo(ErrorManagementPerspective.EXECUTION_ERROR_DETAILS);
+            placeManager.goTo(ExecutionErrorDetailsPresenter.SCREEN_ID);
             execErrorSelectionEvent.fire(new ExecErrorSelectionEvent(getSelectedServerTemplate(),
                                                                      summary.getDeploymentId(),
                                                                      summary.getErrorId()));
@@ -231,12 +234,12 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                                                                      summary.getDeploymentId(),
                                                                      summary.getErrorId()));
         } else if (status == PlaceStatus.OPEN && close) {
-            placeManager.closePlace(ErrorManagementPerspective.EXECUTION_ERROR_DETAILS);
+            placeManager.closePlace(ExecutionErrorDetailsPresenter.SCREEN_ID);
         }
     }
 
     public void onExecutionErrorSelectionEvent(@Observes ExecErrorWithDetailsRequestEvent event) {
-        placeManager.goTo(ErrorManagementPerspective.EXECUTION_ERROR_DETAILS);
+        placeManager.goTo(ExecutionErrorDetailsPresenter.SCREEN_ID);
         execErrorSelectionEvent.fire(new ExecErrorSelectionEvent(event.getServerTemplateId(),
                                                                  event.getDeploymentId(),
                                                                  event.getErrorId()));
@@ -313,14 +316,40 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                                                                         v.getEndDate()))
         );
 
+
+    }
+
+    @Override
+    public void setupActiveSearchFilters() {
+        final Optional<String> processInstanceSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
+        if (processInstanceSearch.isPresent()) {
+            final String processInstanceId = processInstanceSearch.get();
+            view.addActiveFilter(constants.Process_Instance_Id(),
+                                 processInstanceId,
+                                 processInstanceId,
+                                 v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INST_ID,
+                                                                          v))
+            );
+
+            addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INST_ID,
+                                             processInstanceId));
+        } else {
+            setupDefaultActiveSearchFilters();
+        }
+    }
+
+    @Override
+    public void setupDefaultActiveSearchFilters() {
         view.addActiveFilter(
                 this.constants.Acknowledged(),
-                constants.No(),
+                org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No(),
                 String.valueOf(Boolean.FALSE),
                 v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
                                                          v))
-
         );
+
+        addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
+                                         String.valueOf(Boolean.FALSE)));
     }
 
     /*-------------------------------------------------*/
@@ -379,7 +408,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
 
     @Override
     public FilterSettings createSearchTabSettings() {
-        return createFilterTabSettings(Boolean.FALSE);
+        return createTableSettingsPrototype();
     }
 
     protected void addCommonColumnSettings(FilterSettingsBuilderHelper builder) {

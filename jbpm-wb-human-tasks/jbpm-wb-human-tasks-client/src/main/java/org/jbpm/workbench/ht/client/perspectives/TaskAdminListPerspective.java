@@ -17,16 +17,12 @@ package org.jbpm.workbench.ht.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
 import org.jbpm.workbench.ht.client.editors.taskslist.TaskAdminListPresenter;
-import org.kie.workbench.common.workbench.client.PerspectiveIds;
-import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.client.workbench.panels.impl.ClosableSimpleWorkbenchPanelPresenter;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.PerspectiveDefinition;
-import org.uberfire.workbench.model.impl.PartDefinitionImpl;
-import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 /**
  * Administration view of the task list
@@ -35,12 +31,9 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 @WorkbenchPerspective(identifier = PerspectiveIds.TASKS_ADMIN)
 public class TaskAdminListPerspective extends AbstractPerspective {
 
-    @Perspective
-    public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(ClosableSimpleWorkbenchPanelPresenter.class.getName());
-        p.setName(PerspectiveIds.TASKS_ADMIN);
-        p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(TaskAdminListPresenter.SCREEN_ID)));
-        return p;
+    @Override
+    public PlaceRequest getPlaceRequest() {
+        return new DefaultPlaceRequest(TaskAdminListPresenter.SCREEN_ID);
     }
 
     @Override
