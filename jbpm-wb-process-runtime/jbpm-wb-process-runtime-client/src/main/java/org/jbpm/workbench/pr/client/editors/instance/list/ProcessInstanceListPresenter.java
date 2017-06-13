@@ -73,7 +73,7 @@ import org.uberfire.workbench.model.menu.Menus;
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
-import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
+import static org.jbpm.workbench.common.client.PerspectiveIds.*;
 
 @Dependent
 @WorkbenchScreen( identifier = ProcessInstanceListPresenter.SCREEN_ID)
@@ -552,6 +552,8 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     @Override
     public void setupActiveSearchFilters() {
+        boolean hasSearchParam = false;
+
         final Optional<String> processDefinitionSearch = getSearchParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID);
         if (processDefinitionSearch.isPresent()) {
             final String processDefinitionId = processDefinitionSearch.get();
@@ -561,10 +563,26 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                  v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_ID,
                                                                           v))
             );
-
             addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_ID,
                                              processDefinitionId));
-        } else {
+            hasSearchParam = true;
+        }
+
+        final Optional<String> processInstanceSearch = getSearchParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
+        if (processInstanceSearch.isPresent()) {
+            final String processInstanceId = processInstanceSearch.get();
+            view.addActiveFilter(constants.Id(),
+                                 processInstanceId,
+                                 processInstanceId,
+                                 v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                                                                          v))
+            );
+            addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                                             processInstanceId));
+            hasSearchParam = true;
+        }
+
+        if(!hasSearchParam){
             setupDefaultActiveSearchFilters();
         }
     }
@@ -580,6 +598,14 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
         addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
                                          String.valueOf(ProcessInstance.STATE_ACTIVE)));
+    }
+    
+    public void openJobsView(final String pid) {
+        final PlaceRequest request = new DefaultPlaceRequest(JOBS);
+        if(pid != null){
+            request.addParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, pid);
+        }
+        placeManager.goTo(request);
     }
 
     /*-------------------------------------------------*/

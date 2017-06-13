@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -58,11 +60,15 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.mvp.Command;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.jbpm.workbench.common.client.PerspectiveIds.*;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
+
 
 @Dependent
 @WorkbenchScreen(identifier = RequestListPresenter.SCREEN_ID)
@@ -246,7 +252,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
 
     @Override
     public void setupAdvancedSearchView() {
-        view.addNumericFilter(constants.Id(),
+        view.addNumericFilter(constants.Process_Instance_Id(),
                               constants.FilterByProcessInstanceId(),
                               v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
                                                                     v)),
@@ -334,6 +340,23 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         );
 
     }
+    
+    @Override
+    public void setupActiveSearchFilters() {
+        final Optional<String> processInstIdSearch = getSearchParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
+        if (processInstIdSearch.isPresent()) {
+            final String processInstId = processInstIdSearch.get();
+            view.addActiveFilter(
+                constants.Process_Instance_Id(),
+                processInstId,
+                processInstId,
+                v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID, v))
+            );
+            addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID, processInstId));
+        } else {
+            super.setupActiveSearchFilters();
+        }
+    }
 
     @Override
     public void setupDefaultActiveSearchFilters() {
@@ -345,6 +368,14 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         );
         addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
                                          RequestStatus.RUNNING));
+    }
+
+    public void openProcessInstanceView(final String processInstanceId) {
+        final PlaceRequest request = new DefaultPlaceRequest(PROCESS_INSTANCES);
+        if(processInstanceId != null){
+            request.addParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, processInstanceId);
+        }
+        placeManager.goTo(request);
     }
 
     @Override

@@ -16,16 +16,23 @@
 package org.jbpm.workbench.es.client.editors.requestlist;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import com.google.gwt.cell.client.ActionCell;
+import com.google.gwt.cell.client.Cell;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.gwtbootstrap3.client.ui.Button;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.util.ButtonActionCell;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
+import org.jbpm.workbench.es.client.editors.requestlist.RequestListViewImpl.ActionHasCell;
 import org.jbpm.workbench.es.model.RequestSummary;
+import org.jbpm.workbench.es.util.RequestStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +53,8 @@ import org.uberfire.mvp.Command;
 
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -83,6 +92,12 @@ public class RequestListViewImplTest {
 
     @InjectMocks
     private RequestListViewImpl view;
+    
+    @Mock
+    protected Cell.Context cellContext;
+    
+    @Mock
+    protected ActionCell.Delegate<RequestSummary> cellDelegate;
 
     @Before
     public void setup(){
@@ -180,6 +195,66 @@ public class RequestListViewImplTest {
         verify(filterPagedTableMock, times(8)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class), eq(false));
         verify(filterPagedTableMock).addAddTableButton(mockButton);
         verify(presenter).setAddingDefaultFilters(true);
+    }
+    
+    @Test
+    public void multiStateActionHasCellTest(){
+        RequestListViewImpl.ActionHasCell multiStateCell = new RequestListViewImpl.ActionHasCell("", cellDelegate,
+                RequestStatus.QUEUED,
+                RequestStatus.DONE,
+                RequestStatus.CANCELLED
+        );
+        for(RequestStatus rs: RequestStatus.values()){
+            RequestSummary testRequest = new RequestSummary(1L, new Date(), rs.toString(), null,
+                    "Test message", "Test key", 1, 1, "procName", 55L, "procInstDesc");
+            boolean shouldRender = false;
+            switch(rs){
+                case QUEUED:
+                case DONE:
+                case CANCELLED:
+                    shouldRender = true;
+                    break;
+            }
+            runActionHasCellTest(multiStateCell, testRequest, shouldRender);
+        }
+    }
+    
+    @Test
+    public void singleStateActionHasCellTest(){
+        for(RequestStatus cellRs: RequestStatus.values()){
+            RequestListViewImpl.ActionHasCell multiStateCell = new RequestListViewImpl.ActionHasCell("", cellDelegate, cellRs);
+            for(RequestStatus valueRs: RequestStatus.values()){
+                RequestSummary testRequest = new RequestSummary(1L, new Date(), valueRs.toString(), null,
+                        "Test message", "Test key", 1, 1, "procName", 55L, "procInstDesc");
+                boolean shouldRender = (valueRs == cellRs);
+                runActionHasCellTest(multiStateCell, testRequest, shouldRender);
+            }
+        }
+    }
+    
+    @Test
+    public void predicateActionHasCellTest(){
+        RequestSummary testRequest = new RequestSummary(1L, new Date(), "DONE", null, "Test message", "Test key", 1, 1, "procName", 55L, "procInstDesc");
+
+        RequestListViewImpl.ActionHasCell alwaysDisplayedActionCell = new RequestListViewImpl.ActionHasCell("", (val -> true), cellDelegate);
+        runActionHasCellTest(alwaysDisplayedActionCell, testRequest, true);
+
+        RequestListViewImpl.ActionHasCell neverDisplayedActionCell = new RequestListViewImpl.ActionHasCell("", (val -> false), cellDelegate);
+        runActionHasCellTest(neverDisplayedActionCell, testRequest, false);
+    }
+    
+    private void runActionHasCellTest(RequestListViewImpl.ActionHasCell cell, RequestSummary val, boolean shouldRender){
+        RequestListViewImpl.ActionHasCell cellMock = spy(cell);
+        SafeHtmlBuilder cellHtmlBuilder = mock(SafeHtmlBuilder.class);
+        doAnswer(invocationOnMock -> {
+            invocationOnMock.callRealMethod();
+            verify(cellHtmlBuilder, times(shouldRender ? 1 : 0)).append(any());
+            return null;
+        }).when(cellMock).render(any(), any(), eq(cellHtmlBuilder));
+
+        cellMock.render(cellContext, val, cellHtmlBuilder);
+
+        verify(cellMock).render(cellContext, val, cellHtmlBuilder);
     }
 
 }
