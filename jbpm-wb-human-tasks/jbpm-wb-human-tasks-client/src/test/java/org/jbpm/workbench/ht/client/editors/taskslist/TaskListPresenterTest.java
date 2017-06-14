@@ -16,9 +16,11 @@
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 
+import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_USER_DATASET;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -33,7 +35,20 @@ public class TaskListPresenterTest extends AbstractTaskListPresenterTest {
     }
 
     @Override
-    public String getDataSetId(){
+    public String getDataSetId() {
         return HUMAN_TASKS_WITH_USER_DATASET;
+    }
+
+    @Test
+    public void testSuspendActionCondition() {
+        testTaskStatusCondition(getPresenter().getSuspendActionCondition(),
+                                TASK_STATUS_RESERVED,
+                                TASK_STATUS_IN_PROGRESS);
+    }
+
+    @Test
+    public void testResumeActionCondition() {
+        testTaskStatusCondition(getPresenter().getResumeActionCondition(),
+                                TASK_STATUS_SUSPENDED);
     }
 }

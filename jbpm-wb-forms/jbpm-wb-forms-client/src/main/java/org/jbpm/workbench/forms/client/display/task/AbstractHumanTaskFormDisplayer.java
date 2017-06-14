@@ -141,7 +141,7 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
                     return;
                 }
                 buttonsContainer.clear();
-                taskName = task.getTaskName();
+                taskName = task.getName();
                 deploymentId = task.getDeploymentId();
                 if (opener != null) {
                     injectEventListener(AbstractHumanTaskFormDisplayer.this);

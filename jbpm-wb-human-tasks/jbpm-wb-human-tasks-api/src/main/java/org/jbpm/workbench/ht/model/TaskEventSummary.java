@@ -21,7 +21,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.workbench.common.model.GenericSummary;
 
 @Portable
-public class TaskEventSummary extends GenericSummary {
+public class TaskEventSummary extends GenericSummary<Long> {
 
     private Long eventId;
     private Long taskId;

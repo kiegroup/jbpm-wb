@@ -29,6 +29,11 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.security.ResourceRef;
+import org.uberfire.security.authz.AuthorizationManager;
+import org.uberfire.workbench.model.ActivityResourceType;
 
 public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V extends MultiGridView> extends AbstractScreenListPresenter<T> implements RefreshSelectorMenuBuilder.SupportsRefreshInterval {
 
@@ -37,6 +42,13 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
     protected RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder(this);
 
     protected V view;
+
+    private AuthorizationManager authorizationManager;
+
+    @Inject
+    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
+        this.authorizationManager = authorizationManager;
+    }
 
     @Inject
     public void setDataSetQueryHelper(final DataSetQueryHelper dataSetQueryHelper) {
@@ -135,6 +147,20 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
     protected Optional<String> getSearchParameter(final String parameterId) {
         return Optional.ofNullable(place.getParameter(parameterId,
                                                       null));
+    }
+
+    protected void navigateToPerspective(final String perspectiveId,
+                                         final String parameterName,
+                                         final String parameterValue) {
+        final PlaceRequest request = new DefaultPlaceRequest(perspectiveId);
+        request.addParameter(parameterName,
+                             parameterValue);
+        placeManager.goTo(request);
+    }
+
+    public boolean isUserAuthorizedForPerspective(final String perspectiveId) {
+        final ResourceRef resourceRef = new ResourceRef(perspectiveId, ActivityResourceType.PERSPECTIVE);
+        return authorizationManager.authorize(resourceRef, identity);
     }
 
 }

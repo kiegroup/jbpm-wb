@@ -25,10 +25,10 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.jbpm.workbench.common.client.events.SearchEvent;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.jbpm.workbench.es.model.events.RequestChangedEvent;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.*;
 @RunWith(GwtMockitoTestRunner.class)
 public class RequestListPresenterTest {
 
-    private static final Long REQUESTID_ID = 1L;
+    private static final Long REQUEST_ID = 1L;
 
     private CallerMock<ExecutorService> callerMockExecutorService;
 
@@ -105,18 +105,18 @@ public class RequestListPresenterTest {
 
     @Test
     public void cancelRequestTest() {
-        presenter.cancelRequest(REQUESTID_ID);
+        presenter.cancelRequest(REQUEST_ID);
 
         verify(requestChangedEvent, times(1)).fire(any(RequestChangedEvent.class));
-        verify(executorServiceMock).cancelRequest(anyString(), eq(REQUESTID_ID));
+        verify(executorServiceMock).cancelRequest(anyString(), eq(REQUEST_ID));
     }
 
     @Test
     public void requeueRequestTest() {
-        presenter.requeueRequest(REQUESTID_ID);
+        presenter.requeueRequest(REQUEST_ID);
 
         verify(requestChangedEvent, times(1)).fire(any(RequestChangedEvent.class));
-        verify(executorServiceMock).requeueRequest(anyString(), eq(REQUESTID_ID));
+        verify(executorServiceMock).requeueRequest(anyString(), eq(REQUEST_ID));
     }
 
     @Test
@@ -181,31 +181,56 @@ public class RequestListPresenterTest {
         final Long processInstanceId = Long.valueOf(33);
         final String processInstanceDescription = "myProcessInstanceDescription";
 
-        when(dataSetQueryHelper.getColumnLongValue(any(DataSet.class), eq(COLUMN_ID), eq(0))).thenReturn(id);
-        when(dataSetQueryHelper.getColumnDateValue(any(DataSet.class), eq(COLUMN_TIMESTAMP), eq(0))).thenReturn(time);
-        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class), eq(COLUMN_STATUS), eq(0))).thenReturn(status);
-        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class), eq(COLUMN_COMMANDNAME), eq(0))).thenReturn(commandName);
-        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class), eq(COLUMN_MESSAGE), eq(0))).thenReturn(message);
-        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class), eq(COLUMN_BUSINESSKEY), eq(0))).thenReturn(businessKey);
-        when(dataSetQueryHelper.getColumnIntValue(any(DataSet.class), eq(COLUMN_RETRIES), eq(0))).thenReturn(retries);
-        when(dataSetQueryHelper.getColumnIntValue(any(DataSet.class), eq(COLUMN_EXECUTIONS), eq(0))).thenReturn(executions);
-        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class), eq(COLUMN_PROCESS_NAME), eq(0))).thenReturn(processName);
-        when(dataSetQueryHelper.getColumnLongValue(any(DataSet.class), eq(COLUMN_PROCESS_INSTANCE_ID), eq(0))).thenReturn(processInstanceId);
-        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class), eq(COLUMN_PROCESS_INSTANCE_DESCRIPTION), eq(0))).thenReturn(processInstanceDescription);
+        final DataSet dataSet = mock(DataSet.class);
 
-        final RequestSummary rs = presenter.getRequestSummary(mock(DataSet.class), 0);
+        when(dataSet.getValueAt(0,
+                                COLUMN_ID)).thenReturn(id);
+        when(dataSet.getValueAt(0,
+                                COLUMN_TIMESTAMP)).thenReturn(time);
+        when(dataSet.getValueAt(0,
+                                COLUMN_STATUS)).thenReturn(status);
+        when(dataSet.getValueAt(0,
+                                COLUMN_COMMANDNAME)).thenReturn(commandName);
+        when(dataSet.getValueAt(0,
+                                COLUMN_MESSAGE)).thenReturn(message);
+        when(dataSet.getValueAt(0,
+                                COLUMN_BUSINESSKEY)).thenReturn(businessKey);
+        when(dataSet.getValueAt(0,
+                                COLUMN_RETRIES)).thenReturn(retries);
+        when(dataSet.getValueAt(0,
+                                COLUMN_EXECUTIONS)).thenReturn(executions);
+        when(dataSet.getValueAt(0,
+                                COLUMN_PROCESS_NAME)).thenReturn(processName);
+        when(dataSet.getValueAt(0,
+                                COLUMN_PROCESS_INSTANCE_ID)).thenReturn(processInstanceId);
+        when(dataSet.getValueAt(0,
+                                COLUMN_PROCESS_INSTANCE_DESCRIPTION)).thenReturn(processInstanceDescription);
 
-        assertEquals(id, rs.getId());
-        assertEquals(time, rs.getTime());
-        assertEquals(status, rs.getStatus());
-        assertEquals(commandName, rs.getCommandName());
-        assertEquals(message, rs.getMessage());
-        assertEquals(businessKey, rs.getKey());
-        assertEquals(retries, rs.getRetries());
-        assertEquals(executions, rs.getExecutions());
-        assertEquals(processName, rs.getProcessName());
-        assertEquals(processInstanceId, rs.getProcessInstanceId());
-        assertEquals(processInstanceDescription, rs.getProcessInstanceDescription());
+        final RequestSummary rs = presenter.getRequestSummary(dataSet,
+                                                              0);
+
+        assertEquals(id,
+                     rs.getId());
+        assertEquals(time,
+                     rs.getTime());
+        assertEquals(status,
+                     rs.getStatus());
+        assertEquals(commandName,
+                     rs.getCommandName());
+        assertEquals(message,
+                     rs.getMessage());
+        assertEquals(businessKey,
+                     rs.getKey());
+        assertEquals(retries,
+                     rs.getRetries());
+        assertEquals(executions,
+                     rs.getExecutions());
+        assertEquals(processName,
+                     rs.getProcessName());
+        assertEquals(processInstanceId,
+                     rs.getProcessInstanceId());
+        assertEquals(processInstanceDescription,
+                     rs.getProcessInstanceDescription());
     }
 
     @Test

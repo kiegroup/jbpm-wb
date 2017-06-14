@@ -75,7 +75,7 @@ public class ShowcaseEntryPointTest {
 
     @Before
     public void setup() {
-        doNothing().when( pmas ).initActivities( anyList() );
+        doNothing().when( pmas ).initActivities( anyListOf(String.class) );
 
         appConfigServiceCallerMock = new CallerMock<>( appConfigService );
         pmasCallerMock = new CallerMock<>( pmas );
@@ -131,10 +131,12 @@ public class ShowcaseEntryPointTest {
     public void getProcessManagementViewsTest() {
         List<? extends MenuItem> processManagementMenuItems = showcaseEntryPoint.getProcessManagementViews();
 
-        assertEquals( 4, processManagementMenuItems.size() );
+        assertEquals( 5, processManagementMenuItems.size() );
         assertEquals( showcaseEntryPoint.constants.Process_Definitions(), processManagementMenuItems.get( 0 ).getCaption() );
         assertEquals( showcaseEntryPoint.constants.Process_Instances(), processManagementMenuItems.get( 1 ).getCaption() );
         assertEquals( showcaseEntryPoint.constants.Process_Instances_Admin(), processManagementMenuItems.get( 2 ).getCaption() );
+        assertEquals( showcaseEntryPoint.constants.Tasks_Admin(), processManagementMenuItems.get( 3 ).getCaption() );
+        assertEquals( showcaseEntryPoint.constants.ExecutionErrors(), processManagementMenuItems.get( 4 ).getCaption() );
     }
 
     @Test

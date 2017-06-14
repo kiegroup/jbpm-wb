@@ -25,13 +25,13 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.workbench.common.model.GenericSummary;
 
 @Portable
-public class ProcessInstanceSummary extends GenericSummary {
+public class ProcessInstanceSummary extends GenericSummary<Long> {
 
     private Long processInstanceId;
     private String processId;
     private String processName;
     private String processVersion;
-    private int state;
+    private Integer state;
     private Date startTime;
     private Date endTime;
     private String deploymentId;
@@ -42,14 +42,14 @@ public class ProcessInstanceSummary extends GenericSummary {
     private Map<String, String> domainData = new HashMap<String, String>();
     private List<UserTaskSummary> activeTasks;
     private Date lastModificationDate;
-    private int errorCount;
+    private Integer errorCount;
 
-    public ProcessInstanceSummary(long processInstanceId,
+    public ProcessInstanceSummary(Long processInstanceId,
                                   String processId,
                                   String deploymentId,
                                   String processName,
                                   String processVersion,
-                                  int state,
+                                  Integer state,
                                   Date startTime,
                                   Date endTime,
                                   String initiator,
@@ -57,8 +57,7 @@ public class ProcessInstanceSummary extends GenericSummary {
                                   String correlationKey,
                                   Long parentId,
                                   Date lastModificationDate,
-                                  int errorCount
-    ) {
+                                  Integer errorCount) {
         super();
         this.id = processInstanceId;
         this.name = processName;
@@ -103,6 +102,14 @@ public class ProcessInstanceSummary extends GenericSummary {
         this.processInstanceId = processInstanceId;
     }
 
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
     public String getProcessId() {
         return processId;
     }
@@ -117,14 +124,6 @@ public class ProcessInstanceSummary extends GenericSummary {
 
     public void setProcessName(String processName) {
         this.processName = processName;
-    }
-
-    public int getState() {
-        return state;
-    }
-
-    public void setState(int state) {
-        this.state = state;
     }
 
     public String getProcessVersion() {
@@ -207,11 +206,11 @@ public class ProcessInstanceSummary extends GenericSummary {
         this.lastModificationDate = lastModificationDate;
     }
 
-    public int getErrorCount() {
+    public Integer getErrorCount() {
         return this.errorCount;
     }
 
-    public void setErrorCount(int errorCount) {
+    public void setErrorCount(Integer errorCount) {
         this.errorCount = errorCount;
     }
 

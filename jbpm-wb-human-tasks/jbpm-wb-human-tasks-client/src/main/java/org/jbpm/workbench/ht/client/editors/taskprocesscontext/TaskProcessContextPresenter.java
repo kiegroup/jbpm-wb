@@ -133,7 +133,7 @@ public class TaskProcessContextPresenter {
         taskService.call(new RemoteCallback<TaskSummary>() {
                                   @Override
                                   public void callback(TaskSummary details) {
-                                      if (details == null || details.getProcessInstanceId() == -1) {
+                                      if (details == null || details.getProcessInstanceId() == null) {
                                           view.setProcessInstanceId("None");
                                           view.setProcessId("None");
                                           view.enablePIDetailsButton(false);

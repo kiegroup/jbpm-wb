@@ -22,7 +22,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.workbench.common.model.GenericSummary;
 
 @Portable
-public class RequestSummary extends GenericSummary {
+public class RequestSummary extends GenericSummary<Long> {
 
     private Long jobId;
     private Date time;

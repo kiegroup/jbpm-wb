@@ -32,8 +32,6 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import java.util.Date;
-import java.util.Optional;
 
 @Dependent
 public class DataSetQueryHelper {
@@ -153,32 +151,4 @@ public class DataSetQueryHelper {
         this.dataSetHandler = dataSetHandler;
     }
 
-    public Long getColumnLongValue(DataSet currentDataSet, String columnId, int index){
-        Object value = currentDataSet.getColumnById( columnId ).getValues().get(index);
-        return value != null ? Long.parseLong(value.toString()) : null;
-    }
-
-    public String getColumnStringValue(DataSet currentDataSet, String columnId, int index){
-        Object value = currentDataSet.getColumnById( columnId ).getValues().get(index);
-        return value != null ? value.toString() : null;
-    }
-
-    public Date getColumnDateValue(DataSet currentDataSet,String columnId, int index){
-        try{
-            return (Date) currentDataSet.getColumnById( columnId ).getValues().get( index );
-        } catch ( Exception e ){
-            return null;
-        }
-    }
-
-    public Boolean getColumnBooleanValue(DataSet currentDataSet,
-                                         String columnId,
-                                         int index) {
-        return Optional.ofNullable(Boolean.valueOf((String) currentDataSet.getColumnById(columnId).getValues().get(index))).orElse(null);
-    }
-
-    public int getColumnIntValue(DataSet currentDataSet,String columnId, int index){
-        Object value = currentDataSet.getColumnById( columnId ).getValues().get(index);
-        return value != null ? Integer.parseInt(value.toString()) : -1;
-    }
 }

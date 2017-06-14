@@ -34,7 +34,6 @@ public final class TaskDataSetConstants {
     public static final String COLUMN_PRIORITY = "priority";
     public static final String COLUMN_PROCESS_ID = "processId";
     public static final String COLUMN_PROCESS_INSTANCE_ID = "processInstanceId";
-    public static final String COLUMN_PROCESS_SESSION_ID = "processSessionId";
     public static final String COLUMN_STATUS = "status";
     public static final String COLUMN_TASK_ID = "taskId";
     public static final String COLUMN_WORK_ITEM_ID = "workItemId";
@@ -47,9 +46,6 @@ public final class TaskDataSetConstants {
     public static final String COLUMN_TASK_VARIABLE_TASK_NAME = "TASKNAME";
     public static final String COLUMN_TASK_VARIABLE_NAME = "name";
     public static final String COLUMN_TASK_VARIABLE_VALUE = "value";
-    public static final String COLUMN_USER = "userId";
-    public static final String COLUMN_STARTED_ON = "startDate";
-    public static final String COLUMN_END_ON = "endDate";
 
     private TaskDataSetConstants(){}
 }

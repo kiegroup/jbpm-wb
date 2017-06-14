@@ -22,7 +22,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.workbench.common.model.GenericSummary;
 
 @Portable
-public class TaskAssignmentSummary extends GenericSummary {
+public class TaskAssignmentSummary extends GenericSummary<Long> {
 
     private Long taskId;
     private String taskName;

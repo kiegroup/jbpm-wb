@@ -21,11 +21,11 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskAdminListViewImplTest extends AbstractTaskListViewTest {
-    
+
     @InjectMocks
     private TaskAdminListViewImpl view;
 
@@ -33,17 +33,17 @@ public class TaskAdminListViewImplTest extends AbstractTaskListViewTest {
     private TaskAdminListPresenter presenter;
 
     @Override
-    public AbstractTaskListView getView(){
+    public AbstractTaskListView getView() {
         return view;
     }
-    
+
     @Override
-    public AbstractTaskListPresenter getPresenter(){
+    public AbstractTaskListPresenter getPresenter() {
         return presenter;
     }
 
     @Override
-    public int getExpectedDefaultTabFilterCount(){
+    public int getExpectedDefaultTabFilterCount() {
         return 2;
     }
 
@@ -51,5 +51,4 @@ public class TaskAdminListViewImplTest extends AbstractTaskListViewTest {
     public void setup() {
         when(presenter.createAdminTabSettings()).thenReturn(filterSettings);
     }
-
 }

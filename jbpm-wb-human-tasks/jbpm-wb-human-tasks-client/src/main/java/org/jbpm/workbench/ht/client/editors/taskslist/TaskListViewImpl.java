@@ -15,14 +15,11 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import java.util.List;
 import javax.enterprise.context.Dependent;
 
 import org.gwtbootstrap3.client.ui.Button;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-
-import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 
 @Dependent
 public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
@@ -92,29 +89,4 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
         return DATA_SET_TASK_LIST_PREFIX;
     }
 
-    @Override
-    protected ConditionalActionHasCell.ActionCellRenderCondition getSuspendActionCondition() {
-        return task -> {
-            String taskStatus = task.getStatus();
-            String actualOwner = task.getActualOwner();
-            String currentId = identity.getIdentifier();
-            List<String> potOwners = task.getPotOwnersString();
-            return ((actualOwner != null && actualOwner.equals(currentId) &&
-                    (taskStatus.equals(TASK_STATUS_RESERVED) || taskStatus.equals(TASK_STATUS_INPROGRESS)))
-                    || (potOwners != null && potOwners.contains(currentId)
-                    && taskStatus.equals(TASK_STATUS_READY)));
-        };
-    }
-
-    @Override
-    protected ConditionalActionHasCell.ActionCellRenderCondition getResumeActionCondition() {
-        return task -> {
-            String taskStatus = task.getStatus();
-            String actualOwner = task.getActualOwner();
-            String currentId = identity.getIdentifier();
-            List<String> potOwners = task.getPotOwnersString();
-            return (taskStatus.equals(TASK_STATUS_SUSPENDED) && ((actualOwner != null && actualOwner.equals(currentId))
-                    || (potOwners != null && potOwners.contains(currentId))));
-        };
-    }
 }

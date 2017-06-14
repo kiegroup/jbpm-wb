@@ -35,8 +35,8 @@ import org.uberfire.client.views.pfly.widgets.Popover;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
-import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
 import static org.jbpm.workbench.common.client.PerspectiveIds.EXECUTION_ERRORS;
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
 
 
 @Dependent
@@ -69,7 +69,7 @@ public class ProcessInstanceSummaryErrorPopoverCell extends AbstractCell<Process
 
     @Override
     public void render(Context context, ProcessInstanceSummary value, SafeHtmlBuilder sb) {
-        int errCount = (value != null ? value.getErrorCount() : 0);
+        Integer errCount = (value != null && value.getErrorCount() != null ? value.getErrorCount() : 0);
 
         HTMLElement popoverAnchor = popover.getElement();
         popoverAnchor.setTextContent(Integer.toString(errCount));

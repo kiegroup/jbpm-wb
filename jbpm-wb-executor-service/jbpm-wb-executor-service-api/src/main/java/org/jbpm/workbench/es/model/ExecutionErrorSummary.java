@@ -25,7 +25,7 @@ import org.jbpm.workbench.es.util.ExecutionErrorType;
 
 @Bindable
 @Portable
-public class ExecutionErrorSummary extends GenericSummary {
+public class ExecutionErrorSummary extends GenericSummary<String> {
 
     private String errorId;
     private ExecutionErrorType type;
