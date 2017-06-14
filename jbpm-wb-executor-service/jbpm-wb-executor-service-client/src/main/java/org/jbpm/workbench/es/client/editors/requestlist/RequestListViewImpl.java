@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -259,6 +260,12 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                                     },
                                     RequestStatus.ERROR,
                                     RequestStatus.RUNNING));
+        
+        cells.add(new ActionHasCell(constants.ViewProcessInstance(),
+                                    job -> (job.getProcessInstanceId() != null),
+                                    job -> {
+                                        presenter.openProcessInstanceView(Long.toString(job.getProcessInstanceId()));
+                                    }));
 
         CompositeCell<RequestSummary> cell = new CompositeCell<RequestSummary>( cells );
         Column<RequestSummary, RequestSummary> actionsColumn = new Column<RequestSummary, RequestSummary>( cell ) {
@@ -271,24 +278,32 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         return actionsColumn;
     }
 
-    private class ActionHasCell extends ButtonActionCell<RequestSummary> {
+    static class ActionHasCell extends ButtonActionCell<RequestSummary> {
+        
+        private final Predicate<RequestSummary> showCondition;
+        private List<String> availableStatuses = null;
 
-        private final List<String> availableStatuses;
-
-        public ActionHasCell( final String text,
-                              final Delegate<RequestSummary> delegate,
-                              final RequestStatus... status ) {
-            super( text, delegate );
+        public ActionHasCell(final String text,
+                             final Delegate<RequestSummary> delegate,
+                             final RequestStatus... status){
+            super(text, delegate);
             this.availableStatuses = Arrays.stream(status).map(s -> s.name()).collect(Collectors.toList());
+            this.showCondition = (value -> availableStatuses.contains(value.getStatus()));
+        }
+        
+        public ActionHasCell(final String text,
+                             final Predicate<RequestSummary> showCondition,
+                             final Delegate<RequestSummary> delegate){
+            super(text, delegate);
+            this.showCondition = showCondition;
         }
 
         @Override
         public void render(Cell.Context context, RequestSummary value, SafeHtmlBuilder sb) {
-            if ( availableStatuses.contains( value.getStatus() ) ) {
+            if(showCondition.test(value)){
                 super.render(context, value, sb);
             }
         }
-
     }
 
     @Override
