@@ -23,6 +23,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
@@ -38,6 +39,8 @@ import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.security.shared.api.Role;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
@@ -67,13 +70,16 @@ import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.security.authz.AuthorizationResult;
+import org.uberfire.security.authz.Permission;
+import org.uberfire.security.authz.PermissionManager;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
-import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
+import static org.jbpm.workbench.common.client.PerspectiveIds.*;
 
 @Dependent
 @WorkbenchScreen( identifier = ProcessInstanceListPresenter.SCREEN_ID)
@@ -108,6 +114,12 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     @Inject
     private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
+    
+    @Inject
+    User user;
+    
+    @Inject
+    PermissionManager permissionManager;
 
     @Override
     public void getData( final Range visibleRange ) {
@@ -552,6 +564,8 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     @Override
     public void setupActiveSearchFilters() {
+        boolean hasSearchParam = false;
+
         final Optional<String> processDefinitionSearch = getSearchParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID);
         if (processDefinitionSearch.isPresent()) {
             final String processDefinitionId = processDefinitionSearch.get();
@@ -561,10 +575,26 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                  v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_ID,
                                                                           v))
             );
-
             addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_ID,
                                              processDefinitionId));
-        } else {
+            hasSearchParam = true;
+        }
+
+        final Optional<String> processInstanceSearch = getSearchParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
+        if (processInstanceSearch.isPresent()) {
+            final String processInstanceId = processInstanceSearch.get();
+            view.addActiveFilter(constants.Id(),
+                                 processInstanceId,
+                                 processInstanceId,
+                                 v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                                                                          v))
+            );
+            addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                                             processInstanceId));
+            hasSearchParam = true;
+        }
+
+        if(!hasSearchParam){
             setupDefaultActiveSearchFilters();
         }
     }
@@ -580,6 +610,38 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
         addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
                                          String.valueOf(ProcessInstance.STATE_ACTIVE)));
+    }
+
+    public void openJobsView(final String pid) {
+        final PlaceRequest request = new DefaultPlaceRequest(JOBS);
+        if(pid != null){
+            request.addParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, pid);
+        }
+        placeManager.goTo(request);
+    }
+
+    public void openTaskAdminView(final String pid) {
+        final PlaceRequest request = new DefaultPlaceRequest(TASKS_ADMIN);
+        if(pid != null){
+            request.addParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, pid);
+        }
+        placeManager.goTo(request);
+    }
+
+    public boolean canOpenTaskAdminView() { //TODO: doesn't work fine
+        boolean ret = false;
+        for(Role role : user.getRoles()){
+            for(Permission p : permissionManager.getAuthorizationPolicy().getPermissions(role).collection()){
+                if(p.getName() == "perspective.read.TaskAdmin" && AuthorizationResult.ACCESS_GRANTED.equals(p.getResult())){
+                    ret = true;
+                    break;
+                }
+            }
+            if(ret){
+                break;
+            }
+        }
+        return ret;
     }
 
     /*-------------------------------------------------*/

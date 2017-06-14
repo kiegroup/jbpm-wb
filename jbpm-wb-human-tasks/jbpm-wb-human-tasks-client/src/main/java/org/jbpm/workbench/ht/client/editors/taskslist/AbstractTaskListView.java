@@ -300,6 +300,12 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
         cells.add(new ConditionalActionHasCell(constants.Resume(), task -> {
             presenter.resumeTask(task);
         }, getResumeActionCondition()));
+        
+        cells.add(new ConditionalActionHasCell(constants.ViewProcess(), task -> {
+            presenter.openProcessInstanceView(Long.toString(task.getProcessInstanceId()));
+        }, task -> {
+            return (task.getProcessInstanceId() >= 0);
+        }));
 
         cells.add(new CompleteActionHasCell(constants.Open(), task -> {
             selectedRow = -1;
