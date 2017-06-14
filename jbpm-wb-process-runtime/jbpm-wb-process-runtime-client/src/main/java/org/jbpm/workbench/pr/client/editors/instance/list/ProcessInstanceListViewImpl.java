@@ -24,7 +24,6 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.cell.client.*;
-import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Element;
@@ -429,32 +428,52 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     private Column<ProcessInstanceSummary, ProcessInstanceSummary> initActionsColumn() {
         List<HasCell<ProcessInstanceSummary, ?>> cells = new LinkedList<HasCell<ProcessInstanceSummary, ?>>();
 
-        cells.add(new ProcessInstanceSummaryActionCell(constants.Signal(), new Delegate<ProcessInstanceSummary>() {
-            @Override
-            public void execute( final ProcessInstanceSummary processInstance ) {
+        cells.add(new ProcessInstanceSummaryActionCell(
+            constants.Signal(),
+            ProcessInstanceSummaryActionCell.PREDICATE_STATE_ACTIVE,
+            processInstance -> {
                 presenter.signalProcessInstance(processInstance);
             }
-        } ) );
+        ));
 
-        cells.add(new ProcessInstanceSummaryActionCell(constants.Abort(), new Delegate<ProcessInstanceSummary>() {
-            @Override
-            public void execute( ProcessInstanceSummary processInstance ) {
-                if ( Window.confirm( constants.Abort_Process_Instance() ) ) {
-                    presenter.abortProcessInstance( processInstance.getDeploymentId(), processInstance.getProcessInstanceId() );
+        cells.add(new ProcessInstanceSummaryActionCell(
+            constants.Abort(),
+            ProcessInstanceSummaryActionCell.PREDICATE_STATE_ACTIVE,
+            processInstance -> {
+                if(Window.confirm(constants.Abort_Process_Instance())){
+                    presenter.abortProcessInstance(processInstance.getDeploymentId(), processInstance.getProcessInstanceId());
                 }
             }
-        } ) );
+        ));
 
-        CompositeCell<ProcessInstanceSummary> cell = new CompositeCell<ProcessInstanceSummary>( cells );
-        Column<ProcessInstanceSummary, ProcessInstanceSummary> actionsColumn = new Column<ProcessInstanceSummary, ProcessInstanceSummary>( cell ) {
+        cells.add(new ProcessInstanceSummaryActionCell(
+            constants.ViewJobs(),
+            ProcessInstanceSummaryActionCell.PREDICATE_TRUE,
+            processInstance -> {
+                presenter.openJobsView(Long.toString(processInstance.getProcessInstanceId()));
+            }
+        ));
+
+        cells.add(new ProcessInstanceSummaryActionCell(
+            constants.ViewTasks(),
+            processInstance -> {
+                return presenter.canOpenTaskAdminView();
+            },
+            processInstance -> {
+                presenter.openTaskAdminView(Long.toString(processInstance.getProcessInstanceId()));
+            }
+        ));
+
+        CompositeCell<ProcessInstanceSummary> cell = new CompositeCell<ProcessInstanceSummary>(cells);
+        Column<ProcessInstanceSummary, ProcessInstanceSummary> actionsColumn = new Column<ProcessInstanceSummary, ProcessInstanceSummary>(cell) {
             @Override
-            public ProcessInstanceSummary getValue( ProcessInstanceSummary object ) {
+            public ProcessInstanceSummary getValue(ProcessInstanceSummary object) {
                 return object;
             }
         };
-        actionsColumn.setDataStoreName( COL_ID_ACTIONS );
-        return actionsColumn;
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
 
+        return actionsColumn;
     }
 
     private ColumnMeta<ProcessInstanceSummary> initChecksColumn() {

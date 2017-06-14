@@ -30,10 +30,6 @@ import com.google.gwt.view.client.AsyncDataProvider;
 
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 
-import org.dashbuilder.dataset.DataSetOp;
-import org.dashbuilder.dataset.DataSetOpType;
-import org.dashbuilder.dataset.filter.ColumnFilter;
-import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.gwtbootstrap3.client.ui.Button;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
@@ -288,6 +284,21 @@ public abstract class AbstractTaskListViewTest {
         }
     }
     
+    @Test
+    public void testViewProcessActionHasCell(){
+        ConditionalActionHasCell viewProcCell = new ConditionalActionHasCell(
+                "",
+                cellDelegate,
+                task -> (task.getProcessInstanceId() >= 0)
+        );
+        
+        TaskSummary testTask = createTestTaskSummary(TASK_STATUS_READY, TEST_USER_ID, POSITIVE_POTENTIAL_OWNERS);
+        runActionHasCellTest(testTask, viewProcCell, true);
+        testTask = new TaskSummary(0L, "", "", "", 0, "", "", new Date(), new Date(),
+                new Date(), "", 0, -1 /*This is processInstanceId*/, "", 0, new Date(), "", "");
+        runActionHasCellTest(testTask, viewProcCell, false);
+    }
+    
     protected void runActionHasCellTest(
             String taskStatus,
             String taskOwner,
@@ -296,6 +307,14 @@ public abstract class AbstractTaskListViewTest {
             final boolean isRenderExpected)
     {
         TaskSummary testTask = createTestTaskSummary(taskStatus, taskOwner, potOwners);
+        runActionHasCellTest(testTask, cellObject, isRenderExpected);
+    }
+    
+    protected void runActionHasCellTest(
+            TaskSummary testTask,
+            ButtonActionCell<TaskSummary> cellObject,
+            final boolean isRenderExpected)
+    {
         ButtonActionCell<TaskSummary> cellMock = spy(cellObject);
         SafeHtmlBuilder cellHtmlBuilder = mock(SafeHtmlBuilder.class);
         doAnswer( invocationOnMock -> {
