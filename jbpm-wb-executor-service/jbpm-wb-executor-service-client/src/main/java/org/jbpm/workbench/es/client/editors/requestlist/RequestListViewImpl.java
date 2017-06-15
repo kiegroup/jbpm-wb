@@ -28,19 +28,11 @@ import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
-import com.google.gwt.dom.client.BrowserEvents;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.InputElement;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.view.client.CellPreviewEvent;
-import com.google.gwt.view.client.DefaultSelectionEventManager;
-import com.google.gwt.view.client.NoSelectionModel;
-import com.google.gwt.view.client.SelectionChangeEvent;
 import org.gwtbootstrap3.client.ui.Button;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
@@ -71,8 +63,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     private static final String TAB_RUNNING = REQUEST_LIST_PREFIX + "_2";
     private static final String TAB_QUEUED = REQUEST_LIST_PREFIX + "_1";
     private static final String TAB_ALL = REQUEST_LIST_PREFIX + "_0";
-
-    private List<RequestSummary> selectedRequestSummary = new ArrayList<RequestSummary>();
 
     @Override
     public void init( final RequestListPresenter presenter ) {
@@ -159,70 +149,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     @Override
     public void initSelectionModel(ExtendedPagedTable<RequestSummary> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption( constants.No_Jobs_Found() );
-
-        NoSelectionModel<RequestSummary> selectionModel = new NoSelectionModel<RequestSummary>();
-        selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
-            @Override
-            public void onSelectionChange( SelectionChangeEvent event ) {
-
-                if ( selectedRow == -1 ) {
-                    extendedPagedTable.setRowStyles( selectedStyles );
-                    selectedRow = extendedPagedTable.getKeyboardSelectedRow();
-                    extendedPagedTable.redraw();
-                } else if ( extendedPagedTable.getKeyboardSelectedRow() != selectedRow ) {
-                    extendedPagedTable.setRowStyles( selectedStyles );
-                    selectedRow = extendedPagedTable.getKeyboardSelectedRow();
-                    extendedPagedTable.redraw();
-                }
-            }
-        } );
-        initNoActionColumnManager( extendedPagedTable );
-
-        extendedPagedTable.setSelectionModel( selectionModel, initNoActionColumnManager(extendedPagedTable) );
-        extendedPagedTable.setRowStyles( selectedStyles );
-    }
-
-    private DefaultSelectionEventManager<RequestSummary> initNoActionColumnManager( final ExtendedPagedTable extendedPagedTable ) {
-        return DefaultSelectionEventManager
-                .createCustomManager( new DefaultSelectionEventManager.EventTranslator<RequestSummary>() {
-
-                    @Override
-                    public boolean clearCurrentSelection( CellPreviewEvent<RequestSummary> event ) {
-                        return false;
-                    }
-
-                    @Override
-                    public DefaultSelectionEventManager.SelectAction translateSelectionEvent( CellPreviewEvent<RequestSummary> event ) {
-                        DefaultSelectionEventManager.SelectAction ret = DefaultSelectionEventManager.SelectAction.DEFAULT;
-                        NativeEvent nativeEvent = event.getNativeEvent();
-                        if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) ) {
-                            // Ignore if the event didn't occur in the correct column.
-                            if ( extendedPagedTable.isSelectionIgnoreColumn( event.getColumn() ) ) {
-                                ret = DefaultSelectionEventManager.SelectAction.IGNORE;
-                            }
-                            //Extension for checkboxes
-                            Element target = nativeEvent.getEventTarget().cast();
-                            if ( "input".equals( target.getTagName().toLowerCase() ) ) {
-                                final InputElement input = target.cast();
-                                if ( "checkbox".equals( input.getType().toLowerCase() ) ) {
-                                    // Synchronize the checkbox with the current selection state.
-                                    if ( !selectedRequestSummary.contains( event.getValue() ) ) {
-                                        selectedRequestSummary.add( event.getValue() );
-                                        input.setChecked( true );
-                                    } else {
-                                        selectedRequestSummary.remove( event.getValue() );
-                                        input.setChecked( false );
-                                    }
-                                    ret = DefaultSelectionEventManager.SelectAction.IGNORE;
-                                }
-                            }
-                        }
-
-                        return ret;
-                    }
-
-                } );
-
     }
 
     private Column<RequestSummary, RequestSummary> initActionsColumn() {

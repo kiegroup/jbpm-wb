@@ -43,11 +43,22 @@ public class ProcessInstanceSummary extends GenericSummary {
     private List<UserTaskSummary> activeTasks;
     private Date lastModificationDate;
     private int errorCount;
-    
-    public ProcessInstanceSummary(long processInstanceId, String processId, String deploymentId, String processName, String processVersion,
-            int state, Date startTime, Date endTime, String initiator,String processInstanceDescription, String correlationKey, Long parentId,
-            Date lastModificationDate, int errorCount
-     ) {
+
+    public ProcessInstanceSummary(long processInstanceId,
+                                  String processId,
+                                  String deploymentId,
+                                  String processName,
+                                  String processVersion,
+                                  int state,
+                                  Date startTime,
+                                  Date endTime,
+                                  String initiator,
+                                  String processInstanceDescription,
+                                  String correlationKey,
+                                  Long parentId,
+                                  Date lastModificationDate,
+                                  int errorCount
+    ) {
         super();
         this.id = processInstanceId;
         this.name = processName;
@@ -69,45 +80,47 @@ public class ProcessInstanceSummary extends GenericSummary {
 
     public ProcessInstanceSummary() {
     }
-    
-    public void addDomainData(String key, String value){
-        domainData.put(key, value);
+
+    public void addDomainData(String key,
+                              String value) {
+        domainData.put(key,
+                       value);
     }
-    
-    public String getDomainDataValue(String key){
+
+    public String getDomainDataValue(String key) {
         return domainData.get(key);
     }
-    
-    public Map<String, String> getDomainData(){
+
+    public Map<String, String> getDomainData() {
         return domainData;
     }
 
     public Long getProcessInstanceId() {
-      return processInstanceId;
+        return processInstanceId;
+    }
+
+    public void setProcessInstanceId(Long processInstanceId) {
+        this.processInstanceId = processInstanceId;
     }
 
     public String getProcessId() {
         return processId;
     }
 
-    public String getProcessName() {
-        return processName;
-    }
-
-    public int getState() {
-        return state;
-    }
-
-    public void setProcessInstanceId(Long processInstanceId) {
-      this.processInstanceId = processInstanceId;
-    }
-
     public void setProcessId(String processId) {
         this.processId = processId;
     }
 
+    public String getProcessName() {
+        return processName;
+    }
+
     public void setProcessName(String processName) {
         this.processName = processName;
+    }
+
+    public int getState() {
+        return state;
     }
 
     public void setState(int state) {
@@ -186,20 +199,41 @@ public class ProcessInstanceSummary extends GenericSummary {
         this.parentId = parentId;
     }
 
-    public Date getLastModificationDate(){
+    public Date getLastModificationDate() {
         return lastModificationDate;
     }
 
-    public void setLastModificationDate(Date lastModificationDate){
+    public void setLastModificationDate(Date lastModificationDate) {
         this.lastModificationDate = lastModificationDate;
     }
-    
-    public int getErrorCount(){
+
+    public int getErrorCount() {
         return this.errorCount;
     }
-    
-    public void setErrorCount(int errorCount){
+
+    public void setErrorCount(int errorCount) {
         this.errorCount = errorCount;
     }
-    
+
+    @Override
+    public String toString() {
+        return "ProcessInstanceSummary{" +
+                "processInstanceId=" + processInstanceId +
+                ", processId='" + processId + '\'' +
+                ", processName='" + processName + '\'' +
+                ", processVersion='" + processVersion + '\'' +
+                ", state=" + state +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", deploymentId='" + deploymentId + '\'' +
+                ", initiator='" + initiator + '\'' +
+                ", processInstanceDescription='" + processInstanceDescription + '\'' +
+                ", parentId=" + parentId +
+                ", correlationKey='" + correlationKey + '\'' +
+                ", domainData=" + domainData +
+                ", activeTasks=" + activeTasks +
+                ", lastModificationDate=" + lastModificationDate +
+                ", errorCount=" + errorCount +
+                "} " + super.toString();
+    }
 }
