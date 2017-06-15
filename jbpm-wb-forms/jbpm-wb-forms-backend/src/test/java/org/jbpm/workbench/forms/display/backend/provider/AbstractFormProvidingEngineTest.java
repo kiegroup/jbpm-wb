@@ -16,22 +16,17 @@
 
 package org.jbpm.workbench.forms.display.backend.provider;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import javax.enterprise.inject.Instance;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
-import org.apache.commons.io.IOUtils;
-import org.jbpm.workbench.forms.service.providing.RenderingSettings;
 import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
+import org.jbpm.workbench.forms.service.providing.RenderingSettings;
 import org.junit.Before;
 import org.junit.Test;
 import org.kie.internal.task.api.ContentMarshallerContext;
-import org.kie.workbench.common.forms.commons.layout.impl.DynamicFormLayoutTemplateGenerator;
+import org.kie.workbench.common.forms.commons.shared.layout.impl.DynamicFormLayoutTemplateGenerator;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.BackendFormRenderingContextManagerImpl;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.FormValuesProcessorImpl;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.fieldProcessors.MultipleSubFormFieldValueProcessor;
@@ -50,7 +45,8 @@ import org.kie.workbench.common.forms.serialization.impl.FormDefinitionSerialize
 import org.kie.workbench.common.forms.serialization.impl.FormModelSerializer;
 import org.mockito.Mock;
 
-import static junit.framework.TestCase.*;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertNotNull;
 import static org.mockito.Mockito.*;
 
 public abstract class AbstractFormProvidingEngineTest<SETTINGS extends RenderingSettings, PROCESSOR extends KieWorkbenchFormsValuesProcessor<SETTINGS>, PROVIDER extends AbstractKieWorkbenchFormsProvider> {
@@ -156,41 +152,5 @@ public abstract class AbstractFormProvidingEngineTest<SETTINGS extends Rendering
                     result.isEmpty());
 
         checkRuntimeValues(result);
-    }
-
-    protected String getFormContent() {
-
-        try {
-            JsonArray formsArray = new JsonArray();
-
-            JsonParser parser = new JsonParser();
-
-            String content = IOUtils.toString(this.getClass().getResourceAsStream("/forms/Client.frm"));
-
-            formsArray.add(parser.parse(content));
-
-            content = IOUtils.toString(this.getClass().getResourceAsStream("/forms/InvoiceLine.frm"));
-
-            formsArray.add(parser.parse(content));
-
-            content = IOUtils.toString(this.getClass().getResourceAsStream("/forms/Invoice.frm"));
-
-            formsArray.add(parser.parse(content));
-
-            content = IOUtils.toString(this.getClass().getResourceAsStream("/forms/invoices-taskform.frm"));
-
-            formsArray.add(parser.parse(content));
-
-            content = IOUtils.toString(this.getClass().getResourceAsStream("/forms/modify-taskform.frm"));
-
-            formsArray.add(parser.parse(content));
-
-            Gson gson = new Gson();
-
-            return gson.toJson(formsArray);
-        } catch (IOException e) {
-        }
-
-        return null;
     }
 }

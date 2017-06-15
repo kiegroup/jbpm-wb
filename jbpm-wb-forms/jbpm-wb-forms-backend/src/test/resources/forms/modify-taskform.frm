@@ -5,12 +5,14 @@
     "processId": "invoices",
     "taskId": "_214D8182-692C-4016-9885-BDD79CDFA8FA",
     "taskName": "modify",
-    "variables": [
+    "properties": [
       {
         "name": "invoice",
-        "type": "org.jbpm.workbench.forms.display.backend.provider.model.Invoice",
-        "inputMapping": "in_invoice",
-        "ouputMapping": "out_invoice"
+        "typeInfo": {
+          "type": "OBJECT",
+          "className": "org.jbpm.workbench.forms.display.backend.provider.model.Invoice",
+          "multiple": false
+        }
       }
     ],
     "formModelType": "org.kie.workbench.common.forms.jbpm.model.authoring.task.TaskFormModel"

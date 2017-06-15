@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jbpm.workbench.forms.service.providing.TaskRenderingSettings;
-import org.jbpm.workbench.forms.service.providing.model.TaskDefinition;
 import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
 import org.jbpm.workbench.forms.display.backend.provider.AbstractFormProvidingEngineTest;
 import org.jbpm.workbench.forms.display.backend.provider.AbstractKieWorkbenchFormsProvider;
@@ -31,6 +29,9 @@ import org.jbpm.workbench.forms.display.backend.provider.TaskFormValuesProcessor
 import org.jbpm.workbench.forms.display.backend.provider.model.Client;
 import org.jbpm.workbench.forms.display.backend.provider.model.Invoice;
 import org.jbpm.workbench.forms.display.backend.provider.model.InvoiceLine;
+import org.jbpm.workbench.forms.display.backend.provider.util.FormContentReader;
+import org.jbpm.workbench.forms.service.providing.TaskRenderingSettings;
+import org.jbpm.workbench.forms.service.providing.model.TaskDefinition;
 import org.junit.Test;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
@@ -38,8 +39,7 @@ import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
 import org.mockito.Mock;
 
 import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public abstract class AbstractTaskFormProvidingTest<PROVIDER extends AbstractKieWorkbenchFormsProvider> extends AbstractFormProvidingEngineTest<TaskRenderingSettings, TaskFormValuesProcessor, PROVIDER> {
@@ -81,13 +81,13 @@ public abstract class AbstractTaskFormProvidingTest<PROVIDER extends AbstractKie
 
         Map<String, Object> inputs = new HashMap<>();
 
-        inputs.put("in_invoice",
+        inputs.put("invoice",
                    invoice);
 
         return new TaskRenderingSettings(task,
                                          inputs,
                                          new HashMap<>(),
-                                         getFormContent(),
+                                         FormContentReader.getTaskForms(),
                                          marshallerContext);
     }
 

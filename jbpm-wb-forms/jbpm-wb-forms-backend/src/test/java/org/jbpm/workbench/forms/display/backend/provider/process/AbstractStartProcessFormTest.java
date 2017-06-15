@@ -22,14 +22,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jbpm.workbench.forms.service.providing.ProcessRenderingSettings;
-import org.jbpm.workbench.forms.service.providing.model.ProcessDefinition;
 import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
 import org.jbpm.workbench.forms.display.backend.provider.AbstractFormProvidingEngineTest;
 import org.jbpm.workbench.forms.display.backend.provider.AbstractKieWorkbenchFormsProvider;
 import org.jbpm.workbench.forms.display.backend.provider.ProcessFormsValuesProcessor;
 import org.jbpm.workbench.forms.display.backend.provider.model.Invoice;
 import org.jbpm.workbench.forms.display.backend.provider.model.InvoiceLine;
+import org.jbpm.workbench.forms.display.backend.provider.util.FormContentReader;
+import org.jbpm.workbench.forms.service.providing.ProcessRenderingSettings;
+import org.jbpm.workbench.forms.service.providing.model.ProcessDefinition;
 import org.junit.Test;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
@@ -37,8 +38,7 @@ import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
 import org.mockito.Mock;
 
 import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public abstract class AbstractStartProcessFormTest<PROVIDER extends AbstractKieWorkbenchFormsProvider> extends AbstractFormProvidingEngineTest<ProcessRenderingSettings, ProcessFormsValuesProcessor, PROVIDER> {
@@ -65,7 +65,7 @@ public abstract class AbstractStartProcessFormTest<PROVIDER extends AbstractKieW
 
         return new ProcessRenderingSettings(process,
                                             formData,
-                                            getFormContent(),
+                                            FormContentReader.getStartProcessForms(),
                                             marshallerContext);
     }
 

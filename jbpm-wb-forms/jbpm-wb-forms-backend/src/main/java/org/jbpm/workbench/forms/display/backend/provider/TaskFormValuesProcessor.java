@@ -30,12 +30,13 @@ import org.jbpm.workbench.forms.service.providing.model.TaskDefinition;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContext;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
 import org.kie.workbench.common.forms.dynamic.service.shared.RenderMode;
-import org.kie.workbench.common.forms.jbpm.model.authoring.JBPMVariable;
 import org.kie.workbench.common.forms.jbpm.model.authoring.task.TaskFormModel;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.util.BPMNVariableUtils;
 import org.kie.workbench.common.forms.model.FormDefinition;
+import org.kie.workbench.common.forms.model.ModelProperty;
 import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
+import org.kie.workbench.common.forms.service.backend.util.ModelPropertiesGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +106,7 @@ public class TaskFormValuesProcessor extends KieWorkbenchFormsValuesProcessor<Ta
 
     @Override
     protected Collection<FormDefinition> generateDefaultFormsForContext(TaskRenderingSettings settings) {
-        List<JBPMVariable> variables = new ArrayList<>();
+        List<ModelProperty> properties = new ArrayList<>();
 
         TaskDefinition task = settings.getTask();
 
@@ -116,14 +117,15 @@ public class TaskFormValuesProcessor extends KieWorkbenchFormsValuesProcessor<Ta
         taskData.forEach((name, type) -> {
             // filter not needed variables
             if (BPMNVariableUtils.isValidInputName(name)) {
-                variables.add(new JBPMVariable(name,
-                                               type));
+                properties.add(ModelPropertiesGenerator.createModelProperty(name,
+                                                                            BPMNVariableUtils.getRealTypeForInput(type),
+                                                                            settings.getMarshallerContext().getClassloader()));
             }
         });
 
         TaskFormModel formModel = new TaskFormModel(task.getProcessId(),
                                                     task.getFormName(),
-                                                    variables);
+                                                    properties);
 
         Collection<FormDefinition> forms = dynamicBPMNFormGenerator.generateTaskForms(formModel,
                                                                                       settings.getMarshallerContext().getClassloader());
