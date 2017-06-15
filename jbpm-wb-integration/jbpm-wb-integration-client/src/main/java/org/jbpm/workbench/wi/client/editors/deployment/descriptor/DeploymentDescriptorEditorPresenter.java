@@ -94,6 +94,7 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
         fillPersistenceModes();
         fillAuditModes();
         fillRuntimeStrategies(translationService);
+        view.setSourceTabReadOnly(true); 
         view.setup();
     }
 
@@ -159,7 +160,6 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
     }
 
     protected void addSourcePage() {
-
         addPage(new PageImpl(view.getSourceEditor(),
                              CommonConstants.INSTANCE.SourceTabTitle()) {
             @Override

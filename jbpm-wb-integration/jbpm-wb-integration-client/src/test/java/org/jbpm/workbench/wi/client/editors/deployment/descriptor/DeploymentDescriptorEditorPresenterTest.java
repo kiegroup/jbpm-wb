@@ -72,6 +72,7 @@ public class DeploymentDescriptorEditorPresenterTest {
     public void testDeploymentDescriptorEditorSetup() throws Exception {
         presenter.onStartup(mock(ObservablePath.class), mock(PlaceRequest.class));
 
+        verify(view).setSourceTabReadOnly(true);
         verify(view).setup();
         verify(view, times(RuntimeStrategy.values().length)).addRuntimeStrategy(anyString(), anyString());
         verify(view, times(2)).addPersistenceMode(anyString(), anyString());

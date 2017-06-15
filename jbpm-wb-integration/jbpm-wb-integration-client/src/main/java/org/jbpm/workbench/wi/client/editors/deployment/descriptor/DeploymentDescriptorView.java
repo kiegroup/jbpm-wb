@@ -42,4 +42,6 @@ public interface DeploymentDescriptorView extends KieEditorView, IsWidget {
 
     void addAuditMode(String auditModeTitle, String auditModeValue);
 
+    void setSourceTabReadOnly(boolean readOnly);
+
 }
