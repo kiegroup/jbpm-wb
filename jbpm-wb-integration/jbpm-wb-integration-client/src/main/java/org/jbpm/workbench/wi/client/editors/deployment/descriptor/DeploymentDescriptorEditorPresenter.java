@@ -49,7 +49,7 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.events.NotificationEvent;
 import org.uberfire.workbench.model.menu.Menus;
 
-@WorkbenchEditor(identifier = "org.kie.jbpmconsole.dd", supportedTypes = { DDResourceType.class }, priority = 101)
+@WorkbenchEditor(identifier = "org.kie.jbpmconsole.dd", supportedTypes = {DDResourceType.class}, priority = 101)
 public class DeploymentDescriptorEditorPresenter extends KieEditor {
 
     private Caller<DDEditorService> ddEditorService;
@@ -70,10 +70,10 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
     private TranslationService translationService;
 
     @Inject
-    public DeploymentDescriptorEditorPresenter( final DeploymentDescriptorView baseView,
-                                                final Caller<DDEditorService> ddEditorService ,
-                                                TranslationService translationService) {
-        super( baseView );
+    public DeploymentDescriptorEditorPresenter(final DeploymentDescriptorView baseView,
+                                               final Caller<DDEditorService> ddEditorService,
+                                               TranslationService translationService) {
+        super(baseView);
         view = baseView;
         this.translationService = translationService;
         this.ddEditorService = ddEditorService;
@@ -81,129 +81,136 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
 
     //This is called after the View's content has been loaded
     public void onAfterViewLoaded() {
-        setOriginalHash( model.hashCode() );
+        setOriginalHash(model.hashCode());
     }
 
     @OnStartup
-    public void onStartup( final ObservablePath path, final PlaceRequest place ) {
+    public void onStartup(final ObservablePath path,
+                          final PlaceRequest place) {
         ddEditorService.call().createIfNotExists(path);
-        init( path, place, type );
+        init(path,
+             place,
+             type);
         fillPersistenceModes();
         fillAuditModes();
         fillRuntimeStrategies(translationService);
+        view.setSourceTabReadOnly(true);
         view.setup();
-
     }
 
     protected void loadContent() {
         view.showLoading();
         ddEditorService.call(new RemoteCallback<DeploymentDescriptorModel>() {
 
-            @Override
-            public void callback( final DeploymentDescriptorModel content ) {
-                //Path is set to null when the Editor is closed (which can happen before async calls complete).
-                if ( versionRecordManager.getCurrentPath() == null ) {
-                    return;
-                }
+                                 @Override
+                                 public void callback(final DeploymentDescriptorModel content) {
+                                     //Path is set to null when the Editor is closed (which can happen before async calls complete).
+                                     if (versionRecordManager.getCurrentPath() == null) {
+                                         return;
+                                     }
 
-                model = content;
-                resetEditorPages( content.getOverview() );
-                addSourcePage();
+                                     model = content;
+                                     resetEditorPages(content.getOverview());
+                                     addSourcePage();
 
-                view.setContent( content );
-                onAfterViewLoaded();
-                view.hideBusyIndicator();
-            }
-        },
-        getNoSuchFileExceptionErrorCallback()).load(versionRecordManager.getCurrentPath());
+                                     view.setContent(content);
+                                     onAfterViewLoaded();
+                                     view.hideBusyIndicator();
+                                 }
+                             },
+                             getNoSuchFileExceptionErrorCallback()).load(versionRecordManager.getCurrentPath());
     }
 
     protected Command onValidate() {
         return new Command() {
             @Override
             public void execute() {
-                ddEditorService.call( new RemoteCallback<List<ValidationMessage>>() {
+                ddEditorService.call(new RemoteCallback<List<ValidationMessage>>() {
                     @Override
-                    public void callback( final List<ValidationMessage> results ) {
-                        if ( results == null || results.isEmpty() ) {
-                            notification.fire( new NotificationEvent( CommonConstants.INSTANCE.ItemValidatedSuccessfully(),
-                                    NotificationEvent.NotificationType.SUCCESS ) );
+                    public void callback(final List<ValidationMessage> results) {
+                        if (results == null || results.isEmpty()) {
+                            notification.fire(new NotificationEvent(CommonConstants.INSTANCE.ItemValidatedSuccessfully(),
+                                                                    NotificationEvent.NotificationType.SUCCESS));
                         } else {
                             validationPopup.showMessages(results);
                         }
                     }
-                } ).validate( versionRecordManager.getCurrentPath(),
-                        model );
+                }).validate(versionRecordManager.getCurrentPath(),
+                            model);
             }
         };
     }
 
     protected void save() {
-        savePopUpPresenter.show( versionRecordManager.getCurrentPath(),
-                                 new ParameterizedCommand<String>() {
-                                     @Override
-                                     public void execute( final String comment ) {
-                                         view.showSaving();
-                                         view.updateContent( model );
-                                         ddEditorService.call( getSaveSuccessCallback( model.hashCode() ),
-                                                               new HasBusyIndicatorDefaultErrorCallback( view ) ).save( versionRecordManager.getCurrentPath(),
-                                                                                                                        model,
-                                                                                                                        metadata,
-                                                                                                                        comment );
-                                     }
-                                 }
-                               );
+        savePopUpPresenter.show(versionRecordManager.getCurrentPath(),
+                                new ParameterizedCommand<String>() {
+                                    @Override
+                                    public void execute(final String comment) {
+                                        view.showSaving();
+                                        view.updateContent(model);
+                                        ddEditorService.call(getSaveSuccessCallback(model.hashCode()),
+                                                             new HasBusyIndicatorDefaultErrorCallback(view)).save(versionRecordManager.getCurrentPath(),
+                                                                                                                  model,
+                                                                                                                  metadata,
+                                                                                                                  comment);
+                                    }
+                                }
+        );
         concurrentUpdateSessionInfo = null;
     }
 
     protected void addSourcePage() {
-
-        addPage( new PageImpl( view.getSourceEditor(),
-                CommonConstants.INSTANCE.SourceTabTitle() ) {
+        addPage(new PageImpl(view.getSourceEditor(),
+                             CommonConstants.INSTANCE.SourceTabTitle()) {
             @Override
             public void onFocus() {
                 onSourceTabSelected();
             }
-
             @Override
             public void onLostFocus() {
 
             }
-
-        } );
+        });
     }
 
     @Override
     public void onSourceTabSelected() {
         view.updateContent(model);
-        ddEditorService.call( new RemoteCallback<String>() {
+        ddEditorService.call(new RemoteCallback<String>() {
             @Override
-            public void callback( String source ) {
-                updateSource( source );
+            public void callback(String source) {
+                updateSource(source);
             }
-        } ).toSource( versionRecordManager.getCurrentPath(), model );
+        }).toSource(versionRecordManager.getCurrentPath(),
+                    model);
     }
 
-    protected void fillRuntimeStrategies(TranslationService translationService ){
+    protected void fillRuntimeStrategies(TranslationService translationService) {
         ClientRuntimeStrategy[] clientRuntimeStrategies = ClientRuntimeStrategy.values();
         for (ClientRuntimeStrategy clientRunTimeStrategy : clientRuntimeStrategies) {
-            view.addRuntimeStrategy(clientRunTimeStrategy.getValue(translationService),clientRunTimeStrategy.name());
+            view.addRuntimeStrategy(clientRunTimeStrategy.getValue(translationService),
+                                    clientRunTimeStrategy.name());
         }
     }
 
-    protected void fillPersistenceModes( ){
-        view.addPersistenceMode( "NONE", "NONE" );
-        view.addPersistenceMode( "JPA", "JPA" );
+    protected void fillPersistenceModes() {
+        view.addPersistenceMode("NONE",
+                                "NONE");
+        view.addPersistenceMode("JPA",
+                                "JPA");
     }
 
-    protected void fillAuditModes( ){
-        view.addAuditMode( "NONE", "NONE" );
-        view.addAuditMode( "JPA", "JPA" );
-        view.addAuditMode("JMS", "JMS");
+    protected void fillAuditModes() {
+        view.addAuditMode("NONE",
+                          "NONE");
+        view.addAuditMode("JPA",
+                          "JPA");
+        view.addAuditMode("JMS",
+                          "JMS");
     }
 
     protected void updateSource(String source) {
-        view.setSource( source );
+        view.setSource(source);
     }
 
     @WorkbenchPartView
@@ -219,9 +226,8 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
     @OnMayClose
     public boolean checkIfDirty() {
         view.updateContent(model);
-        return super.mayClose( model.hashCode() );
+        return super.mayClose(model.hashCode());
     }
-
 
     @WorkbenchPartTitleDecoration
     public IsWidget getTitle() {
@@ -240,7 +246,7 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
 
     protected void makeMenuBar() {
         menus = menuBuilder
-                .addSave( versionRecordManager.newSaveMenuItem(new Command() {
+                .addSave(versionRecordManager.newSaveMenuItem(new Command() {
                     @Override
                     public void execute() {
                         onSave();
@@ -250,5 +256,4 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
                 .addNewTopLevelMenu(versionRecordManager.buildMenu())
                 .build();
     }
-
 }
