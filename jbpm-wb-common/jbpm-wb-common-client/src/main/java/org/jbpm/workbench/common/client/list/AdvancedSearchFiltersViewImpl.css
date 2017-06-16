@@ -1,0 +1,3 @@
+.select-filters > .bootstrap-select.form-control + .bootstrap-select.form-control {
+    margin-left: 15px;
+}
