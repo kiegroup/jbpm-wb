@@ -33,7 +33,7 @@ import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
+import org.jbpm.workbench.df.client.filter.FilterSettingsJSONMarshaller;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
@@ -94,7 +94,7 @@ public class ProcessInstanceListPresenterTest {
     private FilterSettings filterSettings;
 
     @Mock
-    private DataSetEditorManager dataSetEditorManager;
+    private FilterSettingsJSONMarshaller filterSettingsJSONMarshaller;
 
     @Spy
     private DataSetLookup dataSetLookup;
@@ -114,7 +114,7 @@ public class ProcessInstanceListPresenterTest {
         when(filterSettings.getDataSetLookup()).thenReturn(dataSetLookup);
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getPageSize()).thenReturn(10);
-        when(dataSetEditorManager.getStrToTableSettings(anyString())).thenReturn(filterSettings);
+        when(filterSettingsJSONMarshaller.fromJsonString(anyString())).thenReturn(filterSettings);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
         when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
         when(filterSettings.getKey()).thenReturn("key");
