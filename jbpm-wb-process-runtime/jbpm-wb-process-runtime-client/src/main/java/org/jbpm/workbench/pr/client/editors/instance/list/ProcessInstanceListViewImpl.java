@@ -23,22 +23,15 @@ import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.cell.client.*;
+import com.google.gwt.cell.client.CompositeCell;
+import com.google.gwt.cell.client.HasCell;
+import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.BrowserEvents;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.InputElement;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.view.client.CellPreviewEvent;
-import com.google.gwt.view.client.DefaultSelectionEventManager;
-import com.google.gwt.view.client.NoSelectionModel;
-import com.google.gwt.view.client.SelectionChangeEvent;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.ButtonGroup;
@@ -69,25 +62,10 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     public static final String TAB_COMPLETED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1";
     public static final String TAB_ABORTED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2";
 
-    private List<ProcessInstanceSummary> selectedProcessInstances = new ArrayList<ProcessInstanceSummary>();
-
     private final Constants constants = Constants.INSTANCE;
 
-    private AnchorListItem bulkAbortNavLink;
-    private AnchorListItem bulkSignalNavLink;
-    
     @Inject
     private ManagedInstance<ProcessInstanceSummaryErrorPopoverCell> popoverCellInstance;
-
-    private void controlBulkOperations() {
-        if ( selectedProcessInstances != null && selectedProcessInstances.size() > 0 ) {
-            bulkAbortNavLink.setEnabled( true );
-            bulkSignalNavLink.setEnabled( true );
-        } else {
-            bulkAbortNavLink.setEnabled( false );
-            bulkSignalNavLink.setEnabled( false );
-        }
-    }
 
     @Override
     public void init( final ProcessInstanceListPresenter presenter ) {
@@ -141,78 +119,16 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     }
 
     @Override
-    public void initSelectionModel(ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
+    public void initSelectionModel(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption(constants.No_Process_Instances_Found());
-        extendedPagedTable.getRightActionsToolbar().clear();
+        extendedPagedTable.setSelectionCallback((pis, close) -> presenter.selectProcessInstance(pis,
+                                                                                                close));
         initBulkActions(extendedPagedTable);
-        NoSelectionModel<ProcessInstanceSummary> selectionModel = new NoSelectionModel<ProcessInstanceSummary>();
-        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
-            @Override
-            public void onSelectionChange(SelectionChangeEvent event) {
-
-                boolean close = false;
-                if (selectedRow == -1 || extendedPagedTable.getKeyboardSelectedRow() != selectedRow) {
-                    extendedPagedTable.setRowStyles(selectedStyles);
-                    selectedRow = extendedPagedTable.getKeyboardSelectedRow();
-                    extendedPagedTable.redraw();
-                } else {
-                    close = true;
-                }
-
-                selectedItem = selectionModel.getLastSelectedObject();
-
-                presenter.selectProcessInstance(selectedItem, close);
-            }
-        });
-
-        DefaultSelectionEventManager<ProcessInstanceSummary> noActionColumnManager = DefaultSelectionEventManager
-                .createCustomManager( new DefaultSelectionEventManager.EventTranslator<ProcessInstanceSummary>() {
-
-                    @Override
-                    public boolean clearCurrentSelection( CellPreviewEvent<ProcessInstanceSummary> event ) {
-                        return false;
-                    }
-
-                    @Override
-                    public DefaultSelectionEventManager.SelectAction translateSelectionEvent( CellPreviewEvent<ProcessInstanceSummary> event ) {
-                        DefaultSelectionEventManager.SelectAction ret = DefaultSelectionEventManager.SelectAction.DEFAULT;
-                        NativeEvent nativeEvent = event.getNativeEvent();
-                        if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) ) {
-                            // Ignore if the event didn't occur in the correct column.
-                            if ( extendedPagedTable.isSelectionIgnoreColumn( event.getColumn() ) ) {
-                                ret = DefaultSelectionEventManager.SelectAction.IGNORE;
-                            }
-                            //Extension for checkboxes
-                            Element target = nativeEvent.getEventTarget().cast();
-                            if ( "input".equals( target.getTagName().toLowerCase() ) ) {
-                                final InputElement input = target.cast();
-                                if ( "checkbox".equals( input.getType().toLowerCase() ) ) {
-                                    // Synchronize the checkbox with the current selection state.
-                                    if ( !selectedProcessInstances.contains( event.getValue() ) ) {
-                                        selectedProcessInstances.add( event.getValue() );
-                                        input.setChecked( true );
-                                    } else {
-                                        selectedProcessInstances.remove( event.getValue() );
-                                        input.setChecked( false );
-                                    }
-                                    getListGrid().redraw();
-                                    controlBulkOperations();
-                                    ret = DefaultSelectionEventManager.SelectAction.IGNORE;
-                                }
-                            }
-                        }
-                        return ret;
-                    }
-
-                } );
-
-        extendedPagedTable.setSelectionModel(selectionModel, noActionColumnManager);
-        extendedPagedTable.setRowStyles(selectedStyles);
     }
 
     @Override
     public void initColumns( ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
-        final ColumnMeta checkColumnMeta = initChecksColumn();
+        final ColumnMeta checkColumnMeta = initChecksColumn(extendedPagedTable);
 
         Column<ProcessInstanceSummary, ?> actionsColumn = initActionsColumn();
         Column<ProcessInstanceSummary, ?> errorCountColumn = initErrorCountColumn();
@@ -357,9 +273,10 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     }
 
     private void initBulkActions( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
-        bulkAbortNavLink = GWT.create(AnchorListItem.class);
+        extendedPagedTable.getRightActionsToolbar().clear();
+        final AnchorListItem bulkAbortNavLink = GWT.create(AnchorListItem.class);
         bulkAbortNavLink.setText(constants.Bulk_Abort());
-        bulkSignalNavLink = GWT.create(AnchorListItem.class);
+        final AnchorListItem bulkSignalNavLink = GWT.create(AnchorListItem.class);
         bulkSignalNavLink.setText(constants.Bulk_Signal());
 
         final ButtonGroup bulkActions = GWT.create(ButtonGroup.class);
@@ -385,8 +302,8 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             @Override
             public void onClick( ClickEvent event ) {
                 if( Window.confirm( constants.Abort_Process_Instances() ) ) {
-                    presenter.bulkAbort(selectedProcessInstances);
-                    selectedProcessInstances.clear();
+                    presenter.bulkAbort(extendedPagedTable.getSelectedItems());
+                    extendedPagedTable.deselectAllItems();
                     extendedPagedTable.redraw();
                 }
             }
@@ -397,17 +314,15 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         bulkSignalNavLink.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
-                presenter.bulkSignal( selectedProcessInstances );
-                selectedProcessInstances.clear();
+                presenter.bulkSignal(extendedPagedTable.getSelectedItems());
+                extendedPagedTable.deselectAllItems();
                 extendedPagedTable.redraw();
             }
         } );
 
         extendedPagedTable.getRightActionsToolbar().add(bulkActions);
-
-        controlBulkOperations();
     }
-    
+
     private Column<ProcessInstanceSummary, ProcessInstanceSummary> initErrorCountColumn() {
         
         Column<ProcessInstanceSummary, ProcessInstanceSummary> column = new Column<ProcessInstanceSummary, ProcessInstanceSummary>(
@@ -464,43 +379,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         actionsColumn.setDataStoreName(COL_ID_ACTIONS);
 
         return actionsColumn;
-    }
-
-    private ColumnMeta<ProcessInstanceSummary> initChecksColumn() {
-        CheckboxCell checkboxCell = new CheckboxCell(true,false);
-        Column<ProcessInstanceSummary, Boolean> checkColumn = new Column<ProcessInstanceSummary, Boolean>(checkboxCell ) {
-            @Override
-            public Boolean getValue( ProcessInstanceSummary object ) {
-                // Get the value from the selection model.
-                return selectedProcessInstances.contains( object );
-            }
-        };
-
-        Header<Boolean> selectPageHeader = new Header<Boolean>(checkboxCell) {
-            @Override
-            public Boolean getValue() {
-                List<ProcessInstanceSummary> displayedInstances = presenter.getDisplayedProcessInstances();
-                return displayedInstances.size() > 0
-                        && selectedProcessInstances.size() == presenter.getDisplayedProcessInstances().size();
-            }
-        };
-        selectPageHeader.setUpdater(new ValueUpdater<Boolean>() {
-            @Override
-            public void update(Boolean value) {
-                selectedProcessInstances.clear();
-                if (value) {
-                    selectedProcessInstances.addAll(presenter.getDisplayedProcessInstances());
-                }
-                getListGrid().redraw();
-                controlBulkOperations();
-            }
-        });
-
-        checkColumn.setSortable(false);
-        checkColumn.setDataStoreName( COL_ID_SELECT );
-        ColumnMeta<ProcessInstanceSummary> checkColMeta = new ColumnMeta<ProcessInstanceSummary>( checkColumn, "");
-        checkColMeta.setHeader(selectPageHeader);
-        return checkColMeta;
     }
 
     @Override

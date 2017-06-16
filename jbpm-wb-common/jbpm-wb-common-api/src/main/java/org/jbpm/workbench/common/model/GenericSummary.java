@@ -19,12 +19,13 @@ package org.jbpm.workbench.common.model;
 import java.io.Serializable;
 import org.uberfire.paging.AbstractPageRow;
 
-public class GenericSummary extends AbstractPageRow implements Serializable {
+public abstract class GenericSummary extends AbstractPageRow implements Serializable {
 
     private static final long serialVersionUID = -8709434225517887911L;
 
     protected Object id;
     protected String name;
+    private boolean selected = false;
 
     public GenericSummary() {
     }
@@ -48,6 +49,14 @@ public class GenericSummary extends AbstractPageRow implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 
     @Override
@@ -89,6 +98,7 @@ public class GenericSummary extends AbstractPageRow implements Serializable {
         return "GenericSummary{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", selected=" + selected +
                 '}';
     }
 }

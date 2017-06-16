@@ -26,16 +26,12 @@ import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.dom.client.BrowserEvents;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.view.client.CellPreviewEvent;
-import com.google.gwt.view.client.DefaultSelectionEventManager;
-import com.google.gwt.view.client.NoSelectionModel;
-import com.google.gwt.view.client.SelectionChangeEvent;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.resources.CommonResources;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
@@ -108,16 +104,16 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
     }
 
     @Override
-    public void initSelectionModel(ExtendedPagedTable<TaskSummary> extendedPagedTable) {
-        selectedStyles = new RowStyles<TaskSummary>() {
+    public void initSelectionModel(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+        final RowStyles selectedStyles = new RowStyles<TaskSummary>() {
 
             @Override
-            public String getStyleNames( TaskSummary row,
-                                         int rowIndex ) {
-                if ( rowIndex == selectedRow ) {
+            public String getStyleNames(TaskSummary row,
+                                        int rowIndex) {
+                if (rowIndex == extendedPagedTable.getSelectedRow()) {
                     return CommonResources.INSTANCE.css().selected();
                 } else {
-                    if ( row.getStatus().equals( TASK_STATUS_INPROGRESS ) || row.getStatus().equals( TASK_STATUS_READY ) ) {
+                    if (row.getStatus().equals(TASK_STATUS_INPROGRESS) || row.getStatus().equals(TASK_STATUS_READY)) {
                         switch (row.getPriority()) {
                             case 5:
                                 return HumanTaskResources.INSTANCE.css().taskPriorityFive();
@@ -132,63 +128,18 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
                             default:
                                 return "";
                         }
-                    } else if ( row.getStatus().equals( TASK_STATUS_COMPLETED ) ) {
+                    } else if (row.getStatus().equals(TASK_STATUS_COMPLETED)) {
                         return HumanTaskResources.INSTANCE.css().taskCompleted();
                     }
-
                 }
                 return null;
             }
         };
 
-        extendedPagedTable.setEmptyTableCaption( constants.No_Tasks_Found() );
-
-        NoSelectionModel<TaskSummary> selectionModel = new NoSelectionModel<TaskSummary>();
-        selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
-            @Override
-            public void onSelectionChange( SelectionChangeEvent event ) {
-                boolean close = false;
-                if ( selectedRow == -1 ) {
-                    selectedRow = extendedPagedTable.getKeyboardSelectedRow();
-                    extendedPagedTable.setRowStyles( selectedStyles );
-                    extendedPagedTable.redraw();
-
-                } else if ( extendedPagedTable.getKeyboardSelectedRow() != selectedRow ) {
-                    extendedPagedTable.setRowStyles( selectedStyles );
-                    selectedRow = extendedPagedTable.getKeyboardSelectedRow();
-                    extendedPagedTable.redraw();
-                } else {
-                    close = true;
-                }
-
-                selectedItem = selectionModel.getLastSelectedObject();
-
-                presenter.selectTask(selectedItem, close);
-            }
-        } );
-
-        DefaultSelectionEventManager<TaskSummary> noActionColumnManager = DefaultSelectionEventManager
-                .createCustomManager( new DefaultSelectionEventManager.EventTranslator<TaskSummary>() {
-
-                    @Override
-                    public boolean clearCurrentSelection( CellPreviewEvent<TaskSummary> event ) {
-                        return false;
-                    }
-
-                    @Override
-                    public DefaultSelectionEventManager.SelectAction translateSelectionEvent( CellPreviewEvent<TaskSummary> event ) {
-                        DefaultSelectionEventManager.SelectAction ret = DefaultSelectionEventManager.SelectAction.DEFAULT;
-                        NativeEvent nativeEvent = event.getNativeEvent();
-                        if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) &&
-                            // Ignore if the event didn't occur in the correct column.
-                            extendedPagedTable.isSelectionIgnoreColumn( event.getColumn() ) ) {
-                            ret = DefaultSelectionEventManager.SelectAction.IGNORE;
-                        }
-                        return ret;
-                    }
-                } );
-        extendedPagedTable.setSelectionModel( selectionModel, noActionColumnManager );
-        extendedPagedTable.setRowStyles( selectedStyles );
+        extendedPagedTable.setEmptyTableCaption(constants.No_Tasks_Found());
+        extendedPagedTable.setSelectionCallback((task, close) -> presenter.selectTask(task,
+                                                                                      close));
+        extendedPagedTable.setRowStyles(selectedStyles);
     }
 
     @Override
@@ -296,7 +247,6 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
         }, getResumeActionCondition()));
 
         cells.add(new CompleteActionHasCell(constants.Open(), task -> {
-            selectedRow = -1;
             presenter.selectTask(task, false);
         }));
 

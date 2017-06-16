@@ -27,20 +27,20 @@ import org.jbpm.workbench.es.util.ExecutionErrorType;
 @Portable
 public class ExecutionErrorSummary extends GenericSummary {
 
-    protected String errorId;
-    protected ExecutionErrorType type;
-    protected String deploymentId;
-    protected Long processInstanceId;
-    protected String processId;
-    protected Long activityId;
-    protected String activityName;
-    protected Long jobId;
-    protected String errorMessage;
-    protected String error;
-    protected Boolean acknowledged;
-    protected String acknowledgedBy;
-    protected Date acknowledgedAt;
-    protected Date errorDate;
+    private String errorId;
+    private ExecutionErrorType type;
+    private String deploymentId;
+    private Long processInstanceId;
+    private String processId;
+    private Long activityId;
+    private String activityName;
+    private Long jobId;
+    private String errorMessage;
+    private String error;
+    private Boolean acknowledged;
+    private String acknowledgedBy;
+    private Date acknowledgedAt;
+    private Date errorDate;
 
     public ExecutionErrorSummary() {
     }
@@ -196,12 +196,22 @@ public class ExecutionErrorSummary extends GenericSummary {
 
     @Override
     public String toString() {
-
-        return "ExecutionErrorSummary  [type=" + this.type + ", deploymentId=" + this.deploymentId +
-                ", processInstanceId=" + this.processInstanceId + ", processId=" + this.processId + ", activityId=" +
-                this.activityId + ", activityName=" + this.activityName + ", errorMessage=" + this.errorMessage +
-                ", acknowledged=" + this.acknowledged + ", acknowledgedBy=" + this.acknowledgedBy + ", acknowledgedAt="
-                + this.acknowledgedAt + "]";
+        return "ExecutionErrorSummary{" +
+                "errorId='" + errorId + '\'' +
+                ", type=" + type +
+                ", deploymentId='" + deploymentId + '\'' +
+                ", processInstanceId=" + processInstanceId +
+                ", processId='" + processId + '\'' +
+                ", activityId=" + activityId +
+                ", activityName='" + activityName + '\'' +
+                ", jobId=" + jobId +
+                ", errorMessage='" + errorMessage + '\'' +
+                ", error='" + error + '\'' +
+                ", acknowledged=" + acknowledged +
+                ", acknowledgedBy='" + acknowledgedBy + '\'' +
+                ", acknowledgedAt=" + acknowledgedAt +
+                ", errorDate=" + errorDate +
+                "} " + super.toString();
     }
 
     public static class Builder {

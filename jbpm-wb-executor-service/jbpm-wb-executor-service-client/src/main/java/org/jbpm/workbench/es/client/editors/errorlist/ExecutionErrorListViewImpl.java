@@ -24,23 +24,13 @@ import javax.inject.Inject;
 
 import com.google.gwt.cell.client.ActionCell.Delegate;
 import com.google.gwt.cell.client.Cell;
-import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.BrowserEvents;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.InputElement;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.Header;
-import com.google.gwt.view.client.CellPreviewEvent;
-import com.google.gwt.view.client.DefaultSelectionEventManager;
-import com.google.gwt.view.client.NoSelectionModel;
-import com.google.gwt.view.client.SelectionChangeEvent;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.ButtonGroup;
@@ -85,18 +75,6 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
 
     @Inject
     BooleanConverter booleanConverter;
-
-    private List<ExecutionErrorSummary> selectedExecutionErrorSummary = new ArrayList<>();
-
-    private AnchorListItem bulkAbortNavLink;
-
-    private void controlBulkOperations() {
-        if (selectedExecutionErrorSummary != null && selectedExecutionErrorSummary.size() > 0) {
-            bulkAbortNavLink.setEnabled(true);
-        } else {
-            bulkAbortNavLink.setEnabled(false);
-        }
-    }
 
     @Override
     public void init(final ExecutionErrorListPresenter presenter) {
@@ -154,77 +132,15 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
     @Override
     public void initSelectionModel(final ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption(constants.No_Execution_Errors_Found());
-        extendedPagedTable.getRightActionsToolbar().clear();
+        extendedPagedTable.setSelectionCallback((error, close) -> presenter.selectExecutionError(error,
+                                                                                              close));
         initBulkActions(extendedPagedTable);
-        NoSelectionModel<ExecutionErrorSummary> selectionModel = new NoSelectionModel<>();
-        selectionModel.addSelectionChangeHandler((SelectionChangeEvent event) -> {
-
-            boolean close = false;
-            if (selectedRow == -1) {
-                extendedPagedTable.setRowStyles(selectedStyles);
-                selectedRow = extendedPagedTable.getKeyboardSelectedRow();
-                extendedPagedTable.redraw();
-            } else if (extendedPagedTable.getKeyboardSelectedRow() != selectedRow) {
-                extendedPagedTable.setRowStyles(selectedStyles);
-                selectedRow = extendedPagedTable.getKeyboardSelectedRow();
-                extendedPagedTable.redraw();
-            } else {
-                close = true;
-            }
-
-            selectedItem = selectionModel.getLastSelectedObject();
-
-            presenter.selectExecutionError(selectedItem,
-                                           close);
-        });
-
-        DefaultSelectionEventManager<ExecutionErrorSummary> noActionColumnManager = DefaultSelectionEventManager
-                .createCustomManager(new DefaultSelectionEventManager.EventTranslator<ExecutionErrorSummary>() {
-
-                    @Override
-                    public boolean clearCurrentSelection(CellPreviewEvent<ExecutionErrorSummary> event) {
-                        return false;
-                    }
-
-                    @Override
-                    public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<ExecutionErrorSummary> event) {
-                        NativeEvent nativeEvent = event.getNativeEvent();
-                        if (BrowserEvents.CLICK.equals(nativeEvent.getType())) {
-                            // Ignore if the event didn't occur in the correct column.
-                            if (extendedPagedTable.isSelectionIgnoreColumn(event.getColumn())) {
-                                return DefaultSelectionEventManager.SelectAction.IGNORE;
-                            }
-                            //Extension for checkboxes
-                            Element target = nativeEvent.getEventTarget().cast();
-                            if ("input".equals(target.getTagName().toLowerCase())) {
-                                final InputElement input = target.cast();
-                                if ("checkbox".equals(input.getType().toLowerCase())) {
-                                    // Synchronize the checkbox with the current selection state.
-                                    if (!selectedExecutionErrorSummary.contains(event.getValue())) {
-                                        selectedExecutionErrorSummary.add(event.getValue());
-                                        input.setChecked(true);
-                                    } else {
-                                        selectedExecutionErrorSummary.remove(event.getValue());
-                                        input.setChecked(false);
-                                    }
-                                    getListGrid().redraw();
-                                    controlBulkOperations();
-                                    return DefaultSelectionEventManager.SelectAction.IGNORE;
-                                }
-                            }
-                        }
-
-                        return DefaultSelectionEventManager.SelectAction.DEFAULT;
-                    }
-                });
-
-        extendedPagedTable.setSelectionModel(selectionModel,
-                                             noActionColumnManager);
-        extendedPagedTable.setRowStyles(selectedStyles);
     }
 
     private void initBulkActions(final ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable) {
-        bulkAbortNavLink = GWT.create(AnchorListItem.class);
+        extendedPagedTable.getRightActionsToolbar().clear();
+
+        final AnchorListItem bulkAbortNavLink = GWT.create(AnchorListItem.class);
         bulkAbortNavLink.setText(constants.Bulk_Ack());
 
         final ButtonGroup bulkActions = GWT.create(ButtonGroup.class);
@@ -247,21 +163,18 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                               constants.Acknowledge(),
                               constants.Bulk_Ack_confirm(),
                               () -> {
-                                  presenter.bulkAcknowledge(selectedExecutionErrorSummary);
-                                  selectedExecutionErrorSummary.clear();
-                                  controlBulkOperations();
+                                  presenter.bulkAcknowledge(extendedPagedTable.getSelectedItems());
+                                  extendedPagedTable.deselectAllItems();
                                   extendedPagedTable.redraw();
                               });
         });
 
         extendedPagedTable.getRightActionsToolbar().add(bulkActions);
-
-        controlBulkOperations();
     }
 
     @Override
-    public void initColumns(ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable) {
-        final ColumnMeta<ExecutionErrorSummary> checkColumnMeta = initChecksColumn();
+    public void initColumns(final ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable) {
+        final ColumnMeta<ExecutionErrorSummary> checkColumnMeta = initChecksColumn(extendedPagedTable);
 
         final List<ColumnMeta<ExecutionErrorSummary>> columnMetas = new ArrayList<ColumnMeta<ExecutionErrorSummary>>();
 
@@ -317,41 +230,6 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                                          constants.Actions()));
 
         extendedPagedTable.addColumns(columnMetas);
-    }
-
-    private ColumnMeta<ExecutionErrorSummary> initChecksColumn() {
-        CheckboxCell checkboxCell = new CheckboxCell(true,
-                                                     false);
-        Column<ExecutionErrorSummary, Boolean> checkColumn = new Column<ExecutionErrorSummary, Boolean>(checkboxCell) {
-            @Override
-            public Boolean getValue(ExecutionErrorSummary object) {
-                return selectedExecutionErrorSummary.contains(object);
-            }
-        };
-
-        Header<Boolean> selectPageHeader = new Header<Boolean>(checkboxCell) {
-            @Override
-            public Boolean getValue() {
-                List<ExecutionErrorSummary> displayedInstances = presenter.getDisplayedExecutionErrors();
-                return displayedInstances.size() > 0
-                        && selectedExecutionErrorSummary.size() == displayedInstances.size();
-            }
-        };
-        selectPageHeader.setUpdater((Boolean value) -> {
-            selectedExecutionErrorSummary.clear();
-            if (value) {
-                selectedExecutionErrorSummary.addAll(presenter.getDisplayedExecutionErrors());
-            }
-            getListGrid().redraw();
-            controlBulkOperations();
-        });
-
-        checkColumn.setSortable(false);
-        checkColumn.setDataStoreName(COL_ID_SELECT);
-        ColumnMeta<ExecutionErrorSummary> checkColMeta = new ColumnMeta<ExecutionErrorSummary>(checkColumn,
-                                                                                               "");
-        checkColMeta.setHeader(selectPageHeader);
-        return checkColMeta;
     }
 
     private Column<ExecutionErrorSummary, ExecutionErrorSummary> initActionsColumn() {

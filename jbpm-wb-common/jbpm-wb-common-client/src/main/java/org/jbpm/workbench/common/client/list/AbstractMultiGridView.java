@@ -23,15 +23,20 @@ import java.util.function.Function;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.common.collect.Iterables;
+import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.RowStyles;
+import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.gwtbootstrap3.client.ui.Button;
@@ -40,8 +45,6 @@ import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.workbench.common.client.resources.CommonResources;
-import org.jbpm.workbench.common.client.resources.css.CommonCSS;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.client.util.DateRange;
 import org.jbpm.workbench.common.model.GenericSummary;
@@ -57,6 +60,7 @@ import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
@@ -66,13 +70,12 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public static final String TAB_SEARCH = "base";
     public static final String FILTER_TABLE_SETTINGS = "tableSettings";
     public static final String USER_DEFINED = "ud_";
+    public static final String COL_ID_SELECT = "Select";
 
     interface Binder extends UiBinder<Widget, AbstractMultiGridView> {
     }
 
     private static Binder uiBinder = GWT.create( Binder.class );
-
-    private final CommonCSS commonCSS = CommonResources.INSTANCE.css();
 
     private final Constants constants = Constants.INSTANCE;
 
@@ -101,29 +104,13 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     protected ExtendedPagedTable<T> currentListGrid;
 
-    protected RowStyles<T> selectedStyles = new RowStyles<T>() {
-
-        @Override
-        public String getStyleNames( T row,
-                int rowIndex ) {
-            if ( rowIndex == selectedRow ) {
-                return commonCSS.selected();
-            }
-            return null;
-        }
-    };
-
-    protected T selectedItem;
-
-    protected int selectedRow = -1;
-
     public GridGlobalPreferences currentGlobalPreferences;
 
     public Button createTabButton = GWT.create(Button.class);
 
     public AbstractMultiGridView() {
-        initWidget( uiBinder.createAndBindUi( this ) );
-        column.add( filterPagedTable.makeWidget() );
+        initWidget(uiBinder.createAndBindUi(this));
+        column.add(filterPagedTable.makeWidget());
         createTabButton.setIcon(IconType.PLUS);
         createTabButton.setSize(ButtonSize.SMALL);
     }
@@ -149,7 +136,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                     for ( int i = 0; i < existingGrids.size(); i++ ) {
                         final String key = existingGrids.get( i );
                         final ExtendedPagedTable<T> extendedPagedTable = loadGridInstance( preferences, key );
-                        extendedPagedTable.setDataProvider( presenter.getDataProvider());
+                        extendedPagedTable.setDataProvider(presenter.getDataProvider());
                         filterPagedTable.addTab(extendedPagedTable,
                                                 key,
                                                 () -> {
@@ -211,11 +198,26 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         initDefaultFilters( currentGlobalPreferences, createTabButton );
     }
 
-  /*
-   * By default all the tables will have a refresh button
-   */
+    protected void controlBulkOperations(final ExtendedPagedTable<T> extendedPagedTable) {
+        Scheduler.get().scheduleDeferred(() -> enableWidgets(Iterables.getFirst(extendedPagedTable.getRightActionsToolbar(),
+                                                                                null),
+                                                             extendedPagedTable.hasSelectedItems()));
+    }
 
-    public void initGenericToolBar( ExtendedPagedTable<T> extendedPagedTable ) {
+    protected void enableWidgets(final Widget widget,
+                                 boolean enable) {
+        if (widget == null) {
+            return;
+        }
+        if (widget instanceof HasEnabled) {
+            ((HasEnabled) widget).setEnabled(enable);
+        }
+        if (widget instanceof HasWidgets) {
+            for (Widget w : (HasWidgets) widget) {
+                enableWidgets(w,
+                              enable);
+            }
+        }
     }
 
     public String getValidKeyForAdditionalListGrid( String baseName ) {
@@ -229,7 +231,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         newListGrid.setShowFastFordwardPagerButton( false );
         newListGrid.setPreferencesService( preferencesService );
         initColumns( newListGrid );
-        initGenericToolBar( newListGrid );
         initSelectionModel( newListGrid );
         newListGrid.loadPageSizePreferences();
         newListGrid.createPageSizesListBox(5, 20, 5);
@@ -256,8 +257,10 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         return table;
     }
 
-    protected AdvancedSearchTable<T> createAdvancedSearchTable(final GridGlobalPreferences preferences) {
-        final AdvancedSearchTable advancedSearchTable = new AdvancedSearchTable<T>(preferences);
+    protected ExtendedPagedTable<T> createAdvancedSearchTable(final GridGlobalPreferences preferences) {
+        final ExtendedPagedTable advancedSearchTable = new ExtendedPagedTable<T>(preferences);
+        advancedSearchTable.getElement().getStyle().setPaddingTop(0,
+                                                                  Style.Unit.PX);
         advancedSearchTable.getTopToolbar().add(advancedSearchFiltersView);
         return advancedSearchTable;
     }
@@ -268,6 +271,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                                                            key);
         newListGrid.setShowLastPagerButton(false);
         newListGrid.setShowFastFordwardPagerButton(false);
+        newListGrid.dataGrid.addRedrawHandler(() -> controlBulkOperations(newListGrid));
         preferencesService.call( new RemoteCallback<GridPreferencesStore>() {
 
             @Override
@@ -275,7 +279,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                 newListGrid.setPreferencesService( preferencesService );
                 newListGrid.setGridPreferencesStore( preferencesStore );
                 initColumns( newListGrid );
-                initGenericToolBar( newListGrid );
                 initSelectionModel( newListGrid );
                 newListGrid.loadPageSizePreferences();
                 newListGrid.createPageSizesListBox(5, 20, 5);
@@ -461,6 +464,37 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         column.setSortable( true );
         column.setDataStoreName( columnId );
         return column;
+    }
+
+    protected ColumnMeta<T> initChecksColumn(final ExtendedPagedTable<T> extendedPagedTable) {
+        CheckboxCell checkboxCell = new CheckboxCell(true,
+                                                     false);
+        Column<T, Boolean> checkColumn = new Column<T, Boolean>(checkboxCell) {
+            @Override
+            public Boolean getValue(T pis) {
+                // Get the value from the selection model.
+                return pis.isSelected();
+            }
+        };
+
+        Header<Boolean> selectPageHeader = new Header<Boolean>(checkboxCell) {
+            @Override
+            public Boolean getValue() {
+                return extendedPagedTable.isAllItemsSelected();
+            }
+        };
+
+        selectPageHeader.setUpdater(value -> {
+            getListGrid().getVisibleItems().forEach(pis -> pis.setSelected(value));
+            getListGrid().redraw();
+        });
+
+        checkColumn.setSortable(false);
+        checkColumn.setDataStoreName(COL_ID_SELECT);
+        ColumnMeta<T> checkColMeta = new ColumnMeta<T>(checkColumn,
+                                                       "");
+        checkColMeta.setHeader(selectPageHeader);
+        return checkColMeta;
     }
 
     public int getRefreshValue() {

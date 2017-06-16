@@ -33,7 +33,6 @@ public interface ExecutionErrorDataSetConstants {
     String COLUMN_PROCESS_INST_ID = "PROCESS_INST_ID";
     String COLUMN_ERROR_TYPE = "ERROR_TYPE";
 
-    String COL_ID_SELECT = "Select";
     String COL_ID_ACTIONS = "Actions";
     String EXECUTION_ERROR_LIST_PREFIX = "DS_ExecutionErrorListGrid";
 }
