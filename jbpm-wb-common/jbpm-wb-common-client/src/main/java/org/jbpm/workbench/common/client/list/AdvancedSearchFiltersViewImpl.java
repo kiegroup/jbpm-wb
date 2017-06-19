@@ -57,6 +57,10 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     Span filterText;
 
     @Inject
+    @DataField("date-dropdown-filter-text")
+    Span dateFilterText;
+
+    @Inject
     @DataField("active-filters-text")
     Span activeFiltersText;
 
@@ -65,12 +69,20 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     Div filtersInput;
 
     @Inject
+    @DataField("date-filters-input")
+    Div dateFiltersInput;
+
+    @Inject
     @DataField("remove-all-filters")
     Anchor removeAll;
 
     @Inject
     @DataField("filters")
     UnorderedList filters;
+
+    @Inject
+    @DataField("date-filters")
+    UnorderedList dateFilters;
 
     @Inject
     @DataField("active-filters")
@@ -85,6 +97,14 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     @Inject
     @DataField("select-filters")
     private Div selectFilters;
+
+    @Inject
+    @DataField("date-caret")
+    private Span dateCaret;
+
+    @Inject
+    @DataField("date-button")
+    private Button dateButton;
 
     @Inject
     private ManagedInstance<Select> selectProvider;
@@ -113,12 +133,12 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                               final String placeholder,
                               final Consumer<String> addCallback,
                               final Consumer<String> removeCallback) {
-        createFilterOption(label);
+        createFilterOption(label,
+                           filters,
+                           e -> setInputCurrentFilter(label));
         createInput(label,
                     placeholder,
-                    input -> {
-                        input.setType("text");
-                    },
+                    input -> input.setType("text"),
                     addCallback,
                     removeCallback);
     }
@@ -128,12 +148,15 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                  final String placeholder,
                                  final Consumer<String> addCallback,
                                  final Consumer<String> removeCallback) {
-        createFilterOption(label);
+        createFilterOption(label,
+                           filters,
+                           e -> setInputCurrentFilter(label));
         createInput(label,
                     placeholder,
                     input -> {
                         input.setType("number");
-                        input.setAttribute("min", "0");
+                        input.setAttribute("min",
+                                           "0");
                         input.addEventListener("keypress",
                                                getNumericInputListener(),
                                                false);
@@ -142,10 +165,10 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                     removeCallback);
     }
 
-    protected EventListener<KeyboardEvent> getNumericInputListener(){
+    protected EventListener<KeyboardEvent> getNumericInputListener() {
         return (KeyboardEvent e) -> {
             int keyCode = e.getKeyCode();
-            if(keyCode <= 0){ //getKeyCode() returns 0 for numbers on Firefox 53
+            if (keyCode <= 0) { //getKeyCode() returns 0 for numbers on Firefox 53
                 keyCode = e.getWhich();
             }
             if (!((keyCode >= KeyCodes.KEY_NUM_ZERO && keyCode <= KeyCodes.KEY_NUM_NINE) ||
@@ -154,7 +177,7 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                 e.preventDefault();
             }
         };
-    };
+    }
 
     @Override
     public void addDataSetSelectFilter(final String label,
@@ -207,10 +230,15 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
         div.appendChild(divTo);
         appendWidgetToElement(div,
                               toDate);
-        filtersInput.appendChild(div);
-        createFilterOption(label);
-        if (filterText.getTextContent().isEmpty()) {
-            setCurrentFilter(label);
+        dateFiltersInput.appendChild(div);
+        createFilterOption(label,
+                           dateFilters,
+                           e -> setDateCurrentFilter(label));
+        if (dateFilterText.getTextContent().isEmpty()) {
+            setDateCurrentFilter(label);
+        } else {
+            removeCSSClass(dateCaret, "hidden");
+            dateButton.setAttribute("data-toggle", "dropdown");
         }
     }
 
@@ -320,26 +348,45 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                false);
         filtersInput.appendChild(input);
         if (filterText.getTextContent().isEmpty()) {
-            setCurrentFilter(label);
+            setInputCurrentFilter(label);
         }
     }
 
-    private void createFilterOption(final String label) {
+    private void createFilterOption(final String label,
+                                    final HTMLElement element,
+                                    final EventListener listener) {
         final Anchor a = (Anchor) getDocument().createElement("a");
         a.setTextContent(label);
         a.addEventListener("click",
-                           e -> setCurrentFilter(label),
+                           listener,
                            false);
         final ListItem li = (ListItem) getDocument().createElement("li");
         li.setAttribute("data-filter",
                         label);
         li.appendChild(a);
-        filters.appendChild(li);
+        element.appendChild(li);
     }
 
-    public void setCurrentFilter(final String label) {
-        filterText.setTextContent(label);
-        for (Element child : elementIterable(filters.getChildNodes())) {
+    public void setInputCurrentFilter(final String label) {
+        setCurrentFilter(label,
+                         filterText,
+                         filters,
+                         filtersInput);
+    }
+
+    public void setDateCurrentFilter(final String label) {
+        setCurrentFilter(label,
+                         dateFilterText,
+                         dateFilters,
+                         dateFiltersInput);
+    }
+
+    private void setCurrentFilter(final String label,
+                                  final HTMLElement text,
+                                  final HTMLElement optionsText,
+                                  final HTMLElement options) {
+        text.setTextContent(label);
+        for (Element child : elementIterable(optionsText.getChildNodes())) {
             if (label.equals(child.getAttribute("data-filter"))) {
                 addCSSClass((HTMLElement) child,
                             "hidden");
@@ -348,7 +395,7 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                "hidden");
             }
         }
-        for (Element child : elementIterable(filtersInput.getChildNodes())) {
+        for (Element child : elementIterable(options.getChildNodes())) {
             if (label.equals(child.getAttribute("data-filter"))) {
                 removeCSSClass((HTMLElement) child,
                                "hidden");
