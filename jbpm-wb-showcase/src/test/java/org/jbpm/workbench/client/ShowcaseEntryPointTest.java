@@ -27,7 +27,6 @@ import org.jbpm.workbench.client.i18n.Constants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.workbench.common.services.shared.service.PlaceManagerActivityService;
 import org.kie.workbench.common.workbench.client.menu.DefaultWorkbenchFeaturesMenusHelper;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -53,10 +52,6 @@ public class ShowcaseEntryPointTest {
     private CallerMock<AppConfigService> appConfigServiceCallerMock;
 
     @Mock
-    private PlaceManagerActivityService pmas;
-    private CallerMock<PlaceManagerActivityService> pmasCallerMock;
-
-    @Mock
     private ActivityBeansCache activityBeansCache;
 
     @Mock
@@ -75,13 +70,9 @@ public class ShowcaseEntryPointTest {
 
     @Before
     public void setup() {
-        doNothing().when( pmas ).initActivities( anyListOf(String.class) );
-
         appConfigServiceCallerMock = new CallerMock<>( appConfigService );
-        pmasCallerMock = new CallerMock<>( pmas );
 
         showcaseEntryPoint = spy( new ShowcaseEntryPoint( appConfigServiceCallerMock,
-                                                          pmasCallerMock,
                                                           activityBeansCache,
                                                           iocManager,
                                                           identity,

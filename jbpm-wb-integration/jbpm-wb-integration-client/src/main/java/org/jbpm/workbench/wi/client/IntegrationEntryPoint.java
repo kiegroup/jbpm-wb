@@ -16,9 +16,9 @@
 
 package org.jbpm.workbench.wi.client;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jbpm.workbench.wi.client.casemgmt.CaseProvisioningAppLauncherHandler;
 
@@ -28,7 +28,7 @@ public class IntegrationEntryPoint {
     @Inject
     private CaseProvisioningAppLauncherHandler presenter;
 
-    @AfterInitialization
+    @PostConstruct
     public void startWorkbench() {
         presenter.verifyCaseAppStatus();
     }
