@@ -63,6 +63,7 @@ import static java.util.Arrays.asList;
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
 import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.junit.Assert.*;
@@ -638,6 +639,22 @@ public class ProcessInstanceListPresenterTest {
         verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Process_Definition_Id()),
                                          eq(processDefinitionId),
                                          eq(processDefinitionId),
+                                         any(Consumer.class));
+    }
+
+    @Test
+    public void testActiveSearchFiltersProcessInstanceId(){
+        final PlaceRequest place = mock(PlaceRequest.class);
+        final String processInstanceId = "1";
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID, null)).thenReturn(null);
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, null)).thenReturn(processInstanceId);
+        presenter.onStartup(place);
+
+        presenter.setupActiveSearchFilters();
+
+        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Id()),
+                                         eq(processInstanceId),
+                                         eq(processInstanceId),
                                          any(Consumer.class));
     }
 

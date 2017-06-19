@@ -41,6 +41,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.PlaceRequest;
 
 import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
@@ -243,5 +244,21 @@ public class RequestListPresenterTest {
                                          any(Consumer.class));
 
     }
+
+    @Test
+    public void testActiveSearchFilters(){
+        final PlaceRequest place = mock(PlaceRequest.class);
+        when(place.getParameter(anyString(), anyString())).thenReturn(null);
+        presenter.onStartup(place);
+
+        presenter.setupActiveSearchFilters();
+
+        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Status()),
+                                         eq(Constants.INSTANCE.Running()),
+                                         eq(RequestStatus.RUNNING.name()),
+                                         any(Consumer.class));
+
+    }
+
 
 }
