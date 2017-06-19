@@ -23,7 +23,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.workbench.common.model.GenericSummary;
 
 @Portable
-public class ProcessSummary extends GenericSummary {
+public class ProcessSummary extends GenericSummary<String> {
 
     private String processDefId;
     private String processDefName;

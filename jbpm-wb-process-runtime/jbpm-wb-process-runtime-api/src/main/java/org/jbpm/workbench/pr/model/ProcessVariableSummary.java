@@ -20,7 +20,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.workbench.common.model.GenericSummary;
 
 @Portable
-public class ProcessVariableSummary extends GenericSummary {
+public class ProcessVariableSummary extends GenericSummary<String> {
 
     private String variableId;
     private String variableInstanceId;

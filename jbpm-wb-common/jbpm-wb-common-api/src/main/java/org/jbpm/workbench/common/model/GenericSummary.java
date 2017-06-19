@@ -17,29 +17,31 @@
 package org.jbpm.workbench.common.model;
 
 import java.io.Serializable;
+
 import org.uberfire.paging.AbstractPageRow;
 
-public abstract class GenericSummary extends AbstractPageRow implements Serializable {
+public abstract class GenericSummary<T> extends AbstractPageRow implements Serializable {
 
     private static final long serialVersionUID = -8709434225517887911L;
 
-    protected Object id;
+    protected T id;
     protected String name;
     private boolean selected = false;
 
     public GenericSummary() {
     }
 
-    public GenericSummary(final Object id, final String name) {
+    public GenericSummary(final T id,
+                          final String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Object getId() {
+    public T getId() {
         return id;
     }
 
-    public void setId(Object id) {
+    public void setId(T id) {
         this.id = id;
     }
 
@@ -73,23 +75,30 @@ public abstract class GenericSummary extends AbstractPageRow implements Serializ
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         GenericSummary other = (GenericSummary) obj;
         if (id == null) {
-            if (other.id != null)
+            if (other.id != null) {
                 return false;
-        } else if (!id.equals(other.id))
+            }
+        } else if (!id.equals(other.id)) {
             return false;
+        }
         if (name == null) {
-            if (other.name != null)
+            if (other.name != null) {
                 return false;
-        } else if (!name.equals(other.name))
+            }
+        } else if (!name.equals(other.name)) {
             return false;
+        }
         return true;
     }
 

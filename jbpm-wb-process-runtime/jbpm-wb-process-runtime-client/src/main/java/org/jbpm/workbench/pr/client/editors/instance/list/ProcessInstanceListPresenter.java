@@ -17,7 +17,7 @@ package org.jbpm.workbench.pr.client.editors.instance.list;
 
 import java.util.*;
 import java.util.function.Function;
-
+import java.util.function.Predicate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -40,6 +40,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
+import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
@@ -71,9 +72,9 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
-import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.jbpm.workbench.common.client.PerspectiveIds.*;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
+import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
 
 @Dependent
 @WorkbenchScreen( identifier = ProcessInstanceListPresenter.SCREEN_ID)
@@ -108,7 +109,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     @Inject
     private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
-
+    
     @Override
     public void getData( final Range visibleRange ) {
         try {
@@ -169,9 +170,9 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
             public void callback( DataSet dataSet ) {
                 Set<String> columns = new HashSet<String>();
                 for ( int i = 0; i < dataSet.getRowCount(); i++ ) {
-                    Long processInstanceId = dataSetQueryHelperDomainSpecific.getColumnLongValue( dataSet, PROCESS_INSTANCE_ID, i );
-                    String variableName = dataSetQueryHelperDomainSpecific.getColumnStringValue( dataSet, VARIABLE_NAME, i );
-                    String variableValue = dataSetQueryHelperDomainSpecific.getColumnStringValue( dataSet, VARIABLE_VALUE, i );
+                    Long processInstanceId = getColumnLongValue(dataSet, PROCESS_INSTANCE_ID, i );
+                    String variableName = getColumnStringValue( dataSet, VARIABLE_NAME, i );
+                    String variableValue = getColumnStringValue( dataSet, VARIABLE_VALUE, i );
 
                     for ( ProcessInstanceSummary pis : myProcessInstancesFromDataSet ) {
                         if ( pis.getProcessInstanceId().equals( processInstanceId ) ) {
@@ -207,7 +208,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                     }
 
                     final String filterValue = isFilteredByProcessId(tableSettings.getDataSetLookup().getOperationList());
-                    if(TAB_SEARCH.equals(tableSettings.getKey()) == false && filterValue != null) {
+                    if(AbstractMultiGridView.TAB_SEARCH.equals(tableSettings.getKey()) == false && filterValue != null) {
                         getDomainSpecifDataForProcessInstances(startRange,
                                                                filterValue,
                                                                lastPage);
@@ -265,20 +266,20 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     protected ProcessInstanceSummary createProcessInstanceSummaryFromDataSet( DataSet dataSet, int i ) {
         return new ProcessInstanceSummary(
-                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PROCESS_INSTANCE_ID, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESS_ID, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_EXTERNAL_ID, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESS_NAME, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESS_VERSION, i ),
-                dataSetQueryHelper.getColumnIntValue( dataSet, COLUMN_STATUS, i ),
-                dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_START, i ),
-                dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_END, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_IDENTITY, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_PROCESS_INSTANCE_DESCRIPTION, i ),
-                dataSetQueryHelper.getColumnStringValue( dataSet, COLUMN_CORRELATION_KEY, i ),
-                dataSetQueryHelper.getColumnLongValue( dataSet, COLUMN_PARENT_PROCESS_INSTANCE_ID, i ),
-                dataSetQueryHelper.getColumnDateValue( dataSet, COLUMN_LAST_MODIFICATION_DATE, i ),
-                dataSetQueryHelper.getColumnIntValue( dataSet, COLUMN_ERROR_COUNT, i )
+                getColumnLongValue( dataSet, COLUMN_PROCESS_INSTANCE_ID, i ),
+                getColumnStringValue( dataSet, COLUMN_PROCESS_ID, i ),
+                getColumnStringValue( dataSet, COLUMN_EXTERNAL_ID, i ),
+                getColumnStringValue( dataSet, COLUMN_PROCESS_NAME, i ),
+                getColumnStringValue( dataSet, COLUMN_PROCESS_VERSION, i ),
+                getColumnIntValue( dataSet, COLUMN_STATUS, i ),
+                getColumnDateValue( dataSet, COLUMN_START, i ),
+                getColumnDateValue( dataSet, COLUMN_END, i ),
+                getColumnStringValue( dataSet, COLUMN_IDENTITY, i ),
+                getColumnStringValue( dataSet, COLUMN_PROCESS_INSTANCE_DESCRIPTION, i ),
+                getColumnStringValue( dataSet, COLUMN_CORRELATION_KEY, i ),
+                getColumnLongValue( dataSet, COLUMN_PARENT_PROCESS_INSTANCE_ID, i ),
+                getColumnDateValue( dataSet, COLUMN_LAST_MODIFICATION_DATE, i ),
+                getColumnIntValue( dataSet, COLUMN_ERROR_COUNT, i )
                 );
     }
 
@@ -521,7 +522,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                       SortOrder.ASCENDING)
                 .buildLookup();
         view.addDataSetSelectFilter(constants.Name(),
-                                    TAB_SEARCH,
+                                    AbstractMultiGridView.TAB_SEARCH,
                                     dataSetLookup,
                                     COLUMN_PROCESS_NAME,
                                     COLUMN_PROCESS_NAME,
@@ -601,11 +602,31 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     }
     
     public void openJobsView(final String pid) {
-        final PlaceRequest request = new DefaultPlaceRequest(JOBS);
-        if(pid != null){
-            request.addParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, pid);
-        }
-        placeManager.goTo(request);
+        navigateToPerspective(JOBS,
+                              SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
+                              pid);
+    }
+
+    public void openTaskView(final String pid) {
+        navigateToPerspective(isUserAuthorizedForPerspective(TASKS_ADMIN) ? TASKS_ADMIN : TASKS,
+                              SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
+                              pid);
+    }
+
+    public Predicate<ProcessInstanceSummary> getSignalActionCondition(){
+        return pis -> pis.getState() == ProcessInstance.STATE_ACTIVE;
+    }
+
+    public Predicate<ProcessInstanceSummary> getAbortActionCondition(){
+        return pis -> pis.getState() == ProcessInstance.STATE_ACTIVE;
+    }
+
+    public Predicate<ProcessInstanceSummary> getViewJobsActionCondition(){
+        return pis -> isUserAuthorizedForPerspective(JOBS);
+    }
+
+    public Predicate<ProcessInstanceSummary> getViewTasksActionCondition(){
+        return pis -> isUserAuthorizedForPerspective(TASKS_ADMIN) || isUserAuthorizedForPerspective(TASKS);
     }
 
     /*-------------------------------------------------*/

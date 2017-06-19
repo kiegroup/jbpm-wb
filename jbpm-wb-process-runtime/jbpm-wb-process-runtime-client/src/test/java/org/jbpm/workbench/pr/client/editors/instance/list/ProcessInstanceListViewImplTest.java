@@ -22,7 +22,6 @@ import java.util.List;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CheckboxCell;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
@@ -35,7 +34,6 @@ import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.api.runtime.process.ProcessInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -216,59 +214,4 @@ public class ProcessInstanceListViewImplTest {
         verify(placeManager).goTo(any(PlaceRequest.class));
     }
     
-    @Test
-    public void processInstanceSummaryActionCellErrorsTest(){
-        ProcessInstanceSummaryActionCell errorsPresentCell = new ProcessInstanceSummaryActionCell(
-                "Button label",
-                ProcessInstanceSummaryActionCell.PREDICATE_ERRORS_PRESENT,
-                cellDelegate);
-        ProcessInstanceSummary val = new ProcessInstanceSummary();
-        val.setErrorCount(0);
-        runActionHasCellTest(errorsPresentCell, val, false);
-        val.setErrorCount(1);
-        runActionHasCellTest(errorsPresentCell, val, true);
-    }
-    
-    @Test
-    public void processInstanceSummaryActionCellTrueTest(){
-        ProcessInstanceSummaryActionCell errorsPresentCell = new ProcessInstanceSummaryActionCell(
-                "Button label",
-                ProcessInstanceSummaryActionCell.PREDICATE_TRUE,
-                cellDelegate);
-        ProcessInstanceSummary val = new ProcessInstanceSummary();
-        val.setState(ProcessInstance.STATE_ABORTED);
-        val.setErrorCount(1);
-        runActionHasCellTest(errorsPresentCell, val, true);
-        val.setState(ProcessInstance.STATE_ACTIVE);
-        val.setErrorCount(0);
-        runActionHasCellTest(errorsPresentCell, val, true);
-    }
-    
-    @Test
-    public void processInstanceSummaryActionCellStateTest(){
-        ProcessInstanceSummaryActionCell errorsPresentCell = new ProcessInstanceSummaryActionCell(
-                "Button label",
-                ProcessInstanceSummaryActionCell.PREDICATE_STATE_ACTIVE,
-                cellDelegate);
-        ProcessInstanceSummary val = new ProcessInstanceSummary();
-        val.setState(ProcessInstance.STATE_ABORTED);
-        runActionHasCellTest(errorsPresentCell, val, false);
-        val.setState(ProcessInstance.STATE_ACTIVE);
-        runActionHasCellTest(errorsPresentCell, val, true);
-    }
-    
-    private void runActionHasCellTest(ProcessInstanceSummaryActionCell cell, ProcessInstanceSummary val, boolean shouldRender){
-        ProcessInstanceSummaryActionCell cellMock = spy(cell);
-        SafeHtmlBuilder cellHtmlBuilder = mock(SafeHtmlBuilder.class);
-        doAnswer(invocationOnMock -> {
-            invocationOnMock.callRealMethod();
-            verify(cellHtmlBuilder, times(shouldRender ? 1 : 0)).append(any());
-            return null;
-        }).when(cellMock).render(any(), any(), eq(cellHtmlBuilder));
-
-        cellMock.render(cellContext, val, cellHtmlBuilder);
-
-        verify(cellMock).render(cellContext, val, cellHtmlBuilder);
-    }
-
 }

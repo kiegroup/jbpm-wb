@@ -74,7 +74,7 @@ public class TaskAssignmentsPresenterTest {
 
         final TaskAssignmentSummary task = new TaskAssignmentSummary();
         task.setTaskId(TASK_ID);
-        task.setStatus(TASK_STATUS_INPROGRESS);
+        task.setStatus(TASK_STATUS_IN_PROGRESS);
         task.setPotOwnersString(Arrays.asList(CURRENT_USER));
         task.setDelegationAllowed(true);
 

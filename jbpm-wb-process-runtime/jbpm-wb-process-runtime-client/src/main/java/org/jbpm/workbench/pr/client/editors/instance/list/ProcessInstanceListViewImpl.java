@@ -42,6 +42,7 @@ import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
@@ -343,30 +344,33 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     private Column<ProcessInstanceSummary, ProcessInstanceSummary> initActionsColumn() {
         List<HasCell<ProcessInstanceSummary, ?>> cells = new LinkedList<HasCell<ProcessInstanceSummary, ?>>();
 
-        cells.add(new ProcessInstanceSummaryActionCell(
-            constants.Signal(),
-            ProcessInstanceSummaryActionCell.PREDICATE_STATE_ACTIVE,
-            processInstance -> {
-                presenter.signalProcessInstance(processInstance);
-            }
+        cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
+                constants.Signal(),
+                processInstance -> presenter.signalProcessInstance(processInstance),
+                presenter.getSignalActionCondition()
         ));
 
-        cells.add(new ProcessInstanceSummaryActionCell(
-            constants.Abort(),
-            ProcessInstanceSummaryActionCell.PREDICATE_STATE_ACTIVE,
-            processInstance -> {
-                if(Window.confirm(constants.Abort_Process_Instance())){
-                    presenter.abortProcessInstance(processInstance.getDeploymentId(), processInstance.getProcessInstanceId());
-                }
-            }
+        cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
+                constants.Abort(),
+                processInstance -> {
+                    if (Window.confirm(constants.Abort_Process_Instance())) {
+                        presenter.abortProcessInstance(processInstance.getDeploymentId(),
+                                                       processInstance.getProcessInstanceId());
+                    }
+                },
+                presenter.getAbortActionCondition()
         ));
 
-        cells.add(new ProcessInstanceSummaryActionCell(
-            constants.ViewJobs(),
-            ProcessInstanceSummaryActionCell.PREDICATE_TRUE,
-            processInstance -> {
-                presenter.openJobsView(Long.toString(processInstance.getProcessInstanceId()));
-            }
+        cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
+                constants.ViewJobs(),
+                processInstance -> presenter.openJobsView(Long.toString(processInstance.getProcessInstanceId())),
+                presenter.getViewJobsActionCondition()
+        ));
+
+        cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
+                constants.ViewTasks(),
+                processInstance -> presenter.openTaskView(Long.toString(processInstance.getProcessInstanceId())),
+                presenter.getViewTasksActionCondition()
         ));
 
         CompositeCell<ProcessInstanceSummary> cell = new CompositeCell<ProcessInstanceSummary>(cells);

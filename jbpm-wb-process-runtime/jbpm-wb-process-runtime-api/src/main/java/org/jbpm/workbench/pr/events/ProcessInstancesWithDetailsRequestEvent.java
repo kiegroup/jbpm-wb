@@ -30,7 +30,7 @@ public class ProcessInstancesWithDetailsRequestEvent {
     public ProcessInstancesWithDetailsRequestEvent() {
     }
 
-    public ProcessInstancesWithDetailsRequestEvent(String serverTemplateId, String deploymentId, Long processInstanceId, String processDefId, String processDefName, int processInstanceStatus) {
+    public ProcessInstancesWithDetailsRequestEvent(String serverTemplateId, String deploymentId, Long processInstanceId, String processDefId, String processDefName, Integer processInstanceStatus) {
         this.serverTemplateId = serverTemplateId;
         this.processInstanceId = processInstanceId;
         this.processDefId = processDefId;

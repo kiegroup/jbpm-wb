@@ -16,16 +16,18 @@
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.ArrayList;
+import java.util.function.Predicate;
 import javax.enterprise.context.Dependent;
 
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.ht.model.TaskSummary;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.jbpm.workbench.common.client.util.TaskUtils.getStatusByType;
+import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Dependent
@@ -58,6 +60,21 @@ public class TaskAdminListPresenter extends AbstractTaskListPresenter<TaskAdminL
     public FilterSettings createAdminTabSettings(){
         //Filter status Admin
         return createStatusSettings(HUMAN_TASKS_WITH_ADMIN_DATASET, new ArrayList<>(getStatusByType(TaskUtils.TaskType.ADMIN)));
+    }
+
+    @Override
+    protected Predicate<TaskSummary> getSuspendActionCondition() {
+        return task -> {
+            String taskStatus = task.getStatus();
+            return (taskStatus.equals(TASK_STATUS_RESERVED) ||
+                    taskStatus.equals(TASK_STATUS_IN_PROGRESS) ||
+                    taskStatus.equals(TASK_STATUS_READY));
+        };
+    }
+
+    @Override
+    protected Predicate<TaskSummary> getResumeActionCondition() {
+        return task -> TASK_STATUS_SUSPENDED.equals(task.getStatus());
     }
 
 }

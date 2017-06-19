@@ -54,9 +54,9 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.between;
-import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.dashbuilder.dataset.sort.SortOrder.*;
+import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 
 @Dependent
@@ -128,45 +128,45 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     protected ExecutionErrorSummary createExecutionErrorSummaryFromDataSet(final DataSet dataSet,
                                                                            final Integer index) {
         return new ExecutionErrorSummary(
-                dataSetQueryHelper.getColumnStringValue(dataSet,
-                                                        COLUMN_ERROR_ID,
-                                                        index),
-                dataSetQueryHelper.getColumnStringValue(dataSet,
-                                                        COLUMN_ERROR_TYPE,
-                                                        index),
-                dataSetQueryHelper.getColumnStringValue(dataSet,
-                                                        COLUMN_DEPLOYMENT_ID,
-                                                        index),
-                dataSetQueryHelper.getColumnLongValue(dataSet,
-                                                      COLUMN_PROCESS_INST_ID,
-                                                      index),
-                dataSetQueryHelper.getColumnStringValue(dataSet,
-                                                        COLUMN_PROCESS_ID,
-                                                        index),
-                dataSetQueryHelper.getColumnLongValue(dataSet,
-                                                      COLUMN_ACTIVITY_ID,
-                                                      index),
-                dataSetQueryHelper.getColumnStringValue(dataSet,
-                                                        COLUMN_ACTIVITY_NAME,
-                                                        index),
-                dataSetQueryHelper.getColumnLongValue(dataSet,
-                                                      COLUMN_JOB_ID,
-                                                      index),
-                dataSetQueryHelper.getColumnStringValue(dataSet,
-                                                        COLUMN_ERROR_MSG,
-                                                        index),
-                dataSetQueryHelper.getColumnBooleanValue(dataSet,
-                                                         COLUMN_ERROR_ACK,
-                                                         index),
-                dataSetQueryHelper.getColumnStringValue(dataSet,
-                                                        COLUMN_ERROR_ACK_BY,
-                                                        index),
-                dataSetQueryHelper.getColumnDateValue(dataSet,
-                                                      COLUMN_ERROR_ACK_AT,
-                                                      index),
-                dataSetQueryHelper.getColumnDateValue(dataSet,
-                                                      COLUMN_ERROR_DATE,
-                                                      index)
+                getColumnStringValue(dataSet,
+                                     COLUMN_ERROR_ID,
+                                     index),
+                getColumnStringValue(dataSet,
+                                     COLUMN_ERROR_TYPE,
+                                     index),
+                getColumnStringValue(dataSet,
+                                     COLUMN_DEPLOYMENT_ID,
+                                     index),
+                getColumnLongValue(dataSet,
+                                   COLUMN_PROCESS_INST_ID,
+                                   index),
+                getColumnStringValue(dataSet,
+                                     COLUMN_PROCESS_ID,
+                                     index),
+                getColumnLongValue(dataSet,
+                                   COLUMN_ACTIVITY_ID,
+                                   index),
+                getColumnStringValue(dataSet,
+                                     COLUMN_ACTIVITY_NAME,
+                                     index),
+                getColumnLongValue(dataSet,
+                                   COLUMN_JOB_ID,
+                                   index),
+                getColumnStringValue(dataSet,
+                                     COLUMN_ERROR_MSG,
+                                     index),
+                getColumnBooleanValue(dataSet,
+                                      COLUMN_ERROR_ACK,
+                                      index),
+                getColumnStringValue(dataSet,
+                                     COLUMN_ERROR_ACK_BY,
+                                     index),
+                getColumnDateValue(dataSet,
+                                   COLUMN_ERROR_ACK_AT,
+                                   index),
+                getColumnDateValue(dataSet,
+                                   COLUMN_ERROR_DATE,
+                                   index)
         );
     }
 

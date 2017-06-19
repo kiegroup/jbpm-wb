@@ -50,7 +50,6 @@ public class DataSetDefsBootstrap {
             "t.priority, " +
             "t.processId, " +
             "t.processInstanceId, " +
-            "t.processSessionId, " +
             "t.status, " +
             "t.taskId, " +
             "t.workItemId, " +
@@ -183,7 +182,6 @@ public class DataSetDefsBootstrap {
             .number(COLUMN_PRIORITY)
             .label(COLUMN_PROCESS_ID)
             .number(COLUMN_PROCESS_INSTANCE_ID)
-            .number(COLUMN_PROCESS_SESSION_ID)
             .label(COLUMN_STATUS)
             .number(COLUMN_TASK_ID)
             .number(COLUMN_WORK_ITEM_ID)

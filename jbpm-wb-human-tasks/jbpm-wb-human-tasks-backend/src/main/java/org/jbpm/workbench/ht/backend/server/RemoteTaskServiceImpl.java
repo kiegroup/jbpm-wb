@@ -24,12 +24,12 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.jbpm.workbench.ht.model.CommentSummary;
 import org.jbpm.workbench.ht.model.TaskAssignmentSummary;
 import org.jbpm.workbench.ht.model.TaskEventSummary;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.service.TaskService;
+import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.kie.internal.identity.IdentityProvider;
 import org.kie.server.api.exception.KieServicesException;
 import org.kie.server.api.model.instance.TaskComment;
@@ -56,7 +56,7 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
         UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
         try {
             TaskInstance task = client.getTaskInstance(containerId, taskId);
-            return build(task);
+            return new TaskSummaryMapper().apply(task);
         } catch (KieServicesException e) {
             // task not found
             return null;
@@ -277,62 +277,6 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
     @Override
     public void executeReminderForTask(String serverTemplateId, String containerId, Long taskId, String fromUser) {
 
-    }
-
-    protected TaskSummary build(org.kie.server.api.model.instance.TaskSummary task) {
-        TaskSummary taskSummary = new TaskSummary(
-                task.getId(),
-                task.getName(),
-                task.getDescription(),
-                task.getStatus(),
-                task.getPriority(),
-                task.getActualOwner(),
-                task.getCreatedBy(),
-                task.getCreatedOn(),
-                task.getActivationTime(),
-                task.getExpirationTime(),
-                task.getProcessId(),
-                -1,
-                task.getProcessInstanceId(),
-                task.getContainerId(),
-                task.getParentId(),
-                null,
-                null,
-                null,
-                false
-        );
-
-        return taskSummary;
-    }
-
-    protected TaskSummary build(TaskInstance task) {
-        if (task == null) {
-            return null;
-        }
-
-        TaskSummary taskSummary = new TaskSummary(
-                task.getId(),
-                task.getName(),
-                task.getDescription(),
-                task.getStatus(),
-                task.getPriority(),
-                task.getActualOwner(),
-                task.getCreatedBy(),
-                task.getCreatedOn(),
-                task.getActivationTime(),
-                task.getExpirationDate(),
-                task.getProcessId(),
-                -1,
-                task.getProcessInstanceId(),
-                task.getContainerId(),
-                task.getParentId(),
-                null,
-                null,
-                null,
-                false
-        );
-
-        return taskSummary;
     }
 
     protected CommentSummary build(TaskComment comment) {

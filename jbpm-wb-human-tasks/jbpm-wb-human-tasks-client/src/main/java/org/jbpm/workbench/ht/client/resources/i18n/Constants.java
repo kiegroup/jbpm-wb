@@ -238,4 +238,6 @@ public interface Constants extends Messages {
     String FilterByActualOwner();
 
     String FilterByProcessInstanceDescription();
+    
+    String ViewProcess();
 }

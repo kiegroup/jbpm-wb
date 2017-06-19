@@ -152,53 +152,41 @@ public class ExecutionErrorListPresenterTest {
         final String activityName = "activityName";
         final Long jobId = 1L;
         final String errorMessage = "errorMessage";
-        final boolean ack = false;
+        final String ack = "false";
         final String ackBy = "ackBy";
         final Date ackAt = new Date();
         final Date errorDate = new Date();
 
-        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class),
-                                                     eq(COLUMN_ERROR_ID),
-                                                     eq(0))).thenReturn(errorId);
-        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class),
-                                                     eq(COLUMN_ERROR_TYPE),
-                                                     eq(0))).thenReturn(errorType);
-        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class),
-                                                     eq(COLUMN_DEPLOYMENT_ID),
-                                                     eq(0))).thenReturn(deploymentId);
+        final DataSet dataSet = mock(DataSet.class);
 
-        when(dataSetQueryHelper.getColumnLongValue(any(DataSet.class),
-                                                   eq(COLUMN_PROCESS_INST_ID),
-                                                   eq(0))).thenReturn(processInsId);
-        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class),
-                                                     eq(COLUMN_PROCESS_ID),
-                                                     eq(0))).thenReturn(processId);
-        when(dataSetQueryHelper.getColumnLongValue(any(DataSet.class),
-                                                   eq(COLUMN_ACTIVITY_ID),
-                                                   eq(0))).thenReturn(activityId);
-        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class),
-                                                     eq(COLUMN_ACTIVITY_NAME),
-                                                     eq(0))).thenReturn(activityName);
-        when(dataSetQueryHelper.getColumnLongValue(any(DataSet.class),
-                                                   eq(COLUMN_JOB_ID),
-                                                   eq(0))).thenReturn(jobId);
-        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class),
-                                                     eq(COLUMN_ERROR_MSG),
-                                                     eq(0))).thenReturn(errorMessage);
-        when(dataSetQueryHelper.getColumnBooleanValue(any(DataSet.class),
-                                                      eq(COLUMN_ERROR_ACK),
-                                                      eq(0))).thenReturn(ack);
-        when(dataSetQueryHelper.getColumnStringValue(any(DataSet.class),
-                                                     eq(COLUMN_ERROR_ACK_BY),
-                                                     eq(0))).thenReturn(ackBy);
-        when(dataSetQueryHelper.getColumnDateValue(any(DataSet.class),
-                                                   eq(COLUMN_ERROR_ACK_AT),
-                                                   eq(0))).thenReturn(ackAt);
-        when(dataSetQueryHelper.getColumnDateValue(any(DataSet.class),
-                                                   eq(COLUMN_ERROR_DATE),
-                                                   eq(0))).thenReturn(errorDate);
+        when(dataSet.getValueAt(0,
+                                COLUMN_ERROR_ID)).thenReturn(errorId);
+        when(dataSet.getValueAt(0,
+                                COLUMN_ERROR_TYPE)).thenReturn(errorType);
+        when(dataSet.getValueAt(0,
+                                COLUMN_DEPLOYMENT_ID)).thenReturn(deploymentId);
+        when(dataSet.getValueAt(0,
+                                COLUMN_PROCESS_INST_ID)).thenReturn(processInsId);
+        when(dataSet.getValueAt(0,
+                                COLUMN_PROCESS_ID)).thenReturn(processId);
+        when(dataSet.getValueAt(0,
+                                COLUMN_ACTIVITY_ID)).thenReturn(activityId);
+        when(dataSet.getValueAt(0,
+                                COLUMN_ACTIVITY_NAME)).thenReturn(activityName);
+        when(dataSet.getValueAt(0,
+                                COLUMN_JOB_ID)).thenReturn(jobId);
+        when(dataSet.getValueAt(0,
+                                COLUMN_ERROR_MSG)).thenReturn(errorMessage);
+        when(dataSet.getValueAt(0,
+                                COLUMN_ERROR_ACK)).thenReturn(ack);
+        when(dataSet.getValueAt(0,
+                                COLUMN_ERROR_ACK_BY)).thenReturn(ackBy);
+        when(dataSet.getValueAt(0,
+                                COLUMN_ERROR_ACK_AT)).thenReturn(ackAt);
+        when(dataSet.getValueAt(0,
+                                COLUMN_ERROR_DATE)).thenReturn(errorDate);
 
-        final ExecutionErrorSummary es = presenter.createExecutionErrorSummaryFromDataSet(mock(DataSet.class),
+        final ExecutionErrorSummary es = presenter.createExecutionErrorSummaryFromDataSet(dataSet,
                                                                                           0);
 
         assertEquals(errorMessage,
@@ -211,7 +199,7 @@ public class ExecutionErrorListPresenterTest {
                      es.getAcknowledgedAt());
         assertEquals(ackBy,
                      es.getAcknowledgedBy());
-        assertEquals(ack,
+        assertEquals(Boolean.valueOf(ack),
                      es.isAcknowledged());
         assertEquals(activityId,
                      es.getActivityId());

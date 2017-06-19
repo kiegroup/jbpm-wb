@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -60,13 +59,12 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.mvp.Command;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.common.client.PerspectiveIds.*;
+import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 
 
@@ -171,19 +169,42 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
 
     }
 
-    protected RequestSummary getRequestSummary(final DataSet dataSet, final Integer index) {
+    protected RequestSummary getRequestSummary(final DataSet dataSet,
+                                               final Integer index) {
         return new RequestSummary(
-                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_ID, index),
-                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_TIMESTAMP, index),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_STATUS, index),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_COMMANDNAME, index),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_MESSAGE, index),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_BUSINESSKEY, index),
-                dataSetQueryHelper.getColumnIntValue(dataSet, COLUMN_RETRIES, index),
-                dataSetQueryHelper.getColumnIntValue(dataSet, COLUMN_EXECUTIONS, index),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_PROCESS_NAME, index),
-                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESS_INSTANCE_ID, index),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_PROCESS_INSTANCE_DESCRIPTION, index)
+                getColumnLongValue(dataSet,
+                                   COLUMN_ID,
+                                   index),
+                getColumnDateValue(dataSet,
+                                   COLUMN_TIMESTAMP,
+                                   index),
+                getColumnStringValue(dataSet,
+                                     COLUMN_STATUS,
+                                     index),
+                getColumnStringValue(dataSet,
+                                     COLUMN_COMMANDNAME,
+                                     index),
+                getColumnStringValue(dataSet,
+                                     COLUMN_MESSAGE,
+                                     index),
+                getColumnStringValue(dataSet,
+                                     COLUMN_BUSINESSKEY,
+                                     index),
+                getColumnIntValue(dataSet,
+                                  COLUMN_RETRIES,
+                                  index),
+                getColumnIntValue(dataSet,
+                                  COLUMN_EXECUTIONS,
+                                  index),
+                getColumnStringValue(dataSet,
+                                     COLUMN_PROCESS_NAME,
+                                     index),
+                getColumnLongValue(dataSet,
+                                   COLUMN_PROCESS_INSTANCE_ID,
+                                   index),
+                getColumnStringValue(dataSet,
+                                     COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                     index)
         );
     }
 
@@ -371,11 +392,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     }
 
     public void openProcessInstanceView(final String processInstanceId) {
-        final PlaceRequest request = new DefaultPlaceRequest(PROCESS_INSTANCES);
-        if(processInstanceId != null){
-            request.addParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, processInstanceId);
-        }
-        placeManager.goTo(request);
+        navigateToPerspective(PROCESS_INSTANCES, SEARCH_PARAMETER_PROCESS_INSTANCE_ID, processInstanceId);
     }
 
     @Override

@@ -327,4 +327,6 @@ public interface Constants extends Messages {
 
     String ViewJobs();
 
+    String ViewTasks();
+
 }

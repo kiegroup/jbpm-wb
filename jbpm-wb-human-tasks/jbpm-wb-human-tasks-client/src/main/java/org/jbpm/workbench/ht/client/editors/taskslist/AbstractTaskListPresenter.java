@@ -16,12 +16,9 @@
 
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -43,8 +40,10 @@ import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.Group;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
+import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
@@ -67,7 +66,7 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
+import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
@@ -179,8 +178,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                     final List<TaskSummary> myTasksFromDataSet = new ArrayList<TaskSummary>();
 
                     for (int i = 0; i < dataSet.getRowCount(); i++) {
-                        myTasksFromDataSet.add(createTaskSummaryFromDataSet(dataSet, i));
-
+                        myTasksFromDataSet.add(new TaskSummaryDataSetMapper().apply(dataSet,
+                                                                                    i));
                     }
 
                     boolean lastPageExactCount = false;
@@ -190,7 +189,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
                     List<DataSetOp> ops = tableSettings.getDataSetLookup().getOperationList();
                     String filterValue = isFilteredByTaskName(ops); //Add here the check to add the domain data columns taskName?
-                    if (TAB_SEARCH.equals(tableSettings.getKey()) == false && filterValue != null) {
+                    if (AbstractMultiGridView.TAB_SEARCH.equals(tableSettings.getKey()) == false && filterValue != null) {
                         getDomainSpecifDataForTasks(startRange,
                                                     filterValue,
                                                     myTasksFromDataSet,
@@ -248,7 +247,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
         List<Comparable> tasksIds = new ArrayList<Comparable>();
         for (TaskSummary task : myTasksFromDataSet) {
-            tasksIds.add(task.getTaskId());
+            tasksIds.add(task.getId());
         }
         DataSetFilter filter = new DataSetFilter();
         ColumnFilter filter1 = equalsTo(COLUMN_TASK_VARIABLE_TASK_ID, tasksIds);
@@ -266,12 +265,12 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                 if (dataSet.getRowCount() > 0) {
                     Set<String> columns = new HashSet<String>();
                     for (int i = 0; i < dataSet.getRowCount(); i++) {
-                        Long taskId = dataSetQueryHelperDomainSpecific.getColumnLongValue(dataSet, COLUMN_TASK_ID, i);
-                        String variableName = dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSet, COLUMN_TASK_VARIABLE_NAME, i);
-                        String variableValue = dataSetQueryHelperDomainSpecific.getColumnStringValue(dataSet, COLUMN_TASK_VARIABLE_VALUE, i);
+                        Long taskId = getColumnLongValue(dataSet, COLUMN_TASK_ID, i);
+                        String variableName = getColumnStringValue(dataSet, COLUMN_TASK_VARIABLE_NAME, i);
+                        String variableValue = getColumnStringValue(dataSet, COLUMN_TASK_VARIABLE_VALUE, i);
 
                         for (TaskSummary task : instances) {
-                            if (task.getTaskId().equals(taskId)) {
+                            if (task.getId().equals(taskId)) {
                                 task.addDomainData(variableName, variableValue);
                                 columns.add(variableName);
                             }
@@ -285,39 +284,16 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         };
     }
 
-    protected TaskSummary createTaskSummaryFromDataSet(final DataSet dataSet, int i) {
-        return new TaskSummary(
-                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_TASK_ID, i),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_NAME, i),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_DESCRIPTION, i),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_STATUS, i),
-                dataSetQueryHelper.getColumnIntValue(dataSet, COLUMN_PRIORITY, i),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_ACTUAL_OWNER, i),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_CREATED_BY, i),
-                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_CREATED_ON, i),
-                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_ACTIVATION_TIME, i),
-                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_DUE_DATE, i),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_PROCESS_ID, i),
-                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESS_SESSION_ID, i),
-                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PROCESS_INSTANCE_ID, i),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_DEPLOYMENT_ID, i),
-                dataSetQueryHelper.getColumnLongValue(dataSet, COLUMN_PARENT_ID, i),
-                dataSetQueryHelper.getColumnDateValue(dataSet, COLUMN_LAST_MODIFICATION_DATE, i),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_PROCESS_INSTANCE_CORRELATION_KEY, i),
-                dataSetQueryHelper.getColumnStringValue(dataSet, COLUMN_PROCESS_INSTANCE_DESCRIPTION, i),
-                HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet.getUUID()));
-    }
-
     public void releaseTask(final TaskSummary task) {
         taskService.call(
                 new RemoteCallback<Void>() {
                     @Override
                     public void callback(Void nothing) {
-                        view.displayNotification(constants.TaskReleased(String.valueOf(task.getTaskId())));
+                        view.displayNotification(constants.TaskReleased(String.valueOf(task.getId())));
                         refreshGrid();
                     }
-                }).releaseTask(getSelectedServerTemplate(), task.getDeploymentId(), task.getTaskId());
-        taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), task.getDeploymentId(), task.getTaskId(), task.getTaskName() ) );
+                }).releaseTask(getSelectedServerTemplate(), task.getDeploymentId(), task.getId());
+        taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), task.getDeploymentId(), task.getId(), task.getName() ) );
     }
 
     public void claimTask(final TaskSummary task) {
@@ -325,12 +301,12 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                 new RemoteCallback<Void>() {
                     @Override
                     public void callback(Void nothing) {
-                        view.displayNotification(constants.TaskClaimed(String.valueOf(task.getTaskId())));
+                        view.displayNotification(constants.TaskClaimed(String.valueOf(task.getId())));
                         refreshGrid();
                     }
                 }
-        ).claimTask(getSelectedServerTemplate(), task.getDeploymentId(), task.getTaskId());
-        taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), task.getDeploymentId(), task.getTaskId(), task.getTaskName() ) );
+        ).claimTask(getSelectedServerTemplate(), task.getDeploymentId(), task.getId());
+        taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), task.getDeploymentId(), task.getId(), task.getName() ) );
     }
     
     public void resumeTask(final TaskSummary task) {
@@ -338,12 +314,12 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                 new RemoteCallback<Void>() {
                     @Override
                     public void callback(Void nothing) {
-                        view.displayNotification(constants.TaskResumed(String.valueOf(task.getTaskId())));
+                        view.displayNotification(constants.TaskResumed(String.valueOf(task.getId())));
                         refreshGrid();
                     }
                 }
-        ).resumeTask(getSelectedServerTemplate(), task.getDeploymentId(), task.getTaskId());
-        taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), task.getDeploymentId(), task.getTaskId(), task.getTaskName() ) );
+        ).resumeTask(getSelectedServerTemplate(), task.getDeploymentId(), task.getId());
+        taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), task.getDeploymentId(), task.getId(), task.getName() ) );
     }
     
     public void suspendTask(final TaskSummary task) {
@@ -351,12 +327,12 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                 new RemoteCallback<Void>() {
                     @Override
                     public void callback(Void nothing) {
-                        view.displayNotification(constants.TaskSuspended(String.valueOf(task.getTaskId())));
+                        view.displayNotification(constants.TaskSuspended(String.valueOf(task.getId())));
                         refreshGrid();
                     }
                 }
-        ).suspendTask(getSelectedServerTemplate(), task.getDeploymentId(), task.getTaskId());
-        taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), task.getDeploymentId(), task.getTaskId(), task.getTaskName() ) );
+        ).suspendTask(getSelectedServerTemplate(), task.getDeploymentId(), task.getId());
+        taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), task.getDeploymentId(), task.getId(), task.getName() ) );
     }
     
     public Menus getMenus(){ //To be used by subclass methods annotated with @WorkbenchMenu
@@ -377,9 +353,9 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         }
         if ( status == PlaceStatus.CLOSE ) {
             placeManager.goTo( defaultPlaceRequest );
-            taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), summary.getDeploymentId(), summary.getTaskId(), summary.getTaskName(), summary.isForAdmin(), logOnly ) );
+            taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), summary.getDeploymentId(), summary.getId(), summary.getName(), summary.isForAdmin(), logOnly ) );
         } else if ( status == PlaceStatus.OPEN && !close ) {
-            taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), summary.getDeploymentId(),summary.getTaskId(), summary.getTaskName(), summary.isForAdmin(), logOnly ) );
+            taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), summary.getDeploymentId(),summary.getId(), summary.getName(), summary.isForAdmin(), logOnly ) );
         } else if ( status == PlaceStatus.OPEN && close ) {
             placeManager.closePlace( "Task Details Multi" );
         }
@@ -395,7 +371,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
             taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), null, newTask.getNewTaskId(), newTask.getNewTaskName() ) );
         }
 
-        view.setSelectedTask(new TaskSummary( newTask.getNewTaskId(), newTask.getNewTaskName() ));
+        view.setSelectedTask(TaskSummary.builder().id(newTask.getNewTaskId()).name(newTask.getNewTaskName()).build());
     }
 
     public void onTaskRefreshedEvent( @Observes TaskRefreshedEvent event ) {
@@ -487,6 +463,23 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         );
 
     }
+    
+    @Override
+    public void setupActiveSearchFilters() {
+        final Optional<String> processInstIdSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
+        if (processInstIdSearch.isPresent()) {
+            final String processInstId = processInstIdSearch.get();
+            view.addActiveFilter(
+                constants.Process_Instance_Id(),
+                processInstId,
+                processInstId,
+                v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID, v))
+            );
+            addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID, processInstId));
+        } else {
+            super.setupActiveSearchFilters();
+        }
+    }
 
     @Override
     public void setupDefaultActiveSearchFilters() {
@@ -499,6 +492,12 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
                                          TASK_STATUS_READY));
     }
+    
+    public void openProcessInstanceView(final String processInstanceId) {
+        navigateToPerspective(PerspectiveIds.PROCESS_INSTANCES,
+                              PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
+                              processInstanceId);
+    }
 
     protected void addProcessNameFilter(final String dataSetId){
         final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
@@ -509,7 +508,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                       SortOrder.ASCENDING)
                 .buildLookup();
         view.addDataSetSelectFilter(constants.Process_Name(),
-                                    TAB_SEARCH,
+                                    AbstractMultiGridView.TAB_SEARCH,
                                     dataSetLookup,
                                     COLUMN_PROCESS_ID,
                                     COLUMN_PROCESS_ID,
@@ -549,7 +548,6 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         builder.setColumn(COLUMN_PRIORITY, constants.Priority());
         builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Id());
         builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id());
-        builder.setColumn(COLUMN_PROCESS_SESSION_ID, constants.ProcessSessionId());
         builder.setColumn(COLUMN_STATUS, constants.Status());
         builder.setColumn(COLUMN_TASK_ID, constants.Id());
         builder.setColumn(COLUMN_WORK_ITEM_ID, constants.WorkItemId());
@@ -582,5 +580,26 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     @Override
     public FilterSettings createSearchTabSettings() {
         return createTableSettingsPrototype();
+    }
+
+    protected abstract Predicate<TaskSummary> getSuspendActionCondition();
+
+    protected abstract Predicate<TaskSummary> getResumeActionCondition();
+
+    protected Predicate<TaskSummary> getCompleteActionCondition() {
+        return task -> task.getActualOwner() != null && task.getStatus().equals(TASK_STATUS_IN_PROGRESS);
+    }
+
+    protected Predicate<TaskSummary> getClaimActionCondition() {
+        return task -> task.getStatus().equals(TASK_STATUS_READY);
+    }
+
+    protected Predicate<TaskSummary> getReleaseActionCondition() {
+        return task -> task.getActualOwner() != null && task.getActualOwner().equals(identity.getIdentifier())
+                && (task.getStatus().equals(TASK_STATUS_RESERVED) || task.getStatus().equals(TASK_STATUS_IN_PROGRESS));
+    }
+
+    protected Predicate<TaskSummary> getProcessInstanceCondition() {
+        return task -> task.getProcessInstanceId() != null;
     }
 }

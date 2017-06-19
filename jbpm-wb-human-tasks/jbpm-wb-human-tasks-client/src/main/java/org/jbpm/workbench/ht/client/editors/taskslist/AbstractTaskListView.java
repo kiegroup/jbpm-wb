@@ -21,24 +21,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.google.gwt.cell.client.ActionCell;
-import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.view.client.CellPreviewEvent;
-import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.workbench.common.client.resources.CommonResources;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
-import org.jbpm.workbench.common.client.util.ButtonActionCell;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.resources.CommonResources;
+import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
+import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
@@ -113,7 +109,7 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
                 if (rowIndex == extendedPagedTable.getSelectedRow()) {
                     return CommonResources.INSTANCE.css().selected();
                 } else {
-                    if (row.getStatus().equals(TASK_STATUS_INPROGRESS) || row.getStatus().equals(TASK_STATUS_READY)) {
+                    if (row.getStatus().equals(TASK_STATUS_IN_PROGRESS) || row.getStatus().equals(TASK_STATUS_READY)) {
                         switch (row.getPriority()) {
                             case 5:
                                 return HumanTaskResources.INSTANCE.css().taskPriorityFive();
@@ -151,10 +147,10 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
 
         List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
         columnMetas.add(new ColumnMeta<>(
-                createNumberColumn(COLUMN_TASK_ID, task -> task.getTaskId()), constants.Id()
+                createNumberColumn(COLUMN_TASK_ID, task -> task.getId()), constants.Id()
             ));
         columnMetas.add(new ColumnMeta<>(
-                createTextColumn(COLUMN_NAME, task -> task.getTaskName()), constants.Task()
+                createTextColumn(COLUMN_NAME, task -> task.getName()), constants.Task()
                 ));
         columnMetas.add(new ColumnMeta<>(
                 createTextColumn(COLUMN_DESCRIPTION, task -> task.getDescription()), constants.Description()
@@ -229,26 +225,31 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
 
     private Column<TaskSummary, ?> initActionsColumn() {
         List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
-        
-        cells.add(new ClaimActionHasCell(constants.Claim(), task -> {
-            presenter.claimTask(task);
-        }));
 
-        cells.add(new ReleaseActionHasCell(identity, constants.Release(), task -> {
-            presenter.releaseTask(task);
-        }));
+        cells.add(new ConditionalButtonActionCell<TaskSummary>(constants.Claim(),
+                                                               task -> presenter.claimTask(task),
+                                                               presenter.getClaimActionCondition()));
 
-        cells.add(new ConditionalActionHasCell(constants.Suspend(), task -> {
-            presenter.suspendTask(task);
-        }, getSuspendActionCondition()));
+        cells.add(new ConditionalButtonActionCell<TaskSummary>(constants.Release(),
+                                                               task -> presenter.releaseTask(task),
+                                                               presenter.getReleaseActionCondition()));
 
-        cells.add(new ConditionalActionHasCell(constants.Resume(), task -> {
-            presenter.resumeTask(task);
-        }, getResumeActionCondition()));
+        cells.add(new ConditionalButtonActionCell<TaskSummary>(constants.Suspend(),
+                                                               task -> presenter.suspendTask(task),
+                                                               presenter.getSuspendActionCondition()));
 
-        cells.add(new CompleteActionHasCell(constants.Open(), task -> {
-            presenter.selectTask(task, false);
-        }));
+        cells.add(new ConditionalButtonActionCell<TaskSummary>(constants.Resume(),
+                                                               task -> presenter.resumeTask(task),
+                                                               presenter.getResumeActionCondition()));
+
+        cells.add(new ConditionalButtonActionCell<TaskSummary>(constants.ViewProcess(),
+                                                               task -> presenter.openProcessInstanceView(task.getProcessInstanceId().toString()),
+                                                               presenter.getProcessInstanceCondition()));
+
+        cells.add(new ConditionalButtonActionCell<TaskSummary>(constants.Open(),
+                                                               task -> presenter.selectTask(task,
+                                                                                            false),
+                                                               presenter.getCompleteActionCondition()));
 
         CompositeCell<TaskSummary> cell = new CompositeCell<TaskSummary>(cells);
         Column<TaskSummary, TaskSummary> actionsColumn = new Column<TaskSummary, TaskSummary>(cell) {
@@ -262,89 +263,6 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
 
     }
     
-    protected ConditionalActionHasCell.ActionCellRenderCondition getSuspendActionCondition(){
-        return task -> {
-            String taskStatus = task.getStatus();
-            return (taskStatus.equals(TASK_STATUS_RESERVED) ||
-                    taskStatus.equals(TASK_STATUS_INPROGRESS) ||
-                    taskStatus.equals(TASK_STATUS_READY));
-        };
-    }
-    
-    protected ConditionalActionHasCell.ActionCellRenderCondition getResumeActionCondition(){
-        return task -> {
-            String taskStatus = task.getStatus();
-            return taskStatus.equals(TASK_STATUS_SUSPENDED);
-        };
-    }
-
-    protected static class CompleteActionHasCell extends ButtonActionCell<TaskSummary> {
-
-        public CompleteActionHasCell( final String text, final ActionCell.Delegate<TaskSummary> delegate ) {
-            super( text, delegate );
-        }
-
-        @Override
-        public void render( final Cell.Context context, final TaskSummary value, final SafeHtmlBuilder sb ) {
-            if ( value.getActualOwner() != null && value.getStatus().equals( TASK_STATUS_INPROGRESS ) ) {
-                super.render( context, value, sb );
-            }
-        }
-    }
-
-    protected static class ClaimActionHasCell extends ButtonActionCell<TaskSummary> {
-
-        public ClaimActionHasCell( final String text, final ActionCell.Delegate<TaskSummary> delegate ) {
-            super( text, delegate );
-        }
-
-        @Override
-        public void render( final Cell.Context context, final TaskSummary value, final SafeHtmlBuilder sb ) {
-            if ( value.getStatus().equals( TASK_STATUS_READY ) ) {
-                super.render( context, value, sb );
-            }
-        }
-    }
-
-    protected static class ReleaseActionHasCell extends ButtonActionCell<TaskSummary> {
-        
-        private final User identity;
-
-        public ReleaseActionHasCell(  final User identity, final String text, final ActionCell.Delegate<TaskSummary> delegate ) {
-            super( text, delegate );
-            this.identity = identity;
-        }
-
-        @Override
-        public void render( final Cell.Context context, final TaskSummary value, final SafeHtmlBuilder sb ) {
-            if ( value.getActualOwner() != null && value.getActualOwner().equals( identity.getIdentifier() )
-                    && ( value.getStatus().equals( TASK_STATUS_RESERVED ) || value.getStatus().equals( TASK_STATUS_INPROGRESS ) ) ) {
-                super.render( context, value, sb );
-            }
-        }
-    }
-
-    protected static class ConditionalActionHasCell extends ButtonActionCell<TaskSummary> {
-        
-        protected interface ActionCellRenderCondition{
-            boolean shouldRender(final TaskSummary t);
-        }
-        
-        private final ActionCellRenderCondition cond;
-
-        public ConditionalActionHasCell(final String text, final ActionCell.Delegate<TaskSummary> delegate, final ActionCellRenderCondition cond) {
-            super(text, delegate);
-            this.cond = cond;
-        }
-
-        @Override
-        public void render(final Cell.Context context, final TaskSummary value, final SafeHtmlBuilder sb) {
-            if(cond.shouldRender(value)){
-                super.render(context, value, sb);
-            }
-        }
-    }
-
     protected void initFilterTab(FilterSettings tableSettings, final String key, String tabName, String tabDesc, GridGlobalPreferences preferences) {
         tableSettings.setKey(key);
         tableSettings.setTableName(tabName);
