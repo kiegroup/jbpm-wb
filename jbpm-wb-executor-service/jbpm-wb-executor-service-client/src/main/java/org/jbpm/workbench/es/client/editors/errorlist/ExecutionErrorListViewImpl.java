@@ -22,14 +22,11 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.cell.client.ActionCell.Delegate;
-import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.Button;
@@ -41,7 +38,7 @@ import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.BooleanConverter;
-import org.jbpm.workbench.common.client.util.ButtonActionCell;
+import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateConverter;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.es.client.i18n.Constants;
@@ -140,8 +137,8 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
     private void initBulkActions(final ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable) {
         extendedPagedTable.getRightActionsToolbar().clear();
 
-        final AnchorListItem bulkAbortNavLink = GWT.create(AnchorListItem.class);
-        bulkAbortNavLink.setText(constants.Bulk_Ack());
+        final AnchorListItem bulkAckNavLink = GWT.create(AnchorListItem.class);
+        bulkAckNavLink.setText(constants.Bulk_Ack());
 
         final ButtonGroup bulkActions = GWT.create(ButtonGroup.class);
         final Button bulkButton = GWT.create(Button.class);
@@ -154,11 +151,11 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
         bulkDropDown.addStyleName(Styles.DROPDOWN_MENU + "-right");
         bulkDropDown.getElement().getStyle().setMarginRight(5,
                                                             Style.Unit.PX);
-        bulkDropDown.add(bulkAbortNavLink);
+        bulkDropDown.add(bulkAckNavLink);
         bulkActions.add(bulkDropDown);
-        bulkAbortNavLink.setIcon(IconType.BAN);
-        bulkAbortNavLink.setIconFixedWidth(true);
-        bulkAbortNavLink.addClickHandler((ClickEvent event) -> {
+        bulkAckNavLink.setIcon(IconType.BAN);
+        bulkAckNavLink.setIconFixedWidth(true);
+        bulkAckNavLink.addClickHandler((ClickEvent event) -> {
             confirmPopup.show(constants.Bulk_Ack(),
                               constants.Acknowledge(),
                               constants.Bulk_Ack_confirm(),
@@ -226,19 +223,38 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
 
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
 
-        columnMetas.add(new ColumnMeta<>(actionsColumn,
-                                         constants.Actions()));
+        ColumnMeta actionsColumnMeta= new ColumnMeta<>(actionsColumn,
+                                                         constants.Actions());
+        columnMetas.add(actionsColumnMeta);
 
+        extendedPagedTable.setColumnWidth(checkColumnMeta.getColumn(),
+                                          38,
+                                          Style.Unit.PX);
+        extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
+                                          260,
+                                          Style.Unit.PX);
         extendedPagedTable.addColumns(columnMetas);
     }
 
     private Column<ExecutionErrorSummary, ExecutionErrorSummary> initActionsColumn() {
         List<HasCell<ExecutionErrorSummary, ?>> cells = new LinkedList<HasCell<ExecutionErrorSummary, ?>>();
-        cells.add(new ActionHasCell(constants.Acknowledge(),
-                                    (ExecutionErrorSummary errorSummary) ->
-                                            presenter.acknowledgeExecutionError(errorSummary.getErrorId(),
-                                                                                errorSummary.getDeploymentId())
-        ));
+
+        cells.add(new ConditionalButtonActionCell<ExecutionErrorSummary>(
+                constants.Acknowledge(),
+                errorSummary -> presenter.acknowledgeExecutionError(errorSummary.getErrorId(),
+                                                                       errorSummary.getDeploymentId()),
+                presenter.getAcknowledgeActionCondition()));
+
+        cells.add(new ConditionalButtonActionCell<ExecutionErrorSummary>(
+                constants.ViewJob(),
+                errorSummary -> presenter.goToJob(errorSummary),
+                presenter.getViewJobActionCondition()));
+
+        cells.add(new ConditionalButtonActionCell<ExecutionErrorSummary>(
+                constants.ViewProcessInstance(),
+                errorSummary -> presenter.goToProcessInstance(errorSummary),
+                presenter.getViewProcessInstanceActionCondition()));
+
 
         CompositeCell<ExecutionErrorSummary> cell = new CompositeCell<ExecutionErrorSummary>(cells);
         Column<ExecutionErrorSummary, ExecutionErrorSummary> actionsColumn = new Column<ExecutionErrorSummary, ExecutionErrorSummary>(cell) {
@@ -307,23 +323,4 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                         constants.FilterAll());
     }
 
-    private class ActionHasCell extends ButtonActionCell<ExecutionErrorSummary> {
-
-        public ActionHasCell(final String text,
-                             Delegate<ExecutionErrorSummary> delegate) {
-            super(text,
-                  delegate);
-        }
-
-        @Override
-        public void render(Cell.Context context,
-                           ExecutionErrorSummary value,
-                           SafeHtmlBuilder sb) {
-            if (!value.isAcknowledged()) {
-                super.render(context,
-                             value,
-                             sb);
-            }
-        }
-    }
 }

@@ -181,6 +181,8 @@ public interface Constants extends Messages {
 
     String Acknowledge();
 
+    String ViewJob();
+
     String Acknowledged();
 
     String AckAt();

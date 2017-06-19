@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -70,7 +71,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     @Inject
     private ErrorPopupPresenter errorPopup;
     @Inject
-    private Caller<ExecutorService> executorServices;
+    private Caller<ExecutorService> executorService;
     @Inject
     private Event<ExecErrorSelectionEvent> execErrorSelectionEvent;
     @Inject
@@ -176,7 +177,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
 
     public void acknowledgeExecutionError(final String executionErrorId,
                                           final String deploymentId) {
-        executorServices.call((Void nothing) -> {
+        executorService.call((Void nothing) -> {
             view.displayNotification(Constants.INSTANCE.ExecutionErrorAcknowledged(executionErrorId));
             execErrorChangedEvent.fire(new ExecErrorChangedEvent(getSelectedServerTemplate(),
                                                                  deploymentId,
@@ -185,6 +186,31 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         }).acknowledgeError(getSelectedServerTemplate(),
                             deploymentId,
                             executionErrorId);
+    }
+
+    public void goToJob(ExecutionErrorSummary errorSummary) {
+        navigateToPerspective(PerspectiveIds.JOBS,
+                              PerspectiveIds.SEARCH_PARAMETER_JOB_ID,
+                              errorSummary.getJobId().toString());
+    }
+
+    public Predicate<ExecutionErrorSummary> getAcknowledgeActionCondition(){
+        return pis -> !pis.isAcknowledged();
+    }
+
+    public Predicate<ExecutionErrorSummary> getViewJobActionCondition(){
+        return pis -> isUserAuthorizedForPerspective(PerspectiveIds.JOBS) && pis.getJobId() != null;
+    }
+
+    public Predicate<ExecutionErrorSummary> getViewProcessInstanceActionCondition(){
+        return pis -> isUserAuthorizedForPerspective(PerspectiveIds.PROCESS_INSTANCES) && pis.getProcessInstanceId() != null;
+    }
+
+
+    public void goToProcessInstance(final ExecutionErrorSummary errorSummary) {
+        navigateToPerspective(PerspectiveIds.PROCESS_INSTANCES,
+                              PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
+                              errorSummary.getProcessInstanceId().toString());
     }
 
     public void bulkAcknowledge(List<ExecutionErrorSummary> execErrorsSelected) {
@@ -246,8 +272,8 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     }
 
     @Inject
-    public void setExecutorServices(final Caller<ExecutorService> executorServices) {
-        this.executorServices = executorServices;
+    public void setExecutorService(final Caller<ExecutorService> executorService) {
+        this.executorService = executorService;
     }
 
     @Override
@@ -315,8 +341,6 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                                                                         v.getStartDate(),
                                                                         v.getEndDate()))
         );
-
-
     }
 
     @Override

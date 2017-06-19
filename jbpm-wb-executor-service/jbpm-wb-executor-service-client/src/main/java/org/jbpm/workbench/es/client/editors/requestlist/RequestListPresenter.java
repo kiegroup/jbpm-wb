@@ -37,6 +37,7 @@ import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
@@ -63,10 +64,8 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.jbpm.workbench.common.client.PerspectiveIds.*;
 import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
-
 
 @Dependent
 @WorkbenchScreen(identifier = RequestListPresenter.SCREEN_ID)
@@ -361,10 +360,10 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         );
 
     }
-    
+
     @Override
     public void setupActiveSearchFilters() {
-        final Optional<String> processInstIdSearch = getSearchParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
+        final Optional<String> processInstIdSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
         if (processInstIdSearch.isPresent()) {
             final String processInstId = processInstIdSearch.get();
             view.addActiveFilter(
@@ -375,7 +374,21 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
             );
             addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID, processInstId));
         } else {
-            super.setupActiveSearchFilters();
+            final Optional<String> jobSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_JOB_ID);
+            if (jobSearch.isPresent()) {
+                final String jobId = jobSearch.get();
+                view.addActiveFilter(constants.JobId(),
+                                     jobId,
+                                     jobId,
+                                     v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
+                                                                              v))
+                );
+
+                addAdvancedSearchFilter(equalsTo(COLUMN_ID,
+                                                 jobId));
+            } else {
+                setupDefaultActiveSearchFilters();
+            }
         }
     }
 
@@ -392,7 +405,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     }
 
     public void openProcessInstanceView(final String processInstanceId) {
-        navigateToPerspective(PROCESS_INSTANCES, SEARCH_PARAMETER_PROCESS_INSTANCE_ID, processInstanceId);
+        navigateToPerspective(PerspectiveIds.PROCESS_INSTANCES, PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID, processInstanceId);
     }
 
     @Override

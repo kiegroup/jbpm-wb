@@ -24,6 +24,8 @@ import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
+import org.jboss.errai.security.shared.api.identity.User;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
@@ -34,17 +36,25 @@ import org.jbpm.workbench.es.service.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.security.ResourceRef;
+import org.uberfire.security.authz.AuthorizationManager;
 
 import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 import static org.junit.Assert.*;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.JOBS;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.PROCESS_INSTANCES;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -67,6 +77,15 @@ public class ExecutionErrorListPresenterTest {
     @Mock
     private EventSourceMock<ExecErrorChangedEvent> execErrorChangedEvent;
 
+    @Mock
+    private PlaceManager placeManager;
+
+    @Mock
+    private AuthorizationManager authorizationManager;
+
+    @Mock
+    private User identity;
+
     @Spy
     private FilterSettings filterSettings;
 
@@ -79,7 +98,6 @@ public class ExecutionErrorListPresenterTest {
     @Before
     public void setupMocks() {
         callerMockExecutorService = new CallerMock<>(executorServiceMock);
-
         filterSettings.setDataSetLookup(dataSetLookup);
 
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
@@ -88,7 +106,7 @@ public class ExecutionErrorListPresenterTest {
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
         when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
 
-        presenter.setExecutorServices(callerMockExecutorService);
+        presenter.setExecutorService(callerMockExecutorService);
     }
 
     @Test
@@ -257,6 +275,73 @@ public class ExecutionErrorListPresenterTest {
                                          eq(processInstanceId),
                                          any(Consumer.class));
 
+    }
+
+    @Test
+    public void testGoToJobErrorSummary() {
+        String jobId = "1";
+
+        presenter.goToJob(ExecutionErrorSummary.builder().jobId(Long.valueOf(jobId)).build());
+
+        final ArgumentCaptor<PlaceRequest> captor = ArgumentCaptor.forClass(PlaceRequest.class);
+        verify(placeManager).goTo(captor.capture());
+        final PlaceRequest request = captor.getValue();
+        assertEquals(JOBS, request.getIdentifier());
+        assertEquals(jobId, request.getParameter(PerspectiveIds.SEARCH_PARAMETER_JOB_ID, null));
+    }
+
+    @Test
+    public void testGoProcessInstanceErrorSummary() {
+
+        ExecutionErrorSummary errorSummary =
+                ExecutionErrorSummary.builder()
+                        .deploymentId("test_depId")
+                        .processInstanceId(Long.valueOf("1"))
+                        .processId("test_processId")
+                        .build();
+
+        presenter.goToProcessInstance(errorSummary);
+        final ArgumentCaptor<PlaceRequest> captor = ArgumentCaptor.forClass(PlaceRequest.class);
+        verify(placeManager).goTo(captor.capture());
+        final PlaceRequest request = captor.getValue();
+        assertEquals(PROCESS_INSTANCES, request.getIdentifier());
+        assertEquals(errorSummary.getProcessInstanceId().toString(), request.getParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID, null));
+    }
+
+    @Test
+    public void testViewJobsActionCondition() {
+        doAnswer(new PerspectiveAnswer(JOBS)).when(authorizationManager).authorize(any(ResourceRef.class), eq(identity));
+
+        assertTrue(presenter.getViewJobActionCondition().test(ExecutionErrorSummary.builder().jobId(Long.valueOf(1)).build()));
+
+        when(authorizationManager.authorize(any(ResourceRef.class), eq(identity))).thenReturn(false);
+
+        assertFalse(presenter.getViewJobActionCondition().test(new ExecutionErrorSummary()));
+    }
+
+    @Test
+    public void testViewProcessInstanceActionCondition() {
+        doAnswer(new PerspectiveAnswer(PROCESS_INSTANCES)).when(authorizationManager).authorize(any(ResourceRef.class), eq(identity));
+
+        assertTrue(presenter.getViewProcessInstanceActionCondition().test(ExecutionErrorSummary.builder().processInstanceId(Long.valueOf(1)).build()));
+
+        when(authorizationManager.authorize(any(ResourceRef.class), eq(identity))).thenReturn(false);
+
+        assertFalse(presenter.getViewProcessInstanceActionCondition().test(new ExecutionErrorSummary()));
+    }
+
+    protected class PerspectiveAnswer implements Answer<Boolean> {
+
+        private String perspectiveId;
+
+        public PerspectiveAnswer(String perspectiveId) {
+            this.perspectiveId = perspectiveId;
+        }
+
+        @Override
+        public Boolean answer(InvocationOnMock invocation) throws Throwable {
+            return perspectiveId.equals(((ResourceRef)invocation.getArguments()[0]).getIdentifier());
+        }
     }
 
 }

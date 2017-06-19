@@ -426,6 +426,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                 event.getProcessInstanceId(), event.getProcessDefId(),
                 event.getProcessDefName(), event.getProcessInstanceStatus(),
                 event.getServerTemplateId()) );
+
     }
 
     public void formClosed( @Observes BeforeClosePlaceEvent closed ) {
@@ -600,7 +601,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
                                          String.valueOf(ProcessInstance.STATE_ACTIVE)));
     }
-    
+
     public void openJobsView(final String pid) {
         navigateToPerspective(JOBS,
                               SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
