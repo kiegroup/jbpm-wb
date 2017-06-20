@@ -411,6 +411,7 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                                    final String labelValue,
                                                    final T value,
                                                    final Consumer<T> removeCallback) {
+        activeFiltersList.getModel().removeIf(f -> f.getLabelKey().equals(labelKey));
         activeFiltersList.getModel().add(new ActiveFilterItem(labelKey,
                                                               labelValue,
                                                               value,
