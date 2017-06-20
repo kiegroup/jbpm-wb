@@ -126,4 +126,21 @@ public class KieServerDataSetManagerTest {
 
         assertEquals(1, receivedEvents.size());
     }
+
+    @Test
+    public void testRegisterQueriesOnServerWithoutBPMCapability() throws Exception {
+
+        when(kieClient.getServicesClient(any())).thenThrow(KieServicesException.class);
+
+        QueryDefinition query = QueryDefinition.builder().name("test").expression("expression").source("jbpm").target("CUSTOM").build();
+        Set<QueryDefinition> definitions = new HashSet<>();
+        definitions.add(query);
+
+        kieServerDataSetManager.registerQueriesWithRetry("template", "instance", definitions);
+
+        verify(kieServerIntegration, times(1)).getAdminServerClient(anyString());
+        verify(queryClient, never()).replaceQuery(any());
+
+        assertEquals(0, receivedEvents.size());
+    }
 }
