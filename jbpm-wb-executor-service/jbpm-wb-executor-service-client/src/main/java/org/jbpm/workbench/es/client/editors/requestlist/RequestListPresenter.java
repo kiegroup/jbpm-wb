@@ -17,10 +17,13 @@
 package org.jbpm.workbench.es.client.editors.requestlist;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -470,4 +473,40 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     public FilterSettings createCancelledTabSettings() {
         return createStatusSettings(RequestStatus.CANCELLED);
     }
+
+    public Predicate<RequestSummary> getDetailsActionCondition(){
+        return getActionConditionFromStatusList(new RequestStatus[]{
+            RequestStatus.QUEUED,
+            RequestStatus.DONE,
+            RequestStatus.CANCELLED,
+            RequestStatus.ERROR,
+            RequestStatus.RETRYING,
+            RequestStatus.RUNNING
+        });
+    }
+
+    public Predicate<RequestSummary> getCancelActionCondition(){
+        return getActionConditionFromStatusList(new RequestStatus[]{
+            RequestStatus.QUEUED,
+            RequestStatus.RETRYING,
+            RequestStatus.RUNNING
+        });
+    }
+
+    public Predicate<RequestSummary> getRequeueActionCondition(){
+        return getActionConditionFromStatusList(new RequestStatus[]{
+            RequestStatus.ERROR,
+            RequestStatus.RUNNING
+        });
+    }
+
+    public Predicate<RequestSummary> getViewProcessActionCondition(){
+        return job -> (job.getProcessInstanceId() != null);
+    }
+
+    private Predicate<RequestSummary> getActionConditionFromStatusList(RequestStatus[] statusList){
+        return value -> Arrays.stream(statusList).anyMatch(
+                    s -> s.name().equals(value.getStatus()));
+    }
+
 }

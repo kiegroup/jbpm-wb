@@ -17,31 +17,24 @@
 package org.jbpm.workbench.es.client.editors.requestlist;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import javax.enterprise.context.Dependent;
 
-import com.google.gwt.cell.client.ActionCell.Delegate;
-import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
 import org.gwtbootstrap3.client.ui.Button;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.util.ButtonActionCell;
+import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
-import org.jbpm.workbench.es.util.RequestStatus;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
@@ -65,52 +58,52 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     private static final String TAB_ALL = REQUEST_LIST_PREFIX + "_0";
 
     @Override
-    public void init( final RequestListPresenter presenter ) {
+    public void init(final RequestListPresenter presenter) {
         final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add( COLUMN_ID );
-        bannedColumns.add( COLUMN_COMMANDNAME );
-        bannedColumns.add( COL_ID_ACTIONS );
+        bannedColumns.add(COLUMN_ID);
+        bannedColumns.add(COLUMN_COMMANDNAME);
+        bannedColumns.add(COL_ID_ACTIONS);
         final List<String> initColumns = new ArrayList<String>();
-        initColumns.add( COLUMN_ID );
-        initColumns.add( COLUMN_BUSINESSKEY );
-        initColumns.add( COLUMN_COMMANDNAME );
-        initColumns.add( COL_ID_ACTIONS );
+        initColumns.add(COLUMN_ID);
+        initColumns.add(COLUMN_BUSINESSKEY);
+        initColumns.add(COLUMN_COMMANDNAME);
+        initColumns.add(COL_ID_ACTIONS);
 
-        createTabButton.addClickHandler( new ClickHandler() {
-            public void onClick( ClickEvent event ) {
-                final String key = getValidKeyForAdditionalListGrid( REQUEST_LIST_PREFIX + "_" );
+        createTabButton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                final String key = getValidKeyForAdditionalListGrid(REQUEST_LIST_PREFIX + "_");
 
                 Command addNewGrid = new Command() {
                     @Override
                     public void execute() {
 
-                        final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
+                        final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance(new GridGlobalPreferences(key, initColumns, bannedColumns), key);
 
-                        extendedPagedTable.setDataProvider( presenter.getDataProvider() );
+                        extendedPagedTable.setDataProvider(presenter.getDataProvider());
 
-                        filterPagedTable.createNewTab( extendedPagedTable, key, createTabButton, new Command() {
+                        filterPagedTable.createNewTab(extendedPagedTable, key, createTabButton, new Command() {
                             @Override
                             public void execute() {
                                 currentListGrid = extendedPagedTable;
-                                applyFilterOnPresenter( key );
+                                applyFilterOnPresenter(key);
                             }
                         } );
-                        applyFilterOnPresenter( key );
+                        applyFilterOnPresenter(key);
 
                     }
                 };
                 FilterSettings tableSettings = presenter.createTableSettingsPrototype();
-                tableSettings.setKey( key );
-                dataSetEditorManager.showTableSettingsEditor( filterPagedTable, constants.New_JobList(), tableSettings, addNewGrid );
+                tableSettings.setKey(key);
+                dataSetEditorManager.showTableSettingsEditor(filterPagedTable, constants.New_JobList(), tableSettings, addNewGrid);
 
             }
         } );
 
-        super.init( presenter, new GridGlobalPreferences( REQUEST_LIST_PREFIX, initColumns, bannedColumns ) );
+        super.init(presenter, new GridGlobalPreferences(REQUEST_LIST_PREFIX, initColumns, bannedColumns));
     }
 
     @Override
-    public void initColumns( ExtendedPagedTable extendedPagedTable ) {
+    public void initColumns(ExtendedPagedTable extendedPagedTable) {
         Column actionsColumn = initActionsColumn();
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
         
@@ -148,83 +141,51 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
     @Override
     public void initSelectionModel(ExtendedPagedTable<RequestSummary> extendedPagedTable) {
-        extendedPagedTable.setEmptyTableCaption( constants.No_Jobs_Found() );
+        extendedPagedTable.setEmptyTableCaption(constants.No_Jobs_Found());
     }
 
     private Column<RequestSummary, RequestSummary> initActionsColumn() {
         List<HasCell<RequestSummary, ?>> cells = new LinkedList<HasCell<RequestSummary, ?>>();
 
-        cells.add(new ActionHasCell(constants.Details(),
+        cells.add(new ConditionalButtonActionCell<RequestSummary>(
+                                    constants.Details(),
                                     job -> presenter.showJobDetails(job),
-                                    RequestStatus.QUEUED,
-                                    RequestStatus.DONE,
-                                    RequestStatus.CANCELLED,
-                                    RequestStatus.ERROR,
-                                    RequestStatus.RETRYING,
-                                    RequestStatus.RUNNING));
+                                    presenter.getDetailsActionCondition()));
 
-        cells.add(new ActionHasCell(constants.Cancel(),
+        cells.add(new ConditionalButtonActionCell<RequestSummary>(
+                                    constants.Cancel(),
                                     job -> {
                                         if (Window.confirm(constants.CancelJob())) {
                                             presenter.cancelRequest(job.getJobId());
                                         }
                                     },
-                                    RequestStatus.QUEUED,
-                                    RequestStatus.RETRYING,
-                                    RequestStatus.RUNNING));
+                                    presenter.getCancelActionCondition()));
 
-        cells.add(new ActionHasCell(constants.Requeue(),
+        cells.add(new ConditionalButtonActionCell<RequestSummary>(
+                                    constants.Requeue(),
                                     job -> {
                                         if (Window.confirm(constants.RequeueJob())) {
                                             presenter.requeueRequest(job.getJobId());
                                         }
                                     },
-                                    RequestStatus.ERROR,
-                                    RequestStatus.RUNNING));
+                                    presenter.getRequeueActionCondition()));
         
-        cells.add(new ActionHasCell(constants.ViewProcessInstance(),
-                                    job -> (job.getProcessInstanceId() != null),
+        cells.add(new ConditionalButtonActionCell<RequestSummary>(
+                                    constants.ViewProcessInstance(),
                                     job -> {
                                         presenter.openProcessInstanceView(Long.toString(job.getProcessInstanceId()));
-                                    }));
+                                    },
+                                    presenter.getViewProcessActionCondition()));
 
-        CompositeCell<RequestSummary> cell = new CompositeCell<RequestSummary>( cells );
-        Column<RequestSummary, RequestSummary> actionsColumn = new Column<RequestSummary, RequestSummary>( cell ) {
+        CompositeCell<RequestSummary> cell = new CompositeCell<RequestSummary>(cells);
+        Column<RequestSummary, RequestSummary> actionsColumn = new Column<RequestSummary, RequestSummary>(cell) {
             @Override
-            public RequestSummary getValue( RequestSummary object ) {
+            public RequestSummary getValue(RequestSummary object) {
                 return object;
             }
         };
-        actionsColumn.setDataStoreName( COL_ID_ACTIONS );
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
-    }
-
-    static class ActionHasCell extends ButtonActionCell<RequestSummary> {
-        
-        private final Predicate<RequestSummary> showCondition;
-        private List<String> availableStatuses = null;
-
-        public ActionHasCell(final String text,
-                             final Delegate<RequestSummary> delegate,
-                             final RequestStatus... status){
-            super(text, delegate);
-            this.availableStatuses = Arrays.stream(status).map(s -> s.name()).collect(Collectors.toList());
-            this.showCondition = (value -> availableStatuses.contains(value.getStatus()));
-        }
-        
-        public ActionHasCell(final String text,
-                             final Predicate<RequestSummary> showCondition,
-                             final Delegate<RequestSummary> delegate){
-            super(text, delegate);
-            this.showCondition = showCondition;
-        }
-
-        @Override
-        public void render(Cell.Context context, RequestSummary value, SafeHtmlBuilder sb) {
-            if(showCondition.test(value)){
-                super.render(context, value, sb);
-            }
-        }
     }
 
     @Override
@@ -269,18 +230,18 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                       constants.FilterCancelled(),
                       preferences);
 
-        filterPagedTable.addAddTableButton( createTabButton );
+        filterPagedTable.addAddTableButton(createTabButton);
     }
 
-    private void initTabFilter( FilterSettings tableSettings,
-                                final String key,
-                                String tabName,
-                                String tabDesc,
-                                GridGlobalPreferences preferences ) {
-        tableSettings.setUUID( REQUEST_LIST_DATASET );
-        tableSettings.setKey( key );
-        tableSettings.setTableName( tabName );
-        tableSettings.setTableDescription( tabDesc );
+    private void initTabFilter(FilterSettings tableSettings,
+                               final String key,
+                               String tabName,
+                               String tabDesc,
+                               GridGlobalPreferences preferences) {
+        tableSettings.setUUID(REQUEST_LIST_DATASET);
+        tableSettings.setKey(key);
+        tableSettings.setTableName(tabName);
+        tableSettings.setTableDescription(tabDesc);
 
         addNewTab(preferences, tableSettings);
     }
