@@ -97,33 +97,37 @@ public class KieServerDataSetManager {
     protected void registerQueriesWithRetry(String serverTemplateId, String serverInstanceId, Set<QueryDefinition> queryDefinitions) throws Exception {
         long waitLimit = 5 * 60 * 1000;   // default 5 min
         long elapsed = 0;
+        try {
+            QueryServicesClient queryClient = kieServerIntegration.getAdminServerClient(serverTemplateId).getServicesClient(QueryServicesClient.class);
 
-        QueryServicesClient queryClient = kieServerIntegration.getAdminServerClient(serverTemplateId).getServicesClient(QueryServicesClient.class);
+            while (elapsed < waitLimit) {
+                try {
+                    Iterator<QueryDefinition> definitionIt = queryDefinitions.iterator();
 
-        while (elapsed < waitLimit) {
-            try {
-                Iterator<QueryDefinition> definitionIt = queryDefinitions.iterator();
+                    while (definitionIt.hasNext()) {
+                        QueryDefinition definition = definitionIt.next();
+                        queryClient.replaceQuery(definition);
+                        LOGGER.info("Query definition {} (type {}) successfully registered on kie server '{}'", definition.getName(), definition.getTarget(), serverInstanceId);
+                        // remove successfully stored definition to avoid duplicated reads in case of intermediate error
+                        definitionIt.remove();
+                    }
 
-                while (definitionIt.hasNext()) {
-                    QueryDefinition definition = definitionIt.next();
-                    queryClient.replaceQuery(definition);
-                    LOGGER.info("Query definition {} (type {}) successfully registered on kie server '{}'", definition.getName(), definition.getTarget(), serverInstanceId);
-                    // remove successfully stored definition to avoid duplicated reads in case of intermediate error
-                    definitionIt.remove();
+                    event.fire(new KieServerDataSetRegistered(serverInstanceId, serverTemplateId));
+                    return;
+                } catch (KieServicesException | KieServerHttpRequestException e) {
+                    // unable to register, might still be booting
+                    Thread.sleep(500);
+                    elapsed += 500;
+                    // get admin client with forced check of endpoints as they might have been banned (marked as failed)
+                    queryClient = kieServerIntegration.getAdminServerClientCheckEndpoints(serverTemplateId).getServicesClient(QueryServicesClient.class);
+                    LOGGER.debug("Cannot reach KIE Server, elapsed time while waiting '{}', max time '{}' error {}", elapsed, waitLimit, e.getMessage());
                 }
-
-                event.fire(new KieServerDataSetRegistered(serverInstanceId, serverTemplateId));
-                return;
-            } catch (KieServicesException | KieServerHttpRequestException e) {
-                // unable to register, might still be booting
-                Thread.sleep(500);
-                elapsed += 500;
-                // get admin client with forced check of endpoints as they might have been banned (marked as failed)
-                queryClient = kieServerIntegration.getAdminServerClientCheckEndpoints(serverTemplateId).getServicesClient(QueryServicesClient.class);
-                LOGGER.debug("Cannot reach KIE Server, elapsed time while waiting '{}', max time '{}' error {}", elapsed, waitLimit, e.getMessage());
             }
-        }
 
-        LOGGER.warn("Timeout while trying to register query definitions on '{}'", serverInstanceId);
+            LOGGER.warn("Timeout while trying to register query definitions on '{}'", serverInstanceId);
+        } catch (KieServicesException ex) {
+            // in case getting queryClient fails due to missing capability to handle advanced queries
+            LOGGER.info("Not possible to register queries on server {} most likely due to BPM capability missing (details {})", serverInstanceId, ex.getMessage());
+        }
     }
 }
