@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.common.client.list;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -31,7 +32,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -40,8 +43,8 @@ public class AdvancedSearchFiltersViewImplTest {
     @Mock
     DataBinder<List<ActiveFilterItem>> dataBinder;
 
-    @Mock
-    List<ActiveFilterItem> modelList;
+    @Spy
+    List<ActiveFilterItem> modelList = new ArrayList<>();
 
     @Mock
     TranslationService translationService;
@@ -119,10 +122,12 @@ public class AdvancedSearchFiltersViewImplTest {
     }
 
     protected void testInvalidKeyCode(int keyCode) {
-        testKeyCode(keyCode, 1);
+        testKeyCode(keyCode,
+                    1);
     }
 
-    protected void testKeyCode(int keyCode, int wantedNumberOfInvocations) {
+    protected void testKeyCode(int keyCode,
+                               int wantedNumberOfInvocations) {
         final KeyboardEvent event = mock(KeyboardEvent.class);
         when(event.getKeyCode()).thenReturn(keyCode);
         view.getNumericInputListener().call(event);
@@ -131,6 +136,27 @@ public class AdvancedSearchFiltersViewImplTest {
     }
 
     protected void testValidKeyCode(int keyCode) {
-        testKeyCode(keyCode, 0);
+        testKeyCode(keyCode,
+                    0);
+    }
+
+    @Test
+    public void testAddActiveFilter() {
+
+        view.addActiveFilter("key1",
+                             "someValue",
+                             "someValue",
+                             null);
+
+        assertEquals(1,
+                     modelList.size());
+
+        view.addActiveFilter("key1",
+                             "anotherValue",
+                             "anotherValue",
+                             null);
+
+        assertEquals(1,
+                     modelList.size());
     }
 }
