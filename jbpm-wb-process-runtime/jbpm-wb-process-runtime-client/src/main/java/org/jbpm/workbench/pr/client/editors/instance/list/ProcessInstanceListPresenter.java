@@ -613,6 +613,12 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                               SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
                               pid);
     }
+    
+    public void openErrorView(final String pid) {
+        navigateToPerspective(EXECUTION_ERRORS,
+                              SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
+                              pid);
+    }
 
     public Predicate<ProcessInstanceSummary> getSignalActionCondition(){
         return pis -> pis.getState() == ProcessInstance.STATE_ACTIVE;
@@ -628,6 +634,10 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     public Predicate<ProcessInstanceSummary> getViewTasksActionCondition(){
         return pis -> isUserAuthorizedForPerspective(TASKS_ADMIN) || isUserAuthorizedForPerspective(TASKS);
+    }
+    
+    public Predicate<ProcessInstanceSummary> getViewErrorsActionCondition(){
+        return pis -> isUserAuthorizedForPerspective(EXECUTION_ERRORS) && pis.getErrorCount() != null && pis.getErrorCount() > 0;
     }
 
     /*-------------------------------------------------*/

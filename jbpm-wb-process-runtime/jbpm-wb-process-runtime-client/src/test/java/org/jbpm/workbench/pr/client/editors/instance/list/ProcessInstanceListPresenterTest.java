@@ -716,6 +716,26 @@ public class ProcessInstanceListPresenterTest {
 
         assertFalse(presenter.getViewJobsActionCondition().test(new ProcessInstanceSummary()));
     }
+    
+    @Test
+    public void testViewErrorsActionCondition() {
+        doAnswer(new PerspectiveAnswer(EXECUTION_ERRORS)).when(authorizationManager).authorize(any(ResourceRef.class),
+                                                                                               eq(identity));
+
+        ProcessInstanceSummary okProcInst = new ProcessInstanceSummary();
+        ProcessInstanceSummary errProcInst = new ProcessInstanceSummary();
+        errProcInst.setErrorCount(1);
+        Predicate<ProcessInstanceSummary> viewErrCondition = presenter.getViewErrorsActionCondition();
+        
+        assertFalse(viewErrCondition.test(okProcInst));
+        assertTrue(viewErrCondition.test(errProcInst));
+
+        when(authorizationManager.authorize(any(ResourceRef.class),
+                                            eq(identity))).thenReturn(false);
+
+        assertFalse(viewErrCondition.test(okProcInst));
+        assertFalse(viewErrCondition.test(errProcInst));
+    }
 
     @Test
     public void testAbortActionCondition() {
