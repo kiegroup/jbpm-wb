@@ -16,7 +16,8 @@
 
 package org.jbpm.workbench.forms.client;
 
-import org.jboss.errai.ioc.client.api.AfterInitialization;
+import javax.annotation.PostConstruct;
+
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jbpm.workbench.forms.client.resources.AppResources;
 import org.uberfire.client.views.pfly.sys.PatternFlyBootstrapper;
@@ -24,7 +25,7 @@ import org.uberfire.client.views.pfly.sys.PatternFlyBootstrapper;
 @EntryPoint
 public class GenericFormsClientEntryPoint {
 
-    @AfterInitialization
+    @PostConstruct
     public void startApp() {
         AppResources.INSTANCE.style().ensureInjected();
         PatternFlyBootstrapper.ensureBootstrapSelectIsAvailable();

@@ -31,7 +31,6 @@ import org.jbpm.workbench.client.i18n.Constants;
 import org.jbpm.workbench.client.perspectives.ProcessAdminSettingsPerspective;
 import org.jbpm.workbench.client.perspectives.TaskAdminSettingsPerspective;
 import org.kie.workbench.common.screens.search.client.menu.SearchMenuBuilder;
-import org.kie.workbench.common.services.shared.service.PlaceManagerActivityService;
 import org.kie.workbench.common.workbench.client.entrypoint.DefaultWorkbenchEntryPoint;
 import org.kie.workbench.common.workbench.client.menu.DefaultWorkbenchFeaturesMenusHelper;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
@@ -60,14 +59,12 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
 
     @Inject
     public ShowcaseEntryPoint(final Caller<AppConfigService> appConfigService,
-                              final Caller<PlaceManagerActivityService> pmas,
                               final ActivityBeansCache activityBeansCache,
                               final SyncBeanManager iocManager,
                               final User identity,
                               final DefaultWorkbenchFeaturesMenusHelper menusHelper,
                               final WorkbenchMenuBarPresenter menuBar) {
         super(appConfigService,
-              pmas,
               activityBeansCache);
         this.iocManager = iocManager;
         this.identity = identity;
