@@ -115,4 +115,10 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
         return task -> TASK_STATUS_SUSPENDED.equals(task.getStatus());
     }
 
+    @Override
+    protected Predicate<TaskSummary> getReleaseActionCondition() {
+        return task -> task.getActualOwner() != null && task.getActualOwner().equals(identity.getIdentifier())
+                && super.getReleaseActionCondition().test(task);
+    }
+
 }

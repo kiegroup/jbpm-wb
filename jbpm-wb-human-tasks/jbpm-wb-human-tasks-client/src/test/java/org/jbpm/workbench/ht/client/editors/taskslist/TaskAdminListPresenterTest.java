@@ -16,12 +16,16 @@
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 
+import org.jbpm.workbench.ht.model.TaskSummary;
+
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_ADMIN_DATASET;
+import static org.junit.Assert.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskAdminListPresenterTest extends AbstractTaskListPresenterTest {
@@ -52,4 +56,11 @@ public class TaskAdminListPresenterTest extends AbstractTaskListPresenterTest {
         testTaskStatusCondition(getPresenter().getResumeActionCondition(),
                                 TASK_STATUS_SUSPENDED);
     }
+    
+    @Test
+    public void adminShouldBeAbleToReleaseTaskOwnedByOthers() {
+        assertTrue(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner("userx").status(TASK_STATUS_RESERVED).build()));
+        assertTrue(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner("userx").status(TASK_STATUS_IN_PROGRESS).build()));
+    }
+
 }
