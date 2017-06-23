@@ -17,6 +17,8 @@ package org.jbpm.dashboard.renderer.client;
 
 import java.util.Arrays;
 
+import org.dashbuilder.common.client.widgets.FilterLabel;
+import org.dashbuilder.common.client.widgets.FilterLabelSet;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.DisplayerType;
 import org.dashbuilder.displayer.client.AbstractDisplayer;
@@ -58,7 +60,11 @@ public abstract class AbstractDashboardTest extends AbstractDisplayerTest {
             return initDisplayer(new MetricDisplayer(mock(MetricDisplayer.View.class)), settings);
         }
         if (settings.getType().equals(DisplayerType.TABLE)) {
-            return initDisplayer(new TableDisplayer(mock(TableDisplayer.View.class)), settings);
+            FilterLabel filterLabel = mock(FilterLabel.class);
+            FilterLabelSet filterLabelSet = mock(FilterLabelSet.class);
+            TableDisplayer.View tableView = mock(TableDisplayer.View.class);
+            doAnswer(invocationOnMock -> filterLabel).when(filterLabelSet).addLabel(anyString());
+            return initDisplayer(new TableDisplayer(tableView, filterLabelSet), settings);
         }
         return super.createNewDisplayer(settings);
     }
