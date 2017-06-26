@@ -49,6 +49,7 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.ResourceRef;
 import org.uberfire.security.authz.AuthorizationManager;
 
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
@@ -342,6 +343,28 @@ public class ExecutionErrorListPresenterTest {
         public Boolean answer(InvocationOnMock invocation) throws Throwable {
             return perspectiveId.equals(((ResourceRef)invocation.getArguments()[0]).getIdentifier());
         }
+    }
+
+    @Test
+    public void testDefaultAdvancedSearchFilterTypes(){
+        presenter.setupAdvancedSearchView();
+        verify(viewMock).addTextFilter(eq(Constants.INSTANCE.Id()),
+                                       eq(Constants.INSTANCE.FilterByErrorId()),
+                                       any(Consumer.class),
+                                       any(Consumer.class));
+        verify(viewMock).addNumericFilter(eq(Constants.INSTANCE.Process_Instance_Id()),
+                                       eq(Constants.INSTANCE.FilterByProcessInstanceId()),
+                                       any(Consumer.class),
+                                       any(Consumer.class));
+        verify(viewMock).addNumericFilter(eq(Constants.INSTANCE.JobId()),
+                                          eq(Constants.INSTANCE.FilterByJobId()),
+                                          any(Consumer.class),
+                                          any(Consumer.class));
+        verify(viewMock).addSelectFilter(eq(Constants.INSTANCE.Type()),
+                                         anyMap(),
+                                         eq(false),
+                                         any(Consumer.class),
+                                         any(Consumer.class));
     }
 
 }

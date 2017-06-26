@@ -278,7 +278,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
 
     @Override
     public void setupAdvancedSearchView() {
-        view.addNumericFilter(constants.Id(),
+        view.addTextFilter(constants.Id(),
                               constants.FilterByErrorId(),
                               v -> addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ID,
                                                                     v)),
