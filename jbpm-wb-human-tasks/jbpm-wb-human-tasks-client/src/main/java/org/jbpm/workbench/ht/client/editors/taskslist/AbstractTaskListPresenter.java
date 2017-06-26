@@ -595,8 +595,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     }
 
     protected Predicate<TaskSummary> getReleaseActionCondition() {
-        return task -> task.getActualOwner() != null && task.getActualOwner().equals(identity.getIdentifier())
-                && (task.getStatus().equals(TASK_STATUS_RESERVED) || task.getStatus().equals(TASK_STATUS_IN_PROGRESS));
+        return task -> task.getStatus().equals(TASK_STATUS_RESERVED) || task.getStatus().equals(TASK_STATUS_IN_PROGRESS);
     }
 
     protected Predicate<TaskSummary> getProcessInstanceCondition() {

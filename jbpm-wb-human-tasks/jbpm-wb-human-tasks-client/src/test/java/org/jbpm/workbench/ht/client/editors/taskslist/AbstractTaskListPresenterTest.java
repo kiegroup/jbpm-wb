@@ -589,9 +589,6 @@ public abstract class AbstractTaskListPresenterTest {
         assertTrue(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_IN_PROGRESS).build()));
         assertFalse(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_COMPLETED).build()));
         assertFalse(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_CREATED).build()));
-
-        assertFalse(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner("userx").status(TASK_STATUS_RESERVED).build()));
-        assertFalse(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner("userx").status(TASK_STATUS_IN_PROGRESS).build()));
     }
 
     @Test

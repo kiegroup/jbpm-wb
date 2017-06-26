@@ -20,8 +20,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 
+import org.jbpm.workbench.ht.model.TaskSummary;
+
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_USER_DATASET;
+import static org.junit.Assert.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskListPresenterTest extends AbstractTaskListPresenterTest {
@@ -51,4 +54,11 @@ public class TaskListPresenterTest extends AbstractTaskListPresenterTest {
         testTaskStatusCondition(getPresenter().getResumeActionCondition(),
                                 TASK_STATUS_SUSPENDED);
     }
+    
+    @Test
+    public void userShouldNotBeAbleToReleaseTasksOwnedByOthers() {
+        assertFalse(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner("userx").status(TASK_STATUS_RESERVED).build()));
+        assertFalse(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner("userx").status(TASK_STATUS_IN_PROGRESS).build()));
+    }
+
 }
