@@ -100,11 +100,10 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public String startCaseInstance(final String serverTemplateId, final String containerId, final String caseDefinitionId, final String owner,
-                                    final List<CaseRoleAssignmentSummary> roleAssignments) {
+    public String startCaseInstance(final String serverTemplateId, final String containerId, final String caseDefinitionId, final String owner, final List<CaseRoleAssignmentSummary> roleAssignments) {
         final CaseFile.Builder builder = CaseFile.builder();
         builder.addUserAssignments(CASE_OWNER_ROLE, owner);
-        roleAssignments.forEach( a -> {
+        roleAssignments.forEach(a -> {
             a.getGroups().forEach(g -> builder.addGroupAssignments(a.getName(), g));
             a.getUsers().forEach(u -> builder.addUserAssignments(a.getName(), u));
         });
@@ -123,9 +122,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
 
     @Override
     public CaseInstanceSummary getCaseInstance(final String serverTemplateId, final String containerId, final String caseId) {
-        return ofNullable(client.getCaseInstance(containerId, caseId, true, true, true, true))
-                .map(new CaseInstanceMapper())
-                .orElse(null);
+        return ofNullable(client.getCaseInstance(containerId, caseId, true, true, true, true)).map(new CaseInstanceMapper()).orElse(null);
     }
 
     @Override
@@ -155,20 +152,17 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public void addComment(final String serverTemplateId, final String containerId, final String caseId,
-                           final String author, final String text) {
+    public void addComment(final String serverTemplateId, final String containerId, final String caseId, final String author, final String text) {
         client.addComment(containerId, caseId, author, text);
     }
 
     @Override
-    public void updateComment(final String serverTemplateId, final String containerId, final String caseId,
-                              final String commentId, final String author, final String text) {
+    public void updateComment(final String serverTemplateId, final String containerId, final String caseId, final String commentId, final String author, final String text) {
         client.updateComment(containerId, caseId, commentId, author, text);
     }
 
     @Override
-    public void removeComment(final String serverTemplateId, final String containerId, final String caseId,
-                              final String commentId) {
+    public void removeComment(final String serverTemplateId, final String containerId, final String caseId, final String commentId) {
         client.removeComment(containerId, caseId, commentId);
     }
 
@@ -196,13 +190,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     public List<CaseActionSummary> getInProgressActions(String containerId, String caseId) {
         List<NodeInstance> activeNodes = client.getActiveNodes(containerId, caseId, 0, PAGE_SIZE_UNLIMITED);
 
-        return activeNodes.stream()
-                .map(s -> new CaseActionNodeInstanceMapper(
-                        (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
-                                userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
-                                ""),
-                        CaseActionStatus.IN_PROGRESS).apply(s))
-                .collect(toList());
+        return activeNodes.stream().map(s -> new CaseActionNodeInstanceMapper((NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ? userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() : ""), CaseActionStatus.IN_PROGRESS).apply(s)).collect(toList());
     }
 
     public List<NodeInstance> getCaseCompletedNodes(String containerId, String caseId) {
@@ -211,33 +199,22 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
 
     public List<CaseActionSummary> getCompletedActions(String containerId, String caseId) {
         List<NodeInstance> activeNodes = getCaseCompletedNodes(containerId, caseId);
-        return activeNodes.stream()
-                .map(s -> new CaseActionNodeInstanceMapper(
-                        (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
-                                userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
-                                ""),
-                        CaseActionStatus.COMPLETED).apply(s))
-                .collect(toList());
+        return activeNodes.stream().map(s -> new CaseActionNodeInstanceMapper((NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ? userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() : ""), CaseActionStatus.COMPLETED).apply(s)).collect(toList());
     }
 
     public List<CaseActionSummary> getAdHocFragments(String containerId, String caseId) {
-        return client.getAdHocFragments(containerId, caseId)
-                .stream()
-                .map(new CaseActionAdHocMapper(""))
-                .collect(toList());
+        return client.getAdHocFragments(containerId, caseId).stream().map(new CaseActionAdHocMapper("")).collect(toList());
     }
 
     public List<CaseActionSummary> getAdHocActions(String serverTemplateId, String containerId, String caseId) {
         List<CaseActionSummary> adHocActions = getAdHocFragments(containerId, caseId);
         CaseInstanceSummary caseInstanceSummary = getCaseInstance(serverTemplateId, containerId, caseId);
-        caseInstanceSummary.getStages().stream()
-                .filter(s -> s.getStatus().equals(CaseStageStatus.ACTIVE.getStatus()))
-                .forEach(ah -> {
-                    if (ah.getAdHocActions().size() > 0) {
-                        adHocActions.addAll(ah.getAdHocActions());
-                    }
-                    return;
-                });
+        caseInstanceSummary.getStages().stream().filter(s -> s.getStatus().equals(CaseStageStatus.ACTIVE.getStatus())).forEach(ah -> {
+            if (ah.getAdHocActions().size() > 0) {
+                adHocActions.addAll(ah.getAdHocActions());
+            }
+            return;
+        });
         return adHocActions;
     }
 
@@ -271,5 +248,11 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     public List<ProcessDefinitionSummary> getProcessDefinitions(String containerId) {
         final List<ProcessDefinition> processDefinitions = client.findProcessesByContainerId(containerId, 0, PAGE_SIZE_UNLIMITED);
         return processDefinitions.stream().map(new ProcessDefinitionMapper()).collect(toList());
+    }
+
+    @Override
+    public List<CaseCommentSummary> getComments(String serverTemplateId, String containerId, String caseId, int page, int pageSize) {
+        final List<CaseComment> caseComments = client.getComments(containerId, caseId, page, pageSize);
+        return caseComments.stream().map(new CaseCommentMapper()).collect(toList());
     }
 }

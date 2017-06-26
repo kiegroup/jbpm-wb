@@ -81,4 +81,6 @@ public interface CaseManagementService {
 
     List<ProcessDefinitionSummary> getProcessDefinitions(String containerId);
 
+    List<CaseCommentSummary> getComments(String serverTemplateId, String containerId, String caseId, int currentPage, int pageSize);
+
 }

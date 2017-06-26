@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.cm.client.comments;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -64,13 +65,14 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
     private final Date addedAt = new Date();
 
     private final String serverTemplateId = "serverTemplateId";
+    
 
     @Test
     public void testLoadCaseInstance() {
         final CaseInstanceSummary cis = newCaseInstanceSummary();
         final CaseCommentSummary caseComment = CaseCommentSummary.builder().id(commentId).author(author).text(text).addedAt(addedAt).build();
 
-        when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId())).thenReturn(
+        when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId(), 0, presenter.getPageSize())).thenReturn(
                 Collections.singletonList(caseComment));
         when(identity.getIdentifier()).thenReturn(author);
 
@@ -98,7 +100,7 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
         final CaseInstanceSummary cis = newCaseInstanceSummary();
         when(identity.getIdentifier()).thenReturn(author);
         final CaseCommentSummary caseComment = CaseCommentSummary.builder().id(commentId).author(author).text(text).addedAt(addedAt).build();
-        when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId())).thenReturn(
+        when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId(), 0, presenter.getPageSize())).thenReturn(
                 Collections.singletonList(caseComment));
 
         setupCaseInstance(cis, serverTemplateId);
@@ -114,7 +116,7 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
         final CaseInstanceSummary cis = newCaseInstanceSummary();
         final CaseCommentSummary caseComment = CaseCommentSummary.builder().id(commentId).author(author).text(text).addedAt(addedAt).build();
 
-        when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId())).thenReturn(
+        when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId(), 0, presenter.getPageSize())).thenReturn(
                 Collections.singletonList(caseComment));
 
         setupCaseInstance(cis, serverTemplateId);
@@ -174,7 +176,7 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
         final CaseCommentSummary caseComment1 = CaseCommentSummary.builder().id(comment1_id).author(author).text(text).addedAt(first).build();
         final CaseCommentSummary caseComment2 = CaseCommentSummary.builder().id(comment2_id).author(author).text(text).addedAt(second).build();
 
-        when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId())).thenReturn(
+        when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId(), 0, presenter.getPageSize())).thenReturn(
                 Arrays.asList(caseComment1,caseComment2));
 
         setupCaseInstance(cis, serverTemplateId);
@@ -188,5 +190,27 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
         assertEquals(comment1_id,((CaseCommentSummary)captor.getValue().get(0)).getId());
         assertEquals(comment2_id,((CaseCommentSummary)captor.getValue().get(1)).getId());
 
+    }
+    
+    @Test
+    public void testLoadMoreComments() {
+        final CaseInstanceSummary cis = newCaseInstanceSummary();
+
+        List<CaseCommentSummary> caseCommentSummary = new ArrayList<>();
+        
+        for (int i = 0 ; i < 55 ; i++) {
+            final CaseCommentSummary comment = CaseCommentSummary.builder().id("comment" + i).author(author).text(text).addedAt(addedAt).build();
+            caseCommentSummary.add(comment);
+        }
+        
+        when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId(), 0, presenter.getPageSize())).thenReturn(
+                caseCommentSummary.subList(0, 20));
+
+        setupCaseInstance(cis, serverTemplateId);
+        
+        presenter.loadMoreCaseComments();
+        
+        assertEquals(1, presenter.getCurrentPage());
+        verify(caseManagementService).getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId(), presenter.getCurrentPage(), presenter.getPageSize());
     }
 }

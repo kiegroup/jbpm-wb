@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.cm.backend.server;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -92,11 +93,7 @@ public class RemoteCaseManagementServiceImplTest {
     @Test
     public void testGetCaseDefinitions_singleCaseDefinition() {
         final CaseDefinition definition = createTestDefinition();
-        when(clientMock.getCaseDefinitions(anyInt(),
-                                           anyInt(),
-                                           eq(CaseServicesClient.SORT_BY_CASE_DEFINITION_NAME),
-                                           eq(true)))
-                .thenReturn(singletonList(definition));
+        when(clientMock.getCaseDefinitions(anyInt(), anyInt(), eq(CaseServicesClient.SORT_BY_CASE_DEFINITION_NAME), eq(true))).thenReturn(singletonList(definition));
 
         List<CaseDefinitionSummary> definitions = testedService.getCaseDefinitions();
         assertNotNull(definitions);
@@ -106,8 +103,7 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void testGetCaseDefinitions_emptyList() {
-        when(clientMock.getCaseDefinitions(anyInt(), anyInt()))
-                .thenReturn(emptyList());
+        when(clientMock.getCaseDefinitions(anyInt(), anyInt())).thenReturn(emptyList());
 
         List<CaseDefinitionSummary> definitions = testedService.getCaseDefinitions();
         assertNotNull(definitions);
@@ -117,8 +113,7 @@ public class RemoteCaseManagementServiceImplTest {
     @Test
     public void getCaseDefinition_whenClientReturnsCaseDefinition() {
         final CaseDefinition definition = createTestDefinition();
-        when(clientMock.getCaseDefinition(anyString(), anyString()))
-                .thenReturn(definition);
+        when(clientMock.getCaseDefinition(anyString(), anyString())).thenReturn(definition);
 
         CaseDefinitionSummary actualDef = testedService.getCaseDefinition(serverTemplateId, containerId, caseDefinitionId);
         assertCaseDefinition(definition, actualDef);
@@ -126,8 +121,7 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void getCaseDefinition_whenClientReturnsNull() {
-        when(clientMock.getCaseDefinition(anyString(), anyString()))
-                .thenReturn(null);
+        when(clientMock.getCaseDefinition(anyString(), anyString())).thenReturn(null);
 
         CaseDefinitionSummary shouldBeNull = testedService.getCaseDefinition(serverTemplateId, containerId, caseDefinitionId);
         assertNull(shouldBeNull);
@@ -225,8 +219,7 @@ public class RemoteCaseManagementServiceImplTest {
     @Test
     public void getCaseInstance_whenClientReturnsInstance() {
         final CaseInstance ci = createTestInstance(caseId);
-        when(clientMock.getCaseInstance(ci.getContainerId(), ci.getCaseId(), true, true, true, true))
-                .thenReturn(ci);
+        when(clientMock.getCaseInstance(ci.getContainerId(), ci.getCaseId(), true, true, true, true)).thenReturn(ci);
 
         final CaseInstanceSummary cis = testedService.getCaseInstance(serverTemplateId, ci.getContainerId(), ci.getCaseId());
         assertCaseInstance(ci, cis);
@@ -234,8 +227,7 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void getCaseInstance_whenClientReturnsNull() {
-        when(clientMock.getCaseInstance(containerId, caseId, true, true, true, true))
-                .thenReturn(null);
+        when(clientMock.getCaseInstance(containerId, caseId, true, true, true, true)).thenReturn(null);
 
         final CaseInstanceSummary cis = testedService.getCaseInstance(serverTemplateId, containerId, caseId);
         assertNull(cis);
@@ -250,6 +242,39 @@ public class RemoteCaseManagementServiceImplTest {
         assertNotNull(comments);
         assertEquals(1, comments.size());
         assertCaseComment(caseComment, comments.get(0));
+    }
+
+    @Test
+    public void testGetComments_bulkComments() {
+        int pageSize = 20;
+        List<CaseComment> caseComments = new ArrayList<>();
+
+        for (int i = 0; i < 55; i++) {
+            final CaseComment caseComment = createTestComment();
+            caseComments.add(caseComment);
+        }
+        
+        List<CaseComment> firstPage = caseComments.subList(0, 20);
+        List<CaseComment> secondPage = caseComments.subList(20, 40);
+        List<CaseComment> thirdPage = caseComments.subList(40, 55);
+        
+        when(clientMock.getComments(containerId, caseId, 0, 20)).thenReturn(firstPage);
+        List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId, containerId, caseId, 0, pageSize);
+        
+        assertNotNull(comments);
+        assertEquals(20, comments.size());
+        
+        when(clientMock.getComments(containerId, caseId, 1, 20)).thenReturn(secondPage);
+        comments = testedService.getComments(serverTemplateId, containerId, caseId, 1, pageSize);
+        
+        assertNotNull(comments);
+        assertEquals(20, comments.size());
+        
+        when(clientMock.getComments(containerId, caseId, 2, 20)).thenReturn(thirdPage);
+        comments = testedService.getComments(serverTemplateId, containerId, caseId, 2, pageSize);
+        
+        assertNotNull(comments);
+        assertEquals(15, comments.size());       
     }
 
     @Test
@@ -312,75 +337,43 @@ public class RemoteCaseManagementServiceImplTest {
     }
 
     private CaseDefinition createTestDefinition() {
-        CaseDefinition definition = CaseDefinition.builder()
-                .id(caseDefinitionId)
-                .name(caseName)
-                .containerId(containerId)
-                .roles(Collections.emptyMap())
-                .build();
+        CaseDefinition definition = CaseDefinition.builder().id(caseDefinitionId).name(caseName).containerId(containerId).roles(Collections.emptyMap()).build();
 
         return definition;
     }
 
     private CaseInstance createTestInstance(String caseId) {
-        CaseInstance instance = CaseInstance.builder()
-                .caseDescription(caseDescription)
-                .caseId(caseId)
-                .caseStatus(1)
-                .containerId(containerId)
-                .build();
+        CaseInstance instance = CaseInstance.builder().caseDescription(caseDescription).caseId(caseId).caseStatus(1).containerId(containerId).build();
 
         return instance;
     }
 
     private CaseComment createTestComment() {
-        CaseComment comment = CaseComment.builder()
-                .id(commentId)
-                .author(author)
-                .text(text)
-                .addedAt(new Date())
-                .build();
+        CaseComment comment = CaseComment.builder().id(commentId).author(author).text(text).addedAt(new Date()).build();
 
         return comment;
     }
 
     private CaseMilestone createTestMilestone(String caseMilestoneId, String caseMilestoneName, String status) {
-        CaseMilestone milestone = CaseMilestone.builder()
-                .name(caseMilestoneName)
-                .status(status)
-                .id(caseMilestoneId)
-                .achieved(false)
-                .build();
+        CaseMilestone milestone = CaseMilestone.builder().name(caseMilestoneName).status(status).id(caseMilestoneId).achieved(false).build();
 
         return milestone;
     }
 
     private CaseAdHocFragment createTestCaseAdHocFragment(String name, String type) {
-        CaseAdHocFragment caseAdHocFragment = CaseAdHocFragment.builder()
-                .name(name)
-                .type(type)
-                .build();
+        CaseAdHocFragment caseAdHocFragment = CaseAdHocFragment.builder().name(name).type(type).build();
 
         return caseAdHocFragment;
     }
 
     private NodeInstance createTestNodeInstace(String name, String nodeType, Long workItemId) {
-        NodeInstance nodeInstance = NodeInstance.builder()
-                .name(name)
-                .nodeType(nodeType)
-                .workItemId(workItemId)
-                .date(new Date())
-                .build();
+        NodeInstance nodeInstance = NodeInstance.builder().name(name).nodeType(nodeType).workItemId(workItemId).date(new Date()).build();
 
         return nodeInstance;
     }
 
     private CaseStage createTestCaseStage(String stageId, String stageName, String stageStatus) {
-        CaseStage stage = CaseStage.builder()
-                .id(stageId)
-                .name(stageName)
-                .status(stageStatus)
-                .build();
+        CaseStage stage = CaseStage.builder().id(stageId).name(stageName).status(stageStatus).build();
         return stage;
     }
 
@@ -399,8 +392,7 @@ public class RemoteCaseManagementServiceImplTest {
         stage2.setAdHocFragments(Arrays.asList(cAHF1_stage2, cAHF2_stage2));
         ci.setStages(Arrays.asList(stage1, stage2));
 
-        when(clientMock.getCaseInstance(ci.getContainerId(), ci.getCaseId(), true, true, true, true))
-                .thenReturn(ci);
+        when(clientMock.getCaseInstance(ci.getContainerId(), ci.getCaseId(), true, true, true, true)).thenReturn(ci);
 
         CaseAdHocFragment cAHF1 = createTestCaseAdHocFragment("adHocFragment-name-1", "adHocFragment-type-1");
         CaseAdHocFragment cAHF2 = createTestCaseAdHocFragment("adHocFragment-name-2", "adHocFragment-type-2");
@@ -418,9 +410,7 @@ public class RemoteCaseManagementServiceImplTest {
         NodeInstance node4 = createTestNodeInstace("complete2", "Service Task", node4WorkItemId);
         when(clientMock.getCompletedNodes(eq(containerId), eq(caseId), anyInt(), anyInt())).thenReturn(Arrays.asList(node3, node4));
 
-        TaskInstance t1 = TaskInstance.builder()
-                .actualOwner("Koe")
-                .build();
+        TaskInstance t1 = TaskInstance.builder().actualOwner("Koe").build();
         when(userTaskServicesClient.findTaskByWorkItemId(node1WorkItemId)).thenReturn(t1);
         when(userTaskServicesClient.findTaskByWorkItemId(node3WorkItemId)).thenReturn(t1);
 
@@ -440,7 +430,6 @@ public class RemoteCaseManagementServiceImplTest {
         CaseActionMapperTest.assertCaseActionNodeInstance(node3, actions.getCompleteActions().get(0));
         CaseActionMapperTest.assertCaseActionNodeInstance(node4, actions.getCompleteActions().get(1));
 
-
         verify(clientMock).getAdHocFragments(containerId, caseId);
         verify(clientMock).getActiveNodes(eq(containerId), eq(caseId), eq(0), anyInt());
         verify(clientMock).getCompletedNodes(eq(containerId), eq(caseId), eq(0), anyInt());
@@ -457,9 +446,7 @@ public class RemoteCaseManagementServiceImplTest {
 
         NodeInstance node1 = createTestNodeInstace("active1", "Human Task", node1WorkItemId);
         NodeInstance node2 = createTestNodeInstace("active2", "Service Task", node2WorkItemId);
-        TaskInstance t1 = TaskInstance.builder()
-                .actualOwner(taskActualOwner)
-                .build();
+        TaskInstance t1 = TaskInstance.builder().actualOwner(taskActualOwner).build();
 
         when(clientMock.getActiveNodes(eq(containerId), eq(caseId), anyInt(), anyInt())).thenReturn(Arrays.asList(node1, node2));
         when(userTaskServicesClient.findTaskByWorkItemId(node1WorkItemId)).thenReturn(t1);
@@ -493,8 +480,7 @@ public class RemoteCaseManagementServiceImplTest {
         stage2.setAdHocFragments(Arrays.asList(cAHF1_stage2, cAHF2_stage2));
         ci.setStages(Arrays.asList(stage1, stage2));
 
-        when(clientMock.getCaseInstance(ci.getContainerId(), ci.getCaseId(), true, true, true, true))
-                .thenReturn(ci);
+        when(clientMock.getCaseInstance(ci.getContainerId(), ci.getCaseId(), true, true, true, true)).thenReturn(ci);
 
         CaseAdHocFragment cAHF1 = createTestCaseAdHocFragment("adHocFragment-name-1", "adHocFragment-type-1");
         CaseAdHocFragment cAHF2 = createTestCaseAdHocFragment("adHocFragment-name-2", "adHocFragment-type-2");
