@@ -69,6 +69,10 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     Div filtersInput;
 
     @Inject
+    @DataField("filters-input-help")
+    Anchor filtersInputHelp;
+
+    @Inject
     @DataField("date-filters-input")
     Div dateFiltersInput;
 
@@ -126,6 +130,19 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
             }
             v.getValue().getCallback().accept(v.getValue().getValue());
         });
+        filtersInputHelp.setAttribute("data-content",
+                                      getInputStringHelpHtml());
+        popover(filtersInputHelp);
+    }
+
+    private String getInputStringHelpHtml() {
+        return "<p>" + constants.AllowedWildcardsForStrings() + "</p>\n" +
+                " <ul>\n" +
+                "   <li><code>_</code> - " + constants.AsubstituteForASingleCharacter() + "</li>\n" +
+                "   <li><code>%</code> - " + constants.ASubstituteForZeroOrMoreCharacters() + "</li>\n" +
+                "   <li><code>[" + constants.Charlist() + "]</code> - " + constants.SetsOfCharactersToMatch() + "</li>\n" +
+                "   <li><code>[^" + constants.Charlist() + "]</code> - " + constants.MatchesOnlyACharacterNOTSpecifiedWithinTheBrackets() + "</li>\n" +
+                " </ul>\n";
     }
 
     @Override
@@ -133,6 +150,8 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                               final String placeholder,
                               final Consumer<String> addCallback,
                               final Consumer<String> removeCallback) {
+
+        removeCSSClass(filtersInputHelp,"hidden");
         createFilterOption(label,
                            filters,
                            e -> setInputCurrentFilter(label));
@@ -237,8 +256,10 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
         if (dateFilterText.getTextContent().isEmpty()) {
             setDateCurrentFilter(label);
         } else {
-            removeCSSClass(dateCaret, "hidden");
-            dateButton.setAttribute("data-toggle", "dropdown");
+            removeCSSClass(dateCaret,
+                           "hidden");
+            dateButton.setAttribute("data-toggle",
+                                    "dropdown");
         }
     }
 
@@ -431,4 +452,8 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     public void removeAllActiveFilters() {
         activeFiltersList.getModel().clear();
     }
+
+    protected native void popover(final HTMLElement e) /*-{
+        $wnd.jQuery(e).popover();
+    }-*/;
 }

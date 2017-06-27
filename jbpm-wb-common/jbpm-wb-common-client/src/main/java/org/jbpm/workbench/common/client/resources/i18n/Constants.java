@@ -82,4 +82,17 @@ public interface Constants extends Messages {
 
     String ClearAll();
 
+    String AllowedWildcardsForStrings();
+
+    String AsubstituteForASingleCharacter();
+
+    String ASubstituteForZeroOrMoreCharacters();
+
+    String Charlist();
+
+    String SetsOfCharactersToMatch();
+
+    String MatchesOnlyACharacterNOTSpecifiedWithinTheBrackets();
+
+
 }
