@@ -27,6 +27,7 @@ import javax.enterprise.event.Event;
 
 import com.google.gwt.view.client.Range;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetOp;
@@ -595,5 +596,21 @@ public abstract class AbstractTaskListPresenterTest {
     public void testProcessInstanceCondition() {
         assertTrue(getPresenter().getProcessInstanceCondition().test(TaskSummary.builder().processInstanceId(1l).build()));
         assertFalse(getPresenter().getProcessInstanceCondition().test(TaskSummary.builder().build()));
+    }
+
+    @Test
+    public void testCreateDataSetTaskCallback() {
+        final AbstractTaskListPresenter presenter = spy(getPresenter());
+        final ClientRuntimeError error = new ClientRuntimeError("");
+        final FilterSettings filterSettings = mock(FilterSettings.class);
+        final DataSetReadyCallback callback = presenter.createDataSetTaskCallback(0,
+                                                                                  filterSettings);
+
+        doNothing().when(presenter).showErrorPopup(any());
+
+        assertFalse(callback.onError(error));
+
+        verify(viewMock).hideBusyIndicator();
+        verify(presenter).showErrorPopup(Constants.INSTANCE.TaskListCouldNotBeLoaded());
     }
 }

@@ -30,37 +30,22 @@ import org.dashbuilder.displayer.client.DisplayerListener;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
 import org.kie.workbench.common.workbench.client.resources.i18n.DefaultWorkbenchConstants;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 
 import static org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback.isKieServerForbiddenException;
 import static org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback.isKieServerUnauthorizedException;
 
 public class DisplayerContainer implements IsWidget {
 
-    public interface View extends UberView<DisplayerContainer> {
-        void setHeaderVisible(boolean visible);
-        void setHeaderText(String text);
-        void setSelectorVisible(boolean visible);
-        void setDisplayerList(Set<String> displayerNames);
-        void setDisplayerHeight(int h);
-        void showLoading(Displayer displayer);
-        void showDisplayer(Displayer displayer);
-        void showEmpty(Displayer displayer);
-        void showError(String message, String cause);
-        Style getHeaderStyle();
-        Style getBodyStyle();
-    }
-
     protected View view = new DisplayerContainerView();
-    protected Map<String,Displayer> displayers;
+    protected Map<String, Displayer> displayers;
     protected Displayer currentDisplayer;
     protected boolean error = true;
-
     protected Timer loadingTimer = new Timer() {
         public void run() {
             view.showLoading(currentDisplayer);
         }
     };
-
     DisplayerListener displayerListener = new AbstractDisplayerListener() {
         public void onDataLookup(Displayer displayer) {
             if (displayer == currentDisplayer) {
@@ -68,19 +53,23 @@ public class DisplayerContainer implements IsWidget {
                 loadingTimer.schedule(1000);
             }
         }
+
         public void onDraw(Displayer displayer) {
             if (displayer == currentDisplayer) {
                 loadingTimer.cancel();
                 updateDisplayer();
             }
         }
+
         public void onRedraw(Displayer displayer) {
             if (displayer == currentDisplayer) {
                 loadingTimer.cancel();
                 updateDisplayer();
             }
         }
-        public void onError(Displayer displayer, ClientRuntimeError e) {
+
+        public void onError(Displayer displayer,
+                            ClientRuntimeError e) {
             if (displayer == currentDisplayer) {
                 loadingTimer.cancel();
                 showError(e);
@@ -88,7 +77,8 @@ public class DisplayerContainer implements IsWidget {
         }
     };
 
-    public DisplayerContainer(Map<String,Displayer> displayers, boolean showHeader) {
+    public DisplayerContainer(Map<String, Displayer> displayers,
+                              boolean showHeader) {
         view.init(this);
         view.setHeaderVisible(showHeader);
         showDisplayers(displayers);
@@ -99,7 +89,7 @@ public class DisplayerContainer implements IsWidget {
         return view.asWidget();
     }
 
-    public void showDisplayers(Map<String,Displayer> displayers) {
+    public void showDisplayers(Map<String, Displayer> displayers) {
         this.displayers = displayers;
         view.setDisplayerList(displayers.keySet());
 
@@ -113,7 +103,9 @@ public class DisplayerContainer implements IsWidget {
         int height = 0;
         for (Map.Entry<String, Displayer> entry : displayers.entrySet()) {
             int chartHeight = entry.getValue().getDisplayerSettings().getChartHeight();
-            if (chartHeight > height) height = chartHeight;
+            if (chartHeight > height) {
+                height = chartHeight;
+            }
         }
 
         if (!displayers.isEmpty()) {
@@ -128,7 +120,8 @@ public class DisplayerContainer implements IsWidget {
         if (displayer != null) {
             showDisplayer(displayer);
         } else {
-            view.showError(DashboardConstants.INSTANCE.displayerNotFound(name), null);
+            view.showError(DashboardConstants.INSTANCE.displayerNotFound(name),
+                           null);
         }
     }
 
@@ -154,12 +147,46 @@ public class DisplayerContainer implements IsWidget {
 
     protected void showError(ClientRuntimeError e) {
         error = true;
-        if(isKieServerForbiddenException(e.getThrowable())){
-            view.showError(DefaultWorkbenchConstants.INSTANCE.KieServerError403(), e.getCause());
-        } else if(isKieServerUnauthorizedException(e.getThrowable())){
-            view.showError(DefaultWorkbenchConstants.INSTANCE.KieServerError401(), e.getCause());
+        if (isKieServerForbiddenException(e.getThrowable())) {
+            view.showError(DefaultWorkbenchConstants.INSTANCE.KieServerError403(),
+                           e.getCause());
+        } else if (isKieServerUnauthorizedException(e.getThrowable())) {
+            view.showError(DefaultWorkbenchConstants.INSTANCE.KieServerError401(),
+                           e.getCause());
         } else {
-            view.showError(e.getMessage(), e.getCause());
+            view.showEmpty(currentDisplayer);
+
+            showErrorPopup(DashboardConstants.INSTANCE.dashboardCouldNotBeLoaded());
         }
+    }
+
+    void showErrorPopup(final String message) {
+        ErrorPopup.showMessage(message);
+    }
+
+    public interface View extends UberView<DisplayerContainer> {
+
+        void setHeaderVisible(boolean visible);
+
+        void setHeaderText(String text);
+
+        void setSelectorVisible(boolean visible);
+
+        void setDisplayerList(Set<String> displayerNames);
+
+        void setDisplayerHeight(int h);
+
+        void showLoading(Displayer displayer);
+
+        void showDisplayer(Displayer displayer);
+
+        void showEmpty(Displayer displayer);
+
+        void showError(String message,
+                       String cause);
+
+        Style getHeaderStyle();
+
+        Style getBodyStyle();
     }
 }

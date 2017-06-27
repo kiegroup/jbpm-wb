@@ -136,4 +136,6 @@ public interface DashboardI18n {
     String taskDetailsNotAvailable();
 
     String displayerNotFound(String name);
+
+    String dashboardCouldNotBeLoaded();
 }

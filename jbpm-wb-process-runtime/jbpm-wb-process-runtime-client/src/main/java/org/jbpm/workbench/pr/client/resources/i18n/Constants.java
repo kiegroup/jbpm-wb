@@ -331,4 +331,5 @@ public interface Constants extends Messages {
 
     String ViewErrors();
 
+    String ResourceCouldNotBeLoaded(String resource);
 }

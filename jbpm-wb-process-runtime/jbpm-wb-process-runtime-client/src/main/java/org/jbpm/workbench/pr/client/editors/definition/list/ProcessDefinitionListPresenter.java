@@ -47,6 +47,7 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
@@ -149,11 +150,22 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
             @Override
             public boolean error( Message message,
                                   Throwable throwable ) {
-                view.hideBusyIndicator();
-                return true;
+                return onRuntimeDataServiceError();
             }
         } ).getProcessesByFilter(getSelectedServerTemplate(), textSearchStr, visibleRange.getStart() / visibleRange.getLength(), visibleRange.getLength(),
                 currentFilter.getOrderBy(), currentFilter.isAscending());
+    }
+
+    boolean onRuntimeDataServiceError() {
+        view.hideBusyIndicator();
+
+        showErrorPopup(Constants.INSTANCE.ResourceCouldNotBeLoaded(Constants.INSTANCE.Process_Definitions()));
+
+        return false;
+    }
+
+    void showErrorPopup(final String message) {
+        ErrorPopup.showMessage(message);
     }
 
     @WorkbenchMenu
