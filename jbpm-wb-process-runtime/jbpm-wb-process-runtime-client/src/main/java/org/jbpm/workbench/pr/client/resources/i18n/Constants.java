@@ -329,4 +329,6 @@ public interface Constants extends Messages {
 
     String ViewTasks();
 
+    String ViewErrors();
+
 }

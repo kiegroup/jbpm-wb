@@ -5,5 +5,8 @@
 
 .process-instance-error-count.error-present {
     background-color: #c00;
+}
+
+.process-instance-error-count.link-available {
     cursor: pointer !important;
 }

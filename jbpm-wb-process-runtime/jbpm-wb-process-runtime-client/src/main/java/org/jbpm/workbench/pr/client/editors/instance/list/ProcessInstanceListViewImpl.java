@@ -327,7 +327,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     private Column<ProcessInstanceSummary, ProcessInstanceSummary> initErrorCountColumn() {
         
         Column<ProcessInstanceSummary, ProcessInstanceSummary> column = new Column<ProcessInstanceSummary, ProcessInstanceSummary>(
-                popoverCellInstance.get()){
+                popoverCellInstance.get().init(presenter)){
 
             @Override
             public ProcessInstanceSummary getValue(ProcessInstanceSummary process) {
@@ -371,6 +371,12 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                 constants.ViewTasks(),
                 processInstance -> presenter.openTaskView(Long.toString(processInstance.getProcessInstanceId())),
                 presenter.getViewTasksActionCondition()
+        ));
+        
+        cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
+                constants.ViewErrors(),
+                processInstance -> presenter.openErrorView(Long.toString(processInstance.getProcessInstanceId())),
+                presenter.getViewErrorsActionCondition()
         ));
 
         CompositeCell<ProcessInstanceSummary> cell = new CompositeCell<ProcessInstanceSummary>(cells);
