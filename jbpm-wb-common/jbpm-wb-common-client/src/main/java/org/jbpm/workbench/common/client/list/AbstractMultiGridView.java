@@ -568,10 +568,13 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                                          removeCallback);
     }
 
+    @Override
     public void addDateRangeFilter(String label,
+                                   String placeholder,
                                    Consumer<DateRange> addCallback,
                                    Consumer<DateRange> removeCallback) {
         advancedSearchFiltersView.addDateRangeFilter(label,
+                                                     placeholder,
                                                      addCallback,
                                                      removeCallback);
     }

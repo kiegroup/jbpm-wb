@@ -547,6 +547,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                                                              v)));
 
         view.addDateRangeFilter(constants.Start_Date(),
+                                constants.Start_Date_Placeholder(),
                                 v -> addAdvancedSearchFilter(between(COLUMN_START,
                                                                      v.getStartDate(),
                                                                      v.getEndDate())),
@@ -556,6 +557,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         );
 
         view.addDateRangeFilter(constants.Last_Modification_Date(),
+                                constants.Last_Modification_Date_Placeholder(),
                                 v -> addAdvancedSearchFilter(between(COLUMN_LAST_MODIFICATION_DATE,
                                                                      v.getStartDate(),
                                                                      v.getEndDate())),

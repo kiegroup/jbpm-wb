@@ -27,6 +27,8 @@ public class ActiveFilterItem<T extends Object> {
 
     private String labelValue;
 
+    private String hint;
+
     private T value;
 
     private Consumer<T> callback;
@@ -36,10 +38,12 @@ public class ActiveFilterItem<T extends Object> {
 
     public ActiveFilterItem(final String labelKey,
                             final String labelValue,
+                            final String hint,
                             final T value,
                             final Consumer<T> callback) {
         this.labelKey = labelKey;
         this.labelValue = labelValue;
+        this.hint = hint;
         this.value = value;
         this.callback = callback;
     }
@@ -74,6 +78,14 @@ public class ActiveFilterItem<T extends Object> {
 
     public void setCallback(Consumer<T> callback) {
         this.callback = callback;
+    }
+
+    public String getHint() {
+        return hint;
+    }
+
+    public void setHint(String hint) {
+        this.hint = hint;
     }
 
     @Override

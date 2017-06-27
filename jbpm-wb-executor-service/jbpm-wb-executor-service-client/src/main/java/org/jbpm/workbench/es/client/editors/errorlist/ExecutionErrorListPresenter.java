@@ -334,6 +334,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         );
 
         view.addDateRangeFilter(this.constants.ErrorDate(),
+                                this.constants.ErrorDatePlaceholder(),
                                 v -> addAdvancedSearchFilter(between(COLUMN_ERROR_DATE,
                                                                      v.getStartDate(),
                                                                      v.getEndDate())),

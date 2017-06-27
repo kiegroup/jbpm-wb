@@ -84,15 +84,22 @@ public interface Constants extends Messages {
 
     String AllowedWildcardsForStrings();
 
-    String AsubstituteForASingleCharacter();
+    String ASubstituteForASingleCharacter();
 
     String ASubstituteForZeroOrMoreCharacters();
 
-    String Charlist();
+    String CharList();
 
     String SetsOfCharactersToMatch();
 
     String MatchesOnlyACharacterNOTSpecifiedWithinTheBrackets();
 
+    String LastHour();
+
+    String LastHours(Integer hours);
+
+    String LastDays(Integer days);
+
+    String Custom();
 
 }
