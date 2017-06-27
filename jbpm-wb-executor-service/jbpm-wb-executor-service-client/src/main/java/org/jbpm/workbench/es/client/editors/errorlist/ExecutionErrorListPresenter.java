@@ -156,9 +156,9 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                 getColumnStringValue(dataSet,
                                      COLUMN_ERROR_MSG,
                                      index),
-                getColumnBooleanValue(dataSet,
+                getColumnIntValue(dataSet,
                                       COLUMN_ERROR_ACK,
-                                      index),
+                                      index).shortValue(),
                 getColumnStringValue(dataSet,
                                      COLUMN_ERROR_ACK_BY,
                                      index),
@@ -320,9 +320,9 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
 
         final Map<String, String> acks = new HashMap<>();
         final org.jbpm.workbench.common.client.resources.i18n.Constants constants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
-        acks.put(String.valueOf(Boolean.TRUE),
+        acks.put("1",
                  constants.Yes());
-        acks.put(String.valueOf(Boolean.FALSE),
+        acks.put("0",
                  constants.No());
         view.addSelectFilter(this.constants.Acknowledged(),
                              acks,
@@ -368,13 +368,13 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         view.addActiveFilter(
                 this.constants.Acknowledged(),
                 org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No(),
-                String.valueOf(Boolean.FALSE),
+                "0",
                 v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
                                                          v))
         );
 
         addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
-                                         String.valueOf(Boolean.FALSE)));
+                                         "0"));
     }
 
     /*-------------------------------------------------*/
@@ -405,7 +405,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
 
         if (acknowledged != null) {
             builder.filter(equalsTo(COLUMN_ERROR_ACK,
-                                    acknowledged));
+                                    acknowledged ? "1" : "0"));
         }
 
         builder.filterOn(true,

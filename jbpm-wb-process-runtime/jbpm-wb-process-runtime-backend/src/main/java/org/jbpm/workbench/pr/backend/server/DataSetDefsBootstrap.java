@@ -65,7 +65,7 @@ public class DataSetDefsBootstrap {
                             "COALESCE(" +
                                 "(select COUNT(errInfo.id) " +
                                     "from ExecutionErrorInfo errInfo " +
-                                    "where errInfo.process_inst_id=log.processInstanceId and errInfo.error_ack!=TRUE " +
+                                    "where errInfo.process_inst_id=log.processInstanceId and errInfo.error_ack=0 " +
                                     "group by errInfo.process_inst_id)" +
                             ",0) as " + COLUMN_ERROR_COUNT + " " +
                        "from " +

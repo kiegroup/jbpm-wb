@@ -18,7 +18,6 @@ package org.jbpm.workbench.es.client.editors.errordetails;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
-import org.jbpm.workbench.es.model.events.ExecErrorChangedEvent;
 import org.jbpm.workbench.es.model.events.ExecErrorSelectionEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
 import org.junit.Before;

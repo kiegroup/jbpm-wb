@@ -54,7 +54,7 @@ public class ExecutionErrorSummary extends GenericSummary<String> {
                                  String activityName,
                                  Long jobId,
                                  String errorMessage,
-                                 Boolean acknowledged,
+                                 Short acknowledged,
                                  String acknowledgedBy,
                                  Date acknowledgedAt,
                                  Date errorDate) {
@@ -69,7 +69,7 @@ public class ExecutionErrorSummary extends GenericSummary<String> {
         this.activityName = activityName;
         this.jobId = jobId;
         this.errorMessage = errorMessage;
-        this.acknowledged = acknowledged;
+        this.acknowledged = (acknowledged != null && acknowledged > 0);
         this.acknowledgedBy = acknowledgedBy;
         this.acknowledgedAt = acknowledgedAt;
         this.errorDate = errorDate;
