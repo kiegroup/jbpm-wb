@@ -25,6 +25,7 @@ import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetOp;
@@ -779,4 +780,16 @@ public class ProcessInstanceListPresenterTest {
         assertEquals(TASKS, captor.getAllValues().get(1).getIdentifier());
     }
 
+    @Test
+    public void testCreateDataSetProcessInstanceCallbackOnError() {
+        final ProcessInstanceListPresenter spy = spy(presenter);
+        final ClientRuntimeError error = new ClientRuntimeError("");
+        final FilterSettings filterSettings = mock(FilterSettings.class);
+        final DataSetReadyCallback callback = spy.createDataSetProcessInstanceCallback(0,
+                                                                                       filterSettings);
+        doNothing().when(spy).showErrorPopup(any());
+        assertFalse(callback.onError(error));
+        verify(viewMock).hideBusyIndicator();
+        verify(spy).showErrorPopup(Constants.INSTANCE.ResourceCouldNotBeLoaded(Constants.INSTANCE.Process_Instances()));
+    }
 }

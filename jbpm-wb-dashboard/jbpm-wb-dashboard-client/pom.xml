@@ -189,6 +189,18 @@
     </dependency>
 
     <dependency>
+      <groupId>com.google.gwt.gwtmockito</groupId>
+      <artifactId>gwtmockito</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>ant</groupId>
+          <artifactId>ant</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
       <groupId>org.dashbuilder</groupId>
       <artifactId>dashbuilder-dataset-api</artifactId>
       <type>test-jar</type>
@@ -214,5 +226,5 @@
       <scope>test</scope>
     </dependency>
 
-</dependencies>
+  </dependencies>
 </project>
