@@ -59,7 +59,6 @@ import static org.jbpm.workbench.cm.backend.server.CaseCommentMapperTest.assertC
 import static org.jbpm.workbench.cm.backend.server.CaseDefinitionMapperTest.assertCaseDefinition;
 import static org.jbpm.workbench.cm.backend.server.CaseInstanceMapperTest.assertCaseInstance;
 import static org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl.CASE_OWNER_ROLE;
-import static org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl.PAGE_SIZE_UNLIMITED;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyList;
@@ -236,9 +235,9 @@ public class RemoteCaseManagementServiceImplTest {
     @Test
     public void testGetComments_singleComment() {
         final CaseComment caseComment = createTestComment();
-        when(clientMock.getComments(containerId, caseId, 0, PAGE_SIZE_UNLIMITED)).thenReturn(singletonList(caseComment));
+        when(clientMock.getComments(containerId, caseId, 0, 10)).thenReturn(singletonList(caseComment));
 
-        final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId, containerId, caseId);
+        final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId, containerId, caseId, 0, 10);
         assertNotNull(comments);
         assertEquals(1, comments.size());
         assertCaseComment(caseComment, comments.get(0));
@@ -281,7 +280,7 @@ public class RemoteCaseManagementServiceImplTest {
     public void testGetComments_emptyList() {
         when(clientMock.getComments(containerId, caseId, 0, 0)).thenReturn(emptyList());
 
-        final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId, containerId, caseId);
+        final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId, containerId, caseId, 0, 10);
         assertNotNull(comments);
         assertTrue(comments.isEmpty());
     }

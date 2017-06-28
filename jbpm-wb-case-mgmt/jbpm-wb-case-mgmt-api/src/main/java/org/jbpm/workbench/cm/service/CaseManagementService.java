@@ -47,7 +47,7 @@ public interface CaseManagementService {
 
     void destroyCaseInstance(String serverTemplateId, String containerId, String caseId);
 
-    List<CaseCommentSummary> getComments(String serverTemplateId, String containerId, String caseId);
+    List<CaseCommentSummary> getComments(String serverTemplateId, String containerId, String caseId, int currentPage, int pageSize);
 
     void addComment(String serverTemplateId, String containerId, String caseId, String author, String text);
 
@@ -80,7 +80,5 @@ public interface CaseManagementService {
     void triggerAdHocAction(String containerId, String caseId, String adHocName, Map<String, Object> data);
 
     List<ProcessDefinitionSummary> getProcessDefinitions(String containerId);
-
-    List<CaseCommentSummary> getComments(String serverTemplateId, String containerId, String caseId, int currentPage, int pageSize);
 
 }

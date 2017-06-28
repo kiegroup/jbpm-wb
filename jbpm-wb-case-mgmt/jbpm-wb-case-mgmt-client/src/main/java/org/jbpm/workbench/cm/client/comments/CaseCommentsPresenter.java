@@ -46,13 +46,13 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
 
     boolean sortAsc = false;
 
-    private int currentPage = 0;
-    private int pageSize = 20;
+    int currentPage = 0;
+    public static final int PAGE_SIZE = 20;
 
     List<CaseCommentSummary> visibleComments = new ArrayList<CaseCommentSummary>();
     
     public int getPageSize() {
-        return pageSize;
+        return PAGE_SIZE;
     }
 
     public void setCurrentPage(int i) {
@@ -82,7 +82,7 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
         caseService.call(
                 (List<CaseCommentSummary> comments) -> {
                     visibleComments.addAll(comments);
-                    if (comments.size() < pageSize) {
+                    if (comments.size() < PAGE_SIZE) {
                         view.hideLoadButton();
                     }
                     view.setCaseCommentList(visibleComments.stream()
@@ -91,7 +91,7 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
                                     comparing(CaseCommentSummary::getAddedAt).reversed()))
                             .collect(toList()));
                 }
-        ).getComments(serverTemplateId, containerId, caseId, currentPage, pageSize);
+        ).getComments(serverTemplateId, containerId, caseId, currentPage, PAGE_SIZE);
     }
 
     public void refreshComments() {

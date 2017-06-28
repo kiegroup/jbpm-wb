@@ -107,7 +107,6 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
     @Inject
     private TranslationService translationService;
 
-    List<CaseCommentSummary> allCommentsList;
 
     @PostConstruct
     public void init() {
@@ -148,9 +147,7 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
     @Override
     public void setCaseCommentList(final List<CaseCommentSummary> caseCommentList) {
         
-        allCommentsList = caseCommentList;
-
-        this.caseCommentList.setModel(allCommentsList);
+        this.caseCommentList.setModel(caseCommentList);
 
         if (caseCommentList.isEmpty()) {
             removeCSSClass(emptyContainer, "hidden");
