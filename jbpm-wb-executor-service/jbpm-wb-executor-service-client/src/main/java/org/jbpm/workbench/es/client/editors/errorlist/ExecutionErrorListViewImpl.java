@@ -39,7 +39,7 @@ import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.BooleanConverter;
 import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
-import org.jbpm.workbench.common.client.util.DateConverter;
+import org.jbpm.workbench.common.client.util.DateTimeConverter;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.client.util.ExecutionErrorTypeConverter;
@@ -68,7 +68,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
     ExecutionErrorTypeConverter executionErrorTypeConverter;
 
     @Inject
-    DateConverter dateConverter;
+    DateTimeConverter dateTimeConverter;
 
     @Inject
     BooleanConverter booleanConverter;
@@ -187,7 +187,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                                          constants.Ack()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_ERROR_ACK_AT,
                                                           errorSummary ->
-                                                                  dateConverter.toWidgetValue(errorSummary.getAcknowledgedAt())),
+                                                                  dateTimeConverter.toWidgetValue(errorSummary.getAcknowledgedAt())),
                                          constants.AckAt()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_ERROR_ACK_BY,
                                                           errorSummary -> errorSummary.getAcknowledgedBy()),
@@ -213,7 +213,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                                          constants.DeploymentId()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_ERROR_DATE,
                                                           errorSummary ->
-                                                                  dateConverter.toWidgetValue(errorSummary.getErrorDate())),
+                                                                  dateTimeConverter.toWidgetValue(errorSummary.getErrorDate())),
                                          constants.ErrorDate()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_ERROR_MSG,
                                                           errorSummary -> errorSummary.getErrorMessage()),
