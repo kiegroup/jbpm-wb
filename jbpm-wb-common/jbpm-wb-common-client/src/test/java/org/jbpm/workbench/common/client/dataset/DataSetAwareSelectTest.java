@@ -138,7 +138,6 @@ public class DataSetAwareSelectTest {
         verify(select).removeAllOptions();
     }
 
-
     @Test
     public void testLookupEmptyDataSet() throws Exception {
         final String key = "key";
@@ -174,7 +173,9 @@ public class DataSetAwareSelectTest {
                      cdsl.getServerTemplateId());
         assertEquals(dataUUID,
                      cdsl.getDataSetUUID());
-        verify(select, never()).addOption(anyString(), anyString());
+        verify(select,
+               never()).addOption(anyString(),
+                                  anyString());
         verify(select).disable();
         verify(select).removeAllOptions();
     }

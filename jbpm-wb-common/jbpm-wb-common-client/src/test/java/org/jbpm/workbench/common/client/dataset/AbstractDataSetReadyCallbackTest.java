@@ -49,7 +49,10 @@ public class AbstractDataSetReadyCallbackTest {
 
     @Before
     public void setup() {
-        dataSetReadyCallback = new AbstractDataSetReadyCallback(errorPopup, view, "", errorCallback) {
+        dataSetReadyCallback = new AbstractDataSetReadyCallback(errorPopup,
+                                                                view,
+                                                                "",
+                                                                errorCallback) {
             @Override
             public void callback(DataSet dataSet) {
                 //Do nothing
@@ -57,14 +60,15 @@ public class AbstractDataSetReadyCallbackTest {
         };
     }
 
-
     @Test
     public void testNotFound() {
         dataSetReadyCallback.notFound();
 
         verify(view).hideBusyIndicator();
         verify(errorPopup).showMessage(anyString());
-        verify(errorCallback, never()).error(any(Message.class), any(Throwable.class));
+        verify(errorCallback,
+               never()).error(any(Message.class),
+                              any(Throwable.class));
     }
 
     @Test
@@ -72,8 +76,9 @@ public class AbstractDataSetReadyCallbackTest {
         dataSetReadyCallback.onError(mock(ClientRuntimeError.class));
 
         verify(view).hideBusyIndicator();
-        verify(errorPopup, never()).showMessage(anyString());
-        verify(errorCallback).error(any(Message.class), any(Throwable.class));
+        verify(errorPopup,
+               never()).showMessage(anyString());
+        verify(errorCallback).error(any(Message.class),
+                                    any(Throwable.class));
     }
-
 }

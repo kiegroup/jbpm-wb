@@ -32,7 +32,7 @@ public class ProcessDashboardData extends RawDataSet {
      * 4: suspended
      */
     public static final ProcessDashboardData INSTANCE = new ProcessDashboardData(
-            new String[] {
+            new String[]{
                     // Ensure the tests also works with columns in a different case,
                     // which is actually the case when working with some DBs
                     COLUMN_PROCESS_ID.toUpperCase(),
@@ -45,7 +45,7 @@ public class ProcessDashboardData extends RawDataSet {
                     COLUMN_PROCESS_STATUS.toUpperCase(),
                     COLUMN_PROCESS_VERSION.toUpperCase(),
                     COLUMN_PROCESS_DURATION.toUpperCase()},
-            new Class[] {
+            new Class[]{
                     String.class,
                     Integer.class,
                     String.class,
@@ -56,15 +56,18 @@ public class ProcessDashboardData extends RawDataSet {
                     Integer.class,
                     String.class,
                     Integer.class},
-            new String[][] {
+            new String[][]{
                     {"1", "1", "org.jbpm.test", "Process A", "user1", "01/01/19 12:00", null, "1", "1", null},
                     {"1", "2", "org.jbpm.test", "Process A", "user2", "01/01/19 12:00", null, "1", "1", null},
                     {"1", "3", "org.jbpm.test", "Process B", "user1", "01/01/19 12:00", null, "1", "1", null},
                     {"1", "4", "org.jbpm.test", "Process B", "user2", "01/01/19 12:00", "01/02/19 10:00", "2", "1", "100000"}
             });
 
-    public ProcessDashboardData(String[] columnIds, Class[] types, String[][] data) {
-        super(columnIds, types, data);
+    public ProcessDashboardData(String[] columnIds,
+                                Class[] types,
+                                String[][] data) {
+        super(columnIds,
+              types,
+              data);
     }
-
 }

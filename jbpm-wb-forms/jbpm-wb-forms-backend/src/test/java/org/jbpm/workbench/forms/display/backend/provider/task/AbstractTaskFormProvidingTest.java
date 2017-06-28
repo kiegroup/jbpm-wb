@@ -49,40 +49,55 @@ public abstract class AbstractTaskFormProvidingTest<PROVIDER extends AbstractKie
 
     @Test
     public void testFormProvider() {
-        KieWorkbenchFormRenderingSettings result = workbenchFormsProvider.render( generateSettings() );
+        KieWorkbenchFormRenderingSettings result = workbenchFormsProvider.render(generateSettings());
 
-        checkRenderingSettings( result );
+        checkRenderingSettings(result);
     }
 
     @Override
     protected TaskRenderingSettings generateSettings() {
 
-        when( task.getFormName() ).thenReturn( "modify" );
+        when(task.getFormName()).thenReturn("modify");
 
         Invoice invoice = new Invoice();
-        invoice.setClient( new Client( new Long( 1234 ), "John Snow", "Winterfell" ) );
-        invoice.setDate( new Date() );
-        invoice.setComments( "Everything was perfect" );
-        invoice.setTotal( 150.5 );
+        invoice.setClient(new Client(new Long(1234),
+                                     "John Snow",
+                                     "Winterfell"));
+        invoice.setDate(new Date());
+        invoice.setComments("Everything was perfect");
+        invoice.setTotal(150.5);
 
         List<InvoiceLine> lines = new ArrayList<>();
-        lines.add( new InvoiceLine( "Really Dangerous Sword", 1, 100.5, 100.5 ) );
-        lines.add( new InvoiceLine( "A comfortable black jacket", 1, 50.0, 50.0 ) );
+        lines.add(new InvoiceLine("Really Dangerous Sword",
+                                  1,
+                                  100.5,
+                                  100.5));
+        lines.add(new InvoiceLine("A comfortable black jacket",
+                                  1,
+                                  50.0,
+                                  50.0));
 
-        invoice.setLines( lines );
+        invoice.setLines(lines);
 
         Map<String, Object> inputs = new HashMap<>();
 
-        inputs.put( "in_invoice", invoice );
+        inputs.put("in_invoice",
+                   invoice);
 
-        return new TaskRenderingSettings( task, inputs, new HashMap<>(), getFormContent(), marshallerContext );
+        return new TaskRenderingSettings(task,
+                                         inputs,
+                                         new HashMap<>(),
+                                         getFormContent(),
+                                         marshallerContext);
     }
 
     @Override
-    protected TaskFormValuesProcessor getProcessorInstance( FormDefinitionSerializer formSerializer,
-                                                            BackendFormRenderingContextManager contextManager,
-                                                            DynamicBPMNFormGenerator dynamicBPMNFormGenerator ) {
-        return new TaskFormValuesProcessor( formSerializer, contextManager, dynamicBPMNFormGenerator );
+    protected TaskFormValuesProcessor getProcessorInstance(FormDefinitionSerializer formSerializer,
+                                                           BackendFormRenderingContextManager contextManager,
+                                                           DynamicBPMNFormGenerator dynamicBPMNFormGenerator) {
+        return new TaskFormValuesProcessor(formSerializer,
+                                           contextManager,
+                                           dynamicBPMNFormGenerator);
     }
 
     @Override
@@ -90,59 +105,83 @@ public abstract class AbstractTaskFormProvidingTest<PROVIDER extends AbstractKie
         Map<String, Object> result = new HashMap<>();
 
         Map<String, Object> client = new HashMap<>();
-        client.put( "id", new Long( 12345 ) );
-        client.put( "name", "Ned Stark" );
-        client.put( "address", "Winterfell" );
+        client.put("id",
+                   new Long(12345));
+        client.put("name",
+                   "Ned Stark");
+        client.put("address",
+                   "Winterfell");
 
         List<Map<String, Object>> lines = new ArrayList<>();
 
         Map<String, Object> line = new HashMap<>();
 
-        line.put( "product", "Really Dangerous & Expensive Sword" );
-        line.put( "quantity", 1 );
-        line.put( "price", 1000.5 );
-        line.put( "total", 1000.5 );
+        line.put("product",
+                 "Really Dangerous & Expensive Sword");
+        line.put("quantity",
+                 1);
+        line.put("price",
+                 1000.5);
+        line.put("total",
+                 1000.5);
 
-        lines.add( line );
+        lines.add(line);
 
         Map<String, Object> invoice = new HashMap<>();
-        invoice.put( "client", client );
-        invoice.put( "lines", lines );
-        invoice.put( "total", 1000.5 );
-        invoice.put( "comments", "Better than expected" );
-        invoice.put( "date", new Date() );
+        invoice.put("client",
+                    client);
+        invoice.put("lines",
+                    lines);
+        invoice.put("total",
+                    1000.5);
+        invoice.put("comments",
+                    "Better than expected");
+        invoice.put("date",
+                    new Date());
 
-        result.put( "invoice", invoice );
+        result.put("invoice",
+                   invoice);
 
         return result;
     }
 
     @Override
-    protected void checkRuntimeValues( Map<String, Object> result ) {
-        assertNotNull( "There should be an invoice on the result Map", result.get( "invoice" ) );
+    protected void checkRuntimeValues(Map<String, Object> result) {
+        assertNotNull("There should be an invoice on the result Map",
+                      result.get("invoice"));
 
-        assertTrue( "There should be an invoice on the result Map", result.get( "invoice" ) instanceof Invoice );
+        assertTrue("There should be an invoice on the result Map",
+                   result.get("invoice") instanceof Invoice);
 
-        Invoice invoice = (Invoice) result.get( "invoice" );
+        Invoice invoice = (Invoice) result.get("invoice");
 
-        assertNotNull( "Invoice should have a client", invoice.getClient() );
+        assertNotNull("Invoice should have a client",
+                      invoice.getClient());
 
-        assertEquals( invoice.getClient().getId(), new Long( 12345 ) );
-        assertEquals( "Ned Stark", invoice.getClient().getName() );
-        assertEquals( "Winterfell", invoice.getClient().getAddress() );
+        assertEquals(invoice.getClient().getId(),
+                     new Long(12345));
+        assertEquals("Ned Stark",
+                     invoice.getClient().getName());
+        assertEquals("Winterfell",
+                     invoice.getClient().getAddress());
 
-        assertNotNull( invoice.getDate() );
-        assertNotNull( invoice.getComments() );
-        assertEquals( new Double( 1000.5 ), invoice.getTotal() );
+        assertNotNull(invoice.getDate());
+        assertNotNull(invoice.getComments());
+        assertEquals(new Double(1000.5),
+                     invoice.getTotal());
 
-        assertNotNull( invoice.getLines() );
-        assertTrue( invoice.getLines().size() == 1 );
+        assertNotNull(invoice.getLines());
+        assertTrue(invoice.getLines().size() == 1);
 
-        InvoiceLine line = invoice.getLines().get( 0 );
+        InvoiceLine line = invoice.getLines().get(0);
 
-        assertEquals( "Really Dangerous & Expensive Sword", line.getProduct() );
-        assertEquals( new Integer( 1 ), line.getQuantity() );
-        assertEquals( new Double( 1000.5 ), line.getPrice() );
-        assertEquals( new Double( 1000.5 ), line.getTotal() );
+        assertEquals("Really Dangerous & Expensive Sword",
+                     line.getProduct());
+        assertEquals(new Integer(1),
+                     line.getQuantity());
+        assertEquals(new Double(1000.5),
+                     line.getPrice());
+        assertEquals(new Double(1000.5),
+                     line.getTotal());
     }
 }

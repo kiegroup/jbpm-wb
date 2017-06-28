@@ -73,26 +73,26 @@ public class ProcessInstanceListViewImplTest {
     @Mock
     protected ProcessInstanceListPresenter presenter;
 
-    @Spy
-    private FilterSettings filterSettings;
-    
     @Mock
-    private ManagedInstance<ProcessInstanceSummaryErrorPopoverCell> popoverCellInstance;
-    
+    protected Cell.Context cellContext;
+
     @Mock
-    private PlaceManager placeManager;
-    
+    protected ActionCell.Delegate<ProcessInstanceSummary> cellDelegate;
+
     @InjectMocks
     ProcessInstanceSummaryErrorPopoverCell popoverCellMock;
 
+    @Spy
+    private FilterSettings filterSettings;
+
+    @Mock
+    private ManagedInstance<ProcessInstanceSummaryErrorPopoverCell> popoverCellInstance;
+
+    @Mock
+    private PlaceManager placeManager;
+
     @InjectMocks
     private ProcessInstanceListViewImpl view;
-    
-    @Mock
-    protected Cell.Context cellContext;
-    
-    @Mock
-    protected ActionCell.Delegate<ProcessInstanceSummary> cellDelegate;
 
     @Before
     public void setupMocks() {
@@ -121,7 +121,6 @@ public class ProcessInstanceListViewImplTest {
             }
         }).when(currentListGrid).addColumns(anyList());
 
-
         view.initColumns(currentListGrid);
 
         verify(currentListGrid).addColumns(anyList());
@@ -129,10 +128,19 @@ public class ProcessInstanceListViewImplTest {
 
     @Test
     public void testInitDefaultFilters() {
-        view.initDefaultFilters(new GridGlobalPreferences("testGrid", new ArrayList<String>(), new ArrayList<String>()), null);
+        view.initDefaultFilters(new GridGlobalPreferences("testGrid",
+                                                          new ArrayList<String>(),
+                                                          new ArrayList<String>()),
+                                null);
 
-        verify(filterPagedTable, times(4)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class), eq(false));
-        verify(filterPagedTable, times(4)).saveNewTabSettings(anyString(), any(HashMap.class));
+        verify(filterPagedTable,
+               times(4)).addTab(any(ExtendedPagedTable.class),
+                                anyString(),
+                                any(Command.class),
+                                eq(false));
+        verify(filterPagedTable,
+               times(4)).saveNewTabSettings(anyString(),
+                                            any(HashMap.class));
         verify(presenter).setAddingDefaultFilters(true);
     }
 
@@ -140,11 +148,16 @@ public class ProcessInstanceListViewImplTest {
     public void setDefaultFilterTitleAndDescriptionTest() {
         view.resetDefaultFilterTitleAndDescription();
 
-        verify(filterPagedTable, times(4)).getMultiGridPreferencesStore();
-        verify(filterPagedTable).saveTabSettings(eq(ProcessInstanceListViewImpl.TAB_SEARCH), any(HashMap.class));
-        verify(filterPagedTable).saveTabSettings(eq(ProcessInstanceListViewImpl.TAB_ACTIVE), any(HashMap.class));
-        verify(filterPagedTable).saveTabSettings(eq(ProcessInstanceListViewImpl.TAB_COMPLETED), any(HashMap.class));
-        verify(filterPagedTable).saveTabSettings(eq(ProcessInstanceListViewImpl.TAB_ABORTED), any(HashMap.class));
+        verify(filterPagedTable,
+               times(4)).getMultiGridPreferencesStore();
+        verify(filterPagedTable).saveTabSettings(eq(ProcessInstanceListViewImpl.TAB_SEARCH),
+                                                 any(HashMap.class));
+        verify(filterPagedTable).saveTabSettings(eq(ProcessInstanceListViewImpl.TAB_ACTIVE),
+                                                 any(HashMap.class));
+        verify(filterPagedTable).saveTabSettings(eq(ProcessInstanceListViewImpl.TAB_COMPLETED),
+                                                 any(HashMap.class));
+        verify(filterPagedTable).saveTabSettings(eq(ProcessInstanceListViewImpl.TAB_ABORTED),
+                                                 any(HashMap.class));
     }
 
     @Test
@@ -170,13 +183,12 @@ public class ProcessInstanceListViewImplTest {
             }
         }).when(currentListGrid).addColumns(anyList());
 
-
         view.initColumns(currentListGrid);
 
         verify(currentListGrid).addColumns(anyList());
         verify(popoverCellInstance).get();
     }
-    
+
     @Test
     public void testColumnNumber() {
         when(gridPreferencesStore.getColumnPreferences()).thenReturn(new ArrayList<GridColumnPreference>());
@@ -185,7 +197,8 @@ public class ProcessInstanceListViewImplTest {
             @Override
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
                 final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[0];
-                assertEquals(12, columns.size());
+                assertEquals(12,
+                             columns.size());
                 return null;
             }
         }).when(currentListGrid).addColumns(anyList());
@@ -194,5 +207,4 @@ public class ProcessInstanceListViewImplTest {
 
         verify(currentListGrid).addColumns(anyList());
     }
-
 }

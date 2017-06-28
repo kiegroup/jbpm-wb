@@ -26,20 +26,32 @@ import static org.junit.Assert.*;
 
 public class ProcessSummaryMapperTest {
 
-    public static void assertProcessSummary(final ProcessDefinition pd, final ProcessSummary ps) {
+    public static void assertProcessSummary(final ProcessDefinition pd,
+                                            final ProcessSummary ps) {
         assertNotNull(ps);
 
-        assertEquals(pd.getId(), ps.getId());
-        assertEquals(pd.getId(), ps.getProcessDefId());
-        assertEquals(pd.getName(), ps.getName());
-        assertEquals(pd.getName(), ps.getProcessDefName());
-        assertEquals(pd.isDynamic(), ps.isDynamic());
-        assertEquals(pd.getVersion(), ps.getVersion());
-        assertEquals(pd.getContainerId(), ps.getDeploymentId());
-        assertEquals(pd.getAssociatedEntities(), ps.getAssociatedEntities());
-        assertEquals(pd.getProcessVariables(), ps.getProcessVariables());
-        assertEquals(pd.getReusableSubProcesses(), ps.getReusableSubProcesses());
-        assertEquals(pd.getServiceTasks(), ps.getServiceTasks());
+        assertEquals(pd.getId(),
+                     ps.getId());
+        assertEquals(pd.getId(),
+                     ps.getProcessDefId());
+        assertEquals(pd.getName(),
+                     ps.getName());
+        assertEquals(pd.getName(),
+                     ps.getProcessDefName());
+        assertEquals(pd.isDynamic(),
+                     ps.isDynamic());
+        assertEquals(pd.getVersion(),
+                     ps.getVersion());
+        assertEquals(pd.getContainerId(),
+                     ps.getDeploymentId());
+        assertEquals(pd.getAssociatedEntities(),
+                     ps.getAssociatedEntities());
+        assertEquals(pd.getProcessVariables(),
+                     ps.getProcessVariables());
+        assertEquals(pd.getReusableSubProcesses(),
+                     ps.getReusableSubProcesses());
+        assertEquals(pd.getServiceTasks(),
+                     ps.getServiceTasks());
     }
 
     @Test
@@ -50,17 +62,20 @@ public class ProcessSummaryMapperTest {
         pd.setDynamic(true);
         pd.setContainerId("containerId");
         pd.setVersion("1.0");
-        pd.setAssociatedEntities(singletonMap("e1", new String[0]));
-        pd.setProcessVariables(singletonMap("initiator", "String"));
+        pd.setAssociatedEntities(singletonMap("e1",
+                                              new String[0]));
+        pd.setProcessVariables(singletonMap("initiator",
+                                            "String"));
         pd.setReusableSubProcesses(singletonList("processOne"));
-        pd.setServiceTasks(singletonMap("email", "org.jbpm"));
+        pd.setServiceTasks(singletonMap("email",
+                                        "org.jbpm"));
 
-        assertProcessSummary(pd, new ProcessSummaryMapper().apply(pd));
+        assertProcessSummary(pd,
+                             new ProcessSummaryMapper().apply(pd));
     }
 
     @Test
     public void testProcessSummaryMapper_mapNull() {
         assertNull(new ProcessSummaryMapper().apply(null));
     }
-
 }

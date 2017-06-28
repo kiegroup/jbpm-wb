@@ -35,10 +35,10 @@ import static org.mockito.Mockito.*;
 public class ProcessInstanceDetailsMultiViewImplTest {
 
     @Mock
-    private NavTabs navTabs;
+    TabContent tabContent;
 
     @Mock
-    TabContent tabContent;
+    private NavTabs navTabs;
 
     @Mock(name = "instanceDetailsTab")
     private TabListItem instanceDetailsTab;
@@ -122,10 +122,9 @@ public class ProcessInstanceDetailsMultiViewImplTest {
         verify(presenter).getDocumentView();
         verify(presenter).getLogsView();
 
-
-        verify(navTabs, times(4)).add(any(TabListItem.class));
-        verify(tabContent, times(4)).add(any(TabPane.class));
-
+        verify(navTabs,
+               times(4)).add(any(TabListItem.class));
+        verify(tabContent,
+               times(4)).add(any(TabPane.class));
     }
-
 }

@@ -78,10 +78,12 @@ public class DataSetDefsDatabaseTest {
 
     @Before
     public void setup() throws SQLException {
-        LOGGER.info("Testing DataSet SQL with DB: {}", database);
+        LOGGER.info("Testing DataSet SQL with DB: {}",
+                    database);
         MockitoAnnotations.initMocks(this);
 
-        emf = Persistence.createEntityManagerFactory("org.jbpm.domain", database.properties());
+        emf = Persistence.createEntityManagerFactory("org.jbpm.domain",
+                                                     database.properties());
 
         conn = DriverManager.getConnection(database.url);
     }
@@ -101,8 +103,8 @@ public class DataSetDefsDatabaseTest {
         dataSetDefs.registerDataSetDefinitions();
 
         final ArgumentCaptor<SQLDataSetDef> dataSetDef = ArgumentCaptor.forClass(SQLDataSetDef.class);
-        verify(defRegistry, times(2)).registerDataSetDef(dataSetDef.capture());
-
+        verify(defRegistry,
+               times(2)).registerDataSetDef(dataSetDef.capture());
 
         for (SQLDataSetDef dataSet : dataSetDef.getAllValues()) {
             if (dataSet.getDbSQL() == null) {
@@ -110,14 +112,17 @@ public class DataSetDefsDatabaseTest {
             }
 
             try {
-                LOGGER.info("Testing SQL DataSet: {}", dataSet.getName());
-                LOGGER.info("SQL: {}", dataSet.getDbSQL());
+                LOGGER.info("Testing SQL DataSet: {}",
+                            dataSet.getName());
+                LOGGER.info("SQL: {}",
+                            dataSet.getDbSQL());
 
                 PreparedStatement ps = conn.prepareStatement(dataSet.getDbSQL());
                 ResultSet rs = ps.executeQuery();
                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
-                for (int i=0; i < dataSet.getColumns().size(); i++) {
-                    assertTrue("select column name don't match", dataSet.getColumns().get(i).getId().equalsIgnoreCase(resultSetMetaData.getColumnLabel(i + 1)));
+                for (int i = 0; i < dataSet.getColumns().size(); i++) {
+                    assertTrue("select column name don't match",
+                               dataSet.getColumns().get(i).getId().equalsIgnoreCase(resultSetMetaData.getColumnLabel(i + 1)));
                 }
                 ps.close();
 
@@ -125,22 +130,38 @@ public class DataSetDefsDatabaseTest {
 
                 conn.prepareStatement(countSQL).executeQuery();
             } catch (Exception ex) {
-                LOGGER.error("Failed to execute query for DataSet {} on DB {}", dataSet.getName(), database.name(), ex);
+                LOGGER.error("Failed to execute query for DataSet {} on DB {}",
+                             dataSet.getName(),
+                             database.name(),
+                             ex);
                 fail(ex.getMessage());
             }
         }
-
     }
 
     public enum Database {
 
-        HSQLDB("org.hibernate.dialect.HSQLDialect", "jdbc:hsqldb:mem:datasetdb;sql.enforce_refs=true;shutdown=true", "org.hsqldb.jdbc.JDBCDriver"),
-        H2("org.hibernate.dialect.H2Dialect", "jdbc:h2:mem:datasetdb", "org.h2.Driver"),
-        H2_DB2("org.hibernate.dialect.DB2Dialect", "jdbc:h2:mem:datasetdbdb2;MODE=DB2", "org.h2.Driver"),
-        H2_Oracle("org.hibernate.dialect.Oracle10gDialect", "jdbc:h2:mem:datasetdboracle;MODE=Oracle", "org.h2.Driver"),
-        H2_PostgreSQL("org.hibernate.dialect.PostgreSQL82Dialect", "jdbc:h2:mem:datasetdbpostgresql;MODE=PostgreSQL", "org.h2.Driver"),
-        H2_MySQL("org.hibernate.dialect.MySQLDialect", "jdbc:h2:mem:datasetdbmysql;MODE=MySQL", "org.h2.Driver"),
-        H2_MSSQLServer("org.hibernate.dialect.SQLServerDialect", "jdbc:h2:mem:datasetdbmssql;MODE=MSSQLServer", "org.h2.Driver");
+        HSQLDB("org.hibernate.dialect.HSQLDialect",
+               "jdbc:hsqldb:mem:datasetdb;sql.enforce_refs=true;shutdown=true",
+               "org.hsqldb.jdbc.JDBCDriver"),
+        H2("org.hibernate.dialect.H2Dialect",
+           "jdbc:h2:mem:datasetdb",
+           "org.h2.Driver"),
+        H2_DB2("org.hibernate.dialect.DB2Dialect",
+               "jdbc:h2:mem:datasetdbdb2;MODE=DB2",
+               "org.h2.Driver"),
+        H2_Oracle("org.hibernate.dialect.Oracle10gDialect",
+                  "jdbc:h2:mem:datasetdboracle;MODE=Oracle",
+                  "org.h2.Driver"),
+        H2_PostgreSQL("org.hibernate.dialect.PostgreSQL82Dialect",
+                      "jdbc:h2:mem:datasetdbpostgresql;MODE=PostgreSQL",
+                      "org.h2.Driver"),
+        H2_MySQL("org.hibernate.dialect.MySQLDialect",
+                 "jdbc:h2:mem:datasetdbmysql;MODE=MySQL",
+                 "org.h2.Driver"),
+        H2_MSSQLServer("org.hibernate.dialect.SQLServerDialect",
+                       "jdbc:h2:mem:datasetdbmssql;MODE=MSSQLServer",
+                       "org.h2.Driver");
 
         private String dialect;
 
@@ -148,7 +169,9 @@ public class DataSetDefsDatabaseTest {
 
         private String driver;
 
-        Database(final String dialect, final String url, final String driver) {
+        Database(final String dialect,
+                 final String url,
+                 final String driver) {
             this.dialect = dialect;
             this.url = url;
             this.driver = driver;
@@ -156,9 +179,12 @@ public class DataSetDefsDatabaseTest {
 
         public Properties properties() {
             final Properties p = new Properties();
-            p.put("hibernate.dialect", dialect);
-            p.put("javax.persistence.jdbc.driver", driver);
-            p.put("javax.persistence.jdbc.url", url);
+            p.put("hibernate.dialect",
+                  dialect);
+            p.put("javax.persistence.jdbc.driver",
+                  driver);
+            p.put("javax.persistence.jdbc.url",
+                  url);
             return p;
         }
     }

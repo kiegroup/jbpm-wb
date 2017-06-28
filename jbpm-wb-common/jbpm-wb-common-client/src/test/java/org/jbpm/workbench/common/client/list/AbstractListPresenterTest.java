@@ -15,7 +15,6 @@
  */
 package org.jbpm.workbench.common.client.list;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,15 +34,8 @@ import org.mockito.Mock;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-
 @RunWith(GwtMockitoTestRunner.class)
 public class AbstractListPresenterTest {
-
-    @Mock
-    private Timer timer;
-
-    @Mock
-    private ListView viewMock;
 
     @Mock
     ExtendedPagedTable extendedPagedTable;
@@ -54,13 +46,20 @@ public class AbstractListPresenterTest {
     @Mock
     AsyncDataProvider dataProviderMock;
 
+    @Mock
+    private Timer timer;
+
+    @Mock
+    private ListView viewMock;
+
     private AbstractListPresenter testListPresenter;
 
     @Before
     public void setupMocks() {
         testListPresenter = spy(AbstractScreenListPresenter.class);
         when(testListPresenter.getListView()).thenReturn(viewMock);
-        when(next.getVisibleRange()).thenReturn(new Range(1, 1));
+        when(next.getVisibleRange()).thenReturn(new Range(1,
+                                                          1));
         testListPresenter.initDataProvider();
         testListPresenter.getDataProvider().addDataDisplay(next);
     }
@@ -93,7 +92,6 @@ public class AbstractListPresenterTest {
         verify(timer).schedule(60000);
     }
 
-
     @Test
     public void restoreTabsTest() {
         testListPresenter.onRestoreDefaultFilters();
@@ -108,11 +106,15 @@ public class AbstractListPresenterTest {
         testListPresenter.onSearchEvent(searchEvent);
 
         final ArgumentCaptor<Range> captor = ArgumentCaptor.forClass(Range.class);
-        verify(next).setVisibleRangeAndClearData(captor.capture(), eq(true));
+        verify(next).setVisibleRangeAndClearData(captor.capture(),
+                                                 eq(true));
         final Range range = captor.getValue();
-        assertEquals(1, range.getStart());
-        assertEquals(1, range.getLength());
-        assertEquals(searchEvent.getFilter(), testListPresenter.getTextSearchStr());
+        assertEquals(1,
+                     range.getStart());
+        assertEquals(1,
+                     range.getLength());
+        assertEquals(searchEvent.getFilter(),
+                     testListPresenter.getTextSearchStr());
     }
 
     @Test
@@ -122,56 +124,67 @@ public class AbstractListPresenterTest {
         testListPresenter.onSearchEvent(searchEvent);
 
         final ArgumentCaptor<Range> captor = ArgumentCaptor.forClass(Range.class);
-        verify(next).setVisibleRangeAndClearData(captor.capture(), eq(true));
+        verify(next).setVisibleRangeAndClearData(captor.capture(),
+                                                 eq(true));
         final Range range = captor.getValue();
-        assertEquals(0, range.getStart());
-        assertEquals(1, range.getLength());
-        assertEquals(searchEvent.getFilter().toLowerCase(), testListPresenter.getTextSearchStr());
+        assertEquals(0,
+                     range.getStart());
+        assertEquals(1,
+                     range.getLength());
+        assertEquals(searchEvent.getFilter().toLowerCase(),
+                     testListPresenter.getTextSearchStr());
     }
 
     @Test
     public void testUpDateDataOnCallBackFirstPage() {
-        List instanceSummaries =new ArrayList<>();
+        List instanceSummaries = new ArrayList<>();
         instanceSummaries.add("item1");
         instanceSummaries.add("item2");
 
         int startRange = 0;
         testListPresenter.setDataProvider(dataProviderMock);
-        testListPresenter.updateDataOnCallback(instanceSummaries, startRange, startRange + instanceSummaries.size(), false);
+        testListPresenter.updateDataOnCallback(instanceSummaries,
+                                               startRange,
+                                               startRange + instanceSummaries.size(),
+                                               false);
 
-        verify(dataProviderMock).updateRowCount(2, false);
-        verify(dataProviderMock).updateRowData(0, instanceSummaries);
-
+        verify(dataProviderMock).updateRowCount(2,
+                                                false);
+        verify(dataProviderMock).updateRowData(0,
+                                               instanceSummaries);
     }
 
     @Test
     public void testUpDateDataOnCallBackMiddlePage() {
-        List instanceSummaries =new ArrayList<>();
+        List instanceSummaries = new ArrayList<>();
         instanceSummaries.add("item1");
         instanceSummaries.add("item2");
 
         int startRange = 10;
         testListPresenter.setDataProvider(dataProviderMock);
-        testListPresenter.updateDataOnCallback(instanceSummaries, startRange,startRange + instanceSummaries.size(), true);
+        testListPresenter.updateDataOnCallback(instanceSummaries,
+                                               startRange,
+                                               startRange + instanceSummaries.size(),
+                                               true);
 
-        verify(dataProviderMock).updateRowCount(startRange + instanceSummaries.size(), true);
-        verify(dataProviderMock).updateRowData(startRange, instanceSummaries);
-
+        verify(dataProviderMock).updateRowCount(startRange + instanceSummaries.size(),
+                                                true);
+        verify(dataProviderMock).updateRowData(startRange,
+                                               instanceSummaries);
     }
 
     @Test
     public void testRefreshGrid() {
 
-        Range range = new Range(0,5);
+        Range range = new Range(0,
+                                5);
 
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getVisibleRange()).thenReturn(range);
 
         testListPresenter.refreshGrid();
 
-        verify(extendedPagedTable).setVisibleRangeAndClearData(range, true);
-
+        verify(extendedPagedTable).setVisibleRangeAndClearData(range,
+                                                               true);
     }
-
-
 }

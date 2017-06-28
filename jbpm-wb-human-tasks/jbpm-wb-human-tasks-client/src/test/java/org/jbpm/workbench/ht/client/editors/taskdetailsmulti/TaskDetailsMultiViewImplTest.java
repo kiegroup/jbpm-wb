@@ -36,10 +36,10 @@ import static org.mockito.Mockito.*;
 public class TaskDetailsMultiViewImplTest {
 
     @Mock
-    private NavTabs navTabs;
+    TabContent tabContent;
 
     @Mock
-    TabContent tabContent;
+    private NavTabs navTabs;
 
     @Mock(name = "taskDetailsPane")
     private TabPane taskDetailsPane;
@@ -150,8 +150,9 @@ public class TaskDetailsMultiViewImplTest {
         verify(presenter).getTaskAdminView();
         verify(presenter).getTaskLogsView();
 
-        verify(navTabs, times(7)).add(any(TabListItem.class));
-        verify(tabContent, times(7)).add(any(TabPane.class));
+        verify(navTabs,
+               times(7)).add(any(TabListItem.class));
+        verify(tabContent,
+               times(7)).add(any(TabPane.class));
     }
-
 }

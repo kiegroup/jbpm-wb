@@ -37,13 +37,13 @@ import static org.mockito.Mockito.*;
 public abstract class BaseProcessDefDetailsMultiPresenterTest<T extends BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView> {
 
     @Mock
+    protected EventSourceMock<ProcessDefSelectionEvent> processDefSelectionEvent = new EventSourceMock<ProcessDefSelectionEvent>();
+
+    @Mock
     PlaceManager placeManager;
 
     @Mock
     T view;
-
-    @Mock
-    protected EventSourceMock<ProcessDefSelectionEvent> processDefSelectionEvent = new EventSourceMock<ProcessDefSelectionEvent>();
 
     @Spy
     Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent = new EventSourceMock<ChangeTitleWidgetEvent>();
@@ -51,7 +51,7 @@ public abstract class BaseProcessDefDetailsMultiPresenterTest<T extends BaseProc
     public abstract BaseProcessDefDetailsMultiPresenter getPresenter();
 
     @Before
-    public void setup(){
+    public void setup() {
         doNothing().when(changeTitleWidgetEvent).fire(any(ChangeTitleWidgetEvent.class));
     }
 
@@ -67,8 +67,11 @@ public abstract class BaseProcessDefDetailsMultiPresenterTest<T extends BaseProc
         final ArgumentCaptor<PlaceRequest> captor = ArgumentCaptor.forClass(PlaceRequest.class);
         verify(placeManager).goTo(captor.capture());
         final PlaceRequest request = captor.getValue();
-        assertEquals(PROCESS_INSTANCES, request.getIdentifier());
-        assertEquals(process, request.getParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID, null));
+        assertEquals(PROCESS_INSTANCES,
+                     request.getIdentifier());
+        assertEquals(process,
+                     request.getParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID,
+                                          null));
     }
 
     @Test
@@ -76,13 +79,14 @@ public abstract class BaseProcessDefDetailsMultiPresenterTest<T extends BaseProc
         final String processDefName = "testProcessDefName";
         final String deploymentId = "testDeploymentId";
         ProcessDefSelectionEvent processDefSelectionEvent = new ProcessDefSelectionEvent();
-        processDefSelectionEvent.setProcessDefName( processDefName );
-        processDefSelectionEvent.setDeploymentId( deploymentId );
+        processDefSelectionEvent.setProcessDefName(processDefName);
+        processDefSelectionEvent.setDeploymentId(deploymentId);
 
         getPresenter().onProcessSelectionEvent(processDefSelectionEvent);
 
-        ArgumentCaptor<ChangeTitleWidgetEvent> argument = ArgumentCaptor.forClass( ChangeTitleWidgetEvent.class );
-        verify(changeTitleWidgetEvent).fire( argument.capture() );
-        assertEquals(  deploymentId  + " - " + processDefName , argument.getValue().getTitle());
+        ArgumentCaptor<ChangeTitleWidgetEvent> argument = ArgumentCaptor.forClass(ChangeTitleWidgetEvent.class);
+        verify(changeTitleWidgetEvent).fire(argument.capture());
+        assertEquals(deploymentId + " - " + processDefName,
+                     argument.getValue().getTitle());
     }
 }

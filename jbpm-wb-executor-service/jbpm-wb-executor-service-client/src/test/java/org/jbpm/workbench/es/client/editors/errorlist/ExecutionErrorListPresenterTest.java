@@ -237,20 +237,20 @@ public class ExecutionErrorListPresenterTest {
     }
 
     @Test
-    public void testDefaultActiveSearchFilters(){
+    public void testDefaultActiveSearchFilters() {
         presenter.setupDefaultActiveSearchFilters();
 
         verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Acknowledged()),
                                          eq(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No()),
                                          eq(String.valueOf(Boolean.FALSE)),
                                          any(Consumer.class));
-
     }
 
     @Test
-    public void testActiveSearchFilters(){
+    public void testActiveSearchFilters() {
         final PlaceRequest place = mock(PlaceRequest.class);
-        when(place.getParameter(anyString(), anyString())).thenReturn(null);
+        when(place.getParameter(anyString(),
+                                anyString())).thenReturn(null);
         presenter.onStartup(place);
 
         presenter.setupActiveSearchFilters();
@@ -259,14 +259,14 @@ public class ExecutionErrorListPresenterTest {
                                          eq(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No()),
                                          eq(String.valueOf(Boolean.FALSE)),
                                          any(Consumer.class));
-
     }
 
     @Test
-    public void testActiveSearchFiltersProcessInstanceId(){
+    public void testActiveSearchFiltersProcessInstanceId() {
         final PlaceRequest place = mock(PlaceRequest.class);
         final String processInstanceId = "1";
-        when(place.getParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, null)).thenReturn(processInstanceId);
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
+                                null)).thenReturn(processInstanceId);
         presenter.onStartup(place);
 
         presenter.setupActiveSearchFilters();
@@ -275,7 +275,6 @@ public class ExecutionErrorListPresenterTest {
                                          eq(processInstanceId),
                                          eq(processInstanceId),
                                          any(Consumer.class));
-
     }
 
     @Test
@@ -287,8 +286,11 @@ public class ExecutionErrorListPresenterTest {
         final ArgumentCaptor<PlaceRequest> captor = ArgumentCaptor.forClass(PlaceRequest.class);
         verify(placeManager).goTo(captor.capture());
         final PlaceRequest request = captor.getValue();
-        assertEquals(JOBS, request.getIdentifier());
-        assertEquals(jobId, request.getParameter(PerspectiveIds.SEARCH_PARAMETER_JOB_ID, null));
+        assertEquals(JOBS,
+                     request.getIdentifier());
+        assertEquals(jobId,
+                     request.getParameter(PerspectiveIds.SEARCH_PARAMETER_JOB_ID,
+                                          null));
     }
 
     @Test
@@ -305,30 +307,59 @@ public class ExecutionErrorListPresenterTest {
         final ArgumentCaptor<PlaceRequest> captor = ArgumentCaptor.forClass(PlaceRequest.class);
         verify(placeManager).goTo(captor.capture());
         final PlaceRequest request = captor.getValue();
-        assertEquals(PROCESS_INSTANCES, request.getIdentifier());
-        assertEquals(errorSummary.getProcessInstanceId().toString(), request.getParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID, null));
+        assertEquals(PROCESS_INSTANCES,
+                     request.getIdentifier());
+        assertEquals(errorSummary.getProcessInstanceId().toString(),
+                     request.getParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
+                                          null));
     }
 
     @Test
     public void testViewJobsActionCondition() {
-        doAnswer(new PerspectiveAnswer(JOBS)).when(authorizationManager).authorize(any(ResourceRef.class), eq(identity));
+        doAnswer(new PerspectiveAnswer(JOBS)).when(authorizationManager).authorize(any(ResourceRef.class),
+                                                                                   eq(identity));
 
         assertTrue(presenter.getViewJobActionCondition().test(ExecutionErrorSummary.builder().jobId(Long.valueOf(1)).build()));
 
-        when(authorizationManager.authorize(any(ResourceRef.class), eq(identity))).thenReturn(false);
+        when(authorizationManager.authorize(any(ResourceRef.class),
+                                            eq(identity))).thenReturn(false);
 
         assertFalse(presenter.getViewJobActionCondition().test(new ExecutionErrorSummary()));
     }
 
     @Test
     public void testViewProcessInstanceActionCondition() {
-        doAnswer(new PerspectiveAnswer(PROCESS_INSTANCES)).when(authorizationManager).authorize(any(ResourceRef.class), eq(identity));
+        doAnswer(new PerspectiveAnswer(PROCESS_INSTANCES)).when(authorizationManager).authorize(any(ResourceRef.class),
+                                                                                                eq(identity));
 
         assertTrue(presenter.getViewProcessInstanceActionCondition().test(ExecutionErrorSummary.builder().processInstanceId(Long.valueOf(1)).build()));
 
-        when(authorizationManager.authorize(any(ResourceRef.class), eq(identity))).thenReturn(false);
+        when(authorizationManager.authorize(any(ResourceRef.class),
+                                            eq(identity))).thenReturn(false);
 
         assertFalse(presenter.getViewProcessInstanceActionCondition().test(new ExecutionErrorSummary()));
+    }
+
+    @Test
+    public void testDefaultAdvancedSearchFilterTypes() {
+        presenter.setupAdvancedSearchView();
+        verify(viewMock).addTextFilter(eq(Constants.INSTANCE.Id()),
+                                       eq(Constants.INSTANCE.FilterByErrorId()),
+                                       any(Consumer.class),
+                                       any(Consumer.class));
+        verify(viewMock).addNumericFilter(eq(Constants.INSTANCE.Process_Instance_Id()),
+                                          eq(Constants.INSTANCE.FilterByProcessInstanceId()),
+                                          any(Consumer.class),
+                                          any(Consumer.class));
+        verify(viewMock).addNumericFilter(eq(Constants.INSTANCE.JobId()),
+                                          eq(Constants.INSTANCE.FilterByJobId()),
+                                          any(Consumer.class),
+                                          any(Consumer.class));
+        verify(viewMock).addSelectFilter(eq(Constants.INSTANCE.Type()),
+                                         anyMap(),
+                                         eq(false),
+                                         any(Consumer.class),
+                                         any(Consumer.class));
     }
 
     protected class PerspectiveAnswer implements Answer<Boolean> {
@@ -341,30 +372,7 @@ public class ExecutionErrorListPresenterTest {
 
         @Override
         public Boolean answer(InvocationOnMock invocation) throws Throwable {
-            return perspectiveId.equals(((ResourceRef)invocation.getArguments()[0]).getIdentifier());
+            return perspectiveId.equals(((ResourceRef) invocation.getArguments()[0]).getIdentifier());
         }
     }
-
-    @Test
-    public void testDefaultAdvancedSearchFilterTypes(){
-        presenter.setupAdvancedSearchView();
-        verify(viewMock).addTextFilter(eq(Constants.INSTANCE.Id()),
-                                       eq(Constants.INSTANCE.FilterByErrorId()),
-                                       any(Consumer.class),
-                                       any(Consumer.class));
-        verify(viewMock).addNumericFilter(eq(Constants.INSTANCE.Process_Instance_Id()),
-                                       eq(Constants.INSTANCE.FilterByProcessInstanceId()),
-                                       any(Consumer.class),
-                                       any(Consumer.class));
-        verify(viewMock).addNumericFilter(eq(Constants.INSTANCE.JobId()),
-                                          eq(Constants.INSTANCE.FilterByJobId()),
-                                          any(Consumer.class),
-                                          any(Consumer.class));
-        verify(viewMock).addSelectFilter(eq(Constants.INSTANCE.Type()),
-                                         anyMap(),
-                                         eq(false),
-                                         any(Consumer.class),
-                                         any(Consumer.class));
-    }
-
 }

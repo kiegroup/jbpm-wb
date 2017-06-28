@@ -16,7 +16,6 @@
 
 package org.jbpm.workbench.common.client.util;
 
-
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,12 +37,13 @@ public class UTCDateBoxTest {
     @Test
     public void testSetValue() {
         utcDateBoxTest.setValue(null);
-        verify(datePicker).setValue(UTCDateBox.utc2date(null), false);
+        verify(datePicker).setValue(UTCDateBox.utc2date(null),
+                                    false);
 
         long nextDueDate = System.currentTimeMillis() + 1800 * 1000;
         utcDateBoxTest.setValue(nextDueDate);
-        verify(datePicker).setValue(UTCDateBox.utc2date(nextDueDate), false);
-
+        verify(datePicker).setValue(UTCDateBox.utc2date(nextDueDate),
+                                    false);
     }
 
     @Test

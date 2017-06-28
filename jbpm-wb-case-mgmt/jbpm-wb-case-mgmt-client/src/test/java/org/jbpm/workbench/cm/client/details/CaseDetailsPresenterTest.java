@@ -55,7 +55,10 @@ public class CaseDetailsPresenterTest extends AbstractCaseInstancePresenterTest 
 
         verify(view).setValue(new CaseInstanceSummary());
         verifyNoMoreInteractions(view);
-        verify(caseManagementService, never()).getCaseInstance(anyString(), anyString(), anyString());
+        verify(caseManagementService,
+               never()).getCaseInstance(anyString(),
+                                        anyString(),
+                                        anyString());
     }
 
     @Test
@@ -66,7 +69,9 @@ public class CaseDetailsPresenterTest extends AbstractCaseInstancePresenterTest 
         verify(view).setValue(new CaseInstanceSummary());
         verify(view).setValue(cis);
         verifyNoMoreInteractions(view);
-        verify(caseManagementService).getCaseInstance(serverTemplateId, cis.getContainerId(), cis.getCaseId());
+        verify(caseManagementService).getCaseInstance(serverTemplateId,
+                                                      cis.getContainerId(),
+                                                      cis.getCaseId());
     }
 
     @Test
@@ -76,11 +81,15 @@ public class CaseDetailsPresenterTest extends AbstractCaseInstancePresenterTest 
 
         presenter.onCaseRefreshEvent(new CaseRefreshEvent(cis.getCaseId()));
 
-        verify(view, times(2)).setValue(new CaseInstanceSummary());
-        verify(view, times(2)).setValue(cis);
+        verify(view,
+               times(2)).setValue(new CaseInstanceSummary());
+        verify(view,
+               times(2)).setValue(cis);
 
         verifyNoMoreInteractions(view);
-        verify(caseManagementService, times(2)).getCaseInstance(serverTemplateId, cis.getContainerId(), cis.getCaseId());
+        verify(caseManagementService,
+               times(2)).getCaseInstance(serverTemplateId,
+                                         cis.getContainerId(),
+                                         cis.getCaseId());
     }
-
 }

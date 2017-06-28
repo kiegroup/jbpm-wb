@@ -251,5 +251,4 @@ public abstract class AbstractTaskListViewTest {
         assertEquals(AbstractTaskListView.COL_ID_ACTIONS,
                      columnPreferences.get(4).getName());
     }
-
 }

@@ -68,8 +68,10 @@ public class CaseProjectServiceImplTest {
 
     @BeforeClass
     public static void setupOnce() {
-        System.setProperty("org.uberfire.nio.git.daemon.enabled", "false");
-        System.setProperty("org.uberfire.nio.git.ssh.enabled", "false");
+        System.setProperty("org.uberfire.nio.git.daemon.enabled",
+                           "false");
+        System.setProperty("org.uberfire.nio.git.ssh.enabled",
+                           "false");
     }
 
     @AfterClass
@@ -99,7 +101,8 @@ public class CaseProjectServiceImplTest {
         when(kieProject.getKModuleXMLPath()).thenReturn(kmodulePath);
         when(kieProject.getRootPath()).thenReturn(projectPath);
 
-        caseProjectService = new CaseProjectServiceImpl(ddEditorService, ioService);
+        caseProjectService = new CaseProjectServiceImpl(ddEditorService,
+                                                        ioService);
     }
 
     @Test
@@ -107,27 +110,39 @@ public class CaseProjectServiceImplTest {
         final ArgumentCaptor<DeploymentDescriptorModel> ddArgumentCaptor = ArgumentCaptor.forClass(DeploymentDescriptorModel.class);
 
         DirectoryStream directoryStream = Mockito.mock(DirectoryStream.class);
-        when(ioService.newDirectoryStream(any(), any())).thenReturn((DirectoryStream<Path>) directoryStream);
+        when(ioService.newDirectoryStream(any(),
+                                          any())).thenReturn((DirectoryStream<Path>) directoryStream);
         when(directoryStream.iterator()).thenReturn(new ArrayList().iterator());
 
         caseProjectService.configureNewCaseProject(kieProject);
-        verify(ddEditorService, times(1)).save(any(), ddArgumentCaptor.capture(), any(), eq("Updated with case project configuration"));
+        verify(ddEditorService,
+               times(1)).save(any(),
+                              ddArgumentCaptor.capture(),
+                              any(),
+                              eq("Updated with case project configuration"));
 
         DeploymentDescriptorModel updatedDD = ddArgumentCaptor.getValue();
         assertNotNull(updatedDD);
-        assertEquals("PER_CASE", updatedDD.getRuntimeStrategy());
+        assertEquals("PER_CASE",
+                     updatedDD.getRuntimeStrategy());
 
         List<ItemObjectModel> marshallingStrategies = updatedDD.getMarshallingStrategies();
-        assertEquals(2, marshallingStrategies.size());
+        assertEquals(2,
+                     marshallingStrategies.size());
 
-        Map<String, String> mappedStrategies = marshallingStrategies.stream().collect(Collectors.toMap(ItemObjectModel::getValue, ItemObjectModel::getResolver));
+        Map<String, String> mappedStrategies = marshallingStrategies.stream().collect(Collectors.toMap(ItemObjectModel::getValue,
+                                                                                                       ItemObjectModel::getResolver));
         assertTrue(mappedStrategies.containsKey(CaseProjectServiceImpl.CASE_FILE_MARSHALLER));
         assertTrue(mappedStrategies.containsKey(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
 
-        assertEquals("mvel", mappedStrategies.get(CaseProjectServiceImpl.CASE_FILE_MARSHALLER));
-        assertEquals("mvel", mappedStrategies.get(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
+        assertEquals("mvel",
+                     mappedStrategies.get(CaseProjectServiceImpl.CASE_FILE_MARSHALLER));
+        assertEquals("mvel",
+                     mappedStrategies.get(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
 
-        verify(ioService, times(1)).write(any(), any(byte[].class));
+        verify(ioService,
+               times(1)).write(any(),
+                               any(byte[].class));
     }
 
     @Test
@@ -137,27 +152,39 @@ public class CaseProjectServiceImplTest {
         Path packagePath = Mockito.mock(Path.class);
         when(packagePath.toUri()).thenReturn(URI.create("default://p0/Evaluation/src/main/resources/org"));
         DirectoryStream directoryStream = Mockito.mock(DirectoryStream.class);
-        when(ioService.newDirectoryStream(any(), any())).thenReturn((DirectoryStream<Path>) directoryStream);
+        when(ioService.newDirectoryStream(any(),
+                                          any())).thenReturn((DirectoryStream<Path>) directoryStream);
         when(directoryStream.iterator()).thenReturn(Arrays.asList(packagePath).iterator());
 
         caseProjectService.configureNewCaseProject(kieProject);
-        verify(ddEditorService, times(1)).save(any(), ddArgumentCaptor.capture(), any(), eq("Updated with case project configuration"));
+        verify(ddEditorService,
+               times(1)).save(any(),
+                              ddArgumentCaptor.capture(),
+                              any(),
+                              eq("Updated with case project configuration"));
 
         DeploymentDescriptorModel updatedDD = ddArgumentCaptor.getValue();
         assertNotNull(updatedDD);
-        assertEquals("PER_CASE", updatedDD.getRuntimeStrategy());
+        assertEquals("PER_CASE",
+                     updatedDD.getRuntimeStrategy());
 
         List<ItemObjectModel> marshallingStrategies = updatedDD.getMarshallingStrategies();
-        assertEquals(2, marshallingStrategies.size());
+        assertEquals(2,
+                     marshallingStrategies.size());
 
-        Map<String, String> mappedStrategies = marshallingStrategies.stream().collect(Collectors.toMap(ItemObjectModel::getValue, ItemObjectModel::getResolver));
+        Map<String, String> mappedStrategies = marshallingStrategies.stream().collect(Collectors.toMap(ItemObjectModel::getValue,
+                                                                                                       ItemObjectModel::getResolver));
         assertTrue(mappedStrategies.containsKey(CaseProjectServiceImpl.CASE_FILE_MARSHALLER));
         assertTrue(mappedStrategies.containsKey(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
 
-        assertEquals("mvel", mappedStrategies.get(CaseProjectServiceImpl.CASE_FILE_MARSHALLER));
-        assertEquals("mvel", mappedStrategies.get(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
+        assertEquals("mvel",
+                     mappedStrategies.get(CaseProjectServiceImpl.CASE_FILE_MARSHALLER));
+        assertEquals("mvel",
+                     mappedStrategies.get(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
 
-        verify(ioService, times(2)).write(any(), any(byte[].class));
+        verify(ioService,
+               times(2)).write(any(),
+                               any(byte[].class));
     }
 
     @Test
@@ -166,7 +193,8 @@ public class CaseProjectServiceImplTest {
         Path packagePath = Mockito.mock(Path.class);
         when(packagePath.toUri()).thenReturn(URI.create("default://p0/Evaluation/src/main/resources/org"));
         DirectoryStream directoryStream = Mockito.mock(DirectoryStream.class);
-        when(ioService.newDirectoryStream(any(), any())).thenReturn((DirectoryStream<Path>) directoryStream);
+        when(ioService.newDirectoryStream(any(),
+                                          any())).thenReturn((DirectoryStream<Path>) directoryStream);
         when(directoryStream.iterator()).thenReturn(Arrays.asList(packagePath).iterator());
 
         org.guvnor.common.services.project.model.Package pkg = Mockito.mock(org.guvnor.common.services.project.model.Package.class);
@@ -177,7 +205,9 @@ public class CaseProjectServiceImplTest {
 
         caseProjectService.configurePackage(event);
 
-        verify(ioService, times(1)).write(any(), any(byte[].class));
+        verify(ioService,
+               times(1)).write(any(),
+                               any(byte[].class));
     }
 
     @Test
@@ -185,28 +215,41 @@ public class CaseProjectServiceImplTest {
         final ArgumentCaptor<DeploymentDescriptorModel> ddArgumentCaptor = ArgumentCaptor.forClass(DeploymentDescriptorModel.class);
 
         DirectoryStream directoryStream = Mockito.mock(DirectoryStream.class);
-        when(ioService.newDirectoryStream(any(), any())).thenReturn((DirectoryStream<Path>) directoryStream);
+        when(ioService.newDirectoryStream(any(),
+                                          any())).thenReturn((DirectoryStream<Path>) directoryStream);
         when(directoryStream.iterator()).thenReturn(new ArrayList().iterator());
         when(ioService.exists(ddPath)).thenReturn(false);
 
         caseProjectService.configureNewCaseProject(kieProject);
-        verify(ddEditorService, times(1)).save(any(), ddArgumentCaptor.capture(), any(), eq("Updated with case project configuration"));
-        verify(ddEditorService, times(1)).createIfNotExists(any());
+        verify(ddEditorService,
+               times(1)).save(any(),
+                              ddArgumentCaptor.capture(),
+                              any(),
+                              eq("Updated with case project configuration"));
+        verify(ddEditorService,
+               times(1)).createIfNotExists(any());
 
         DeploymentDescriptorModel updatedDD = ddArgumentCaptor.getValue();
         assertNotNull(updatedDD);
-        assertEquals("PER_CASE", updatedDD.getRuntimeStrategy());
+        assertEquals("PER_CASE",
+                     updatedDD.getRuntimeStrategy());
 
         List<ItemObjectModel> marshallingStrategies = updatedDD.getMarshallingStrategies();
-        assertEquals(2, marshallingStrategies.size());
+        assertEquals(2,
+                     marshallingStrategies.size());
 
-        Map<String, String> mappedStrategies = marshallingStrategies.stream().collect(Collectors.toMap(ItemObjectModel::getValue, ItemObjectModel::getResolver));
+        Map<String, String> mappedStrategies = marshallingStrategies.stream().collect(Collectors.toMap(ItemObjectModel::getValue,
+                                                                                                       ItemObjectModel::getResolver));
         assertTrue(mappedStrategies.containsKey(CaseProjectServiceImpl.CASE_FILE_MARSHALLER));
         assertTrue(mappedStrategies.containsKey(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
 
-        assertEquals("mvel", mappedStrategies.get(CaseProjectServiceImpl.CASE_FILE_MARSHALLER));
-        assertEquals("mvel", mappedStrategies.get(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
+        assertEquals("mvel",
+                     mappedStrategies.get(CaseProjectServiceImpl.CASE_FILE_MARSHALLER));
+        assertEquals("mvel",
+                     mappedStrategies.get(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
 
-        verify(ioService, times(1)).write(any(), any(byte[].class));
+        verify(ioService,
+               times(1)).write(any(),
+                               any(byte[].class));
     }
 }

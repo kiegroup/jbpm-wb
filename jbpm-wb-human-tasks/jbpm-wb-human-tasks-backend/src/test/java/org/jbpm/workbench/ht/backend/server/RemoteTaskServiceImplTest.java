@@ -42,11 +42,11 @@ public class RemoteTaskServiceImplTest {
     private static final String CURRENT_USER = "Jan";
     private static final String OTHER_USER = "OTHER_USER";
 
-    @InjectMocks
-    private RemoteTaskServiceImpl remoteTaskService;
-
     @Mock
     IdentityProvider identityProvider;
+
+    @InjectMocks
+    private RemoteTaskServiceImpl remoteTaskService;
 
     @Before
     public void initMocks() {
@@ -144,13 +144,20 @@ public class RemoteTaskServiceImplTest {
         final TaskEventSummary summary = remoteTaskService.build(event);
 
         assertNotNull(summary);
-        assertEquals(event.getId(), summary.getEventId());
-        assertEquals(event.getTaskId(), summary.getTaskId());
-        assertEquals(event.getType(), summary.getType());
-        assertEquals(event.getUserId(), summary.getUserId());
-        assertEquals(event.getLogTime(), summary.getLogTime());
-        assertEquals(event.getWorkItemId(), summary.getWorkItemId());
-        assertEquals(event.getMessage(), summary.getMessage());
+        assertEquals(event.getId(),
+                     summary.getEventId());
+        assertEquals(event.getTaskId(),
+                     summary.getTaskId());
+        assertEquals(event.getType(),
+                     summary.getType());
+        assertEquals(event.getUserId(),
+                     summary.getUserId());
+        assertEquals(event.getLogTime(),
+                     summary.getLogTime());
+        assertEquals(event.getWorkItemId(),
+                     summary.getWorkItemId());
+        assertEquals(event.getMessage(),
+                     summary.getMessage());
     }
 
     @Test
@@ -159,23 +166,36 @@ public class RemoteTaskServiceImplTest {
         for (Method method : methods) {
             final Class<?> returnType = method.getReturnType();
             final Object[] args = new Object[method.getParameterCount()];
-            Object result = method.invoke(remoteTaskService, args);
+            Object result = method.invoke(remoteTaskService,
+                                          args);
 
-            assertMethodResult(method, returnType, result);
+            assertMethodResult(method,
+                               returnType,
+                               result);
 
             args[0] = "";
-            result = method.invoke(remoteTaskService, args);
-            assertMethodResult(method, returnType, result);
+            result = method.invoke(remoteTaskService,
+                                   args);
+            assertMethodResult(method,
+                               returnType,
+                               result);
         }
     }
 
-    private void assertMethodResult(final Method method, final Class<?> returnType, final Object result) {
+    private void assertMethodResult(final Method method,
+                                    final Class<?> returnType,
+                                    final Object result) {
         if (Collection.class.isAssignableFrom(returnType)) {
-            assertNotNull(format("Returned collection for method %s should not be null", method.getName()), result);
-            assertTrue(format("Returned collection for method %s should be empty", method.getName()), ((Collection) result).isEmpty());
+            assertNotNull(format("Returned collection for method %s should not be null",
+                                 method.getName()),
+                          result);
+            assertTrue(format("Returned collection for method %s should be empty",
+                              method.getName()),
+                       ((Collection) result).isEmpty());
         } else {
-            assertNull(format("Returned object for method %s should be null", method.getName()), result);
+            assertNull(format("Returned object for method %s should be null",
+                              method.getName()),
+                       result);
         }
     }
-
 }

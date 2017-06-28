@@ -32,7 +32,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 
-
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -47,7 +46,7 @@ public class JobDetailsPopupTest {
 
     @Test
     public void errorGenerationTest() {
-        RequestSummary r= new RequestSummary();
+        RequestSummary r = new RequestSummary();
         r.setExecutions(1);
         ErrorSummary error = new ErrorSummary();
         error.setMessage("errorMessage");
@@ -55,9 +54,10 @@ public class JobDetailsPopupTest {
         List<ErrorSummary> errors = new ArrayList<>();
         errors.add(error);
 
-        jobDetailsPopup.setRequest(r,errors,null);
+        jobDetailsPopup.setRequest(r,
+                                   errors,
+                                   null);
 
-        verify(errorsOccurredList).setHTML(SafeHtmlUtils.fromTrustedString("<strong>" + error.getMessage() + "</strong><br/>" + error.getStacktrace() +"<br><br>"));
-   }
-
+        verify(errorsOccurredList).setHTML(SafeHtmlUtils.fromTrustedString("<strong>" + error.getMessage() + "</strong><br/>" + error.getStacktrace() + "<br><br>"));
+    }
 }

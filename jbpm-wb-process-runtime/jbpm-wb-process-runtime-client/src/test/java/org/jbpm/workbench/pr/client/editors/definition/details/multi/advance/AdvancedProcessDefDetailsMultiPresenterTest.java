@@ -32,5 +32,4 @@ public class AdvancedProcessDefDetailsMultiPresenterTest
     public AdvancedProcessDefDetailsMultiPresenter getPresenter() {
         return presenter;
     }
-
 }

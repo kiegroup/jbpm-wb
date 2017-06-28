@@ -75,25 +75,30 @@ public abstract class AbstractFormProvidingEngineTest<SETTINGS extends Rendering
     @Before
     public void initTest() {
 
-        when( marshallerContext.getClassloader() ).thenReturn( AbstractFormProvidingEngineTest.class.getClassLoader() );
+        when(marshallerContext.getClassloader()).thenReturn(AbstractFormProvidingEngineTest.class.getClassLoader());
 
-        formSerializer = new FormDefinitionSerializerImpl( new FieldSerializer(), new FormModelSerializer() );
+        formSerializer = new FormDefinitionSerializerImpl(new FieldSerializer(),
+                                                          new FormModelSerializer());
 
-        List<FieldValueProcessor> processors = Arrays.asList( new SubFormFieldValueProcessor(),
-                                                              new MultipleSubFormFieldValueProcessor() );
+        List<FieldValueProcessor> processors = Arrays.asList(new SubFormFieldValueProcessor(),
+                                                             new MultipleSubFormFieldValueProcessor());
 
-        Instance fieldValueProcessors = mock( Instance.class );
-        when( fieldValueProcessors.iterator() ).then( proc -> processors.iterator() );
+        Instance fieldValueProcessors = mock(Instance.class);
+        when(fieldValueProcessors.iterator()).then(proc -> processors.iterator());
 
-        formValuesProcessor = new FormValuesProcessorImpl( fieldValueProcessors );
+        formValuesProcessor = new FormValuesProcessorImpl(fieldValueProcessors);
 
-        dynamicBPMNFormGenerator = new DynamicBPMNFormGeneratorImpl( new BPMNRuntimeFormGeneratorService(new TestFieldManager(), new DynamicFormLayoutTemplateGenerator()));
+        dynamicBPMNFormGenerator = new DynamicBPMNFormGeneratorImpl(new BPMNRuntimeFormGeneratorService(new TestFieldManager(),
+                                                                                                        new DynamicFormLayoutTemplateGenerator()));
 
-        contextManager = new BackendFormRenderingContextManagerImpl( formValuesProcessor, new ContextModelConstraintsExtractorImpl() );
+        contextManager = new BackendFormRenderingContextManagerImpl(formValuesProcessor,
+                                                                    new ContextModelConstraintsExtractorImpl());
 
         settings = generateSettings();
 
-        processor = getProcessorInstance( formSerializer, contextManager, dynamicBPMNFormGenerator );
+        processor = getProcessorInstance(formSerializer,
+                                         contextManager,
+                                         dynamicBPMNFormGenerator);
 
         initFormsProvider();
     }
@@ -102,13 +107,13 @@ public abstract class AbstractFormProvidingEngineTest<SETTINGS extends Rendering
 
     protected abstract SETTINGS generateSettings();
 
-    protected abstract PROCESSOR getProcessorInstance( FormDefinitionSerializer formSerializer,
-                                                       BackendFormRenderingContextManager contextManager,
-                                                       DynamicBPMNFormGenerator dynamicBPMNFormGenerator );
+    protected abstract PROCESSOR getProcessorInstance(FormDefinitionSerializer formSerializer,
+                                                      BackendFormRenderingContextManager contextManager,
+                                                      DynamicBPMNFormGenerator dynamicBPMNFormGenerator);
 
     protected abstract Map<String, Object> getFormValues();
 
-    protected abstract void checkRuntimeValues( Map<String, Object> resultValues );
+    protected abstract void checkRuntimeValues(Map<String, Object> resultValues);
 
     @Test
     public void testGenerateRenderingContext() {
@@ -116,35 +121,41 @@ public abstract class AbstractFormProvidingEngineTest<SETTINGS extends Rendering
     }
 
     protected KieWorkbenchFormRenderingSettings generateRenderingSettings() {
-        KieWorkbenchFormRenderingSettings settings = processor.generateRenderingContext( this.settings );
+        KieWorkbenchFormRenderingSettings settings = processor.generateRenderingContext(this.settings);
 
-        checkRenderingSettings( settings );
+        checkRenderingSettings(settings);
 
         return settings;
     }
 
-    protected void checkRenderingSettings( KieWorkbenchFormRenderingSettings settings ) {
-        assertNotNull( "Settings cannot be null", settings );
+    protected void checkRenderingSettings(KieWorkbenchFormRenderingSettings settings) {
+        assertNotNull("Settings cannot be null",
+                      settings);
 
-        assertNotNull( "There should be a backend context", contextManager.getContext( settings.getTimestamp() ) );
+        assertNotNull("There should be a backend context",
+                      contextManager.getContext(settings.getTimestamp()));
 
-        assertFalse( "There should exist some forms...", settings.getRenderingContext().getAvailableForms().isEmpty() );
+        assertFalse("There should exist some forms...",
+                    settings.getRenderingContext().getAvailableForms().isEmpty());
 
-        assertNotNull( "A root form should exist", settings.getRenderingContext().getRootForm() );
+        assertNotNull("A root form should exist",
+                      settings.getRenderingContext().getRootForm());
     }
 
     @Test
     public void testGenerateRuntimeValuesMap() {
         KieWorkbenchFormRenderingSettings settings = generateRenderingSettings();
 
-        Map<String, Object> result = processor.generateRuntimeValuesMap( settings.getTimestamp(), getFormValues() );
+        Map<String, Object> result = processor.generateRuntimeValuesMap(settings.getTimestamp(),
+                                                                        getFormValues());
 
-        assertNotNull( "Result values cannot be null", result );
+        assertNotNull("Result values cannot be null",
+                      result);
 
-        assertFalse( "Result cannot be empty", result.isEmpty() );
+        assertFalse("Result cannot be empty",
+                    result.isEmpty());
 
-        checkRuntimeValues( result );
-
+        checkRuntimeValues(result);
     }
 
     protected String getFormContent() {
@@ -154,34 +165,32 @@ public abstract class AbstractFormProvidingEngineTest<SETTINGS extends Rendering
 
             JsonParser parser = new JsonParser();
 
-            String content = IOUtils.toString( this.getClass().getResourceAsStream( "/forms/Client.frm" ) );
+            String content = IOUtils.toString(this.getClass().getResourceAsStream("/forms/Client.frm"));
 
-            formsArray.add( parser.parse( content ) );
+            formsArray.add(parser.parse(content));
 
-            content = IOUtils.toString( this.getClass().getResourceAsStream( "/forms/InvoiceLine.frm" ) );
+            content = IOUtils.toString(this.getClass().getResourceAsStream("/forms/InvoiceLine.frm"));
 
-            formsArray.add( parser.parse( content ) );
+            formsArray.add(parser.parse(content));
 
-            content = IOUtils.toString( this.getClass().getResourceAsStream( "/forms/Invoice.frm" ) );
+            content = IOUtils.toString(this.getClass().getResourceAsStream("/forms/Invoice.frm"));
 
-            formsArray.add( parser.parse( content ) );
+            formsArray.add(parser.parse(content));
 
-            content = IOUtils.toString( this.getClass().getResourceAsStream( "/forms/invoices-taskform.frm" ) );
+            content = IOUtils.toString(this.getClass().getResourceAsStream("/forms/invoices-taskform.frm"));
 
-            formsArray.add( parser.parse( content ) );
+            formsArray.add(parser.parse(content));
 
-            content = IOUtils.toString( this.getClass().getResourceAsStream( "/forms/modify-taskform.frm" ) );
+            content = IOUtils.toString(this.getClass().getResourceAsStream("/forms/modify-taskform.frm"));
 
-            formsArray.add( parser.parse( content ) );
+            formsArray.add(parser.parse(content));
 
             Gson gson = new Gson();
 
-            return gson.toJson( formsArray );
-
-        } catch ( IOException e ) {
+            return gson.toJson(formsArray);
+        } catch (IOException e) {
         }
 
         return null;
     }
-
 }

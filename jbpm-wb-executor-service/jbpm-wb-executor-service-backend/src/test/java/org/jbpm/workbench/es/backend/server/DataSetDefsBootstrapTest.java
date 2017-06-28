@@ -50,7 +50,8 @@ public class DataSetDefsBootstrapTest {
         List<DataSetDef> dataSetDefList = argument.getAllValues();
         assertEquals(dataSetDefList.size(),
                      2);
-        assertEquals(dataSetDefList.get(0).getUUID(), REQUEST_LIST_DATASET);
+        assertEquals(dataSetDefList.get(0).getUUID(),
+                     REQUEST_LIST_DATASET);
         assertEquals(dataSetDefList.get(1).getUUID(),
                      EXECUTION_ERROR_LIST_DATASET);
     }

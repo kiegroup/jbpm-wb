@@ -60,8 +60,13 @@ public class ProcessInstanceDetailsMultiPresenterTest {
     @Test
     public void isForLogRemainsEnabledAfterRefresh() {
         //When task selected with logOnly
-        presenter.onProcessSelectionEvent(new ProcessInstanceSelectionEvent(PI_DEPLOYMENT_ID, PI_ID, PI_PROCESS_DEF_ID,
-                PI_PROCESS_DEF_NAME, 0, true, SERVER_TEMPLATE_ID));
+        presenter.onProcessSelectionEvent(new ProcessInstanceSelectionEvent(PI_DEPLOYMENT_ID,
+                                                                            PI_ID,
+                                                                            PI_PROCESS_DEF_ID,
+                                                                            PI_PROCESS_DEF_NAME,
+                                                                            0,
+                                                                            true,
+                                                                            SERVER_TEMPLATE_ID));
         //Then only tab log is displayed
         verify(view).displayOnlyLogTab();
         assertTrue(presenter.isForLog());
@@ -73,8 +78,13 @@ public class ProcessInstanceDetailsMultiPresenterTest {
     @Test
     public void isForLogRemainsDisabledAfterRefresh() {
         //When task selected without logOnly
-        presenter.onProcessSelectionEvent(new ProcessInstanceSelectionEvent(PI_DEPLOYMENT_ID, PI_ID, PI_PROCESS_DEF_ID,
-                PI_PROCESS_DEF_NAME, 0, false, SERVER_TEMPLATE_ID));
+        presenter.onProcessSelectionEvent(new ProcessInstanceSelectionEvent(PI_DEPLOYMENT_ID,
+                                                                            PI_ID,
+                                                                            PI_PROCESS_DEF_ID,
+                                                                            PI_PROCESS_DEF_NAME,
+                                                                            0,
+                                                                            false,
+                                                                            SERVER_TEMPLATE_ID));
 
         //Then alltabs are displayed
         verify(view).displayAllTabs();
@@ -83,5 +93,4 @@ public class ProcessInstanceDetailsMultiPresenterTest {
         presenter.onRefresh();
         assertFalse(presenter.isForLog());
     }
-
 }

@@ -15,7 +15,6 @@
  */
 package org.jbpm.workbench.df.client.filter;
 
-
 import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.gwtmockito.WithClassesToStub;
@@ -43,15 +42,6 @@ import static org.mockito.Mockito.*;
 @WithClassesToStub({Text.class})
 public class FilterEditorPopupTest {
 
-    @GwtMock
-    private TextBox tableNameText;
-
-    @GwtMock
-    private HelpBlock tableNameHelpInline;
-
-    @GwtMock
-    private FormGroup tableNameControlGroup;
-
     @Mock
     FilterSettings tableDisplayerSettings;
 
@@ -61,11 +51,20 @@ public class FilterEditorPopupTest {
     @GwtMock
     DataSetFilterEditor filterEditor;
 
-    @InjectMocks
-    private FilterEditorPopup filterEditorPopup;
-
     @Mock
     FilterEditorPopup.Listener editorListener;
+
+    @GwtMock
+    private TextBox tableNameText;
+
+    @GwtMock
+    private HelpBlock tableNameHelpInline;
+
+    @GwtMock
+    private FormGroup tableNameControlGroup;
+
+    @InjectMocks
+    private FilterEditorPopup filterEditorPopup;
 
     @Before
     public void setupMocks() {
@@ -77,9 +76,11 @@ public class FilterEditorPopupTest {
         when(tableNameText.getText()).thenReturn(""); // Return empty string
 
         boolean isValid = filterEditorPopup.validateForm();
-        assertFalse("Form with an empty filter name should be rejected", isValid);
+        assertFalse("Form with an empty filter name should be rejected",
+                    isValid);
 
-        verify(tableNameControlGroup,times(2)).setValidationState(ValidationState.ERROR);
+        verify(tableNameControlGroup,
+               times(2)).setValidationState(ValidationState.ERROR);
         verify(tableNameHelpInline).setText(FiltersConstants.INSTANCE.Name_must_be_defined());
     }
 
@@ -98,8 +99,8 @@ public class FilterEditorPopupTest {
 
         verify(filterEditor).getFilter();
         verify(tableDisplayerSettings).setTableName(filterName);
-        verify(previousLookup).addOperation(0,filter);
+        verify(previousLookup).addOperation(0,
+                                            filter);
         verify(editorListener).onSave(filterEditorPopup);
     }
-
 }
