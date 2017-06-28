@@ -31,7 +31,7 @@ import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.util.BooleanConverter;
-import org.jbpm.workbench.common.client.util.DateConverter;
+import org.jbpm.workbench.common.client.util.DateTimeConverter;
 import org.jbpm.workbench.es.client.util.ExecutionErrorTypeConverter;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 
@@ -114,13 +114,13 @@ public class ExecutionErrorBasicDetailsViewImpl implements TakesValue<ExecutionE
 
     @Inject
     @DataField("error-acknowledgedAt")
-    @Bound(converter = DateConverter.class)
+    @Bound(converter = DateTimeConverter.class)
     @SuppressWarnings("unused")
     private Span acknowledgedAt;
 
     @Inject
     @DataField("error-errorDate")
-    @Bound(converter = DateConverter.class)
+    @Bound(converter = DateTimeConverter.class)
     @SuppressWarnings("unused")
     private Span errorDate;
 

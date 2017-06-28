@@ -28,37 +28,40 @@ import static org.junit.Assert.*;
 @RunWith(GwtMockitoTestRunner.class)
 public class DateUtilsTest {
 
-
-
     @Test
     public void testGetDateFormatMask() {
         String dateFormatMask = DateUtils.getDateFormatMask();
-        assertEquals(dateFormatMask,DateUtils.DEFAULT_DATE_FORMAT_MASK);
+        assertEquals(dateFormatMask,
+                     DateUtils.DEFAULT_DATE_FORMAT_MASK);
     }
 
     @Test
     public void testGetDateTimeFormatMask() {
         String dateTimeFormatMask = DateUtils.getDateFormatMask();
-        assertEquals(dateTimeFormatMask,DateUtils.DEFAULT_DATE_FORMAT_MASK);
+        assertEquals(dateTimeFormatMask,
+                     DateUtils.DEFAULT_DATE_FORMAT_MASK);
     }
 
-
     @Test
-    public void testGetDateStr(){
+    public void testGetDateStr() {
         Date now = new Date();
-        String nowStr =(new SimpleDateFormat(DateUtils.getDateFormatMask()).format(now));
+        String nowStr = (new SimpleDateFormat(DateUtils.getDateFormatMask()).format(now));
 
-        assertEquals(nowStr, DateUtils.getDateStr(now));
-        assertEquals("",DateUtils.getDateStr(null));
+        assertEquals(nowStr,
+                     DateUtils.getDateStr(now));
+        assertEquals("",
+                     DateUtils.getDateStr(null));
     }
 
     @Test
-    public void testGetDateAndTimeStr(){
+    public void testGetDateAndTimeStr() {
         DateUtils.getDateTimeStr(new Date());
         Date now = new Date();
-        String nowStr =(new SimpleDateFormat(DateUtils.getDateTimeFormatMask()).format(now));
+        String nowStr = (new SimpleDateFormat(DateUtils.getDateTimeFormatMask()).format(now));
 
-        assertEquals(nowStr, DateUtils.getDateTimeStr(now));
-        assertEquals("",DateUtils.getDateTimeStr(null));
+        assertEquals(nowStr,
+                     DateUtils.getDateTimeStr(now));
+        assertEquals("",
+                     DateUtils.getDateTimeStr(null));
     }
 }
