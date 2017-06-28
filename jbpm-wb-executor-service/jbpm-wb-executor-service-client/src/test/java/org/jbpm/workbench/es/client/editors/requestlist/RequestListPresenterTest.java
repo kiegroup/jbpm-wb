@@ -15,6 +15,7 @@
  */
 package org.jbpm.workbench.es.client.editors.requestlist;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
@@ -259,6 +260,46 @@ public class RequestListPresenterTest {
                                          any(Consumer.class));
 
     }
-
+    
+    @Test
+    public void testStatusActionConditionPredicates(){
+        final RequestStatus[] DETAILS_ALLOW_STATUSES = new RequestStatus[]{
+            RequestStatus.QUEUED,
+            RequestStatus.DONE,
+            RequestStatus.CANCELLED,
+            RequestStatus.ERROR,
+            RequestStatus.RETRYING,
+            RequestStatus.RUNNING
+        };
+        final RequestStatus[] CANCEL_ALLOW_STATUSES = new RequestStatus[]{
+            RequestStatus.QUEUED,
+            RequestStatus.RETRYING,
+            RequestStatus.RUNNING
+        };
+        final RequestStatus[] REQUEUE_ALLOW_STATUSES = new RequestStatus[]{
+                RequestStatus.ERROR,
+                RequestStatus.RUNNING        
+        };
+        RequestSummary testJob = new RequestSummary();
+        for(RequestStatus status : RequestStatus.values()){
+            testJob.setStatus(status.name());
+            assertEquals(Arrays.asList(DETAILS_ALLOW_STATUSES).contains(status),
+                    presenter.getDetailsActionCondition().test(testJob));
+            assertEquals(Arrays.asList(CANCEL_ALLOW_STATUSES).contains(status),
+                    presenter.getCancelActionCondition().test(testJob));
+            assertEquals(Arrays.asList(REQUEUE_ALLOW_STATUSES).contains(status),
+                    presenter.getRequeueActionCondition().test(testJob));
+        }
+    }
+    
+    @Test
+    public void testViewProcessActionConditionPredicates(){
+        RequestSummary testJob = new RequestSummary();
+        testJob.setProcessInstanceId(33L);
+        assertTrue(presenter.getViewProcessActionCondition().test(testJob));
+        testJob.setProcessInstanceId(null);
+        assertFalse(presenter.getViewProcessActionCondition().test(testJob));
+        assertFalse(presenter.getViewProcessActionCondition().test(new RequestSummary()));
+    }
 
 }

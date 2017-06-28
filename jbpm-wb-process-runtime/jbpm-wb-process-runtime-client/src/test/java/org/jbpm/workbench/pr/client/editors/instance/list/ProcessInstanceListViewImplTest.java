@@ -26,7 +26,6 @@ import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
 import org.jboss.errai.ioc.client.api.ManagedInstance;
-import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
@@ -47,7 +46,6 @@ import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
-import org.uberfire.mvp.PlaceRequest;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -196,22 +194,5 @@ public class ProcessInstanceListViewImplTest {
 
         verify(currentListGrid).addColumns(anyList());
     }
-    
-    @Test
-    public void testErrorCellNavigation(){
-        doAnswer(new Answer<Void>(){
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                PlaceRequest request = invocation.getArgumentAt(0, PlaceRequest.class);
-                assertEquals(PerspectiveIds.EXECUTION_ERRORS, request.getIdentifier());
-                return null;
-            }
-            
-        }).when(placeManager).goTo(any(PlaceRequest.class));
-        
-        popoverCellInstance.get().openErrorView(null);
-        
-        verify(placeManager).goTo(any(PlaceRequest.class));
-    }
-    
+
 }

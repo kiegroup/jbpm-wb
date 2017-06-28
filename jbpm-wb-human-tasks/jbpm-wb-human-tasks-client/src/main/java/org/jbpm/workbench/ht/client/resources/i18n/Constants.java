@@ -240,4 +240,6 @@ public interface Constants extends Messages {
     String FilterByProcessInstanceDescription();
     
     String ViewProcess();
+
+    String TaskListCouldNotBeLoaded();
 }

@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.Range;
+import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetLookupFactory;
@@ -64,6 +65,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
@@ -223,7 +225,19 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                 view.hideBusyIndicator();
             }
 
+            @Override
+            public boolean onError(final ClientRuntimeError error) {
+                view.hideBusyIndicator();
+
+                showErrorPopup(Constants.INSTANCE.ResourceCouldNotBeLoaded(Constants.INSTANCE.Process_Instances()));
+
+                return false;
+            }
         };
+    }
+
+    void showErrorPopup(final String message) {
+        ErrorPopup.showMessage(message);
     }
 
     protected String isFilteredByProcessId( List<DataSetOp> ops ) {
@@ -613,6 +627,12 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                               SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
                               pid);
     }
+    
+    public void openErrorView(final String pid) {
+        navigateToPerspective(EXECUTION_ERRORS,
+                              SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
+                              pid);
+    }
 
     public Predicate<ProcessInstanceSummary> getSignalActionCondition(){
         return pis -> pis.getState() == ProcessInstance.STATE_ACTIVE;
@@ -628,6 +648,10 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     public Predicate<ProcessInstanceSummary> getViewTasksActionCondition(){
         return pis -> isUserAuthorizedForPerspective(TASKS_ADMIN) || isUserAuthorizedForPerspective(TASKS);
+    }
+    
+    public Predicate<ProcessInstanceSummary> getViewErrorsActionCondition(){
+        return pis -> isUserAuthorizedForPerspective(EXECUTION_ERRORS) && pis.getErrorCount() != null && pis.getErrorCount() > 0;
     }
 
     /*-------------------------------------------------*/

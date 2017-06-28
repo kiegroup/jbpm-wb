@@ -16,7 +16,12 @@
 
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -26,6 +31,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.Range;
+import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetLookupFactory;
@@ -60,6 +66,7 @@ import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
@@ -72,23 +79,11 @@ import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresenter.TaskListView> extends AbstractMultiGridPresenter<TaskSummary, V> {
 
-    public interface TaskListView<T extends AbstractTaskListPresenter> extends MultiGridView<TaskSummary, T> {
-
-        void addDomainSpecifColumns(ExtendedPagedTable<TaskSummary> extendedPagedTable, Set<String> columns);
-
-        void setSelectedTask(TaskSummary selectedTask);
-
-    }
-
     protected Constants constants = Constants.INSTANCE;
-
     private Caller<TaskService> taskService;
-
     private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
-
     @Inject
     private ErrorPopupPresenter errorPopup;
-
     @Inject
     private Event<TaskSelectionEvent> taskSelected;
 
@@ -119,12 +114,13 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                     }
                 }
                 dataSetQueryHelper.setDataSetHandler(currentTableSettings);
-                dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), createDataSetTaskCallback(visibleRange.getStart(), currentTableSettings));
+                dataSetQueryHelper.lookupDataSet(visibleRange.getStart(),
+                                                 createDataSetTaskCallback(visibleRange.getStart(),
+                                                                           currentTableSettings));
             }
         } catch (Exception e) {
             errorPopup.showMessage(constants.UnexpectedError(e.getMessage()));
         }
-
     }
 
     protected List<ColumnFilter> getColumnFilters(final String searchString) {
@@ -132,11 +128,18 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         if (searchString != null && searchString.trim().length() > 0) {
             try {
                 final Long taskId = Long.valueOf(searchString.trim());
-                filters.add(equalsTo(COLUMN_TASK_ID, taskId));
+                filters.add(equalsTo(COLUMN_TASK_ID,
+                                     taskId));
             } catch (NumberFormatException ex) {
-                filters.add(likeTo(COLUMN_NAME, "%" + searchString.toLowerCase() + "%", false));
-                filters.add(likeTo(COLUMN_DESCRIPTION, "%" + searchString.toLowerCase() + "%", false));
-                filters.add(likeTo(COLUMN_PROCESS_ID, "%" + searchString.toLowerCase() + "%", false));
+                filters.add(likeTo(COLUMN_NAME,
+                                   "%" + searchString.toLowerCase() + "%",
+                                   false));
+                filters.add(likeTo(COLUMN_DESCRIPTION,
+                                   "%" + searchString.toLowerCase() + "%",
+                                   false));
+                filters.add(likeTo(COLUMN_PROCESS_ID,
+                                   "%" + searchString.toLowerCase() + "%",
+                                   false));
             }
         }
         return filters;
@@ -155,22 +158,31 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         Set<Group> groups = identity.getGroups();
         List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
         for (Group g : groups) {
-            condList.add(equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, g.getName()));
-
+            condList.add(equalsTo(COLUMN_ORGANIZATIONAL_ENTITY,
+                                  g.getName()));
         }
-        condList.add(equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, identity.getIdentifier()));
+        condList.add(equalsTo(COLUMN_ORGANIZATIONAL_ENTITY,
+                              identity.getIdentifier()));
         ColumnFilter myGroupFilter;
         if (isAdminDataset) {
-            return OR(COLUMN_ORGANIZATIONAL_ENTITY, condList);
+            return OR(COLUMN_ORGANIZATIONAL_ENTITY,
+                      condList);
         } else {
             myGroupFilter = AND(OR(condList),
-                    OR(equalsTo(COLUMN_ACTUAL_OWNER, ""), isNull(COLUMN_ACTUAL_OWNER)));
-            return OR(myGroupFilter, equalsTo(COLUMN_ACTUAL_OWNER, identity.getIdentifier()));
+                                OR(equalsTo(COLUMN_ACTUAL_OWNER,
+                                            ""),
+                                   isNull(COLUMN_ACTUAL_OWNER)));
+            return OR(myGroupFilter,
+                      equalsTo(COLUMN_ACTUAL_OWNER,
+                               identity.getIdentifier()));
         }
     }
 
-    protected DataSetReadyCallback createDataSetTaskCallback(final int startRange, final FilterSettings tableSettings) {
-        return new AbstractDataSetReadyCallback(errorPopup, view, tableSettings.getUUID()) {
+    protected DataSetReadyCallback createDataSetTaskCallback(final int startRange,
+                                                             final FilterSettings tableSettings) {
+        return new AbstractDataSetReadyCallback(errorPopup,
+                                                view,
+                                                tableSettings.getUUID()) {
 
             @Override
             public void callback(DataSet dataSet) {
@@ -183,7 +195,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                     }
 
                     boolean lastPageExactCount = false;
-                    if( dataSet.getRowCount() < view.getListGrid().getPageSize()) {
+                    if (dataSet.getRowCount() < view.getListGrid().getPageSize()) {
                         lastPageExactCount = true;
                     }
 
@@ -200,12 +212,23 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                                              startRange + myTasksFromDataSet.size(),
                                              lastPageExactCount);
                     }
-
                 }
                 view.hideBusyIndicator();
             }
 
+            @Override
+            public boolean onError(final ClientRuntimeError error) {
+                view.hideBusyIndicator();
+
+                showErrorPopup(Constants.INSTANCE.TaskListCouldNotBeLoaded());
+
+                return false;
+            }
         };
+    }
+
+    void showErrorPopup(final String message) {
+        ErrorPopup.showMessage(message);
     }
 
     protected String isFilteredByTaskName(List<DataSetOp> ops) {
@@ -231,10 +254,12 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         }
 
         return null;
-
     }
 
-    public void getDomainSpecifDataForTasks(final int startRange, String filterValue, final List<TaskSummary> myTasksFromDataSet, boolean lastPageExactCount) {
+    public void getDomainSpecifDataForTasks(final int startRange,
+                                            String filterValue,
+                                            final List<TaskSummary> myTasksFromDataSet,
+                                            boolean lastPageExactCount) {
 
         FilterSettings variablesTableSettings = getVariablesTableSettings(filterValue);
         variablesTableSettings.setTablePageSize(-1);
@@ -250,37 +275,56 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
             tasksIds.add(task.getId());
         }
         DataSetFilter filter = new DataSetFilter();
-        ColumnFilter filter1 = equalsTo(COLUMN_TASK_VARIABLE_TASK_ID, tasksIds);
+        ColumnFilter filter1 = equalsTo(COLUMN_TASK_VARIABLE_TASK_ID,
+                                        tasksIds);
         filter.addFilterColumn(filter1);
         variablesTableSettings.getDataSetLookup().addOperation(filter);
 
-        dataSetQueryHelperDomainSpecific.lookupDataSet(0, createDataSetDomainSpecificCallback(startRange, myTasksFromDataSet, variablesTableSettings, lastPageExactCount));
-
+        dataSetQueryHelperDomainSpecific.lookupDataSet(0,
+                                                       createDataSetDomainSpecificCallback(startRange,
+                                                                                           myTasksFromDataSet,
+                                                                                           variablesTableSettings,
+                                                                                           lastPageExactCount));
     }
 
-    protected DataSetReadyCallback createDataSetDomainSpecificCallback(final int startRange, final List<TaskSummary> instances, final FilterSettings tableSettings, boolean lastPageExactCount) {
-        return new AbstractDataSetReadyCallback(errorPopup, view, tableSettings.getUUID()) {
+    protected DataSetReadyCallback createDataSetDomainSpecificCallback(final int startRange,
+                                                                       final List<TaskSummary> instances,
+                                                                       final FilterSettings tableSettings,
+                                                                       boolean lastPageExactCount) {
+        return new AbstractDataSetReadyCallback(errorPopup,
+                                                view,
+                                                tableSettings.getUUID()) {
             @Override
             public void callback(DataSet dataSet) {
                 if (dataSet.getRowCount() > 0) {
                     Set<String> columns = new HashSet<String>();
                     for (int i = 0; i < dataSet.getRowCount(); i++) {
-                        Long taskId = getColumnLongValue(dataSet, COLUMN_TASK_ID, i);
-                        String variableName = getColumnStringValue(dataSet, COLUMN_TASK_VARIABLE_NAME, i);
-                        String variableValue = getColumnStringValue(dataSet, COLUMN_TASK_VARIABLE_VALUE, i);
+                        Long taskId = getColumnLongValue(dataSet,
+                                                         COLUMN_TASK_ID,
+                                                         i);
+                        String variableName = getColumnStringValue(dataSet,
+                                                                   COLUMN_TASK_VARIABLE_NAME,
+                                                                   i);
+                        String variableValue = getColumnStringValue(dataSet,
+                                                                    COLUMN_TASK_VARIABLE_VALUE,
+                                                                    i);
 
                         for (TaskSummary task : instances) {
                             if (task.getId().equals(taskId)) {
-                                task.addDomainData(variableName, variableValue);
+                                task.addDomainData(variableName,
+                                                   variableValue);
                                 columns.add(variableName);
                             }
                         }
                     }
-                    view.addDomainSpecifColumns(view.getListGrid(), columns);
+                    view.addDomainSpecifColumns(view.getListGrid(),
+                                                columns);
                 }
-                updateDataOnCallback(instances, startRange, startRange + instances.size(), lastPageExactCount);
+                updateDataOnCallback(instances,
+                                     startRange,
+                                     startRange + instances.size(),
+                                     lastPageExactCount);
             }
-
         };
     }
 
@@ -292,8 +336,13 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         view.displayNotification(constants.TaskReleased(String.valueOf(task.getId())));
                         refreshGrid();
                     }
-                }).releaseTask(getSelectedServerTemplate(), task.getDeploymentId(), task.getId());
-        taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), task.getDeploymentId(), task.getId(), task.getName() ) );
+                }).releaseTask(getSelectedServerTemplate(),
+                               task.getDeploymentId(),
+                               task.getId());
+        taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
+                                                 task.getDeploymentId(),
+                                                 task.getId(),
+                                                 task.getName()));
     }
 
     public void claimTask(final TaskSummary task) {
@@ -305,10 +354,15 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         refreshGrid();
                     }
                 }
-        ).claimTask(getSelectedServerTemplate(), task.getDeploymentId(), task.getId());
-        taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), task.getDeploymentId(), task.getId(), task.getName() ) );
+        ).claimTask(getSelectedServerTemplate(),
+                    task.getDeploymentId(),
+                    task.getId());
+        taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
+                                                 task.getDeploymentId(),
+                                                 task.getId(),
+                                                 task.getName()));
     }
-    
+
     public void resumeTask(final TaskSummary task) {
         taskService.call(
                 new RemoteCallback<Void>() {
@@ -318,10 +372,15 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         refreshGrid();
                     }
                 }
-        ).resumeTask(getSelectedServerTemplate(), task.getDeploymentId(), task.getId());
-        taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), task.getDeploymentId(), task.getId(), task.getName() ) );
+        ).resumeTask(getSelectedServerTemplate(),
+                     task.getDeploymentId(),
+                     task.getId());
+        taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
+                                                 task.getDeploymentId(),
+                                                 task.getId(),
+                                                 task.getName()));
     }
-    
+
     public void suspendTask(final TaskSummary task) {
         taskService.call(
                 new RemoteCallback<Void>() {
@@ -331,54 +390,76 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         refreshGrid();
                     }
                 }
-        ).suspendTask(getSelectedServerTemplate(), task.getDeploymentId(), task.getId());
-        taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), task.getDeploymentId(), task.getId(), task.getName() ) );
-    }
-    
-    public Menus getMenus(){ //To be used by subclass methods annotated with @WorkbenchMenu
-        return MenuFactory
-            .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder).endMenu()
-            .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
-            .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()
-            .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
-            .build();
+        ).suspendTask(getSelectedServerTemplate(),
+                      task.getDeploymentId(),
+                      task.getId());
+        taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
+                                                 task.getDeploymentId(),
+                                                 task.getId(),
+                                                 task.getName()));
     }
 
-    public void selectTask(final TaskSummary summary, final Boolean close) {
-        final DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest( "Task Details Multi" );
-        final PlaceStatus status = placeManager.getStatus( defaultPlaceRequest );
+    public Menus getMenus() { //To be used by subclass methods annotated with @WorkbenchMenu
+        return MenuFactory
+                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder).endMenu()
+                .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
+                .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()
+                .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
+                .build();
+    }
+
+    public void selectTask(final TaskSummary summary,
+                           final Boolean close) {
+        final DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest("Task Details Multi");
+        final PlaceStatus status = placeManager.getStatus(defaultPlaceRequest);
         boolean logOnly = false;
-        if ( summary.getStatus().equals( TASK_STATUS_COMPLETED ) && summary.isLogOnly() ) {
+        if (summary.getStatus().equals(TASK_STATUS_COMPLETED) && summary.isLogOnly()) {
             logOnly = true;
         }
-        if ( status == PlaceStatus.CLOSE ) {
-            placeManager.goTo( defaultPlaceRequest );
-            taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), summary.getDeploymentId(), summary.getId(), summary.getName(), summary.isForAdmin(), logOnly ) );
-        } else if ( status == PlaceStatus.OPEN && !close ) {
-            taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), summary.getDeploymentId(),summary.getId(), summary.getName(), summary.isForAdmin(), logOnly ) );
-        } else if ( status == PlaceStatus.OPEN && close ) {
-            placeManager.closePlace( "Task Details Multi" );
+        if (status == PlaceStatus.CLOSE) {
+            placeManager.goTo(defaultPlaceRequest);
+            taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
+                                                     summary.getDeploymentId(),
+                                                     summary.getId(),
+                                                     summary.getName(),
+                                                     summary.isForAdmin(),
+                                                     logOnly));
+        } else if (status == PlaceStatus.OPEN && !close) {
+            taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
+                                                     summary.getDeploymentId(),
+                                                     summary.getId(),
+                                                     summary.getName(),
+                                                     summary.isForAdmin(),
+                                                     logOnly));
+        } else if (status == PlaceStatus.OPEN && close) {
+            placeManager.closePlace("Task Details Multi");
         }
     }
 
-    public void refreshNewTask( @Observes NewTaskEvent newTask ) {
+    public void refreshNewTask(@Observes NewTaskEvent newTask) {
         refreshGrid();
-        PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( "Task Details Multi" ) );
-        if ( status == PlaceStatus.OPEN ) {
-            taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), null, newTask.getNewTaskId(), newTask.getNewTaskName() ) );
+        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
+        if (status == PlaceStatus.OPEN) {
+            taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
+                                                     null,
+                                                     newTask.getNewTaskId(),
+                                                     newTask.getNewTaskName()));
         } else {
-            placeManager.goTo( "Task Details Multi" );
-            taskSelected.fire( new TaskSelectionEvent( getSelectedServerTemplate(), null, newTask.getNewTaskId(), newTask.getNewTaskName() ) );
+            placeManager.goTo("Task Details Multi");
+            taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
+                                                     null,
+                                                     newTask.getNewTaskId(),
+                                                     newTask.getNewTaskName()));
         }
 
         view.setSelectedTask(TaskSummary.builder().id(newTask.getNewTaskId()).name(newTask.getNewTaskName()).build());
     }
 
-    public void onTaskRefreshedEvent( @Observes TaskRefreshedEvent event ) {
+    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
         refreshGrid();
     }
 
-    public void onTaskCompletedEvent( @Observes TaskCompletedEvent event ) {
+    public void onTaskCompletedEvent(@Observes TaskCompletedEvent event) {
         refreshGrid();
     }
 
@@ -461,21 +542,22 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                                                                         v.getStartDate(),
                                                                         v.getEndDate()))
         );
-
     }
-    
+
     @Override
     public void setupActiveSearchFilters() {
         final Optional<String> processInstIdSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
         if (processInstIdSearch.isPresent()) {
             final String processInstId = processInstIdSearch.get();
             view.addActiveFilter(
-                constants.Process_Instance_Id(),
-                processInstId,
-                processInstId,
-                v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID, v))
+                    constants.Process_Instance_Id(),
+                    processInstId,
+                    processInstId,
+                    v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                                                             v))
             );
-            addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID, processInstId));
+            addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                                             processInstId));
         } else {
             super.setupActiveSearchFilters();
         }
@@ -492,14 +574,14 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
                                          TASK_STATUS_READY));
     }
-    
+
     public void openProcessInstanceView(final String processInstanceId) {
         navigateToPerspective(PerspectiveIds.PROCESS_INSTANCES,
                               PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
                               processInstanceId);
     }
 
-    protected void addProcessNameFilter(final String dataSetId){
+    protected void addProcessNameFilter(final String dataSetId) {
         final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
                 .dataset(dataSetId)
                 .group(COLUMN_PROCESS_ID)
@@ -518,13 +600,14 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                                                                              v)));
     }
 
-    public FilterSettings createStatusSettings(final String dataSetId, final List<Comparable> status){
+    public FilterSettings createStatusSettings(final String dataSetId,
+                                               final List<Comparable> status) {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
         builder.dataset(dataSetId);
 
-        if (status != null){
+        if (status != null) {
             builder.filter(COLUMN_STATUS,
                            equalsTo(COLUMN_STATUS,
                                     status));
@@ -536,42 +619,70 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     }
 
     protected void addCommonColumnSettings(FilterSettingsBuilderHelper builder) {
-        builder.setColumn(COLUMN_ACTIVATION_TIME, constants.ActivationTime(), DateUtils.getDateTimeFormatMask());
-        builder.setColumn(COLUMN_ACTUAL_OWNER, constants.Actual_Owner());
-        builder.setColumn(COLUMN_CREATED_BY, constants.CreatedBy());
-        builder.setColumn(COLUMN_CREATED_ON, constants.Created_On(), DateUtils.getDateTimeFormatMask());
-        builder.setColumn(COLUMN_DEPLOYMENT_ID, constants.DeploymentId());
-        builder.setColumn(COLUMN_DESCRIPTION, constants.Description());
-        builder.setColumn(COLUMN_DUE_DATE, constants.DueDate(), DateUtils.getDateTimeFormatMask());
-        builder.setColumn(COLUMN_NAME, constants.Task());
-        builder.setColumn(COLUMN_PARENT_ID, constants.ParentId());
-        builder.setColumn(COLUMN_PRIORITY, constants.Priority());
-        builder.setColumn(COLUMN_PROCESS_ID, constants.Process_Id());
-        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id());
-        builder.setColumn(COLUMN_STATUS, constants.Status());
-        builder.setColumn(COLUMN_TASK_ID, constants.Id());
-        builder.setColumn(COLUMN_WORK_ITEM_ID, constants.WorkItemId());
-        builder.setColumn(COLUMN_LAST_MODIFICATION_DATE, constants.Last_Modification_Date());
-        builder.setColumn(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY, constants.Process_Instance_Correlation_Key());
-        builder.setColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION, constants.Process_Instance_Description());
+        builder.setColumn(COLUMN_ACTIVATION_TIME,
+                          constants.ActivationTime(),
+                          DateUtils.getDateTimeFormatMask());
+        builder.setColumn(COLUMN_ACTUAL_OWNER,
+                          constants.Actual_Owner());
+        builder.setColumn(COLUMN_CREATED_BY,
+                          constants.CreatedBy());
+        builder.setColumn(COLUMN_CREATED_ON,
+                          constants.Created_On(),
+                          DateUtils.getDateTimeFormatMask());
+        builder.setColumn(COLUMN_DEPLOYMENT_ID,
+                          constants.DeploymentId());
+        builder.setColumn(COLUMN_DESCRIPTION,
+                          constants.Description());
+        builder.setColumn(COLUMN_DUE_DATE,
+                          constants.DueDate(),
+                          DateUtils.getDateTimeFormatMask());
+        builder.setColumn(COLUMN_NAME,
+                          constants.Task());
+        builder.setColumn(COLUMN_PARENT_ID,
+                          constants.ParentId());
+        builder.setColumn(COLUMN_PRIORITY,
+                          constants.Priority());
+        builder.setColumn(COLUMN_PROCESS_ID,
+                          constants.Process_Id());
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID,
+                          constants.Process_Instance_Id());
+        builder.setColumn(COLUMN_STATUS,
+                          constants.Status());
+        builder.setColumn(COLUMN_TASK_ID,
+                          constants.Id());
+        builder.setColumn(COLUMN_WORK_ITEM_ID,
+                          constants.WorkItemId());
+        builder.setColumn(COLUMN_LAST_MODIFICATION_DATE,
+                          constants.Last_Modification_Date());
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
+                          constants.Process_Instance_Correlation_Key());
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                          constants.Process_Instance_Description());
 
-        builder.filterOn(true, true, true);
+        builder.filterOn(true,
+                         true,
+                         true);
         builder.tableOrderEnabled(true);
-        builder.tableOrderDefault(COLUMN_CREATED_ON, SortOrder.DESCENDING);
+        builder.tableOrderDefault(COLUMN_CREATED_ON,
+                                  SortOrder.DESCENDING);
     }
 
-    public FilterSettings getVariablesTableSettings( String taskName ) {
+    public FilterSettings getVariablesTableSettings(String taskName) {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
         builder.dataset(HUMAN_TASKS_WITH_VARIABLES_DATASET);
-        builder.filter(equalsTo(COLUMN_TASK_VARIABLE_TASK_NAME, taskName));
+        builder.filter(equalsTo(COLUMN_TASK_VARIABLE_TASK_NAME,
+                                taskName));
 
-        builder.filterOn(true, true, true);
+        builder.filterOn(true,
+                         true,
+                         true);
         builder.tableOrderEnabled(true);
-        builder.tableOrderDefault(COLUMN_TASK_ID, SortOrder.ASCENDING);
+        builder.tableOrderDefault(COLUMN_TASK_ID,
+                                  SortOrder.ASCENDING);
 
-        FilterSettings varTableSettings =builder.buildSettings();
+        FilterSettings varTableSettings = builder.buildSettings();
         varTableSettings.setTablePageSize(-1);
 
         return varTableSettings;
@@ -600,5 +711,13 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     protected Predicate<TaskSummary> getProcessInstanceCondition() {
         return task -> task.getProcessInstanceId() != null;
+    }
+
+    public interface TaskListView<T extends AbstractTaskListPresenter> extends MultiGridView<TaskSummary, T> {
+
+        void addDomainSpecifColumns(ExtendedPagedTable<TaskSummary> extendedPagedTable,
+                                    Set<String> columns);
+
+        void setSelectedTask(TaskSummary selectedTask);
     }
 }

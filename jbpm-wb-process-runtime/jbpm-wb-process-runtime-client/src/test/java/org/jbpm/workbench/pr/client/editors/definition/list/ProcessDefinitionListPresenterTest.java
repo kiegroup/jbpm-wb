@@ -34,6 +34,7 @@ import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;
@@ -49,7 +50,7 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.PlaceRequest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -164,4 +165,16 @@ public class ProcessDefinitionListPresenterTest {
         return summaries;
     }
 
+    @Test
+    public void testOnRuntimeDataServiceError() {
+        final ProcessDefinitionListPresenter presenter = spy(this.presenter);
+        final String errorMessage = Constants.INSTANCE.ResourceCouldNotBeLoaded(Constants.INSTANCE.Process_Definitions());
+
+        doNothing().when(presenter).showErrorPopup(any());
+
+        assertFalse(presenter.onRuntimeDataServiceError());
+        verify(presenter).showErrorPopup(errorMessage);
+        verify(view,
+               times(2)).hideBusyIndicator();
+    }
 }
