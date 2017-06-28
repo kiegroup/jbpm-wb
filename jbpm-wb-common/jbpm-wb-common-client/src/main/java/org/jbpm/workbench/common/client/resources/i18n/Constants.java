@@ -90,7 +90,7 @@ public interface Constants extends Messages {
 
     String CharList();
 
-    String SetsOfCharactersToMatch();
+    String SetOfCharactersToMatch();
 
     String MatchesOnlyACharacterNOTSpecifiedWithinTheBrackets();
 
