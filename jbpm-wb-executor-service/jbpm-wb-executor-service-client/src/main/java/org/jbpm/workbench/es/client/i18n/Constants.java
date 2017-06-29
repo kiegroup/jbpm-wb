@@ -81,6 +81,8 @@ public interface Constants extends Messages {
 
     String Due_On();
 
+    String Due_On_Placeholder();
+
     String Process_Name();
 
     String Process_Instance_Id();
@@ -202,6 +204,8 @@ public interface Constants extends Messages {
     String ProcessId();
 
     String ErrorDate();
+
+    String ErrorDatePlaceholder();
 
     String No_Execution_Errors_Found();
 

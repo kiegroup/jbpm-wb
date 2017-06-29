@@ -22,6 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import org.jboss.errai.common.client.dom.Anchor;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.MouseEvent;
 import org.jboss.errai.common.client.dom.Span;
@@ -46,6 +47,9 @@ import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 @Dependent
 @Templated
 public class EditRoleAssignmentViewImpl extends AbstractView<CaseRolesPresenter> implements CaseRolesPresenter.EditRoleAssignmentView {
+
+    @Inject
+    private JQueryProducer.JQuery<Popover> jQueryPopover;
 
     @Inject
     @DataField("alert")
@@ -74,7 +78,7 @@ public class EditRoleAssignmentViewImpl extends AbstractView<CaseRolesPresenter>
 
     @Inject
     @DataField("roles-help")
-    private Popover rolesHelp;
+    private Anchor rolesHelp;
 
     @Inject
     @Bound(converter = CommaListValuesConverter.class)
@@ -115,7 +119,8 @@ public class EditRoleAssignmentViewImpl extends AbstractView<CaseRolesPresenter>
     public void init() {
         this.roleNameLabel.addRequiredIndicator();
         this.assignmentLabel.addRequiredIndicator();
-        rolesHelp.setContent(translationService.getTranslation(ROLES_INFO_TEXT));
+        rolesHelp.setAttribute("data-content", translationService.getTranslation(ROLES_INFO_TEXT));
+        jQueryPopover.wrap(rolesHelp).popover();
         notification.setType(InlineNotification.InlineNotificationType.DANGER);
     }
 

@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.common.client.list;
 
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -27,6 +28,9 @@ import org.jboss.errai.common.client.dom.ListItem;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.*;
+import org.uberfire.client.views.pfly.widgets.JQueryProducer;
+import org.uberfire.client.views.pfly.widgets.Popover;
+import org.uberfire.client.views.pfly.widgets.PopoverOptions;
 
 @Templated
 @Dependent
@@ -48,6 +52,8 @@ public class ActiveFilterItemView implements TakesValue<ActiveFilterItem>,
     ListItem li;
 
     @Inject
+    private JQueryProducer.JQuery<Popover> jQueryPopover;
+    @Inject
     @AutoBound
     private DataBinder<ActiveFilterItem> dataBinder;
 
@@ -62,6 +68,14 @@ public class ActiveFilterItemView implements TakesValue<ActiveFilterItem>,
     @Override
     public void setValue(final ActiveFilterItem value) {
         dataBinder.setModel(value);
+        if (value.getHint() != null) {
+            final PopoverOptions options = new PopoverOptions();
+            options.setContent(value.getHint());
+            options.setHtml(true);
+            options.setPlacement("top");
+            options.setTrigger("hover click");
+            jQueryPopover.wrap(li).popover(options);
+        }
     }
 
     @Override
@@ -72,5 +86,12 @@ public class ActiveFilterItemView implements TakesValue<ActiveFilterItem>,
     @EventHandler("remove")
     public void onRemove(@ForEvent("click") Event e) {
         event.fire(new ActiveFilterItemRemoved(getValue()));
+    }
+
+    @PreDestroy
+    public void destroy() {
+        if (getValue().getHint() != null) {
+            jQueryPopover.wrap(li).destroy();
+        }
     }
 }

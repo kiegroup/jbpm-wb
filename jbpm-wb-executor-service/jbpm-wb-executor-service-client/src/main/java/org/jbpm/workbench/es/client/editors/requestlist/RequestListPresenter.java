@@ -354,6 +354,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                                                                              v)));
 
         view.addDateRangeFilter(constants.Due_On(),
+                                constants.Due_On_Placeholder(),
                                 v -> addAdvancedSearchFilter(between(COLUMN_TIMESTAMP,
                                                                      v.getStartDate(),
                                                                      v.getEndDate())),

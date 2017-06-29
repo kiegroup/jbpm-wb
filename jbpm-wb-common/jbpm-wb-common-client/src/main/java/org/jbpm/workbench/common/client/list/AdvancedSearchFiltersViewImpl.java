@@ -17,7 +17,7 @@
 package org.jbpm.workbench.common.client.list;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -26,7 +26,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.ui.Composite;
 import org.dashbuilder.dataset.DataSetLookup;
@@ -39,12 +38,14 @@ import org.jboss.errai.ui.shared.api.annotations.*;
 import org.jbpm.workbench.common.client.dataset.DataSetAwareSelect;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.client.util.DateRange;
-import org.jbpm.workbench.common.client.util.UTCDateBox;
+import org.uberfire.client.views.pfly.widgets.DateRangePicker;
+import org.uberfire.client.views.pfly.widgets.DateRangePickerOptions;
+import org.uberfire.client.views.pfly.widgets.Moment;
 import org.uberfire.client.views.pfly.widgets.Select;
 
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
 import static org.jboss.errai.common.client.dom.Window.getDocument;
-import static org.jbpm.workbench.common.client.util.DateUtils.getDateTimeStr;
+import static org.uberfire.client.views.pfly.widgets.Moment.Builder.moment;
 
 @Dependent
 @Templated
@@ -114,7 +115,12 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     private ManagedInstance<Select> selectProvider;
 
     @Inject
+    private ManagedInstance<DateRangePicker> dateRangePickerProvider;
+
+    @Inject
     private ManagedInstance<DataSetAwareSelect> dataSetSelectProvider;
+
+    private Map<String, Moment[]> datePickerRanges = new HashMap<>();
 
     @PostConstruct
     public void init() {
@@ -130,18 +136,45 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
             }
             v.getValue().getCallback().accept(v.getValue().getValue());
         });
+
         filtersInputHelp.setAttribute("data-content",
                                       getInputStringHelpHtml());
         popover(filtersInputHelp);
+
+        datePickerRanges.put(constants.LastHour(),
+                             new Moment[]{
+                                     moment().subtract(1,
+                                                       "hours"),
+                                     moment().endOf("day")});
+        datePickerRanges.put(constants.Today(),
+                             new Moment[]{
+                                     moment().startOf("day"),
+                                     moment().endOf("day")});
+
+        datePickerRanges.put(constants.LastHours(24),
+                             new Moment[]{
+                                     moment().subtract(24,
+                                                       "hours"),
+                                     moment().endOf("day")});
+        datePickerRanges.put(constants.LastDays(7),
+                             new Moment[]{
+                                     moment().subtract(7,
+                                                       "days").startOf("day"),
+                                     moment().endOf("day")});
+        datePickerRanges.put(constants.LastDays(30),
+                             new Moment[]{
+                                     moment().subtract(30,
+                                                       "days").startOf("day"),
+                                     moment().endOf("day")});
     }
 
     private String getInputStringHelpHtml() {
         return "<p>" + constants.AllowedWildcardsForStrings() + "</p>\n" +
                 " <ul>\n" +
-                "   <li><code>_</code> - " + constants.AsubstituteForASingleCharacter() + "</li>\n" +
+                "   <li><code>_</code> - " + constants.ASubstituteForASingleCharacter() + "</li>\n" +
                 "   <li><code>%</code> - " + constants.ASubstituteForZeroOrMoreCharacters() + "</li>\n" +
-                "   <li><code>[" + constants.Charlist() + "]</code> - " + constants.SetsOfCharactersToMatch() + "</li>\n" +
-                "   <li><code>[^" + constants.Charlist() + "]</code> - " + constants.MatchesOnlyACharacterNOTSpecifiedWithinTheBrackets() + "</li>\n" +
+                "   <li><code>[" + constants.CharList() + "]</code> - " + constants.SetsOfCharactersToMatch() + "</li>\n" +
+                "   <li><code>[^" + constants.CharList() + "]</code> - " + constants.MatchesOnlyACharacterNOTSpecifiedWithinTheBrackets() + "</li>\n" +
                 " </ul>\n";
     }
 
@@ -218,22 +251,41 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                     removeCallback);
     }
 
+    private String getSelectedRangeLabel(final Moment start,
+                                         final Moment end) {
+        return datePickerRanges.entrySet()
+                .stream()
+                .filter(e -> e.getValue()[0].isSame(start) && e.getValue()[1].isSame(end))
+                .findFirst()
+                .map(e -> e.getKey())
+                .orElse(constants.Custom());
+    }
+
     @Override
     public void addDateRangeFilter(final String label,
+                                   final String placeholder,
                                    final Consumer<DateRange> addCallback,
                                    final Consumer<DateRange> removeCallback) {
-        final UTCDateBox fromDate = GWT.create(UTCDateBox.class);
-        final UTCDateBox toDate = GWT.create(UTCDateBox.class);
-        fromDate.addValueChangeHandler(e -> onDateValueChange(label,
-                                                              fromDate,
-                                                              toDate,
-                                                              addCallback,
-                                                              removeCallback));
-        toDate.addValueChangeHandler(e -> onDateValueChange(label,
-                                                            fromDate,
-                                                            toDate,
-                                                            addCallback,
-                                                            removeCallback));
+        final DateRangePicker dateRangePicker = dateRangePickerProvider.get();
+        dateRangePicker.getElement().setReadOnly(true);
+        dateRangePicker.getElement().setAttribute("placeholder",
+                                                  placeholder);
+        dateRangePicker.getElement().getClassList().add("form-control");
+        final DateRangePickerOptions options = getDateRangePickerOptions();
+
+        dateRangePicker.setup(options,
+                              null);
+
+        dateRangePicker.addApplyListener((e, p) -> {
+            final String rangeLabel = getSelectedRangeLabel(p.getStartDate(),
+                                                            p.getEndDate());
+            onDateRangeValueChange(label,
+                                   rangeLabel,
+                                   p.getStartDate(),
+                                   p.getEndDate(),
+                                   addCallback,
+                                   removeCallback);
+        });
 
         final Div div = (Div) getDocument().createElement("div");
         div.setAttribute("data-filter",
@@ -241,14 +293,7 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
         div.getClassList().add("input-group");
         div.getClassList().add("filter-control");
         div.getClassList().add("hidden");
-        appendWidgetToElement(div,
-                              fromDate);
-        final Div divTo = (Div) getDocument().createElement("div");
-        divTo.getClassList().add("input-group-addon");
-        divTo.setTextContent("to");
-        div.appendChild(divTo);
-        appendWidgetToElement(div,
-                              toDate);
+        div.appendChild(dateRangePicker.getElement());
         dateFiltersInput.appendChild(div);
         createFilterOption(label,
                            dateFilters,
@@ -263,31 +308,34 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
         }
     }
 
-    protected void onDateValueChange(final String label,
-                                     final UTCDateBox fromDate,
-                                     final UTCDateBox toDate,
-                                     final Consumer<DateRange> addCallback,
-                                     final Consumer<DateRange> removeCallback) {
-        if (toDate.getValue() == null || fromDate.getValue() == null) {
-            return;
-        }
-        final Date toDateValue = UTCDateBox.utc2date(toDate.getValue());
+    protected DateRangePickerOptions getDateRangePickerOptions() {
+        final DateRangePickerOptions options = DateRangePickerOptions.create();
+        options.setAutoUpdateInput(false);
+        options.setAutoApply(true);
+        options.setTimePicker(true);
+        options.setTimePickerIncrement(30);
+        options.setMaxDate(moment().endOf("day"));
+        datePickerRanges.forEach((key, moments) -> options.addRange(key,
+                                                                    moments[0],
+                                                                    moments[1]));
+        return options;
+    }
 
-        final Date fromDateValue = UTCDateBox.utc2date(fromDate.getValue());
-        final DateRange dateRange = new DateRange(fromDateValue,
-                                                  toDateValue);
+    protected void onDateRangeValueChange(final String label,
+                                          final String selectedLabel,
+                                          final Moment fromDate,
+                                          final Moment toDate,
+                                          final Consumer<DateRange> addCallback,
+                                          final Consumer<DateRange> removeCallback) {
+
+        final DateRange dateRange = new DateRange(fromDate.asDate(),
+                                                  toDate.asDate());
+        final String hint = constants.From() + ": " + fromDate.format("lll") + "<br>" + constants.To() + ": " + toDate.format("lll");
         addActiveFilter(label,
-                        constants.From()
-                                + " " +
-                                getDateTimeStr(fromDateValue)
-                                + " " +
-                                constants.To()
-                                + " " +
-                                getDateTimeStr(toDateValue),
+                        selectedLabel,
+                        hint,
                         dateRange,
                         removeCallback);
-        toDate.setValue(null);
-        fromDate.setValue(null);
         addCallback.accept(dateRange);
     }
 
@@ -432,9 +480,22 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                                    final String labelValue,
                                                    final T value,
                                                    final Consumer<T> removeCallback) {
+        addActiveFilter(labelKey,
+                        labelValue,
+                        null,
+                        value,
+                        removeCallback);
+    }
+
+    protected <T extends Object> void addActiveFilter(final String labelKey,
+                                                      final String labelValue,
+                                                      final String hint,
+                                                      final T value,
+                                                      final Consumer<T> removeCallback) {
         activeFiltersList.getModel().removeIf(f -> f.getLabelKey().equals(labelKey));
         activeFiltersList.getModel().add(new ActiveFilterItem(labelKey,
                                                               labelValue,
+                                                              hint,
                                                               value,
                                                               removeCallback));
     }

@@ -55,6 +55,8 @@ public interface Constants extends Messages {
 
     String Start_Date();
 
+    String Start_Date_Placeholder();
+
     String State();
 
     String Unknown();
@@ -256,6 +258,8 @@ public interface Constants extends Messages {
     String Correlation_Key();
 
     String Last_Modification_Date();
+
+    String Last_Modification_Date_Placeholder();
 
     String Process_DeploymentId();
     

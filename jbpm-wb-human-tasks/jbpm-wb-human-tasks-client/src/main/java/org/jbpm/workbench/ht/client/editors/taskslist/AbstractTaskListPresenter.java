@@ -535,6 +535,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         );
 
         view.addDateRangeFilter(constants.Created_On(),
+                                constants.Created_On_Placeholder(),
                                 v -> addAdvancedSearchFilter(between(COLUMN_CREATED_ON,
                                                                      v.getStartDate(),
                                                                      v.getEndDate())),

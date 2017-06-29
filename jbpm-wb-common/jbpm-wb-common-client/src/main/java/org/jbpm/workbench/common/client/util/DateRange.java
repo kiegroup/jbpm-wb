@@ -33,11 +33,11 @@ public class DateRange {
     }
 
     public Date getStartDate() {
-        return new Date(startDate.getTime());
+        return startDate;
     }
 
     public Date getEndDate() {
-        return new Date(endDate.getTime());
+        return endDate;
     }
 
     @Override

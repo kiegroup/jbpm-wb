@@ -145,6 +145,8 @@ public interface Constants extends Messages {
 
     String Created_On();
 
+    String Created_On_Placeholder();
+
     String DeploymentId();
 
     String DueDate();

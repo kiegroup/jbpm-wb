@@ -29,5 +29,6 @@ public class CommonEntryPoint {
     public void init() {
         CommonResources.INSTANCE.css().ensureInjected();
         PatternFlyBootstrapper.ensureBootstrapSelectIsAvailable();
+        PatternFlyBootstrapper.ensureBootstrapDateRangePickerIsAvailable();
     }
 }
