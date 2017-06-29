@@ -37,11 +37,13 @@
         </div>
     </form>
     <div class="toolbar-pf-results" style="border-bottom: 1px solid #d1d1d1;">
-        <div class="col-md-12">
-            <div>
-                <p style="padding-right: 5px;"><span data-field="active-filters-text"></span>: </p>
-                <ul class="list-inline" data-field="active-filters"></ul>
-                <p><a href="#" data-field="remove-all-filters" class="hidden"></a></p>
+       <div style="height: auto;overflow: hidden">
+            <div class="active-filters-label" >
+                <p><span data-field="active-filters-text">Active filters</span>: </p>
+            </div>
+            <div class="active-filters-container" >
+                <ul class="list-inline active-filters-list"  data-field="active-filters"></ul>
+                <p class="line-height-short"><a href="#" data-field="remove-all-filters" class="hidden"></a></p>
             </div>
         </div>
     </div>

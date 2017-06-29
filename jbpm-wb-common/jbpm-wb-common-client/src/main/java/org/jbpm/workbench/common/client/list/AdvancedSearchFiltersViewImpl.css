@@ -1,7 +1,26 @@
 .select-filters > .bootstrap-select.form-control + .bootstrap-select.form-control {
     margin-left: 15px;
 }
+.active-filters-label{
+    float: left;
+    padding-left: 20px;
+    padding-right: 20px;
+}
 
+.active-filters-container{
+    float: none;
+    width: auto;
+    overflow: auto;
+    line-height: 20px;
+}
+
+.active-filters-list{
+     line-height: 24px !important;;
+     margin-top: 7px !important;
+}
+.line-height-short{
+    line-height: 20px !important;
+}
 .margin-left-5{
     margin-left: 5px;
 }
