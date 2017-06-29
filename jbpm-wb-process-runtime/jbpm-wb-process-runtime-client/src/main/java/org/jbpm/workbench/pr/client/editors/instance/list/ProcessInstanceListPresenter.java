@@ -515,8 +515,8 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         );
 
         final Map<String, String> errorOptions = new HashMap<>();
-        errorOptions.put(String.valueOf(true), constants.HasErrorsYes());
-        errorOptions.put(String.valueOf(false), constants.HasErrorsNo());
+        errorOptions.put(String.valueOf(true), constants.HasAtLeastOneError());
+        errorOptions.put(String.valueOf(false), constants.HasNoErrors());
         final Function<String, ColumnFilter> errorFilterGenerator = new Function<String, ColumnFilter>(){
             @Override
             public ColumnFilter apply(String hasErrors) {
