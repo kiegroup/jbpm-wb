@@ -325,9 +325,9 @@ public interface Constants extends Messages {
 
     String FilterByDescription();
 
-    String HasErrorsYes();
+    String HasAtLeastOneError();
 
-    String HasErrorsNo();
+    String HasNoErrors();
 
     String ViewJobs();
 
