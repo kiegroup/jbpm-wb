@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -37,12 +38,13 @@ import org.kie.server.common.rest.KieServerHttpRequestException;
 import org.kie.server.controller.api.model.runtime.ServerInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uberfire.commons.async.SimpleAsyncExecutorService;
 
 @ApplicationScoped
 public class KieServerDataSetManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KieServerDataSetManager.class);
+
+    private ManagedExecutorService managedExecutorService;
 
     private DataSetDefRegistry dataSetDefRegistry;
 
@@ -51,50 +53,65 @@ public class KieServerDataSetManager {
     private Event<KieServerDataSetRegistered> event;
 
     @Inject
-    public KieServerDataSetManager(DataSetDefRegistry dataSetDefRegistry, KieServerIntegration kieServerIntegration, Event<KieServerDataSetRegistered> event) {
+    public KieServerDataSetManager(DataSetDefRegistry dataSetDefRegistry,
+                                   KieServerIntegration kieServerIntegration,
+                                   Event<KieServerDataSetRegistered> event,
+                                   ManagedExecutorService managedExecutorService) {
         this.dataSetDefRegistry = dataSetDefRegistry;
         this.kieServerIntegration = kieServerIntegration;
         this.event = event;
+        this.managedExecutorService = managedExecutorService;
     }
 
     public void registerInKieServer(@Observes final ServerInstanceRegistered serverInstanceRegistered) {
         final ServerInstance serverInstance = serverInstanceRegistered.getServerInstance();
         final String serverInstanceId = serverInstance.getServerInstanceId();
         final String serverTemplateId = serverInstance.getServerTemplateId();
-        LOGGER.info("Server instance '{}' connected, registering data sets", serverInstanceId);
+        LOGGER.info("Server instance '{}' connected, registering data sets",
+                    serverInstanceId);
 
         final List<DataSetDef> dataSetDefs = dataSetDefRegistry.getDataSetDefs(false);
 
-        LOGGER.debug("Found {} data sets to register", dataSetDefs.size());
+        LOGGER.debug("Found {} data sets to register",
+                     dataSetDefs.size());
 
         if (dataSetDefs.isEmpty()) {
             return;
         }
 
-        SimpleAsyncExecutorService.getDefaultInstance().execute(() -> {
+        this.managedExecutorService.execute(() -> {
             try {
-                LOGGER.debug("Registering data set definitions on connected server instance '{}'", serverInstanceId);
+                LOGGER.debug("Registering data set definitions on connected server instance '{}'",
+                             serverInstanceId);
 
                 final Set<QueryDefinition> queryDefinitions = dataSetDefs.stream()
-                                        .filter(dataSetDef -> dataSetDef.getProvider().getName().equals("REMOTE"))
-                                        .map(
-                                                dataSetDef ->
-                                                        QueryDefinition.builder()
-                                                                .name(dataSetDef.getUUID())
-                                                                .expression(((SQLDataSetDef) dataSetDef).getDbSQL())
-                                                                .source(((SQLDataSetDef) dataSetDef).getDataSource())
-                                                                .target(dataSetDef.getName().contains("-") ? dataSetDef.getName().substring(0, dataSetDef.getName().indexOf("-")) : "CUSTOM")
-                                                                .build()
-                                        ).collect(Collectors.toSet());
+                        .filter(dataSetDef -> dataSetDef.getProvider().getName().equals("REMOTE"))
+                        .map(
+                                dataSetDef ->
+                                        QueryDefinition.builder()
+                                                .name(dataSetDef.getUUID())
+                                                .expression(((SQLDataSetDef) dataSetDef).getDbSQL())
+                                                .source(((SQLDataSetDef) dataSetDef).getDataSource())
+                                                .target(dataSetDef.getName().contains("-") ? dataSetDef.getName().substring(0,
+                                                                                                                            dataSetDef.getName().indexOf("-")) : "CUSTOM")
+                                                .build()
+                        ).collect(Collectors.toSet());
 
-                registerQueriesWithRetry(serverTemplateId, serverInstanceId, queryDefinitions);
+                registerQueriesWithRetry(serverTemplateId,
+                                         serverInstanceId,
+                                         queryDefinitions);
             } catch (Exception e) {
-                LOGGER.warn("Unable to register query definition on '{}' due to {}", serverInstanceId, e.getMessage(), e);
+                LOGGER.warn("Unable to register query definition on '{}' due to {}",
+                            serverInstanceId,
+                            e.getMessage(),
+                            e);
             }
         });
     }
 
-    protected void registerQueriesWithRetry(String serverTemplateId, String serverInstanceId, Set<QueryDefinition> queryDefinitions) throws Exception {
+    protected void registerQueriesWithRetry(String serverTemplateId,
+                                            String serverInstanceId,
+                                            Set<QueryDefinition> queryDefinitions) throws Exception {
         long waitLimit = 5 * 60 * 1000;   // default 5 min
         long elapsed = 0;
         try {
@@ -107,12 +124,16 @@ public class KieServerDataSetManager {
                     while (definitionIt.hasNext()) {
                         QueryDefinition definition = definitionIt.next();
                         queryClient.replaceQuery(definition);
-                        LOGGER.info("Query definition {} (type {}) successfully registered on kie server '{}'", definition.getName(), definition.getTarget(), serverInstanceId);
+                        LOGGER.info("Query definition {} (type {}) successfully registered on kie server '{}'",
+                                    definition.getName(),
+                                    definition.getTarget(),
+                                    serverInstanceId);
                         // remove successfully stored definition to avoid duplicated reads in case of intermediate error
                         definitionIt.remove();
                     }
 
-                    event.fire(new KieServerDataSetRegistered(serverInstanceId, serverTemplateId));
+                    event.fire(new KieServerDataSetRegistered(serverInstanceId,
+                                                              serverTemplateId));
                     return;
                 } catch (KieServicesException | KieServerHttpRequestException e) {
                     // unable to register, might still be booting
@@ -120,14 +141,20 @@ public class KieServerDataSetManager {
                     elapsed += 500;
                     // get admin client with forced check of endpoints as they might have been banned (marked as failed)
                     queryClient = kieServerIntegration.getAdminServerClientCheckEndpoints(serverTemplateId).getServicesClient(QueryServicesClient.class);
-                    LOGGER.debug("Cannot reach KIE Server, elapsed time while waiting '{}', max time '{}' error {}", elapsed, waitLimit, e.getMessage());
+                    LOGGER.debug("Cannot reach KIE Server, elapsed time while waiting '{}', max time '{}' error {}",
+                                 elapsed,
+                                 waitLimit,
+                                 e.getMessage());
                 }
             }
 
-            LOGGER.warn("Timeout while trying to register query definitions on '{}'", serverInstanceId);
+            LOGGER.warn("Timeout while trying to register query definitions on '{}'",
+                        serverInstanceId);
         } catch (KieServicesException ex) {
             // in case getting queryClient fails due to missing capability to handle advanced queries
-            LOGGER.info("Not possible to register queries on server {} most likely due to BPM capability missing (details {})", serverInstanceId, ex.getMessage());
+            LOGGER.info("Not possible to register queries on server {} most likely due to BPM capability missing (details {})",
+                        serverInstanceId,
+                        ex.getMessage());
         }
     }
 }
