@@ -17,7 +17,9 @@
 package org.jbpm.workbench.cm.server;
 
 import java.util.Properties;
+import java.util.concurrent.Executors;
 
+import org.uberfire.commons.async.DescriptiveThreadFactory;
 import org.uberfire.commons.config.ConfigProperties;
 
 public class JGitFileSystemProvider extends org.uberfire.java.nio.fs.jgit.JGitFileSystemProvider {
@@ -25,11 +27,13 @@ public class JGitFileSystemProvider extends org.uberfire.java.nio.fs.jgit.JGitFi
     public static final String NIOGIT_CASEAPP = ".niogit-caseapp";
 
     public JGitFileSystemProvider() {
-        super(new ConfigProperties(new DefaultProperties()));
+        super(new ConfigProperties(new DefaultProperties()),
+              Executors.newCachedThreadPool(new DescriptiveThreadFactory()));
     }
 
     public JGitFileSystemProvider(final ConfigProperties gitPrefs) {
-        super(gitPrefs);
+        super(gitPrefs,
+              Executors.newCachedThreadPool(new DescriptiveThreadFactory()));
     }
 
     public static class DefaultProperties extends Properties {

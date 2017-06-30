@@ -16,7 +16,7 @@
 
 package org.jbpm.workbench.wi.backend.server.casemgmt.service;
 
-import javax.enterprise.concurrent.ManagedExecutorService;
+import java.util.concurrent.ExecutorService;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -40,13 +40,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.apache.commons.io.FilenameUtils;
 import org.uberfire.commons.async.DescriptiveRunnable;
+import org.uberfire.commons.concurrent.Managed;
 
 @Dependent
 public class CaseProvisioningExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CaseProvisioningExecutor.class);
 
-    private ManagedExecutorService managedExecutorService;
+    private ExecutorService executorService;
 
     private CaseProvisioningSettings settings;
 
@@ -64,18 +65,18 @@ public class CaseProvisioningExecutor {
                                     Event<CaseProvisioningStartedEvent> startedEvent,
                                     Event<CaseProvisioningCompletedEvent> completedEvent,
                                     Event<CaseProvisioningFailedEvent> failedEvent,
-                                    ManagedExecutorService managedExecutorService) {
+                                    @Managed ExecutorService executorService) {
         this.settings = settings;
         this.startedEvent = startedEvent;
         this.completedEvent = completedEvent;
         this.failedEvent = failedEvent;
-        this.managedExecutorService = managedExecutorService;
+        this.executorService = executorService;
     }
 
     public void execute(final PipelineExecutor executor,
                         final Pipeline pipeline,
                         final Input input) {
-        this.managedExecutorService.execute(new ProvisionRunnable(() -> {
+        this.executorService.execute(new ProvisionRunnable(() -> {
             startedEvent.fire(new CaseProvisioningStartedEvent());
             executor.execute(input,
                              pipeline,
