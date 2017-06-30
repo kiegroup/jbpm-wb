@@ -62,7 +62,6 @@ public class FilterSettingsJSONMarshallerTest {
     @Mock
     protected DataSetLookup dataSetLookup;
 
-
     protected DataSetSort datasetSort;
     protected DataSetFilter datasetFilter;
     protected DataSetGroup datasetGroup;
@@ -73,7 +72,8 @@ public class FilterSettingsJSONMarshallerTest {
     public void setUp() throws Exception {
         DataSetJSONMarshaller datasetJsonMarshaller = new DataSetJSONMarshaller();
         DataSetLookupJSONMarshaller lookupJsonMarshaller = new DataSetLookupJSONMarshaller();
-        DisplayerSettingsJSONMarshaller displayerJsonMarshaller = new DisplayerSettingsJSONMarshaller(datasetJsonMarshaller, lookupJsonMarshaller);
+        DisplayerSettingsJSONMarshaller displayerJsonMarshaller = new DisplayerSettingsJSONMarshaller(datasetJsonMarshaller,
+                                                                                                      lookupJsonMarshaller);
         filterSettingsJSONMarshaller = new FilterSettingsJSONMarshaller(displayerJsonMarshaller);
     }
 
@@ -83,66 +83,93 @@ public class FilterSettingsJSONMarshallerTest {
         String json = filterSettingsJSONMarshaller.toJsonString(filterSettings);
         FilterSettings fs = filterSettingsJSONMarshaller.fromJsonString(json);
         assertTrue("Check the number of operations",
-                fs.getDataSetLookup().getOperationList().size() == filterSettings.getDataSetLookup().getOperationList().size());
+                   fs.getDataSetLookup().getOperationList().size() == filterSettings.getDataSetLookup().getOperationList().size());
         assertTrue("Check the DataSetUUID",
-                filterSettings.getDataSetLookup().getDataSetUUID().equals(fs.getDataSetLookup().getDataSetUUID()) );
+                   filterSettings.getDataSetLookup().getDataSetUUID().equals(fs.getDataSetLookup().getDataSetUUID()));
         assertTrue("Check ColumSettingList size",
-                filterSettings.getColumnSettingsList().size() ==fs.getColumnSettingsList().size() );
+                   filterSettings.getColumnSettingsList().size() == fs.getColumnSettingsList().size());
         assertTrue("Check the ColumSettingList(0)",
-                filterSettings.getColumnSettingsList().get(0).getColumnId().equals(fs.getColumnSettingsList().get(0).getColumnId()));
+                   filterSettings.getColumnSettingsList().get(0).getColumnId().equals(fs.getColumnSettingsList().get(0).getColumnId()));
         assertTrue("Check the Settings selfApply",
-                filterSettings.getSettingsFlatMap().get("type").equals(fs.getSettingsFlatMap().get("type")));
+                   filterSettings.getSettingsFlatMap().get("type").equals(fs.getSettingsFlatMap().get("type")));
         assertTrue("Check the Settings table.sort.enabled",
-                filterSettings.getSettingsFlatMap().get("table.sort.enabled").equals(fs.getSettingsFlatMap().get("table.sort.enabled")));
+                   filterSettings.getSettingsFlatMap().get("table.sort.enabled").equals(fs.getSettingsFlatMap().get("table.sort.enabled")));
         assertTrue("Check the Settings table.sort.columnId",
-                filterSettings.getSettingsFlatMap().get("table.sort.columnId").equals(fs.getSettingsFlatMap().get("table.sort.columnId")));
+                   filterSettings.getSettingsFlatMap().get("table.sort.columnId").equals(fs.getSettingsFlatMap().get("table.sort.columnId")));
     }
 
-    private FilterSettings createTableSettings(){
+    private FilterSettings createTableSettings() {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
         builder.dataset("jbpmHumanTasksWithUser");
         List<Comparable> names = new ArrayList<Comparable>();
-        List<String> states= ImmutableList.of("Ready","Reserved","InProgress");
-        for(String s : states){
+        List<String> states = ImmutableList.of("Ready",
+                                               "Reserved",
+                                               "InProgress");
+        for (String s : states) {
             names.add(s);
         }
-        builder.filter(COLUMN_STATUS, equalsTo(COLUMN_STATUS, names));
+        builder.filter(COLUMN_STATUS,
+                       equalsTo(COLUMN_STATUS,
+                                names));
 
-        List<ColumnFilter> condList = new  ArrayList<ColumnFilter>();
-        condList.add(equalsTo(COLUMN_ORGANIZATIONAL_ENTITY, "user"));
+        List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
+        condList.add(equalsTo(COLUMN_ORGANIZATIONAL_ENTITY,
+                              "user"));
 
-        ColumnFilter myGroupFilter = AND( OR( condList ), equalsTo( COLUMN_ACTUALOWNER, "" ));
+        ColumnFilter myGroupFilter = AND(OR(condList),
+                                         equalsTo(COLUMN_ACTUALOWNER,
+                                                  ""));
 
-        builder.filter( OR( myGroupFilter, equalsTo(COLUMN_ACTUALOWNER, "user" )) );
+        builder.filter(OR(myGroupFilter,
+                          equalsTo(COLUMN_ACTUALOWNER,
+                                   "user")));
 //        builder.group(COLUMN_TASKID);
 
-        builder.setColumn(COLUMN_ACTIVATIONTIME, "Activation Time", "MMM dd E, yyyy");
-        builder.setColumn( COLUMN_ACTUALOWNER, "Actual_Owner");
-        builder.setColumn( COLUMN_CREATEDBY,"CreatedBy" );
-        builder.setColumn( COLUMN_CREATEDON , "Created on", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_DEPLOYMENTID, "DeploymentId" );
-        builder.setColumn( COLUMN_DESCRIPTION, "Description" );
-        builder.setColumn( COLUMN_DUEDATE, "Due Date", "MMM dd E, yyyy" );
-        builder.setColumn( COLUMN_NAME, "Task" );
-        builder.setColumn( COLUMN_PARENTID,  "ParentId");
-        builder.setColumn( COLUMN_PRIORITY, "Priority" );
-        builder.setColumn( COLUMN_PROCESSID, "ProcessId" );
-        builder.setColumn( COLUMN_PROCESSINSTANCEID, "ProcessInstanceId" );
-        builder.setColumn( COLUMN_PROCESSSESSIONID, "ProcessSesionId" );
-        builder.setColumn( COLUMN_STATUS, "Status" );
-        builder.setColumn(COLUMN_TASKID, "Id");
-        builder.setColumn(COLUMN_WORKITEMID, "WorkItemId");
+        builder.setColumn(COLUMN_ACTIVATIONTIME,
+                          "Activation Time",
+                          "MMM dd E, yyyy");
+        builder.setColumn(COLUMN_ACTUALOWNER,
+                          "Actual_Owner");
+        builder.setColumn(COLUMN_CREATEDBY,
+                          "CreatedBy");
+        builder.setColumn(COLUMN_CREATEDON,
+                          "Created on",
+                          "MMM dd E, yyyy");
+        builder.setColumn(COLUMN_DEPLOYMENTID,
+                          "DeploymentId");
+        builder.setColumn(COLUMN_DESCRIPTION,
+                          "Description");
+        builder.setColumn(COLUMN_DUEDATE,
+                          "Due Date",
+                          "MMM dd E, yyyy");
+        builder.setColumn(COLUMN_NAME,
+                          "Task");
+        builder.setColumn(COLUMN_PARENTID,
+                          "ParentId");
+        builder.setColumn(COLUMN_PRIORITY,
+                          "Priority");
+        builder.setColumn(COLUMN_PROCESSID,
+                          "ProcessId");
+        builder.setColumn(COLUMN_PROCESSINSTANCEID,
+                          "ProcessInstanceId");
+        builder.setColumn(COLUMN_PROCESSSESSIONID,
+                          "ProcessSesionId");
+        builder.setColumn(COLUMN_STATUS,
+                          "Status");
+        builder.setColumn(COLUMN_TASKID,
+                          "Id");
+        builder.setColumn(COLUMN_WORKITEMID,
+                          "WorkItemId");
 
-        builder.filterOn(true, true, true);
+        builder.filterOn(true,
+                         true,
+                         true);
         builder.tableOrderEnabled(true);
-        builder.tableOrderDefault(COLUMN_CREATEDON, DESCENDING);
+        builder.tableOrderDefault(COLUMN_CREATEDON,
+                                  DESCENDING);
 
         return builder.buildSettings();
-
     }
-
-
-
 }

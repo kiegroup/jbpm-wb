@@ -27,31 +27,37 @@ import bitronix.tm.resource.jdbc.PoolingDataSource;
  * Custom extension for arquillian to setup bitronix data source for all the tests that can be closed properly
  */
 public class ArquillianTestWrapperExtension implements LoadableExtension {
+
     @Override
     public void register(ExtensionBuilder builder) {
         builder.observer(DataSourceHandler.class);
     }
 
     public static class DataSourceHandler {
+
         private PoolingDataSource ds;
-        
-        public void init(@Observes BeforeSuite event, ContainerRegistry registry) {
+
+        public void init(@Observes BeforeSuite event,
+                         ContainerRegistry registry) {
             ds = new PoolingDataSource();
             ds.setUniqueName("jdbc/testDS1");
-            
-            
+
             //NON XA CONFIGS
             ds.setClassName("org.h2.jdbcx.JdbcDataSource");
             ds.setMaxPoolSize(3);
             ds.setAllowLocalTransactions(true);
-            ds.getDriverProperties().put("user", "sa");
-            ds.getDriverProperties().put("password", "sasa");
-            ds.getDriverProperties().put("URL", "jdbc:h2:mem:mydb");
-             
+            ds.getDriverProperties().put("user",
+                                         "sa");
+            ds.getDriverProperties().put("password",
+                                         "sasa");
+            ds.getDriverProperties().put("URL",
+                                         "jdbc:h2:mem:mydb");
+
             ds.init();
         }
-        
-        public void close(@Observes AfterSuite event, ContainerRegistry registry) {
+
+        public void close(@Observes AfterSuite event,
+                          ContainerRegistry registry) {
             ds.close();
         }
     }

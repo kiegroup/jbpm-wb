@@ -55,7 +55,8 @@ public class DataSetDefsBootstrapTest {
     @InjectMocks
     DataSetDefsBootstrap dataSetsBootstrap;
 
-    List<String> deploymentIds = Arrays.asList("role1", "role2");
+    List<String> deploymentIds = Arrays.asList("role1",
+                                               "role2");
 
     @Before
     public void setUp() {
@@ -69,14 +70,17 @@ public class DataSetDefsBootstrapTest {
     @Test
     public void registerDataSetDefsTest() {
         ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
-        verify(dataSetRegistry, times(2)).registerDataSetDef(argument.capture());
+        verify(dataSetRegistry,
+               times(2)).registerDataSetDef(argument.capture());
 
         List<DataSetDef> dataSetDefList = argument.getAllValues();
-        assertEquals(dataSetDefList.size(), 2);
-        assertEquals(dataSetDefList.get(0).getUUID(), DATASET_PROCESS_INSTANCES);
-        assertEquals(dataSetDefList.get(1).getUUID(), DATASET_HUMAN_TASKS);
+        assertEquals(dataSetDefList.size(),
+                     2);
+        assertEquals(dataSetDefList.get(0).getUUID(),
+                     DATASET_PROCESS_INSTANCES);
+        assertEquals(dataSetDefList.get(1).getUUID(),
+                     DATASET_HUMAN_TASKS);
     }
-
 
     //TODO Needs redesign as data source is deployed to kie server
     @Ignore
@@ -89,10 +93,12 @@ public class DataSetDefsBootstrapTest {
         ArgumentCaptor<DataSetLookup> argument = ArgumentCaptor.forClass(DataSetLookup.class);
 
         verify(dataSetManager).lookupDataSet(argument.capture());
-        assertEquals(argument.getValue(), DataSetLookupFactory.newDataSetLookupBuilder()
-                .dataset(DATASET_PROCESS_INSTANCES)
-                .filter(in(COLUMN_PROCESS_EXTERNAL_ID, deploymentIds))
-                .buildLookup());
+        assertEquals(argument.getValue(),
+                     DataSetLookupFactory.newDataSetLookupBuilder()
+                             .dataset(DATASET_PROCESS_INSTANCES)
+                             .filter(in(COLUMN_PROCESS_EXTERNAL_ID,
+                                        deploymentIds))
+                             .buildLookup());
     }
 
     //TODO Needs redesign as data source is deployed to kie server
@@ -106,9 +112,11 @@ public class DataSetDefsBootstrapTest {
         ArgumentCaptor<DataSetLookup> argument = ArgumentCaptor.forClass(DataSetLookup.class);
 
         verify(dataSetManager).lookupDataSet(argument.capture());
-        assertEquals(argument.getValue(), DataSetLookupFactory.newDataSetLookupBuilder()
-                .dataset(DATASET_HUMAN_TASKS)
-                .filter(in(COLUMN_PROCESS_EXTERNAL_ID, deploymentIds))
-                .buildLookup());
+        assertEquals(argument.getValue(),
+                     DataSetLookupFactory.newDataSetLookupBuilder()
+                             .dataset(DATASET_HUMAN_TASKS)
+                             .filter(in(COLUMN_PROCESS_EXTERNAL_ID,
+                                        deploymentIds))
+                             .buildLookup());
     }
 }

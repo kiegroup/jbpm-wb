@@ -70,7 +70,8 @@ public class CaseProvisioningAppLauncherHandlerTest {
 
         appLauncherHandler.verifyCaseAppStatus();
 
-        verify(appLauncherAddEvent, never()).fire(any(AppLauncherAddEvent.class));
+        verify(appLauncherAddEvent,
+               never()).fire(any(AppLauncherAddEvent.class));
     }
 
     @Test
@@ -79,7 +80,8 @@ public class CaseProvisioningAppLauncherHandlerTest {
 
         appLauncherHandler.verifyCaseAppStatus();
 
-        verify(appLauncherAddEvent, never()).fire(any(AppLauncherAddEvent.class));
+        verify(appLauncherAddEvent,
+               never()).fire(any(AppLauncherAddEvent.class));
     }
 
     @Test
@@ -95,11 +97,10 @@ public class CaseProvisioningAppLauncherHandlerTest {
     public void testOnCaseManagementProvisioningStartedEvent() {
         appLauncherHandler.onCaseManagementProvisioningStartedEvent(new CaseProvisioningStartedEvent());
 
-        verify(appLauncherAddEvent, never()).fire(any(AppLauncherAddEvent.class));
+        verify(appLauncherAddEvent,
+               never()).fire(any(AppLauncherAddEvent.class));
         assertNotification(DEFAULT);
     }
-
-
 
     @Test
     public void testOnCaseManagementProvisioningCompletedEvent() {
@@ -113,14 +114,15 @@ public class CaseProvisioningAppLauncherHandlerTest {
     public void testOnCaseManagementProvisioningFailedEvent() {
         appLauncherHandler.onCaseManagementProvisioningFailedEvent(new CaseProvisioningFailedEvent());
 
-        verify(appLauncherAddEvent, never()).fire(any(AppLauncherAddEvent.class));
+        verify(appLauncherAddEvent,
+               never()).fire(any(AppLauncherAddEvent.class));
         assertNotification(ERROR);
     }
 
     protected void assertNotification(final NotificationEvent.NotificationType notificationType) {
         final ArgumentCaptor<NotificationEvent> captor = ArgumentCaptor.forClass(NotificationEvent.class);
         verify(notification).fire(captor.capture());
-        assertEquals(notificationType, captor.getValue().getType());
+        assertEquals(notificationType,
+                     captor.getValue().getType());
     }
-
 }

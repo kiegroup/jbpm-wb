@@ -30,21 +30,32 @@ import static org.junit.Assert.*;
 
 public class RequestSummaryMapperTest {
 
-    public static void assertRequestSummary(final RequestInfoInstance request, final RequestSummary rs) {
+    public static void assertRequestSummary(final RequestInfoInstance request,
+                                            final RequestSummary rs) {
         assertNotNull(rs);
 
-        assertEquals(request.getId(), rs.getJobId());
-        assertEquals(request.getId(), rs.getId());
-        assertEquals(request.getStatus(), rs.getStatus());
-        assertEquals(request.getCommandName(), rs.getCommandName());
-        assertEquals(request.getBusinessKey(), rs.getKey());
-        assertEquals(request.getRetries(), rs.getRetries());
-        assertEquals(request.getScheduledDate(), rs.getTime());
-        assertEquals(request.getMessage(), rs.getMessage());
-        assertEquals(null, rs.getProcessName());
-        assertEquals(null, rs.getProcessInstanceId());
-        assertEquals(null, rs.getProcessInstanceDescription());
-
+        assertEquals(request.getId(),
+                     rs.getJobId());
+        assertEquals(request.getId(),
+                     rs.getId());
+        assertEquals(request.getStatus(),
+                     rs.getStatus());
+        assertEquals(request.getCommandName(),
+                     rs.getCommandName());
+        assertEquals(request.getBusinessKey(),
+                     rs.getKey());
+        assertEquals(request.getRetries(),
+                     rs.getRetries());
+        assertEquals(request.getScheduledDate(),
+                     rs.getTime());
+        assertEquals(request.getMessage(),
+                     rs.getMessage());
+        assertEquals(null,
+                     rs.getProcessName());
+        assertEquals(null,
+                     rs.getProcessInstanceId());
+        assertEquals(null,
+                     rs.getProcessInstanceDescription());
     }
 
     public static RequestInfoInstance newRequestInfoInstance() {
@@ -52,14 +63,16 @@ public class RequestSummaryMapperTest {
                 .id(1l)
                 .businessKey("businessKey")
                 .command("commandName")
-                .data(singletonMap("key", "data"))
+                .data(singletonMap("key",
+                                   "data"))
                 .errors(new ErrorInfoInstanceList(singletonList(newErrorInfoInstance())))
                 .executions(10)
                 .message("message")
                 .retries(2)
                 .scheduledDate(new Date())
                 .status("status")
-                .responseData(singletonMap("responseKey", "responseData"))
+                .responseData(singletonMap("responseKey",
+                                           "responseData"))
                 .build();
     }
 
@@ -69,12 +82,12 @@ public class RequestSummaryMapperTest {
 
         final RequestSummary rs = new RequestSummaryMapper().apply(request);
 
-        assertRequestSummary(request, rs);
+        assertRequestSummary(request,
+                             rs);
     }
 
     @Test
     public void testRequestSummaryMapperNull() {
         assertNull(new RequestSummaryMapper().apply(null));
     }
-
 }

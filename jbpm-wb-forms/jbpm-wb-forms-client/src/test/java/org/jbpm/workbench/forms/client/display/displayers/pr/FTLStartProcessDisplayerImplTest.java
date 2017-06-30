@@ -31,7 +31,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-@RunWith( GwtMockitoTestRunner.class )
+@RunWith(GwtMockitoTestRunner.class)
 public class FTLStartProcessDisplayerImplTest extends AbstractStartProcessFormDisplayerTest {
 
     @InjectMocks
@@ -44,11 +44,12 @@ public class FTLStartProcessDisplayerImplTest extends AbstractStartProcessFormDi
 
     @Test
     public void testNotificationOnStartProcessWithJavaScriptObject() {
-        ftlStartProcessDisplayer.startProcess( mock( JavaScriptObject.class ) );
+        ftlStartProcessDisplayer.startProcess(mock(JavaScriptObject.class));
 
-        verify( newProcessInstanceEvent ).fire( any( NewProcessInstanceEvent.class ) );
-        ArgumentCaptor<NotificationEvent> argument = ArgumentCaptor.forClass( NotificationEvent.class );
-        verify( notificationEvent ).fire( argument.capture() );
-        assertEquals( NotificationEvent.NotificationType.SUCCESS, argument.getValue().getType() );
+        verify(newProcessInstanceEvent).fire(any(NewProcessInstanceEvent.class));
+        ArgumentCaptor<NotificationEvent> argument = ArgumentCaptor.forClass(NotificationEvent.class);
+        verify(notificationEvent).fire(argument.capture());
+        assertEquals(NotificationEvent.NotificationType.SUCCESS,
+                     argument.getValue().getType());
     }
 }

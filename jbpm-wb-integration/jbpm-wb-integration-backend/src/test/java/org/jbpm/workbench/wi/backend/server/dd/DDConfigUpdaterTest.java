@@ -61,7 +61,10 @@ public class DDConfigUpdaterTest {
     public void setup() {
         model = new DeploymentDescriptorModel();
         model.setOverview(new Overview());
-        ddConfigUpdater = new DDConfigUpdater(ddEditorService, projectService, ioService, configUpdaterHelper);
+        ddConfigUpdater = new DDConfigUpdater(ddEditorService,
+                                              projectService,
+                                              ioService,
+                                              configUpdaterHelper);
 
         Path rootPath = Mockito.mock(Path.class);
         when(rootPath.toURI()).thenReturn("default://project");
@@ -77,77 +80,125 @@ public class DDConfigUpdaterTest {
 
     @Test
     public void testProcessResourceAdd() {
-        ddConfigUpdater.processResourceAdd(new ResourceAddedEvent(Mockito.mock(Path.class), "test resource", Mockito.mock(SessionInfo.class)));
+        ddConfigUpdater.processResourceAdd(new ResourceAddedEvent(Mockito.mock(Path.class),
+                                                                  "test resource",
+                                                                  Mockito.mock(SessionInfo.class)));
 
         assertNotNull(model.getMarshallingStrategies());
-        assertEquals(1, model.getMarshallingStrategies().size());
+        assertEquals(1,
+                     model.getMarshallingStrategies().size());
 
         ItemObjectModel objectModel = model.getMarshallingStrategies().get(0);
         assertNotNull(objectModel);
-        assertEquals(JPA_MARSHALLING_STRATEGY, objectModel.getValue());
-        assertEquals("mvel", objectModel.getResolver());
+        assertEquals(JPA_MARSHALLING_STRATEGY,
+                     objectModel.getValue());
+        assertEquals("mvel",
+                     objectModel.getResolver());
     }
 
     @Test
     public void testProcessWorkitemInstall() {
-        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class), "mvel", "new com.myhandlers.MyHandler()", "MyWorkItem", ""));
+        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
+                                                                                  "mvel",
+                                                                                  "new com.myhandlers.MyHandler()",
+                                                                                  "MyWorkItem",
+                                                                                  ""));
 
         assertNotNull(model.getWorkItemHandlers());
-        assertEquals(1, model.getWorkItemHandlers().size());
+        assertEquals(1,
+                     model.getWorkItemHandlers().size());
 
         ItemObjectModel objectModel = model.getWorkItemHandlers().get(0);
         assertNotNull(objectModel);
-        assertEquals("MyWorkItem", objectModel.getName());
-        assertEquals("mvel", objectModel.getResolver());
-        assertEquals("new com.myhandlers.MyHandler()", objectModel.getValue());
-
+        assertEquals("MyWorkItem",
+                     objectModel.getName());
+        assertEquals("mvel",
+                     objectModel.getResolver());
+        assertEquals("new com.myhandlers.MyHandler()",
+                     objectModel.getValue());
 
         // same name -- should not add
-        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class), "mvel", "new com.myhandlers.MyHandler2()", "MyWorkItem", ""));
+        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
+                                                                                  "mvel",
+                                                                                  "new com.myhandlers.MyHandler2()",
+                                                                                  "MyWorkItem",
+                                                                                  ""));
 
         assertNotNull(model.getWorkItemHandlers());
-        assertEquals(1, model.getWorkItemHandlers().size());
+        assertEquals(1,
+                     model.getWorkItemHandlers().size());
         // make sure the one we have is not this new one
-        assertEquals("new com.myhandlers.MyHandler()", model.getWorkItemHandlers().get(0).getValue());
+        assertEquals("new com.myhandlers.MyHandler()",
+                     model.getWorkItemHandlers().get(0).getValue());
 
         // different name - should add
-        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class), "reflection", "com.myhandlers.MyHandler", "MyWorkItem2", ""));
+        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
+                                                                                  "reflection",
+                                                                                  "com.myhandlers.MyHandler",
+                                                                                  "MyWorkItem2",
+                                                                                  ""));
 
         assertNotNull(model.getWorkItemHandlers());
-        assertEquals(2, model.getWorkItemHandlers().size());
+        assertEquals(2,
+                     model.getWorkItemHandlers().size());
 
         ItemObjectModel objectModel2 = model.getWorkItemHandlers().get(1);
         assertNotNull(objectModel2);
-        assertEquals("MyWorkItem2", objectModel2.getName());
-        assertEquals("reflection", objectModel2.getResolver());
-        assertEquals("com.myhandlers.MyHandler", objectModel2.getValue());
+        assertEquals("MyWorkItem2",
+                     objectModel2.getName());
+        assertEquals("reflection",
+                     objectModel2.getResolver());
+        assertEquals("com.myhandlers.MyHandler",
+                     objectModel2.getValue());
 
         // invalid (no name) - should not add
-        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class), "mvel", "new com.myhandlers.MyHandler3()", "", ""));
+        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
+                                                                                  "mvel",
+                                                                                  "new com.myhandlers.MyHandler3()",
+                                                                                  "",
+                                                                                  ""));
         assertNotNull(model.getWorkItemHandlers());
-        assertEquals(2, model.getWorkItemHandlers().size());
+        assertEquals(2,
+                     model.getWorkItemHandlers().size());
 
         // invalid (no handler) - should not add
-        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class), "mvel", "", "MyWorkItem3", ""));
+        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
+                                                                                  "mvel",
+                                                                                  "",
+                                                                                  "MyWorkItem3",
+                                                                                  ""));
         assertNotNull(model.getWorkItemHandlers());
-        assertEquals(2, model.getWorkItemHandlers().size());
+        assertEquals(2,
+                     model.getWorkItemHandlers().size());
 
         // invalid (no name and handler) - should not add
-        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class), "mvel", "", "", ""));
+        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
+                                                                                  "mvel",
+                                                                                  "",
+                                                                                  "",
+                                                                                  ""));
         assertNotNull(model.getWorkItemHandlers());
-        assertEquals(2, model.getWorkItemHandlers().size());
+        assertEquals(2,
+                     model.getWorkItemHandlers().size());
 
         // test overwritten resolver from value
-        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class), "reflection", "mvel: new com.myhandlers.MyHandler4()", "MyWorkItem4", ""));
+        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
+                                                                                  "reflection",
+                                                                                  "mvel: new com.myhandlers.MyHandler4()",
+                                                                                  "MyWorkItem4",
+                                                                                  ""));
         assertNotNull(model.getWorkItemHandlers());
-        assertEquals(3, model.getWorkItemHandlers().size());
+        assertEquals(3,
+                     model.getWorkItemHandlers().size());
 
         ItemObjectModel objectModel3 = model.getWorkItemHandlers().get(2);
         assertNotNull(objectModel3);
-        assertEquals("MyWorkItem4", objectModel3.getName());
-        assertEquals("mvel", objectModel3.getResolver());
-        assertEquals("new com.myhandlers.MyHandler4()", objectModel3.getValue());
-
+        assertEquals("MyWorkItem4",
+                     objectModel3.getName());
+        assertEquals("mvel",
+                     objectModel3.getResolver());
+        assertEquals("new com.myhandlers.MyHandler4()",
+                     objectModel3.getValue());
     }
 
     @Test
@@ -155,58 +206,100 @@ public class DDConfigUpdaterTest {
         assertFalse(ddConfigUpdater.isValidWorkitem(null));
 
         assertFalse(ddConfigUpdater.isValidWorkitem(
-                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class), "", "", "", "")
+                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
+                                                   "",
+                                                   "",
+                                                   "",
+                                                   "")
         ));
 
         assertFalse(ddConfigUpdater.isValidWorkitem(
-                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class), "mvel", "", "", "")
+                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
+                                                   "mvel",
+                                                   "",
+                                                   "",
+                                                   "")
         ));
 
         assertFalse(ddConfigUpdater.isValidWorkitem(
-                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class), "mvel", "new com.myhandlers.MyHandler()", "", "")
+                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
+                                                   "mvel",
+                                                   "new com.myhandlers.MyHandler()",
+                                                   "",
+                                                   "")
         ));
 
         assertFalse(ddConfigUpdater.isValidWorkitem(
-                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class), "mvel", "", "MyHandler", "")
+                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
+                                                   "mvel",
+                                                   "",
+                                                   "MyHandler",
+                                                   "")
         ));
 
         assertTrue(ddConfigUpdater.isValidWorkitem(
-                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class), "mvel", "new com.myhandlers.MyHandler()", "MyHandler", "")
+                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
+                                                   "mvel",
+                                                   "new com.myhandlers.MyHandler()",
+                                                   "MyHandler",
+                                                   "")
         ));
 
         assertTrue(ddConfigUpdater.isValidWorkitem(
-                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class), "", "mvel: new com.myhandlers.MyHandler()", "MyHandler", "")
+                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
+                                                   "",
+                                                   "mvel: new com.myhandlers.MyHandler()",
+                                                   "MyHandler",
+                                                   "")
         ));
     }
 
     @Test
     public void testParseWorkitemValue() {
-        assertEquals("new com.myhandlers.MyHandler()", ddConfigUpdater.parseWorkitemValue("new com.myhandlers.MyHandler()"));
-        assertEquals("new com.myhandlers.MyHandler()", ddConfigUpdater.parseWorkitemValue("  new com.myhandlers.MyHandler()"));
-        assertEquals("new com.myhandlers.MyHandler()", ddConfigUpdater.parseWorkitemValue("new com.myhandlers.MyHandler()   "));
+        assertEquals("new com.myhandlers.MyHandler()",
+                     ddConfigUpdater.parseWorkitemValue("new com.myhandlers.MyHandler()"));
+        assertEquals("new com.myhandlers.MyHandler()",
+                     ddConfigUpdater.parseWorkitemValue("  new com.myhandlers.MyHandler()"));
+        assertEquals("new com.myhandlers.MyHandler()",
+                     ddConfigUpdater.parseWorkitemValue("new com.myhandlers.MyHandler()   "));
 
-        assertEquals("new com.myhandlers.MyHandler()", ddConfigUpdater.parseWorkitemValue("mvel: new com.myhandlers.MyHandler()"));
-        assertEquals("new com.myhandlers.MyHandler()", ddConfigUpdater.parseWorkitemValue("reflection: new com.myhandlers.MyHandler()"));
+        assertEquals("new com.myhandlers.MyHandler()",
+                     ddConfigUpdater.parseWorkitemValue("mvel: new com.myhandlers.MyHandler()"));
+        assertEquals("new com.myhandlers.MyHandler()",
+                     ddConfigUpdater.parseWorkitemValue("reflection: new com.myhandlers.MyHandler()"));
 
-        assertEquals("new com.myhandlers.MyHandler()", ddConfigUpdater.parseWorkitemValue("MVEL: new com.myhandlers.MyHandler()"));
-        assertEquals("new com.myhandlers.MyHandler()", ddConfigUpdater.parseWorkitemValue("REFLECTION: new com.myhandlers.MyHandler()"));
+        assertEquals("new com.myhandlers.MyHandler()",
+                     ddConfigUpdater.parseWorkitemValue("MVEL: new com.myhandlers.MyHandler()"));
+        assertEquals("new com.myhandlers.MyHandler()",
+                     ddConfigUpdater.parseWorkitemValue("REFLECTION: new com.myhandlers.MyHandler()"));
 
-
-        assertEquals("new com.myhandlers.MyHandler()", ddConfigUpdater.parseWorkitemValue("  MveL:     new com.myhandlers.MyHandler()"));
-        assertEquals("new com.myhandlers.MyHandler()", ddConfigUpdater.parseWorkitemValue("   ReFlEcTIoN:new com.myhandlers.MyHandler()   "));
-
+        assertEquals("new com.myhandlers.MyHandler()",
+                     ddConfigUpdater.parseWorkitemValue("  MveL:     new com.myhandlers.MyHandler()"));
+        assertEquals("new com.myhandlers.MyHandler()",
+                     ddConfigUpdater.parseWorkitemValue("   ReFlEcTIoN:new com.myhandlers.MyHandler()   "));
     }
 
     @Test
     public void testGetWorkitemResolver() {
-        assertEquals("mvel", ddConfigUpdater.getWorkitemResolver("new com.myhandlers.MyHandler()", "mvel"));
-        assertEquals("mvel", ddConfigUpdater.getWorkitemResolver("mvel:new com.myhandlers.MyHandler()", "reflection"));
-        assertEquals("reflection", ddConfigUpdater.getWorkitemResolver("reflection:new com.myhandlers.MyHandler()", "mvel"));
-        assertEquals("reflection", ddConfigUpdater.getWorkitemResolver("reflection:new com.myhandlers.MyHandler()", ""));
+        assertEquals("mvel",
+                     ddConfigUpdater.getWorkitemResolver("new com.myhandlers.MyHandler()",
+                                                         "mvel"));
+        assertEquals("mvel",
+                     ddConfigUpdater.getWorkitemResolver("mvel:new com.myhandlers.MyHandler()",
+                                                         "reflection"));
+        assertEquals("reflection",
+                     ddConfigUpdater.getWorkitemResolver("reflection:new com.myhandlers.MyHandler()",
+                                                         "mvel"));
+        assertEquals("reflection",
+                     ddConfigUpdater.getWorkitemResolver("reflection:new com.myhandlers.MyHandler()",
+                                                         ""));
 
         // test use of default when no resolver is specified
-        assertEquals("reflection", ddConfigUpdater.getWorkitemResolver("new com.myhandlers.MyHandler()", ""));
-        assertEquals("reflection", ddConfigUpdater.getWorkitemResolver("new com.myhandlers.MyHandler()", null));
+        assertEquals("reflection",
+                     ddConfigUpdater.getWorkitemResolver("new com.myhandlers.MyHandler()",
+                                                         ""));
+        assertEquals("reflection",
+                     ddConfigUpdater.getWorkitemResolver("new com.myhandlers.MyHandler()",
+                                                         null));
     }
-
 }

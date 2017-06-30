@@ -57,14 +57,17 @@ public abstract class AbstractDashboardTest extends AbstractDisplayerTest {
     @Override
     public AbstractDisplayer createNewDisplayer(DisplayerSettings settings) {
         if (settings.getType().equals(DisplayerType.METRIC)) {
-            return initDisplayer(new MetricDisplayer(mock(MetricDisplayer.View.class)), settings);
+            return initDisplayer(new MetricDisplayer(mock(MetricDisplayer.View.class)),
+                                 settings);
         }
         if (settings.getType().equals(DisplayerType.TABLE)) {
             FilterLabel filterLabel = mock(FilterLabel.class);
             FilterLabelSet filterLabelSet = mock(FilterLabelSet.class);
             TableDisplayer.View tableView = mock(TableDisplayer.View.class);
             doAnswer(invocationOnMock -> filterLabel).when(filterLabelSet).addLabel(anyString());
-            return initDisplayer(new TableDisplayer(tableView, filterLabelSet), settings);
+            return initDisplayer(new TableDisplayer(tableView,
+                                                    filterLabelSet),
+                                 settings);
         }
         return super.createNewDisplayer(settings);
     }
@@ -76,13 +79,14 @@ public abstract class AbstractDashboardTest extends AbstractDisplayerTest {
         displayerCoordinator = new DisplayerCoordinator(rendererManager);
         displayerCoordinator.addListener(displayerListener);
 
-        i18n = mock(DashboardI18n.class, new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                return invocation.getMethod().getName() +
-                        Arrays.deepToString(invocation.getArguments());
-            }
-        });
+        i18n = mock(DashboardI18n.class,
+                    new Answer() {
+                        @Override
+                        public Object answer(InvocationOnMock invocation) throws Throwable {
+                            return invocation.getMethod().getName() +
+                                    Arrays.deepToString(invocation.getArguments());
+                        }
+                    });
 
         when(getView().getI18nService()).thenReturn(i18n);
 
@@ -95,9 +99,12 @@ public abstract class AbstractDashboardTest extends AbstractDisplayerTest {
 
     protected abstract AbstractDashboard getPresenter();
 
-    protected void verifyMetricHeaderText(String process, MetricDisplayer metricDisplayer, String expected) {
+    protected void verifyMetricHeaderText(String process,
+                                          MetricDisplayer metricDisplayer,
+                                          String expected) {
         metricDisplayer.filterApply();
-        assertEquals(getPresenter().getSelectedMetric(), metricDisplayer);
+        assertEquals(getPresenter().getSelectedMetric(),
+                     metricDisplayer);
         reset(getView());
         getPresenter().changeCurrentProcess(process);
         verify(getView()).setHeaderText(expected);

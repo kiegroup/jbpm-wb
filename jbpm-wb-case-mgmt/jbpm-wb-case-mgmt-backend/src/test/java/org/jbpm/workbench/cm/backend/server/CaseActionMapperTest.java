@@ -25,23 +25,43 @@ import org.junit.Test;
 import org.kie.server.api.model.cases.CaseAdHocFragment;
 import org.kie.server.api.model.instance.NodeInstance;
 
-
 import static org.junit.Assert.*;
 
 public class CaseActionMapperTest {
 
     static private final String STAGE_ID = "StageId";
     static private final String HUMAN_TASK_OWNER = "humanTaskOwner";
-    
-    public static void assertCaseActionAdHocFragment(final CaseAdHocFragment cc, final CaseActionSummary ccs) {
+
+    public static void assertCaseActionAdHocFragment(final CaseAdHocFragment cc,
+                                                     final CaseActionSummary ccs) {
         assertNotNull(ccs);
         assertNotNull(cc);
 
-        assertEquals(cc.getName(), ccs.getName());
-        assertEquals(cc.getType(), ccs.getType());
+        assertEquals(cc.getName(),
+                     ccs.getName());
+        assertEquals(cc.getType(),
+                     ccs.getType());
         assertNotNull(ccs.getStageId());
-        assertEquals(CaseActionType.AD_HOC_TASK, ccs.getActionType());
-        assertEquals(CaseActionStatus.AVAILABLE, ccs.getActionStatus());
+        assertEquals(CaseActionType.AD_HOC_TASK,
+                     ccs.getActionType());
+        assertEquals(CaseActionStatus.AVAILABLE,
+                     ccs.getActionStatus());
+    }
+
+    public static void assertCaseActionNodeInstance(final NodeInstance nodeInstance,
+                                                    final CaseActionSummary caseActionSummary) {
+        assertNotNull(caseActionSummary);
+        assertNotNull(nodeInstance);
+
+        assertEquals(nodeInstance.getId(),
+                     caseActionSummary.getId());
+        assertEquals(nodeInstance.getName(),
+                     caseActionSummary.getName());
+        assertEquals(nodeInstance.getNodeType(),
+                     caseActionSummary.getType());
+        assertEquals(nodeInstance.getDate(),
+                     caseActionSummary.getCreatedOn());
+        assertNotNull(caseActionSummary.getActionStatus());
     }
 
     @Test
@@ -52,7 +72,8 @@ public class CaseActionMapperTest {
                 .build();
 
         final CaseActionSummary ccs = new CaseActionAdHocMapper(STAGE_ID).apply(cc);
-        assertCaseActionAdHocFragment(cc, ccs);
+        assertCaseActionAdHocFragment(cc,
+                                      ccs);
     }
 
     @Test
@@ -62,17 +83,6 @@ public class CaseActionMapperTest {
         assertNull(ccs);
     }
 
-    public static void assertCaseActionNodeInstance(final NodeInstance nodeInstance, final CaseActionSummary caseActionSummary) {
-        assertNotNull(caseActionSummary);
-        assertNotNull(nodeInstance);
-
-        assertEquals(nodeInstance.getId(), caseActionSummary.getId());
-        assertEquals(nodeInstance.getName(), caseActionSummary.getName());
-        assertEquals(nodeInstance.getNodeType(), caseActionSummary.getType());
-        assertEquals(nodeInstance.getDate(), caseActionSummary.getCreatedOn());
-        assertNotNull(caseActionSummary.getActionStatus());
-    }
-
     @Test
     public void testCaseActionNodeInstanceMapper_mapCaseAction() {
         final NodeInstance nodeInstance = NodeInstance.builder()
@@ -80,21 +90,25 @@ public class CaseActionMapperTest {
                 .nodeType("NodeInst-type")
                 .date(new Date())
                 .build();
-        final CaseActionSummary caseActionSummary = new CaseActionNodeInstanceMapper(HUMAN_TASK_OWNER, CaseActionStatus.IN_PROGRESS)
+        final CaseActionSummary caseActionSummary = new CaseActionNodeInstanceMapper(HUMAN_TASK_OWNER,
+                                                                                     CaseActionStatus.IN_PROGRESS)
                 .apply(nodeInstance);
 
-        assertCaseActionNodeInstance(nodeInstance, caseActionSummary);
-        assertEquals(HUMAN_TASK_OWNER, caseActionSummary.getActualOwner());
-        assertEquals(CaseActionStatus.IN_PROGRESS, caseActionSummary.getActionStatus());
+        assertCaseActionNodeInstance(nodeInstance,
+                                     caseActionSummary);
+        assertEquals(HUMAN_TASK_OWNER,
+                     caseActionSummary.getActualOwner());
+        assertEquals(CaseActionStatus.IN_PROGRESS,
+                     caseActionSummary.getActionStatus());
     }
 
     @Test
     public void testCaseActionNodeInstanceMapper_mapNull() {
         final NodeInstance nodeInstance = null;
-        final CaseActionSummary ccs = new CaseActionNodeInstanceMapper(HUMAN_TASK_OWNER, CaseActionStatus.IN_PROGRESS)
+        final CaseActionSummary ccs = new CaseActionNodeInstanceMapper(HUMAN_TASK_OWNER,
+                                                                       CaseActionStatus.IN_PROGRESS)
                 .apply(nodeInstance);
 
         assertNull(ccs);
     }
-
 }

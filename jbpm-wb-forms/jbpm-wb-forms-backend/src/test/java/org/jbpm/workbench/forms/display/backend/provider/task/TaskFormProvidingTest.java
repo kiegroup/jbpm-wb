@@ -20,11 +20,12 @@ import org.jbpm.workbench.forms.display.backend.provider.DefaultKieWorkbenchForm
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-@RunWith( MockitoJUnitRunner.class )
+@RunWith(MockitoJUnitRunner.class)
 public class TaskFormProvidingTest extends AbstractTaskFormProvidingTest<DefaultKieWorkbenchFormsProvider> {
 
     @Override
     protected void initFormsProvider() {
-        this.workbenchFormsProvider = new DefaultKieWorkbenchFormsProvider( null, processor );
+        this.workbenchFormsProvider = new DefaultKieWorkbenchFormsProvider(null,
+                                                                           processor);
     }
 }

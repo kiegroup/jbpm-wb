@@ -102,8 +102,8 @@ public class NewCaseInstancePresenterTest {
         when(caseManagementService.getCaseDefinitions()).thenReturn(Arrays.asList(cds));
         final String owner = "userx";
         when(identity.getIdentifier()).thenReturn(owner);
-        when(caseRolesValidations.validateRolesAssignments(any(CaseDefinitionSummary.class),anyList())).thenReturn(EMPTY_LIST);
-
+        when(caseRolesValidations.validateRolesAssignments(any(CaseDefinitionSummary.class),
+                                                           anyList())).thenReturn(EMPTY_LIST);
 
         presenter.show();
 

@@ -42,8 +42,11 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
-@RunWith ( GwtMockitoTestRunner.class )
+@RunWith(GwtMockitoTestRunner.class)
 public class FormModellerStartProcessDisplayerTest {
+
+    @GwtMock
+    protected JSNIHelper jsniHelper;
 
     @GwtMock
     private FormRendererWidget rendererWidget;
@@ -57,9 +60,6 @@ public class FormModellerStartProcessDisplayerTest {
     @Mock
     private EventSourceMock<NewProcessInstanceEvent> newProcessInstanceEvent;
 
-    @GwtMock
-    protected JSNIHelper jsniHelper;
-
     @Mock
     private EventSourceMock<NotificationEvent> notificationEvent;
 
@@ -67,88 +67,117 @@ public class FormModellerStartProcessDisplayerTest {
 
     private TestFormModellerStartProcessDisplayerImpl displayer;
 
-    private FormModelerFormRenderingSettings settings = new FormModelerFormRenderingSettings( "ctxtID" );
+    private FormModelerFormRenderingSettings settings = new FormModelerFormRenderingSettings("ctxtID");
 
     @Before
     public void init() {
-        serviceCaller = new CallerMock<>( service );
+        serviceCaller = new CallerMock<>(service);
 
-        displayer = new TestFormModellerStartProcessDisplayerImpl( rendererWidget, serviceCaller );
+        displayer = new TestFormModellerStartProcessDisplayerImpl(rendererWidget,
+                                                                  serviceCaller);
 
-        displayer.setNewProcessInstanceEvent( newProcessInstanceEvent );
-        displayer.setJSNIHelper( jsniHelper );
-        displayer.setNotificationEvent( notificationEvent );
+        displayer.setNewProcessInstanceEvent(newProcessInstanceEvent);
+        displayer.setJSNIHelper(jsniHelper);
+        displayer.setNotificationEvent(notificationEvent);
 
-        displayer.setResizeListener( resizeListener );
+        displayer.setResizeListener(resizeListener);
 
-        assertEquals( rendererWidget, displayer.getFormWidget() );
+        assertEquals(rendererWidget,
+                     displayer.getFormWidget());
     }
 
     @Test
     public void testDisplay() {
-        displayer.setRenderingSettings( settings );
+        displayer.setRenderingSettings(settings);
 
         displayer.initDisplayer();
 
-        verify( rendererWidget ).loadContext( settings.getContextId() );
-        verify( rendererWidget ).setVisible( true );
+        verify(rendererWidget).loadContext(settings.getContextId());
+        verify(rendererWidget).setVisible(true);
     }
 
     @Test
     public void testResizeEventWithSettings() {
-        displayer.setRenderingSettings( settings );
+        displayer.setRenderingSettings(settings);
 
         ResizeFormcontainerEvent resizeEvent = new ResizeFormcontainerEvent();
-        resizeEvent.setContext( new FormRenderContextTO( settings.getContextId() ) );
-        resizeEvent.setHeight( 100 );
-        resizeEvent.setWidth( 100 );
-        displayer.onFormResized( resizeEvent );
+        resizeEvent.setContext(new FormRenderContextTO(settings.getContextId()));
+        resizeEvent.setHeight(100);
+        resizeEvent.setWidth(100);
+        displayer.onFormResized(resizeEvent);
 
-        verify( rendererWidget ).resize( 100, 100 );
-        verify( resizeListener ).resize( 100, 100 );
+        verify(rendererWidget).resize(100,
+                                      100);
+        verify(resizeListener).resize(100,
+                                      100);
     }
 
     @Test
     public void testResizeEventWithoutSettings() {
         ResizeFormcontainerEvent resizeEvent = new ResizeFormcontainerEvent();
-        resizeEvent.setContext( new FormRenderContextTO( settings.getContextId() ) );
-        resizeEvent.setHeight( 100 );
-        resizeEvent.setWidth( 100 );
-        displayer.onFormResized( resizeEvent );
+        resizeEvent.setContext(new FormRenderContextTO(settings.getContextId()));
+        resizeEvent.setHeight(100);
+        resizeEvent.setWidth(100);
+        displayer.onFormResized(resizeEvent);
 
-        verify( rendererWidget, never() ).resize( 100, 100 );
-        verify( resizeListener, never() ).resize( 100, 100 );
+        verify(rendererWidget,
+               never()).resize(100,
+                               100);
+        verify(resizeListener,
+               never()).resize(100,
+                               100);
     }
 
     @Test
     public void testStartProcessWithSettings() {
-        displayer.setRenderingSettings( settings );
+        displayer.setRenderingSettings(settings);
 
         displayer.startProcessFromDisplayer();
 
-        verify( rendererWidget ).submitFormAndPersist();
+        verify(rendererWidget).submitFormAndPersist();
 
-        FormSubmittedEvent formSubmittedEvent = new FormSubmittedEvent( new FormRenderContextTO( settings.getContextId(), true, 0 ) );
-        displayer.onFormSubmitted( formSubmittedEvent );
-        verify( service ).startProcessFromRenderContext( anyString(), anyString(), anyString(), anyString(), anyString(), anyLong() );
-        verify( newProcessInstanceEvent ).fire( any() );
-        verify( jsniHelper ).notifySuccessMessage( anyString(), anyString() );
-        verify( notificationEvent ).fire( any() );
-        verify( service ).clearContext( settings.getContextId() );
+        FormSubmittedEvent formSubmittedEvent = new FormSubmittedEvent(new FormRenderContextTO(settings.getContextId(),
+                                                                                               true,
+                                                                                               0));
+        displayer.onFormSubmitted(formSubmittedEvent);
+        verify(service).startProcessFromRenderContext(anyString(),
+                                                      anyString(),
+                                                      anyString(),
+                                                      anyString(),
+                                                      anyString(),
+                                                      anyLong());
+        verify(newProcessInstanceEvent).fire(any());
+        verify(jsniHelper).notifySuccessMessage(anyString(),
+                                                anyString());
+        verify(notificationEvent).fire(any());
+        verify(service).clearContext(settings.getContextId());
     }
 
     @Test
     public void testStartProcessWithoutSettings() {
         displayer.startProcessFromDisplayer();
 
-        verify( rendererWidget ).submitFormAndPersist();
+        verify(rendererWidget).submitFormAndPersist();
 
-        FormSubmittedEvent formSubmittedEvent = new FormSubmittedEvent( new FormRenderContextTO( settings.getContextId(), true, 0 ) );
-        displayer.onFormSubmitted( formSubmittedEvent );
-        verify( service, never() ).startProcessFromRenderContext( anyString(), anyString(), anyString(), anyString(), anyString(), anyLong() );
-        verify( newProcessInstanceEvent, never() ).fire( any() );
-        verify( jsniHelper, never() ).notifySuccessMessage( anyString(), anyString() );
-        verify( notificationEvent, never() ).fire( any() );
-        verify( service, never() ).clearContext( settings.getContextId() );
+        FormSubmittedEvent formSubmittedEvent = new FormSubmittedEvent(new FormRenderContextTO(settings.getContextId(),
+                                                                                               true,
+                                                                                               0));
+        displayer.onFormSubmitted(formSubmittedEvent);
+        verify(service,
+               never()).startProcessFromRenderContext(anyString(),
+                                                      anyString(),
+                                                      anyString(),
+                                                      anyString(),
+                                                      anyString(),
+                                                      anyLong());
+        verify(newProcessInstanceEvent,
+               never()).fire(any());
+        verify(jsniHelper,
+               never()).notifySuccessMessage(anyString(),
+                                             anyString());
+        verify(notificationEvent,
+               never()).fire(any());
+        verify(service,
+               never()).clearContext(settings.getContextId());
     }
 }

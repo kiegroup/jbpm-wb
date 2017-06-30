@@ -62,5 +62,4 @@ public class RestoreDefaultFiltersMenuBuilderTest {
 
         verify(supportsRestoreDefaultFilters).onRestoreDefaultFilters();
     }
-
 }

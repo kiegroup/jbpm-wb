@@ -26,15 +26,20 @@ import static org.junit.Assert.*;
 
 public class ProcessDefinitionMapperTest {
 
-    public static void assertCaseDefinition(final ProcessDefinition pd, final ProcessDefinitionSummary pds) {
+    public static void assertCaseDefinition(final ProcessDefinition pd,
+                                            final ProcessDefinitionSummary pds) {
         assertNotNull(pds);
 
-        assertEquals(pd.getName(), pds.getName());
-        assertEquals(pd.getId(), pds.getId());
-        assertEquals(pd.getContainerId(), pds.getContainerId());
-        assertEquals(pd.getVersion(), pds.getVersion());
-        assertEquals(pd.getPackageName(), pds.getPackageName());
-
+        assertEquals(pd.getName(),
+                     pds.getName());
+        assertEquals(pd.getId(),
+                     pds.getId());
+        assertEquals(pd.getContainerId(),
+                     pds.getContainerId());
+        assertEquals(pd.getVersion(),
+                     pds.getVersion());
+        assertEquals(pd.getPackageName(),
+                     pds.getPackageName());
     }
 
     @Test
@@ -47,7 +52,8 @@ public class ProcessDefinitionMapperTest {
         pd.setPackageName("packageName");
 
         final ProcessDefinitionSummary pds = new ProcessDefinitionMapper().apply(pd);
-        assertCaseDefinition(pd, pds);
+        assertCaseDefinition(pd,
+                             pds);
     }
 
     @Test
@@ -56,5 +62,4 @@ public class ProcessDefinitionMapperTest {
         final CaseDefinitionSummary cds = new CaseDefinitionMapper().apply(cd);
         assertNull(cds);
     }
-
 }

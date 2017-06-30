@@ -16,7 +16,6 @@
 
 package org.jbpm.workbench.pr.client.editors.definition.list;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,16 +56,16 @@ import static org.mockito.Mockito.*;
 public class ProcessDefinitionListPresenterTest {
 
     @Mock
-    ProcessDefinitionListPresenter.ProcessDefinitionListView view;
-
-    @Mock
-    ExtendedPagedTable extendedPagedTable;
-
-    @Mock
     protected PlaceManager placeManager;
 
     @Mock
     protected EventSourceMock<ProcessDefSelectionEvent> processDefSelectionEvent;
+
+    @Mock
+    ProcessDefinitionListPresenter.ProcessDefinitionListView view;
+
+    @Mock
+    ExtendedPagedTable extendedPagedTable;
 
     Caller<ProcessRuntimeDataService> processRuntimeDataServiceCaller;
 
@@ -85,6 +84,14 @@ public class ProcessDefinitionListPresenterTest {
     @InjectMocks
     ProcessDefinitionListPresenter presenter;
 
+    private static List<ProcessSummary> getMockList(int instances) {
+        final List<ProcessSummary> summaries = new ArrayList<>();
+        for (int i = 0; i < instances; i++) {
+            summaries.add(new ProcessSummary());
+        }
+        return summaries;
+    }
+
     @Before
     public void setup() {
         processRuntimeDataServiceCaller = new CallerMock<ProcessRuntimeDataService>(processRuntimeDataService);
@@ -92,7 +99,8 @@ public class ProcessDefinitionListPresenterTest {
         when(view.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getColumnSortList()).thenReturn(new ColumnSortList());
 
-        when(next.getVisibleRange()).thenReturn(new Range(1, 1));
+        when(next.getVisibleRange()).thenReturn(new Range(1,
+                                                          1));
         presenter.getDataProvider().addDataDisplay(next);
     }
 
@@ -103,12 +111,18 @@ public class ProcessDefinitionListPresenterTest {
 
         presenter.onSearchEvent(searchEvent);
 
-        assertEquals(searchEvent.getFilter(), presenter.getTextSearchStr());
-        verify(processRuntimeDataService).getProcessesByFilter(anyString(), anyString(), anyInt(), anyInt(), anyString(), anyBoolean());
+        assertEquals(searchEvent.getFilter(),
+                     presenter.getTextSearchStr());
+        verify(processRuntimeDataService).getProcessesByFilter(anyString(),
+                                                               anyString(),
+                                                               anyInt(),
+                                                               anyInt(),
+                                                               anyString(),
+                                                               anyBoolean());
     }
 
     @Test
-    public void testProcessDefNameDefinitionPropagation(){
+    public void testProcessDefNameDefinitionPropagation() {
         final ProcessSummary processSummary = new ProcessSummary();
         processSummary.setProcessDefId("testProcessDefId");
         processSummary.setDeploymentId("testDeploymentId");
@@ -116,53 +130,67 @@ public class ProcessDefinitionListPresenterTest {
         processSummary.setDynamic(false);
 
         when(placeManager.getStatus(any(PlaceRequest.class))).thenReturn(PlaceStatus.CLOSE);
-        presenter.selectProcessDefinition(processSummary, true);
+        presenter.selectProcessDefinition(processSummary,
+                                          true);
 
         verify(processDefSelectionEvent).fire(any(ProcessDefSelectionEvent.class));
-        ArgumentCaptor<ProcessDefSelectionEvent> argument = ArgumentCaptor.forClass( ProcessDefSelectionEvent.class );
-        verify( processDefSelectionEvent).fire(argument.capture());
+        ArgumentCaptor<ProcessDefSelectionEvent> argument = ArgumentCaptor.forClass(ProcessDefSelectionEvent.class);
+        verify(processDefSelectionEvent).fire(argument.capture());
         final ProcessDefSelectionEvent event = argument.getValue();
-        assertEquals( processSummary.getProcessDefName(), event.getProcessDefName() );
-        assertEquals( processSummary.getDeploymentId(), event.getDeploymentId() );
-        assertEquals( processSummary.getProcessDefId(), event.getProcessId() );
-        assertEquals( processSummary.isDynamic(), event.isDynamic() );
+        assertEquals(processSummary.getProcessDefName(),
+                     event.getProcessDefName());
+        assertEquals(processSummary.getDeploymentId(),
+                     event.getDeploymentId());
+        assertEquals(processSummary.getProcessDefId(),
+                     event.getProcessId());
+        assertEquals(processSummary.isDynamic(),
+                     event.isDynamic());
     }
 
     @Test
-    public void testProcessDefNameDefinitionOpenGenericForm(){
+    public void testProcessDefNameDefinitionOpenGenericForm() {
         String processDefName = "testProcessDefName";
 
-        presenter.openGenericForm("processDefId","deploymentId", processDefName);
+        presenter.openGenericForm("processDefId",
+                                  "deploymentId",
+                                  processDefName);
 
-        ArgumentCaptor< ProcessDisplayerConfig> argument = ArgumentCaptor.forClass(  ProcessDisplayerConfig.class );
-        verify( startProcessDisplayProvider).setup(argument.capture(),any());
-        assertEquals(processDefName,argument.getValue().getProcessName());
+        ArgumentCaptor<ProcessDisplayerConfig> argument = ArgumentCaptor.forClass(ProcessDisplayerConfig.class);
+        verify(startProcessDisplayProvider).setup(argument.capture(),
+                                                  any());
+        assertEquals(processDefName,
+                     argument.getValue().getProcessName());
     }
 
     @Test
     public void testGetData() {
-        when(processRuntimeDataService.getProcessesByFilter(anyString(), anyString(), anyInt(), anyInt(), anyString(), anyBoolean()))
+        when(processRuntimeDataService.getProcessesByFilter(anyString(),
+                                                            anyString(),
+                                                            anyInt(),
+                                                            anyInt(),
+                                                            anyString(),
+                                                            anyBoolean()))
                 .thenReturn(getMockList(10))
                 .thenReturn(getMockList(1));
 
-        Range range = new Range(0, 10);
+        Range range = new Range(0,
+                                10);
         final ProcessDefinitionListPresenter presenter = spy(this.presenter);
         presenter.getData(range);
 
-        verify(presenter).updateDataOnCallback(anyList(), eq(0), eq(10), eq(false));
+        verify(presenter).updateDataOnCallback(anyList(),
+                                               eq(0),
+                                               eq(10),
+                                               eq(false));
 
-        range = new Range(10, 10);
+        range = new Range(10,
+                          10);
         presenter.getData(range);
 
-        verify(presenter).updateDataOnCallback(anyList(), eq(10), eq(11), eq(true));
-    }
-
-    private static List<ProcessSummary> getMockList(int instances) {
-        final List<ProcessSummary> summaries = new ArrayList<>();
-        for (int i = 0; i < instances; i++) {
-            summaries.add(new ProcessSummary());
-        }
-        return summaries;
+        verify(presenter).updateDataOnCallback(anyList(),
+                                               eq(10),
+                                               eq(11),
+                                               eq(true));
     }
 
     @Test

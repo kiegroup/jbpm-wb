@@ -66,5 +66,4 @@ public class TaskDetailsViewImplTest {
         view.setUpdateTaskVisible(false);
         verify(updateTaskButton).setVisible(false);
     }
-
 }

@@ -24,25 +24,37 @@ public class Invoice implements java.io.Serializable {
 
     static final long serialVersionUID = 1L;
 
-    @org.kie.api.definition.type.Label( value = "Date" )
+    @org.kie.api.definition.type.Label(value = "Date")
     private java.util.Date date;
-    @org.kie.api.definition.type.Label( value = "Comments" )
+    @org.kie.api.definition.type.Label(value = "Comments")
     private String comments;
-    @org.kie.api.definition.type.Label( value = "client" )
+    @org.kie.api.definition.type.Label(value = "client")
     private Client client;
-    @org.kie.api.definition.type.Label( value = "Lines" )
+    @org.kie.api.definition.type.Label(value = "Lines")
     private java.util.List<InvoiceLine> lines;
-    @org.kie.api.definition.type.Label( value = "Total" )
+    @org.kie.api.definition.type.Label(value = "Total")
     private Double total;
 
     public Invoice() {
+    }
+
+    public Invoice(java.util.Date date,
+                   String comments,
+                   Client client,
+                   java.util.List<InvoiceLine> lines,
+                   Double total) {
+        this.date = date;
+        this.comments = comments;
+        this.client = client;
+        this.lines = lines;
+        this.total = total;
     }
 
     public java.util.Date getDate() {
         return this.date;
     }
 
-    public void setDate( java.util.Date date ) {
+    public void setDate(java.util.Date date) {
         this.date = date;
     }
 
@@ -50,7 +62,7 @@ public class Invoice implements java.io.Serializable {
         return this.comments;
     }
 
-    public void setComments( String comments ) {
+    public void setComments(String comments) {
         this.comments = comments;
     }
 
@@ -58,7 +70,7 @@ public class Invoice implements java.io.Serializable {
         return this.client;
     }
 
-    public void setClient( Client client ) {
+    public void setClient(Client client) {
         this.client = client;
     }
 
@@ -66,7 +78,7 @@ public class Invoice implements java.io.Serializable {
         return this.lines;
     }
 
-    public void setLines( java.util.List<InvoiceLine> lines ) {
+    public void setLines(java.util.List<InvoiceLine> lines) {
         this.lines = lines;
     }
 
@@ -74,19 +86,7 @@ public class Invoice implements java.io.Serializable {
         return this.total;
     }
 
-    public void setTotal( Double total ) {
+    public void setTotal(Double total) {
         this.total = total;
     }
-
-    public Invoice( java.util.Date date, String comments,
-                    Client client,
-                    java.util.List<InvoiceLine> lines,
-                    Double total ) {
-        this.date = date;
-        this.comments = comments;
-        this.client = client;
-        this.lines = lines;
-        this.total = total;
-    }
-
 }

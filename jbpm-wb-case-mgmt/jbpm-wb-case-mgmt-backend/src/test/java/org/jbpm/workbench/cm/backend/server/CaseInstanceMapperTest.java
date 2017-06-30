@@ -33,54 +33,79 @@ import static org.junit.Assert.*;
 
 public class CaseInstanceMapperTest {
 
-    public static void assertCaseInstance(final CaseInstance ci, final CaseInstanceSummary cis) {
+    public static void assertCaseInstance(final CaseInstance ci,
+                                          final CaseInstanceSummary cis) {
         assertNotNull(cis);
-        assertEquals(ci.getCaseId(), cis.getCaseId());
-        assertEquals(ci.getContainerId(), cis.getContainerId());
-        assertEquals(ci.getCaseStatus(), cis.getStatus().getId());
-        assertEquals(ci.getCaseDescription(), cis.getDescription());
-        assertEquals(ci.getCaseOwner(), cis.getOwner());
-        assertEquals(ci.getStartedAt(), cis.getStartedAt());
-        assertEquals(ci.getCompletedAt(), cis.getCompletedAt());
-        assertEquals(ci.getCaseDefinitionId(), cis.getCaseDefinitionId());
-        assertCaseStages(ci.getStages(), cis.getStages());
+        assertEquals(ci.getCaseId(),
+                     cis.getCaseId());
+        assertEquals(ci.getContainerId(),
+                     cis.getContainerId());
+        assertEquals(ci.getCaseStatus(),
+                     cis.getStatus().getId());
+        assertEquals(ci.getCaseDescription(),
+                     cis.getDescription());
+        assertEquals(ci.getCaseOwner(),
+                     cis.getOwner());
+        assertEquals(ci.getStartedAt(),
+                     cis.getStartedAt());
+        assertEquals(ci.getCompletedAt(),
+                     cis.getCompletedAt());
+        assertEquals(ci.getCaseDefinitionId(),
+                     cis.getCaseDefinitionId());
+        assertCaseStages(ci.getStages(),
+                         cis.getStages());
     }
 
-    public static void assertCaseStages(final List<CaseStage> csl, final List<CaseStageSummary> cssl) {
+    public static void assertCaseStages(final List<CaseStage> csl,
+                                        final List<CaseStageSummary> cssl) {
         assertNotNull(cssl);
-        if(csl==null) {
-            assertEquals(0, cssl.size());
+        if (csl == null) {
+            assertEquals(0,
+                         cssl.size());
         } else {
-            assertEquals(cssl.size(), csl.size());
+            assertEquals(cssl.size(),
+                         csl.size());
 
             CaseStage caseStage;
             CaseStageSummary caseStageSummary;
             for (int i = 0; i < csl.size(); i++) {
                 caseStage = csl.get(i);
                 caseStageSummary = cssl.get(i);
-                assertEquals(caseStageSummary.getName(), caseStage.getName());
-                assertEquals(caseStageSummary.getIdentifier(), caseStage.getIdentifier());
-                assertEquals(caseStageSummary.getStatus(), caseStage.getStatus());
-                assertCaseStageAdHocFragments(caseStage.getAdHocFragments(), caseStageSummary.getAdHocActions(), caseStage.getIdentifier());
+                assertEquals(caseStageSummary.getName(),
+                             caseStage.getName());
+                assertEquals(caseStageSummary.getIdentifier(),
+                             caseStage.getIdentifier());
+                assertEquals(caseStageSummary.getStatus(),
+                             caseStage.getStatus());
+                assertCaseStageAdHocFragments(caseStage.getAdHocFragments(),
+                                              caseStageSummary.getAdHocActions(),
+                                              caseStage.getIdentifier());
             }
         }
     }
 
-    public static void assertCaseStageAdHocFragments(final List<CaseAdHocFragment> cahfl, final List<CaseActionSummary> casl, String stageId) {
+    public static void assertCaseStageAdHocFragments(final List<CaseAdHocFragment> cahfl,
+                                                     final List<CaseActionSummary> casl,
+                                                     String stageId) {
         assertNotNull(casl);
         if (cahfl == null) {
-            assertEquals(0, casl.size());
+            assertEquals(0,
+                         casl.size());
         } else {
-            assertEquals(casl.size(), cahfl.size());
+            assertEquals(casl.size(),
+                         cahfl.size());
 
             CaseAdHocFragment caseAdHocFragment;
             CaseActionSummary caseActionSummary;
             for (int i = 0; i < cahfl.size(); i++) {
                 caseAdHocFragment = cahfl.get(i);
                 caseActionSummary = casl.get(i);
-                assertEquals(caseActionSummary.getName(), caseAdHocFragment.getName());
-                assertEquals(stageId, caseActionSummary.getStageId());
-                assertEquals(CaseActionType.AD_HOC_TASK, caseActionSummary.getActionType());
+                assertEquals(caseActionSummary.getName(),
+                             caseAdHocFragment.getName());
+                assertEquals(stageId,
+                             caseActionSummary.getStageId());
+                assertEquals(CaseActionType.AD_HOC_TASK,
+                             caseActionSummary.getActionType());
             }
         }
     }
@@ -99,9 +124,9 @@ public class CaseInstanceMapperTest {
 
         final CaseInstanceSummary cis = new CaseInstanceMapper().apply(ci);
 
-        assertCaseInstance(ci, cis);
+        assertCaseInstance(ci,
+                           cis);
     }
-
 
     @Test
     public void testCaseInstanceMapper_mapNull() {
@@ -122,5 +147,4 @@ public class CaseInstanceMapperTest {
                 .completedAt(new Date())
                 .build();
     }
-
 }

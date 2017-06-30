@@ -104,6 +104,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         }
         return displayer;
     }
+
     @Before
     public void init() throws Exception {
         super.init();
@@ -111,40 +112,40 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         processRuntimeDataServiceCaller = new CallerMock<ProcessRuntimeDataService>(processRuntimeDataService);
 
         presenter = new TaskDashboard(view,
-                processBreadCrumb,
-                clientServices,
-                displayerLocator,
-                displayerCoordinator,
-                placeManager,
-                taskSelectionEvent,
-                taskDashboardFocusEvent,
-                serverTemplateSelectorMenuBuilder,
-                processRuntimeDataServiceCaller,
-                notificationEvent);
+                                      processBreadCrumb,
+                                      clientServices,
+                                      displayerLocator,
+                                      displayerCoordinator,
+                                      placeManager,
+                                      taskSelectionEvent,
+                                      taskDashboardFocusEvent,
+                                      serverTemplateSelectorMenuBuilder,
+                                      processRuntimeDataServiceCaller,
+                                      notificationEvent);
     }
 
     @Test
     public void testDrawAll() {
 
         verify(view).init(presenter,
-                presenter.getTotalMetric(),
-                presenter.getCreatedMetric(),
-                presenter.getReadyMetric(),
-                presenter.getReservedMetric(),
-                presenter.getInProgressMetric(),
-                presenter.getSuspendedMetric(),
-                presenter.getCompletedMetric(),
-                presenter.getFailedMetric(),
-                presenter.getErrorMetric(),
-                presenter.getExitedMetric(),
-                presenter.getObsoleteMetric(),
-                presenter.getTasksByProcess(),
-                presenter.getTasksByOwner(),
-                presenter.getTasksByCreationDate(),
-                presenter.getTasksByEndDate(),
-                presenter.getTasksByRunningTime(),
-                presenter.getTasksByStatus(),
-                presenter.getTasksTable());
+                          presenter.getTotalMetric(),
+                          presenter.getCreatedMetric(),
+                          presenter.getReadyMetric(),
+                          presenter.getReservedMetric(),
+                          presenter.getInProgressMetric(),
+                          presenter.getSuspendedMetric(),
+                          presenter.getCompletedMetric(),
+                          presenter.getFailedMetric(),
+                          presenter.getErrorMetric(),
+                          presenter.getExitedMetric(),
+                          presenter.getObsoleteMetric(),
+                          presenter.getTasksByProcess(),
+                          presenter.getTasksByOwner(),
+                          presenter.getTasksByCreationDate(),
+                          presenter.getTasksByEndDate(),
+                          presenter.getTasksByRunningTime(),
+                          presenter.getTasksByStatus(),
+                          presenter.getTasksTable());
 
         verify(view).showLoading();
 
@@ -172,14 +173,19 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void test_JBPM_4851_Fix() {
-        assertEquals(presenter.getTotalMetric().isFilterOn(), true);
+        assertEquals(presenter.getTotalMetric().isFilterOn(),
+                     true);
     }
 
     @Test
     public void test_JBPM_5834_Fix() {
-        assertEquals(presenter.getTotalMetric().isFilterOn(), true);
-        verify(totalMetricListener, never()).onFilterEnabled(any(), any(DataSetFilter.class));
+        assertEquals(presenter.getTotalMetric().isFilterOn(),
+                     true);
+        verify(totalMetricListener,
+               never()).onFilterEnabled(any(),
+                                        any(DataSetFilter.class));
     }
+
     @Test
     public void testShowInstances() {
         reset(displayerListener);
@@ -195,42 +201,53 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         presenter.showDashboard();
         verify(view).showDashboard();
         verify(taskDashboardFocusEvent).fire(any(TaskDashboardFocusEvent.class));
-        verify(displayerListener, never()).onRedraw(presenter.getTasksTable());
+        verify(displayerListener,
+               never()).onRedraw(presenter.getTasksTable());
     }
 
     @Test
     public void testTotalMetric() {
         Displayer displayer = presenter.getTotalMetric();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
-        assertEquals(dataSet.getValueAt(0, 0), 9d);
+        assertEquals(dataSet.getValueAt(0,
+                                        0),
+                     9d);
     }
 
     @Test
     public void testInProgressMetric() {
         Displayer displayer = presenter.getInProgressMetric();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
-        assertEquals(dataSet.getValueAt(0, 0), 3d);
+        assertEquals(dataSet.getValueAt(0,
+                                        0),
+                     3d);
     }
 
     @Test
     public void testCompletedMetric() {
         Displayer displayer = presenter.getCompletedMetric();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
-        assertEquals(dataSet.getValueAt(0, 0), 2d);
+        assertEquals(dataSet.getValueAt(0,
+                                        0),
+                     2d);
     }
 
     @Test
     public void testReservedMetric() {
         Displayer displayer = presenter.getReservedMetric();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
-        assertEquals(dataSet.getValueAt(0, 0), 1d);
+        assertEquals(dataSet.getValueAt(0,
+                                        0),
+                     1d);
     }
 
     @Test
     public void testSuspendedMetric() {
         Displayer displayer = presenter.getSuspendedMetric();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
-        assertEquals(dataSet.getValueAt(0, 0), 1d);
+        assertEquals(dataSet.getValueAt(0,
+                                        0),
+                     1d);
     }
 
     @Test
@@ -238,20 +255,22 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         Displayer displayer = presenter.getTasksByEndDate();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
 
-        assertDataSetValues(dataSet, new String[][]{
-                {"2019-01", "1.00"},
-                {"2019-02", "0.00"},
-                {"2019-03", "0.00"},
-                {"2019-04", "0.00"},
-                {"2019-05", "0.00"},
-                {"2019-06", "0.00"},
-                {"2019-07", "0.00"},
-                {"2019-08", "0.00"},
-                {"2019-09", "0.00"},
-                {"2019-10", "0.00"},
-                {"2019-11", "0.00"},
-                {"2019-12", "1.00"}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"2019-01", "1.00"},
+                                    {"2019-02", "0.00"},
+                                    {"2019-03", "0.00"},
+                                    {"2019-04", "0.00"},
+                                    {"2019-05", "0.00"},
+                                    {"2019-06", "0.00"},
+                                    {"2019-07", "0.00"},
+                                    {"2019-08", "0.00"},
+                                    {"2019-09", "0.00"},
+                                    {"2019-10", "0.00"},
+                                    {"2019-11", "0.00"},
+                                    {"2019-12", "1.00"}
+                            },
+                            0);
     }
 
     @Test
@@ -259,9 +278,11 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         Displayer displayer = presenter.getTasksByCreationDate();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
 
-        assertDataSetValues(dataSet, new String[][]{
-                {"2019-01-01", "9.00"}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"2019-01-01", "9.00"}
+                            },
+                            0);
     }
 
     @Test
@@ -269,10 +290,12 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         Displayer displayer = presenter.getTasksByRunningTime();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
 
-        assertDataSetValues(dataSet, new String[][]{
-                {"Process A", "1.00", "9,000.00", "Process A", "1.00"},
-                {"Process B", "1.00", "10,000.00", "Process B", "1.00"}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"Process A", "1.00", "9,000.00", "Process A", "1.00"},
+                                    {"Process B", "1.00", "10,000.00", "Process B", "1.00"}
+                            },
+                            0);
     }
 
     @Test
@@ -280,14 +303,16 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         Displayer displayer = presenter.getTasksByStatus();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
 
-        assertDataSetValues(dataSet, new String[][]{
-                {"InProgress", "3.00"},
-                {"Completed", "2.00"},
-                {"Suspended", "1.00"},
-                {"Error", "1.00"},
-                {"Reserved", "1.00"},
-                {"Exited", "1.00"}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"InProgress", "3.00"},
+                                    {"Completed", "2.00"},
+                                    {"Suspended", "1.00"},
+                                    {"Error", "1.00"},
+                                    {"Reserved", "1.00"},
+                                    {"Exited", "1.00"}
+                            },
+                            0);
     }
 
     @Test
@@ -295,12 +320,14 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         Displayer displayer = presenter.getTasksByOwner();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
 
-        assertDataSetValues(dataSet, new String[][]{
-                {"user1", "3.00"},
-                {"user2", "2.00"},
-                {"user3", "1.00"},
-                {"user4", "3.00"}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"user1", "3.00"},
+                                    {"user2", "2.00"},
+                                    {"user3", "1.00"},
+                                    {"user4", "3.00"}
+                            },
+                            0);
     }
 
     @Test
@@ -308,10 +335,12 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         Displayer displayer = presenter.getTasksByProcess();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
 
-        assertDataSetValues(dataSet, new String[][]{
-                {"Process A", "4.00"},
-                {"Process B", "5.00"}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"Process A", "4.00"},
+                                    {"Process B", "5.00"}
+                            },
+                            0);
     }
 
     @Test
@@ -319,17 +348,19 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         Displayer displayer = presenter.getTasksTable();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
 
-        assertDataSetValues(dataSet, new String[][]{
-                {"1.00", "Process A", "1.00", "Task 1", "user1", "InProgress", "01/01/19 10:00", "", ""},
-                {"4.00", "Process A", "1.00", "Task 4", "user2", "InProgress", "01/01/19 10:00", "", ""},
-                {"8.00", "Process B", "2.00", "Task 4", "user4", "Completed", "01/01/19 10:00", "12/02/19 16:00", "10,000.00"},
-                {"9.00", "Process B", "2.00", "Task 4", "user4", "Exited", "01/01/19 10:00", "", ""},
-                {"2.00", "Process A", "1.00", "Task 2", "user1", "Completed", "01/01/19 09:00", "01/01/19 13:00", "9,000.00"},
-                {"3.00", "Process A", "1.00", "Task 3", "user2", "Suspended", "01/01/19 08:00", "", ""},
-                {"7.00", "Process B", "2.00", "Task 3", "user4", "Reserved", "01/01/19 08:00", "", ""},
-                {"6.00", "Process B", "2.00", "Task 2", "user3", "Error", "01/01/19 07:00", "", ""},
-                {"5.00", "Process B", "2.00", "Task 2", "user1", "InProgress", "01/01/19 06:00", "", ""}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"1.00", "Process A", "1.00", "Task 1", "user1", "InProgress", "01/01/19 10:00", "", ""},
+                                    {"4.00", "Process A", "1.00", "Task 4", "user2", "InProgress", "01/01/19 10:00", "", ""},
+                                    {"8.00", "Process B", "2.00", "Task 4", "user4", "Completed", "01/01/19 10:00", "12/02/19 16:00", "10,000.00"},
+                                    {"9.00", "Process B", "2.00", "Task 4", "user4", "Exited", "01/01/19 10:00", "", ""},
+                                    {"2.00", "Process A", "1.00", "Task 2", "user1", "Completed", "01/01/19 09:00", "01/01/19 13:00", "9,000.00"},
+                                    {"3.00", "Process A", "1.00", "Task 3", "user2", "Suspended", "01/01/19 08:00", "", ""},
+                                    {"7.00", "Process B", "2.00", "Task 3", "user4", "Reserved", "01/01/19 08:00", "", ""},
+                                    {"6.00", "Process B", "2.00", "Task 2", "user3", "Error", "01/01/19 07:00", "", ""},
+                                    {"5.00", "Process B", "2.00", "Task 2", "user1", "InProgress", "01/01/19 06:00", "", ""}
+                            },
+                            0);
     }
 
     @Test
@@ -337,14 +368,20 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         reset(view);
         reset(displayerListener);
 
-        presenter.getTasksByProcess().filterUpdate(COLUMN_PROCESS_NAME, 1);
+        presenter.getTasksByProcess().filterUpdate(COLUMN_PROCESS_NAME,
+                                                   1);
         final String process = "Process B";
-        assertEquals(presenter.getSelectedProcess(), process);
+        assertEquals(presenter.getSelectedProcess(),
+                     process);
 
         verify(view).showBreadCrumb(process);
-        verify(view).setHeaderText(i18n.selectedTaskStatusHeader("", process));
-        verify(displayerListener, times(17)).onRedraw(any(Displayer.class));
-        verify(displayerListener, never()).onError(any(Displayer.class), any(ClientRuntimeError.class));
+        verify(view).setHeaderText(i18n.selectedTaskStatusHeader("",
+                                                                 process));
+        verify(displayerListener,
+               times(17)).onRedraw(any(Displayer.class));
+        verify(displayerListener,
+               never()).onError(any(Displayer.class),
+                                any(ClientRuntimeError.class));
     }
 
     @Test
@@ -365,19 +402,27 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         MetricDisplayer inProgressMetric = presenter.getInProgressMetric();
         inProgressMetric.filterApply();
 
-        assertEquals(presenter.getSelectedMetric(), inProgressMetric);
+        assertEquals(presenter.getSelectedMetric(),
+                     inProgressMetric);
         verify(view).setHeaderText(i18n.tasksInProgress());
-        verify(displayerListener).onFilterEnabled(eq(inProgressMetric), any(DataSetFilter.class));
-        verify(displayerListener, times(1)).onFilterEnabled(any(Displayer.class), any(DataSetFilter.class));
-        verify(displayerListener, never()).onFilterReset(any(Displayer.class), any(DataSetFilter.class));
+        verify(displayerListener).onFilterEnabled(eq(inProgressMetric),
+                                                  any(DataSetFilter.class));
+        verify(displayerListener,
+               times(1)).onFilterEnabled(any(Displayer.class),
+                                         any(DataSetFilter.class));
+        verify(displayerListener,
+               never()).onFilterReset(any(Displayer.class),
+                                      any(DataSetFilter.class));
 
         // Check that only processes with status=active are shown
         DataSet dataSet = presenter.getTasksTable().getDataSetHandler().getLastDataSet();
-        assertDataSetValues(dataSet, new String[][]{
-                {"1.00", "Process A", "1.00", "Task 1", "user1", "InProgress", "01/01/19 10:00", "", ""},
-                {"4.00", "Process A", "1.00", "Task 4", "user2", "InProgress", "01/01/19 10:00", "", ""},
-                {"5.00", "Process B", "2.00", "Task 2", "user1", "InProgress", "01/01/19 06:00", "", ""}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"1.00", "Process A", "1.00", "Task 1", "user1", "InProgress", "01/01/19 10:00", "", ""},
+                                    {"4.00", "Process A", "1.00", "Task 4", "user2", "InProgress", "01/01/19 10:00", "", ""},
+                                    {"5.00", "Process B", "2.00", "Task 2", "user1", "InProgress", "01/01/19 06:00", "", ""}
+                            },
+                            0);
     }
 
     @Test
@@ -385,27 +430,33 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         MetricDisplayer inProgressMetric = presenter.getInProgressMetric();
         inProgressMetric.filterApply();
 
-        reset(displayerListener, view);
+        reset(displayerListener,
+              view);
         inProgressMetric.filterReset();
 
         assertNull(presenter.getSelectedMetric());
         verify(view).setHeaderText(i18n.allTasks());
-        verify(displayerListener).onFilterReset(eq(inProgressMetric), any(DataSetFilter.class));
-        verify(displayerListener, times(1)).onFilterReset(any(Displayer.class), any(DataSetFilter.class));
+        verify(displayerListener).onFilterReset(eq(inProgressMetric),
+                                                any(DataSetFilter.class));
+        verify(displayerListener,
+               times(1)).onFilterReset(any(Displayer.class),
+                                       any(DataSetFilter.class));
 
         // Check that only tasks with status=InProgress are shown
         DataSet dataSet = presenter.getTasksTable().getDataSetHandler().getLastDataSet();
-        assertDataSetValues(dataSet, new String[][]{
-                {"1.00", "Process A", "1.00", "Task 1", "user1", "InProgress", "01/01/19 10:00", "", ""},
-                {"4.00", "Process A", "1.00", "Task 4", "user2", "InProgress", "01/01/19 10:00", "", ""},
-                {"8.00", "Process B", "2.00", "Task 4", "user4", "Completed", "01/01/19 10:00", "12/02/19 16:00", "10,000.00"},
-                {"9.00", "Process B", "2.00", "Task 4", "user4", "Exited", "01/01/19 10:00", "", ""},
-                {"2.00", "Process A", "1.00", "Task 2", "user1", "Completed", "01/01/19 09:00", "01/01/19 13:00", "9,000.00"},
-                {"3.00", "Process A", "1.00", "Task 3", "user2", "Suspended", "01/01/19 08:00", "", ""},
-                {"7.00", "Process B", "2.00", "Task 3", "user4", "Reserved", "01/01/19 08:00", "", ""},
-                {"6.00", "Process B", "2.00", "Task 2", "user3", "Error", "01/01/19 07:00", "", ""},
-                {"5.00", "Process B", "2.00", "Task 2", "user1", "InProgress", "01/01/19 06:00", "", ""}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"1.00", "Process A", "1.00", "Task 1", "user1", "InProgress", "01/01/19 10:00", "", ""},
+                                    {"4.00", "Process A", "1.00", "Task 4", "user2", "InProgress", "01/01/19 10:00", "", ""},
+                                    {"8.00", "Process B", "2.00", "Task 4", "user4", "Completed", "01/01/19 10:00", "12/02/19 16:00", "10,000.00"},
+                                    {"9.00", "Process B", "2.00", "Task 4", "user4", "Exited", "01/01/19 10:00", "", ""},
+                                    {"2.00", "Process A", "1.00", "Task 2", "user1", "Completed", "01/01/19 09:00", "01/01/19 13:00", "9,000.00"},
+                                    {"3.00", "Process A", "1.00", "Task 3", "user2", "Suspended", "01/01/19 08:00", "", ""},
+                                    {"7.00", "Process B", "2.00", "Task 3", "user4", "Reserved", "01/01/19 08:00", "", ""},
+                                    {"6.00", "Process B", "2.00", "Task 2", "user3", "Error", "01/01/19 07:00", "", ""},
+                                    {"5.00", "Process B", "2.00", "Task 2", "user1", "InProgress", "01/01/19 06:00", "", ""}
+                            },
+                            0);
     }
 
     @Test
@@ -414,58 +465,81 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         MetricDisplayer completedMetric = presenter.getCompletedMetric();
         inProgressMetric.filterApply();
 
-        reset(displayerListener, view, inProgressMetric.getView());
+        reset(displayerListener,
+              view,
+              inProgressMetric.getView());
         completedMetric.filterApply();
 
-        assertEquals(presenter.getSelectedMetric(), completedMetric);
+        assertEquals(presenter.getSelectedMetric(),
+                     completedMetric);
         verify(inProgressMetric.getView()).setHtml(anyString());
-        verify(displayerListener).onFilterReset(eq(inProgressMetric), any(DataSetFilter.class));
-        verify(displayerListener).onFilterEnabled(eq(completedMetric), any(DataSetFilter.class));
+        verify(displayerListener).onFilterReset(eq(inProgressMetric),
+                                                any(DataSetFilter.class));
+        verify(displayerListener).onFilterEnabled(eq(completedMetric),
+                                                  any(DataSetFilter.class));
 
         // Check that only tasks with status=Completed are shown
         DataSet dataSet = presenter.getTasksTable().getDataSetHandler().getLastDataSet();
-        assertDataSetValues(dataSet, new String[][]{
-                {"8.00", "Process B", "2.00", "Task 4", "user4", "Completed", "01/01/19 10:00", "12/02/19 16:00", "10,000.00"},
-                {"2.00", "Process A", "1.00", "Task 2", "user1", "Completed", "01/01/19 09:00", "01/01/19 13:00", "9,000.00"}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"8.00", "Process B", "2.00", "Task 4", "user4", "Completed", "01/01/19 10:00", "12/02/19 16:00", "10,000.00"},
+                                    {"2.00", "Process A", "1.00", "Task 2", "user1", "Completed", "01/01/19 09:00", "01/01/19 13:00", "9,000.00"}
+                            },
+                            0);
     }
 
     @Test
     public void testTaskInstanceNoDetailsStatusExited() {
-        when(processRuntimeDataService.getProcessInstance(anyString(), any(ProcessInstanceKey.class))).thenReturn(mock(ProcessInstanceSummary.class));
+        when(processRuntimeDataService.getProcessInstance(anyString(),
+                                                          any(ProcessInstanceKey.class))).thenReturn(mock(ProcessInstanceSummary.class));
         when(placeManager.getStatus(TaskDashboard.TASK_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
-        tableDisplayer.selectCell(COLUMN_TASK_ID, 3);
+        tableDisplayer.selectCell(COLUMN_TASK_ID,
+                                  3);
         DataSet currentDataSet = presenter.getTasksTable().getDataSetHandler().getLastDataSet();
 
-        assertEquals(TASK_STATUS_EXITED, currentDataSet.getValueAt(0, COLUMN_TASK_STATUS));
+        assertEquals(TASK_STATUS_EXITED,
+                     currentDataSet.getValueAt(0,
+                                               COLUMN_TASK_STATUS));
         verify(notificationEvent).fire(any(NotificationEvent.class));
-        verify(taskSelectionEvent, never()).fire(any(TaskSelectionEvent.class));
-        verify(taskDashboardFocusEvent, never()).fire(any(TaskDashboardFocusEvent.class));
-        verify(placeManager, never()).goTo(TaskDashboard.TASK_DETAILS_SCREEN_ID);
+        verify(taskSelectionEvent,
+               never()).fire(any(TaskSelectionEvent.class));
+        verify(taskDashboardFocusEvent,
+               never()).fire(any(TaskDashboardFocusEvent.class));
+        verify(placeManager,
+               never()).goTo(TaskDashboard.TASK_DETAILS_SCREEN_ID);
     }
 
     @Test
     public void testTaskInstanceNoDetailsStatusComplete() {
-        when(processRuntimeDataService.getProcessInstance(anyString(), any(ProcessInstanceKey.class))).thenReturn(mock(ProcessInstanceSummary.class));
+        when(processRuntimeDataService.getProcessInstance(anyString(),
+                                                          any(ProcessInstanceKey.class))).thenReturn(mock(ProcessInstanceSummary.class));
         when(placeManager.getStatus(TaskDashboard.TASK_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
-        tableDisplayer.selectCell(COLUMN_TASK_ID, 2);
+        tableDisplayer.selectCell(COLUMN_TASK_ID,
+                                  2);
         DataSet currentDataSet = presenter.getTasksTable().getDataSetHandler().getLastDataSet();
 
-        assertEquals(TASK_STATUS_COMPLETED, currentDataSet.getValueAt(0, COLUMN_TASK_STATUS));
+        assertEquals(TASK_STATUS_COMPLETED,
+                     currentDataSet.getValueAt(0,
+                                               COLUMN_TASK_STATUS));
         verify(notificationEvent).fire(any(NotificationEvent.class));
-        verify(taskSelectionEvent, never()).fire(any(TaskSelectionEvent.class));
-        verify(taskDashboardFocusEvent, never()).fire(any(TaskDashboardFocusEvent.class));
-        verify(placeManager, never()).goTo(TaskDashboard.TASK_DETAILS_SCREEN_ID);
+        verify(taskSelectionEvent,
+               never()).fire(any(TaskSelectionEvent.class));
+        verify(taskDashboardFocusEvent,
+               never()).fire(any(TaskDashboardFocusEvent.class));
+        verify(placeManager,
+               never()).goTo(TaskDashboard.TASK_DETAILS_SCREEN_ID);
     }
 
     @Test
     public void testOpenInstanceDetails() {
-        when(processRuntimeDataService.getProcessInstance(anyString(), any(ProcessInstanceKey.class))).thenReturn(mock(ProcessInstanceSummary.class));
+        when(processRuntimeDataService.getProcessInstance(anyString(),
+                                                          any(ProcessInstanceKey.class))).thenReturn(mock(ProcessInstanceSummary.class));
         when(placeManager.getStatus(TaskDashboard.TASK_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
-        tableDisplayer.selectCell(COLUMN_TASK_ID, 0);
+        tableDisplayer.selectCell(COLUMN_TASK_ID,
+                                  0);
 
         verify(taskSelectionEvent).fire(any(TaskSelectionEvent.class));
         verify(taskDashboardFocusEvent).fire(any(TaskDashboardFocusEvent.class));
@@ -473,15 +547,33 @@ public class TaskDashboardTest extends AbstractDashboardTest {
     }
 
     @Test
-    public void testHeaderText(){
+    public void testHeaderText() {
         final String task = "Task Test";
 
-        verifyMetricHeaderText(task, presenter.getTotalMetric(), i18n.selectedTaskStatusHeader("", task));
-        verifyMetricHeaderText(task, presenter.getReadyMetric(), i18n.selectedTaskStatusHeader(i18n.taskStatusReady(), task));
-        verifyMetricHeaderText(task, presenter.getReservedMetric(), i18n.selectedTaskStatusHeader(i18n.taskStatusReserved(), task));
-        verifyMetricHeaderText(task, presenter.getInProgressMetric(), i18n.selectedTaskStatusHeader(i18n.taskStatusInProgress(), task));
-        verifyMetricHeaderText(task, presenter.getSuspendedMetric(), i18n.selectedTaskStatusHeader(i18n.taskStatusSuspended(), task));
-        verifyMetricHeaderText(task, presenter.getCompletedMetric(), i18n.selectedTaskStatusHeader(i18n.taskStatusCompleted(), task));
+        verifyMetricHeaderText(task,
+                               presenter.getTotalMetric(),
+                               i18n.selectedTaskStatusHeader("",
+                                                             task));
+        verifyMetricHeaderText(task,
+                               presenter.getReadyMetric(),
+                               i18n.selectedTaskStatusHeader(i18n.taskStatusReady(),
+                                                             task));
+        verifyMetricHeaderText(task,
+                               presenter.getReservedMetric(),
+                               i18n.selectedTaskStatusHeader(i18n.taskStatusReserved(),
+                                                             task));
+        verifyMetricHeaderText(task,
+                               presenter.getInProgressMetric(),
+                               i18n.selectedTaskStatusHeader(i18n.taskStatusInProgress(),
+                                                             task));
+        verifyMetricHeaderText(task,
+                               presenter.getSuspendedMetric(),
+                               i18n.selectedTaskStatusHeader(i18n.taskStatusSuspended(),
+                                                             task));
+        verifyMetricHeaderText(task,
+                               presenter.getCompletedMetric(),
+                               i18n.selectedTaskStatusHeader(i18n.taskStatusCompleted(),
+                                                             task));
 
         reset(view);
         presenter.resetCurrentProcess();

@@ -28,25 +28,31 @@ import static org.jbpm.workbench.es.backend.server.RequestSummaryMapperTest.asse
 import static org.jbpm.workbench.es.backend.server.RequestSummaryMapperTest.newRequestInfoInstance;
 import static org.junit.Assert.*;
 
-
 public class RequestDetailsMapperTest {
 
-    public static void assertRequestDetails(final RequestInfoInstance ri, final RequestDetails rd) {
+    public static void assertRequestDetails(final RequestInfoInstance ri,
+                                            final RequestDetails rd) {
         assertNotNull(rd);
 
         assertNotNull(rd.getRequest());
-        assertRequestSummary(ri, rd.getRequest());
+        assertRequestSummary(ri,
+                             rd.getRequest());
         assertNotNull(rd.getErrors());
-        assertErrorSummary(ri.getErrors().getItems().get(0), rd.getErrors().get(0));
+        assertErrorSummary(ri.getErrors().getItems().get(0),
+                           rd.getErrors().get(0));
         assertNotNull(rd.getParams());
-        assertRequestParameterSummary(ri.getData().entrySet().iterator().next(), rd.getParams().get(0));
+        assertRequestParameterSummary(ri.getData().entrySet().iterator().next(),
+                                      rd.getParams().get(0));
     }
 
-    public static void assertRequestParameterSummary(final Map.Entry<String, Object> param, final RequestParameterSummary rps) {
+    public static void assertRequestParameterSummary(final Map.Entry<String, Object> param,
+                                                     final RequestParameterSummary rps) {
         assertNotNull(rps);
 
-        assertEquals(param.getKey(), rps.getKey());
-        assertEquals(param.getValue(), rps.getValue());
+        assertEquals(param.getKey(),
+                     rps.getKey());
+        assertEquals(param.getValue(),
+                     rps.getValue());
     }
 
     @Test
@@ -55,12 +61,12 @@ public class RequestDetailsMapperTest {
 
         final RequestDetails rd = new RequestDetailsMapper().apply(ri);
 
-        assertRequestDetails(ri, rd);
+        assertRequestDetails(ri,
+                             rd);
     }
 
     @Test
     public void testRequestDetailsMapperNull() {
         assertNull(new RequestDetailsMapper().apply(null));
     }
-
 }

@@ -52,8 +52,12 @@ public class CaseProvisioningServiceImplTest {
 
         service.init();
 
-        verify(executor, never()).execute(any(PipelineExecutor.class), any(Pipeline.class), any(Input.class));
-        assertEquals(DISABLED, service.getProvisioningStatus());
+        verify(executor,
+               never()).execute(any(PipelineExecutor.class),
+                                any(Pipeline.class),
+                                any(Input.class));
+        assertEquals(DISABLED,
+                     service.getProvisioningStatus());
     }
 
     @Test
@@ -66,8 +70,11 @@ public class CaseProvisioningServiceImplTest {
         service.init();
 
         ArgumentCaptor<Input> captor = ArgumentCaptor.forClass(Input.class);
-        verify(executor).execute(any(PipelineExecutor.class), any(Pipeline.class), captor.capture());
-        assertEquals(path, captor.getValue().get("war-path"));
+        verify(executor).execute(any(PipelineExecutor.class),
+                                 any(Pipeline.class),
+                                 captor.capture());
+        assertEquals(path,
+                     captor.getValue().get("war-path"));
     }
 
     @Test
@@ -80,29 +87,34 @@ public class CaseProvisioningServiceImplTest {
         service.init();
 
         ArgumentCaptor<Input> captor = ArgumentCaptor.forClass(Input.class);
-        verify(executor).execute(any(PipelineExecutor.class), any(Pipeline.class), captor.capture());
-        assertEquals(gav, captor.getValue().get("artifact"));
+        verify(executor).execute(any(PipelineExecutor.class),
+                                 any(Pipeline.class),
+                                 captor.capture());
+        assertEquals(gav,
+                     captor.getValue().get("artifact"));
     }
 
     @Test
     public void testOnCaseManagementProvisioningStartedEvent() {
         service.onCaseManagementProvisioningStartedEvent(new CaseProvisioningStartedEvent());
 
-        assertEquals(STARTED, service.getProvisioningStatus());
+        assertEquals(STARTED,
+                     service.getProvisioningStatus());
     }
 
     @Test
     public void testOnCaseManagementProvisioningCompletedEvent() {
         service.onCaseManagementProvisioningCompletedEvent(new CaseProvisioningCompletedEvent("/context"));
 
-        assertEquals(COMPLETED, service.getProvisioningStatus());
+        assertEquals(COMPLETED,
+                     service.getProvisioningStatus());
     }
 
     @Test
     public void testOnCaseManagementProvisioningFailedEvent() {
         service.onCaseManagementProvisioningFailedEvent(new CaseProvisioningFailedEvent());
 
-        assertEquals(FAILED, service.getProvisioningStatus());
+        assertEquals(FAILED,
+                     service.getProvisioningStatus());
     }
-
 }

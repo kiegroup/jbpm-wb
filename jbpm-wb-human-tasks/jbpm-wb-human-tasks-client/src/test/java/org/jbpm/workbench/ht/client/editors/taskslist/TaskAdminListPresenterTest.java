@@ -56,11 +56,10 @@ public class TaskAdminListPresenterTest extends AbstractTaskListPresenterTest {
         testTaskStatusCondition(getPresenter().getResumeActionCondition(),
                                 TASK_STATUS_SUSPENDED);
     }
-    
+
     @Test
     public void adminShouldBeAbleToReleaseTaskOwnedByOthers() {
         assertTrue(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner("userx").status(TASK_STATUS_RESERVED).build()));
         assertTrue(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner("userx").status(TASK_STATUS_IN_PROGRESS).build()));
     }
-
 }

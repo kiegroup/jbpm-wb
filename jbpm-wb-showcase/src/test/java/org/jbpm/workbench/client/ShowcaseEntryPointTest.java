@@ -70,103 +70,130 @@ public class ShowcaseEntryPointTest {
 
     @Before
     public void setup() {
-        appConfigServiceCallerMock = new CallerMock<>( appConfigService );
+        appConfigServiceCallerMock = new CallerMock<>(appConfigService);
 
-        showcaseEntryPoint = spy( new ShowcaseEntryPoint( appConfigServiceCallerMock,
-                                                          activityBeansCache,
-                                                          iocManager,
-                                                          identity,
-                                                          menusHelper,
-                                                          menuBar ) );
+        showcaseEntryPoint = spy(new ShowcaseEntryPoint(appConfigServiceCallerMock,
+                                                        activityBeansCache,
+                                                        iocManager,
+                                                        identity,
+                                                        menusHelper,
+                                                        menuBar));
         mockMenuHelper();
         mockConstants();
-        IocTestingUtils.mockIocManager( iocManager );
+        IocTestingUtils.mockIocManager(iocManager);
     }
 
     @Test
     public void setupMenuTest() {
         showcaseEntryPoint.setupMenu();
 
-        ArgumentCaptor<Menus> menusCaptor = ArgumentCaptor.forClass( Menus.class );
-        verify( menuBar ).addMenus( menusCaptor.capture() );
+        ArgumentCaptor<Menus> menusCaptor = ArgumentCaptor.forClass(Menus.class);
+        verify(menuBar).addMenus(menusCaptor.capture());
 
         Menus menus = menusCaptor.getValue();
 
-        assertEquals( 8, menus.getItems().size() );
+        assertEquals(8,
+                     menus.getItems().size());
 
-        assertEquals( showcaseEntryPoint.constants.Home(), menus.getItems().get( 0 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Authoring(), menus.getItems().get( 1 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Deploy(), menus.getItems().get( 2 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Process_Management(), menus.getItems().get( 3 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Work(), menus.getItems().get( 4 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Dashboards(), menus.getItems().get( 5 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Extensions(), menus.getItems().get( 6 ).getCaption() );
+        assertEquals(showcaseEntryPoint.constants.Home(),
+                     menus.getItems().get(0).getCaption());
+        assertEquals(showcaseEntryPoint.constants.Authoring(),
+                     menus.getItems().get(1).getCaption());
+        assertEquals(showcaseEntryPoint.constants.Deploy(),
+                     menus.getItems().get(2).getCaption());
+        assertEquals(showcaseEntryPoint.constants.Process_Management(),
+                     menus.getItems().get(3).getCaption());
+        assertEquals(showcaseEntryPoint.constants.Work(),
+                     menus.getItems().get(4).getCaption());
+        assertEquals(showcaseEntryPoint.constants.Dashboards(),
+                     menus.getItems().get(5).getCaption());
+        assertEquals(showcaseEntryPoint.constants.Extensions(),
+                     menus.getItems().get(6).getCaption());
 
-        verify( menusHelper ).addRolesMenuItems();
-        verify( menusHelper ).addGroupsMenuItems();
-        verify( menusHelper ).addWorkbenchConfigurationMenuItem();
-        verify( menusHelper ).addUtilitiesMenuItems();
+        verify(menusHelper).addRolesMenuItems();
+        verify(menusHelper).addGroupsMenuItems();
+        verify(menusHelper).addWorkbenchConfigurationMenuItem();
+        verify(menusHelper).addUtilitiesMenuItems();
     }
 
     @Test
     public void getAuthoringViewsTest() {
         List<? extends MenuItem> authoringMenuItems = showcaseEntryPoint.getAuthoringViews();
 
-        assertEquals( 3, authoringMenuItems.size() );
-        assertEquals( showcaseEntryPoint.constants.Project_Authoring(), authoringMenuItems.get( 0 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.artifactRepository(), authoringMenuItems.get( 1 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Administration(), authoringMenuItems.get( 2 ).getCaption() );
+        assertEquals(3,
+                     authoringMenuItems.size());
+        assertEquals(showcaseEntryPoint.constants.Project_Authoring(),
+                     authoringMenuItems.get(0).getCaption());
+        assertEquals(showcaseEntryPoint.constants.artifactRepository(),
+                     authoringMenuItems.get(1).getCaption());
+        assertEquals(showcaseEntryPoint.constants.Administration(),
+                     authoringMenuItems.get(2).getCaption());
     }
 
     @Test
     public void getProcessManagementViewsTest() {
         List<? extends MenuItem> processManagementMenuItems = showcaseEntryPoint.getProcessManagementViews();
 
-        assertEquals( 5, processManagementMenuItems.size() );
-        assertEquals( showcaseEntryPoint.constants.Process_Definitions(), processManagementMenuItems.get( 0 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Process_Instances(), processManagementMenuItems.get( 1 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Process_Instances_Admin(), processManagementMenuItems.get( 2 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Tasks_Admin(), processManagementMenuItems.get( 3 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.ExecutionErrors(), processManagementMenuItems.get( 4 ).getCaption() );
+        assertEquals(5,
+                     processManagementMenuItems.size());
+        assertEquals(showcaseEntryPoint.constants.Process_Definitions(),
+                     processManagementMenuItems.get(0).getCaption());
+        assertEquals(showcaseEntryPoint.constants.Process_Instances(),
+                     processManagementMenuItems.get(1).getCaption());
+        assertEquals(showcaseEntryPoint.constants.Process_Instances_Admin(),
+                     processManagementMenuItems.get(2).getCaption());
+        assertEquals(showcaseEntryPoint.constants.Tasks_Admin(),
+                     processManagementMenuItems.get(3).getCaption());
+        assertEquals(showcaseEntryPoint.constants.ExecutionErrors(),
+                     processManagementMenuItems.get(4).getCaption());
     }
 
     @Test
     public void getDeploymentViewsTest() {
         List<? extends MenuItem> deploymentMenuItems = showcaseEntryPoint.getDeploymentViews();
 
-        assertEquals( 2, deploymentMenuItems.size() );
-        assertEquals( showcaseEntryPoint.constants.Execution_Servers(), deploymentMenuItems.get( 0 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Jobs(), deploymentMenuItems.get( 1 ).getCaption() );
+        assertEquals(2,
+                     deploymentMenuItems.size());
+        assertEquals(showcaseEntryPoint.constants.Execution_Servers(),
+                     deploymentMenuItems.get(0).getCaption());
+        assertEquals(showcaseEntryPoint.constants.Jobs(),
+                     deploymentMenuItems.get(1).getCaption());
     }
 
     @Test
     public void getWorkViewsTest() {
         List<? extends MenuItem> workMenuItems = showcaseEntryPoint.getWorkViews();
 
-        assertEquals( 3, workMenuItems.size() );
-        assertEquals( showcaseEntryPoint.constants.Tasks_List(), workMenuItems.get( 0 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Tasks_List_Admin(), workMenuItems.get( 1 ).getCaption() );
-        assertEquals( showcaseEntryPoint.constants.Data_Sets(), workMenuItems.get( 2 ).getCaption() );
+        assertEquals(3,
+                     workMenuItems.size());
+        assertEquals(showcaseEntryPoint.constants.Tasks_List(),
+                     workMenuItems.get(0).getCaption());
+        assertEquals(showcaseEntryPoint.constants.Tasks_List_Admin(),
+                     workMenuItems.get(1).getCaption());
+        assertEquals(showcaseEntryPoint.constants.Data_Sets(),
+                     workMenuItems.get(2).getCaption());
     }
 
     @Test
     public void getDashboardsViewsTest() {
         List<? extends MenuItem> dashboardsMenuItems = showcaseEntryPoint.getDashboardsViews();
 
-        assertEquals( 1, dashboardsMenuItems.size() );
-        assertEquals( showcaseEntryPoint.constants.Process_Dashboard(), dashboardsMenuItems.get( 0 ).getCaption() );
+        assertEquals(1,
+                     dashboardsMenuItems.size());
+        assertEquals(showcaseEntryPoint.constants.Process_Dashboard(),
+                     dashboardsMenuItems.get(0).getCaption());
     }
 
     private void mockMenuHelper() {
-        doReturn( mock( AbstractWorkbenchPerspectiveActivity.class ) ).when( menusHelper ).getDefaultPerspectiveActivity();
-        doReturn(Collections.emptyList() ).when( menusHelper ).getRoles();
-        doReturn(Collections.emptyList() ).when( menusHelper ).getGroups();
-        doNothing().when( menusHelper ).addWorkbenchConfigurationMenuItem();
-        doNothing().when( menusHelper ).addUtilitiesMenuItems();
+        doReturn(mock(AbstractWorkbenchPerspectiveActivity.class)).when(menusHelper).getDefaultPerspectiveActivity();
+        doReturn(Collections.emptyList()).when(menusHelper).getRoles();
+        doReturn(Collections.emptyList()).when(menusHelper).getGroups();
+        doNothing().when(menusHelper).addWorkbenchConfigurationMenuItem();
+        doNothing().when(menusHelper).addUtilitiesMenuItems();
     }
 
     private void mockConstants() {
-        showcaseEntryPoint.constants = mock( Constants.class, new ConstantsAnswerMock() );
+        showcaseEntryPoint.constants = mock(Constants.class,
+                                            new ConstantsAnswerMock());
     }
-
 }

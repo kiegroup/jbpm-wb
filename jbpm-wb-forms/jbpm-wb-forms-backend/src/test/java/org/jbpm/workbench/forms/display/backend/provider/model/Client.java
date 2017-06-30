@@ -23,21 +23,29 @@ public class Client implements java.io.Serializable {
 
     static final long serialVersionUID = 1L;
 
-    @org.kie.api.definition.type.Label( value = "ID" )
+    @org.kie.api.definition.type.Label(value = "ID")
     private Long id;
-    @org.kie.api.definition.type.Label( value = "Name" )
+    @org.kie.api.definition.type.Label(value = "Name")
     private String name;
-    @org.kie.api.definition.type.Label( value = "Address" )
+    @org.kie.api.definition.type.Label(value = "Address")
     private String address;
 
     public Client() {
+    }
+
+    public Client(Long id,
+                  String name,
+                  String address) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
     }
 
     public Long getId() {
         return this.id;
     }
 
-    public void setId( Long id ) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -45,7 +53,7 @@ public class Client implements java.io.Serializable {
         return this.name;
     }
 
-    public void setName( String name ) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -53,15 +61,7 @@ public class Client implements java.io.Serializable {
         return this.address;
     }
 
-    public void setAddress( String address ) {
+    public void setAddress(String address) {
         this.address = address;
     }
-
-    public Client( Long id, String name,
-                   String address ) {
-        this.id = id;
-        this.name = name;
-        this.address = address;
-    }
-
 }

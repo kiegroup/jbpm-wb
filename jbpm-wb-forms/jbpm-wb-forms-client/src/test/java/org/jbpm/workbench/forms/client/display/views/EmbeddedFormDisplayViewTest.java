@@ -31,29 +31,26 @@ import static org.mockito.Mockito.*;
 @RunWith(GwtMockitoTestRunner.class)
 public class EmbeddedFormDisplayViewTest {
 
-    @Mock
-    private GenericFormDisplayer displayerMock;
-
-    @Mock(name="formContainer")
-    private FlowPanel formContainer;
-
-    @Mock(name="formPanel")
-    private FlowPanel formPanel;
-
     @InjectMocks
     protected EmbeddedFormDisplayView view;
+    @Mock
+    private GenericFormDisplayer displayerMock;
+    @Mock(name = "formContainer")
+    private FlowPanel formContainer;
+    @Mock(name = "formPanel")
+    private FlowPanel formPanel;
 
     @Test
     public void displayPanelCreationTest() {
         view.display(displayerMock);
 
         verify(formContainer).clear();
-        verify(formContainer, times(2)).add(any(FlowPanel.class));
+        verify(formContainer,
+               times(2)).add(any(FlowPanel.class));
 
         verify(formPanel).addStyleName(AppResources.INSTANCE.style().taskFormPanel());
 
         verify(displayerMock).getContainer();
         verify(displayerMock).getFooter();
     }
-
 }

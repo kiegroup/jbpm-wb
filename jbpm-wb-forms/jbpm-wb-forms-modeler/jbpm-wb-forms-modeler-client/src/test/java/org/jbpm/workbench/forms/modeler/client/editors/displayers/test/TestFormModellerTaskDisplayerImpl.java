@@ -32,35 +32,37 @@ import org.jbpm.formModeler.renderer.client.FormRendererWidget;
 
 public class TestFormModellerTaskDisplayerImpl extends FormModellerTaskDisplayerImpl {
 
-    public TestFormModellerTaskDisplayerImpl( FormRendererWidget formRenderer, Caller<FormModelerProcessStarterEntryPoint> renderContextServices ) {
-        super( formRenderer, renderContextServices );
+    public TestFormModellerTaskDisplayerImpl(FormRendererWidget formRenderer,
+                                             Caller<FormModelerProcessStarterEntryPoint> renderContextServices) {
+        super(formRenderer,
+              renderContextServices);
     }
 
-    public void setRenderingSettings( FormModelerFormRenderingSettings settings ) {
+    public void setRenderingSettings(FormModelerFormRenderingSettings settings) {
         this.renderingSettings = settings;
     }
 
-    public void setResizeListener( FormContentResizeListener listener ) {
+    public void setResizeListener(FormContentResizeListener listener) {
         this.resizeListener = listener;
     }
 
-    public void setJSNIHelper( JSNIHelper JSNIHelper ) {
+    public void setJSNIHelper(JSNIHelper JSNIHelper) {
         this.jsniHelper = JSNIHelper;
     }
 
-    public void setTaskService( Caller<TaskService> taskService ) {
+    public void setTaskService(Caller<TaskService> taskService) {
         this.taskService = taskService;
     }
 
-    public void setTaskRefreshedEvent( Event<TaskRefreshedEvent> taskRefreshed ) {
+    public void setTaskRefreshedEvent(Event<TaskRefreshedEvent> taskRefreshed) {
         this.taskRefreshed = taskRefreshed;
     }
 
-    public void setTaskCompletedEvent( Event<TaskCompletedEvent> taskCompleted ) {
+    public void setTaskCompletedEvent(Event<TaskCompletedEvent> taskCompleted) {
         this.taskCompleted = taskCompleted;
     }
 
-    public void setIdentity( User identity ) {
+    public void setIdentity(User identity) {
         this.identity = identity;
     }
 }
