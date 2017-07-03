@@ -14,23 +14,36 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.forms.model.events;
+package org.jbpm.workbench.pr.client.util;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.uberfire.backend.vfs.Path;
 
 @Portable
-public class FormRenderedEvent {
+public class DummyProcessPath implements Path {
 
-    private String form;
+    private String fileName;
 
-    public FormRenderedEvent() {
+    public DummyProcessPath() {
+
     }
 
-    public FormRenderedEvent(String form) {
-        this.form = form;
+    public DummyProcessPath(String fileName) {
+        this.fileName = fileName;
     }
 
-    public String getForm() {
-        return form;
+    @Override
+    public String getFileName() {
+        return fileName + ".bpmn2";
+    }
+
+    @Override
+    public String toURI() {
+        return "default://master@dummy/" + getFileName();
+    }
+
+    @Override
+    public int compareTo(Path path) {
+        return 0;
     }
 }

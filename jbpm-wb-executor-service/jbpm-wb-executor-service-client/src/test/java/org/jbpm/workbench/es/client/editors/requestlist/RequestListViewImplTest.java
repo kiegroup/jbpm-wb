@@ -26,7 +26,7 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.gwtbootstrap3.client.ui.Button;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
+import org.jbpm.workbench.df.client.list.DataSetEditorManager;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.junit.Before;
 import org.junit.Test;

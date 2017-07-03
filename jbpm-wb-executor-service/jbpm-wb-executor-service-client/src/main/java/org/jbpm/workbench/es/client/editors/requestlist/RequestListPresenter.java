@@ -49,7 +49,7 @@ import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
-import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.es.client.editors.jobdetails.JobDetailsPopup;
 import org.jbpm.workbench.es.client.editors.quicknewjob.QuickNewJobPopup;
 import org.jbpm.workbench.es.client.i18n.Constants;
