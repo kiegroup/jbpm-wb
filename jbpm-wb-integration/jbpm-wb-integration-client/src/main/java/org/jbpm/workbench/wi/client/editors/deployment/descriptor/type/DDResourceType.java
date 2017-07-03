@@ -23,14 +23,13 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.workbench.wi.client.i18n.Constants;
 import org.jbpm.workbench.wi.dd.type.DDResourceTypeDefinition;
 
-
 import org.uberfire.client.resources.UberfireResources;
 import org.uberfire.client.workbench.type.ClientResourceType;
 
 @ApplicationScoped
 public class DDResourceType extends DDResourceTypeDefinition implements ClientResourceType {
 
-    private static final Image IMAGE = new Image( UberfireResources.INSTANCE.images().typeGenericFile() );
+    private static final Image IMAGE = new Image(UberfireResources.INSTANCE.images().typeGenericFile());
 
     @Override
     public IsWidget getIcon() {
@@ -40,8 +39,9 @@ public class DDResourceType extends DDResourceTypeDefinition implements ClientRe
     @Override
     public String getDescription() {
         String desc = Constants.INSTANCE.Deployment();
-        if ( desc == null || desc.isEmpty() ) return super.getDescription();
+        if (desc == null || desc.isEmpty()) {
+            return super.getDescription();
+        }
         return desc;
     }
-
 }

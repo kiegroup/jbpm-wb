@@ -18,22 +18,37 @@ package org.jbpm.workbench.common.model;
 
 import java.util.Map;
 
-public interface QueryFilter  {
-    Integer getOffset();
-    void setOffset(Integer offset);
-    Integer getCount();
-    void setCount(Integer count);
-    boolean isSingleResult();
-    void setIsSingleResult(boolean isSingleResult);
-    String getLanguage();
-    void setLanguage(String language);
-    String getOrderBy();
-    void setOrderBy(String orderBy);
-    String getFilterParams();
-    void setFilterParams(String filterParams);
-    Map<String, Object> getParams();
-    void setParams(Map<String, Object> params);
-    Boolean isAscending();
-    void setIsAscending(Boolean isAscending);
+public interface QueryFilter {
 
+    Integer getOffset();
+
+    void setOffset(Integer offset);
+
+    Integer getCount();
+
+    void setCount(Integer count);
+
+    boolean isSingleResult();
+
+    void setIsSingleResult(boolean isSingleResult);
+
+    String getLanguage();
+
+    void setLanguage(String language);
+
+    String getOrderBy();
+
+    void setOrderBy(String orderBy);
+
+    String getFilterParams();
+
+    void setFilterParams(String filterParams);
+
+    Map<String, Object> getParams();
+
+    void setParams(Map<String, Object> params);
+
+    Boolean isAscending();
+
+    void setIsAscending(Boolean isAscending);
 }

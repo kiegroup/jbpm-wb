@@ -124,7 +124,8 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
     public void init() {
         caseDefinitionNameLabel.addRequiredIndicator();
         ownerNameLabel.addRequiredIndicator();
-        rolesHelp.setAttribute("data-content", translationService.getTranslation(Constants.ROLES_INFO_TEXT));
+        rolesHelp.setAttribute("data-content",
+                               translationService.getTranslation(Constants.ROLES_INFO_TEXT));
         jQueryPopover.wrap(rolesHelp).popover();
         notification.setType(InlineNotification.InlineNotificationType.DANGER);
     }
@@ -280,7 +281,7 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
         loadCaseRoles();
     }
 
-    private void loadCaseRoles(){
+    private void loadCaseRoles() {
         presenter.loadCaseRoles(caseTemplatesList.getValue());
     }
 }

@@ -19,16 +19,8 @@ package org.jbpm.workbench.pr.client.util;
 import org.kie.api.runtime.process.ProcessInstance;
 
 public class LogUtils {
-    
-    public static enum LogType {
-        TECHNICAL, BUSINESS
-    }    
-        
-    public static enum LogOrder {
-        DESC, ASC
-    }
-    
-    public static String getInstanceStatus(int state){
+
+    public static String getInstanceStatus(int state) {
         String statusStr = "Unknown";
         switch (state) {
             case ProcessInstance.STATE_ACTIVE:
@@ -50,5 +42,15 @@ public class LogUtils {
                 break;
         }
         return statusStr;
+    }
+
+    public static enum LogType {
+        TECHNICAL,
+        BUSINESS
+    }
+
+    public static enum LogOrder {
+        DESC,
+        ASC
     }
 }

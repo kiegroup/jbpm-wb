@@ -22,8 +22,11 @@ import org.jbpm.workbench.forms.display.FormRenderingSettings;
 @Remote
 public interface FormServiceEntryPoint {
 
-    FormRenderingSettings getFormDisplayTask( String serverTemplateId, String domainId, long taskId );
+    FormRenderingSettings getFormDisplayTask(String serverTemplateId,
+                                             String domainId,
+                                             long taskId);
 
-    FormRenderingSettings getFormDisplayProcess( String serverTemplateId, String domainId, String processId );
-
+    FormRenderingSettings getFormDisplayProcess(String serverTemplateId,
+                                                String domainId,
+                                                String processId);
 }

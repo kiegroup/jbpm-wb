@@ -100,16 +100,25 @@ public class CaseActionSummary {
         this.actionType = actionType;
     }
 
-    public CaseActionStatus getActionStatus() { return actionStatus; }
+    public CaseActionStatus getActionStatus() {
+        return actionStatus;
+    }
 
-    public void setActionStatus(CaseActionStatus actionStatus) { this.actionStatus = actionStatus; }
+    public void setActionStatus(CaseActionStatus actionStatus) {
+        this.actionStatus = actionStatus;
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         CaseActionSummary that = (CaseActionSummary) o;
-        return Objects.equals(id, that.getId());
+        return Objects.equals(id,
+                              that.getId());
     }
 
     @Override
@@ -183,7 +192,5 @@ public class CaseActionSummary {
             caseActionSummary.setActionStatus(actionStatus);
             return this;
         }
-
     }
-
 }

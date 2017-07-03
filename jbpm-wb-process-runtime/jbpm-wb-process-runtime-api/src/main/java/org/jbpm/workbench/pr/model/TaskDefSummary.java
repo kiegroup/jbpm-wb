@@ -16,6 +16,7 @@
 package org.jbpm.workbench.pr.model;
 
 import java.io.Serializable;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
@@ -24,7 +25,8 @@ public class TaskDefSummary implements Serializable {
     private long id;
     private String name;
 
-    public TaskDefSummary(long id, final String name) {
+    public TaskDefSummary(long id,
+                          final String name) {
         this(name);
         this.id = id;
     }
@@ -53,5 +55,4 @@ public class TaskDefSummary implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-
 }

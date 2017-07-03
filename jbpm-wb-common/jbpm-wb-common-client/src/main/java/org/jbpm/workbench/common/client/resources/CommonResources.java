@@ -26,5 +26,4 @@ public interface CommonResources extends ClientBundle {
 
     @Source("css/common.css")
     CommonCSS css();
-
 }

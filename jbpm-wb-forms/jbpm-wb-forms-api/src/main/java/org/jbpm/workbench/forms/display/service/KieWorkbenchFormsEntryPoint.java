@@ -23,23 +23,24 @@ import org.jboss.errai.bus.server.annotations.Remote;
 @Remote
 public interface KieWorkbenchFormsEntryPoint {
 
-    Long startProcessFromRenderContext( Long timestamp,
-                                        Map<String, Object> formData, String serverTemplateId,
+    Long startProcessFromRenderContext(Long timestamp,
+                                       Map<String, Object> formData,
+                                       String serverTemplateId,
+                                       String containerId,
+                                       String processId,
+                                       String correlationKey);
+
+    void saveTaskStateFromRenderContext(Long timestamp,
+                                        Map<String, Object> formData,
+                                        String serverTemplateId,
                                         String containerId,
-                                        String processId,
-                                        String correlationKey );
+                                        Long taskId);
 
-    void saveTaskStateFromRenderContext( Long timestamp,
-                                         Map<String, Object> formData,
-                                         String serverTemplateId,
-                                         String containerId,
-                                         Long taskId );
+    void completeTaskFromContext(Long timestamp,
+                                 Map<String, Object> formData,
+                                 String serverTemplateId,
+                                 String containerId,
+                                 Long taskId);
 
-    void completeTaskFromContext( Long timestamp,
-                                  Map<String, Object> formData,
-                                  String serverTemplateId,
-                                  String containerId,
-                                  Long taskId );
-
-    void clearContext( long timestamp );
+    void clearContext(long timestamp);
 }

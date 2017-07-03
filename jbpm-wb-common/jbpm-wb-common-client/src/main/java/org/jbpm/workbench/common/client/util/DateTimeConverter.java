@@ -32,7 +32,8 @@ public class DateTimeConverter implements Converter<Date, String> {
             return null;
         }
 
-        return DateUtils.createDate(widgetValue, DateUtils.getDateTimeFormatMask());
+        return DateUtils.createDate(widgetValue,
+                                    DateUtils.getDateTimeFormatMask());
     }
 
     @Override

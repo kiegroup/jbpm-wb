@@ -23,12 +23,10 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class IdentitySummary implements Serializable {
 
-    private static final long serialVersionUID = -2770686571222400395L;
-
     // TODO only for id, remove it later
     protected static final String SEPARATOR = "_._._";
     protected static final String SEPARATOR_REGEX = "_\\._\\._";
-
+    private static final long serialVersionUID = -2770686571222400395L;
     protected String id;
     private String name;
 
@@ -55,5 +53,4 @@ public class IdentitySummary implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
-
 }

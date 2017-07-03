@@ -22,9 +22,9 @@ package org.jbpm.dashboard.renderer.service;
  */
 public class DashboardURLBuilder {
 
-    final static private String GWT_DEFAULT_LOCALE  = "default";
-    final static private String DASHBUILDER_DEFAULT_LOCALE  = "en";
-    final static private String SLASH  = "/";
+    final static private String GWT_DEFAULT_LOCALE = "default";
+    final static private String DASHBUILDER_DEFAULT_LOCALE = "en";
+    final static private String SLASH = "/";
 
     /**
      * <p>Returns the url for jBPM dashboard using the current locale.</p>
@@ -35,16 +35,26 @@ public class DashboardURLBuilder {
      * @param localeName The GWT locale name.
      * @return The url for the jBPM dashboard.
      */
-    public static String getDashboardURL(String preffix, String suffix, String localeName) {
-        if (preffix == null && suffix == null) return null;
+    public static String getDashboardURL(String preffix,
+                                         String suffix,
+                                         String localeName) {
+        if (preffix == null && suffix == null) {
+            return null;
+        }
 
         StringBuilder result = new StringBuilder();
 
-        if (preffix != null) result.append(preffix);
+        if (preffix != null) {
+            result.append(preffix);
+        }
 
         if (localeName != null) {
-            if (!preffix.endsWith(SLASH)) result.append(SLASH);
-            if (GWT_DEFAULT_LOCALE.equals(localeName)) localeName = DASHBUILDER_DEFAULT_LOCALE;
+            if (!preffix.endsWith(SLASH)) {
+                result.append(SLASH);
+            }
+            if (GWT_DEFAULT_LOCALE.equals(localeName)) {
+                localeName = DASHBUILDER_DEFAULT_LOCALE;
+            }
             result.append(localeName);
         }
 
@@ -57,5 +67,4 @@ public class DashboardURLBuilder {
 
         return result.toString();
     }
-
 }

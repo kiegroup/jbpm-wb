@@ -29,7 +29,7 @@ import javax.inject.Inject;
 import java.util.HashMap;
 
 @Dependent
-public class DataSetEditorManager extends Composite  {
+public class DataSetEditorManager extends Composite {
 
     public static String FILTER_TABLE_SETTINGS = "tableSettings";
 
@@ -39,31 +39,37 @@ public class DataSetEditorManager extends Composite  {
     @Inject
     private FilterSettingsJSONMarshaller tableSettingsJSONMarshaller;
 
-    public void showTableSettingsEditor(final FilterPagedTable filterPagedTable , String popupTitle, final FilterSettings tableSettings, final Command drawCommand) {
+    public void showTableSettingsEditor(final FilterPagedTable filterPagedTable,
+                                        String popupTitle,
+                                        final FilterSettings tableSettings,
+                                        final Command drawCommand) {
         FilterSettings clone = tableSettings.cloneInstance();
-        clone.setKey( tableSettings.getKey() );
-        clone.setDataSet( tableSettings.getDataSet());
-        tableDisplayerEditorPopup.setTitle( popupTitle );
+        clone.setKey(tableSettings.getKey());
+        clone.setDataSet(tableSettings.getDataSet());
+        tableDisplayerEditorPopup.setTitle(popupTitle);
         tableDisplayerEditorPopup.show(clone,
-                (FilterEditorPopup editor ) -> {
-                FilterSettings modifiedSettings = editor.getTableDisplayerSettings();
-                HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
+                                       (FilterEditorPopup editor) -> {
+                                           FilterSettings modifiedSettings = editor.getTableDisplayerSettings();
+                                           HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
 
+                                           tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM,
+                                                                 modifiedSettings.getTableName());
+                                           tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM,
+                                                                 modifiedSettings.getTableDescription());
+                                           tabSettingsValues.put(FILTER_TABLE_SETTINGS,
+                                                                 getTableSettingsToStr(modifiedSettings));
 
-                tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_NAME_PARAM, modifiedSettings.getTableName() );
-                tabSettingsValues.put( NewTabFilterPopup.FILTER_TAB_DESC_PARAM, modifiedSettings.getTableDescription() );
-                tabSettingsValues.put( FILTER_TABLE_SETTINGS, getTableSettingsToStr( modifiedSettings ) );
-
-                filterPagedTable.saveNewTabSettings( modifiedSettings.getKey(),tabSettingsValues );
-                drawCommand.execute();
-            } );
+                                           filterPagedTable.saveNewTabSettings(modifiedSettings.getKey(),
+                                                                               tabSettingsValues);
+                                           drawCommand.execute();
+                                       });
     }
 
-    public String getTableSettingsToStr(FilterSettings tableSettings){
-        return tableSettingsJSONMarshaller.toJsonString( tableSettings );
+    public String getTableSettingsToStr(FilterSettings tableSettings) {
+        return tableSettingsJSONMarshaller.toJsonString(tableSettings);
     }
 
-    public FilterSettings getStrToTableSettings(String json){
-        return tableSettingsJSONMarshaller.fromJsonString( json );
+    public FilterSettings getStrToTableSettings(String json) {
+        return tableSettingsJSONMarshaller.fromJsonString(json);
     }
 }

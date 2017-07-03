@@ -24,7 +24,8 @@ import org.kie.internal.jaxb.CorrelationKeyXmlAdapter;
 import org.kie.internal.process.CorrelationKey;
 import org.kie.internal.process.CorrelationProperty;
 
-public class RemoteCorrelationKey implements CorrelationKey, Serializable {
+public class RemoteCorrelationKey implements CorrelationKey,
+                                             Serializable {
 
     private static final long serialVersionUID = 4469298702447675428L;
     private String name;
@@ -40,13 +41,13 @@ public class RemoteCorrelationKey implements CorrelationKey, Serializable {
         return this.name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public List<CorrelationProperty<?>> getProperties() {
         return this.properties;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override
@@ -59,5 +60,4 @@ public class RemoteCorrelationKey implements CorrelationKey, Serializable {
     public String toExternalForm() {
         return CorrelationKeyXmlAdapter.marshalCorrelationKey(this);
     }
-
 }

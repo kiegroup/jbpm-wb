@@ -29,7 +29,8 @@ public class RequestParameterSummary implements Serializable {
     public RequestParameterSummary() {
     }
 
-    public RequestParameterSummary(String key, String value) {
+    public RequestParameterSummary(String key,
+                                   String value) {
         super();
         this.key = key;
         this.value = value;
@@ -50,5 +51,4 @@ public class RequestParameterSummary implements Serializable {
     public void setValue(String value) {
         this.value = value;
     }
-
 }

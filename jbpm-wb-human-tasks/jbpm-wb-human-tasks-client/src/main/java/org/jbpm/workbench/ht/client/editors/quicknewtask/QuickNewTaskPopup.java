@@ -61,11 +61,11 @@ import org.uberfire.workbench.events.NotificationEvent;
 @Dependent
 public class QuickNewTaskPopup extends BaseModal {
 
-    interface Binder
-            extends
-            UiBinder<Widget, QuickNewTaskPopup> {
+    private static Binder uiBinder = GWT.create(Binder.class);
 
-    }
+    private final List<FormGroup> userControlGroups = new ArrayList<FormGroup>();
+
+    private final List<FormGroup> groupControlGroups = new ArrayList<FormGroup>();
 
     @UiField
     public TabPanel tabPanel;
@@ -145,52 +145,43 @@ public class QuickNewTaskPopup extends BaseModal {
     @Inject
     private Event<NotificationEvent> notification;
 
-//    @Inject
-//    private Event<NewTaskEvent> newTaskEvent;
-
-    private static Binder uiBinder = GWT.create( Binder.class );
-
     private HandlerRegistration textKeyPressHandler;
 
-    private final List<FormGroup> userControlGroups = new ArrayList<FormGroup>();
-
-    private final List<FormGroup> groupControlGroups = new ArrayList<FormGroup>();
-
-    private String[] priorities = { "0 - " + Constants.INSTANCE.High(),
+    private String[] priorities = {"0 - " + Constants.INSTANCE.High(),
             "1", "2", "3", "4", "5 - " + Constants.INSTANCE.Medium(),
-            "6", "7", "8", "9", "10 - " + Constants.INSTANCE.Low() };
+            "6", "7", "8", "9", "10 - " + Constants.INSTANCE.Low()};
 
     private Long processInstanceId = -1L;
 
     public QuickNewTaskPopup() {
-        setTitle( Constants.INSTANCE.New_Task() );
+        setTitle(Constants.INSTANCE.New_Task());
 
-        setBody( uiBinder.createAndBindUi( this ) );
+        setBody(uiBinder.createAndBindUi(this));
 
-        basicTab.setDataTargetWidget( basicTabPane );
-        taskformTab.setDataTargetWidget( taskformTabPane );
-        advancedTab.setDataTargetWidget( advancedTabPane );
+        basicTab.setDataTargetWidget(basicTabPane);
+        taskformTab.setDataTargetWidget(taskformTabPane);
+        advancedTab.setDataTargetWidget(advancedTabPane);
 
-        dueDate.getDateBox().setContainer( this );
+        dueDate.getDateBox().setContainer(this);
 
         init();
         final GenericModalFooter footer = new GenericModalFooter();
-        footer.addButton( Constants.INSTANCE.Create(),
-                          new Command() {
-                              @Override
-                              public void execute() {
-                                  okButton();
-                              }
-                          }, IconType.PLUS,
-                          ButtonType.PRIMARY );
+        footer.addButton(Constants.INSTANCE.Create(),
+                         new Command() {
+                             @Override
+                             public void execute() {
+                                 okButton();
+                             }
+                         },
+                         IconType.PLUS,
+                         ButtonType.PRIMARY);
 
-        add( footer );
+        add(footer);
     }
 
-    public void show( Long processInstanceId ) {
+    public void show(Long processInstanceId) {
         show();
         this.processInstanceId = processInstanceId;
-
     }
 
     public void show() {
@@ -199,87 +190,88 @@ public class QuickNewTaskPopup extends BaseModal {
     }
 
     private void okButton() {
-        if ( validateForm() ) {
+        if (validateForm()) {
             addTask();
         }
     }
 
     public void init() {
 
-        long day = new Long( 24 * 60 * 60 * 1000 );
+        long day = new Long(24 * 60 * 60 * 1000);
         long now = System.currentTimeMillis();
-        dueDate.setEnabled( true );
+        dueDate.setEnabled(true);
 
-        dueDate.setValue( day + now );
+        dueDate.setValue(day + now);
 
-        dueDateTime.setValue( UTCTimeBox.getValueForNextHour() );
+        dueDateTime.setValue(UTCTimeBox.getValueForNextHour());
 
         //initializeUserGroupControls();
         refreshUserGroupControls();
 
         KeyPressHandler keyPressHandlerText = new KeyPressHandler() {
             @Override
-            public void onKeyPress( KeyPressEvent event ) {
+            public void onKeyPress(KeyPressEvent event) {
                 clearErrorMessages();
-                if ( event.getNativeEvent().getKeyCode() == 13 ) {
+                if (event.getNativeEvent().getKeyCode() == 13) {
                     addTask();
                 }
             }
         };
-        textKeyPressHandler = taskNameText.addKeyPressHandler( keyPressHandlerText );
+        textKeyPressHandler = taskNameText.addKeyPressHandler(keyPressHandlerText);
 
-        taskNameText.setFocus( true );
+        taskNameText.setFocus(true);
 
-        for ( String priority : priorities ) {
-            taskPriorityListBox.addItem( priority );
+        for (String priority : priorities) {
+            taskPriorityListBox.addItem(priority);
         }
-        addUserButton.addClickHandler( new ClickHandler() {
+        addUserButton.addClickHandler(new ClickHandler() {
             @Override
-            public void onClick( ClickEvent event ) {
-                addUserControl( false );
+            public void onClick(ClickEvent event) {
+                addUserControl(false);
                 refreshUserGroupControls();
             }
-        } );
+        });
 
-        addGroupButton.addClickHandler( new ClickHandler() {
+        addGroupButton.addClickHandler(new ClickHandler() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void onClick(ClickEvent event) {
                 addGroupControl();
                 refreshUserGroupControls();
             }
-        } );
+        });
     }
-
-
 
     public void cleanForm() {
 
         basicTab.showTab();
-        basicTab.setActive( true );
-        advancedTab.setActive( false );
+        basicTab.setActive(true);
+        advancedTab.setActive(false);
 
         userControlGroups.clear();
         groupControlGroups.clear();
         clearErrorMessages();
-        taskNameText.setValue( "" );
+        taskNameText.setValue("");
 
-        long day = new Long( 24 * 60 * 60 * 1000 );
+        long day = new Long(24 * 60 * 60 * 1000);
         long now = System.currentTimeMillis();
-        dueDate.setEnabled( true );
-        dueDate.setValue( day + now );
-        dueDateTime.setValue( UTCTimeBox.getValueForNextHour() );
+        dueDate.setEnabled(true);
+        dueDate.setValue(day + now);
+        dueDateTime.setValue(UTCTimeBox.getValueForNextHour());
 
-        setSelectedValue( taskPriorityListBox, "0" );
+        setSelectedValue(taskPriorityListBox,
+                         "0");
 
-        addUserControl( true );
+        addUserControl(true);
         refreshUserGroupControls();
-        taskNameText.setFocus( true );
+        taskNameText.setFocus(true);
 
         taskFormDeploymentId.clear();
-        setSelectedValue( taskFormDeploymentId, "" );
+        setSelectedValue(taskFormDeploymentId,
+                         "");
 
         taskFormName.clear();
-        setSelectedValue( taskFormName, "" );
+        setSelectedValue(taskFormName,
+                         "");
 
         this.processInstanceId = -1L;
     }
@@ -293,147 +285,152 @@ public class QuickNewTaskPopup extends BaseModal {
         boolean valid = true;
         clearErrorMessages();
 
-        if ( taskNameText.getText() != null && taskNameText.getText().trim().length() == 0 ) {
+        if (taskNameText.getText() != null && taskNameText.getText().trim().length() == 0) {
             basicTab.showTab();
-            taskNameText.setFocus( true );
+            taskNameText.setFocus(true);
 
-            taskNameHelpLabel.setText( Constants.INSTANCE.Task_Must_Have_A_Name() );
-            taskNameControlGroup.setValidationState( ValidationState.ERROR );
+            taskNameHelpLabel.setText(Constants.INSTANCE.Task_Must_Have_A_Name());
+            taskNameControlGroup.setValidationState(ValidationState.ERROR);
             valid = false;
         } else {
-            taskNameControlGroup.setValidationState( ValidationState.SUCCESS );
+            taskNameControlGroup.setValidationState(ValidationState.SUCCESS);
         }
         return valid;
     }
 
     private void refreshUserGroupControls() {
-        final List<Widget> widgets2Remove = new ArrayList<Widget>( controlsPanel.getWidgetCount() );
-        for ( int i = 0; i < controlsPanel.getWidgetCount(); i++ ) {
-            if ( "yes".equals( controlsPanel.getWidget( i ).getElement().getPropertyString( "isDynamic" ) ) ) {
-                widgets2Remove.add( controlsPanel.getWidget( i ) );
+        final List<Widget> widgets2Remove = new ArrayList<Widget>(controlsPanel.getWidgetCount());
+        for (int i = 0; i < controlsPanel.getWidgetCount(); i++) {
+            if ("yes".equals(controlsPanel.getWidget(i).getElement().getPropertyString("isDynamic"))) {
+                widgets2Remove.add(controlsPanel.getWidget(i));
             }
         }
 
-        for ( final Widget widget : widgets2Remove ) {
-            controlsPanel.remove( widget );
+        for (final Widget widget : widgets2Remove) {
+            controlsPanel.remove(widget);
         }
 
         widgets2Remove.clear();
 
-        for ( FormGroup userGroupControl : userControlGroups ) {
-            controlsPanel.add( userGroupControl );
+        for (FormGroup userGroupControl : userControlGroups) {
+            controlsPanel.add(userGroupControl);
         }
 
-        for ( FormGroup groupGroupControl : groupControlGroups ) {
-            controlsPanel.add( groupGroupControl );
+        for (FormGroup groupGroupControl : groupControlGroups) {
+            controlsPanel.add(groupGroupControl);
         }
-
     }
 
-    private void addUserControl( final Boolean addCurrentUser ) {
+    private void addUserControl(final Boolean addCurrentUser) {
         final FormGroup userControlGroup = new FormGroup();
-        userControlGroup.getElement().setPropertyString( "isDynamic", "yes" );
-        userControlGroup.add( new FormLabel() {{
-            setText( Constants.INSTANCE.User() );
-            addStyleName( ColumnSize.MD_3.getCssName() );
-            setFor( "userTextBox" );
-        }} );
-        userControlGroup.add( new Column( ColumnSize.MD_9 ) {{
-            add( new InputGroup() {{
-                add( new TextBox() {{
-                    setName( "userTextBox" );
-                    if ( addCurrentUser ) {
-                        setText( identity.getIdentifier() );
+        userControlGroup.getElement().setPropertyString("isDynamic",
+                                                        "yes");
+        userControlGroup.add(new FormLabel() {{
+            setText(Constants.INSTANCE.User());
+            addStyleName(ColumnSize.MD_3.getCssName());
+            setFor("userTextBox");
+        }});
+        userControlGroup.add(new Column(ColumnSize.MD_9) {{
+            add(new InputGroup() {{
+                add(new TextBox() {{
+                    setName("userTextBox");
+                    if (addCurrentUser) {
+                        setText(identity.getIdentifier());
                     }
-                }} );
-                add( new InputGroupButton() {{
-                    add( new Button() {{
-                        setIcon( IconType.TRASH );
-                        setType( ButtonType.DANGER );
-                        setTitle( Constants.INSTANCE.Remove_User() );
-                        addClickHandler( new ClickHandler() {
+                }});
+                add(new InputGroupButton() {{
+                    add(new Button() {{
+                        setIcon(IconType.TRASH);
+                        setType(ButtonType.DANGER);
+                        setTitle(Constants.INSTANCE.Remove_User());
+                        addClickHandler(new ClickHandler() {
                             @Override
-                            public void onClick( ClickEvent event ) {
-                                userControlGroups.remove( userControlGroup );
+                            public void onClick(ClickEvent event) {
+                                userControlGroups.remove(userControlGroup);
                                 refreshUserGroupControls();
                             }
-                        } );
-                    }} );
-                }} );
-            }} );
-        }} );
+                        });
+                    }});
+                }});
+            }});
+        }});
 
-        userControlGroups.add( userControlGroup );
+        userControlGroups.add(userControlGroup);
     }
 
     private void addGroupControl() {
         final FormGroup groupControlGroup = new FormGroup();
-        groupControlGroup.getElement().setPropertyString( "isDynamic", "yes" );
-        groupControlGroup.add( new FormLabel() {{
-            setText( Constants.INSTANCE.Group() );
-            addStyleName( ColumnSize.MD_3.getCssName() );
-            setFor( "groupTextBox" );
-        }} );
-        groupControlGroup.add( new Column( ColumnSize.MD_9 ) {{
-            add( new InputGroup() {{
-                add( new TextBox() {{
-                    setName( "groupTextBox" );
-                }} );
-                add( new InputGroupButton() {{
-                    add( new Button() {{
-                        setIcon( IconType.MINUS );
-                        setTitle( Constants.INSTANCE.Remove_User() );
-                        addClickHandler( new ClickHandler() {
+        groupControlGroup.getElement().setPropertyString("isDynamic",
+                                                         "yes");
+        groupControlGroup.add(new FormLabel() {{
+            setText(Constants.INSTANCE.Group());
+            addStyleName(ColumnSize.MD_3.getCssName());
+            setFor("groupTextBox");
+        }});
+        groupControlGroup.add(new Column(ColumnSize.MD_9) {{
+            add(new InputGroup() {{
+                add(new TextBox() {{
+                    setName("groupTextBox");
+                }});
+                add(new InputGroupButton() {{
+                    add(new Button() {{
+                        setIcon(IconType.MINUS);
+                        setTitle(Constants.INSTANCE.Remove_User());
+                        addClickHandler(new ClickHandler() {
                             @Override
-                            public void onClick( ClickEvent event ) {
-                                groupControlGroups.remove( groupControlGroup );
+                            public void onClick(ClickEvent event) {
+                                groupControlGroups.remove(groupControlGroup);
                                 refreshUserGroupControls();
                             }
-                        } );
-                    }} );
-                }} );
-            }} );
-        }} );
+                        });
+                    }});
+                }});
+            }});
+        }});
 
-        groupControlGroups.add( groupControlGroup );
+        groupControlGroups.add(groupControlGroup);
     }
 
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     private void addTask() {
         textKeyPressHandler.removeHandler();
-        List<String> users = getTextBoxValues( userControlGroups );
-        List<String> groups = getTextBoxValues( groupControlGroups );
+        List<String> users = getTextBoxValues(userControlGroups);
+        List<String> groups = getTextBoxValues(groupControlGroups);
 
-        if ( users.size() == 0 && groups.size() == 0 ) {
+        if (users.size() == 0 && groups.size() == 0) {
             userControlGroups.clear();
             groupControlGroups.clear();
-            addUserControl( true );
+            addUserControl(true);
             refreshUserGroupControls();
-            errorMessages.setText( Constants.INSTANCE.Provide_User_Or_Group() );
-            errorMessagesGroup.setValidationState( ValidationState.ERROR );
+            errorMessages.setText(Constants.INSTANCE.Provide_User_Or_Group());
+            errorMessagesGroup.setValidationState(ValidationState.ERROR);
             advancedTab.showTab();
         } else {
-            addTask( users, groups,
-                     taskNameText.getText(), taskPriorityListBox.getSelectedIndex(),
-                     dueDate.getValue(), dueDateTime.getValue(), taskFormName.getSelectedValue(),
-                     taskFormDeploymentId.getSelectedValue(), processInstanceId );
+            addTask(users,
+                    groups,
+                    taskNameText.getText(),
+                    taskPriorityListBox.getSelectedIndex(),
+                    dueDate.getValue(),
+                    dueDateTime.getValue(),
+                    taskFormName.getSelectedValue(),
+                    taskFormDeploymentId.getSelectedValue(),
+                    processInstanceId);
         }
-
     }
 
-    public void addTask( final List<String> users,
-                         List<String> groups,
-                         final String taskName,
-                         int priority,
-                         long dueDate,
-                         long dueDateTime,
-                         String taskFormName,
-                         String deploymentId,
-                         Long processInstanceId
-                       ) {
+    public void addTask(final List<String> users,
+                        List<String> groups,
+                        final String taskName,
+                        int priority,
+                        long dueDate,
+                        long dueDateTime,
+                        String taskFormName,
+                        String deploymentId,
+                        Long processInstanceId
+    ) {
 /*        Date due = UTCDateBox.utc2date( dueDate + dueDateTime );
 
         boolean start = false;
@@ -467,6 +464,15 @@ public class QuickNewTaskPopup extends BaseModal {
 */
     }
 
+    public List<String> getTextBoxValues(List<FormGroup> controlGroups) {
+        List<String> filledValues = new ArrayList<String>();
+        for (final FormGroup userGroupControl : controlGroups) {
+            getTextBoxValues(userGroupControl,
+                             filledValues);
+        }
+        return filledValues;
+    }
+
 /*    private void refreshNewTask( Long taskId,
                                  String taskName,
                                  String msj ) {
@@ -475,42 +481,40 @@ public class QuickNewTaskPopup extends BaseModal {
         closePopup();
     }*/
 
-    public List<String> getTextBoxValues( List<FormGroup> controlGroups ) {
-        List<String> filledValues = new ArrayList<String>();
-        for ( final FormGroup userGroupControl : controlGroups ) {
-            getTextBoxValues( userGroupControl, filledValues );
-        }
-        return filledValues;
-    }
-
-    private void getTextBoxValues( final Widget widget,
-                                  final List<String> values ) {
-        if ( widget instanceof ComplexPanel ) {
-            for ( Widget child : (ComplexPanel) widget ) {
-                getTextBoxValues( child, values );
+    private void getTextBoxValues(final Widget widget,
+                                  final List<String> values) {
+        if (widget instanceof ComplexPanel) {
+            for (Widget child : (ComplexPanel) widget) {
+                getTextBoxValues(child,
+                                 values);
             }
-        } else if ( widget instanceof TextBox ) {
-            final String value = ( (TextBox) widget ).getText().trim();
-            if ( !value.isEmpty() ) {
-                values.add( value );
+        } else if (widget instanceof TextBox) {
+            final String value = ((TextBox) widget).getText().trim();
+            if (!value.isEmpty()) {
+                values.add(value);
             }
         }
     }
 
     private void clearErrorMessages() {
-        errorMessages.setText( "" );
-        taskNameHelpLabel.setText( "" );
-        taskNameControlGroup.setValidationState( ValidationState.NONE );
+        errorMessages.setText("");
+        taskNameHelpLabel.setText("");
+        taskNameControlGroup.setValidationState(ValidationState.NONE);
     }
 
-    void setSelectedValue( final ListBox listbox,
-                           final String value ) {
-        for ( int i = 0; i < listbox.getItemCount(); i++ ) {
-            if ( listbox.getValue( i ).equals( value ) ) {
-                listbox.setSelectedIndex( i );
+    void setSelectedValue(final ListBox listbox,
+                          final String value) {
+        for (int i = 0; i < listbox.getItemCount(); i++) {
+            if (listbox.getValue(i).equals(value)) {
+                listbox.setSelectedIndex(i);
                 return;
             }
         }
     }
 
+    interface Binder
+            extends
+            UiBinder<Widget, QuickNewTaskPopup> {
+
+    }
 }

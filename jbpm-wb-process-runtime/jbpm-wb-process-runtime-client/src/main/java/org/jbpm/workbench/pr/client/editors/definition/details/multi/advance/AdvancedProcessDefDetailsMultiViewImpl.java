@@ -43,12 +43,7 @@ import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 public class AdvancedProcessDefDetailsMultiViewImpl extends BaseProcessDefDetailsMultiViewImpl
         implements AdvancedProcessDefDetailsMultiPresenter.AdvancedProcessDefDetailsMultiView {
 
-    interface Binder extends
-                     UiBinder<Widget, AdvancedProcessDefDetailsMultiViewImpl> {
-
-    }
-
-    private static Binder uiBinder = GWT.create( Binder.class );
+    private static Binder uiBinder = GWT.create(Binder.class);
 
     @UiField
     NavTabs navTabs;
@@ -59,56 +54,57 @@ public class AdvancedProcessDefDetailsMultiViewImpl extends BaseProcessDefDetail
     private AdvancedProcessDefDetailsMultiPresenter presenter;
 
     private TabPane definitionDetailsPane;
+
     private TabListItem definitionDetailsTab;
 
     @Override
-    public void init( final AdvancedProcessDefDetailsMultiPresenter presenter ) {
+    public void init(final AdvancedProcessDefDetailsMultiPresenter presenter) {
         this.presenter = presenter;
-        initWidget( uiBinder.createAndBindUi( this ) );
+        initWidget(uiBinder.createAndBindUi(this));
         initTabs();
     }
 
     protected void initTabs() {
         definitionDetailsPane = new TabPane() {{
-            add( getTabView() );
-            setActive( true );
+            add(getTabView());
+            setActive(true);
         }};
-        definitionDetailsTab = new TabListItem( Constants.INSTANCE.Definition_Details() ) {{
-            setDataTargetWidget( definitionDetailsPane );
-            addStyleName( "uf-dropdown-tab-list-item" );
-            setActive( true );
+        definitionDetailsTab = new TabListItem(Constants.INSTANCE.Definition_Details()) {{
+            setDataTargetWidget(definitionDetailsPane);
+            addStyleName("uf-dropdown-tab-list-item");
+            setActive(true);
         }};
 
-        navTabs.add( definitionDetailsTab );
-        tabContent.add( definitionDetailsPane );
+        navTabs.add(definitionDetailsTab);
+        tabContent.add(definitionDetailsPane);
     }
 
     @Override
     public IsWidget getOptionsButton() {
         return new ButtonGroup() {{
-            add( new Button( Constants.INSTANCE.Options() ) {{
-                setSize( ButtonSize.SMALL );
-                setDataToggle( Toggle.DROPDOWN );
-            }} );
-            add( new DropDownMenu() {{
-                addStyleName( Styles.DROPDOWN_MENU + "-right" );
-                add( new AnchorListItem( Constants.INSTANCE.View_Process_Instances() ) {{
-                    addClickHandler( new ClickHandler() {
+            add(new Button(Constants.INSTANCE.Options()) {{
+                setSize(ButtonSize.SMALL);
+                setDataToggle(Toggle.DROPDOWN);
+            }});
+            add(new DropDownMenu() {{
+                addStyleName(Styles.DROPDOWN_MENU + "-right");
+                add(new AnchorListItem(Constants.INSTANCE.View_Process_Instances()) {{
+                    addClickHandler(new ClickHandler() {
                         @Override
-                        public void onClick( final ClickEvent clickEvent ) {
+                        public void onClick(final ClickEvent clickEvent) {
                             presenter.viewProcessInstances();
                         }
-                    } );
-                }} );
-                add( new AnchorListItem( Constants.INSTANCE.View_Process_Model() ) {{
-                    addClickHandler( new ClickHandler() {
+                    });
+                }});
+                add(new AnchorListItem(Constants.INSTANCE.View_Process_Model()) {{
+                    addClickHandler(new ClickHandler() {
                         @Override
-                        public void onClick( final ClickEvent clickEvent ) {
+                        public void onClick(final ClickEvent clickEvent) {
                             presenter.goToProcessDefModelPopup();
                         }
-                    } );
-                }} );
-            }} );
+                    });
+                }});
+            }});
         }};
     }
 
@@ -127,4 +123,8 @@ public class AdvancedProcessDefDetailsMultiViewImpl extends BaseProcessDefDetail
         presenter.createNewProcessInstance();
     }
 
+    interface Binder extends
+                     UiBinder<Widget, AdvancedProcessDefDetailsMultiViewImpl> {
+
+    }
 }

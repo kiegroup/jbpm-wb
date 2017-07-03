@@ -19,5 +19,5 @@ package org.jbpm.workbench.common.model;
 import org.jbpm.workbench.common.service.ItemKey;
 
 public class DataMockKey implements ItemKey {
-  
+
 }

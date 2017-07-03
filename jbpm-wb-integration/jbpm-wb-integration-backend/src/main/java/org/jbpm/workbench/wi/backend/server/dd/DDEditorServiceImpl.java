@@ -53,7 +53,7 @@ public class DDEditorServiceImpl
         implements DDEditorService {
 
     @Inject
-    @Named( "ioStrategy" )
+    @Named("ioStrategy")
     private IOService ioService;
 
     @Inject
@@ -63,79 +63,95 @@ public class DDEditorServiceImpl
     private CommentedOptionFactory commentedOptionFactory;
 
     @Override
-    public DeploymentDescriptorModel load( Path path ) {
-        return super.loadContent( path );
+    public DeploymentDescriptorModel load(Path path) {
+        return super.loadContent(path);
     }
 
     @Override
-    protected DeploymentDescriptorModel constructContent( Path path, Overview overview ) {
+    protected DeploymentDescriptorModel constructContent(Path path,
+                                                         Overview overview) {
 
-        InputStream input = ioService.newInputStream( Paths.convert( path ) );
+        InputStream input = ioService.newInputStream(Paths.convert(path));
 
         DeploymentDescriptor originDD = DeploymentDescriptorIO.fromXml(input);
 
-        DeploymentDescriptorModel ddModel = marshal( originDD );
+        DeploymentDescriptorModel ddModel = marshal(originDD);
 
-        ddModel.setOverview( overview );
+        ddModel.setOverview(overview);
 
         return ddModel;
     }
 
     @Override
-    public Path save( Path path, DeploymentDescriptorModel content, Metadata metadata, String comment ) {
+    public Path save(Path path,
+                     DeploymentDescriptorModel content,
+                     Metadata metadata,
+                     String comment) {
 
         try {
-            save( path, content, metadata, commentedOptionFactory.makeCommentedOption( comment ) );
+            save(path,
+                 content,
+                 metadata,
+                 commentedOptionFactory.makeCommentedOption(comment));
             return path;
-        } catch ( Exception e ) {
-            throw ExceptionUtilities.handleException( e );
+        } catch (Exception e) {
+            throw ExceptionUtilities.handleException(e);
         }
     }
 
     //Don't expose this method in the service API just in case we wants to remove the automatic updates for the descriptor.
-    public Path save( Path path, DeploymentDescriptorModel content, Metadata metadata, CommentedOption commentedOption ) {
+    public Path save(Path path,
+                     DeploymentDescriptorModel content,
+                     Metadata metadata,
+                     CommentedOption commentedOption) {
 
         try {
-            String deploymentContent = unmarshal( path, content ).toXml();
+            String deploymentContent = unmarshal(path,
+                                                 content).toXml();
 
-            Metadata currentMetadata = metadataService.getMetadata( path );
-            ioService.write( Paths.convert( path ),
-                             deploymentContent,
-                             metadataService.setUpAttributes( path,
-                                                              metadata ),
-                             commentedOption );
+            Metadata currentMetadata = metadataService.getMetadata(path);
+            ioService.write(Paths.convert(path),
+                            deploymentContent,
+                            metadataService.setUpAttributes(path,
+                                                            metadata),
+                            commentedOption);
 
-            fireMetadataSocialEvents( path, currentMetadata, metadata );
+            fireMetadataSocialEvents(path,
+                                     currentMetadata,
+                                     metadata);
 
             return path;
-        } catch ( Exception e ) {
-            throw ExceptionUtilities.handleException( e );
+        } catch (Exception e) {
+            throw ExceptionUtilities.handleException(e);
         }
     }
 
     @Override
-    public List<ValidationMessage> validate( Path path, DeploymentDescriptorModel content ) {
+    public List<ValidationMessage> validate(Path path,
+                                            DeploymentDescriptorModel content) {
         final List<ValidationMessage> validationMessages = new ArrayList<ValidationMessage>();
         try {
-            unmarshal( path, content ).toXml();
-        } catch ( Exception e ) {
+            unmarshal(path,
+                      content).toXml();
+        } catch (Exception e) {
             final ValidationMessage msg = new ValidationMessage();
-            msg.setPath( path );
-            msg.setLevel( Level.ERROR );
-            msg.setText( e.getMessage() );
-            validationMessages.add( msg );
+            msg.setPath(path);
+            msg.setLevel(Level.ERROR);
+            msg.setText(e.getMessage());
+            validationMessages.add(msg);
         }
 
         return validationMessages;
     }
 
     @Override
-    public String toSource( Path path, DeploymentDescriptorModel model ) {
+    public String toSource(Path path,
+                           DeploymentDescriptorModel model) {
         try {
-            return unmarshal( path, model ).toXml();
-
-        } catch ( Exception e ) {
-            throw ExceptionUtilities.handleException( e );
+            return unmarshal(path,
+                             model).toXml();
+        } catch (Exception e) {
+            throw ExceptionUtilities.handleException(e);
         }
     }
 
@@ -188,8 +204,8 @@ public class DDEditorServiceImpl
         return ddModel;
     }
 
-
-    protected DeploymentDescriptor unmarshal(Path path, DeploymentDescriptorModel model) {
+    protected DeploymentDescriptor unmarshal(Path path,
+                                             DeploymentDescriptorModel model) {
 
         if (model == null) {
             return new DeploymentDescriptorManager().getDefaultDescriptor();
@@ -239,7 +255,6 @@ public class DDEditorServiceImpl
         updated.getBuilder().setClasses(model.getRemotableClasses());
 
         return updated;
-
     }
 
     private List<ItemObjectModel> processNamedObjectModel(List<NamedObjectModel> data) {
@@ -249,7 +264,10 @@ public class DDEditorServiceImpl
             for (NamedObjectModel orig : data) {
                 List<Parameter> parameters = collectParameters(orig.getParameters());
 
-                result.add(new ItemObjectModel(orig.getName(), orig.getIdentifier(), orig.getResolver(), parameters));
+                result.add(new ItemObjectModel(orig.getName(),
+                                               orig.getIdentifier(),
+                                               orig.getResolver(),
+                                               parameters));
             }
         }
 
@@ -263,7 +281,10 @@ public class DDEditorServiceImpl
             for (ObjectModel orig : data) {
                 List<Parameter> parameters = collectParameters(orig.getParameters());
 
-                result.add(new ItemObjectModel(null, orig.getIdentifier(), orig.getResolver(), parameters));
+                result.add(new ItemObjectModel(null,
+                                               orig.getIdentifier(),
+                                               orig.getResolver(),
+                                               parameters));
             }
         }
 
@@ -278,23 +299,26 @@ public class DDEditorServiceImpl
             for (Object param : parameters) {
                 if (param instanceof ObjectModel) {
                     ObjectModel model = (ObjectModel) param;
-                    result.add(new Parameter(model.getIdentifier(), model.getParameters().get(0).toString()));
+                    result.add(new Parameter(model.getIdentifier(),
+                                             model.getParameters().get(0).toString()));
                 }
             }
         }
         return result;
     }
 
-
     private List<ObjectModel> processToObjectModel(List<ItemObjectModel> data) {
         List<ObjectModel> result = null;
         if (data != null) {
             result = new ArrayList<ObjectModel>();
             for (ItemObjectModel item : data) {
-                ObjectModel ms = new ObjectModel(item.getResolver(), item.getValue());
+                ObjectModel ms = new ObjectModel(item.getResolver(),
+                                                 item.getValue());
                 if (item.getParameters() != null) {
                     for (Parameter param : item.getParameters()) {
-                        ObjectModel p = new ObjectModel(item.getResolver(), param.getType(), param.getValue().trim());
+                        ObjectModel p = new ObjectModel(item.getResolver(),
+                                                        param.getType(),
+                                                        param.getValue().trim());
                         ms.addParameter(p);
                     }
                 }
@@ -310,10 +334,14 @@ public class DDEditorServiceImpl
         if (data != null) {
             result = new ArrayList<NamedObjectModel>();
             for (ItemObjectModel item : data) {
-                NamedObjectModel ms = new NamedObjectModel(item.getResolver(), item.getName(), item.getValue());
+                NamedObjectModel ms = new NamedObjectModel(item.getResolver(),
+                                                           item.getName(),
+                                                           item.getValue());
                 if (item.getParameters() != null) {
                     for (Parameter param : item.getParameters()) {
-                        ObjectModel p = new ObjectModel(item.getResolver(), param.getType(), param.getValue().trim());
+                        ObjectModel p = new ObjectModel(item.getResolver(),
+                                                        param.getType(),
+                                                        param.getValue().trim());
                         ms.addParameter(p);
                     }
                 }
@@ -329,16 +357,17 @@ public class DDEditorServiceImpl
         org.uberfire.java.nio.file.Path converted = Paths.convert(path);
         if (!ioService.exists(converted)) {
             // create descriptor
-            DeploymentDescriptor dd = new DeploymentDescriptorManager( "org.jbpm.domain" ).getDefaultDescriptor();
+            DeploymentDescriptor dd = new DeploymentDescriptorManager("org.jbpm.domain").getDefaultDescriptor();
 
-            if ( configUpdaterHelper.hasPersistenceFile( path ) ) {
+            if (configUpdaterHelper.hasPersistenceFile(path)) {
                 //if current project has a persistence.xml file configured add the JPAMarshalling strategy.
-                configUpdaterHelper.addJPAMarshallingStrategy( dd, path );
+                configUpdaterHelper.addJPAMarshallingStrategy(dd,
+                                                              path);
             }
 
             String xmlDescriptor = dd.toXml();
-            ioService.write( converted, xmlDescriptor );
+            ioService.write(converted,
+                            xmlDescriptor);
         }
     }
-
 }

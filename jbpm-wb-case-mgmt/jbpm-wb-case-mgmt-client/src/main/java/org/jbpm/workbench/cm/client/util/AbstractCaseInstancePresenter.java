@@ -52,9 +52,12 @@ public abstract class AbstractCaseInstancePresenter<V extends UberElement> exten
     @OnStartup
     public void onStartup(final PlaceRequest place) {
         this.place = place;
-        this.caseId = place.getParameter(PARAMETER_CASE_ID, null);
-        this.serverTemplateId = place.getParameter(PARAMETER_SERVER_TEMPLATE_ID, null);
-        this.containerId = place.getParameter(PARAMETER_CONTAINER_ID, null);
+        this.caseId = place.getParameter(PARAMETER_CASE_ID,
+                                         null);
+        this.serverTemplateId = place.getParameter(PARAMETER_SERVER_TEMPLATE_ID,
+                                                   null);
+        this.containerId = place.getParameter(PARAMETER_CONTAINER_ID,
+                                              null);
         findCaseInstance();
     }
 
@@ -65,7 +68,9 @@ public abstract class AbstractCaseInstancePresenter<V extends UberElement> exten
     public void findCaseInstance() {
         clearCaseInstance();
         if (isCaseInstanceValid()) {
-            caseService.call((CaseInstanceSummary cis) -> loadCaseInstance(cis)).getCaseInstance(serverTemplateId, containerId, caseId);
+            caseService.call((CaseInstanceSummary cis) -> loadCaseInstance(cis)).getCaseInstance(serverTemplateId,
+                                                                                                 containerId,
+                                                                                                 caseId);
         }
     }
 
@@ -82,5 +87,4 @@ public abstract class AbstractCaseInstancePresenter<V extends UberElement> exten
     public void setCaseService(final Caller<CaseManagementService> caseService) {
         this.caseService = caseService;
     }
-
 }

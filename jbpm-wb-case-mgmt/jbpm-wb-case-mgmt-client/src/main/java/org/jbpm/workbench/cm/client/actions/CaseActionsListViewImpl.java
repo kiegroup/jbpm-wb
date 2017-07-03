@@ -39,8 +39,10 @@ import static org.jboss.errai.common.client.dom.DOMUtil.*;
 @Dependent
 @Templated
 public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter>
-        implements CaseActionsPresenter.CaseActionsListView, PaginationViewImpl.PageList <CaseActionSummary> {
-    private int PAGE_SIZE = 3;
+        implements CaseActionsPresenter.CaseActionsListView,
+                   PaginationViewImpl.PageList<CaseActionSummary> {
+
+    private static int PAGE_SIZE = 3;
 
     @Inject
     @DataField("simple-list")
@@ -57,6 +59,8 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter>
     @Inject
     @DataField("actions-list-header-counter")
     Span actionsListHeaderCounter;
+
+    List<CaseActionSummary> allActionsList;
 
     @Inject
     @DataField("empty-list-item")
@@ -79,8 +83,6 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter>
     @AutoBound
     private DataBinder<List<CaseActionSummary>> caseActionList;
 
-    List<CaseActionSummary> allActionsList;
-
     @Override
     public void init(final CaseActionsPresenter presenter) {
         this.presenter = presenter;
@@ -89,11 +91,15 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter>
 
     public void setCaseActionList(final List<CaseActionSummary> caseActionList) {
         allActionsList = caseActionList;
-        pagination.init(caseActionList, this, PAGE_SIZE);
+        pagination.init(caseActionList,
+                        this,
+                        PAGE_SIZE);
         if (caseActionList.isEmpty()) {
-            removeCSSClass(emptyContainer, "hidden");
+            removeCSSClass(emptyContainer,
+                           "hidden");
         } else {
-            addCSSClass(emptyContainer, "hidden");
+            addCSSClass(emptyContainer,
+                        "hidden");
         }
         actionsListHeaderCounter.setTextContent(String.valueOf(allActionsList.size()));
     }
@@ -103,19 +109,21 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter>
         caseActionList.setModel(new ArrayList<>());
     }
 
-    public void updateActionsHeader(final String heatherText, final String... stylesClass) {
+    public void updateActionsHeader(final String heatherText,
+                                    final String... stylesClass) {
         actionsListHeaderText.setTextContent(heatherText);
         for (String styleClass : stylesClass) {
-            addCSSClass(this.actionsListHeaderImage, styleClass);
+            addCSSClass(this.actionsListHeaderImage,
+                        styleClass);
         }
     }
 
     @Override
     public void setVisibleItems(List<CaseActionSummary> visibleItems) {
         this.caseActionList.setModel(visibleItems);
-        int tasksSize =visibleItems.size();
-        if(tasksSize > 1){
-            tasks.getComponent(tasksSize-1).setLastElementStyle();
+        int tasksSize = visibleItems.size();
+        if (tasksSize > 1) {
+            tasks.getComponent(tasksSize - 1).setLastElementStyle();
         }
     }
 
@@ -128,5 +136,4 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter>
     public HTMLElement getElement() {
         return simpleList;
     }
-
 }

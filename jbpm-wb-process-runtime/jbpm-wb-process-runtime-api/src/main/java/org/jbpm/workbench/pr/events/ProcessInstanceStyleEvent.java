@@ -17,21 +17,25 @@
 package org.jbpm.workbench.pr.events;
 
 import java.util.Date;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class ProcessInstanceStyleEvent {
-    
+
     private Long processInstanceId;
     private String processDefName;
     private String processDefVersion;
     private Date processInstanceStartDate;
-    
-    public ProcessInstanceStyleEvent(){
-        
+
+    public ProcessInstanceStyleEvent() {
+
     }
 
-    public ProcessInstanceStyleEvent(Long processInstanceId, String processDefName, String processDefVersion, Date processInstanceStartDate) {
+    public ProcessInstanceStyleEvent(Long processInstanceId,
+                                     String processDefName,
+                                     String processDefVersion,
+                                     Date processInstanceStartDate) {
         this.processInstanceId = processInstanceId;
         this.processDefName = processDefName;
         this.processDefVersion = processDefVersion;
@@ -69,6 +73,4 @@ public class ProcessInstanceStyleEvent {
     public void setProcessInstanceStartDate(Date processInstanceStartDate) {
         this.processInstanceStartDate = processInstanceStartDate;
     }
-
-    
 }

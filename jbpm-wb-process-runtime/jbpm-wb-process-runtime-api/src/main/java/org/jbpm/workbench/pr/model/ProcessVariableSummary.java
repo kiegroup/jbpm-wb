@@ -32,8 +32,13 @@ public class ProcessVariableSummary extends GenericSummary<String> {
     private String deploymentId;
     private String serverTemplateId;
 
-    public ProcessVariableSummary(String variableId, String variableInstanceId, long processInstanceId, String oldValue,
-            String newValue, long timestamp, String type) {
+    public ProcessVariableSummary(String variableId,
+                                  String variableInstanceId,
+                                  long processInstanceId,
+                                  String oldValue,
+                                  String newValue,
+                                  long timestamp,
+                                  String type) {
         this.id = variableId;
         this.name = variableId;
         this.variableId = variableId;
@@ -45,8 +50,15 @@ public class ProcessVariableSummary extends GenericSummary<String> {
         this.type = type;
     }
 
-    public ProcessVariableSummary(String variableId, String variableInstanceId, long processInstanceId, String oldValue,
-            String newValue, long timestamp, String type, String deploymentId, String serverTemplateId) {
+    public ProcessVariableSummary(String variableId,
+                                  String variableInstanceId,
+                                  long processInstanceId,
+                                  String oldValue,
+                                  String newValue,
+                                  long timestamp,
+                                  String type,
+                                  String deploymentId,
+                                  String serverTemplateId) {
         this.id = variableId;
         this.name = variableId;
         this.variableId = variableId;

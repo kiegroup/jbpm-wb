@@ -34,7 +34,9 @@ public class RequestDetails implements Serializable {
     public RequestDetails() {
     }
 
-    public RequestDetails(RequestSummary request, List<ErrorSummary> errors, List<RequestParameterSummary> params) {
+    public RequestDetails(RequestSummary request,
+                          List<ErrorSummary> errors,
+                          List<RequestParameterSummary> params) {
         this();
         this.request = request;
         setErrors(errors);
@@ -64,5 +66,4 @@ public class RequestDetails implements Serializable {
     public void setParams(List<RequestParameterSummary> params) {
         this.params = ofNullable(params).orElse(emptyList());
     }
-
 }

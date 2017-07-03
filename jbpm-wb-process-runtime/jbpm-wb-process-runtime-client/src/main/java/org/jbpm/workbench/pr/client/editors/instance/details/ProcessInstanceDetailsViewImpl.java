@@ -99,17 +99,16 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     private Constants constants = Constants.INSTANCE;
 
     @PostConstruct
-    public void init(  ) {
-        processDefinitionIdLabel.setText( constants.Process_Definition_Id() );
-        processDeploymentLabel.setText( constants.Deployment_Name() );
-        processVersionLabel.setText( constants.Process_Definition_Version() );
-        correlationKeyLabel.setText( constants.Correlation_Key() );
-        stateLabel.setText( constants.Process_Instance_State() );
-        activeTasksListLabel.setText( constants.Active_Tasks() );
-        currentActivitiesListLabel.setText( constants.Current_Activities() );
+    public void init() {
+        processDefinitionIdLabel.setText(constants.Process_Definition_Id());
+        processDeploymentLabel.setText(constants.Deployment_Name());
+        processVersionLabel.setText(constants.Process_Definition_Version());
+        correlationKeyLabel.setText(constants.Correlation_Key());
+        stateLabel.setText(constants.Process_Instance_State());
+        activeTasksListLabel.setText(constants.Active_Tasks());
+        currentActivitiesListLabel.setText(constants.Current_Activities());
         parentProcessInstanceIdLabel.setText(constants.Parent_Process_Instance());
     }
-
 
     @Override
     public HTML getProcessDefinitionIdText() {
@@ -150,5 +149,4 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     public HTML getProcessVersionText() {
         return processVersionText;
     }
-
 }

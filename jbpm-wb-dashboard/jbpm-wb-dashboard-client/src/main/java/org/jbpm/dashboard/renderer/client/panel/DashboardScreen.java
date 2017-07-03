@@ -39,12 +39,6 @@ public class DashboardScreen {
 
     protected static final String SCREEN_ID = "DashboardScreen";
 
-    public interface View extends UberView<DashboardScreen> {
-    }
-
-    @Inject
-    private ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
-
     @Inject
     ProcessDashboard processDashboard;
 
@@ -56,6 +50,9 @@ public class DashboardScreen {
 
     @Inject
     PlaceManager placeManager;
+
+    @Inject
+    private ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
 
     @PostConstruct
     public void init() {
@@ -88,10 +85,13 @@ public class DashboardScreen {
                 .build();
     }
 
-    public void onServerTemplateSelected(@Observes final ServerTemplateSelected serverTemplateSelected ) {
+    public void onServerTemplateSelected(@Observes final ServerTemplateSelected serverTemplateSelected) {
         //Refresh view
         placeManager.closePlace(SCREEN_ID);
         placeManager.goTo(SCREEN_ID);
     }
 
+    public interface View extends UberView<DashboardScreen> {
+
+    }
 }

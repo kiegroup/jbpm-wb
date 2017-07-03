@@ -41,6 +41,10 @@ import org.uberfire.workbench.events.ResourceUpdatedEvent;
 @ApplicationScoped
 public class DDConfigUpdater {
 
+    private static final String MVEL_PREFIX = "mvel:";
+    private static final String REFLECTION_PREFIX = "reflection:";
+    private static final String DEFAULT_RESOLVER = "reflection";
+
     private KieProjectService projectService;
 
     private IOService ioService;
@@ -49,86 +53,92 @@ public class DDConfigUpdater {
 
     private DDConfigUpdaterHelper configUpdaterHelper;
 
-    private static final String MVEL_PREFIX = "mvel:";
-
-    private static final String REFLECTION_PREFIX = "reflection:";
-
-    private static final String DEFAULT_RESOLVER = "reflection";
-
     public DDConfigUpdater() {
     }
-    
 
     @Inject
-    public DDConfigUpdater( DDEditorService ddEditorService,
-                            KieProjectService projectService,
-                            @Named("ioStrategy") IOService ioService,
-                            DDConfigUpdaterHelper configUpdaterHelper ) {
+    public DDConfigUpdater(DDEditorService ddEditorService,
+                           KieProjectService projectService,
+                           @Named("ioStrategy") IOService ioService,
+                           DDConfigUpdaterHelper configUpdaterHelper) {
         this.ddEditorService = ddEditorService;
         this.projectService = projectService;
         this.ioService = ioService;
         this.configUpdaterHelper = configUpdaterHelper;
     }
 
-    public void processResourceAdd( @Observes final ResourceAddedEvent resourceAddedEvent ) {
-        if ( configUpdaterHelper.isPersistenceFile(resourceAddedEvent.getPath()) ) {
+    public void processResourceAdd(@Observes final ResourceAddedEvent resourceAddedEvent) {
+        if (configUpdaterHelper.isPersistenceFile(resourceAddedEvent.getPath())) {
             //persistence.xml has been added to current project.
             updateConfig(projectService.resolveProject(resourceAddedEvent.getPath()));
         }
     }
 
-    public void processResourceUpdate( @Observes final ResourceUpdatedEvent resourceUpdatedEvent ) {
-        if ( configUpdaterHelper.isPersistenceFile(resourceUpdatedEvent.getPath()) ) {
+    public void processResourceUpdate(@Observes final ResourceUpdatedEvent resourceUpdatedEvent) {
+        if (configUpdaterHelper.isPersistenceFile(resourceUpdatedEvent.getPath())) {
             //persistence.xml has been updated in current project.
             updateConfig(projectService.resolveProject(resourceUpdatedEvent.getPath()));
         }
     }
 
-    public void processWorkitemInstall( @Observes final DesignerWorkitemInstalledEvent workitemInstalledEvent ) {
-        addWorkItemToConfig(projectService.resolveProject(workitemInstalledEvent.getPath()), workitemInstalledEvent);
+    public void processWorkitemInstall(@Observes final DesignerWorkitemInstalledEvent workitemInstalledEvent) {
+        addWorkItemToConfig(projectService.resolveProject(workitemInstalledEvent.getPath()),
+                            workitemInstalledEvent);
     }
 
-    private void addWorkItemToConfig( final KieProject kieProject, final DesignerWorkitemInstalledEvent workitemInstalledEvent) {
-        Path deploymentDescriptorPath = getDeploymentDescriptorPath( kieProject );
-        if ( ioService.exists(Paths.convert(deploymentDescriptorPath)) ) {
-            DeploymentDescriptorModel descriptorModel = ddEditorService.load( deploymentDescriptorPath );
+    private void addWorkItemToConfig(final KieProject kieProject,
+                                     final DesignerWorkitemInstalledEvent workitemInstalledEvent) {
+        Path deploymentDescriptorPath = getDeploymentDescriptorPath(kieProject);
+        if (ioService.exists(Paths.convert(deploymentDescriptorPath))) {
+            DeploymentDescriptorModel descriptorModel = ddEditorService.load(deploymentDescriptorPath);
 
-            if(descriptorModel != null) {
-                if(descriptorModel.getWorkItemHandlers() == null) {
+            if (descriptorModel != null) {
+                if (descriptorModel.getWorkItemHandlers() == null) {
                     descriptorModel.setWorkItemHandlers(new ArrayList<>());
                 }
 
-                if( isValidWorkitem(workitemInstalledEvent) && !workItemAlreadyInstalled( descriptorModel.getWorkItemHandlers(), workitemInstalledEvent.getName()) ) {
+                if (isValidWorkitem(workitemInstalledEvent) && !workItemAlreadyInstalled(descriptorModel.getWorkItemHandlers(),
+                                                                                         workitemInstalledEvent.getName())) {
                     ItemObjectModel itemModel = new ItemObjectModel(workitemInstalledEvent.getName(),
-                            parseWorkitemValue(workitemInstalledEvent.getValue()),
-                            getWorkitemResolver(workitemInstalledEvent.getValue(), workitemInstalledEvent.getResolver()),
-                            null);
+                                                                    parseWorkitemValue(workitemInstalledEvent.getValue()),
+                                                                    getWorkitemResolver(workitemInstalledEvent.getValue(),
+                                                                                        workitemInstalledEvent.getResolver()),
+                                                                    null);
                     descriptorModel.getWorkItemHandlers().add(itemModel);
 
-                    CommentedOption commentedOption = new CommentedOption( "system", null, "Workitem config added by system.", new Date() );
-                    ( ( DDEditorServiceImpl ) ddEditorService ).save(deploymentDescriptorPath, descriptorModel, descriptorModel.getOverview().getMetadata(), commentedOption);
+                    CommentedOption commentedOption = new CommentedOption("system",
+                                                                          null,
+                                                                          "Workitem config added by system.",
+                                                                          new Date());
+                    ((DDEditorServiceImpl) ddEditorService).save(deploymentDescriptorPath,
+                                                                 descriptorModel,
+                                                                 descriptorModel.getOverview().getMetadata(),
+                                                                 commentedOption);
                 }
             }
         }
     }
 
     public String parseWorkitemValue(String value) {
-        if(value.trim().toLowerCase().startsWith(MVEL_PREFIX)) {
+        if (value.trim().toLowerCase().startsWith(MVEL_PREFIX)) {
             return value.trim().substring(MVEL_PREFIX.length()).trim();
-        } else if(value.trim().toLowerCase().startsWith(REFLECTION_PREFIX)) {
+        } else if (value.trim().toLowerCase().startsWith(REFLECTION_PREFIX)) {
             return value.trim().substring(REFLECTION_PREFIX.length()).trim();
         } else {
             return value.trim();
         }
     }
 
-    public String getWorkitemResolver(String value, String defaultResolver) {
-        if(value.trim().toLowerCase().startsWith(MVEL_PREFIX)) {
-            return MVEL_PREFIX.substring(0,MVEL_PREFIX.length()-1);
-        } else if(value.trim().toLowerCase().startsWith(REFLECTION_PREFIX)) {
-            return REFLECTION_PREFIX.substring(0,REFLECTION_PREFIX.length()-1);
+    public String getWorkitemResolver(String value,
+                                      String defaultResolver) {
+        if (value.trim().toLowerCase().startsWith(MVEL_PREFIX)) {
+            return MVEL_PREFIX.substring(0,
+                                         MVEL_PREFIX.length() - 1);
+        } else if (value.trim().toLowerCase().startsWith(REFLECTION_PREFIX)) {
+            return REFLECTION_PREFIX.substring(0,
+                                               REFLECTION_PREFIX.length() - 1);
         } else {
-            if(defaultResolver == null || defaultResolver.trim().isEmpty()) {
+            if (defaultResolver == null || defaultResolver.trim().isEmpty()) {
                 return DEFAULT_RESOLVER;
             } else {
                 return defaultResolver;
@@ -144,13 +154,14 @@ public class DDConfigUpdater {
                 workitemInstalledEvent.getValue().trim().length() > 0;
     }
 
-    private boolean workItemAlreadyInstalled(List<ItemObjectModel> workitemHandlers, String name) {
-        if(name == null || name.trim().length() < 1) {
+    private boolean workItemAlreadyInstalled(List<ItemObjectModel> workitemHandlers,
+                                             String name) {
+        if (name == null || name.trim().length() < 1) {
             return false;
         }
 
-        for(ItemObjectModel itemObject : workitemHandlers) {
-            if(itemObject != null && itemObject.getName().equals(name)) {
+        for (ItemObjectModel itemObject : workitemHandlers) {
+            if (itemObject != null && itemObject.getName().equals(name)) {
                 return true;
             }
         }
@@ -158,52 +169,59 @@ public class DDConfigUpdater {
         return false;
     }
 
-    private void updateConfig( final KieProject kieProject ) {
+    private void updateConfig(final KieProject kieProject) {
 
-        Path deploymentDescriptorPath = getDeploymentDescriptorPath( kieProject );
+        Path deploymentDescriptorPath = getDeploymentDescriptorPath(kieProject);
 
-        if ( ioService.exists(Paths.convert( deploymentDescriptorPath )) ) {
+        if (ioService.exists(Paths.convert(deploymentDescriptorPath))) {
             //if deployment descriptor exists created, then update it.
-            DeploymentDescriptorModel descriptorModel = ddEditorService.load( deploymentDescriptorPath );
-            updateMarshallingConfig( descriptorModel, deploymentDescriptorPath, kieProject );
+            DeploymentDescriptorModel descriptorModel = ddEditorService.load(deploymentDescriptorPath);
+            updateMarshallingConfig(descriptorModel,
+                                    deploymentDescriptorPath,
+                                    kieProject);
         }
     }
 
-    private Path getDeploymentDescriptorPath( final KieProject kieProject ) {
-        return PathFactory.newPath( "kie-deployment-descriptor.xml",
-                kieProject.getRootPath().toURI() + "/src/main/resources/META-INF/kie-deployment-descriptor.xml" );
+    private Path getDeploymentDescriptorPath(final KieProject kieProject) {
+        return PathFactory.newPath("kie-deployment-descriptor.xml",
+                                   kieProject.getRootPath().toURI() + "/src/main/resources/META-INF/kie-deployment-descriptor.xml");
     }
 
-    private void updateMarshallingConfig( final DeploymentDescriptorModel descriptorModel,
-            final Path path, final KieProject kieProject ) {
+    private void updateMarshallingConfig(final DeploymentDescriptorModel descriptorModel,
+                                         final Path path,
+                                         final KieProject kieProject) {
 
-        String marshallingValue = configUpdaterHelper.buildJPAMarshallingStrategyValue( kieProject );
-        if ( marshallingValue != null && descriptorModel != null ) {
-                ItemObjectModel oldMarshallingStrategy = null;
-                if ( descriptorModel.getMarshallingStrategies() != null ) {
-                    //check if the marshalling strategy is already configured
-                    for ( ItemObjectModel itemModel: descriptorModel.getMarshallingStrategies() ) {
-                        if ( itemModel.getValue() != null &&
-                                itemModel.getValue().contains( "org.drools.persistence.jpa.marshaller.JPAPlaceholderResolverStrategy" ) ) {
-                            oldMarshallingStrategy = itemModel;
-                            break;
-                        }
+        String marshallingValue = configUpdaterHelper.buildJPAMarshallingStrategyValue(kieProject);
+        if (marshallingValue != null && descriptorModel != null) {
+            ItemObjectModel oldMarshallingStrategy = null;
+            if (descriptorModel.getMarshallingStrategies() != null) {
+                //check if the marshalling strategy is already configured
+                for (ItemObjectModel itemModel : descriptorModel.getMarshallingStrategies()) {
+                    if (itemModel.getValue() != null &&
+                            itemModel.getValue().contains("org.drools.persistence.jpa.marshaller.JPAPlaceholderResolverStrategy")) {
+                        oldMarshallingStrategy = itemModel;
+                        break;
                     }
-                    if ( oldMarshallingStrategy != null ) {
-                        descriptorModel.getMarshallingStrategies().remove( oldMarshallingStrategy );
-                    }
-                } else {
-                    descriptorModel.setMarshallingStrategies( new ArrayList<ItemObjectModel>() );
                 }
+                if (oldMarshallingStrategy != null) {
+                    descriptorModel.getMarshallingStrategies().remove(oldMarshallingStrategy);
+                }
+            } else {
+                descriptorModel.setMarshallingStrategies(new ArrayList<ItemObjectModel>());
+            }
 
-                ItemObjectModel marshallingStrategy = new ItemObjectModel();
-                marshallingStrategy.setResolver( "mvel" );
-                marshallingStrategy.setValue( marshallingValue );
-                descriptorModel.getMarshallingStrategies().add( marshallingStrategy );
-                CommentedOption commentedOption = new CommentedOption( "system", null, "JPA marshalling strategy added by system", new Date() );
-                ( ( DDEditorServiceImpl ) ddEditorService ).save( path, descriptorModel, descriptorModel.getOverview().getMetadata(), commentedOption );
-
+            ItemObjectModel marshallingStrategy = new ItemObjectModel();
+            marshallingStrategy.setResolver("mvel");
+            marshallingStrategy.setValue(marshallingValue);
+            descriptorModel.getMarshallingStrategies().add(marshallingStrategy);
+            CommentedOption commentedOption = new CommentedOption("system",
+                                                                  null,
+                                                                  "JPA marshalling strategy added by system",
+                                                                  new Date());
+            ((DDEditorServiceImpl) ddEditorService).save(path,
+                                                         descriptorModel,
+                                                         descriptorModel.getOverview().getMetadata(),
+                                                         commentedOption);
         }
     }
-
 }

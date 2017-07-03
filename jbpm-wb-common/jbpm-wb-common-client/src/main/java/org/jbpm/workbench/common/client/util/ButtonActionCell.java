@@ -33,33 +33,43 @@ public class ButtonActionCell<T> implements HasCell<T, T> {
 
     private String text;
 
-    public ButtonActionCell( final ActionCell.Delegate<T> delegate ) {
-        this( "", delegate );
+    public ButtonActionCell(final ActionCell.Delegate<T> delegate) {
+        this("",
+             delegate);
     }
 
-    public ButtonActionCell( final String text, final ActionCell.Delegate<T> delegate ) {
+    public ButtonActionCell(final String text,
+                            final ActionCell.Delegate<T> delegate) {
         this.text = text;
-        this.cell = new ActionCell<T>( text, delegate ) {
+        this.cell = new ActionCell<T>(text,
+                                      delegate) {
             @Override
-            public void render( final Context context, final T value, final SafeHtmlBuilder sb ) {
-                ButtonActionCell.this.render( context, value, sb );
+            public void render(final Context context,
+                               final T value,
+                               final SafeHtmlBuilder sb) {
+                ButtonActionCell.this.render(context,
+                                             value,
+                                             sb);
             }
         };
     }
 
-    public void render( final Cell.Context context, final T value, final SafeHtmlBuilder sb ) {
+    public void render(final Cell.Context context,
+                       final T value,
+                       final SafeHtmlBuilder sb) {
         final SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-        final Button btn = GWT.create( Button.class );
-        btn.setText( getText( value ) );
-        btn.setTitle( getText( value ) );
-        btn.setType( ButtonType.DEFAULT );
-        btn.setSize( ButtonSize.SMALL );
-        btn.getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-        mysb.appendHtmlConstant( btn.getElement().getString() );
-        sb.append( mysb.toSafeHtml() );
+        final Button btn = GWT.create(Button.class);
+        btn.setText(getText(value));
+        btn.setTitle(getText(value));
+        btn.setType(ButtonType.DEFAULT);
+        btn.setSize(ButtonSize.SMALL);
+        btn.getElement().getStyle().setMarginRight(5,
+                                                   Style.Unit.PX);
+        mysb.appendHtmlConstant(btn.getElement().getString());
+        sb.append(mysb.toSafeHtml());
     }
 
-    public String getText( final T value ) {
+    public String getText(final T value) {
         return text;
     }
 
@@ -74,8 +84,7 @@ public class ButtonActionCell<T> implements HasCell<T, T> {
     }
 
     @Override
-    public T getValue( T object ) {
+    public T getValue(T object) {
         return object;
     }
-
 }

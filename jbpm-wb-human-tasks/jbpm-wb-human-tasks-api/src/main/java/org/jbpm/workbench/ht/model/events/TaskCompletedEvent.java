@@ -22,21 +22,25 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class TaskCompletedEvent implements Serializable {
+
     private String serverTemplateId;
     private String deploymentId;
     private long taskId;
     private String taskName;
-    public TaskCompletedEvent(long taskId, String taskName) {
+
+    public TaskCompletedEvent(long taskId,
+                              String taskName) {
         this.taskId = taskId;
         this.taskName = taskName;
-
     }
 
     public TaskCompletedEvent(long taskId) {
         this.taskId = taskId;
     }
 
-    public TaskCompletedEvent(String serverTemplateId, String deploymentId, long taskId) {
+    public TaskCompletedEvent(String serverTemplateId,
+                              String deploymentId,
+                              long taskId) {
         this.serverTemplateId = serverTemplateId;
         this.deploymentId = deploymentId;
         this.taskId = taskId;
@@ -44,7 +48,6 @@ public class TaskCompletedEvent implements Serializable {
 
     public TaskCompletedEvent() {
     }
-
 
     public long getTaskId() {
         return taskId;

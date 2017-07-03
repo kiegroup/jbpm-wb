@@ -16,43 +16,46 @@
 package org.jbpm.workbench.pr.model;
 
 import java.util.Date;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.workbench.common.model.GenericSummary;
 
 @Portable
 public class DocumentSummary extends GenericSummary<String> {
 
-  private String documentId;
-  private Date documentLastModified;
-  private Long documentSize;
-  private String documentLink;
+    private String documentId;
+    private Date documentLastModified;
+    private Long documentSize;
+    private String documentLink;
 
-  public DocumentSummary() {
-  }
+    public DocumentSummary() {
+    }
 
-  public DocumentSummary(String documentId, Date documentLastModified, Long documentSize, String documentLink) {
-    this.id = documentId;
-    this.name = documentId;
-    this.documentId = documentId;
-    this.documentLastModified = documentLastModified;
-    this.documentSize = documentSize;
-    this.documentLink = documentLink;
-  }
+    public DocumentSummary(String documentId,
+                           Date documentLastModified,
+                           Long documentSize,
+                           String documentLink) {
+        this.id = documentId;
+        this.name = documentId;
+        this.documentId = documentId;
+        this.documentLastModified = documentLastModified;
+        this.documentSize = documentSize;
+        this.documentLink = documentLink;
+    }
 
-  public String getDocumentId() {
-    return documentId;
-  }
+    public String getDocumentId() {
+        return documentId;
+    }
 
-  public Date getDocumentLastModified() {
-    return documentLastModified;
-  }
+    public Date getDocumentLastModified() {
+        return documentLastModified;
+    }
 
-  public Long getDocumentSize() {
-    return documentSize;
-  }
+    public Long getDocumentSize() {
+        return documentSize;
+    }
 
-  public String getDocumentLink() {
-    return documentLink;
-  }
-
+    public String getDocumentLink() {
+        return documentLink;
+    }
 }

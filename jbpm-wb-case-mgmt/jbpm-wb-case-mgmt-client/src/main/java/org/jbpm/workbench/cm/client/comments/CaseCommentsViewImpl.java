@@ -53,12 +53,32 @@ import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 @Dependent
 @Templated
 public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter>
-        implements CaseCommentsPresenter.CaseCommentsView, PaginationViewImpl.PageList<CaseCommentSummary> {
-    private int PAGE_SIZE = 20;
+        implements CaseCommentsPresenter.CaseCommentsView,
+                   PaginationViewImpl.PageList<CaseCommentSummary> {
+
+    private static int PAGE_SIZE = 20;
 
     @Inject
     @DataField("comments")
     Div commentsContainer;
+
+    @Inject
+    @DataField("comment-creation-input")
+    Input newCommentTextArea;
+
+    @Inject
+    @DataField("comment-creation-help")
+    Span newCommentTextAreaHelp;
+
+    @Inject
+    @DataField("comment-creation-group")
+    FormGroup newCommentTextAreaGroup;
+
+    @Inject
+    @DataField
+    Anchor addCommentButton;
+
+    List<CaseCommentSummary> allCommentsList;
 
     @Inject
     @DataField("sort-alpha-asc")
@@ -82,22 +102,6 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter>
     private Div emptyContainer;
 
     @Inject
-    @DataField("comment-creation-input")
-    Input newCommentTextArea;
-
-    @Inject
-    @DataField("comment-creation-help")
-    Span newCommentTextAreaHelp;
-
-    @Inject
-    @DataField("comment-creation-group")
-    FormGroup newCommentTextAreaGroup;
-
-    @Inject
-    @DataField
-    Anchor addCommentButton;
-
-    @Inject
     @DataField("scrollbox")
     private Div scrollbox;
 
@@ -108,14 +112,14 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter>
     @Inject
     private TranslationService translationService;
 
-    List<CaseCommentSummary> allCommentsList;
-
     @PostConstruct
     public void init() {
         tooltip(sortAlphaAsc);
-        sortAlphaAsc.setAttribute("data-original-title", translationService.format(SORT_BY_DATE_DESC));
+        sortAlphaAsc.setAttribute("data-original-title",
+                                  translationService.format(SORT_BY_DATE_DESC));
         tooltip(sortAlphaDesc);
-        sortAlphaDesc.setAttribute("data-original-title", translationService.format(SORT_BY_DATE_ASC));
+        sortAlphaDesc.setAttribute("data-original-title",
+                                   translationService.format(SORT_BY_DATE_ASC));
     }
 
     @Override
@@ -143,18 +147,24 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter>
     @Override
     public void resetPagination() {
         pagination.setCurrentPage(0);
-        onSortChange(sortAlphaAsc, sortAlphaDesc, false);
+        onSortChange(sortAlphaAsc,
+                     sortAlphaDesc,
+                     false);
     }
 
     @Override
     public void setCaseCommentList(final List<CaseCommentSummary> caseCommentList) {
         allCommentsList = caseCommentList;
-        pagination.init(allCommentsList, this, PAGE_SIZE);
+        pagination.init(allCommentsList,
+                        this,
+                        PAGE_SIZE);
 
         if (caseCommentList.isEmpty()) {
-            removeCSSClass(emptyContainer, "hidden");
+            removeCSSClass(emptyContainer,
+                           "hidden");
         } else {
-            addCSSClass(emptyContainer, "hidden");
+            addCSSClass(emptyContainer,
+                        "hidden");
         }
     }
 
@@ -166,9 +176,9 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter>
     @Override
     public void setVisibleItems(List<CaseCommentSummary> visibleItems) {
         this.caseCommentList.setModel(visibleItems);
-        int pageSize =visibleItems.size();
-        if(pageSize > 1){
-            comments.getComponent(pageSize-1).setLastElementStyle();
+        int pageSize = visibleItems.size();
+        if (pageSize > 1) {
+            comments.getComponent(pageSize - 1).setLastElementStyle();
         }
     }
 
@@ -178,7 +188,7 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter>
         submitCommentAddition();
     }
 
-    private void submitCommentAddition(){
+    private void submitCommentAddition() {
         if (validateForm()) {
             presenter.addCaseComment(newCommentTextArea.getValue());
         }
@@ -199,17 +209,25 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter>
 
     @EventHandler("sort-alpha-asc")
     public void onSortAlphaAsc(final @ForEvent("click") MouseEvent event) {
-        onSortChange(sortAlphaAsc, sortAlphaDesc, false);
+        onSortChange(sortAlphaAsc,
+                     sortAlphaDesc,
+                     false);
     }
 
     @EventHandler("sort-alpha-desc")
     public void onSortAlphaDesc(final @ForEvent("click") MouseEvent event) {
-        onSortChange(sortAlphaDesc, sortAlphaAsc, true);
+        onSortChange(sortAlphaDesc,
+                     sortAlphaAsc,
+                     true);
     }
 
-    private void onSortChange(final HTMLElement toHide, final HTMLElement toShow, final Boolean sortByAsc){
-        addCSSClass(toHide, "hidden");
-        removeCSSClass(toShow, "hidden");
+    private void onSortChange(final HTMLElement toHide,
+                              final HTMLElement toShow,
+                              final Boolean sortByAsc) {
+        addCSSClass(toHide,
+                    "hidden");
+        removeCSSClass(toShow,
+                       "hidden");
         presenter.sortComments(sortByAsc);
     }
 }

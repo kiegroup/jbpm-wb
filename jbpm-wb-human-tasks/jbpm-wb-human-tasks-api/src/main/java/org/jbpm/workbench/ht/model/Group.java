@@ -22,17 +22,17 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 public class Group extends IdentitySummary {
 
     private static final long serialVersionUID = -8439757821807142776L;
-    
+
     // TODO only for id, remove it later
     private static final String PREFIX = "group_id";
-    
+
     private Group parent;
-    
-    public Group(){
-        
+
+    public Group() {
+
     }
-    
-    public Group(String description){
+
+    public Group(String description) {
         super(description);
     }
 
@@ -43,12 +43,9 @@ public class Group extends IdentitySummary {
     public void setParent(Group parent) {
         this.parent = parent;
     }
-    
+
     // TODO please remove it when we have id
     public String getId() {
         return PREFIX + SEPARATOR + super.getName();
     }
-
-    
-
 }

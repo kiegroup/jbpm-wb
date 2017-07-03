@@ -34,8 +34,8 @@ public class KieWorkbenchFormsStartProcessDisplayer extends AbstractStartProcess
     private Caller<KieWorkbenchFormsEntryPoint> service;
 
     @Inject
-    public KieWorkbenchFormsStartProcessDisplayer( DynamicFormRenderer formRenderer,
-                                                   Caller<KieWorkbenchFormsEntryPoint> service ) {
+    public KieWorkbenchFormsStartProcessDisplayer(DynamicFormRenderer formRenderer,
+                                                  Caller<KieWorkbenchFormsEntryPoint> service) {
         this.formRenderer = formRenderer;
         this.service = service;
     }
@@ -47,7 +47,7 @@ public class KieWorkbenchFormsStartProcessDisplayer extends AbstractStartProcess
 
     @Override
     protected void initDisplayer() {
-        formRenderer.render( renderingSettings.getRenderingContext() );
+        formRenderer.render(renderingSettings.getRenderingContext());
     }
 
     @Override
@@ -57,14 +57,15 @@ public class KieWorkbenchFormsStartProcessDisplayer extends AbstractStartProcess
 
     @Override
     public void startProcessFromDisplayer() {
-        if ( formRenderer.isValid() ) {
-            service.call( getStartProcessRemoteCallback(), getUnexpectedErrorCallback() ).startProcessFromRenderContext(
+        if (formRenderer.isValid()) {
+            service.call(getStartProcessRemoteCallback(),
+                         getUnexpectedErrorCallback()).startProcessFromRenderContext(
                     renderingSettings.getTimestamp(),
                     renderingSettings.getRenderingContext().getModel(),
                     serverTemplateId,
                     deploymentId,
                     processDefId,
-                    getCorrelationKey() );
+                    getCorrelationKey());
         }
     }
 }

@@ -35,13 +35,12 @@ import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.uberfire.lifecycle.OnClose;
 import org.uberfire.paging.PageResponse;
 
-
 /**
  * @param <T> data type for the AsyncDataProvider
  */
 public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.SupportsRefresh,
-        RefreshSelectorMenuBuilder.SupportsRefreshInterval,
-        RestoreDefaultFiltersMenuBuilder.SupportsRestoreDefaultFilters {
+                                                          RefreshSelectorMenuBuilder.SupportsRefreshInterval,
+                                                          RestoreDefaultFiltersMenuBuilder.SupportsRestoreDefaultFilters {
 
     protected AsyncDataProvider<T> dataProvider;
 
@@ -49,43 +48,44 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
 
     protected String textSearchStr = "";
 
-    private Constants constants = GWT.create(Constants.class);
-
     protected boolean addingDefaultFilters = false;
 
     protected Timer refreshTimer = null;
+
     protected boolean autoRefreshEnabled = false;
+
     protected int autoRefreshSeconds = 0; // This should be loaded from the grid settings (probably the filters)
 
-
-    protected abstract ListView getListView();
+    private Constants constants = GWT.create(Constants.class);
 
     public AbstractListPresenter() {
         initDataProvider();
     }
 
+    protected abstract ListView getListView();
+
     public boolean isAddingDefaultFilters() {
         return addingDefaultFilters;
     }
 
-    public void setAddingDefaultFilters( boolean addingDefaultFilters ) {
+    public void setAddingDefaultFilters(boolean addingDefaultFilters) {
         this.addingDefaultFilters = addingDefaultFilters;
-    }
-
-    public void setRefreshTimer(Timer refreshTimer) {
-        this.refreshTimer = refreshTimer;
     }
 
     public Timer getRefreshTimer() {
         return refreshTimer;
     }
 
-    public void setAutoRefreshEnabled(boolean autoRefreshEnabled) {
-        this.autoRefreshEnabled = autoRefreshEnabled;
+    public void setRefreshTimer(Timer refreshTimer) {
+        this.refreshTimer = refreshTimer;
     }
 
     public boolean isAutoRefreshEnabled() {
         return autoRefreshEnabled;
+    }
+
+    public void setAutoRefreshEnabled(boolean autoRefreshEnabled) {
+        this.autoRefreshEnabled = autoRefreshEnabled;
     }
 
     protected void updateRefreshTimer() {
@@ -95,17 +95,18 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
                     getData(getListView().getListGrid().getVisibleRange());
                 }
             };
-        }else{
+        } else {
             refreshTimer.cancel();
         }
         if (autoRefreshEnabled && autoRefreshSeconds > 10) {
-            refreshTimer.schedule( autoRefreshSeconds * 1000 );
+            refreshTimer.schedule(autoRefreshSeconds * 1000);
         }
     }
 
     public abstract void getData(Range visibleRange);
 
-    public void onGridPreferencesStoreLoaded(){}
+    public void onGridPreferencesStoreLoaded() {
+    }
 
     protected void initDataProvider() {
         dataProvider = new AsyncDataProvider<T>() {
@@ -118,32 +119,39 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
         };
     }
 
-    public void updateDataOnCallback(PageResponse response){
+    public void updateDataOnCallback(PageResponse response) {
         getListView().hideBusyIndicator();
         dataProvider.updateRowCount(response.getTotalRowSize(),
-                response.isTotalRowSizeExact() );
-        dataProvider.updateRowData( response.getStartRowIndex(),
-                response.getPageRowList() );
+                                    response.isTotalRowSizeExact());
+        dataProvider.updateRowData(response.getStartRowIndex(),
+                                   response.getPageRowList());
         updateRefreshTimer();
     }
 
-    public void updateDataOnCallback(List<T> instanceSummaries, int startRange, int totalRowCount, boolean isExact){
+    public void updateDataOnCallback(List<T> instanceSummaries,
+                                     int startRange,
+                                     int totalRowCount,
+                                     boolean isExact) {
 
         getListView().hideBusyIndicator();
         dataProvider.updateRowCount(totalRowCount,
-                isExact);
+                                    isExact);
         dataProvider.updateRowData(startRange,
-                instanceSummaries);
+                                   instanceSummaries);
 
         updateRefreshTimer();
     }
 
-    public void addDataDisplay( final HasData<T> display ) {
+    public void addDataDisplay(final HasData<T> display) {
         dataProvider.addDataDisplay(display);
     }
 
-    public AsyncDataProvider<T> getDataProvider(){
+    public AsyncDataProvider<T> getDataProvider() {
         return dataProvider;
+    }
+
+    protected void setDataProvider(AsyncDataProvider<T> dataProvider) {
+        this.dataProvider = dataProvider;
     }
 
     @Override
@@ -162,18 +170,21 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
         String filterString = searchEvent.getFilter();
         textSearchStr = filterString == null ? "" : filterString.toLowerCase();
         final Map<String, Object> params = new HashMap<String, Object>();
-        params.put("textSearch", textSearchStr);
+        params.put("textSearch",
+                   textSearchStr);
         if (currentFilter != null) {
             currentFilter.setParams(params);
         }
 
         final HasData<T> next = dataProvider.getDataDisplays().iterator().next();
         if (Strings.isNullOrEmpty(filterString)) {
-            next.setVisibleRangeAndClearData(next.getVisibleRange(), true);
+            next.setVisibleRangeAndClearData(next.getVisibleRange(),
+                                             true);
         } else {
-            next.setVisibleRangeAndClearData(new Range(0, next.getVisibleRange().getLength()), true);
+            next.setVisibleRangeAndClearData(new Range(0,
+                                                       next.getVisibleRange().getLength()),
+                                             true);
         }
-
     }
 
     @Override
@@ -182,17 +193,18 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
     }
 
     @Override
-    public void onUpdateRefreshInterval(boolean enableAutoRefresh, int newInterval) {
+    public void onUpdateRefreshInterval(boolean enableAutoRefresh,
+                                        int newInterval) {
         this.autoRefreshEnabled = enableAutoRefresh;
         setAutoRefreshSeconds(newInterval);
         updateRefreshTimer();
     }
 
-    protected int getAutoRefreshSeconds(){
+    protected int getAutoRefreshSeconds() {
         return autoRefreshSeconds;
     }
 
-    protected void setAutoRefreshSeconds(int refreshSeconds){
+    protected void setAutoRefreshSeconds(int refreshSeconds) {
         autoRefreshSeconds = refreshSeconds;
     }
 
@@ -203,11 +215,7 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
         }
     }
 
-    public String getTextSearchStr(){
+    public String getTextSearchStr() {
         return textSearchStr;
-    }
-
-    protected void setDataProvider(AsyncDataProvider<T> dataProvider) {
-        this.dataProvider = dataProvider;
     }
 }

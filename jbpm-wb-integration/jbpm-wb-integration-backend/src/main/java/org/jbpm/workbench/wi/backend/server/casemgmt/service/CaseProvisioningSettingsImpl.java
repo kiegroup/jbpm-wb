@@ -30,8 +30,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class CaseProvisioningSettingsImpl implements CaseProvisioningSettings {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CaseProvisioningSettingsImpl.class);
-
     public static final String SHOWCASE_DEPLOY = "org.jbpm.casemgmt.showcase.deploy";
     public static final String SHOWCASE_PATH = "org.jbpm.casemgmt.showcase.path";
     public static final String SHOWCASE_URL = "org.jbpm.casemgmt.showcase.url";
@@ -41,7 +39,7 @@ public class CaseProvisioningSettingsImpl implements CaseProvisioningSettings {
     public static final String WIDLFLY_USER_NAME = "org.jbpm.casemgmt.showcase.wildfly.username";
     public static final String WIDLFLY_PASSWORD = "org.jbpm.casemgmt.showcase.wildfly.password";
     public static final String CASEMGMT_PROPERTIES = "casemgmt.properties";
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(CaseProvisioningSettingsImpl.class);
     private String showcaseGAV;
 
     @PostConstruct
@@ -50,7 +48,9 @@ public class CaseProvisioningSettingsImpl implements CaseProvisioningSettings {
         try (final InputStream resource = Thread.currentThread().getContextClassLoader().getResourceAsStream(CASEMGMT_PROPERTIES)) {
             properties.load(resource);
         } catch (Exception ex) {
-            LOGGER.error("Failed to load {} file", CASEMGMT_PROPERTIES, ex);
+            LOGGER.error("Failed to load {} file",
+                         CASEMGMT_PROPERTIES,
+                         ex);
         }
         showcaseGAV = properties.getProperty(SHOWCASE_GAV);
     }
@@ -72,22 +72,26 @@ public class CaseProvisioningSettingsImpl implements CaseProvisioningSettings {
 
     @Override
     public String getHost() {
-        return System.getProperty(WIDLFLY_MANAGEMENT_HOST, "localhost");
+        return System.getProperty(WIDLFLY_MANAGEMENT_HOST,
+                                  "localhost");
     }
 
     @Override
     public String getManagementPort() {
-        return System.getProperty(WIDLFLY_MANAGEMENT_PORT, "9990");
+        return System.getProperty(WIDLFLY_MANAGEMENT_PORT,
+                                  "9990");
     }
 
     @Override
     public String getUsername() {
-        return System.getProperty(WIDLFLY_USER_NAME, "admin");
+        return System.getProperty(WIDLFLY_USER_NAME,
+                                  "admin");
     }
 
     @Override
     public String getPassword() {
-        return System.getProperty(WIDLFLY_PASSWORD, "admin");
+        return System.getProperty(WIDLFLY_PASSWORD,
+                                  "admin");
     }
 
     @Override

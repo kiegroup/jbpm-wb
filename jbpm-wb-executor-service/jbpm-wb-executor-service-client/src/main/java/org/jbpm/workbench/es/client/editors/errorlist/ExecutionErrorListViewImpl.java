@@ -130,7 +130,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
     public void initSelectionModel(final ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption(constants.No_Execution_Errors_Found());
         extendedPagedTable.setSelectionCallback((error, close) -> presenter.selectExecutionError(error,
-                                                                                              close));
+                                                                                                 close));
         initBulkActions(extendedPagedTable);
     }
 
@@ -145,7 +145,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
         bulkButton.setText(constants.Bulk_Actions());
         bulkButton.setDataToggle(Toggle.DROPDOWN);
         bulkButton.getElement().getStyle().setMarginRight(5,
-                                                         Style.Unit.PX);
+                                                          Style.Unit.PX);
         bulkActions.add(bulkButton);
         final DropDownMenu bulkDropDown = GWT.create(DropDownMenu.class);
         bulkDropDown.addStyleName(Styles.DROPDOWN_MENU + "-right");
@@ -223,8 +223,8 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
 
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
 
-        ColumnMeta actionsColumnMeta= new ColumnMeta<>(actionsColumn,
-                                                         constants.Actions());
+        ColumnMeta actionsColumnMeta = new ColumnMeta<>(actionsColumn,
+                                                        constants.Actions());
         columnMetas.add(actionsColumnMeta);
 
         extendedPagedTable.setColumnWidth(checkColumnMeta.getColumn(),
@@ -242,7 +242,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
         cells.add(new ConditionalButtonActionCell<ExecutionErrorSummary>(
                 constants.Acknowledge(),
                 errorSummary -> presenter.acknowledgeExecutionError(errorSummary.getErrorId(),
-                                                                       errorSummary.getDeploymentId()),
+                                                                    errorSummary.getDeploymentId()),
                 presenter.getAcknowledgeActionCondition()));
 
         cells.add(new ConditionalButtonActionCell<ExecutionErrorSummary>(
@@ -254,7 +254,6 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                 constants.ViewProcessInstance(),
                 errorSummary -> presenter.goToProcessInstance(errorSummary),
                 presenter.getViewProcessInstanceActionCondition()));
-
 
         CompositeCell<ExecutionErrorSummary> cell = new CompositeCell<ExecutionErrorSummary>(cells);
         Column<ExecutionErrorSummary, ExecutionErrorSummary> actionsColumn = new Column<ExecutionErrorSummary, ExecutionErrorSummary>(cell) {
@@ -322,5 +321,4 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                         constants.All(),
                         constants.FilterAll());
     }
-
 }

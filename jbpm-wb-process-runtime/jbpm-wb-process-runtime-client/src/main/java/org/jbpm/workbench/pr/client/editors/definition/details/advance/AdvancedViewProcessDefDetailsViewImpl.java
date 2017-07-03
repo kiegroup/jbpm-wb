@@ -31,9 +31,7 @@ import com.google.gwt.user.client.ui.HTML;
 @Dependent
 @Templated(value = "AdvancedProcessDefDetailsViewImpl.html")
 public class AdvancedViewProcessDefDetailsViewImpl extends BaseProcessDefDetailsViewImpl implements
-        AdvancedViewProcessDefDetailsPresenter.AdvancedProcessDefDetailsView {
-
-    private Constants constants = GWT.create( Constants.class );
+                                                                                         AdvancedViewProcessDefDetailsPresenter.AdvancedProcessDefDetailsView {
 
     @Inject
     @DataField
@@ -83,17 +81,19 @@ public class AdvancedViewProcessDefDetailsViewImpl extends BaseProcessDefDetails
     @DataField
     public FormLabel processServicesListLabel;
 
+    private Constants constants = GWT.create(Constants.class);
+
     @Override
     public void init() {
-        processIdLabel.setText( constants.Process_Definition_Id() );
-        processNameLabel.setText( constants.Process_Definition_Name() );
-        nroOfHumanTasksLabel.setText( constants.Human_Tasks_Count() );
-        deploymentIdLabel.setText( constants.Deployment_Name() );
-        humanTasksListLabel.setText( constants.Human_Tasks() );
-        usersGroupsListLabel.setText( constants.User_And_Groups() );
-        subprocessListLabel.setText( constants.SubProcesses() );
-        processDataListLabel.setText( constants.Process_Variables() );
-        processServicesListLabel.setText( constants.Services() );
+        processIdLabel.setText(constants.Process_Definition_Id());
+        processNameLabel.setText(constants.Process_Definition_Name());
+        nroOfHumanTasksLabel.setText(constants.Human_Tasks_Count());
+        deploymentIdLabel.setText(constants.Deployment_Name());
+        humanTasksListLabel.setText(constants.Human_Tasks());
+        usersGroupsListLabel.setText(constants.User_And_Groups());
+        subprocessListLabel.setText(constants.SubProcesses());
+        processDataListLabel.setText(constants.Process_Variables());
+        processServicesListLabel.setText(constants.Services());
     }
 
     @Override
@@ -125,5 +125,4 @@ public class AdvancedViewProcessDefDetailsViewImpl extends BaseProcessDefDetails
     public HTML getSubprocessListBox() {
         return subprocessListBox;
     }
-
 }

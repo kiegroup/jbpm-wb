@@ -29,17 +29,16 @@ import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
 
-
 /**
  * Time is represented as the number of milliseconds after midnight
  * independent of time zone.
- * 
+ * <p>
  * <p>
  * It will use the GWT DateTimeFormat to parse in the browser
  * timezone, but it will then convert the time to be independent of
  * timezone.
  * </p>
- * 
+ * <p>
  * <p>
  * It will first parse a manually typed date using the time format
  * specified (defaulting to TIME_SHORT). It will then attempt the
@@ -48,12 +47,11 @@ import org.gwtbootstrap3.extras.select.client.ui.Select;
  * (e.g. 12 -> 12:00, 123 -> 1:23, and 1234 -> 12:34) and try the
  * specified time format and the fallback formats again.
  * </p>
- * 
+ * <p>
  * <p>
  * The control supports an unspecified value of null with a blank
  * textbox.
  * </p>
- * 
  */
 public class UTCTimeBoxImplHtml4 extends UTCTimeBoxImplShared {
 
@@ -65,46 +63,27 @@ public class UTCTimeBoxImplHtml4 extends UTCTimeBoxImplShared {
     private Long lastKnownValue;
 
     /**
-     * Keyboard handler for the TextBox shows and hides the menu,
-     * scrolls through the menu, and accepts a value.
-     */
-    private class TextBoxHandler implements BlurHandler, ValueChangeHandler<String> {
-
-        @Override
-        public void onBlur( final BlurEvent event ) {
-            clearInvalidStyle();
-            validate();
-        }
-
-        @Override
-        public void onValueChange( final ValueChangeEvent<String> event ) {
-            clearInvalidStyle();
-            validate();
-        }
-
-    }
-
-    /**
      * Allows a UTCTimeBox to be created with a specified format.
      */
     public UTCTimeBoxImplHtml4() {
         this.textbox = new Select();
 
         final TextBoxHandler handler = new TextBoxHandler();
-        textbox.addDomHandler( handler, BlurEvent.getType() );
-        textbox.addValueChangeHandler( handler );
-        textbox.setFixedMenuSize( 5 );
+        textbox.addDomHandler(handler,
+                              BlurEvent.getType());
+        textbox.addValueChangeHandler(handler);
+        textbox.setFixedMenuSize(5);
 
-        initWidget( textbox );
+        initWidget(textbox);
     }
 
     @Override
-    public void setTimeFormat( DateTimeFormat timeFormat ) {
-        super.setTimeFormat( timeFormat );
+    public void setTimeFormat(DateTimeFormat timeFormat) {
+        super.setTimeFormat(timeFormat);
         generateTimeOptions();
     }
 
-    private void generateTimeOptions(){
+    private void generateTimeOptions() {
         int numOptions = (int) (DAY / INTERVAL);
 
         // we need to use times for formatting, but we don't keep
@@ -112,22 +91,22 @@ public class UTCTimeBoxImplHtml4 extends UTCTimeBoxImplShared {
         // insert into the textbox.
         for (int i = 0; i < numOptions; i++) {
             long offsetFromMidnight = i * INTERVAL;
-            final String value = generateTimeValue( offsetFromMidnight );
+            final String value = generateTimeValue(offsetFromMidnight);
             Option option = new Option();
-            option.setText( value );
-            option.setValue( value );
-            textbox.add( option );
+            option.setText(value);
+            option.setValue(value);
+            textbox.add(option);
         }
 
-        Scheduler.get().scheduleDeferred( new Scheduler.ScheduledCommand() {
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {
                 textbox.refresh();
             }
-        } );
+        });
     }
 
-    private String generateTimeValue( long offsetFromMidnight ){
+    private String generateTimeValue(long offsetFromMidnight) {
         // format the time in the local time zone
         long time = UTCDateBox.timezoneOffsetMillis(new Date(0)) + offsetFromMidnight;
         return timeFormat.format(new Date(time));
@@ -140,12 +119,12 @@ public class UTCTimeBoxImplHtml4 extends UTCTimeBoxImplShared {
         return textbox;
     }
 
-    // ----------------------------------------------------------------------
-    // HasValue
-
     public boolean hasValue() {
         return getText().trim().length() > 0;
     }
+
+    // ----------------------------------------------------------------------
+    // HasValue
 
     /**
      * A valid value is either empty (null) or filled with a valid
@@ -169,11 +148,16 @@ public class UTCTimeBoxImplHtml4 extends UTCTimeBoxImplShared {
      * of time zone)
      */
     @Override
-    public void setValue(Long value, boolean fireEvents) {
-        setValue( value, true, fireEvents );
+    public void setValue(Long value,
+                         boolean fireEvents) {
+        setValue(value,
+                 true,
+                 fireEvents);
     }
 
-    protected void setValue(Long value, boolean updateTextBox, boolean fireEvents) {
+    protected void setValue(Long value,
+                            boolean updateTextBox,
+                            boolean fireEvents) {
         if (updateTextBox) {
             syncTextToValue(value);
         }
@@ -183,27 +167,31 @@ public class UTCTimeBoxImplHtml4 extends UTCTimeBoxImplShared {
         Long oldValue = lastKnownValue;
         lastKnownValue = value;
 
-        if (fireEvents && !isSameValue(oldValue, value)) {
-            ValueChangeEvent.fire(this, getValue());
+        if (fireEvents && !isSameValue(oldValue,
+                                       value)) {
+            ValueChangeEvent.fire(this,
+                                  getValue());
         }
     }
 
-    protected boolean isSameValue(Long a, Long b) {
+    protected boolean isSameValue(Long a,
+                                  Long b) {
         return a == null ? b == null : a.equals(b);
     }
 
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Long> handler) {
-        return addHandler(handler, ValueChangeEvent.getType());
+        return addHandler(handler,
+                          ValueChangeEvent.getType());
     }
-
-    // ----------------------------------------------------------------------
-    // Interaction with the textbox
 
     @Override
     public String getText() {
         return textbox.getValue();
     }
+
+    // ----------------------------------------------------------------------
+    // Interaction with the textbox
 
     @Override
     public void setText(String text) {
@@ -213,25 +201,24 @@ public class UTCTimeBoxImplHtml4 extends UTCTimeBoxImplShared {
 
     // ----------------------------------------------------------------------
     // synchronization between text and value
-    protected void syncTextToValue( final Long value ) {
-        final Long valueToSelect = text2value( value2text( value ) );
+    protected void syncTextToValue(final Long value) {
+        final Long valueToSelect = text2value(value2text(value));
         final Iterator<Widget> iterator = textbox.iterator();
-        while( iterator.hasNext() ){
+        while (iterator.hasNext()) {
             final Option option = (Option) iterator.next();
-            final Long optionValue = text2value( option.getValue() );
-            if( optionValue <= valueToSelect){
-                textbox.setValue( option.getValue() );
+            final Long optionValue = text2value(option.getValue());
+            if (optionValue <= valueToSelect) {
+                textbox.setValue(option.getValue());
             }
         }
     }
 
     protected void syncValueToText() {
-        setValue( text2value( getText() ), false, true );
+        setValue(text2value(getText()),
+                 false,
+                 true);
     }
 
-    // ----------------------------------------------------------------------
-    // styling
-    
     @Override
     public void validate() {
         boolean valid = true;
@@ -240,18 +227,21 @@ public class UTCTimeBoxImplHtml4 extends UTCTimeBoxImplShared {
             if (value != null) {
                 // scrub the value to format properly
                 setText(value2text(value));
-            }
-            else {
+            } else {
                 // empty is ok and value != null ok, this is invalid
                 valid = false;
             }
         }
-        setStyleName( CLASSNAME_INVALID, !valid);
+        setStyleName(CLASSNAME_INVALID,
+                     !valid);
     }
 
+    // ----------------------------------------------------------------------
+    // styling
+
     @Override
-    public void setVisibleLength( int length ) {
-        textbox.setFixedMenuSize( length );
+    public void setVisibleLength(int length) {
+        textbox.setFixedMenuSize(length);
     }
 
     @Override
@@ -263,4 +253,23 @@ public class UTCTimeBoxImplHtml4 extends UTCTimeBoxImplShared {
         removeStyleName(CLASSNAME_INVALID);
     }
 
+    /**
+     * Keyboard handler for the TextBox shows and hides the menu,
+     * scrolls through the menu, and accepts a value.
+     */
+    private class TextBoxHandler implements BlurHandler,
+                                            ValueChangeHandler<String> {
+
+        @Override
+        public void onBlur(final BlurEvent event) {
+            clearInvalidStyle();
+            validate();
+        }
+
+        @Override
+        public void onValueChange(final ValueChangeEvent<String> event) {
+            clearInvalidStyle();
+            validate();
+        }
+    }
 }

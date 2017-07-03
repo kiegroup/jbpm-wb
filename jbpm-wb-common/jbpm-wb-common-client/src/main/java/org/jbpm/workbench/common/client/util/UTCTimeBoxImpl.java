@@ -25,7 +25,10 @@ import com.google.gwt.user.client.ui.IsWidget;
  * Interface for UTCTimeBox implementations that are quite different
  * in appearance (HTML4 vs HTML5).
  */
-public interface UTCTimeBoxImpl extends IsWidget, HasValue<Long>, HasValueChangeHandlers<Long>, HasText {
+public interface UTCTimeBoxImpl extends IsWidget,
+                                        HasValue<Long>,
+                                        HasValueChangeHandlers<Long>,
+                                        HasText {
 
     /**
      * Sets the DateTimeFormat for this UTCTimeBox. The HTML5
@@ -49,5 +52,4 @@ public interface UTCTimeBoxImpl extends IsWidget, HasValue<Long>, HasValueChange
      * Sets the tab index for the control.
      */
     void setTabIndex(int tabIndex);
-
 }

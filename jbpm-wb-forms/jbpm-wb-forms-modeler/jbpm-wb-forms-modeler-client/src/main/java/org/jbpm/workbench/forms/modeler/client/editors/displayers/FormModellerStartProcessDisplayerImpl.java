@@ -35,14 +35,15 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
 
     private static final String ACTION_START_PROCESS = "startProcess";
 
+    protected String action;
+
     private FormRendererWidget formRenderer;
 
     private Caller<FormModelerProcessStarterEntryPoint> renderContextServices;
 
-    protected String action;
-
     @Inject
-    public FormModellerStartProcessDisplayerImpl( FormRendererWidget formRenderer, Caller<FormModelerProcessStarterEntryPoint> renderContextServices ) {
+    public FormModellerStartProcessDisplayerImpl(FormRendererWidget formRenderer,
+                                                 Caller<FormModelerProcessStarterEntryPoint> renderContextServices) {
         this.formRenderer = formRenderer;
         this.renderContextServices = renderContextServices;
     }
@@ -53,9 +54,9 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
     }
 
     protected void initDisplayer() {
-        formRenderer.loadContext( renderingSettings.getContextId() );
+        formRenderer.loadContext(renderingSettings.getContextId());
 
-        formRenderer.setVisible( true );
+        formRenderer.setVisible(true);
     }
 
     @Override
@@ -64,47 +65,54 @@ public class FormModellerStartProcessDisplayerImpl extends AbstractStartProcessF
     }
 
     public void startProcessFromDisplayer() {
-        submitForm( ACTION_START_PROCESS );
+        submitForm(ACTION_START_PROCESS);
     }
 
-    protected void submitForm( String action ) {
+    protected void submitForm(String action) {
         this.action = action;
         formRenderer.submitFormAndPersist();
     }
 
     @Override
     public void close() {
-        renderContextServices.call( new RemoteCallback<Void>() {
+        renderContextServices.call(new RemoteCallback<Void>() {
             @Override
-            public void callback( Void response ) {
+            public void callback(Void response) {
                 renderingSettings = null;
                 FormModellerStartProcessDisplayerImpl.super.close();
             }
-        } ).clearContext( renderingSettings.getContextId() );
+        }).clearContext(renderingSettings.getContextId());
     }
 
-    public void onFormSubmitted( @Observes FormSubmittedEvent event ) {
-        if ( renderingSettings == null ) {
+    public void onFormSubmitted(@Observes FormSubmittedEvent event) {
+        if (renderingSettings == null) {
             return;
         }
-        if ( event.isMine( renderingSettings.getContextId() ) &&
+        if (event.isMine(renderingSettings.getContextId()) &&
                 event.getContext().getErrors() == 0 &&
-                ACTION_START_PROCESS.equals( action ) ) {
-            renderContextServices.call( getStartProcessRemoteCallback(), getUnexpectedErrorCallback() )
-                    .startProcessFromRenderContext( renderingSettings.getContextId(), serverTemplateId, deploymentId, processDefId, getCorrelationKey(), parentProcessInstanceId );
+                ACTION_START_PROCESS.equals(action)) {
+            renderContextServices.call(getStartProcessRemoteCallback(),
+                                       getUnexpectedErrorCallback())
+                    .startProcessFromRenderContext(renderingSettings.getContextId(),
+                                                   serverTemplateId,
+                                                   deploymentId,
+                                                   processDefId,
+                                                   getCorrelationKey(),
+                                                   parentProcessInstanceId);
         }
     }
 
-    public void onFormResized( @Observes ResizeFormcontainerEvent event ) {
-        if ( renderingSettings == null ) {
+    public void onFormResized(@Observes ResizeFormcontainerEvent event) {
+        if (renderingSettings == null) {
             return;
         }
-        if ( event.isMine( renderingSettings.getContextId() ) ) {
-            formRenderer.resize( event.getWidth(), event.getHeight() );
-            if ( resizeListener != null ) {
-                resizeListener.resize( event.getWidth(), event.getHeight() );
+        if (event.isMine(renderingSettings.getContextId())) {
+            formRenderer.resize(event.getWidth(),
+                                event.getHeight());
+            if (resizeListener != null) {
+                resizeListener.resize(event.getWidth(),
+                                      event.getHeight());
             }
         }
     }
-
 }

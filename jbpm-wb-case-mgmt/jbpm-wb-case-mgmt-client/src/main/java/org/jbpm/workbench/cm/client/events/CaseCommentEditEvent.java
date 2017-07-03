@@ -20,21 +20,25 @@ public class CaseCommentEditEvent {
 
     private String commentId;
 
-    public CaseCommentEditEvent( final String commentId) {
+    public CaseCommentEditEvent(final String commentId) {
         this.commentId = commentId;
+    }
+
+    public CaseCommentEditEvent() {
     }
 
     public String getCommentId() {
         return commentId;
     }
 
-    public CaseCommentEditEvent() {
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         CaseCommentEditEvent that = (CaseCommentEditEvent) o;
 
@@ -55,5 +59,4 @@ public class CaseCommentEditEvent {
                 "commentId='" + commentId + '\'' +
                 '}';
     }
-
 }

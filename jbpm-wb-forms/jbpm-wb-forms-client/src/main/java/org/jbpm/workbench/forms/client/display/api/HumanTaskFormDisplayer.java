@@ -33,5 +33,4 @@ public interface HumanTaskFormDisplayer<S extends FormRenderingSettings> extends
     void release();
 
     void saveState(Map<String, Object> state);
-
 }

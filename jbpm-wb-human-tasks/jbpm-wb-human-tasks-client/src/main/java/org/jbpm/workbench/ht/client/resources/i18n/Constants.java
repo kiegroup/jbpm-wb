@@ -32,7 +32,7 @@ public interface Constants extends Messages {
     Constants INSTANCE = GWT.create(Constants.class);
 
     String Tasks_List();
-    
+
     String Tasks_Admin();
 
     String Grid();
@@ -76,7 +76,7 @@ public interface Constants extends Messages {
     String Work();
 
     String Suspend();
-    
+
     String Resume();
 
     String Details();
@@ -98,11 +98,11 @@ public interface Constants extends Messages {
     String Process_Definition_Id();
 
     String Process_Instance_Details();
-    
+
     String Process_Instance_Correlation_Key();
-    
+
     String Process_Instance_Description();
-    
+
     String Last_Modification_Date();
 
     String No_Comments_For_This_Task();
@@ -214,9 +214,9 @@ public interface Constants extends Messages {
     String TaskReleased(String taskId);
 
     String TaskClaimed(String taskId);
-    
+
     String TaskResumed(String taskId);
-    
+
     String TaskSuspended(String taskId);
 
     String TaskSuccessfullyForwarded();
@@ -240,7 +240,7 @@ public interface Constants extends Messages {
     String FilterByActualOwner();
 
     String FilterByProcessInstanceDescription();
-    
+
     String ViewProcess();
 
     String TaskListCouldNotBeLoaded();

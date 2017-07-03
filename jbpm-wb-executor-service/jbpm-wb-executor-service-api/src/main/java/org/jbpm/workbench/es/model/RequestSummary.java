@@ -42,8 +42,17 @@ public class RequestSummary extends GenericSummary<Long> {
     public RequestSummary() {
     }
 
-    public RequestSummary(Long jobId, Date time, String status, String commandName, String message, String key,
-            Integer retries, Integer executions, String processName, Long processInstanceId, String processInstanceDescription) {
+    public RequestSummary(Long jobId,
+                          Date time,
+                          String status,
+                          String commandName,
+                          String message,
+                          String key,
+                          Integer retries,
+                          Integer executions,
+                          String processName,
+                          Long processInstanceId,
+                          String processInstanceDescription) {
         this.id = jobId;
         this.jobId = jobId;
         this.time = time;
@@ -122,34 +131,27 @@ public class RequestSummary extends GenericSummary<Long> {
         this.executions = executions;
     }
 
-    
     public String getProcessName() {
         return processName;
     }
 
-    
     public void setProcessName(String processName) {
         this.processName = processName;
     }
 
-    
     public Long getProcessInstanceId() {
         return processInstanceId;
     }
 
-    
     public void setProcessInstanceId(Long processInstanceId) {
         this.processInstanceId = processInstanceId;
     }
 
-    
     public String getProcessInstanceDescription() {
         return processInstanceDescription;
     }
 
-    
     public void setProcessInstanceDescription(String processInstanceDescription) {
         this.processInstanceDescription = processInstanceDescription;
     }
-
 }

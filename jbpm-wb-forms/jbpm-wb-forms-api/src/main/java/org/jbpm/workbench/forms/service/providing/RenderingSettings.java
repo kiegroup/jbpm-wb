@@ -33,7 +33,7 @@ public interface RenderingSettings extends Serializable {
     /**
      * Sets the content of the form to be rendered
      */
-    void setFormContent( String formContent );
+    void setFormContent(String formContent);
 
     /**
      * Retrieves the ContentMarshallerContext
@@ -43,5 +43,5 @@ public interface RenderingSettings extends Serializable {
     /**
      * Sets the ContentMarshallerContext
      */
-    void setMarshallerContext( ContentMarshallerContext marshallerContext );
+    void setMarshallerContext(ContentMarshallerContext marshallerContext);
 }

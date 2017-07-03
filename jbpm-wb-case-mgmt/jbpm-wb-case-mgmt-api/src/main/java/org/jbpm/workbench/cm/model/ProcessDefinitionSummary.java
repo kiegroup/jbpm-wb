@@ -16,10 +16,8 @@
 
 package org.jbpm.workbench.cm.model;
 
-
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
-
 
 @Bindable
 @Portable
@@ -78,7 +76,6 @@ public class ProcessDefinitionSummary {
         this.packageName = packageName;
     }
 
-
     public String toString() {
         return "ProcessDefinitionSummary{" +
                 "id='" + id + '\'' +
@@ -122,5 +119,4 @@ public class ProcessDefinitionSummary {
             return this;
         }
     }
-
 }

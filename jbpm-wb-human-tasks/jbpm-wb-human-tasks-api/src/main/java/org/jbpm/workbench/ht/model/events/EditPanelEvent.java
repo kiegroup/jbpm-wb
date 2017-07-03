@@ -17,22 +17,14 @@
 package org.jbpm.workbench.ht.model.events;
 
 import java.io.Serializable;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class EditPanelEvent implements Serializable {
 
     private static final long serialVersionUID = 905246001127154631L;
     private Long taskId;
-
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
 
     public EditPanelEvent() {
 
@@ -42,4 +34,11 @@ public class EditPanelEvent implements Serializable {
         this.taskId = idTask;
     }
 
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
 }

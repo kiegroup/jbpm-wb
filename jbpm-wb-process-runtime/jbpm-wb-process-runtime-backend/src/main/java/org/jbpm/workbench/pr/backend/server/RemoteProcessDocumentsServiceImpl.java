@@ -59,20 +59,19 @@ public class RemoteProcessDocumentsServiceImpl extends AbstractKieServerService 
 
         if (!documents.isEmpty()) {
             if (documents.size() > (filter.getCount() + filter.getOffset())) {
-                response.setPageRowList(new ArrayList<DocumentSummary>(documents.subList(filter.getOffset(), filter.getOffset() + filter.getCount())));
+                response.setPageRowList(new ArrayList<DocumentSummary>(documents.subList(filter.getOffset(),
+                                                                                         filter.getOffset() + filter.getCount())));
                 response.setLastPage(false);
             } else {
-                response.setPageRowList(new ArrayList<DocumentSummary>(documents.subList(filter.getOffset(), documents.size())));
+                response.setPageRowList(new ArrayList<DocumentSummary>(documents.subList(filter.getOffset(),
+                                                                                         documents.size())));
                 response.setLastPage(true);
             }
-
         } else {
             response.setPageRowList(new ArrayList<DocumentSummary>(documents));
             response.setLastPage(true);
-
         }
         return response;
-
     }
 
     private List<DocumentSummary> getDocuments(QueryFilter filter) throws NumberFormatException {
@@ -84,26 +83,32 @@ public class RemoteProcessDocumentsServiceImpl extends AbstractKieServerService 
         List<DocumentSummary> documents = new ArrayList<DocumentSummary>();
         for (ProcessVariableSummary pv : processVariables) {
             if ("org.jbpm.document.Document".equals(pv.getType()) &&
-                pv.getNewValue() != null && !pv.getNewValue().isEmpty()) {
-                    String[] values = pv.getNewValue().split(Document.PROPERTIES_SEPARATOR);
-                    if (values.length == 4) {
-                        Date lastModified = null;
-                        try {
-                            lastModified = sdf.parse(values[2]);
-                        } catch (ParseException ex) {
-                            logger.error("Can not parse last modified date!", ex);
-                        }
-                        documents.add(new DocumentSummary(values[0], lastModified, Long.valueOf(values[1]), getDocumentLink(serverTemplateId, values[3])));
+                    pv.getNewValue() != null && !pv.getNewValue().isEmpty()) {
+                String[] values = pv.getNewValue().split(Document.PROPERTIES_SEPARATOR);
+                if (values.length == 4) {
+                    Date lastModified = null;
+                    try {
+                        lastModified = sdf.parse(values[2]);
+                    } catch (ParseException ex) {
+                        logger.error("Can not parse last modified date!",
+                                     ex);
                     }
+                    documents.add(new DocumentSummary(values[0],
+                                                      lastModified,
+                                                      Long.valueOf(values[1]),
+                                                      getDocumentLink(serverTemplateId,
+                                                                      values[3])));
+                }
             }
         }
         return documents;
     }
 
     @Override
-    public String getDocumentLink(final String serverTemplateId, final String documentIdentifier) {
-        DocumentServicesClient documentClient = getClient(serverTemplateId, DocumentServicesClient.class);
+    public String getDocumentLink(final String serverTemplateId,
+                                  final String documentIdentifier) {
+        DocumentServicesClient documentClient = getClient(serverTemplateId,
+                                                          DocumentServicesClient.class);
         return documentClient.getDocumentLink(documentIdentifier);
     }
-
 }

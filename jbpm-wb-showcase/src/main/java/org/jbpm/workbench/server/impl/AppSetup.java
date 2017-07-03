@@ -51,39 +51,50 @@ public class AppSetup extends BaseAppSetup {
     }
 
     @Inject
-    public AppSetup( @Named("ioStrategy") final IOService ioService,
-                     final RepositoryService repositoryService,
-                     final OrganizationalUnitService organizationalUnitService,
-                     final KieProjectService projectService,
-                     final ConfigurationService configurationService,
-                     final ConfigurationFactory configurationFactory,
-                     final Event<ApplicationStarted> applicationStartedEvent ) {
-        super( ioService, repositoryService, organizationalUnitService, projectService, configurationService, configurationFactory );
+    public AppSetup(@Named("ioStrategy") final IOService ioService,
+                    final RepositoryService repositoryService,
+                    final OrganizationalUnitService organizationalUnitService,
+                    final KieProjectService projectService,
+                    final ConfigurationService configurationService,
+                    final ConfigurationFactory configurationFactory,
+                    final Event<ApplicationStarted> applicationStartedEvent) {
+        super(ioService,
+              repositoryService,
+              organizationalUnitService,
+              projectService,
+              configurationService,
+              configurationFactory);
         this.applicationStartedEvent = applicationStartedEvent;
     }
 
     @PostConstruct
     public void onStartup() {
-        if ( !"false".equalsIgnoreCase( System.getProperty( "org.kie.demo" ) ) ) {
-            final Repository repository = createRepository( JBPM_WB_PLAYGROUND_ALIAS, GIT_SCHEME, JBPM_WB_PLAYGROUND_ORIGIN, "", "" );
-            createOU( repository, OU_NAME, OU_OWNER );
+        if (!"false".equalsIgnoreCase(System.getProperty("org.kie.demo"))) {
+            final Repository repository = createRepository(JBPM_WB_PLAYGROUND_ALIAS,
+                                                           GIT_SCHEME,
+                                                           JBPM_WB_PLAYGROUND_ORIGIN,
+                                                           "",
+                                                           "");
+            createOU(repository,
+                     OU_NAME,
+                     OU_OWNER);
         }
 
-        configurationService.addConfiguration( getGlobalConfiguration() );
+        configurationService.addConfiguration(getGlobalConfiguration());
 
         // notify cluster service that bootstrap is completed to start synchronization
-        applicationStartedEvent.fire( new ApplicationStarted() );
+        applicationStartedEvent.fire(new ApplicationStarted());
     }
 
     private ConfigGroup getGlobalConfiguration() {
-        final ConfigGroup group = configurationFactory.newConfigGroup( ConfigType.GLOBAL,
-                                                                       GLOBAL_SETTINGS,
-                                                                       "" );
+        final ConfigGroup group = configurationFactory.newConfigGroup(ConfigType.GLOBAL,
+                                                                      GLOBAL_SETTINGS,
+                                                                      "");
 
-        group.addConfigItem( configurationFactory.newConfigItem( "build.enable-incremental",
-                                                                 "true" ) );
-        group.addConfigItem( configurationFactory.newConfigItem( "support.runtime.deploy",
-                                                                 "true" ) );
+        group.addConfigItem(configurationFactory.newConfigItem("build.enable-incremental",
+                                                               "true"));
+        group.addConfigItem(configurationFactory.newConfigItem("support.runtime.deploy",
+                                                               "true"));
 
         return group;
     }

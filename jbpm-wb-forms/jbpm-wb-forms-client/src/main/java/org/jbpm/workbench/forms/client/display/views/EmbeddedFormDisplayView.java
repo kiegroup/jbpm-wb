@@ -94,5 +94,4 @@ public class EmbeddedFormDisplayView extends Composite implements FormDisplayerV
     public GenericFormDisplayer getCurrentDisplayer() {
         return currentDisplayer;
     }
-
 }

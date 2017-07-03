@@ -18,12 +18,8 @@ package org.jbpm.workbench.pr.model;
 
 public final class ProcessInstanceDataSetConstants {
 
-    private ProcessInstanceDataSetConstants() {
-    }
-
     public static final String PROCESS_INSTANCE_DATASET = "jbpmProcessInstances";
     public static final String PROCESS_INSTANCE_WITH_VARIABLES_DATASET = "jbpmProcessInstancesWithVariables";
-
     public static final String COLUMN_PROCESS_INSTANCE_ID = "processInstanceId";
     public static final String COLUMN_PROCESS_ID = "processId";
     public static final String COLUMN_START = "start_date";
@@ -40,14 +36,14 @@ public final class ProcessInstanceDataSetConstants {
     public static final String COLUMN_PROCESS_INSTANCE_DESCRIPTION = "processInstanceDescription";
     public static final String COLUMN_LAST_MODIFICATION_DATE = "lastModificationDate";
     public static final String COLUMN_ERROR_COUNT = "errorCount";
-
     public static final String PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX = "DS_ProcessInstancesWithVariablesIncludedGrid";
-
     public static final String PROCESS_INSTANCE_ID = "processInstanceId";
     public static final String PROCESS_NAME = "processId";
     public static final String VARIABLE_NAME = "variableId";
     public static final String VARIABLE_VALUE = "value";
     public static final String VARIABLE_ID = "id";
-
     public static final String COL_ID_ACTIONS = "Actions";
+
+    private ProcessInstanceDataSetConstants() {
+    }
 }

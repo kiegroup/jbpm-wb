@@ -93,27 +93,40 @@ public class CaseInstanceListSearchViewImpl extends AbstractView<CaseInstanceLis
 
     @PostConstruct
     public void init() {
-        stream(CaseStatus.values()).forEach(s -> status.addOption(translationService.format(s.getLabel()), s.getName()));
+        stream(CaseStatus.values()).forEach(s -> status.addOption(translationService.format(s.getLabel()),
+                                                                  s.getName()));
         status.refresh();
 
-        stream(CaseInstanceSortBy.values()).collect(toMap(s -> s.name(), s -> translationService.format(s.name()))).entrySet().stream().sorted((e1, e2) -> e1.getValue().compareTo(e2.getValue())).forEach(s -> sortBy.addOption(s.getValue(), s.getKey()));
+        stream(CaseInstanceSortBy.values())
+                .collect(toMap(s -> s.name(),
+                               s -> translationService.format(s.name())))
+                .entrySet().stream()
+                .sorted((e1, e2) -> e1.getValue().compareTo(e2.getValue()))
+                .forEach(s -> sortBy.addOption(s.getValue(),
+                                               s.getKey()));
+
         sortBy.refresh();
 
-        searchRequest.addPropertyChangeHandler("sortBy", e -> {
-            if(e.getNewValue() == CaseInstanceSortBy.CASE_ID){
-                addCSSClass(sortStartedAsc, "hidden");
-                addCSSClass(sortStartedDesc, "hidden");
-                onSortCaseIdDesc(null);
-            } else {
-                addCSSClass(sortCaseIdAsc, "hidden");
-                addCSSClass(sortCaseIdDesc, "hidden");
-                onSortStartedDesc(null);
-            }
-        });
+        searchRequest.addPropertyChangeHandler("sortBy",
+                                               e -> {
+                                                   if (e.getNewValue() == CaseInstanceSortBy.CASE_ID) {
+                                                       addCSSClass(sortStartedAsc,
+                                                                   "hidden");
+                                                       addCSSClass(sortStartedDesc,
+                                                                   "hidden");
+                                                       onSortCaseIdDesc(null);
+                                                   } else {
+                                                       addCSSClass(sortCaseIdAsc,
+                                                                   "hidden");
+                                                       addCSSClass(sortCaseIdDesc,
+                                                                   "hidden");
+                                                       onSortStartedDesc(null);
+                                                   }
+                                               });
 
-        searchRequest.setModel(new CaseInstanceSearchRequest(), StateSync.FROM_MODEL);
+        searchRequest.setModel(new CaseInstanceSearchRequest(),
+                               StateSync.FROM_MODEL);
         searchRequest.addPropertyChangeHandler(e -> presenter.searchCaseInstances());
-
     }
 
     public CaseInstanceSearchRequest getCaseInstanceSearchRequest() {
@@ -127,29 +140,40 @@ public class CaseInstanceListSearchViewImpl extends AbstractView<CaseInstanceLis
 
     @EventHandler("sort-case-id-asc")
     public void onSortCaseIdAsc(final @ForEvent("click") MouseEvent event) {
-        onSortChange(sortCaseIdAsc, sortCaseIdDesc, false);
+        onSortChange(sortCaseIdAsc,
+                     sortCaseIdDesc,
+                     false);
     }
 
     @EventHandler("sort-case-id-desc")
     public void onSortCaseIdDesc(final @ForEvent("click") MouseEvent event) {
-        onSortChange(sortCaseIdDesc, sortCaseIdAsc, true);
+        onSortChange(sortCaseIdDesc,
+                     sortCaseIdAsc,
+                     true);
     }
 
     @EventHandler("sort-started-asc")
     public void onSortStartedAsc(final @ForEvent("click") MouseEvent event) {
-        onSortChange(sortStartedAsc, sortStartedDesc, false);
+        onSortChange(sortStartedAsc,
+                     sortStartedDesc,
+                     false);
     }
 
     @EventHandler("sort-started-desc")
     public void onSortStartedDesc(final @ForEvent("click") MouseEvent event) {
-        onSortChange(sortStartedDesc, sortStartedAsc, true);
+        onSortChange(sortStartedDesc,
+                     sortStartedAsc,
+                     true);
     }
 
-    private void onSortChange(final HTMLElement toHide, final HTMLElement toShow, final Boolean sortByAsc){
-        addCSSClass(toHide, "hidden");
-        removeCSSClass(toShow, "hidden");
+    private void onSortChange(final HTMLElement toHide,
+                              final HTMLElement toShow,
+                              final Boolean sortByAsc) {
+        addCSSClass(toHide,
+                    "hidden");
+        removeCSSClass(toShow,
+                       "hidden");
         final CaseInstanceSearchRequest model = searchRequest.getWorkingModel();
         model.setSortByAsc(sortByAsc);
     }
-
 }

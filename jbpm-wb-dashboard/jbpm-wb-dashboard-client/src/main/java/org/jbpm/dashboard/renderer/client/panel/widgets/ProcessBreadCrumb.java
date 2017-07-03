@@ -26,16 +26,11 @@ import org.uberfire.mvp.Command;
 @Dependent
 public class ProcessBreadCrumb implements IsWidget {
 
-    public interface View extends UberView<ProcessBreadCrumb> {
-
-        void setRootTitle(String text);
-
-        void setProcess(String name);
-    }
-
     View view;
-    Command onRootSelectedCommand = new Command() {public void execute() {}};
-
+    Command onRootSelectedCommand = new Command() {
+        public void execute() {
+        }
+    };
     public ProcessBreadCrumb() {
         this(new ProcessBreadCrumbView());
     }
@@ -65,5 +60,12 @@ public class ProcessBreadCrumb implements IsWidget {
 
     public void setProcessName(String name) {
         view.setProcess(name);
+    }
+
+    public interface View extends UberView<ProcessBreadCrumb> {
+
+        void setRootTitle(String text);
+
+        void setProcess(String name);
     }
 }

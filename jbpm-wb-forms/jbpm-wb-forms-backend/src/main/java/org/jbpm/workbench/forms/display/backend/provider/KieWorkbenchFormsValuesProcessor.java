@@ -48,130 +48,143 @@ public abstract class KieWorkbenchFormsValuesProcessor<T extends RenderingSettin
 
     protected DynamicBPMNFormGenerator dynamicBPMNFormGenerator;
 
-    public KieWorkbenchFormsValuesProcessor( FormDefinitionSerializer formSerializer,
-                                             BackendFormRenderingContextManager contextManager,
-                                             DynamicBPMNFormGenerator dynamicBPMNFormGenerator ) {
+    public KieWorkbenchFormsValuesProcessor(FormDefinitionSerializer formSerializer,
+                                            BackendFormRenderingContextManager contextManager,
+                                            DynamicBPMNFormGenerator dynamicBPMNFormGenerator) {
         this.formSerializer = formSerializer;
         this.contextManager = contextManager;
         this.dynamicBPMNFormGenerator = dynamicBPMNFormGenerator;
     }
 
-    public KieWorkbenchFormRenderingSettings generateRenderingContext( T settings ) {
-        return generateRenderingContext( settings, false );
+    public KieWorkbenchFormRenderingSettings generateRenderingContext(T settings) {
+        return generateRenderingContext(settings,
+                                        false);
     }
 
-    public KieWorkbenchFormRenderingSettings generateRenderingContext( T settings, boolean generateDefaultForms ) {
-        if ( generateDefaultForms || !StringUtils.isEmpty( settings.getFormContent() ) ) {
+    public KieWorkbenchFormRenderingSettings generateRenderingContext(T settings,
+                                                                      boolean generateDefaultForms) {
+        if (generateDefaultForms || !StringUtils.isEmpty(settings.getFormContent())) {
 
             try {
 
-                ContextForms forms = generateDefaultForms ? generateDefaultForms( settings ) : parseForms( settings );
+                ContextForms forms = generateDefaultForms ? generateDefaultForms(settings) : parseForms(settings);
 
-                if ( forms.getRootForm() == null || !isValid( forms.getRootForm() ) ) {
+                if (forms.getRootForm() == null || !isValid(forms.getRootForm())) {
                     return null;
                 }
 
-                Map<String, Object> rawData = generateRawFormData( settings, forms.getRootForm() );
+                Map<String, Object> rawData = generateRawFormData(settings,
+                                                                  forms.getRootForm());
 
-                BackendFormRenderingContext context = contextManager.registerContext( forms.getRootForm(),
-                                                                                      rawData,
-                                                                                      settings.getMarshallerContext().getClassloader(),
-                                                                                      forms.getNestedForms().toArray(
-                                                                                              new FormDefinition[forms.getNestedForms().size()] ) );
+                BackendFormRenderingContext context = contextManager.registerContext(forms.getRootForm(),
+                                                                                     rawData,
+                                                                                     settings.getMarshallerContext().getClassloader(),
+                                                                                     forms.getNestedForms().toArray(
+                                                                                             new FormDefinition[forms.getNestedForms().size()]));
 
-                prepareContext( settings, context );
+                prepareContext(settings,
+                               context);
 
-                context.getAttributes().put( SETTINGS_ATRA_NAME, settings );
+                context.getAttributes().put(SETTINGS_ATRA_NAME,
+                                            settings);
 
-                return new KieWorkbenchFormRenderingSettings( context.getTimestamp(), context.getRenderingContext() );
-
-            } catch ( Exception ex ) {
-                getLogger().debug( "Unable to generate render form: ", ex );
+                return new KieWorkbenchFormRenderingSettings(context.getTimestamp(),
+                                                             context.getRenderingContext());
+            } catch (Exception ex) {
+                getLogger().debug("Unable to generate render form: ",
+                                  ex);
             }
         }
 
         return null;
     }
 
-    public Map<String, Object> generateRuntimeValuesMap( long timestamp, Map<String, Object> formValues ) {
+    public Map<String, Object> generateRuntimeValuesMap(long timestamp,
+                                                        Map<String, Object> formValues) {
 
-        BackendFormRenderingContext context = contextManager.getContext( timestamp );
+        BackendFormRenderingContext context = contextManager.getContext(timestamp);
 
-        if ( context != null ) {
+        if (context != null) {
             FormDefinition form = context.getRenderingContext().getRootForm();
 
-            if ( isValid( form ) ) {
-                Map<String, Object> formData = contextManager.updateContextData( timestamp, formValues ).getFormData();
-                return getOutputValues( formData, form, (T) context.getAttributes().get( SETTINGS_ATRA_NAME ) );
+            if (isValid(form)) {
+                Map<String, Object> formData = contextManager.updateContextData(timestamp,
+                                                                                formValues).getFormData();
+                return getOutputValues(formData,
+                                       form,
+                                       (T) context.getAttributes().get(SETTINGS_ATRA_NAME));
             }
         }
         return Collections.emptyMap();
     }
 
-    protected ContextForms parseForms( T settings ) {
+    protected ContextForms parseForms(T settings) {
         ContextForms result = new ContextForms();
 
         JsonParser parser = new JsonParser();
         Gson gson = new Gson();
-        JsonElement element = parser.parse( settings.getFormContent() );
+        JsonElement element = parser.parse(settings.getFormContent());
 
         JsonArray forms = element.getAsJsonArray();
-        forms.forEach( jsonForm -> {
-            String content = gson.toJson( jsonForm );
+        forms.forEach(jsonForm -> {
+            String content = gson.toJson(jsonForm);
 
-            if ( !StringUtils.isEmpty( content ) ) {
-                FormDefinition formDefinition = formSerializer.deserialize( content );
-                if ( formDefinition != null ) {
-                    if ( formDefinition.getName().startsWith( getFormName( settings ) + BPMNVariableUtils.TASK_FORM_SUFFIX ) ) {
-                        result.setRootForm( formDefinition );
+            if (!StringUtils.isEmpty(content)) {
+                FormDefinition formDefinition = formSerializer.deserialize(content);
+                if (formDefinition != null) {
+                    if (formDefinition.getName().startsWith(getFormName(settings) + BPMNVariableUtils.TASK_FORM_SUFFIX)) {
+                        result.setRootForm(formDefinition);
                     } else {
-                        result.getNestedForms().add( formDefinition );
+                        result.getNestedForms().add(formDefinition);
                     }
                 }
             }
-        } );
+        });
         return result;
     }
 
-    protected ContextForms generateDefaultForms( T settings ) {
+    protected ContextForms generateDefaultForms(T settings) {
         ContextForms result = new ContextForms();
 
-        Collection<FormDefinition> contextForms = generateDefaultFormsForContext( settings );
+        Collection<FormDefinition> contextForms = generateDefaultFormsForContext(settings);
 
-        if ( contextForms == null ) {
-            throw new IllegalArgumentException( "Unable to create forms for context" );
+        if (contextForms == null) {
+            throw new IllegalArgumentException("Unable to create forms for context");
         }
 
-        contextForms.forEach( form -> {
-            if ( form.getName().equals( getFormName( settings ) + BPMNVariableUtils.TASK_FORM_SUFFIX ) ) {
-                result.setRootForm( form );
+        contextForms.forEach(form -> {
+            if (form.getName().equals(getFormName(settings) + BPMNVariableUtils.TASK_FORM_SUFFIX)) {
+                result.setRootForm(form);
             } else {
-                result.getNestedForms().add( form );
+                result.getNestedForms().add(form);
             }
-        } );
+        });
 
         return result;
     }
 
-    protected abstract Collection<FormDefinition> generateDefaultFormsForContext( T settings );
+    protected abstract Collection<FormDefinition> generateDefaultFormsForContext(T settings);
 
-    protected abstract Map<String, Object> getOutputValues( Map<String, Object> values,
-                                                            FormDefinition form,
-                                                            T settings );
+    protected abstract Map<String, Object> getOutputValues(Map<String, Object> values,
+                                                           FormDefinition form,
+                                                           T settings);
 
-    protected abstract boolean isValid( FormDefinition rootForm );
+    protected abstract boolean isValid(FormDefinition rootForm);
 
-    protected abstract String getFormName( T settings );
+    protected abstract String getFormName(T settings);
 
-    protected abstract void prepareContext( T settings, BackendFormRenderingContext context );
+    protected abstract void prepareContext(T settings,
+                                           BackendFormRenderingContext context);
 
-    protected Map<String, Object> generateRawFormData( T settings, FormDefinition form ) {
+    protected Map<String, Object> generateRawFormData(T settings,
+                                                      FormDefinition form) {
         return new HashMap<>();
     }
 
     protected abstract Logger getLogger();
 
     protected class ContextForms {
+
         private FormDefinition rootForm;
         private List<FormDefinition> nestedForms = new ArrayList<>();
 
@@ -179,7 +192,7 @@ public abstract class KieWorkbenchFormsValuesProcessor<T extends RenderingSettin
             return rootForm;
         }
 
-        public void setRootForm( FormDefinition rootForm ) {
+        public void setRootForm(FormDefinition rootForm) {
             this.rootForm = rootForm;
         }
 

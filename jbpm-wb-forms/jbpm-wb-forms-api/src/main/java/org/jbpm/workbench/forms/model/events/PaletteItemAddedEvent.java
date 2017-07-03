@@ -23,10 +23,12 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class PaletteItemAddedEvent implements Serializable {
+
     private Map<String, Object> menuItemDesc;
     private String groupName;
 
-    public PaletteItemAddedEvent(Map<String, Object> menuItem, String groupName) {
+    public PaletteItemAddedEvent(Map<String, Object> menuItem,
+                                 String groupName) {
         this.menuItemDesc = menuItem;
         this.groupName = groupName;
     }
@@ -41,5 +43,4 @@ public class PaletteItemAddedEvent implements Serializable {
     public String getGroupName() {
         return groupName;
     }
-
 }

@@ -15,7 +15,6 @@
  */
 package org.jbpm.workbench.cm.backend.server;
 
-
 import java.util.function.Function;
 
 import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
@@ -37,5 +36,4 @@ public class CaseMilestoneMapper implements Function<CaseMilestone, CaseMileston
                 .status(cm.getStatus())
                 .build();
     }
-
 }

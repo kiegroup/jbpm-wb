@@ -43,10 +43,6 @@ public class ProcessDocumentListPresenter extends AbstractListPresenter<Document
 
     private Constants constants = Constants.INSTANCE;
 
-    public interface ProcessDocumentListView extends ListView<DocumentSummary, ProcessDocumentListPresenter> {
-
-    }
-
     @Inject
     private ProcessDocumentListView view;
 
@@ -54,21 +50,24 @@ public class ProcessDocumentListPresenter extends AbstractListPresenter<Document
     private Caller<ProcessDocumentsService> documentsServices;
 
     private String processInstanceId;
+
     private String processDefId;
+
     private String deploymentId;
+
     private String serverTemplateId;
 
     @PostConstruct
     public void init() {
-        view.init( this );
+        view.init(this);
     }
 
     public IsWidget getWidget() {
         return view;
     }
 
-    public void onProcessInstanceSelectionEvent( @Observes final ProcessInstanceSelectionEvent event ) {
-        this.processInstanceId = String.valueOf( event.getProcessInstanceId() );
+    public void onProcessInstanceSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
+        this.processInstanceId = String.valueOf(event.getProcessInstanceId());
         this.processDefId = event.getProcessDefId();
         this.deploymentId = event.getDeploymentId();
         this.serverTemplateId = event.getServerTemplateId();
@@ -82,54 +81,63 @@ public class ProcessDocumentListPresenter extends AbstractListPresenter<Document
 
     @Override
     public void getData(Range visibleRange) {
-        if(processInstanceId!=null) {
+        if (processInstanceId != null) {
             ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-            if ( currentFilter == null ) {
-                currentFilter = new PortableQueryFilter( visibleRange.getStart(),
-                        visibleRange.getLength(),
-                        false, "",
-                        columnSortList.size() > 0 ? columnSortList.get( 0 )
-                                .getColumn().getDataStoreName() : "",
-                        columnSortList.size() == 0 || columnSortList.get( 0 ).isAscending() );
+            if (currentFilter == null) {
+                currentFilter = new PortableQueryFilter(visibleRange.getStart(),
+                                                        visibleRange.getLength(),
+                                                        false,
+                                                        "",
+                                                        columnSortList.size() > 0 ? columnSortList.get(0)
+                                                                .getColumn().getDataStoreName() : "",
+                                                        columnSortList.size() == 0 || columnSortList.get(0).isAscending());
             }
             // If we are refreshing after a search action, we need to go back to offset 0
-            if ( currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
-                    || currentFilter.getParams().get( "textSearch" ) == null || currentFilter.getParams().get( "textSearch" ).equals( "" ) ) {
-                currentFilter.setOffset( visibleRange.getStart() );
-                currentFilter.setCount( visibleRange.getLength() );
+            if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
+                    || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")) {
+                currentFilter.setOffset(visibleRange.getStart());
+                currentFilter.setCount(visibleRange.getLength());
             } else {
-                currentFilter.setOffset( 0 );
-                currentFilter.setCount( view.getListGrid().getPageSize() );
+                currentFilter.setOffset(0);
+                currentFilter.setCount(view.getListGrid().getPageSize());
             }
             //Applying screen specific filters
-            if ( currentFilter.getParams() == null ) {
-                currentFilter.setParams( new HashMap<String, Object>() );
+            if (currentFilter.getParams() == null) {
+                currentFilter.setParams(new HashMap<String, Object>());
             }
-            currentFilter.getParams().put( "processInstanceId", processInstanceId );
-            currentFilter.getParams().put( "processDefId", processDefId );
-            currentFilter.getParams().put( "deploymentId", deploymentId );
-            currentFilter.getParams().put( "serverTemplateId", serverTemplateId );
+            currentFilter.getParams().put("processInstanceId",
+                                          processInstanceId);
+            currentFilter.getParams().put("processDefId",
+                                          processDefId);
+            currentFilter.getParams().put("deploymentId",
+                                          deploymentId);
+            currentFilter.getParams().put("serverTemplateId",
+                                          serverTemplateId);
 
-            currentFilter.setOrderBy( columnSortList.size() > 0 ? columnSortList.get( 0 )
-                    .getColumn().getDataStoreName() : "" );
-            currentFilter.setIsAscending( columnSortList.size() == 0 || columnSortList.get( 0 ).isAscending() );
+            currentFilter.setOrderBy(columnSortList.size() > 0 ? columnSortList.get(0)
+                    .getColumn().getDataStoreName() : "");
+            currentFilter.setIsAscending(columnSortList.size() == 0 || columnSortList.get(0).isAscending());
 
-            documentsServices.call( new RemoteCallback<PageResponse<DocumentSummary>>() {
-                @Override
-                public void callback( PageResponse<DocumentSummary> response ) {
-                    updateDataOnCallback( response );
-                }
-            }, new ErrorCallback<Message>() {
-                @Override
-                public boolean error( Message message,
-                                      Throwable throwable ) {
-                    view.hideBusyIndicator();
-                    view.displayNotification(constants.ErrorRetrievingProcessDocuments(throwable.getMessage()));
-                    GWT.log( throwable.toString() );
-                    return true;
-                }
-            } ).getData( currentFilter );
+            documentsServices.call(new RemoteCallback<PageResponse<DocumentSummary>>() {
+                                       @Override
+                                       public void callback(PageResponse<DocumentSummary> response) {
+                                           updateDataOnCallback(response);
+                                       }
+                                   },
+                                   new ErrorCallback<Message>() {
+                                       @Override
+                                       public boolean error(Message message,
+                                                            Throwable throwable) {
+                                           view.hideBusyIndicator();
+                                           view.displayNotification(constants.ErrorRetrievingProcessDocuments(throwable.getMessage()));
+                                           GWT.log(throwable.toString());
+                                           return true;
+                                       }
+                                   }).getData(currentFilter);
         }
     }
 
+    public interface ProcessDocumentListView extends ListView<DocumentSummary, ProcessDocumentListPresenter> {
+
+    }
 }

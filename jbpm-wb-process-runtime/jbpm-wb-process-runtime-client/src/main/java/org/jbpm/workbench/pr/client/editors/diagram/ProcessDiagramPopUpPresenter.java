@@ -42,13 +42,6 @@ import org.uberfire.mvp.impl.PathPlaceRequest;
 @WorkbenchPopup(identifier = "jBPM Process Diagram", size = WorkbenchPopup.WorkbenchPopupSize.LARGE)
 public class ProcessDiagramPopUpPresenter extends Composite implements RequiresResize {
 
-    public interface View
-            extends
-            HasBusyIndicator,
-            IsWidget {
-
-    }
-
     @Inject
     private ProcessDiagramWidgetView designerWidget;
 
@@ -57,12 +50,12 @@ public class ProcessDiagramPopUpPresenter extends Composite implements RequiresR
 
     private FlowPanel container = new FlowPanel();
 
-    private Constants constants = GWT.create( Constants.class );
+    private Constants constants = GWT.create(Constants.class);
 
     @PostConstruct
     public void init() {
         container.clear();
-        container.add( designerWidget );
+        container.add(designerWidget);
     }
 
     @OnOpen
@@ -71,15 +64,19 @@ public class ProcessDiagramPopUpPresenter extends Composite implements RequiresR
     }
 
     @OnStartup
-    public void onStartup( final PlaceRequest place ) {
+    public void onStartup(final PlaceRequest place) {
 
-        if ( place instanceof PathPlaceRequest ) {
+        if (place instanceof PathPlaceRequest) {
 
-            String serverTemplateId = place.getParameter("serverTemplateId", null);
-            String containerId = place.getParameter("containerId", null);
-            String processId = place.getParameter("processId", null);
+            String serverTemplateId = place.getParameter("serverTemplateId",
+                                                         null);
+            String containerId = place.getParameter("containerId",
+                                                    null);
+            String processId = place.getParameter("processId",
+                                                  null);
 
-            String processInstanceId = place.getParameter("processInstanceId", null);
+            String processInstanceId = place.getParameter("processInstanceId",
+                                                          null);
 
             if (processInstanceId != null && !processInstanceId.isEmpty()) {
                 processImageService.call(new RemoteCallback<String>() {
@@ -87,14 +84,18 @@ public class ProcessDiagramPopUpPresenter extends Composite implements RequiresR
                     public void callback(final String svgContent) {
                         designerWidget.displayImage(svgContent);
                     }
-                }).getProcessInstanceDiagram(serverTemplateId, containerId, Long.parseLong(processInstanceId));
+                }).getProcessInstanceDiagram(serverTemplateId,
+                                             containerId,
+                                             Long.parseLong(processInstanceId));
             } else {
                 processImageService.call(new RemoteCallback<String>() {
                     @Override
                     public void callback(final String svgContent) {
                         designerWidget.displayImage(svgContent);
                     }
-                }).getProcessDiagram(serverTemplateId, containerId, processId);
+                }).getProcessDiagram(serverTemplateId,
+                                     containerId,
+                                     processId);
             }
         }
     }
@@ -116,11 +117,17 @@ public class ProcessDiagramPopUpPresenter extends Composite implements RequiresR
         int width = getContainer().getParent().getOffsetWidth();
 
         getContainer().setWidth(width + "px");
-        getContainer().setHeight( height + "px");
+        getContainer().setHeight(height + "px");
     }
 
     public FlowPanel getContainer() {
         return this.container;
     }
 
+    public interface View
+            extends
+            HasBusyIndicator,
+            IsWidget {
+
+    }
 }

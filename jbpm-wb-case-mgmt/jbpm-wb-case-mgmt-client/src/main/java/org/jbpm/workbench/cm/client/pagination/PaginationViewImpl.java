@@ -39,21 +39,25 @@ import static org.jboss.errai.common.client.dom.DOMUtil.*;
 public class PaginationViewImpl implements IsElement {
 
     @Inject
-    @DataField("pagination")
-    private Div pagination;
-
-    @Inject
     @DataField("nextPage")
     Anchor nextPage;
 
     @Inject
     @DataField("prevPage")
+
     Anchor prevPage;
 
     List allElementsList = new ArrayList();
+
     int currentPage = 0;
+
     int pageSize;
+
     PageList pageList;
+
+    @Inject
+    @DataField("pagination")
+    private Div pagination;
 
     public void init(List allElementsList,
                      PageList pageList,

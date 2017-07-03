@@ -22,75 +22,79 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 
 /**
  * Uses an HTML5 input type=time control to implement the UTCTimeBox
- * 
  */
 public class UTCTimeBoxImplHtml5 extends UTCTimeBoxImplShared {
-    
+
     private static final DateTimeFormat timeInputFormat = DateTimeFormat.getFormat(DateUtils.DEFAULT_TIME_FORMAT_MASK);
-    
+
     private InputWidget widget;
-    
+
     public UTCTimeBoxImplHtml5() {
         widget = new InputWidget("time");
         setTimeFormat(timeInputFormat);
-        
+
         widget.addValueChangeHandler(new ValueChangeHandler<String>() {
 
             @Override
             public void onValueChange(ValueChangeEvent event) {
                 fireValueChangeEvent(getValue());
             }
-            
         });
-        
+
         initWidget(widget);
     }
-    
+
     @Override
     public Long getValue() {
         return string2long(widget.getValue());
     }
 
     @Override
-    public void setValue(Long value, boolean fireEvents) {
-        widget.setValue(long2string(value), fireEvents);
+    public void setValue(Long value,
+                         boolean fireEvents) {
+        widget.setValue(long2string(value),
+                        fireEvents);
     }
 
-     @Override
+    @Override
     public String getText() {
         return value2text(getValue());
     }
 
     @Override
     public void setText(String text) {
-        setValue(text2value(text), true);
+        setValue(text2value(text),
+                 true);
     }
 
     @Override
     public HandlerRegistration addValueChangeHandler(final ValueChangeHandler<Long> handler) {
-        return addHandler(handler, ValueChangeEvent.getType());
+        return addHandler(handler,
+                          ValueChangeEvent.getType());
     }
 
     public void fireValueChangeEvent(Long value) {
-        ValueChangeEvent.fire(this, value);        
+        ValueChangeEvent.fire(this,
+                              value);
     }
 
     @Override
     public void setTabIndex(int tabIndex) {
         widget.setTabIndex(tabIndex);
     }
-    
+
     // ----------------------------------------------------------------------
     // the core translation methods of this class using the form HH:mm
 
     // we only obey hh:mm
     private Long string2long(String value) {
-        return parseUsingFormat(value, timeInputFormat);
+        return parseUsingFormat(value,
+                                timeInputFormat);
     }
-    
+
     private String long2string(Long value) {
-        return formatUsingFormat(value, timeInputFormat);
-    }    
-    
+        return formatUsingFormat(value,
+                                 timeInputFormat);
+    }
 }
  

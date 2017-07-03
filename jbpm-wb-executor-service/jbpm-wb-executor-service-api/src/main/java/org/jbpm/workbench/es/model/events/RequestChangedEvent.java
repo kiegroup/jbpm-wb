@@ -40,5 +40,4 @@ public class RequestChangedEvent implements Serializable {
     public void setRequestId(Long requestId) {
         this.requestId = requestId;
     }
-
 }

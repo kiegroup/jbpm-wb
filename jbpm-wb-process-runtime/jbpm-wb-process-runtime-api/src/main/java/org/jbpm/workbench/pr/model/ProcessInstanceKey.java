@@ -29,7 +29,9 @@ public class ProcessInstanceKey implements ItemKey {
     public ProcessInstanceKey() {
     }
 
-    public ProcessInstanceKey(String serverTemplateId, String deploymentId, Long processInstanceId) {
+    public ProcessInstanceKey(String serverTemplateId,
+                              String deploymentId,
+                              Long processInstanceId) {
         this.serverTemplateId = serverTemplateId;
         this.deploymentId = deploymentId;
         this.processInstanceId = processInstanceId;
@@ -85,5 +87,4 @@ public class ProcessInstanceKey implements ItemKey {
     public String toString() {
         return "ProcessInstanceKey{" + "processInstanceId=" + processInstanceId + '}';
     }
-
 }

@@ -35,8 +35,6 @@ import org.uberfire.workbench.events.NotificationEvent;
 @Templated(value = "TaskProcessContextViewImpl.html")
 public class TaskProcessContextViewImpl extends Composite implements TaskProcessContextPresenter.TaskProcessContextView {
 
-    private TaskProcessContextPresenter presenter;
-
     @Inject
     @DataField
     public Button pIDetailsButton;
@@ -57,45 +55,47 @@ public class TaskProcessContextViewImpl extends Composite implements TaskProcess
     @DataField
     public Paragraph processIdText;
 
+    private TaskProcessContextPresenter presenter;
+
     @Inject
     private Event<NotificationEvent> notification;
 
-    private Constants constants = GWT.create( Constants.class );
+    private Constants constants = GWT.create(Constants.class);
 
     @Override
-    public void init( TaskProcessContextPresenter presenter ) {
+    public void init(TaskProcessContextPresenter presenter) {
         this.presenter = presenter;
         // Instance id
-        processInstanceIdLabel.setText( constants.Process_Instance_Id() );
+        processInstanceIdLabel.setText(constants.Process_Instance_Id());
 
         //Process Id
-        processIdLabel.setText( constants.Process_Definition_Id() );
+        processIdLabel.setText(constants.Process_Definition_Id());
 
-        pIDetailsButton.setText( constants.Process_Instance_Details() );
+        pIDetailsButton.setText(constants.Process_Instance_Details());
     }
 
     @EventHandler("pIDetailsButton")
-    public void pIDetailsButton( ClickEvent e ) {
+    public void pIDetailsButton(ClickEvent e) {
         presenter.goToProcessInstanceDetails();
     }
 
     @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     @Override
-    public void setProcessInstanceId( String piid ) {
-        processInstanceIdText.setText( piid );
+    public void setProcessInstanceId(String piid) {
+        processInstanceIdText.setText(piid);
     }
 
     @Override
-    public void setProcessId( String pid ) {
-        processIdText.setText( pid );
+    public void setProcessId(String pid) {
+        processIdText.setText(pid);
     }
 
     @Override
-    public void enablePIDetailsButton( boolean enable ) {
-        pIDetailsButton.setEnabled( enable );
+    public void enablePIDetailsButton(boolean enable) {
+        pIDetailsButton.setEnabled(enable);
     }
 }

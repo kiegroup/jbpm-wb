@@ -34,11 +34,7 @@ import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 public class BasicProcessDefDetailsMultiViewImpl extends BaseProcessDefDetailsMultiViewImpl
         implements BasicProcessDefDetailsMultiPresenter.BasicProcessDefDetailsMultiView {
 
-    interface Binder
-            extends
-            UiBinder<Widget, BasicProcessDefDetailsMultiViewImpl> {
-
-    }
+    private static Binder uiBinder = GWT.create(Binder.class);
 
     @UiField
     NavTabs navTabs;
@@ -46,33 +42,32 @@ public class BasicProcessDefDetailsMultiViewImpl extends BaseProcessDefDetailsMu
     @UiField
     TabContent tabContent;
 
-    private static Binder uiBinder = GWT.create( Binder.class );
-
     private BasicProcessDefDetailsMultiPresenter presenter;
 
     private TabPane definitionDetailsPane;
+
     private TabListItem definitionDetailsTab;
 
     @Override
-    public void init( final BasicProcessDefDetailsMultiPresenter presenter ) {
+    public void init(final BasicProcessDefDetailsMultiPresenter presenter) {
         this.presenter = presenter;
-        initWidget( uiBinder.createAndBindUi( this ) );
+        initWidget(uiBinder.createAndBindUi(this));
         initTabs();
     }
 
     protected void initTabs() {
         definitionDetailsPane = new TabPane() {{
-            add( getTabView() );
-            setActive( true );
+            add(getTabView());
+            setActive(true);
         }};
-        definitionDetailsTab = new TabListItem( Constants.INSTANCE.Definition_Details() ) {{
-            setDataTargetWidget( definitionDetailsPane );
-            addStyleName( "uf-dropdown-tab-list-item" );
-            setActive( true );
+        definitionDetailsTab = new TabListItem(Constants.INSTANCE.Definition_Details()) {{
+            setDataTargetWidget(definitionDetailsPane);
+            addStyleName("uf-dropdown-tab-list-item");
+            setActive(true);
         }};
 
-        navTabs.add( definitionDetailsTab );
-        tabContent.add( definitionDetailsPane );
+        navTabs.add(definitionDetailsTab);
+        tabContent.add(definitionDetailsPane);
     }
 
     @Override
@@ -90,4 +85,9 @@ public class BasicProcessDefDetailsMultiViewImpl extends BaseProcessDefDetailsMu
         presenter.createNewProcessInstance();
     }
 
+    interface Binder
+            extends
+            UiBinder<Widget, BasicProcessDefDetailsMultiViewImpl> {
+
+    }
 }

@@ -31,7 +31,8 @@ public class KieServerDataSetRegistered {
     public KieServerDataSetRegistered() {
     }
 
-    public KieServerDataSetRegistered(String serverInstanceId, String serverTemplateId) {
+    public KieServerDataSetRegistered(String serverInstanceId,
+                                      String serverTemplateId) {
         this.serverInstanceId = serverInstanceId;
         this.serverTemplateId = serverTemplateId;
     }
@@ -54,14 +55,19 @@ public class KieServerDataSetRegistered {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         KieServerDataSetRegistered that = (KieServerDataSetRegistered) o;
 
-        if (!serverInstanceId.equals(that.serverInstanceId)) return false;
+        if (!serverInstanceId.equals(that.serverInstanceId)) {
+            return false;
+        }
         return serverTemplateId.equals(that.serverTemplateId);
-
     }
 
     @Override
@@ -81,5 +87,4 @@ public class KieServerDataSetRegistered {
                 ", serverTemplateId='" + serverTemplateId + '\'' +
                 '}';
     }
-
 }

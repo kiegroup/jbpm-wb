@@ -18,6 +18,6 @@ package org.jbpm.workbench.forms.display.view;
 
 public interface FormContentResizeListener {
 
-    void resize(int width, int height);
-
+    void resize(int width,
+                int height);
 }

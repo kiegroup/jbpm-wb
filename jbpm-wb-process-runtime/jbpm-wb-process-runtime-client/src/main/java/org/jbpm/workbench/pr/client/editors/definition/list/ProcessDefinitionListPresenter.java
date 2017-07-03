@@ -65,10 +65,6 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     @Inject
     StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
 
-    public interface ProcessDefinitionListView extends ListView<ProcessSummary, ProcessDefinitionListPresenter> {
-
-    }
-
     @Inject
     private ProcessDefinitionListView view;
 
@@ -99,15 +95,20 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
         return view;
     }
 
-    public void openGenericForm( final String processDefId,
-                                 final String deploymentId,
-                                 final String processDefName ) {
+    public void openGenericForm(final String processDefId,
+                                final String deploymentId,
+                                final String processDefName) {
 
-        ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(getSelectedServerTemplate(), deploymentId, processDefId, processDefName), processDefName);
+        ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(getSelectedServerTemplate(),
+                                                                                            deploymentId,
+                                                                                            processDefId,
+                                                                                            processDefName),
+                                                                   processDefName);
 
         formDisplayPopUp.setTitle(processDefName);
 
-        startProcessDisplayProvider.setup(config, formDisplayPopUp);
+        startProcessDisplayProvider.setup(config,
+                                          formDisplayPopUp);
     }
 
     @Override
@@ -118,42 +119,51 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     @Override
     public void getData(Range visibleRange) {
         ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-        if ( currentFilter == null ) {
-            currentFilter = new PortableQueryFilter( visibleRange.getStart(),
-                    visibleRange.getLength(),
-                    false, "",
-                    columnSortList.size() > 0 ? columnSortList.get( 0 )
-                            .getColumn().getDataStoreName() : "",
-                    columnSortList.size() == 0 || columnSortList.get( 0 ).isAscending() );
+        if (currentFilter == null) {
+            currentFilter = new PortableQueryFilter(visibleRange.getStart(),
+                                                    visibleRange.getLength(),
+                                                    false,
+                                                    "",
+                                                    columnSortList.size() > 0 ? columnSortList.get(0)
+                                                            .getColumn().getDataStoreName() : "",
+                                                    columnSortList.size() == 0 || columnSortList.get(0).isAscending());
         }
         // If we are refreshing after a search action, we need to go back to offset 0
-        if ( currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
-                || currentFilter.getParams().get( "textSearch" ) == null || currentFilter.getParams().get( "textSearch" ).equals( "" ) ) {
-            currentFilter.setOffset( visibleRange.getStart() );
-            currentFilter.setCount( visibleRange.getLength() );
+        if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
+                || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")) {
+            currentFilter.setOffset(visibleRange.getStart());
+            currentFilter.setCount(visibleRange.getLength());
         } else {
-            currentFilter.setOffset( 0 );
-            currentFilter.setCount( view.getListGrid().getPageSize() );
+            currentFilter.setOffset(0);
+            currentFilter.setCount(view.getListGrid().getPageSize());
         }
 
-        currentFilter.setOrderBy( columnSortList.size() > 0 ? columnSortList.get( 0 )
-                .getColumn().getDataStoreName() : "" );
+        currentFilter.setOrderBy(columnSortList.size() > 0 ? columnSortList.get(0)
+                .getColumn().getDataStoreName() : "");
         currentFilter.setIsAscending(columnSortList.size() == 0 || columnSortList.get(0).isAscending());
 
         processRuntimeDataService.call(new RemoteCallback<List<ProcessSummary>>() {
-            @Override
-            public void callback( final List<ProcessSummary> processDefsSums ) {
-                boolean lastPageExactCount = processDefsSums.size() < visibleRange.getLength();
-                updateDataOnCallback(processDefsSums, visibleRange.getStart(), visibleRange.getStart() + processDefsSums.size(), lastPageExactCount);
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                return onRuntimeDataServiceError();
-            }
-        } ).getProcessesByFilter(getSelectedServerTemplate(), textSearchStr, visibleRange.getStart() / visibleRange.getLength(), visibleRange.getLength(),
-                currentFilter.getOrderBy(), currentFilter.isAscending());
+                                           @Override
+                                           public void callback(final List<ProcessSummary> processDefsSums) {
+                                               boolean lastPageExactCount = processDefsSums.size() < visibleRange.getLength();
+                                               updateDataOnCallback(processDefsSums,
+                                                                    visibleRange.getStart(),
+                                                                    visibleRange.getStart() + processDefsSums.size(),
+                                                                    lastPageExactCount);
+                                           }
+                                       },
+                                       new ErrorCallback<Message>() {
+                                           @Override
+                                           public boolean error(Message message,
+                                                                Throwable throwable) {
+                                               return onRuntimeDataServiceError();
+                                           }
+                                       }).getProcessesByFilter(getSelectedServerTemplate(),
+                                                               textSearchStr,
+                                                               visibleRange.getStart() / visibleRange.getLength(),
+                                                               visibleRange.getLength(),
+                                                               currentFilter.getOrderBy(),
+                                                               currentFilter.isAscending());
     }
 
     boolean onRuntimeDataServiceError() {
@@ -178,43 +188,49 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                 .build();
     }
 
-    protected void selectProcessDefinition(final ProcessSummary processSummary, final Boolean close) {
+    protected void selectProcessDefinition(final ProcessSummary processSummary,
+                                           final Boolean close) {
         PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details Multi"));
 
-        if ( instanceDetailsStatus == PlaceStatus.OPEN ) {
-            placeManager.closePlace( "Process Instance Details Multi" );
+        if (instanceDetailsStatus == PlaceStatus.OPEN) {
+            placeManager.closePlace("Process Instance Details Multi");
         }
 
         placeIdentifier = "Advanced Process Details Multi";
-        PlaceStatus status = placeManager.getStatus( new DefaultPlaceRequest( placeIdentifier ) );
+        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(placeIdentifier));
 
-        if ( status == PlaceStatus.CLOSE ) {
-            placeManager.goTo( placeIdentifier );
+        if (status == PlaceStatus.CLOSE) {
+            placeManager.goTo(placeIdentifier);
             fireProcessDefSelectionEvent(processSummary);
-        } else if ( status == PlaceStatus.OPEN && !close ) {
+        } else if (status == PlaceStatus.OPEN && !close) {
             fireProcessDefSelectionEvent(processSummary);
-        } else if ( status == PlaceStatus.OPEN && close ) {
-            placeManager.closePlace( placeIdentifier );
+        } else if (status == PlaceStatus.OPEN && close) {
+            placeManager.closePlace(placeIdentifier);
         }
     }
 
     private void fireProcessDefSelectionEvent(final ProcessSummary processSummary) {
-        processDefSelected.fire(new ProcessDefSelectionEvent(processSummary.getProcessDefId(), processSummary.getDeploymentId(), getSelectedServerTemplate(), processSummary.getProcessDefName(), processSummary.isDynamic()));
+        processDefSelected.fire(new ProcessDefSelectionEvent(processSummary.getProcessDefId(),
+                                                             processSummary.getDeploymentId(),
+                                                             getSelectedServerTemplate(),
+                                                             processSummary.getProcessDefName(),
+                                                             processSummary.isDynamic()));
     }
 
-    public void refreshNewProcessInstance( @Observes NewProcessInstanceEvent newProcessInstance ) {
+    public void refreshNewProcessInstance(@Observes NewProcessInstanceEvent newProcessInstance) {
         placeIdentifier = "Advanced Process Details Multi";
 
-        PlaceStatus definitionDetailsStatus = placeManager.getStatus( new DefaultPlaceRequest( placeIdentifier ) );
-        if ( definitionDetailsStatus == PlaceStatus.OPEN ) {
-            placeManager.closePlace( placeIdentifier );
+        PlaceStatus definitionDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest(placeIdentifier));
+        if (definitionDetailsStatus == PlaceStatus.OPEN) {
+            placeManager.closePlace(placeIdentifier);
         }
-        placeManager.goTo( "Process Instance Details Multi" );
-        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( newProcessInstance.getDeploymentId(),
-                newProcessInstance.getNewProcessInstanceId(),
-                newProcessInstance.getNewProcessDefId(), newProcessInstance.getProcessDefName(),
-                newProcessInstance.getNewProcessInstanceStatus(), newProcessInstance.getServerTemplateId() ) );
-
+        placeManager.goTo("Process Instance Details Multi");
+        processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getDeploymentId(),
+                                                                       newProcessInstance.getNewProcessInstanceId(),
+                                                                       newProcessInstance.getNewProcessDefId(),
+                                                                       newProcessInstance.getProcessDefName(),
+                                                                       newProcessInstance.getNewProcessInstanceStatus(),
+                                                                       newProcessInstance.getServerTemplateId()));
     }
 
     @Override
@@ -228,4 +244,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
         this.processRuntimeDataService = processRuntimeDataService;
     }
 
+    public interface ProcessDefinitionListView extends ListView<ProcessSummary, ProcessDefinitionListPresenter> {
+
+    }
 }

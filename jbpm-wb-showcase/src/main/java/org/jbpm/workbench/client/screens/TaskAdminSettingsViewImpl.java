@@ -35,8 +35,6 @@ import org.uberfire.workbench.events.NotificationEvent;
 @Templated(value = "TaskAdminSettingsViewImpl.html")
 public class TaskAdminSettingsViewImpl extends Composite implements TaskAdminSettingsPresenter.TaskAdminSettingsView {
 
-    private TaskAdminSettingsPresenter presenter;
-
     @Inject
     @DataField
     public Button generateMockTasksButton;
@@ -57,28 +55,31 @@ public class TaskAdminSettingsViewImpl extends Composite implements TaskAdminSet
     @DataField
     public TextBox amountOfTasksText;
 
+    private TaskAdminSettingsPresenter presenter;
+
     @Inject
     private Event<NotificationEvent> notification;
 
-    private TaskAdminConstants constants = GWT.create( TaskAdminConstants.class );
+    private TaskAdminConstants constants = GWT.create(TaskAdminConstants.class);
 
     @Override
-    public void init( TaskAdminSettingsPresenter presenter ) {
+    public void init(TaskAdminSettingsPresenter presenter) {
         this.presenter = presenter;
 
-        amountOfTasksLabel.setText( constants.Amount_Of_Tasks() );
-        userNameLabel.setText( constants.User_Name() );
-        generateMockTasksButton.setText( constants.Generate_Mock_Tasks() );
+        amountOfTasksLabel.setText(constants.Amount_Of_Tasks());
+        userNameLabel.setText(constants.User_Name());
+        generateMockTasksButton.setText(constants.Generate_Mock_Tasks());
     }
 
     @EventHandler("generateMockTasksButton")
-    public void generateMockTasksButton( ClickEvent e ) {
-        presenter.generateMockTasks( userNameText.getText(), Integer.parseInt( amountOfTasksText.getText() ) );
+    public void generateMockTasksButton(ClickEvent e) {
+        presenter.generateMockTasks(userNameText.getText(),
+                                    Integer.parseInt(amountOfTasksText.getText()));
     }
 
     @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     @Override
@@ -90,5 +91,4 @@ public class TaskAdminSettingsViewImpl extends Composite implements TaskAdminSet
     public Button getGenerateMockTasksButton() {
         return generateMockTasksButton;
     }
-
 }

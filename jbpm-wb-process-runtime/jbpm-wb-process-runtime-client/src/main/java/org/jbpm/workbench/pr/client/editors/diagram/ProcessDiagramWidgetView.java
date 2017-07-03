@@ -31,7 +31,7 @@ import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 public class ProcessDiagramWidgetView
         extends Composite
         implements ProcessDiagramPopUpPresenter.View,
-        RequiresResize {
+                   RequiresResize {
 
     @DataField("processDiagramDiv")
     Element processDiagramDiv = DOM.createDiv();
@@ -43,7 +43,8 @@ public class ProcessDiagramWidgetView
     public void displayImage(final String svgContent) {
         if (svgContent != null && !svgContent.isEmpty()) {
             processDiagramDiv.setInnerHTML(svgContent);
-            processDiagramDiv.getFirstChildElement().setAttribute("overflow", "scroll");
+            processDiagramDiv.getFirstChildElement().setAttribute("overflow",
+                                                                  "scroll");
         } else {
             processDiagramDiv.setInnerHTML("<h3>No process diagram found</h3>");
         }
@@ -54,13 +55,13 @@ public class ProcessDiagramWidgetView
         int height = getParent().getOffsetHeight();
         int width = getParent().getOffsetWidth();
 
-        setPixelSize(width,height);
-
+        setPixelSize(width,
+                     height);
     }
 
     @Override
-    public void showBusyIndicator( final String message ) {
-        BusyPopup.showMessage( message );
+    public void showBusyIndicator(final String message) {
+        BusyPopup.showMessage(message);
     }
 
     @Override

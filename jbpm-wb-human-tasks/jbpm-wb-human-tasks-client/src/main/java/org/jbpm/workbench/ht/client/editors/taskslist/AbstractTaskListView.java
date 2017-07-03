@@ -46,8 +46,8 @@ import org.uberfire.mvp.Command;
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
-public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter> extends AbstractMultiGridView<TaskSummary, P>
-    implements AbstractTaskListPresenter.TaskListView<P>{
+public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> extends AbstractMultiGridView<TaskSummary, P>
+        implements AbstractTaskListPresenter.TaskListView<P> {
 
     public static final String COL_ID_ACTIONS = "actions";
 
@@ -56,47 +56,57 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
     public abstract String getDataSetTaskListPrefix();
 
     @Override
-    public void init( final P presenter ) {
+    public void init(final P presenter) {
         final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add( COLUMN_NAME );
-        bannedColumns.add( COL_ID_ACTIONS );
+        bannedColumns.add(COLUMN_NAME);
+        bannedColumns.add(COL_ID_ACTIONS);
         final List<String> initColumns = new ArrayList<String>();
-        initColumns.add( COLUMN_NAME );
-        initColumns.add( COLUMN_PROCESS_ID );
-        initColumns.add( COLUMN_STATUS );
-        initColumns.add( COLUMN_CREATED_ON );
-        initColumns.add( COL_ID_ACTIONS );
+        initColumns.add(COLUMN_NAME);
+        initColumns.add(COLUMN_PROCESS_ID);
+        initColumns.add(COLUMN_STATUS);
+        initColumns.add(COLUMN_CREATED_ON);
+        initColumns.add(COL_ID_ACTIONS);
 
-        createTabButton.addClickHandler( new ClickHandler() {
-            public void onClick( ClickEvent event ) {
-                final String key = getValidKeyForAdditionalListGrid(getDataSetTaskListPrefix() + "_" );
+        createTabButton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                final String key = getValidKeyForAdditionalListGrid(getDataSetTaskListPrefix() + "_");
 
                 Command addNewGrid = new Command() {
                     @Override
                     public void execute() {
 
-                        final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
+                        final ExtendedPagedTable<TaskSummary> extendedPagedTable = createGridInstance(new GridGlobalPreferences(key,
+                                                                                                                                initColumns,
+                                                                                                                                bannedColumns),
+                                                                                                      key);
 
-                        extendedPagedTable.setDataProvider( presenter.getDataProvider() );
+                        extendedPagedTable.setDataProvider(presenter.getDataProvider());
 
-                        filterPagedTable.createNewTab( extendedPagedTable, key, createTabButton, new Command() {
-                            @Override
-                            public void execute() {
-                                currentListGrid = extendedPagedTable;
-                                applyFilterOnPresenter( key );
-                            }
-                        } );
-                        applyFilterOnPresenter( key );
-
+                        filterPagedTable.createNewTab(extendedPagedTable,
+                                                      key,
+                                                      createTabButton,
+                                                      new Command() {
+                                                          @Override
+                                                          public void execute() {
+                                                              currentListGrid = extendedPagedTable;
+                                                              applyFilterOnPresenter(key);
+                                                          }
+                                                      });
+                        applyFilterOnPresenter(key);
                     }
                 };
                 FilterSettings tableSettings = presenter.createTableSettingsPrototype();
-                tableSettings.setKey( key );
-                dataSetEditorManager.showTableSettingsEditor( filterPagedTable, Constants.INSTANCE.New_FilteredList(), tableSettings, addNewGrid );
-
+                tableSettings.setKey(key);
+                dataSetEditorManager.showTableSettingsEditor(filterPagedTable,
+                                                             Constants.INSTANCE.New_FilteredList(),
+                                                             tableSettings,
+                                                             addNewGrid);
             }
-        } );
-        super.init(presenter, new GridGlobalPreferences(getDataSetTaskListPrefix(), initColumns, bannedColumns ) );
+        });
+        super.init(presenter,
+                   new GridGlobalPreferences(getDataSetTaskListPrefix(),
+                                             initColumns,
+                                             bannedColumns));
     }
 
     @Override
@@ -139,87 +149,119 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
     }
 
     @Override
-    public void initColumns( ExtendedPagedTable<TaskSummary>  extendedPagedTable ) {
-        initCellPreview( extendedPagedTable );
+    public void initColumns(ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+        initCellPreview(extendedPagedTable);
 
         Column actionsColumn = initActionsColumn();
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
 
         List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
         columnMetas.add(new ColumnMeta<>(
-                createNumberColumn(COLUMN_TASK_ID, task -> task.getId()), constants.Id()
-            ));
+                createNumberColumn(COLUMN_TASK_ID,
+                                   task -> task.getId()),
+                constants.Id()
+        ));
         columnMetas.add(new ColumnMeta<>(
-                createTextColumn(COLUMN_NAME, task -> task.getName()), constants.Task()
-                ));
+                createTextColumn(COLUMN_NAME,
+                                 task -> task.getName()),
+                constants.Task()
+        ));
         columnMetas.add(new ColumnMeta<>(
-                createTextColumn(COLUMN_DESCRIPTION, task -> task.getDescription()), constants.Description()
-                ));
+                createTextColumn(COLUMN_DESCRIPTION,
+                                 task -> task.getDescription()),
+                constants.Description()
+        ));
         columnMetas.add(new ColumnMeta<>(
-                createTextColumn(COLUMN_PROCESS_ID, task -> task.getProcessId()), constants.Process_Name()
-                ));
+                createTextColumn(COLUMN_PROCESS_ID,
+                                 task -> task.getProcessId()),
+                constants.Process_Name()
+        ));
         columnMetas.add(new ColumnMeta<>(
-                createNumberColumn(COLUMN_PROCESS_INSTANCE_ID, task -> task.getProcessInstanceId()), constants.Process_Id()
-                ));
+                createNumberColumn(COLUMN_PROCESS_INSTANCE_ID,
+                                   task -> task.getProcessInstanceId()),
+                constants.Process_Id()
+        ));
         columnMetas.add(new ColumnMeta<>(
-                createNumberColumn(COLUMN_PRIORITY, task -> task.getPriority()), constants.Priority()
-                ));
+                createNumberColumn(COLUMN_PRIORITY,
+                                   task -> task.getPriority()),
+                constants.Priority()
+        ));
         columnMetas.add(new ColumnMeta<>(
-                createTextColumn(COLUMN_STATUS, task -> task.getStatus()), constants.Status()
-                ));
+                createTextColumn(COLUMN_STATUS,
+                                 task -> task.getStatus()),
+                constants.Status()
+        ));
         columnMetas.add(new ColumnMeta<>(
-                createTextColumn(COLUMN_CREATED_ON, task -> DateUtils.getDateTimeStr(task.getCreatedOn())), constants.Created_On()
-                ));
+                createTextColumn(COLUMN_CREATED_ON,
+                                 task -> DateUtils.getDateTimeStr(task.getCreatedOn())),
+                constants.Created_On()
+        ));
         columnMetas.add(new ColumnMeta<>(
-                createTextColumn(COLUMN_DUE_DATE, task -> DateUtils.getDateTimeStr(task.getExpirationTime())), constants.Due_On()
-                ));
+                createTextColumn(COLUMN_DUE_DATE,
+                                 task -> DateUtils.getDateTimeStr(task.getExpirationTime())),
+                constants.Due_On()
+        ));
         columnMetas.add(new ColumnMeta<>(
-                createTextColumn(COLUMN_ACTUAL_OWNER, task -> task.getActualOwner()), constants.Actual_Owner()));
+                createTextColumn(COLUMN_ACTUAL_OWNER,
+                                 task -> task.getActualOwner()),
+                constants.Actual_Owner()));
         columnMetas.add(new ColumnMeta<>(
-                createTextColumn(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY, task -> task.getProcessInstanceCorrelationKey()), constants.Process_Instance_Correlation_Key()
-                ));
+                createTextColumn(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
+                                 task -> task.getProcessInstanceCorrelationKey()),
+                constants.Process_Instance_Correlation_Key()
+        ));
         columnMetas.add(new ColumnMeta<>(
-                createTextColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION, task -> task.getProcessInstanceDescription()), constants.Process_Instance_Description()
-                ));
+                createTextColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                 task -> task.getProcessInstanceDescription()),
+                constants.Process_Instance_Description()
+        ));
         columnMetas.add(new ColumnMeta<>(
-                createTextColumn(COLUMN_LAST_MODIFICATION_DATE, task -> DateUtils.getDateTimeStr(task.getLastModificationDate())), constants.Last_Modification_Date()
-                ));
-        columnMetas.add(new ColumnMeta<>(actionsColumn, constants.Actions()));
+                createTextColumn(COLUMN_LAST_MODIFICATION_DATE,
+                                 task -> DateUtils.getDateTimeStr(task.getLastModificationDate())),
+                constants.Last_Modification_Date()
+        ));
+        columnMetas.add(new ColumnMeta<>(actionsColumn,
+                                         constants.Actions()));
 
         List<GridColumnPreference> columPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
 
-        for ( GridColumnPreference colPref : columPreferenceList ) {
-            if ( !isColumnAdded( columnMetas, colPref.getName() ) ) {
-                Column<TaskSummary, ?> genericColumn = initGenericColumn( colPref.getName() );
-                genericColumn.setSortable( false );
-                columnMetas.add( new ColumnMeta<TaskSummary>( genericColumn, colPref.getName(), true, true ) );
+        for (GridColumnPreference colPref : columPreferenceList) {
+            if (!isColumnAdded(columnMetas,
+                               colPref.getName())) {
+                Column<TaskSummary, ?> genericColumn = initGenericColumn(colPref.getName());
+                genericColumn.setSortable(false);
+                columnMetas.add(new ColumnMeta<TaskSummary>(genericColumn,
+                                                            colPref.getName(),
+                                                            true,
+                                                            true));
             }
         }
 
-        extendedPagedTable.addColumns( columnMetas );
+        extendedPagedTable.addColumns(columnMetas);
     }
 
-    private void initCellPreview( final ExtendedPagedTable<TaskSummary> extendedPagedTable ) {
-        extendedPagedTable.addCellPreviewHandler( new CellPreviewEvent.Handler<TaskSummary>() {
+    private void initCellPreview(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+        extendedPagedTable.addCellPreviewHandler(new CellPreviewEvent.Handler<TaskSummary>() {
 
             @Override
-            public void onCellPreview( final CellPreviewEvent<TaskSummary> event ) {
+            public void onCellPreview(final CellPreviewEvent<TaskSummary> event) {
 
-                if ( BrowserEvents.MOUSEOVER.equalsIgnoreCase( event.getNativeEvent().getType() ) ) {
-                    onMouseOverGrid( extendedPagedTable, event );
+                if (BrowserEvents.MOUSEOVER.equalsIgnoreCase(event.getNativeEvent().getType())) {
+                    onMouseOverGrid(extendedPagedTable,
+                                    event);
                 }
-
             }
-        } );
-
+        });
     }
 
-    private void onMouseOverGrid( ExtendedPagedTable<TaskSummary> extendedPagedTable,
-                                  final CellPreviewEvent<TaskSummary> event ) {
+    private void onMouseOverGrid(ExtendedPagedTable<TaskSummary> extendedPagedTable,
+                                 final CellPreviewEvent<TaskSummary> event) {
         TaskSummary task = event.getValue();
 
-        if ( task.getDescription() != null ) {
-            extendedPagedTable.setTooltip( extendedPagedTable.getKeyboardSelectedRow(), event.getColumn(), task.getDescription() );
+        if (task.getDescription() != null) {
+            extendedPagedTable.setTooltip(extendedPagedTable.getKeyboardSelectedRow(),
+                                          event.getColumn(),
+                                          task.getDescription());
         }
     }
 
@@ -260,22 +302,26 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
         };
         actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
-
     }
-    
-    protected void initFilterTab(FilterSettings tableSettings, final String key, String tabName, String tabDesc, GridGlobalPreferences preferences) {
+
+    protected void initFilterTab(FilterSettings tableSettings,
+                                 final String key,
+                                 String tabName,
+                                 String tabDesc,
+                                 GridGlobalPreferences preferences) {
         tableSettings.setKey(key);
         tableSettings.setTableName(tabName);
         tableSettings.setTableDescription(tabDesc);
 
-        addNewTab(preferences, tableSettings);
+        addNewTab(preferences,
+                  tableSettings);
     }
 
-    private boolean isColumnAdded( List<ColumnMeta<TaskSummary>> columnMetas,
-            String caption ) {
-        if ( caption != null ) {
-            for ( ColumnMeta<TaskSummary> colMet : columnMetas ) {
-                if ( caption.equals( colMet.getColumn().getDataStoreName() ) ) {
+    private boolean isColumnAdded(List<ColumnMeta<TaskSummary>> columnMetas,
+                                  String caption) {
+        if (caption != null) {
+            for (ColumnMeta<TaskSummary> colMet : columnMetas) {
+                if (caption.equals(colMet.getColumn().getDataStoreName())) {
                     return true;
                 }
             }
@@ -283,56 +329,60 @@ public abstract class AbstractTaskListView <P extends AbstractTaskListPresenter>
         return false;
     }
 
-    public void addDomainSpecifColumns( ExtendedPagedTable<TaskSummary> extendedPagedTable,
-            Set<String> columns ) {
+    public void addDomainSpecifColumns(ExtendedPagedTable<TaskSummary> extendedPagedTable,
+                                       Set<String> columns) {
 
         extendedPagedTable.storeColumnToPreferences();
 
         HashMap<String, String> modifiedCaptions = new HashMap<String, String>();
         ArrayList<ColumnMeta<TaskSummary>> existingExtraColumns = new ArrayList<ColumnMeta<TaskSummary>>();
-        for ( ColumnMeta<TaskSummary> cm : extendedPagedTable.getColumnMetaList() ) {
-            if ( cm.isExtraColumn() ) {
-                existingExtraColumns.add( cm );
-            } else if ( columns.contains( cm.getCaption() ) ) {      //exist a column with the same caption
-                for ( String c : columns ) {
-                    if ( c.equals( cm.getCaption() ) ) {
-                        modifiedCaptions.put( c, "Var_" + c );
+        for (ColumnMeta<TaskSummary> cm : extendedPagedTable.getColumnMetaList()) {
+            if (cm.isExtraColumn()) {
+                existingExtraColumns.add(cm);
+            } else if (columns.contains(cm.getCaption())) {      //exist a column with the same caption
+                for (String c : columns) {
+                    if (c.equals(cm.getCaption())) {
+                        modifiedCaptions.put(c,
+                                             "Var_" + c);
                     }
                 }
             }
         }
-        for ( ColumnMeta<TaskSummary> colMet : existingExtraColumns ) {
-            if ( !columns.contains( colMet.getCaption() ) ) {
-                extendedPagedTable.removeColumnMeta( colMet );
+        for (ColumnMeta<TaskSummary> colMet : existingExtraColumns) {
+            if (!columns.contains(colMet.getCaption())) {
+                extendedPagedTable.removeColumnMeta(colMet);
             } else {
-                columns.remove( colMet.getCaption() );
+                columns.remove(colMet.getCaption());
             }
         }
 
         List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
         String caption = "";
-        for ( String c : columns ) {
+        for (String c : columns) {
             caption = c;
-            if ( modifiedCaptions.get( c ) != null ) {
-                caption = (String) modifiedCaptions.get( c );
+            if (modifiedCaptions.get(c) != null) {
+                caption = (String) modifiedCaptions.get(c);
             }
-            Column<TaskSummary, ?> genericColumn = initGenericColumn( c );
-            genericColumn.setSortable( false );
+            Column<TaskSummary, ?> genericColumn = initGenericColumn(c);
+            genericColumn.setSortable(false);
 
-            columnMetas.add( new ColumnMeta<TaskSummary>( genericColumn, caption, true, true ) );
+            columnMetas.add(new ColumnMeta<TaskSummary>(genericColumn,
+                                                        caption,
+                                                        true,
+                                                        true));
         }
 
-        extendedPagedTable.addColumns( columnMetas );
+        extendedPagedTable.addColumns(columnMetas);
     }
 
-
-    private Column<TaskSummary, ?> initGenericColumn( final String key ) {
-        return createTextColumn(key, task -> task.getDomainDataValue(key));
+    private Column<TaskSummary, ?> initGenericColumn(final String key) {
+        return createTextColumn(key,
+                                task -> task.getDomainDataValue(key));
     }
 
     @Override
     public void setSelectedTask(final TaskSummary selectedTask) {
-        currentListGrid.getSelectionModel().setSelected( selectedTask, true );
+        currentListGrid.getSelectionModel().setSelected(selectedTask,
+                                                        true);
     }
-
 }

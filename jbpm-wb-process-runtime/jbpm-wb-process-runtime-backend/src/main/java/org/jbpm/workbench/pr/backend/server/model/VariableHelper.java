@@ -28,28 +28,44 @@ import org.kie.server.api.model.instance.VariableInstance;
 
 public class VariableHelper {
 
-    private static final List<String> excludedVariables = Arrays.asList(new String[] { "processId" });
-
+    private static final List<String> excludedVariables = Arrays.asList(new String[]{"processId"});
 
     public static List<ProcessVariableSummary> adaptCollection(List<VariableInstance> variables,
-            Map<String, String> properties, long processInstanceId, String deploymentId, String serverTemplateId ) {
+                                                               Map<String, String> properties,
+                                                               long processInstanceId,
+                                                               String deploymentId,
+                                                               String serverTemplateId) {
         List<ProcessVariableSummary> variablesSummary = new ArrayList<ProcessVariableSummary>();
         for (VariableInstance v : variables) {
             if (excludedVariables.contains(v.getVariableName())) {
                 continue;
             }
             String type = properties.remove(v.getVariableName());
-            variablesSummary.add(new ProcessVariableSummary(v.getVariableName(), v.getVariableName(), v.getProcessInstanceId(), v
-                    .getOldValue(), v.getValue(), v.getDate().getTime(), type, deploymentId, serverTemplateId));
-
+            variablesSummary.add(new ProcessVariableSummary(v.getVariableName(),
+                                                            v.getVariableName(),
+                                                            v.getProcessInstanceId(),
+                                                            v
+                                                                    .getOldValue(),
+                                                            v.getValue(),
+                                                            v.getDate().getTime(),
+                                                            type,
+                                                            deploymentId,
+                                                            serverTemplateId));
         }
         if (!properties.isEmpty()) {
             for (Entry<String, String> entry : properties.entrySet()) {
-                variablesSummary.add(new ProcessVariableSummary(entry.getKey(), "", processInstanceId, "", "", new Date().getTime(), entry.getValue(), deploymentId, serverTemplateId));
+                variablesSummary.add(new ProcessVariableSummary(entry.getKey(),
+                                                                "",
+                                                                processInstanceId,
+                                                                "",
+                                                                "",
+                                                                new Date().getTime(),
+                                                                entry.getValue(),
+                                                                deploymentId,
+                                                                serverTemplateId));
             }
         }
 
         return variablesSummary;
     }
-
 }

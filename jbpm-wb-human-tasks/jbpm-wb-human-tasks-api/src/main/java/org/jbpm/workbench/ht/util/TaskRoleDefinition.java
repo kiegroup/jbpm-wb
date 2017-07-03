@@ -17,6 +17,7 @@
 package org.jbpm.workbench.ht.util;
 
 public class TaskRoleDefinition {
+
     public final static String TASK_ROLE_INITIATOR = "Initiator";
     public final static String TASK_ROLE_STAKEHOLDER = "Stakeholder";
     public final static String TASK_ROLE_POTENTIALOWNER = "Potential Owner";

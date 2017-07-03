@@ -19,6 +19,7 @@ package org.jbpm.workbench.pr.client.editors.definition.details;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessDefStyleEvent;
 import com.google.gwt.user.client.ui.HTML;
@@ -33,34 +34,43 @@ public abstract class BaseProcessDefDetailsPresenter {
     private String currentDeploymentId = "";
     private String currentServerTemplateId = "";
 
+    protected void changeStyleRow(String processDefName,
+                                  String processDefVersion) {
+
+        processDefStyleEvent.fire(new ProcessDefStyleEvent(processDefName,
+                                                           processDefVersion));
+    }
+
+    public void onProcessDefSelectionEvent(@Observes final ProcessDefSelectionEvent event) {
+        this.currentProcessDefId = event.getProcessId();
+        this.currentDeploymentId = event.getDeploymentId();
+        this.currentServerTemplateId = event.getServerTemplateId();
+        refreshView(currentServerTemplateId,
+                    currentProcessDefId,
+                    currentDeploymentId);
+        refreshProcessDef(currentServerTemplateId,
+                          currentDeploymentId,
+                          currentProcessDefId);
+    }
+
+    public abstract IsWidget getWidget();
+
+    protected abstract void refreshView(final String serverTemplateId,
+                                        String currentProcessDefId,
+                                        String currentDeploymentId);
+
+    protected abstract void refreshProcessDef(final String serverTemplateId,
+                                              final String deploymentId,
+                                              final String processId);
+
     public interface BaseProcessDefDetailsView extends IsWidget {
 
-        void displayNotification( String text );
+        void displayNotification(String text);
 
         HTML getProcessNameText();
 
         HTML getProcessIdText();
 
         HTML getDeploymentIdText();
-
     }
-
-    protected void changeStyleRow( String processDefName, String processDefVersion ) {
-
-        processDefStyleEvent.fire( new ProcessDefStyleEvent( processDefName, processDefVersion ) );
-    }
-
-    public void onProcessDefSelectionEvent( @Observes final ProcessDefSelectionEvent event ) {
-        this.currentProcessDefId = event.getProcessId();
-        this.currentDeploymentId = event.getDeploymentId();
-        this.currentServerTemplateId = event.getServerTemplateId();
-        refreshView( currentServerTemplateId, currentProcessDefId, currentDeploymentId );
-        refreshProcessDef( currentServerTemplateId, currentDeploymentId, currentProcessDefId );
-    }
-
-    public abstract IsWidget getWidget();
-
-    protected abstract void refreshView(  final String serverTemplateId, String currentProcessDefId, String currentDeploymentId );
-
-    protected abstract void refreshProcessDef(  final String serverTemplateId, final String deploymentId, final String processId );
 }

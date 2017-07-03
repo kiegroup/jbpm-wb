@@ -37,7 +37,6 @@ public class DummyProcessPath implements Path {
         return fileName + ".bpmn2";
     }
 
-
     @Override
     public String toURI() {
         return "default://master@dummy/" + getFileName();
@@ -47,5 +46,4 @@ public class DummyProcessPath implements Path {
     public int compareTo(Path path) {
         return 0;
     }
-
 }

@@ -33,72 +33,131 @@ import org.kie.server.client.ProcessServicesClient;
 public class RemoteProcessServiceImpl extends AbstractKieServerService implements ProcessService {
 
     @Override
-    public void abortProcessInstance(String serverTemplateId, String containerId, Long processInstanceId) {
-        ProcessServicesClient client = getClient(serverTemplateId, containerId, ProcessServicesClient.class);
+    public void abortProcessInstance(String serverTemplateId,
+                                     String containerId,
+                                     Long processInstanceId) {
+        ProcessServicesClient client = getClient(serverTemplateId,
+                                                 containerId,
+                                                 ProcessServicesClient.class);
 
-        client.abortProcessInstance(containerId, processInstanceId);
+        client.abortProcessInstance(containerId,
+                                    processInstanceId);
     }
 
     @Override
-    public void abortProcessInstances(String serverTemplateId, List<String> containers, List<Long> processInstanceId) {
+    public void abortProcessInstances(String serverTemplateId,
+                                      List<String> containers,
+                                      List<Long> processInstanceId) {
         if (new HashSet<String>(containers).size() == 1) {
-            ProcessServicesClient client = getClient(serverTemplateId, containers.get(0), ProcessServicesClient.class);
-            client.abortProcessInstances(containers.get(0), processInstanceId);
+            ProcessServicesClient client = getClient(serverTemplateId,
+                                                     containers.get(0),
+                                                     ProcessServicesClient.class);
+            client.abortProcessInstances(containers.get(0),
+                                         processInstanceId);
         } else {
             for (int i = 0; i < processInstanceId.size(); i++) {
-                ProcessServicesClient client = getClient(serverTemplateId, containers.get(i), ProcessServicesClient.class);
-                client.abortProcessInstance(containers.get(i), processInstanceId.get(i));
+                ProcessServicesClient client = getClient(serverTemplateId,
+                                                         containers.get(i),
+                                                         ProcessServicesClient.class);
+                client.abortProcessInstance(containers.get(i),
+                                            processInstanceId.get(i));
             }
         }
     }
 
     @Override
-    public Long startProcess(String serverTemplateId, String containerId, String processId, String correlationKey, Map<String, Object> params) {
-        ProcessServicesClient client = getClient(serverTemplateId, containerId, ProcessServicesClient.class);
+    public Long startProcess(String serverTemplateId,
+                             String containerId,
+                             String processId,
+                             String correlationKey,
+                             Map<String, Object> params) {
+        ProcessServicesClient client = getClient(serverTemplateId,
+                                                 containerId,
+                                                 ProcessServicesClient.class);
 
         if (correlationKey != null && !correlationKey.isEmpty()) {
 
             CorrelationKey actualCorrelationKey = new RemoteCorrelationKey(correlationKey);
 
-            return client.startProcess(containerId, processId, actualCorrelationKey, params);
-
+            return client.startProcess(containerId,
+                                       processId,
+                                       actualCorrelationKey,
+                                       params);
         }
 
-        return client.startProcess(containerId, processId, params);
+        return client.startProcess(containerId,
+                                   processId,
+                                   params);
     }
 
     @Override
-    public List<String> getAvailableSignals(String serverTemplateId, String containerId, Long processInstanceId) {
-        ProcessServicesClient client = getClient(serverTemplateId, containerId, ProcessServicesClient.class);
+    public List<String> getAvailableSignals(String serverTemplateId,
+                                            String containerId,
+                                            Long processInstanceId) {
+        ProcessServicesClient client = getClient(serverTemplateId,
+                                                 containerId,
+                                                 ProcessServicesClient.class);
 
-        return client.getAvailableSignals(containerId, processInstanceId);
+        return client.getAvailableSignals(containerId,
+                                          processInstanceId);
     }
 
     @Override
-    public void signalProcessInstance(String serverTemplateId, String containerId, Long processInstanceId, String signal, Object event) {
-        ProcessServicesClient client = getClient(serverTemplateId, containerId, ProcessServicesClient.class);
+    public void signalProcessInstance(String serverTemplateId,
+                                      String containerId,
+                                      Long processInstanceId,
+                                      String signal,
+                                      Object event) {
+        ProcessServicesClient client = getClient(serverTemplateId,
+                                                 containerId,
+                                                 ProcessServicesClient.class);
 
-        client.signalProcessInstance(containerId, processInstanceId, signal, event);
+        client.signalProcessInstance(containerId,
+                                     processInstanceId,
+                                     signal,
+                                     event);
     }
 
     @Override
-    public void signalProcessInstances(String serverTemplateId, List<String> containers, List<Long> processInstanceId, String signal, Object event) {
+    public void signalProcessInstances(String serverTemplateId,
+                                       List<String> containers,
+                                       List<Long> processInstanceId,
+                                       String signal,
+                                       Object event) {
         if (new HashSet<String>(containers).size() == 1) {
-            ProcessServicesClient client = getClient(serverTemplateId, containers.get(0), ProcessServicesClient.class);
-            client.signalProcessInstances(containers.get(0), processInstanceId, signal, event);
+            ProcessServicesClient client = getClient(serverTemplateId,
+                                                     containers.get(0),
+                                                     ProcessServicesClient.class);
+            client.signalProcessInstances(containers.get(0),
+                                          processInstanceId,
+                                          signal,
+                                          event);
         } else {
             for (int i = 0; i < processInstanceId.size(); i++) {
-                ProcessServicesClient client = getClient(serverTemplateId, containers.get(i), ProcessServicesClient.class);
-                client.signalProcessInstance(containers.get(i), processInstanceId.get(i), signal, event);
+                ProcessServicesClient client = getClient(serverTemplateId,
+                                                         containers.get(i),
+                                                         ProcessServicesClient.class);
+                client.signalProcessInstance(containers.get(i),
+                                             processInstanceId.get(i),
+                                             signal,
+                                             event);
             }
         }
     }
 
     @Override
-    public void setProcessVariable(String serverTemplateId, String containerId, long processInstanceId, String variableName, String value) {
-        ProcessServicesClient client = getClient(serverTemplateId, containerId, ProcessServicesClient.class);
+    public void setProcessVariable(String serverTemplateId,
+                                   String containerId,
+                                   long processInstanceId,
+                                   String variableName,
+                                   String value) {
+        ProcessServicesClient client = getClient(serverTemplateId,
+                                                 containerId,
+                                                 ProcessServicesClient.class);
 
-        client.setProcessVariable(containerId, processInstanceId, variableName, value);
+        client.setProcessVariable(containerId,
+                                  processInstanceId,
+                                  variableName,
+                                  value);
     }
-
 }

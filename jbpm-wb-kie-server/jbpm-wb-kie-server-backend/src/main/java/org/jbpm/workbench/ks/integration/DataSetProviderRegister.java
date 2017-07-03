@@ -43,5 +43,4 @@ public class DataSetProviderRegister {
         providerRegistry.registerDataProvider(kieServerDataSetProvider);
         logger.info("KieServer DataSet provider registered");
     }
-
 }

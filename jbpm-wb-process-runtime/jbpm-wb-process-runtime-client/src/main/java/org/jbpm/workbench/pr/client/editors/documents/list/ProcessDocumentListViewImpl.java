@@ -55,157 +55,161 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummary, ProcessDocumentListPresenter>
         implements ProcessDocumentListPresenter.ProcessDocumentListView {
 
-    private Constants constants = GWT.create( Constants.class );
     public static final String COL_ID_DOCID = "documentId";
     public static final String COL_ID_LASTMOD = "lastModified";
     public static final String COL_ID_DOCSIZE = "docSize";
     public static final String COL_ID_PATH = "Path";
     public static final String COL_ID_ACTIONS = "Actions";
-
-    final String[] units = new String[]{ "B", "KB", "MB", "GB", "TB" };
-
+    final String[] units = new String[]{"B", "KB", "MB", "GB", "TB"};
+    private Constants constants = GWT.create(Constants.class);
     private Column actionsColumn;
 
     @Override
-    public void init( final ProcessDocumentListPresenter presenter ) {
+    public void init(final ProcessDocumentListPresenter presenter) {
         List<String> bannedColumns = new ArrayList<String>();
 
-        bannedColumns.add( COL_ID_DOCID );
-        bannedColumns.add( COL_ID_ACTIONS );
+        bannedColumns.add(COL_ID_DOCID);
+        bannedColumns.add(COL_ID_ACTIONS);
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add( COL_ID_DOCID );
-        initColumns.add( COL_ID_LASTMOD );
-        initColumns.add( COL_ID_DOCSIZE );
-        initColumns.add( COL_ID_ACTIONS );
+        initColumns.add(COL_ID_DOCID);
+        initColumns.add(COL_ID_LASTMOD);
+        initColumns.add(COL_ID_DOCSIZE);
+        initColumns.add(COL_ID_ACTIONS);
 
-        super.init( presenter, new GridGlobalPreferences( "DocumentGrid", initColumns, bannedColumns ) );
+        super.init(presenter,
+                   new GridGlobalPreferences("DocumentGrid",
+                                             initColumns,
+                                             bannedColumns));
 
-        listGrid.setEmptyTableCaption( constants.No_Documents_Available() );
+        listGrid.setEmptyTableCaption(constants.No_Documents_Available());
 
         selectionModel = new NoSelectionModel<DocumentSummary>();
-        selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
+        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             @Override
-            public void onSelectionChange( SelectionChangeEvent event ) {
+            public void onSelectionChange(SelectionChangeEvent event) {
 
-                if ( selectedRow == -1 ) {
-                    listGrid.setRowStyles( selectedStyles );
+                if (selectedRow == -1) {
+                    listGrid.setRowStyles(selectedStyles);
                     selectedRow = listGrid.getKeyboardSelectedRow();
                     listGrid.redraw();
-
-                } else if ( listGrid.getKeyboardSelectedRow() != selectedRow ) {
-                    listGrid.setRowStyles( selectedStyles );
+                } else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
+                    listGrid.setRowStyles(selectedStyles);
                     selectedRow = listGrid.getKeyboardSelectedRow();
                     listGrid.redraw();
                 }
 
                 selectedItem = selectionModel.getLastSelectedObject();
-
             }
-        } );
+        });
 
         noActionColumnManager = DefaultSelectionEventManager
-                .createCustomManager( new DefaultSelectionEventManager.EventTranslator<DocumentSummary>() {
+                .createCustomManager(new DefaultSelectionEventManager.EventTranslator<DocumentSummary>() {
 
                     @Override
-                    public boolean clearCurrentSelection( CellPreviewEvent<DocumentSummary> event ) {
+                    public boolean clearCurrentSelection(CellPreviewEvent<DocumentSummary> event) {
                         return false;
                     }
 
                     @Override
-                    public DefaultSelectionEventManager.SelectAction translateSelectionEvent( CellPreviewEvent<DocumentSummary> event ) {
+                    public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<DocumentSummary> event) {
                         NativeEvent nativeEvent = event.getNativeEvent();
-                        if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) &&
-                            // Ignore if the event didn't occur in the correct column.
-                            listGrid.getColumnIndex( actionsColumn ) == event.getColumn() ) {
-                                return DefaultSelectionEventManager.SelectAction.IGNORE;
+                        if (BrowserEvents.CLICK.equals(nativeEvent.getType()) &&
+                                // Ignore if the event didn't occur in the correct column.
+                                listGrid.getColumnIndex(actionsColumn) == event.getColumn()) {
+                            return DefaultSelectionEventManager.SelectAction.IGNORE;
                         }
                         return DefaultSelectionEventManager.SelectAction.DEFAULT;
                     }
+                });
 
-                } );
-
-        listGrid.setSelectionModel( selectionModel, noActionColumnManager );
-        listGrid.setRowStyles( selectedStyles );
+        listGrid.setSelectionModel(selectionModel,
+                                   noActionColumnManager);
+        listGrid.setRowStyles(selectedStyles);
     }
 
     @Override
-    public void initColumns( ExtendedPagedTable extendedPagedTable ) {
+    public void initColumns(ExtendedPagedTable extendedPagedTable) {
         Column documentId = initDocumentIdColumn();
         Column lastModifiedColumn = initDocumentLastModifiedColumn();
         Column sizeColumn = initDocumentSizeColumn();
         actionsColumn = initActionsColumn();
 
         List<ColumnMeta<DocumentSummary>> columnMetas = new ArrayList<ColumnMeta<DocumentSummary>>();
-        columnMetas.add( new ColumnMeta<DocumentSummary>( documentId, constants.Name() ) );
-        columnMetas.add( new ColumnMeta<DocumentSummary>( lastModifiedColumn, constants.Last_Modification() ) );
-        columnMetas.add( new ColumnMeta<DocumentSummary>( sizeColumn, constants.Size() ) );
-        columnMetas.add( new ColumnMeta<DocumentSummary>( actionsColumn, constants.Actions() ) );
-        extendedPagedTable.addColumns( columnMetas );
+        columnMetas.add(new ColumnMeta<DocumentSummary>(documentId,
+                                                        constants.Name()));
+        columnMetas.add(new ColumnMeta<DocumentSummary>(lastModifiedColumn,
+                                                        constants.Last_Modification()));
+        columnMetas.add(new ColumnMeta<DocumentSummary>(sizeColumn,
+                                                        constants.Size()));
+        columnMetas.add(new ColumnMeta<DocumentSummary>(actionsColumn,
+                                                        constants.Actions()));
+        extendedPagedTable.addColumns(columnMetas);
     }
 
     private Column initDocumentIdColumn() {
         // Id
-        Column<DocumentSummary, String> documentId = new Column<DocumentSummary, String>( new TextCell() ) {
+        Column<DocumentSummary, String> documentId = new Column<DocumentSummary, String>(new TextCell()) {
 
             @Override
-            public String getValue( DocumentSummary object ) {
+            public String getValue(DocumentSummary object) {
                 return object.getDocumentId();
             }
         };
-        documentId.setSortable( true );
-        documentId.setDataStoreName( COL_ID_DOCID );
+        documentId.setSortable(true);
+        documentId.setDataStoreName(COL_ID_DOCID);
 
         return documentId;
     }
 
     private Column initDocumentLastModifiedColumn() {
         // Value.
-        Column<DocumentSummary, String> lastModifiedColumn = new Column<DocumentSummary, String>( new TextCell() ) {
+        Column<DocumentSummary, String> lastModifiedColumn = new Column<DocumentSummary, String>(new TextCell()) {
 
             @Override
-            public String getValue( DocumentSummary object ) {
+            public String getValue(DocumentSummary object) {
                 return object.getDocumentLastModified().toString();
             }
         };
-        lastModifiedColumn.setSortable( true );
-        lastModifiedColumn.setDataStoreName( COL_ID_LASTMOD );
+        lastModifiedColumn.setSortable(true);
+        lastModifiedColumn.setDataStoreName(COL_ID_LASTMOD);
         return lastModifiedColumn;
     }
 
     private Column initDocumentSizeColumn() {
         // Value.
-        Column<DocumentSummary, String> sizeColumn = new Column<DocumentSummary, String>( new TextCell() ) {
+        Column<DocumentSummary, String> sizeColumn = new Column<DocumentSummary, String>(new TextCell()) {
 
             @Override
-            public String getValue( DocumentSummary object ) {
-                return readableFileSize( object.getDocumentSize() );
+            public String getValue(DocumentSummary object) {
+                return readableFileSize(object.getDocumentSize());
             }
         };
-        sizeColumn.setSortable( true );
-        sizeColumn.setDataStoreName( COL_ID_DOCSIZE );
+        sizeColumn.setSortable(true);
+        sizeColumn.setDataStoreName(COL_ID_DOCSIZE);
         return sizeColumn;
     }
 
-    public String readableFileSize( long size ) {
-        if ( size <= 0 ) {
+    public String readableFileSize(long size) {
+        if (size <= 0) {
             return "0";
         }
-        int digitGroups = (int) ( Math.log10( size ) / Math.log10( 1024 ) );
-        return NumberFormat.getDecimalFormat().format( size / Math.pow( 1024, digitGroups ) ) + " " + units[ digitGroups ];
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return NumberFormat.getDecimalFormat().format(size / Math.pow(1024,
+                                                                      digitGroups)) + " " + units[digitGroups];
     }
 
     public Column initDocumentLinkColumn() {
 
         // Type.
-        Column<DocumentSummary, String> pathColumn = new Column<DocumentSummary, String>( new TextCell() ) {
+        Column<DocumentSummary, String> pathColumn = new Column<DocumentSummary, String>(new TextCell()) {
 
             @Override
-            public String getValue( DocumentSummary object ) {
-                return String.valueOf( object.getDocumentSize() );
+            public String getValue(DocumentSummary object) {
+                return String.valueOf(object.getDocumentSize());
             }
         };
-        pathColumn.setSortable( true );
-        pathColumn.setDataStoreName( COL_ID_PATH );
+        pathColumn.setSortable(true);
+        pathColumn.setDataStoreName(COL_ID_PATH);
         return pathColumn;
     }
 
@@ -213,28 +217,29 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
 
         List<HasCell<DocumentSummary, ?>> cells = new LinkedList<HasCell<DocumentSummary, ?>>();
 
-        cells.add( new AccessDocumentActionHasCell(constants.AccessDocument(), new Delegate<DocumentSummary>() {
-            @Override
-            public void execute( DocumentSummary document ) {
-                if ( document != null ) {
-                    GWT.log( "Accessing document: " + document.getDocumentLink() );
-                }
-            }
-        } ) );
+        cells.add(new AccessDocumentActionHasCell(constants.AccessDocument(),
+                                                  new Delegate<DocumentSummary>() {
+                                                      @Override
+                                                      public void execute(DocumentSummary document) {
+                                                          if (document != null) {
+                                                              GWT.log("Accessing document: " + document.getDocumentLink());
+                                                          }
+                                                      }
+                                                  }));
 
-        CompositeCell<DocumentSummary> cell = new CompositeCell<DocumentSummary>( cells );
-        Column<DocumentSummary, DocumentSummary> actionsColumn = new Column<DocumentSummary, DocumentSummary>( cell ) {
+        CompositeCell<DocumentSummary> cell = new CompositeCell<DocumentSummary>(cells);
+        Column<DocumentSummary, DocumentSummary> actionsColumn = new Column<DocumentSummary, DocumentSummary>(cell) {
             @Override
-            public DocumentSummary getValue( DocumentSummary object ) {
+            public DocumentSummary getValue(DocumentSummary object) {
                 return object;
             }
         };
-        actionsColumn.setDataStoreName( COL_ID_ACTIONS );
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
     }
 
-    public void formClosed( @Observes BeforeClosePlaceEvent closed ) {
-        if ( "Edit Variable Popup".equals( closed.getPlace().getIdentifier() ) ) {
+    public void formClosed(@Observes BeforeClosePlaceEvent closed) {
+        if ("Edit Variable Popup".equals(closed.getPlace().getIdentifier())) {
             presenter.refreshGrid();
         }
     }
@@ -243,22 +248,25 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
 
         private ActionCell<DocumentSummary> cell;
 
-        public AccessDocumentActionHasCell( String text,
-                                            Delegate<DocumentSummary> delegate ) {
-            cell = new ActionCell<DocumentSummary>( text, delegate ) {
+        public AccessDocumentActionHasCell(String text,
+                                           Delegate<DocumentSummary> delegate) {
+            cell = new ActionCell<DocumentSummary>(text,
+                                                   delegate) {
                 @Override
-                public void render( final Cell.Context context,
-                                    final DocumentSummary value,
-                                    final SafeHtmlBuilder sb ) {
+                public void render(final Cell.Context context,
+                                   final DocumentSummary value,
+                                   final SafeHtmlBuilder sb) {
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant( new SimplePanel( new AnchorButton( ButtonType.DEFAULT ) {{
-                        setText( constants.download() );
-                        getElement().setPropertyString( "target", "_blank" );
-                        setHref( value.getDocumentLink() );
-                        setSize( ButtonSize.SMALL );
-                        getElement().getStyle().setMarginRight( 5, Style.Unit.PX );
-                    }} ).getElement().getInnerHTML() );
-                    sb.append( mysb.toSafeHtml() );
+                    mysb.appendHtmlConstant(new SimplePanel(new AnchorButton(ButtonType.DEFAULT) {{
+                        setText(constants.download());
+                        getElement().setPropertyString("target",
+                                                       "_blank");
+                        setHref(value.getDocumentLink());
+                        setSize(ButtonSize.SMALL);
+                        getElement().getStyle().setMarginRight(5,
+                                                               Style.Unit.PX);
+                    }}).getElement().getInnerHTML());
+                    sb.append(mysb.toSafeHtml());
                 }
             };
         }
@@ -274,10 +282,8 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
         }
 
         @Override
-        public DocumentSummary getValue( DocumentSummary object ) {
+        public DocumentSummary getValue(DocumentSummary object) {
             return object;
         }
-
     }
-
 }

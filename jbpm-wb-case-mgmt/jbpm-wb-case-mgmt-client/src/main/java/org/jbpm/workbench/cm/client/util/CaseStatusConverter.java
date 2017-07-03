@@ -54,5 +54,4 @@ public class CaseStatusConverter implements Converter<CaseStatus, String> {
     private TranslationService getTranslationService() {
         return IOC.getBeanManager().lookupBean(TranslationService.class).getInstance();
     }
-
 }

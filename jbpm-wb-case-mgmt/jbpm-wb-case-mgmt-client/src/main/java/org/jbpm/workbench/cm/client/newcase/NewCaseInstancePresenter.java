@@ -43,6 +43,9 @@ import static java.util.stream.Collectors.toList;
 @Dependent
 public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstancePresenter.NewCaseInstanceView> {
 
+    @Inject
+    CaseRolesValidations caseRolesValidations;
+
     private List<CaseDefinitionSummary> caseDefinitions = emptyList();
 
     private Caller<CaseManagementService> caseService;
@@ -53,9 +56,6 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
 
     @Inject
     private TranslationService translationService;
-
-    @Inject
-    CaseRolesValidations caseRolesValidations;
 
     @Inject
     private User identity;

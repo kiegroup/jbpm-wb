@@ -86,25 +86,33 @@ public class CaseProvisioningServiceImpl implements CaseProvisioningService {
         final InMemoryRuntimeRegistry runtimeRegistry = new InMemoryRuntimeRegistry();
         final WildflyAccessInterface wildflyAccessInterface = new WildflyAccessInterfaceImpl();
 
-        final Stage<ProviderConfig, RuntimeConfig> runtimeExec = config("Wildfly Runtime Exec", (s) -> new ContextAwareWildflyRuntimeExecConfig());
+        final Stage<ProviderConfig, RuntimeConfig> runtimeExec = config("Wildfly Runtime Exec",
+                                                                        (s) -> new ContextAwareWildflyRuntimeExecConfig());
 
         final PipelineExecutor pipelineExecutor;
         final Pipeline pipeline;
 
         final Input input = new Input();
-        input.put("wildfly-user", settings.getUsername());
-        input.put("wildfly-password", settings.getPassword());
-        input.put("host", settings.getHost());
-        input.put("management-port", settings.getManagementPort());
-        input.put("redeploy", "none");
+        input.put("wildfly-user",
+                  settings.getUsername());
+        input.put("wildfly-password",
+                  settings.getPassword());
+        input.put("host",
+                  settings.getHost());
+        input.put("management-port",
+                  settings.getManagementPort());
+        input.put("redeploy",
+                  "none");
 
         if (settings.isDeployFromLocalPath()) {
-            final Stage<Input, ProviderConfig> providerConfig = config("Wildfly Provider Config", (s) -> new WildflyProviderConfig() {
-            });
+            final Stage<Input, ProviderConfig> providerConfig = config("Wildfly Provider Config",
+                                                                       (s) -> new WildflyProviderConfig() {
+                                                                       });
 
             pipelineExecutor = new PipelineExecutor(asList(
                     new WildflyProviderConfigExecutor(runtimeRegistry),
-                    new WildflyRuntimeExecExecutor(runtimeRegistry, wildflyAccessInterface)
+                    new WildflyRuntimeExecExecutor(runtimeRegistry,
+                                                   wildflyAccessInterface)
             ));
 
             pipeline = PipelineFactory
@@ -112,17 +120,21 @@ public class CaseProvisioningServiceImpl implements CaseProvisioningService {
                     .andThen(runtimeExec)
                     .buildAs(PIPELINE_NAME);
 
-            input.put("war-path", settings.getPath());
+            input.put("war-path",
+                      settings.getPath());
         } else {
-            final Stage<Input, BinaryConfig> mavenConfig = config("Maven Artifact", (s) -> new MavenDependencyConfigImpl());
-            final Stage<BinaryConfig, ProviderConfig> providerConfig = config("Wildfly Provider Config", (s) -> new WildflyProviderConfig() {
-            });
+            final Stage<Input, BinaryConfig> mavenConfig = config("Maven Artifact",
+                                                                  (s) -> new MavenDependencyConfigImpl());
+            final Stage<BinaryConfig, ProviderConfig> providerConfig = config("Wildfly Provider Config",
+                                                                              (s) -> new WildflyProviderConfig() {
+                                                                              });
             final BuildRegistry buildRegistry = new InMemoryBuildRegistry();
 
             pipelineExecutor = new PipelineExecutor(asList(
                     new MavenDependencyConfigExecutor(buildRegistry),
                     new WildflyProviderConfigExecutor(runtimeRegistry),
-                    new WildflyRuntimeExecExecutor(runtimeRegistry, wildflyAccessInterface)
+                    new WildflyRuntimeExecExecutor(runtimeRegistry,
+                                                   wildflyAccessInterface)
             ));
 
             pipeline = PipelineFactory
@@ -131,10 +143,13 @@ public class CaseProvisioningServiceImpl implements CaseProvisioningService {
                     .andThen(runtimeExec)
                     .buildAs(PIPELINE_NAME);
 
-            input.put("artifact", settings.getGAV());
+            input.put("artifact",
+                      settings.getGAV());
         }
 
-        executor.execute(pipelineExecutor, pipeline, input);
+        executor.execute(pipelineExecutor,
+                         pipeline,
+                         input);
     }
 
     @Override
@@ -157,7 +172,7 @@ public class CaseProvisioningServiceImpl implements CaseProvisioningService {
 
     @Override
     public String getApplicationContext() {
-        if(status == DISABLED){
+        if (status == DISABLED) {
             return settings.getURL();
         } else {
             return caseAppContext;

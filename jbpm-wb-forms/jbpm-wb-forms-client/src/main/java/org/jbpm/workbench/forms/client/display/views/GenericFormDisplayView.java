@@ -44,13 +44,14 @@ public class GenericFormDisplayView extends Composite implements GenericFormDisp
     public void init() {
         formContainer.add(view.getView());
     }
+
     @Override
     public FormDisplayerView getDisplayerView() {
         return view;
     }
 
     @Override
-    public void displayNotification( final String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(final String text) {
+        notification.fire(new NotificationEvent(text));
     }
 }

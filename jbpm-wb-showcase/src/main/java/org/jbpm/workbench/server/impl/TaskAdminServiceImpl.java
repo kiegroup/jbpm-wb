@@ -20,14 +20,13 @@ import javax.enterprise.context.ApplicationScoped;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.workbench.api.TaskAdminService;
 
-
 @Service
 @ApplicationScoped
 public class TaskAdminServiceImpl implements TaskAdminService {
 
     @Override
-    public void generateMockTasks(String userName, int amountOfTasks) {
+    public void generateMockTasks(String userName,
+                                  int amountOfTasks) {
         //TODO review implementation based on kie-server
     }
-
 }

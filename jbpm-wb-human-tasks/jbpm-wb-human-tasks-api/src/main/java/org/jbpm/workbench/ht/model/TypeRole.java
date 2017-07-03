@@ -22,21 +22,20 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 public class TypeRole extends IdentitySummary {
 
     private static final long serialVersionUID = -2191443623658177232L;
-    
+
     // TODO only for id, remove it later
     private static final String PREFIX = "typerole_id";
-    
-    public TypeRole(){
-        
+
+    public TypeRole() {
+
     }
-    
-    public TypeRole(String description){
+
+    public TypeRole(String description) {
         super(description);
     }
-    
+
     // TODO please remove it when we have id
     public String getId() {
         return PREFIX + SEPARATOR + super.getName();
     }
-
 }

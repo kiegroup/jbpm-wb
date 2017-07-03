@@ -48,6 +48,8 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class KieServerDataSetManagerTest {
 
+    private final List<Object> receivedEvents = new ArrayList<Object>();
+
     private DataSetDefRegistry dataSetDefRegistry;
 
     private KieServerIntegration kieServerIntegration;
@@ -56,7 +58,6 @@ public class KieServerDataSetManagerTest {
 
     private ManagedExecutorService managedExecutorService;
 
-    private final List<Object> receivedEvents = new ArrayList<Object>();
     private KieServicesClient kieClient;
 
     private QueryServicesClient queryClient;

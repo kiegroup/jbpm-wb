@@ -26,13 +26,19 @@ import org.jbpm.workbench.es.model.RequestDetails;
 @Remote
 public interface ExecutorService {
 
-    RequestDetails getRequestDetails(String serverTemplateId, Long requestId);
+    RequestDetails getRequestDetails(String serverTemplateId,
+                                     Long requestId);
 
-    Long scheduleRequest(String serverTemplateId, String commandId, Date date, Map<String, String> ctx);
+    Long scheduleRequest(String serverTemplateId,
+                         String commandId,
+                         Date date,
+                         Map<String, String> ctx);
 
-    void cancelRequest(String serverTemplateId, Long requestId);
+    void cancelRequest(String serverTemplateId,
+                       Long requestId);
 
-    void requeueRequest(String serverTemplateId, Long requestId);
+    void requeueRequest(String serverTemplateId,
+                        Long requestId);
 
     void acknowledgeError(String serverTemplateId,
                           String deploymentId,

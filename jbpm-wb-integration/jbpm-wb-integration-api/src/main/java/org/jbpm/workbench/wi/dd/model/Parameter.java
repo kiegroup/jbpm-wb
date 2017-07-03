@@ -28,10 +28,10 @@ public class Parameter {
 
     }
 
-    public Parameter(String type, String value) {
+    public Parameter(String type,
+                     String value) {
         this.type = type;
         this.value = value;
-
     }
 
     public String getValue() {

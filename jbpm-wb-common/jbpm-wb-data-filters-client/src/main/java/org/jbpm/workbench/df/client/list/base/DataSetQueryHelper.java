@@ -59,33 +59,37 @@ public class DataSetQueryHelper {
         this.event = event;
     }
 
-    public void lookupDataSet(Integer offset, final DataSetReadyCallback callback) {
+    public void lookupDataSet(Integer offset,
+                              final DataSetReadyCallback callback) {
         try {
-           // Get the sort settings
+            // Get the sort settings
             if (lastOrderedColumn == null) {
                 String defaultSortColumn = currentTableSetting.getTableDefaultSortColumnId();
-                if (!StringUtils.isBlank( defaultSortColumn )) {
+                if (!StringUtils.isBlank(defaultSortColumn)) {
                     lastOrderedColumn = defaultSortColumn;
                     lastSortOrder = currentTableSetting.getTableDefaultSortOrder();
                 }
             }
             // Apply the sort order specified (if any)
             if (lastOrderedColumn != null) {
-                dataSetHandler.sort( lastOrderedColumn, lastSortOrder );
+                dataSetHandler.sort(lastOrderedColumn,
+                                    lastSortOrder);
             }
             // Lookup only the target rows
-            dataSetHandler.limitDataSetRows(offset, currentTableSetting.getTablePageSize());
+            dataSetHandler.limitDataSetRows(offset,
+                                            currentTableSetting.getTablePageSize());
 
             // Do the lookup
             dataSetHandler.lookupDataSet(
                     new DataSetReadyCallback() {
 
-                        public void callback( DataSet dataSet ) {
+                        public void callback(DataSet dataSet) {
                             DataSetQueryHelper.this.dataSet = dataSet;
                             numberOfRows = dataSet.getRowCountNonTrimmed();
-                            callback.callback( dataSet );
+                            callback.callback(dataSet);
                             event.fire(new DataSetReadyEvent(currentTableSetting));
                         }
+
                         public void notFound() {
                             callback.notFound();
                         }
@@ -97,9 +101,9 @@ public class DataSetQueryHelper {
                         }
                     }
             );
-        } catch ( Exception e ) {
+        } catch (Exception e) {
             callback.onError(new ClientRuntimeError(e.getMessage()));
-            GWT.log("DataSetQueryHelper: lookuDataserError"+e.getMessage());
+            GWT.log("DataSetQueryHelper: lookuDataserError" + e.getMessage());
         }
     }
 
@@ -107,7 +111,7 @@ public class DataSetQueryHelper {
         return currentTableSetting;
     }
 
-    public void setCurrentTableSettings( FilterSettings currentTableSetting ) {
+    public void setCurrentTableSettings(FilterSettings currentTableSetting) {
         this.currentTableSetting = currentTableSetting;
     }
 
@@ -115,7 +119,7 @@ public class DataSetQueryHelper {
         return numberOfRows;
     }
 
-    public void setNumberOfRows( int numberOfRows ) {
+    public void setNumberOfRows(int numberOfRows) {
         this.numberOfRows = numberOfRows;
     }
 
@@ -139,16 +143,17 @@ public class DataSetQueryHelper {
         return dataSet;
     }
 
-    public void setDataSet( DataSet dataSet ) {
+    public void setDataSet(DataSet dataSet) {
         this.dataSet = dataSet;
     }
 
     public void setDataSetHandler(FilterSettings tableSettings) {
-        this.dataSetHandler = new DataSetHandlerImpl(dataSetClientServices, ConsoleDataSetLookup.fromInstance(tableSettings.getDataSetLookup(), tableSettings.getServerTemplateId()));
+        this.dataSetHandler = new DataSetHandlerImpl(dataSetClientServices,
+                                                     ConsoleDataSetLookup.fromInstance(tableSettings.getDataSetLookup(),
+                                                                                       tableSettings.getServerTemplateId()));
     }
 
     public void setDataSetHandler(DataSetHandler dataSetHandler) {
         this.dataSetHandler = dataSetHandler;
     }
-
 }

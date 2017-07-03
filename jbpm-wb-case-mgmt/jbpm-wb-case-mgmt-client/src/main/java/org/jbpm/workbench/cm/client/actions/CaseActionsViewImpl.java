@@ -64,7 +64,6 @@ public class CaseActionsViewImpl extends AbstractView<CaseActionsPresenter> impl
         completedActions.init(presenter);
     }
 
-
     @Override
     public HTMLElement getElement() {
         return actionsContainer;
@@ -95,11 +94,19 @@ public class CaseActionsViewImpl extends AbstractView<CaseActionsPresenter> impl
     @Override
     public void updateListHeaders() {
         availableActions.updateActionsHeader(translationService.format(AVAILABLE_ACTIONS),
-                "fa", "fa-flag-o", "kie-card__subtitle-icon", "kie-card__subtitle-icon--available");
+                                             "fa",
+                                             "fa-flag-o",
+                                             "kie-card__subtitle-icon",
+                                             "kie-card__subtitle-icon--available");
         inprogressActions.updateActionsHeader(translationService.format(INPROGRESS_ACTIONS),
-                "fa", "fa-flag-checkered", "kie-card__subtitle-icon", "kie-card__subtitle-icon--inprogress");
+                                              "fa",
+                                              "fa-flag-checkered",
+                                              "kie-card__subtitle-icon",
+                                              "kie-card__subtitle-icon--inprogress");
         completedActions.updateActionsHeader(translationService.format(COMPLETED_ACTIONS),
-                "fa", "fa-flag", "kie-card__subtitle-icon", "kie-card__subtitle-icon--complete");
+                                             "fa",
+                                             "fa-flag",
+                                             "kie-card__subtitle-icon",
+                                             "kie-card__subtitle-icon--complete");
     }
-
 }

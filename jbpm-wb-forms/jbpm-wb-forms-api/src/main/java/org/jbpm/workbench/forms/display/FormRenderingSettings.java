@@ -17,4 +17,5 @@
 package org.jbpm.workbench.forms.display;
 
 public interface FormRenderingSettings {
+
 }

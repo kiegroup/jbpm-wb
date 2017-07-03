@@ -42,5 +42,4 @@ public class HomePerspective {
         p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(HomePresenter.SCREEN_ID)));
         return p;
     }
-
 }

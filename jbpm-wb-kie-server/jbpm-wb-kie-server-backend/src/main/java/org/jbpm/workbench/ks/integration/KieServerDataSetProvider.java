@@ -54,9 +54,8 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class KieServerDataSetProvider extends AbstractKieServerService implements DataSetProvider {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KieServerDataSetProvider.class);
-
     public static final DataSetProviderType TYPE = new KieServerDataSetProviderType();
+    private static final Logger LOGGER = LoggerFactory.getLogger(KieServerDataSetProvider.class);
 
     @Override
     public DataSetProviderType getType() {
@@ -74,21 +73,32 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
             columnTypes.add(column.getColumnType());
         }
 
-        return new DataSetMetadataImpl(def, def.getUUID(), -1, def.getColumns().size(), columnNames, columnTypes, -1);
+        return new DataSetMetadataImpl(def,
+                                       def.getUUID(),
+                                       -1,
+                                       def.getColumns().size(),
+                                       columnNames,
+                                       columnTypes,
+                                       -1);
     }
 
     @Override
-    public DataSet lookupDataSet(DataSetDef def, DataSetLookup lookup) throws Exception {
+    public DataSet lookupDataSet(DataSetDef def,
+                                 DataSetLookup lookup) throws Exception {
         if (!(lookup instanceof ConsoleDataSetLookup)) {
             throw new IllegalArgumentException("DataSetLookup is of incorrect type " + lookup.getClass().getName());
         }
         ConsoleDataSetLookup dataSetLookup = (ConsoleDataSetLookup) lookup;
-        LOGGER.debug("Data Set lookup using Server Template Id: {}", dataSetLookup.getServerTemplateId());
+        LOGGER.debug("Data Set lookup using Server Template Id: {}",
+                     dataSetLookup.getServerTemplateId());
         if (dataSetLookup.getServerTemplateId() == null || dataSetLookup.getServerTemplateId().isEmpty()) {
-            return buildDataSet(def, new ArrayList<>(), new ArrayList<>());
+            return buildDataSet(def,
+                                new ArrayList<>(),
+                                new ArrayList<>());
         }
 
-        final QueryServicesClient queryClient = getClient(dataSetLookup.getServerTemplateId(), QueryServicesClient.class);
+        final QueryServicesClient queryClient = getClient(dataSetLookup.getServerTemplateId(),
+                                                          QueryServicesClient.class);
 
         List<QueryParam> filterParams = new ArrayList<>();
         QueryFilterSpec filterSpec = new QueryFilterSpec();
@@ -102,11 +112,14 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
 
                         CoreFunctionFilter coreFunctionFilter = (CoreFunctionFilter) cFilter;
 
-                        filterParams.add(new QueryParam(coreFunctionFilter.getColumnId(), coreFunctionFilter.getType().toString(), coreFunctionFilter.getParameters()));
+                        filterParams.add(new QueryParam(coreFunctionFilter.getColumnId(),
+                                                        coreFunctionFilter.getType().toString(),
+                                                        coreFunctionFilter.getParameters()));
                     } else if (cFilter instanceof LogicalExprFilter) {
                         LogicalExprFilter logicalExprFilter = (LogicalExprFilter) cFilter;
-                        filterParams.add(new QueryParam(logicalExprFilter.getColumnId(), logicalExprFilter.getLogicalOperator().toString(), logicalExprFilter.getLogicalTerms()));
-
+                        filterParams.add(new QueryParam(logicalExprFilter.getColumnId(),
+                                                        logicalExprFilter.getLogicalOperator().toString(),
+                                                        logicalExprFilter.getLogicalTerms()));
                     }
                 }
             }
@@ -115,8 +128,9 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
 
         List<DataSetGroup> dataSetGroups = lookup.getFirstGroupOpSelections();
         for (DataSetGroup group : dataSetGroups) {
-            if (group.getSelectedIntervalList()!=null && group.getSelectedIntervalList().size()>0) {
-                appendIntervalSelection(group, filterParams);
+            if (group.getSelectedIntervalList() != null && group.getSelectedIntervalList().size() > 0) {
+                appendIntervalSelection(group,
+                                        filterParams);
             }
         }
 
@@ -124,21 +138,27 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
         if (dataSetGroup != null) {
             if (dataSetGroup.getColumnGroup() != null) {
                 // handle group
-                filterParams.add(new QueryParam(dataSetGroup.getColumnGroup().getSourceId(), "group", Arrays.asList(dataSetGroup.getColumnGroup().getColumnId())));
+                filterParams.add(new QueryParam(dataSetGroup.getColumnGroup().getSourceId(),
+                                                "group",
+                                                Arrays.asList(dataSetGroup.getColumnGroup().getColumnId())));
             }
 
             // handle additional columns
             for (GroupFunction groupFunction : dataSetGroup.getGroupFunctions()) {
                 if (groupFunction.getFunction() != null) {
-                    filterParams.add(new QueryParam(groupFunction.getSourceId(), groupFunction.getFunction().toString(), Arrays.asList(groupFunction.getColumnId())));
-                    extraColumns.add(new DataColumnImpl(groupFunction.getSourceId(), ColumnType.NUMBER));
+                    filterParams.add(new QueryParam(groupFunction.getSourceId(),
+                                                    groupFunction.getFunction().toString(),
+                                                    Arrays.asList(groupFunction.getColumnId())));
+                    extraColumns.add(new DataColumnImpl(groupFunction.getSourceId(),
+                                                        ColumnType.NUMBER));
                 } else {
-                    filterParams.add(new QueryParam(groupFunction.getSourceId(), null, Arrays.asList(groupFunction.getColumnId())));
-                    extraColumns.add(new DataColumnImpl(groupFunction.getSourceId(), ColumnType.LABEL));
+                    filterParams.add(new QueryParam(groupFunction.getSourceId(),
+                                                    null,
+                                                    Arrays.asList(groupFunction.getColumnId())));
+                    extraColumns.add(new DataColumnImpl(groupFunction.getSourceId(),
+                                                        ColumnType.LABEL));
                 }
-
             }
-
         }
 
         if (!filterParams.isEmpty()) {
@@ -155,22 +175,25 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
                 sortOrder = cSort.getOrder();
             }
             // remove last ,
-            orderBy.deleteCharAt(orderBy.length()-1);
+            orderBy.deleteCharAt(orderBy.length() - 1);
 
             filterSpec.setOrderBy(orderBy.toString());
             filterSpec.setAscending(sortOrder.equals(SortOrder.ASCENDING));
         }
         final List<List> instances = queryClient.query(
-                    dataSetLookup.getDataSetUUID(),
-                    QueryServicesClient.QUERY_MAP_RAW,
-                    filterSpec,
-                    dataSetLookup.getRowOffset() / dataSetLookup.getNumberOfRows(),
-                    dataSetLookup.getNumberOfRows(),
-                    List.class
-            );
-        LOGGER.debug("Query client returned {} row(s)", instances.size());
+                dataSetLookup.getDataSetUUID(),
+                QueryServicesClient.QUERY_MAP_RAW,
+                filterSpec,
+                dataSetLookup.getRowOffset() / dataSetLookup.getNumberOfRows(),
+                dataSetLookup.getNumberOfRows(),
+                List.class
+        );
+        LOGGER.debug("Query client returned {} row(s)",
+                     instances.size());
 
-        return buildDataSet(def, instances, extraColumns);
+        return buildDataSet(def,
+                            instances,
+                            extraColumns);
     }
 
     @Override
@@ -178,7 +201,9 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
         return false;
     }
 
-    protected DataSet buildDataSet(DataSetDef def, List<List> instances, List<DataColumn> extraColumns) throws Exception {
+    protected DataSet buildDataSet(DataSetDef def,
+                                   List<List> instances,
+                                   List<DataColumn> extraColumns) throws Exception {
         DataSet dataSet = DataSetFactory.newEmptyDataSet();
         dataSet.setUUID(def.getUUID());
         dataSet.setDefinition(def);
@@ -191,12 +216,13 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
         } else {
 
             for (DataColumnDef column : def.getColumns()) {
-                DataColumn numRows = new DataColumnImpl(column.getId(), column.getColumnType());
+                DataColumn numRows = new DataColumnImpl(column.getId(),
+                                                        column.getColumnType());
                 dataSet.addColumn(numRows);
             }
         }
 
-        for(List<Object> row : instances ) {
+        for (List<Object> row : instances) {
 
             int columnIndex = 0;
             for (Object value : row) {
@@ -212,7 +238,8 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
         return dataSet;
     }
 
-    protected void appendIntervalSelection(DataSetGroup intervalSel, List<QueryParam> filterParams) {
+    protected void appendIntervalSelection(DataSetGroup intervalSel,
+                                           List<QueryParam> filterParams) {
         if (intervalSel != null && intervalSel.isSelect()) {
             ColumnGroup cg = intervalSel.getColumnGroup();
             List<Interval> intervalList = intervalSel.getSelectedIntervalList();
@@ -227,12 +254,18 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
                 Comparable intervalMax = (Comparable) interval.getMaxValue();
 
                 if (intervalMin != null) {
-                    if (min == null) min = intervalMin;
-                    else if (min.compareTo(intervalMin) > 0) min = intervalMin;
+                    if (min == null) {
+                        min = intervalMin;
+                    } else if (min.compareTo(intervalMin) > 0) {
+                        min = intervalMin;
+                    }
                 }
                 if (intervalMax != null) {
-                    if (max == null) max = intervalMax;
-                    else if (max.compareTo(intervalMax) > 0) max = intervalMax;
+                    if (max == null) {
+                        max = intervalMax;
+                    } else if (max.compareTo(intervalMax) > 0) {
+                        max = intervalMax;
+                    }
                 }
             }
             // Min can't be greater than max.
@@ -242,23 +275,24 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
 
             ColumnFilter filter;
             if (min != null && max != null) {
-                filter = FilterFactory.between(cg.getSourceId(), min, max);
-            }
-            else if (min != null) {
-                filter = FilterFactory.greaterOrEqualsTo(cg.getSourceId(), min);
-            }
-            else if (max != null) {
-                filter = FilterFactory.lowerOrEqualsTo(cg.getSourceId(), max);
-            }
-            else {
-                filter = FilterFactory.equalsTo(cg.getSourceId(), names);
+                filter = FilterFactory.between(cg.getSourceId(),
+                                               min,
+                                               max);
+            } else if (min != null) {
+                filter = FilterFactory.greaterOrEqualsTo(cg.getSourceId(),
+                                                         min);
+            } else if (max != null) {
+                filter = FilterFactory.lowerOrEqualsTo(cg.getSourceId(),
+                                                       max);
+            } else {
+                filter = FilterFactory.equalsTo(cg.getSourceId(),
+                                                names);
             }
 
             CoreFunctionFilter coreFunctionFilter = (CoreFunctionFilter) filter;
-            filterParams.add(new QueryParam(coreFunctionFilter.getColumnId(), coreFunctionFilter.getType().toString(), coreFunctionFilter.getParameters()));
-
+            filterParams.add(new QueryParam(coreFunctionFilter.getColumnId(),
+                                            coreFunctionFilter.getType().toString(),
+                                            coreFunctionFilter.getParameters()));
         }
     }
-
-
 }

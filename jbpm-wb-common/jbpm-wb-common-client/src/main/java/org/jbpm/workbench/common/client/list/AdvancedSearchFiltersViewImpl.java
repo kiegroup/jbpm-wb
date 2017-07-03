@@ -184,7 +184,8 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                               final Consumer<String> addCallback,
                               final Consumer<String> removeCallback) {
 
-        removeCSSClass(filtersInputHelp,"hidden");
+        removeCSSClass(filtersInputHelp,
+                       "hidden");
         createFilterOption(label,
                            filters,
                            e -> setInputCurrentFilter(label));

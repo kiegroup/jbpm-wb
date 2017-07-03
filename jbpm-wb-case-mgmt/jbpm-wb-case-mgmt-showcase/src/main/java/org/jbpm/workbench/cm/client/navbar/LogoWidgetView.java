@@ -46,16 +46,19 @@ public class LogoWidgetView extends Composite {
 
     @PostConstruct
     public void init() {
-        final RequestBuilder rb = new RequestBuilder(RequestBuilder.GET, "banner/banner.html");
+        final RequestBuilder rb = new RequestBuilder(RequestBuilder.GET,
+                                                     "banner/banner.html");
         rb.setCallback(new RequestCallback() {
             @Override
-            public void onResponseReceived(final Request request, final Response response) {
+            public void onResponseReceived(final Request request,
+                                           final Response response) {
                 final HTMLPanel html = new HTMLPanel(response.getText());
                 container.setWidget(html);
             }
 
             @Override
-            public void onError(final Request request, final Throwable exception) {
+            public void onError(final Request request,
+                                final Throwable exception) {
                 container.setWidget(new Label(translationService.format(ShowcaseConstants.LOGO_BANNER_ERROR)));
             }
         });
@@ -67,5 +70,4 @@ public class LogoWidgetView extends Composite {
 
         initWidget(container);
     }
-
 }

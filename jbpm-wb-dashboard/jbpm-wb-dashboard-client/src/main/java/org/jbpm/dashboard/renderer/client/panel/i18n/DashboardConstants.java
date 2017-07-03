@@ -27,7 +27,8 @@ import com.google.gwt.i18n.client.Messages;
  * Each method name matches up with a key in ProcessDashboardConstants.properties (the properties file can still be used on the server). To use
  * this, use <code>GWT.create(DashboardConstants.class)</code>.
  */
-public interface DashboardConstants extends DashboardI18n, Messages {
+public interface DashboardConstants extends DashboardI18n,
+                                            Messages {
 
     DashboardConstants INSTANCE = GWT.create(DashboardConstants.class);
 }

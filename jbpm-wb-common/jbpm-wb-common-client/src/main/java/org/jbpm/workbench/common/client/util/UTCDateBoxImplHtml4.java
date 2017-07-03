@@ -36,7 +36,7 @@ public class UTCDateBoxImplHtml4 extends UTCDateBoxImplShared {
     public UTCDateBoxImplHtml4() {
         handlerManager = new HandlerManager(this);
         datebox = new DatePicker();
-        datebox.setAutoClose( true );
+        datebox.setAutoClose(true);
         datebox.addValueChangeHandler(new ValueChangeHandler<Date>() {
 
             @Override
@@ -47,7 +47,7 @@ public class UTCDateBoxImplHtml4 extends UTCDateBoxImplShared {
             }
         });
     }
-    
+
     @Override
     public Widget asWidget() {
         return datebox;
@@ -59,8 +59,10 @@ public class UTCDateBoxImplHtml4 extends UTCDateBoxImplShared {
     }
 
     @Override
-    public void setValue(Long value, boolean fireEvents) {
-        datebox.setValue(UTCDateBox.utc2date(value), fireEvents);        
+    public void setValue(Long value,
+                         boolean fireEvents) {
+        datebox.setValue(UTCDateBox.utc2date(value),
+                         fireEvents);
     }
 
     @Override
@@ -71,10 +73,12 @@ public class UTCDateBoxImplHtml4 extends UTCDateBoxImplShared {
     @Override
     public void setText(String text) {
         String oldValue = getText();
-        datebox.getTextBox().setValue(text, true);
+        datebox.getTextBox().setValue(text,
+                                      true);
         if (oldValue == null || !oldValue.equals(text)) {
-            ValueChangeEvent.fire(this, getValue());
-        }        
+            ValueChangeEvent.fire(this,
+                                  getValue());
+        }
     }
 
     @Override
@@ -84,34 +88,37 @@ public class UTCDateBoxImplHtml4 extends UTCDateBoxImplShared {
 
     @Override
     public void setEnabled(boolean enabled) {
-        DomUtils.setEnabled(datebox.getTextBox().getElement(), enabled);
-    }    
-    
+        DomUtils.setEnabled(datebox.getTextBox().getElement(),
+                            enabled);
+    }
+
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Long> handler) {
-        return handlerManager.addHandler(ValueChangeEvent.getType(), handler);
+        return handlerManager.addHandler(ValueChangeEvent.getType(),
+                                         handler);
     }
 
     @Override
     public void fireEvent(GwtEvent<?> event) {
-        handlerManager.fireEvent( event );
+        handlerManager.fireEvent(event);
     }
-    
+
     public void fireValueChangeEvent(long value) {
-        ValueChangeEvent.fire( this, new Long( value ) );
+        ValueChangeEvent.fire(this,
+                              new Long(value));
     }
 
     // ----------------------------------------------------------------------    
-    
+
     @Override
-    public void setDateFormat( final DateTimeFormat dateFormat ) {
-        datebox.setFormat( DatePickerFormatUtilities.convertToBS3DateFormat( dateFormat.getPattern() ) );
-        Scheduler.get().scheduleDeferred( new Scheduler.ScheduledCommand() {
+    public void setDateFormat(final DateTimeFormat dateFormat) {
+        datebox.setFormat(DatePickerFormatUtilities.convertToBS3DateFormat(dateFormat.getPattern()));
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {
                 datebox.reload();
             }
-        } );
+        });
     }
 
     @Override
@@ -123,5 +130,4 @@ public class UTCDateBoxImplHtml4 extends UTCDateBoxImplShared {
     public DatePicker getDateBox() {
         return datebox;
     }
-
 }

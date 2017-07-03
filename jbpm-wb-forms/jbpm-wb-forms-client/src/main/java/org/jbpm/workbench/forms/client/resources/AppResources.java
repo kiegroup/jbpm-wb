@@ -24,6 +24,9 @@ public interface AppResources extends ClientBundle {
 
     AppResources INSTANCE = GWT.create(AppResources.class);
 
+    @Source("css/forms.css")
+    StyleResources style();
+
     interface StyleResources extends CssResource {
 
         @ClassName("task-buttons")
@@ -34,9 +37,5 @@ public interface AppResources extends ClientBundle {
 
         @ClassName("task-form-container")
         String taskFormContainer();
-
     }
-
-    @Source("css/forms.css")
-    StyleResources style();
 }

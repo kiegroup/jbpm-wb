@@ -64,22 +64,22 @@ public class ProjectAuthoringPerspective {
 
     @PostConstruct
     public void setup() {
-        docks.setup(PerspectiveIds.AUTHORING, new DefaultPlaceRequest("org.kie.guvnor.explorer" ) );
+        docks.setup(PerspectiveIds.AUTHORING,
+                    new DefaultPlaceRequest("org.kie.guvnor.explorer"));
     }
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        PerspectiveDefinitionImpl perspective = new PerspectiveDefinitionImpl( MultiListWorkbenchPanelPresenter.class.getName() );
-        perspective.setName( constants.Project_Authoring() );
+        PerspectiveDefinitionImpl perspective = new PerspectiveDefinitionImpl(MultiListWorkbenchPanelPresenter.class.getName());
+        perspective.setName(constants.Project_Authoring());
 
         return perspective;
     }
 
     @WorkbenchMenu
     public Menus getMenus() {
-        if ( !ApplicationPreferences.isProductized() && ApplicationPreferences.getBooleanPref(ExamplesService.EXAMPLES_SYSTEM_PROPERTY ) ) {
+        if (!ApplicationPreferences.isProductized() && ApplicationPreferences.getBooleanPref(ExamplesService.EXAMPLES_SYSTEM_PROPERTY)) {
             return buildMenuBarWithExamples();
-
         } else {
             return buildMenuBarWithoutExamples();
         }
@@ -87,60 +87,59 @@ public class ProjectAuthoringPerspective {
 
     private Menus buildMenuBarWithExamples() {
         return MenuFactory
-                .newTopLevelMenu( constants.Examples() )
-                .respondsWith( new Command() {
+                .newTopLevelMenu(constants.Examples())
+                .respondsWith(new Command() {
                     @Override
                     public void execute() {
                         wizard.start();
                     }
-                } )
+                })
                 .endMenu()
-                .newTopLevelMenu( constants.newItem() )
-                .withItems( newResourcesMenu.getMenuItems() )
+                .newTopLevelMenu(constants.newItem())
+                .withItems(newResourcesMenu.getMenuItems())
                 .endMenu()
-                .newTopLevelMenu( constants.Repository() )
-                .withItems( repositoryMenu.getMenuItems() )
+                .newTopLevelMenu(constants.Repository())
+                .withItems(repositoryMenu.getMenuItems())
                 .endMenu()
-                .newTopLevelMenu( constants.assetSearch() ).position(MenuPosition.RIGHT ).respondsWith(new Command() {
+                .newTopLevelMenu(constants.assetSearch()).position(MenuPosition.RIGHT).respondsWith(new Command() {
                     @Override
                     public void execute() {
-                        placeManager.goTo( "FindForm" );
+                        placeManager.goTo("FindForm");
                     }
-                } )
+                })
                 .endMenu()
-                .newTopLevelMenu( constants.Messages() ).position( MenuPosition.RIGHT ).respondsWith( new Command() {
+                .newTopLevelMenu(constants.Messages()).position(MenuPosition.RIGHT).respondsWith(new Command() {
                     @Override
                     public void execute() {
-                        placeManager.goTo( "org.kie.workbench.common.screens.messageconsole.MessageConsole" );
+                        placeManager.goTo("org.kie.workbench.common.screens.messageconsole.MessageConsole");
                     }
-                } )
+                })
                 .endMenu()
                 .build();
     }
 
     private Menus buildMenuBarWithoutExamples() {
         return MenuFactory
-                .newTopLevelMenu( constants.newItem() )
-                .withItems( newResourcesMenu.getMenuItems() )
+                .newTopLevelMenu(constants.newItem())
+                .withItems(newResourcesMenu.getMenuItems())
                 .endMenu()
-                .newTopLevelMenu( constants.Repository() )
-                .withItems( repositoryMenu.getMenuItems() )
+                .newTopLevelMenu(constants.Repository())
+                .withItems(repositoryMenu.getMenuItems())
                 .endMenu()
-                .newTopLevelMenu( constants.assetSearch() ).position( MenuPosition.RIGHT ).respondsWith( new Command() {
+                .newTopLevelMenu(constants.assetSearch()).position(MenuPosition.RIGHT).respondsWith(new Command() {
                     @Override
                     public void execute() {
-                        placeManager.goTo( "FindForm" );
+                        placeManager.goTo("FindForm");
                     }
-                } )
+                })
                 .endMenu()
-                .newTopLevelMenu( constants.Messages() ).position( MenuPosition.RIGHT ).respondsWith( new Command() {
+                .newTopLevelMenu(constants.Messages()).position(MenuPosition.RIGHT).respondsWith(new Command() {
                     @Override
                     public void execute() {
-                        placeManager.goTo( "org.kie.workbench.common.screens.messageconsole.MessageConsole" );
+                        placeManager.goTo("org.kie.workbench.common.screens.messageconsole.MessageConsole");
                     }
-                } )
+                })
                 .endMenu()
                 .build();
     }
-
 }

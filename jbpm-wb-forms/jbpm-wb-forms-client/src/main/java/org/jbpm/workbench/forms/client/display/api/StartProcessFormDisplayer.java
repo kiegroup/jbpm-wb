@@ -33,5 +33,4 @@ public interface StartProcessFormDisplayer<S extends FormRenderingSettings> exte
     void startProcess(Map<String, Object> params);
 
     void addResizeFormContent(FormContentResizeListener resizeListener);
-
 }

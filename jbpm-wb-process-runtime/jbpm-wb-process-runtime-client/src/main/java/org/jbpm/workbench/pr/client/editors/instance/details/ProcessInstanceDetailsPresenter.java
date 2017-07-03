@@ -41,30 +41,12 @@ import org.kie.api.runtime.process.ProcessInstance;
 public class ProcessInstanceDetailsPresenter {
 
     private String currentDeploymentId;
+
     private String currentProcessInstanceId;
+
     private String currentProcessDefId;
+
     private String currentServerTemplateId;
-
-    public interface ProcessInstanceDetailsView extends IsWidget {
-
-//      TODO Review interface to not expose GWT components
-        HTML getCurrentActivitiesListBox();
-
-        HTML getActiveTasksListBox();
-
-        HTML getProcessDefinitionIdText();
-
-        HTML getStateText();
-
-        HTML getProcessDeploymentText();
-
-        HTML getProcessVersionText();
-
-        HTML getCorrelationKeyText();
-
-        HTML getParentProcessInstanceIdText();
-
-    }
 
     @Inject
     private ProcessInstanceDetailsView view;
@@ -83,20 +65,26 @@ public class ProcessInstanceDetailsPresenter {
         return view;
     }
 
-    private void changeStyleRow( long processInstanceId,
-                                 String processDefName,
-                                 String processDefVersion,
-                                 Date startTime ) {
-        processInstanceStyleEvent.fire( new ProcessInstanceStyleEvent( processInstanceId, processDefName, processDefVersion, startTime ) );
+    private void changeStyleRow(long processInstanceId,
+                                String processDefName,
+                                String processDefVersion,
+                                Date startTime) {
+        processInstanceStyleEvent.fire(new ProcessInstanceStyleEvent(processInstanceId,
+                                                                     processDefName,
+                                                                     processDefVersion,
+                                                                     startTime));
     }
 
-    public void onProcessInstanceSelectionEvent( @Observes ProcessInstanceSelectionEvent event ) {
+    public void onProcessInstanceSelectionEvent(@Observes ProcessInstanceSelectionEvent event) {
         this.currentDeploymentId = event.getDeploymentId();
-        this.currentProcessInstanceId = String.valueOf( event.getProcessInstanceId() );
+        this.currentProcessInstanceId = String.valueOf(event.getProcessInstanceId());
         this.currentProcessDefId = event.getProcessDefId();
         this.currentServerTemplateId = event.getServerTemplateId();
 
-        refreshProcessInstanceDataRemote(currentDeploymentId, currentProcessInstanceId, currentProcessDefId, currentServerTemplateId);
+        refreshProcessInstanceDataRemote(currentDeploymentId,
+                                         currentProcessInstanceId,
+                                         currentProcessDefId,
+                                         currentServerTemplateId);
     }
 
     public void refreshProcessInstanceDataRemote(final String deploymentId,
@@ -112,23 +100,23 @@ public class ProcessInstanceDetailsPresenter {
         view.getParentProcessInstanceIdText().setText("");
         view.getActiveTasksListBox().setText("");
         view.getStateText().setText("");
-        view.getCurrentActivitiesListBox().setText( "" );
+        view.getCurrentActivitiesListBox().setText("");
 
         processRuntimeDataService.call(new RemoteCallback<ProcessInstanceSummary>() {
             @Override
-            public void callback( final ProcessInstanceSummary process ) {
-                view.getProcessDefinitionIdText().setText( process.getProcessId() );
-                view.getProcessVersionText().setText( process.getProcessVersion() );
-                view.getProcessDeploymentText().setText( process.getDeploymentId() );
+            public void callback(final ProcessInstanceSummary process) {
+                view.getProcessDefinitionIdText().setText(process.getProcessId());
+                view.getProcessVersionText().setText(process.getProcessVersion());
+                view.getProcessDeploymentText().setText(process.getDeploymentId());
                 view.getCorrelationKeyText().setText(process.getCorrelationKey());
-                if(process.getParentId() > 0){
+                if (process.getParentId() > 0) {
                     view.getParentProcessInstanceIdText().setText(process.getParentId().toString());
-                }else{
+                } else {
                     view.getParentProcessInstanceIdText().setText(constants.No_Parent_Process_Instance());
                 }
 
                 String statusStr = constants.Unknown();
-                switch ( process.getState() ) {
+                switch (process.getState()) {
                     case ProcessInstance.STATE_ACTIVE:
                         statusStr = constants.Active();
                         break;
@@ -151,31 +139,55 @@ public class ProcessInstanceDetailsPresenter {
                 if (process.getActiveTasks() != null && !process.getActiveTasks().isEmpty()) {
                     SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
 
-                    for ( UserTaskSummary uts : process.getActiveTasks() ) {
-                        safeHtmlBuilder.appendEscapedLines( uts.getName() + " (" + uts.getStatus() +")  "+constants.Owner() +": " + uts.getOwner() +" \n" );
+                    for (UserTaskSummary uts : process.getActiveTasks()) {
+                        safeHtmlBuilder.appendEscapedLines(uts.getName() + " (" + uts.getStatus() + ")  " + constants.Owner() + ": " + uts.getOwner() + " \n");
                     }
-                    view.getActiveTasksListBox().setHTML( safeHtmlBuilder.toSafeHtml() );
+                    view.getActiveTasksListBox().setHTML(safeHtmlBuilder.toSafeHtml());
                 }
-                view.getStateText().setText( statusStr );
+                view.getStateText().setText(statusStr);
                 processSelected = process;
-                changeStyleRow( Long.parseLong( processId ), processSelected.getProcessName(), processSelected.getProcessVersion(),
-                        processSelected.getStartTime() );
-
+                changeStyleRow(Long.parseLong(processId),
+                               processSelected.getProcessName(),
+                               processSelected.getProcessVersion(),
+                               processSelected.getStartTime());
             }
-        } ).getProcessInstance(serverTemplateId, new ProcessInstanceKey(serverTemplateId, deploymentId, Long.parseLong(processId)));
-
+        }).getProcessInstance(serverTemplateId,
+                              new ProcessInstanceKey(serverTemplateId,
+                                                     deploymentId,
+                                                     Long.parseLong(processId)));
 
         processRuntimeDataService.call(new RemoteCallback<List<NodeInstanceSummary>>() {
             @Override
-            public void callback( final List<NodeInstanceSummary> details ) {
+            public void callback(final List<NodeInstanceSummary> details) {
                 final SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                for ( NodeInstanceSummary nis : details ) {
-                    safeHtmlBuilder.appendEscapedLines( nis.getTimestamp() + ": "
-                            + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType() + ") \n" );
+                for (NodeInstanceSummary nis : details) {
+                    safeHtmlBuilder.appendEscapedLines(nis.getTimestamp() + ": "
+                                                               + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType() + ") \n");
                 }
-                view.getCurrentActivitiesListBox().setHTML( safeHtmlBuilder.toSafeHtml() );
+                view.getCurrentActivitiesListBox().setHTML(safeHtmlBuilder.toSafeHtml());
             }
-        } ).getProcessInstanceActiveNodes( serverTemplateId, deploymentId, Long.parseLong( processId ) );
+        }).getProcessInstanceActiveNodes(serverTemplateId,
+                                         deploymentId,
+                                         Long.parseLong(processId));
     }
 
+    public interface ProcessInstanceDetailsView extends IsWidget {
+
+        //      TODO Review interface to not expose GWT components
+        HTML getCurrentActivitiesListBox();
+
+        HTML getActiveTasksListBox();
+
+        HTML getProcessDefinitionIdText();
+
+        HTML getStateText();
+
+        HTML getProcessDeploymentText();
+
+        HTML getProcessVersionText();
+
+        HTML getCorrelationKeyText();
+
+        HTML getParentProcessInstanceIdText();
+    }
 }

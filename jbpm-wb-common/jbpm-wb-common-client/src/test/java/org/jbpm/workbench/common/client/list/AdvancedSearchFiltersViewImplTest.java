@@ -80,11 +80,16 @@ public class AdvancedSearchFiltersViewImplTest {
 
         ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
         verify(modelList).add(captor.capture());
-        assertEquals(1, captor.getAllValues().size());
-        assertEquals(label, captor.getValue().getLabelKey());
-        assertEquals(selectedLabel, captor.getValue().getLabelValue());
-        assertEquals(startDate, ((DateRange)captor.getValue().getValue()).getStartDate());
-        assertEquals(endDate, ((DateRange)captor.getValue().getValue()).getEndDate());
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(label,
+                     captor.getValue().getLabelKey());
+        assertEquals(selectedLabel,
+                     captor.getValue().getLabelValue());
+        assertEquals(startDate,
+                     ((DateRange) captor.getValue().getValue()).getStartDate());
+        assertEquals(endDate,
+                     ((DateRange) captor.getValue().getValue()).getEndDate());
         verify(addCallback).accept(any(DateRange.class));
     }
 

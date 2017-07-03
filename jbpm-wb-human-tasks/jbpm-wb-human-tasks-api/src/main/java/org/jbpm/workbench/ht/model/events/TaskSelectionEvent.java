@@ -17,10 +17,12 @@
 package org.jbpm.workbench.ht.model.events;
 
 import java.io.Serializable;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class TaskSelectionEvent implements Serializable {
+
     private String serverTemplateId;
     private String containerId;
     private Long taskId;
@@ -35,14 +37,22 @@ public class TaskSelectionEvent implements Serializable {
         this.taskId = taskId;
     }
 
-    public TaskSelectionEvent(String serverTemplateId, String containerId, Long taskId, String taskName) {
+    public TaskSelectionEvent(String serverTemplateId,
+                              String containerId,
+                              Long taskId,
+                              String taskName) {
         this.serverTemplateId = serverTemplateId;
         this.containerId = containerId;
         this.taskId = taskId;
         this.taskName = taskName;
     }
 
-    public TaskSelectionEvent(String serverTemplateId, String containerId, Long taskId, String taskName,  boolean forAdmin, boolean forLog) {
+    public TaskSelectionEvent(String serverTemplateId,
+                              String containerId,
+                              Long taskId,
+                              String taskName,
+                              boolean forAdmin,
+                              boolean forLog) {
         this.serverTemplateId = serverTemplateId;
         this.containerId = containerId;
         this.taskId = taskId;
@@ -50,7 +60,7 @@ public class TaskSelectionEvent implements Serializable {
         this.forAdmin = forAdmin;
         this.forLog = forLog;
     }
-    
+
     public String getTaskName() {
         return taskName;
     }

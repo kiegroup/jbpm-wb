@@ -17,6 +17,7 @@
 package org.jbpm.workbench.ht.model.events;
 
 import java.io.Serializable;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
@@ -41,6 +42,4 @@ public class TaskCalendarEvent implements Serializable {
     public void setTaskEventId(Long taskEventId) {
         this.taskEventId = taskEventId;
     }
-
-    
 }

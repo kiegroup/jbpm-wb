@@ -30,5 +30,4 @@ public class GenericFormsClientEntryPoint {
         AppResources.INSTANCE.style().ensureInjected();
         PatternFlyBootstrapper.ensureBootstrapSelectIsAvailable();
     }
-
 }

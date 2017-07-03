@@ -64,9 +64,8 @@ import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 @WorkbenchScreen(identifier = ExecutionErrorListPresenter.SCREEN_ID)
 public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<ExecutionErrorSummary, ExecutionErrorListPresenter.ExecutionErrorListView> {
 
-    private final Constants constants = Constants.INSTANCE;
     public static final String SCREEN_ID = "Execution Error List";
-
+    private final Constants constants = Constants.INSTANCE;
     private List<ExecutionErrorSummary> visibleExecutionErrors = new ArrayList<ExecutionErrorSummary>();
     @Inject
     private ErrorPopupPresenter errorPopup;
@@ -194,18 +193,17 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                               errorSummary.getJobId().toString());
     }
 
-    public Predicate<ExecutionErrorSummary> getAcknowledgeActionCondition(){
+    public Predicate<ExecutionErrorSummary> getAcknowledgeActionCondition() {
         return pis -> !pis.isAcknowledged();
     }
 
-    public Predicate<ExecutionErrorSummary> getViewJobActionCondition(){
+    public Predicate<ExecutionErrorSummary> getViewJobActionCondition() {
         return pis -> isUserAuthorizedForPerspective(PerspectiveIds.JOBS) && pis.getJobId() != null;
     }
 
-    public Predicate<ExecutionErrorSummary> getViewProcessInstanceActionCondition(){
+    public Predicate<ExecutionErrorSummary> getViewProcessInstanceActionCondition() {
         return pis -> isUserAuthorizedForPerspective(PerspectiveIds.PROCESS_INSTANCES) && pis.getProcessInstanceId() != null;
     }
-
 
     public void goToProcessInstance(final ExecutionErrorSummary errorSummary) {
         navigateToPerspective(PerspectiveIds.PROCESS_INSTANCES,
@@ -279,11 +277,11 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     @Override
     public void setupAdvancedSearchView() {
         view.addTextFilter(constants.Id(),
-                              constants.FilterByErrorId(),
-                              v -> addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ID,
-                                                                    v)),
-                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ID,
-                                                                       v))
+                           constants.FilterByErrorId(),
+                           v -> addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ID,
+                                                                 v)),
+                           v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ID,
+                                                                    v))
         );
 
         view.addNumericFilter(constants.Process_Instance_Id(),

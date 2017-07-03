@@ -26,7 +26,9 @@ public class TaskKey implements ItemKey {
     private String deploymentId;
     private Long taskId;
 
-    public TaskKey(String serverTemplateId, String deploymentId, Long taskId) {
+    public TaskKey(String serverTemplateId,
+                   String deploymentId,
+                   Long taskId) {
         this.serverTemplateId = serverTemplateId;
         this.deploymentId = deploymentId;
         this.taskId = taskId;
@@ -75,5 +77,4 @@ public class TaskKey implements ItemKey {
     public String toString() {
         return "TaskKey{" + "taskId=" + taskId + '}';
     }
-
 }

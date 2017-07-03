@@ -18,7 +18,6 @@ package org.jbpm.workbench.cm.backend.server;
 
 import java.util.function.Function;
 
-
 import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
 import org.kie.server.api.model.definition.ProcessDefinition;
 

@@ -37,68 +37,73 @@ public class KieWorkbenchFormsHumanTaskDisplayer extends AbstractHumanTaskFormDi
     private Caller<KieWorkbenchFormsEntryPoint> service;
 
     @Inject
-    public KieWorkbenchFormsHumanTaskDisplayer( DynamicFormRenderer formRenderer,
-                                                Caller<KieWorkbenchFormsEntryPoint> service ) {
+    public KieWorkbenchFormsHumanTaskDisplayer(DynamicFormRenderer formRenderer,
+                                               Caller<KieWorkbenchFormsEntryPoint> service) {
         this.formRenderer = formRenderer;
         this.service = service;
     }
 
     @Override
-    public void init( FormDisplayerConfig<TaskKey, KieWorkbenchFormRenderingSettings> config,
-                      Command onCloseCommand,
-                      Command onRefreshCommand,
-                      FormContentResizeListener resizeListener ) {
-        super.init( config, onCloseCommand, onRefreshCommand, resizeListener );
+    public void init(FormDisplayerConfig<TaskKey, KieWorkbenchFormRenderingSettings> config,
+                     Command onCloseCommand,
+                     Command onRefreshCommand,
+                     FormContentResizeListener resizeListener) {
+        super.init(config,
+                   onCloseCommand,
+                   onRefreshCommand,
+                   resizeListener);
     }
 
     @Override
     protected void initDisplayer() {
-        formRenderer.render( renderingSettings.getRenderingContext() );
-        formContainer.add( formRenderer );
+        formRenderer.render(renderingSettings.getRenderingContext());
+        formContainer.add(formRenderer);
     }
 
     @Override
     protected void completeFromDisplayer() {
-        if ( formRenderer.isValid() ) {
-            service.call( getCompleteTaskRemoteCallback(), getUnexpectedErrorCallback() ).completeTaskFromContext(
+        if (formRenderer.isValid()) {
+            service.call(getCompleteTaskRemoteCallback(),
+                         getUnexpectedErrorCallback()).completeTaskFromContext(
                     renderingSettings.getTimestamp(),
                     renderingSettings.getRenderingContext().getModel(),
                     serverTemplateId,
                     deploymentId,
-                    taskId );
+                    taskId);
         }
     }
 
     @Override
     protected void saveStateFromDisplayer() {
-        if ( formRenderer.isValid() ) {
-            service.call( getSaveTaskStateCallback(), getUnexpectedErrorCallback() ).saveTaskStateFromRenderContext(
+        if (formRenderer.isValid()) {
+            service.call(getSaveTaskStateCallback(),
+                         getUnexpectedErrorCallback()).saveTaskStateFromRenderContext(
                     renderingSettings.getTimestamp(),
                     renderingSettings.getRenderingContext().getModel(),
                     serverTemplateId,
                     deploymentId,
-                    taskId );
+                    taskId);
         }
     }
 
     @Override
     protected void startFromDisplayer() {
-        service.call( response -> start() ).clearContext( renderingSettings.getTimestamp() );
+        service.call(response -> start()).clearContext(renderingSettings.getTimestamp());
     }
 
     @Override
     protected void claimFromDisplayer() {
-        service.call( response -> claim() ).clearContext( renderingSettings.getTimestamp() );
+        service.call(response -> claim()).clearContext(renderingSettings.getTimestamp());
     }
 
     @Override
     protected void releaseFromDisplayer() {
-        service.call( response -> release() ).clearContext( renderingSettings.getTimestamp() );
+        service.call(response -> release()).clearContext(renderingSettings.getTimestamp());
     }
 
     @Override
     protected void clearRenderingSettings() {
-        service.call().clearContext( renderingSettings.getTimestamp() );
+        service.call().clearContext(renderingSettings.getTimestamp());
         super.clearRenderingSettings();
     }
 

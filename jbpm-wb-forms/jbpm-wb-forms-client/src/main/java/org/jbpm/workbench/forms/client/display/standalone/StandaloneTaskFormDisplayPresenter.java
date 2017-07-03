@@ -37,6 +37,10 @@ import org.uberfire.mvp.PlaceRequest;
 @WorkbenchScreen(identifier = "Standalone Task Form Display")
 public class StandaloneTaskFormDisplayPresenter {
 
+    protected String placeOnClose;
+
+    protected PlaceRequest place;
+
     @Inject
     private PlaceManager placeManager;
 
@@ -45,10 +49,6 @@ public class StandaloneTaskFormDisplayPresenter {
 
     @Inject
     private HumanTaskFormDisplayProvider humanTaskFormDisplayProvider;
-
-    protected String placeOnClose;
-
-    protected PlaceRequest place;
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -61,36 +61,41 @@ public class StandaloneTaskFormDisplayPresenter {
     }
 
     @OnStartup
-    public void onStartup( final PlaceRequest place ) {
+    public void onStartup(final PlaceRequest place) {
         this.place = place;
     }
 
     @OnOpen
     public void onOpen() {
 
-        placeOnClose = place.getParameter( "onClose", "none" );
+        placeOnClose = place.getParameter("onClose",
+                                          "none");
 
-        Long currentTaskId = Long.parseLong( place.getParameter( "taskId", "-1" ) );
-        String opener = place.getParameter("opener", null);
+        Long currentTaskId = Long.parseLong(place.getParameter("taskId",
+                                                               "-1"));
+        String opener = place.getParameter("opener",
+                                           null);
 
-        view.setOnCloseCommand( new Command() {
+        view.setOnCloseCommand(new Command() {
             @Override
             public void execute() {
-                if ( !placeOnClose.equals( "none" ) ) {
-                    placeManager.closePlace( place );
-                    placeManager.forceClosePlace( placeOnClose );
+                if (!placeOnClose.equals("none")) {
+                    placeManager.closePlace(place);
+                    placeManager.forceClosePlace(placeOnClose);
                 } else {
-                    placeManager.closePlace( place );
+                    placeManager.closePlace(place);
                 }
             }
-        } );
+        });
 
         if (currentTaskId != -1) {
-            TaskKey key = new TaskKey(null, null, currentTaskId);
+            TaskKey key = new TaskKey(null,
+                                      null,
+                                      currentTaskId);
             HumanTaskDisplayerConfig config = new HumanTaskDisplayerConfig(key);
             config.setFormOpener(opener);
-            humanTaskFormDisplayProvider.setup(config, view);
+            humanTaskFormDisplayProvider.setup(config,
+                                               view);
         }
     }
-
 }

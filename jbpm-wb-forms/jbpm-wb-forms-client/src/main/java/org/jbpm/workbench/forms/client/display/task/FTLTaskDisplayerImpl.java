@@ -30,11 +30,14 @@ public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer<StaticH
         publish(this);
         jsniHelper.publishGetFormValues();
 
-        jsniHelper.injectFormValidationsScripts( renderingSettings.getFormContent() );
+        jsniHelper.injectFormValidationsScripts(renderingSettings.getFormContent());
 
         formContainer.clear();
-        formContainer.add( new HTMLPanel( renderingSettings.getFormContent() ) );
-        if (resizeListener != null) resizeListener.resize(formContainer.getOffsetWidth(), formContainer.getOffsetHeight());
+        formContainer.add(new HTMLPanel(renderingSettings.getFormContent()));
+        if (resizeListener != null) {
+            resizeListener.resize(formContainer.getOffsetWidth(),
+                                  formContainer.getOffsetHeight());
+        }
     }
 
     @Override
@@ -70,7 +73,7 @@ public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer<StaticH
     @Override
     protected native void completeFromDisplayer()/*-{
         try {
-            if($wnd.eval("taskFormValidator()")) $wnd.complete($wnd.getFormValues($doc.getElementById("form-data")));
+            if ($wnd.eval("taskFormValidator()")) $wnd.complete($wnd.getFormValues($doc.getElementById("form-data")));
         } catch (err) {
             alert("Unexpected error: " + err);
         }
@@ -79,7 +82,7 @@ public class FTLTaskDisplayerImpl extends AbstractHumanTaskFormDisplayer<StaticH
     @Override
     protected native void saveStateFromDisplayer()/*-{
         try {
-            if($wnd.eval("taskFormValidator()")) $wnd.saveState($wnd.getFormValues($doc.getElementById("form-data")));
+            if ($wnd.eval("taskFormValidator()")) $wnd.saveState($wnd.getFormValues($doc.getElementById("form-data")));
         } catch (err) {
             alert("Unexpected error: " + err);
         }

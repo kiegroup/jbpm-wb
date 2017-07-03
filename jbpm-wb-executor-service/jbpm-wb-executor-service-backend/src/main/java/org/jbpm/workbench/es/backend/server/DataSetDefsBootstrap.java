@@ -36,7 +36,7 @@ import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 public class DataSetDefsBootstrap {
 
     private static final Logger logger = LoggerFactory.getLogger(DataSetDefsBootstrap.class);
-    private static final String JBPM_DATA_SOURCE = "${"+ KieServerConstants.CFG_PERSISTANCE_DS + "}";
+    private static final String JBPM_DATA_SOURCE = "${" + KieServerConstants.CFG_PERSISTANCE_DS + "}";
 
     @Inject
     protected DataSetDefRegistry dataSetDefRegistry;
@@ -48,23 +48,24 @@ public class DataSetDefsBootstrap {
                 .name("Request List")
                 .dataSource(JBPM_DATA_SOURCE)
                 .dbSQL("select "
-                            + "ri.id, "
-                            + "ri.timestamp, "
-                            + "ri.status, "
-                            + "ri.commandName, "
-                            + "ri.message, "
-                            + "ri.businessKey, "
-                            + "ri.retries, "
-                            + "ri.executions, "
-                            + "pil.processName, "
-                            + "pil.processInstanceId, "
-                            + "pil.processInstanceDescription "
-                        + "from "
-                            + "RequestInfo ri "
-                        + "left join "
-                            + "ProcessInstanceLog pil "
-                        + "on "
-                            + "pil.processInstanceId=ri.processInstanceId", false)
+                                    + "ri.id, "
+                                    + "ri.timestamp, "
+                                    + "ri.status, "
+                                    + "ri.commandName, "
+                                    + "ri.message, "
+                                    + "ri.businessKey, "
+                                    + "ri.retries, "
+                                    + "ri.executions, "
+                                    + "pil.processName, "
+                                    + "pil.processInstanceId, "
+                                    + "pil.processInstanceDescription "
+                               + "from "
+                                    + "RequestInfo ri "
+                               + "left join "
+                                    + "ProcessInstanceLog pil "
+                               + "on "
+                                    + "pil.processInstanceId=ri.processInstanceId",
+                       false)
                 .number(COLUMN_ID)
                 .date(COLUMN_TIMESTAMP)
                 .label(COLUMN_STATUS)
@@ -130,5 +131,4 @@ public class DataSetDefsBootstrap {
         dataSetDefRegistry.registerDataSetDef(executionErrorListDef);
         logger.info("Error Management dataset registered");
     }
-
 }

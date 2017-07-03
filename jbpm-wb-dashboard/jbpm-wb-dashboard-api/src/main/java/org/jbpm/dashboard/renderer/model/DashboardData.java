@@ -51,6 +51,5 @@ public class DashboardData {
     public static final String TASK_STATUS_ERROR = "Error";
     public static final String TASK_STATUS_EXITED = "Exited";
     public static final String TASK_STATUS_OBSOLETE = "Obsolete";
-
 }
 

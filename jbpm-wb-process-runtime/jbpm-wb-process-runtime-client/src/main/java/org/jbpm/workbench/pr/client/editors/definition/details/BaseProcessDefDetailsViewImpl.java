@@ -64,8 +64,8 @@ public abstract class BaseProcessDefDetailsViewImpl extends Composite implements
     public abstract void init();
 
     @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     @Override
@@ -82,5 +82,4 @@ public abstract class BaseProcessDefDetailsViewImpl extends Composite implements
     public HTML getProcessIdText() {
         return processIdText;
     }
-
 }

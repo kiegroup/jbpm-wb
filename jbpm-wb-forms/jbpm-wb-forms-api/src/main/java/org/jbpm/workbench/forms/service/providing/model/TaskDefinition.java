@@ -95,19 +95,19 @@ public class TaskDefinition {
         this.outputIncluded = outputIncluded;
     }
 
-    public void setTaskInputDefinitions( Map<String, String> taskInstanceDefinitions ) {
-        this.taskInputDefinitions = taskInstanceDefinitions;
-    }
-
     public Map<String, String> getTaskInputDefinitions() {
         return taskInputDefinitions;
     }
 
-    public void setTaskOutputDefinitions( Map<String, String> taskOutputDefinitions ) {
-        this.taskOutputDefinitions = taskOutputDefinitions;
+    public void setTaskInputDefinitions(Map<String, String> taskInstanceDefinitions) {
+        this.taskInputDefinitions = taskInstanceDefinitions;
     }
 
     public Map<String, String> getTaskOutputDefinitions() {
         return taskOutputDefinitions;
+    }
+
+    public void setTaskOutputDefinitions(Map<String, String> taskOutputDefinitions) {
+        this.taskOutputDefinitions = taskOutputDefinitions;
     }
 }

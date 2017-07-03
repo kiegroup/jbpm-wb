@@ -35,7 +35,7 @@ import static org.jbpm.dashboard.renderer.model.DashboardData.*;
 public class DataSetDefsBootstrap {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSetDefsBootstrap.class);
-    private static final String JBPM_DATA_SOURCE = "${"+ KieServerConstants.CFG_PERSISTANCE_DS + "}";
+    private static final String JBPM_DATA_SOURCE = "${" + KieServerConstants.CFG_PERSISTANCE_DS + "}";
 
     @Inject
     DataSetDefRegistry dataSetDefRegistry;
@@ -47,18 +47,19 @@ public class DataSetDefsBootstrap {
                 .name("FILTERED_PROCESS-Processes monitoring")
                 .dataSource(JBPM_DATA_SOURCE)
                 .dbSQL("select " +
-                        "log.processInstanceId, " +
-                        "log.processId, " +
-                        "log.start_date, " +
-                        "log.end_date, " +
-                        "log.status, " +
-                        "log.duration, " +
-                        "log.user_identity, " +
-                        "log.processVersion, " +
-                        "log.processName, " +
-                        "log.externalId " +
-                        "from " +
-                        "ProcessInstanceLog log", false)
+                                    "log.processInstanceId, " +
+                                    "log.processId, " +
+                                    "log.start_date, " +
+                                    "log.end_date, " +
+                                    "log.status, " +
+                                    "log.duration, " +
+                                    "log.user_identity, " +
+                                    "log.processVersion, " +
+                                    "log.processName, " +
+                                    "log.externalId " +
+                               "from " +
+                                    "ProcessInstanceLog log",
+                       false)
                 .number(COLUMN_PROCESS_INSTANCE_ID)
                 .label(COLUMN_PROCESS_ID)
                 .date(COLUMN_PROCESS_START_DATE)
@@ -76,21 +77,21 @@ public class DataSetDefsBootstrap {
                 .name("FILTERED_PROCESS-Tasks monitoring")
                 .dataSource(JBPM_DATA_SOURCE)
                 .dbSQL("select " +
-                                "p.processName, " +
-                                "p.externalId, " +
-                                "t.taskId, " +
-                                "t.taskName, " +
-                                "t.status, " +
-                                "t.createdDate, " +
-                                "t.startDate, " +
-                                "t.endDate, " +
-                                "t.processInstanceId, " +
-                                "t.userId, " +
-                                "t.duration " +
-                                "from ProcessInstanceLog p " +
-                                "inner join BAMTaskSummary t on (t.processInstanceId = p.processInstanceId) " +
-                                "inner join (select min(pk) as pk from BAMTaskSummary group by taskId) d on t.pk = d.pk",
-                        true)
+                                    "p.processName, " +
+                                    "p.externalId, " +
+                                    "t.taskId, " +
+                                    "t.taskName, " +
+                                    "t.status, " +
+                                    "t.createdDate, " +
+                                    "t.startDate, " +
+                                    "t.endDate, " +
+                                    "t.processInstanceId, " +
+                                    "t.userId, " +
+                                    "t.duration " +
+                               "from ProcessInstanceLog p " +
+                                    "inner join BAMTaskSummary t on (t.processInstanceId = p.processInstanceId) " +
+                                    "inner join (select min(pk) as pk from BAMTaskSummary group by taskId) d on t.pk = d.pk",
+                       true)
                 .label(COLUMN_PROCESS_NAME)
                 .label(COLUMN_PROCESS_EXTERNAL_ID)
                 .label(COLUMN_TASK_ID)
@@ -115,5 +116,4 @@ public class DataSetDefsBootstrap {
         dataSetDefRegistry.registerDataSetDef(taskMonitoringDef);
         LOGGER.info("Process dashboard datasets registered");
     }
-
 }

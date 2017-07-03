@@ -45,11 +45,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 @Dependent
 public class VariableEditPopup extends BaseModal {
 
-    interface Binder
-            extends
-            UiBinder<Widget, VariableEditPopup> {
-
-    }
+    private static Binder uiBinder = GWT.create(Binder.class);
 
     @UiField
     public FormControlStatic variableNameTextBox;
@@ -72,81 +68,95 @@ public class VariableEditPopup extends BaseModal {
     @Inject
     private Event<ProcessInstancesUpdateEvent> processInstancesUpdateEvent;
 
-    private static Binder uiBinder = GWT.create( Binder.class );
-
     private String serverTemplateId;
+
     private String deploymentId;
+
     private long processInstanceId;
 
     public VariableEditPopup() {
-        setTitle( Constants.INSTANCE.Edit() );
+        setTitle(Constants.INSTANCE.Edit());
 
-        setBody( uiBinder.createAndBindUi( this ) );
+        setBody(uiBinder.createAndBindUi(this));
         final GenericModalFooter footer = new GenericModalFooter();
-        footer.addButton( Constants.INSTANCE.Clear(),
-                          new Command() {
-                              @Override
-                              public void execute() {
-                                  variableValueTextBox.setText( "" );
-                              }
-                          }, null,
-                          ButtonType.DEFAULT );
+        footer.addButton(Constants.INSTANCE.Clear(),
+                         new Command() {
+                             @Override
+                             public void execute() {
+                                 variableValueTextBox.setText("");
+                             }
+                         },
+                         null,
+                         ButtonType.DEFAULT);
 
-        footer.addButton( Constants.INSTANCE.Save(),
-                          new Command() {
-                              @Override
-                              public void execute() {
-                                  setProcessVariable();
-                              }
-                          }, null,
-                          ButtonType.PRIMARY );
+        footer.addButton(Constants.INSTANCE.Save(),
+                         new Command() {
+                             @Override
+                             public void execute() {
+                                 setProcessVariable();
+                             }
+                         },
+                         null,
+                         ButtonType.PRIMARY);
 
-        add( footer );
+        add(footer);
     }
 
-    public void show( String serverTemplateId, String deploymentId, long processInstanceId,
-                      String variableId,
-                      String variableValue ) {
+    public void show(String serverTemplateId,
+                     String deploymentId,
+                     long processInstanceId,
+                     String variableId,
+                     String variableValue) {
         this.serverTemplateId = serverTemplateId;
         this.deploymentId = deploymentId;
         this.processInstanceId = processInstanceId;
-        this.variableNameTextBox.setText( variableId );
-        this.variableValueTextBox.setText( variableValue );
+        this.variableNameTextBox.setText(variableId);
+        this.variableValueTextBox.setText(variableValue);
         cleanErrorMessages();
         super.show();
     }
 
     private void cleanErrorMessages() {
-        errorMessages.setText( "" );
-        errorMessagesGroup.setValidationState( ValidationState.NONE );
+        errorMessages.setText("");
+        errorMessagesGroup.setValidationState(ValidationState.NONE);
     }
 
     public void closePopup() {
         hide();
         super.hide();
-        processInstancesUpdateEvent.fire( new ProcessInstancesUpdateEvent() );
+        processInstancesUpdateEvent.fire(new ProcessInstancesUpdateEvent());
     }
 
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     public void setProcessVariable() {
-        processService.call( new RemoteCallback<Void>() {
-            @Override
-            public void callback( Void v ) {
-                displayNotification( Constants.INSTANCE.VariableValueUpdated( variableNameTextBox.getText() ) );
-                closePopup();
-            }
-        }, new ErrorCallback<Message>() {
-            @Override
-            public boolean error( Message message,
-                                  Throwable throwable ) {
-                errorMessages.setText( throwable.getMessage() );
-                errorMessagesGroup.setValidationState( ValidationState.ERROR );
-                return true;
-            }
-        } ).setProcessVariable( serverTemplateId, deploymentId, processInstanceId, variableNameTextBox.getText(), variableValueTextBox.getValue() );
+        processService.call(new RemoteCallback<Void>() {
+                                @Override
+                                public void callback(Void v) {
+                                    displayNotification(Constants.INSTANCE.VariableValueUpdated(variableNameTextBox.getText()));
+                                    closePopup();
+                                }
+                            },
+                            new ErrorCallback<Message>() {
+                                @Override
+                                public boolean error(Message message,
+                                                     Throwable throwable) {
+                                    errorMessages.setText(throwable.getMessage());
+                                    errorMessagesGroup.setValidationState(ValidationState.ERROR);
+                                    return true;
+                                }
+                            }).setProcessVariable(serverTemplateId,
+                                                  deploymentId,
+                                                  processInstanceId,
+                                                  variableNameTextBox.getText(),
+                                                  variableValueTextBox.getValue());
     }
 
+    interface Binder
+            extends
+            UiBinder<Widget, VariableEditPopup> {
+
+    }
 }

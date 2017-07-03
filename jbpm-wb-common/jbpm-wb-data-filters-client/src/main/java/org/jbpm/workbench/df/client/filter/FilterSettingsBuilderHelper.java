@@ -41,28 +41,40 @@ public final class FilterSettingsBuilderHelper {
         builder.filter(filter);
     }
 
-    public void filter(String column_name, ColumnFilter... filter) {
-        builder.filter(column_name, filter);
+    public void filter(String column_name,
+                       ColumnFilter... filter) {
+        builder.filter(column_name,
+                       filter);
     }
 
-    public void setColumn(String columnId, String columnHeader, String formatStr) {
-        builder.column(columnId).format(columnHeader, formatStr);
+    public void setColumn(String columnId,
+                          String columnHeader,
+                          String formatStr) {
+        builder.column(columnId).format(columnHeader,
+                                        formatStr);
     }
 
-    public void setColumn(String columnId, String columnHeader) {
+    public void setColumn(String columnId,
+                          String columnHeader) {
         builder.column(columnId).format(columnHeader);
     }
 
-    public void filterOn(boolean applySelf, boolean notifyOthers, boolean receiveFromOthers) {
-        builder.filterOn(applySelf, notifyOthers, receiveFromOthers);
+    public void filterOn(boolean applySelf,
+                         boolean notifyOthers,
+                         boolean receiveFromOthers) {
+        builder.filterOn(applySelf,
+                         notifyOthers,
+                         receiveFromOthers);
     }
 
     public void tableOrderEnabled(boolean orderEnabled) {
         builder.tableOrderEnabled(orderEnabled);
     }
 
-    public void tableOrderDefault(String defaultColumnId, SortOrder sortOrder) {
-        builder.tableOrderDefault(defaultColumnId, sortOrder);
+    public void tableOrderDefault(String defaultColumnId,
+                                  SortOrder sortOrder) {
+        builder.tableOrderDefault(defaultColumnId,
+                                  sortOrder);
     }
 
     public void tableWidth(int width) {
@@ -76,5 +88,4 @@ public final class FilterSettingsBuilderHelper {
     public FilterSettings buildSettings() {
         return (FilterSettings) builder.buildSettings();
     }
-
 }

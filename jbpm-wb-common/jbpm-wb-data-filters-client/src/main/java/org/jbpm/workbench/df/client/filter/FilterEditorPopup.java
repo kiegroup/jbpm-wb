@@ -46,19 +46,10 @@ import org.jbpm.workbench.df.client.i18n.FiltersConstants;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 
-
 @Dependent
 public class FilterEditorPopup extends BaseModal {
 
-    interface Binder extends UiBinder<Widget, FilterEditorPopup> {
-
-    }
-
-    private static Binder uiBinder = GWT.create( Binder.class );
-
-    public interface Listener {
-        void onSave( FilterEditorPopup editor );
-    }
+    private static Binder uiBinder = GWT.create(Binder.class);
 
     @UiField
     public TabListItem basictab;
@@ -79,16 +70,10 @@ public class FilterEditorPopup extends BaseModal {
     public TextBox tableNameText;
 
     @UiField
-    HelpBlock tableNameHelpInline;
-
-    @UiField
     public FormGroup tableDescControlGroup;
 
     @UiField
     public TextBox tableDescText;
-
-    @UiField
-    HelpBlock tableDescHelpInline;
 
     @UiField
     public HelpBlock errorMessages;
@@ -96,49 +81,65 @@ public class FilterEditorPopup extends BaseModal {
     @UiField
     public FormGroup errorMessagesGroup;
 
+    protected FilterSettings tableDisplayerSettings = null;
+
+    @UiField
+    HelpBlock tableNameHelpInline;
+
+    @UiField
+    HelpBlock tableDescHelpInline;
+
     @UiField(provided = true)
     DataSetFilterEditor filterEditor;
 
-    protected FilterSettings tableDisplayerSettings = null;
-
     Listener editorListener;
+
     DataSetMetadata metadata;
+
     DataSetLookup dataSetLookup;
+
     DataSetClientServices dataSetClientServices;
 
     @Inject
-    public FilterEditorPopup(DataSetClientServices dataSetClientServices, DataSetFilterEditor filterEditor) {
+    public FilterEditorPopup(DataSetClientServices dataSetClientServices,
+                             DataSetFilterEditor filterEditor) {
         this.filterEditor = filterEditor;
         this.dataSetClientServices = dataSetClientServices;
-        setBody( uiBinder.createAndBindUi( FilterEditorPopup.this ) );
+        setBody(uiBinder.createAndBindUi(FilterEditorPopup.this));
 
-        basictab.setDataTargetWidget( basictabPane );
-        filtertab.setDataTargetWidget( filtertabPane );
+        basictab.setDataTargetWidget(basictabPane);
+        filtertab.setDataTargetWidget(filtertabPane);
 
-        tableNameText.addChangeHandler( (Void) -> {validateForm();});
+        tableNameText.addChangeHandler((Void) -> validateForm());
 
-        tableDescText.addChangeHandler( (Void) -> {validateForm();});
+        tableDescText.addChangeHandler((Void) -> validateForm());
 
         final GenericModalFooter footer = new GenericModalFooter();
-        footer.addButton( FiltersConstants.INSTANCE.ok(), () -> {ok();}, IconType.PLUS, ButtonType.PRIMARY );
-        footer.addButton( FiltersConstants.INSTANCE.cancel(), () -> { hide();}, IconType.ERASER, ButtonType.DEFAULT );
+        footer.addButton(FiltersConstants.INSTANCE.ok(),
+                         () -> ok(),
+                         IconType.PLUS,
+                         ButtonType.PRIMARY);
+        footer.addButton(FiltersConstants.INSTANCE.cancel(),
+                         () -> hide(),
+                         IconType.ERASER,
+                         ButtonType.DEFAULT);
 
-        add( footer );
-        setWidth( 500 + "px" );
+        add(footer);
+        setWidth(500 + "px");
     }
 
-    public void show( FilterSettings settings,
-                      FilterEditorPopup.Listener editorListener ) {
+    public void show(FilterSettings settings,
+                     FilterEditorPopup.Listener editorListener) {
         clean();
-        basictab.setActive( true );
-        basictabPane.setActive( true );
-        filtertab.setActive( false );
-        filtertabPane.setActive( false );
+        basictab.setActive(true);
+        basictabPane.setActive(true);
+        filtertab.setActive(false);
+        filtertabPane.setActive(false);
         basictab.showTab();
 
-        setEditorListener( editorListener);
+        setEditorListener(editorListener);
         tableDisplayerSettings = settings;
-        if ( settings.getDataSet() == null && settings.getDataSetLookup() != null ) {
+        if (settings.getDataSet() == null && settings.getDataSetLookup() != null) {
             fetchDataSetLookup();
         }
 
@@ -146,18 +147,18 @@ public class FilterEditorPopup extends BaseModal {
     }
 
     protected void ok() {
-        if ( validateForm() ) {
+        if (validateForm()) {
             hide();
-            this.tableDisplayerSettings.setTableName( tableNameText.getValue() );
-            this.tableDisplayerSettings.setTableDescription( tableDescText.getValue() );
+            this.tableDisplayerSettings.setTableName(tableNameText.getValue());
+            this.tableDisplayerSettings.setTableDescription(tableDescText.getValue());
             filterChanged(getDatasetFilter());
-            editorListener.onSave( this );
-       }
+            editorListener.onSave(this);
+        }
     }
 
     private void clean() {
-        tableNameText.setValue( "" );
-        tableDescText.setValue( "" );
+        tableNameText.setValue("");
+        tableDescText.setValue("");
         clearErrorMessages();
     }
 
@@ -165,112 +166,125 @@ public class FilterEditorPopup extends BaseModal {
         boolean valid = true;
         clearErrorMessages();
 
-        if ( tableNameText.getText() != null && tableNameText.getText().trim().length() == 0 ) {
-            tableNameHelpInline.setText( FiltersConstants.INSTANCE.Name_must_be_defined() );
-            tableNameControlGroup.setValidationState( ValidationState.ERROR );
+        if (tableNameText.getText() != null && tableNameText.getText().trim().length() == 0) {
+            tableNameHelpInline.setText(FiltersConstants.INSTANCE.Name_must_be_defined());
+            tableNameControlGroup.setValidationState(ValidationState.ERROR);
             valid = false;
         }
-        if ( !valid ) {
-            errorMessages.setText( FiltersConstants.INSTANCE.Required_fields_must_be_defined() );
-            errorMessagesGroup.setValidationState( ValidationState.ERROR );
+        if (!valid) {
+            errorMessages.setText(FiltersConstants.INSTANCE.Required_fields_must_be_defined());
+            errorMessagesGroup.setValidationState(ValidationState.ERROR);
         }
 
         return valid;
     }
 
     private void clearErrorMessages() {
-        errorMessages.setText( "" );
-        tableNameHelpInline.setText( "" );
-        tableDescHelpInline.setText( "" );
-        tableNameControlGroup.setValidationState( ValidationState.NONE );
-        tableDescControlGroup.setValidationState( ValidationState.NONE );
+        errorMessages.setText("");
+        tableNameHelpInline.setText("");
+        tableDescHelpInline.setText("");
+        tableNameControlGroup.setValidationState(ValidationState.NONE);
+        tableDescControlGroup.setValidationState(ValidationState.NONE);
     }
 
     public void fetchDataSetLookup() {
         try {
             String uuid = tableDisplayerSettings.getDataSetLookup().getDataSetUUID();
-            dataSetClientServices.fetchMetadata(uuid, new DataSetMetadataCallback() {
+            dataSetClientServices.fetchMetadata(uuid,
+                                                new DataSetMetadataCallback() {
 
-                public void callback(DataSetMetadata metadata) {
-                    updateDataSetLookup(null, metadata);
-                }
+                                                    public void callback(DataSetMetadata metadata) {
+                                                        updateDataSetLookup(null,
+                                                                            metadata);
+                                                    }
 
-                public void notFound() {
-                    // Very unlikely since this data set has been selected from a list provided by the backend.
-                    error(FiltersConstants.INSTANCE.displayer_editor_dataset_notfound(), null);
-                }
+                                                    public void notFound() {
+                                                        // Very unlikely since this data set has been selected from a list provided by the backend.
+                                                        error(FiltersConstants.INSTANCE.displayer_editor_dataset_notfound(),
+                                                              null);
+                                                    }
 
-                @Override
-                public boolean onError(final ClientRuntimeError error) {
-                    error(error);
-                    return false;
-                }
-            });
-        } catch ( Exception e ) {
-            error( FiltersConstants.INSTANCE.displayer_editor_datasetmetadata_fetcherror(), e );
+                                                    @Override
+                                                    public boolean onError(final ClientRuntimeError error) {
+                                                        error(error);
+                                                        return false;
+                                                    }
+                                                });
+        } catch (Exception e) {
+            error(FiltersConstants.INSTANCE.displayer_editor_datasetmetadata_fetcherror(),
+                  e);
         }
     }
 
-    public void error( String message,
-                       Throwable e ) {
-        if ( e != null ) {
-            GWT.log( message, e );
+    public void error(String message,
+                      Throwable e) {
+        if (e != null) {
+            GWT.log(message,
+                    e);
         } else {
-            GWT.log( message );
+            GWT.log(message);
         }
     }
 
-    public void error( final ClientRuntimeError error ) {
+    public void error(final ClientRuntimeError error) {
         String message = error.getThrowable() != null ? error.getThrowable().getMessage() : error.getMessage().toString();
         Throwable e = error.getThrowable();
-        if ( e.getCause() != null ) {
+        if (e.getCause() != null) {
             e = e.getCause();
         }
-        error( message, e );
+        error(message,
+              e);
     }
 
-    public void updateDataSetLookup( DataSetLookupConstraints constraints,
-                                     DataSetMetadata metadata ) {
+    public void updateDataSetLookup(DataSetLookupConstraints constraints,
+                                    DataSetMetadata metadata) {
 
         this.dataSetLookup = tableDisplayerSettings.getDataSetLookup();
         this.metadata = metadata;
 
-        dataSetClientServices.getPublicDataSetDefs( (List<DataSetDef> dataset) -> {
-           updateFilterControls();
-        } );
-
+        dataSetClientServices.getPublicDataSetDefs((List<DataSetDef> dataset) -> updateFilterControls());
     }
 
     private void updateFilterControls() {
-        filterEditor.init( dataSetLookup.getFirstFilterOp(), metadata);
+        filterEditor.init(dataSetLookup.getFirstFilterOp(),
+                          metadata);
     }
 
-    public void filterChanged( DataSetFilter filterOp ) {
-        changeDataSetFilter( filterOp );
+    public void filterChanged(DataSetFilter filterOp) {
+        changeDataSetFilter(filterOp);
     }
 
-    public void changeDataSetFilter( DataSetFilter filterOp ) {
-        tableDisplayerSettings.getDataSetLookup().removeOperations( DataSetOpType.FILTER );
-        if ( filterOp != null ) {
-            tableDisplayerSettings.getDataSetLookup().addOperation( 0, filterOp );
+    public void changeDataSetFilter(DataSetFilter filterOp) {
+        tableDisplayerSettings.getDataSetLookup().removeOperations(DataSetOpType.FILTER);
+        if (filterOp != null) {
+            tableDisplayerSettings.getDataSetLookup().addOperation(0,
+                                                                   filterOp);
         }
-
     }
 
     public FilterSettings getTableDisplayerSettings() {
         return tableDisplayerSettings;
     }
 
+    public void setTableDisplayerSettings(FilterSettings tableDisplayerSettings) {
+        this.tableDisplayerSettings = tableDisplayerSettings;
+    }
+
     public DataSetFilter getDatasetFilter() {
         return filterEditor.getFilter();
     }
 
-    public void setTableDisplayerSettings( FilterSettings tableDisplayerSettings ) {
-        this.tableDisplayerSettings = tableDisplayerSettings;
+    protected void setEditorListener(FilterEditorPopup.Listener editorListener) {
+        this.editorListener = editorListener;
     }
 
-    protected void setEditorListener(FilterEditorPopup.Listener editorListener){
-        this.editorListener =editorListener;
+    interface Binder extends UiBinder<Widget, FilterEditorPopup> {
+
+    }
+
+    public interface Listener {
+
+        void onSave(FilterEditorPopup editor);
     }
 }
 

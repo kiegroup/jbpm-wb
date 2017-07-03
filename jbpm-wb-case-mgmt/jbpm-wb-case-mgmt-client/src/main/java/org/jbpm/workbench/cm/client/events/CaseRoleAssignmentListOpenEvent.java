@@ -24,11 +24,11 @@ public class CaseRoleAssignmentListOpenEvent {
         this.assignmentLineId = assignmentLineId;
     }
 
-    public String getAssignmentLineId() {
-        return assignmentLineId;
+    public CaseRoleAssignmentListOpenEvent() {
     }
 
-    public CaseRoleAssignmentListOpenEvent() {
+    public String getAssignmentLineId() {
+        return assignmentLineId;
     }
 
     @Override

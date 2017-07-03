@@ -49,13 +49,6 @@ import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 public class EditRoleAssignmentViewImpl extends AbstractView<CaseRolesPresenter> implements CaseRolesPresenter.EditRoleAssignmentView {
 
     @Inject
-    private JQueryProducer.JQuery<Popover> jQueryPopover;
-
-    @Inject
-    @DataField("alert")
-    private InlineNotification notification;
-
-    @Inject
     @DataField("role-name-group")
     FormGroup roleNameGroup;
 
@@ -75,10 +68,6 @@ public class EditRoleAssignmentViewImpl extends AbstractView<CaseRolesPresenter>
     @Inject
     @DataField("assignment-label")
     FormLabel assignmentLabel;
-
-    @Inject
-    @DataField("roles-help")
-    private Anchor rolesHelp;
 
     @Inject
     @Bound(converter = CommaListValuesConverter.class)
@@ -103,6 +92,17 @@ public class EditRoleAssignmentViewImpl extends AbstractView<CaseRolesPresenter>
     FormGroup groupNameGroup;
 
     @Inject
+    private JQueryProducer.JQuery<Popover> jQueryPopover;
+
+    @Inject
+    @DataField("alert")
+    private InlineNotification notification;
+
+    @Inject
+    @DataField("roles-help")
+    private Anchor rolesHelp;
+
+    @Inject
     @DataField("modal")
     private Modal modal;
 
@@ -119,7 +119,8 @@ public class EditRoleAssignmentViewImpl extends AbstractView<CaseRolesPresenter>
     public void init() {
         this.roleNameLabel.addRequiredIndicator();
         this.assignmentLabel.addRequiredIndicator();
-        rolesHelp.setAttribute("data-content", translationService.getTranslation(ROLES_INFO_TEXT));
+        rolesHelp.setAttribute("data-content",
+                               translationService.getTranslation(ROLES_INFO_TEXT));
         jQueryPopover.wrap(rolesHelp).popover();
         notification.setType(InlineNotification.InlineNotificationType.DANGER);
     }
@@ -129,13 +130,13 @@ public class EditRoleAssignmentViewImpl extends AbstractView<CaseRolesPresenter>
     }
 
     @Override
-    public void setValue(final CaseRoleAssignmentSummary caseRoleAssignmentSummary) {
-        binder.setModel(caseRoleAssignmentSummary);
+    public CaseRoleAssignmentSummary getValue() {
+        return binder.getModel();
     }
 
     @Override
-    public CaseRoleAssignmentSummary getValue() {
-        return binder.getModel();
+    public void setValue(final CaseRoleAssignmentSummary caseRoleAssignmentSummary) {
+        binder.setModel(caseRoleAssignmentSummary);
     }
 
     @Override

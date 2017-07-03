@@ -57,30 +57,7 @@ import static org.jbpm.dashboard.renderer.model.DashboardData.*;
 @Dependent
 public class TaskDashboard extends AbstractDashboard implements IsWidget {
 
-    public interface View extends AbstractDashboard.View {
-
-        void init(TaskDashboard presenter,
-                  Displayer totalMetric,
-                  Displayer createdMetric,
-                  Displayer readyMetric,
-                  Displayer reservedMetric,
-                  Displayer inProgressMetric,
-                  Displayer suspendedMetric,
-                  Displayer completedMetric,
-                  Displayer failedMetric,
-                  Displayer errorMetric,
-                  Displayer exitedMetric,
-                  Displayer obsoleteMetric,
-                  Displayer tasksByProcess,
-                  Displayer tasksByOwner,
-                  Displayer tasksByCreationDate,
-                  Displayer tasksByEndDate,
-                  Displayer tasksByRunningTime,
-                  Displayer tasksByStatus,
-                  Displayer tasksTable);
-
-    }
-
+    public static final String TASK_DETAILS_SCREEN_ID = "Task Details Multi";
     protected View view;
     protected Event<TaskSelectionEvent> taskSelectionEvent;
     protected Event<TaskDashboardFocusEvent> taskDashboardFocusEvent;
@@ -108,7 +85,55 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
     protected List<Displayer> metricsGroupOptional = new ArrayList<>();
     protected List<Displayer> chartsGroup = new ArrayList<>();
     protected String totalTasksTitle;
+    DisplayerListener dashboardListener = new AbstractDisplayerListener() {
 
+        @Override
+        public void onDraw(Displayer displayer) {
+            if (totalMetric == displayer) {
+                // The dashboard can be considered empty if the total task count is 0
+                DataSet ds = displayer.getDataSetHandler().getLastDataSet();
+                if (ds.getRowCount() == 0) {
+                    showBlankDashboard();
+                }
+            }
+        }
+
+        @Override
+        public void onFilterEnabled(Displayer displayer,
+                                    DataSetGroup groupOp) {
+            if (COLUMN_PROCESS_NAME.equals(groupOp.getColumnGroup().getSourceId())) {
+                Interval interval = groupOp.getSelectedIntervalList().get(0);
+                changeCurrentProcess(interval.getName());
+            }
+        }
+
+        @Override
+        public void onFilterReset(Displayer displayer,
+                                  List<DataSetGroup> groupOps) {
+            for (DataSetGroup groupOp : groupOps) {
+                if (COLUMN_PROCESS_NAME.equals(groupOp.getColumnGroup().getSourceId())) {
+                    resetCurrentProcess();
+                    return;
+                }
+            }
+        }
+
+        @Override
+        public void onFilterEnabled(Displayer displayer,
+                                    DataSetFilter filter) {
+            if (metricsGroup.contains(displayer)) {
+                changeCurrentMetric((MetricDisplayer) displayer);
+            }
+        }
+
+        @Override
+        public void onFilterReset(Displayer displayer,
+                                  DataSetFilter filter) {
+            if (metricsGroup.contains(displayer)) {
+                resetCurrentMetric();
+            }
+        }
+    };
     private Caller<ProcessRuntimeDataService> processRuntimeDataService;
     private Event<NotificationEvent> notificationEvent;
 
@@ -124,7 +149,13 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
                          final ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder,
                          final Caller<ProcessRuntimeDataService> processRuntimeDataService,
                          final Event<NotificationEvent> notificationEvent) {
-        super(dataSetClientServices, placeManager, view.getI18nService(), processBreadCrumb, displayerLocator, displayerCoordinator, serverTemplateSelectorMenuBuilder);
+        super(dataSetClientServices,
+              placeManager,
+              view.getI18nService(),
+              processBreadCrumb,
+              displayerLocator,
+              displayerCoordinator,
+              serverTemplateSelectorMenuBuilder);
 
         this.view = view;
         this.taskSelectionEvent = taskSelectionEvent;
@@ -145,24 +176,27 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
         totalTasksTitle = totalTasks.getTitle();
 
         view.init(this,
-                totalMetric = createMetricDisplayer(totalTasks),
-                createdMetric = createMetricDisplayer(DashboardKpis.tasksCreated(i18n)),
-                readyMetric = createMetricDisplayer(DashboardKpis.tasksReady(i18n)),
-                reservedMetric = createMetricDisplayer(DashboardKpis.tasksReserved(i18n)),
-                inProgressMetric = createMetricDisplayer(DashboardKpis.tasksInProgress(i18n)),
-                suspendedMetric = createMetricDisplayer(DashboardKpis.tasksSuspended(i18n)),
-                completedMetric = createMetricDisplayer(DashboardKpis.tasksCompleted(i18n)),
-                failedMetric = createMetricDisplayer(DashboardKpis.tasksFailed(i18n)),
-                errorMetric = createMetricDisplayer(DashboardKpis.tasksError(i18n)),
-                exitedMetric = createMetricDisplayer(DashboardKpis.tasksExited(i18n)),
-                obsoleteMetric = createMetricDisplayer(DashboardKpis.tasksObsolete(i18n)),
-                tasksByProcess = createDisplayer(DashboardKpis.tasksByProcess(i18n)),
-                tasksByOwner = createDisplayer(DashboardKpis.tasksByOwner(i18n)),
-                tasksByCreationDate = createDisplayer(DashboardKpis.tasksByCreationDate(i18n)),
-                tasksByEndDate = createDisplayer(DashboardKpis.tasksByEndDate(i18n)),
-                tasksByRunningTime = createDisplayer(DashboardKpis.tasksByRunningTime(i18n)),
-                tasksByStatus = createDisplayer(DashboardKpis.tasksByStatus(i18n)),
-                tasksTable = createTableDisplayer(DashboardKpis.tasksTable(i18n), COLUMN_TASK_DURATION, new DurationFormatter(COLUMN_TASK_CREATED_DATE, COLUMN_TASK_END_DATE)));
+                  totalMetric = createMetricDisplayer(totalTasks),
+                  createdMetric = createMetricDisplayer(DashboardKpis.tasksCreated(i18n)),
+                  readyMetric = createMetricDisplayer(DashboardKpis.tasksReady(i18n)),
+                  reservedMetric = createMetricDisplayer(DashboardKpis.tasksReserved(i18n)),
+                  inProgressMetric = createMetricDisplayer(DashboardKpis.tasksInProgress(i18n)),
+                  suspendedMetric = createMetricDisplayer(DashboardKpis.tasksSuspended(i18n)),
+                  completedMetric = createMetricDisplayer(DashboardKpis.tasksCompleted(i18n)),
+                  failedMetric = createMetricDisplayer(DashboardKpis.tasksFailed(i18n)),
+                  errorMetric = createMetricDisplayer(DashboardKpis.tasksError(i18n)),
+                  exitedMetric = createMetricDisplayer(DashboardKpis.tasksExited(i18n)),
+                  obsoleteMetric = createMetricDisplayer(DashboardKpis.tasksObsolete(i18n)),
+                  tasksByProcess = createDisplayer(DashboardKpis.tasksByProcess(i18n)),
+                  tasksByOwner = createDisplayer(DashboardKpis.tasksByOwner(i18n)),
+                  tasksByCreationDate = createDisplayer(DashboardKpis.tasksByCreationDate(i18n)),
+                  tasksByEndDate = createDisplayer(DashboardKpis.tasksByEndDate(i18n)),
+                  tasksByRunningTime = createDisplayer(DashboardKpis.tasksByRunningTime(i18n)),
+                  tasksByStatus = createDisplayer(DashboardKpis.tasksByStatus(i18n)),
+                  tasksTable = createTableDisplayer(DashboardKpis.tasksTable(i18n),
+                                                    COLUMN_TASK_DURATION,
+                                                    new DurationFormatter(COLUMN_TASK_CREATED_DATE,
+                                                                          COLUMN_TASK_END_DATE)));
 
         totalMetric.setFilterOn(true);
         selectedMetric = totalMetric;
@@ -192,7 +226,8 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
         displayerCoordinator.addDisplayers(chartsGroup);
         displayerCoordinator.addNotificationVeto(metricsGroup);
         displayerCoordinator.addListener(dashboardListener);
-        displayerCoordinator.drawAll(()->view.hideLoading(), ()->view.hideLoading());
+        displayerCoordinator.drawAll(() -> view.hideLoading(),
+                                     () -> view.hideLoading());
     }
 
     public MetricDisplayer getTotalMetric() {
@@ -315,30 +350,44 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
             } else if (obsoleteMetric == selectedMetric) {
                 status = i18n.taskStatusObsolete();
             }
-            view.setHeaderText(i18n.selectedTaskStatusHeader(status, selectedProcess));
+            view.setHeaderText(i18n.selectedTaskStatusHeader(status,
+                                                             selectedProcess));
         }
     }
 
-    public static final String TASK_DETAILS_SCREEN_ID = "Task Details Multi";
-
-    public void tableCellSelected(String columnId, int rowIndex) {
+    public void tableCellSelected(String columnId,
+                                  int rowIndex) {
         final DataSet ds = tasksTable.getDataSetHandler().getLastDataSet();
-        final String status = ds.getValueAt(rowIndex, COLUMN_TASK_STATUS).toString();
+        final String status = ds.getValueAt(rowIndex,
+                                            COLUMN_TASK_STATUS).toString();
         if (TASK_STATUS_EXITED.equalsIgnoreCase(status) || TASK_STATUS_COMPLETED.equals(status)) {
-            notificationEvent.fire(new NotificationEvent(i18n.taskDetailsNotAvailable(), NotificationEvent.NotificationType.WARNING));
+            notificationEvent.fire(new NotificationEvent(i18n.taskDetailsNotAvailable(),
+                                                         NotificationEvent.NotificationType.WARNING));
             return;
         }
 
-        final Long taskId = Double.valueOf(ds.getValueAt(rowIndex, COLUMN_TASK_ID).toString()).longValue();
-        final String taskName = ds.getValueAt(rowIndex, COLUMN_TASK_NAME).toString();
-        final String deploymentId = ds.getValueAt(rowIndex, COLUMN_PROCESS_EXTERNAL_ID).toString();
-        final Long processInstanceId = Double.valueOf(ds.getValueAt(rowIndex, COLUMN_PROCESS_INSTANCE_ID).toString()).longValue();
+        final Long taskId = Double.valueOf(ds.getValueAt(rowIndex,
+                                                         COLUMN_TASK_ID).toString()).longValue();
+        final String taskName = ds.getValueAt(rowIndex,
+                                              COLUMN_TASK_NAME).toString();
+        final String deploymentId = ds.getValueAt(rowIndex,
+                                                  COLUMN_PROCESS_EXTERNAL_ID).toString();
+        final Long processInstanceId = Double.valueOf(ds.getValueAt(rowIndex,
+                                                                    COLUMN_PROCESS_INSTANCE_ID).toString()).longValue();
         final String serverTemplateId = serverTemplateSelectorMenuBuilder.getSelectedServerTemplate();
 
-        processRuntimeDataService.call( (ProcessInstanceSummary p) -> {
-                    openTaskDetailsScreen();
-                    taskSelectionEvent.fire(new TaskSelectionEvent(serverTemplateId, p.getDeploymentId(), taskId, taskName, false, true));
-                }).getProcessInstance(serverTemplateId, new ProcessInstanceKey(serverTemplateId, deploymentId, processInstanceId));
+        processRuntimeDataService.call((ProcessInstanceSummary p) -> {
+            openTaskDetailsScreen();
+            taskSelectionEvent.fire(new TaskSelectionEvent(serverTemplateId,
+                                                           p.getDeploymentId(),
+                                                           taskId,
+                                                           taskName,
+                                                           false,
+                                                           true));
+        }).getProcessInstance(serverTemplateId,
+                              new ProcessInstanceKey(serverTemplateId,
+                                                     deploymentId,
+                                                     processInstanceId));
     }
 
     public void showDashboard() {
@@ -372,49 +421,26 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
         closeTaskDetailsScreen();
     }
 
-    DisplayerListener dashboardListener = new AbstractDisplayerListener() {
+    public interface View extends AbstractDashboard.View {
 
-        @Override
-        public void onDraw(Displayer displayer) {
-            if (totalMetric == displayer) {
-                // The dashboard can be considered empty if the total task count is 0
-                DataSet ds = displayer.getDataSetHandler().getLastDataSet();
-                if (ds.getRowCount() == 0) {
-                    showBlankDashboard();
-                }
-            }
-        }
-
-        @Override
-        public void onFilterEnabled(Displayer displayer, DataSetGroup groupOp) {
-            if (COLUMN_PROCESS_NAME.equals(groupOp.getColumnGroup().getSourceId())) {
-                Interval interval = groupOp.getSelectedIntervalList().get(0);
-                changeCurrentProcess(interval.getName());
-            }
-        }
-
-        @Override
-        public void onFilterReset(Displayer displayer, List<DataSetGroup> groupOps) {
-            for (DataSetGroup groupOp : groupOps) {
-                if (COLUMN_PROCESS_NAME.equals(groupOp.getColumnGroup().getSourceId())) {
-                    resetCurrentProcess();
-                    return;
-                }
-            }
-        }
-
-        @Override
-        public void onFilterEnabled(Displayer displayer, DataSetFilter filter) {
-            if (metricsGroup.contains(displayer)) {
-                changeCurrentMetric((MetricDisplayer) displayer);
-            }
-        }
-
-        @Override
-        public void onFilterReset(Displayer displayer, DataSetFilter filter) {
-            if (metricsGroup.contains(displayer)) {
-                resetCurrentMetric();
-            }
-        }
-    };
+        void init(TaskDashboard presenter,
+                  Displayer totalMetric,
+                  Displayer createdMetric,
+                  Displayer readyMetric,
+                  Displayer reservedMetric,
+                  Displayer inProgressMetric,
+                  Displayer suspendedMetric,
+                  Displayer completedMetric,
+                  Displayer failedMetric,
+                  Displayer errorMetric,
+                  Displayer exitedMetric,
+                  Displayer obsoleteMetric,
+                  Displayer tasksByProcess,
+                  Displayer tasksByOwner,
+                  Displayer tasksByCreationDate,
+                  Displayer tasksByEndDate,
+                  Displayer tasksByRunningTime,
+                  Displayer tasksByStatus,
+                  Displayer tasksTable);
+    }
 }

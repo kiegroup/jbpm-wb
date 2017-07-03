@@ -38,9 +38,13 @@ public class ProcessAdminServiceImpl implements ProcessAdminService {
                                       final String correlationKey,
                                       final Map<String, Object> params,
                                       final Integer amountOfInstances) {
-        IntStream.range(0, amountOfInstances)
+        IntStream.range(0,
+                        amountOfInstances)
                 .forEach(e -> processService.startProcess(
-                        serverTemplateId, containerId, processId, correlationKey, params));
+                        serverTemplateId,
+                        containerId,
+                        processId,
+                        correlationKey,
+                        params));
     }
-
 }

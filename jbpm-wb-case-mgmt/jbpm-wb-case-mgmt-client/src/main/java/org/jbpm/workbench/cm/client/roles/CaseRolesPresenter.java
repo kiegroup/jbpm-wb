@@ -45,19 +45,19 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesP
     public static final String CASE_OWNER_ROLE = "owner";
 
     @Inject
-    private EditRoleAssignmentView editRoleAssignmentView;
-
-    @Inject
     CaseRolesValidations caseRolesValidations;
 
     List<CaseRoleAssignmentSummary> allUnfilteredElements = new ArrayList();
+
+    @Inject
+    private EditRoleAssignmentView editRoleAssignmentView;
+
+    private CaseDefinitionSummary caseDefinition;
 
     @WorkbenchPartTitle
     public String getTittle() {
         return translationService.format(ROLES);
     }
-
-    private CaseDefinitionSummary caseDefinition;
 
     @Override
     protected void clearCaseInstance() {

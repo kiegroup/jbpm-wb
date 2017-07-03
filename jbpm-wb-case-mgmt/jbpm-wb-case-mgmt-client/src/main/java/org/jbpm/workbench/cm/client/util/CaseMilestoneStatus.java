@@ -28,10 +28,8 @@ public enum CaseMilestoneStatus {
 
     private String status;
 
-
     CaseMilestoneStatus(final String status) {
         this.status = status;
-
     }
 
     public static CaseMilestoneStatus fromStatus(final String status) {
