@@ -61,5 +61,4 @@ public class DateConverter implements Converter<Date, String> {
     public Class<String> getComponentType() {
         return String.class;
     }
-
 }

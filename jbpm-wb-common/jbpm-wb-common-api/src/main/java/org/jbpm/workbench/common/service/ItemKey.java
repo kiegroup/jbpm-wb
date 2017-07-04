@@ -17,5 +17,5 @@
 package org.jbpm.workbench.common.service;
 
 public interface ItemKey {
-  
+
 }

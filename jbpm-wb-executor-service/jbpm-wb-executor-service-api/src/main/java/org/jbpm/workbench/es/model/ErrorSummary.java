@@ -18,6 +18,7 @@ package org.jbpm.workbench.es.model;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
@@ -32,7 +33,11 @@ public class ErrorSummary implements Serializable {
     public ErrorSummary() {
     }
 
-    public ErrorSummary(Long id, Date time, String message, String stacktrace, Long requestInfoId) {
+    public ErrorSummary(Long id,
+                        Date time,
+                        String message,
+                        String stacktrace,
+                        Long requestInfoId) {
         this.id = id;
         this.time = time;
         this.message = message;
@@ -79,5 +84,4 @@ public class ErrorSummary implements Serializable {
     public void setRequestInfoId(Long requestInfoId) {
         this.requestInfoId = requestInfoId;
     }
-
 }

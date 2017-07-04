@@ -42,8 +42,6 @@ import static org.jboss.errai.common.client.dom.Window.getDocument;
 @Templated(value = "TaskAssignmentsViewImpl.html")
 public class TaskAssignmentsViewImpl extends Composite implements TaskAssignmentsPresenter.TaskAssignmentsView {
 
-    private TaskAssignmentsPresenter presenter;
-
     @Inject
     @DataField
     public FormLabel userOrGroupLabel;
@@ -67,6 +65,8 @@ public class TaskAssignmentsViewImpl extends Composite implements TaskAssignment
     @Inject
     @DataField
     public HelpBlock userOrGroupHelpBlock;
+
+    private TaskAssignmentsPresenter presenter;
 
     @Inject
     private Event<NotificationEvent> notification;

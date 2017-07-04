@@ -69,13 +69,13 @@ public class CaseDetailsViewImpl implements CaseDetailsPresenter.CaseDetailsView
     private DataBinder<CaseInstanceSummary> binder;
 
     @Override
-    public void setValue(final CaseInstanceSummary caseInstanceSummary) {
-        binder.setModel(caseInstanceSummary);
+    public CaseInstanceSummary getValue() {
+        return binder.getModel();
     }
 
     @Override
-    public CaseInstanceSummary getValue() {
-        return binder.getModel();
+    public void setValue(final CaseInstanceSummary caseInstanceSummary) {
+        binder.setModel(caseInstanceSummary);
     }
 
     @Override

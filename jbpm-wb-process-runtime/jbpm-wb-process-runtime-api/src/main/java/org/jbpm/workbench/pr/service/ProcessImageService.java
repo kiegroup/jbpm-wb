@@ -21,8 +21,11 @@ import org.jboss.errai.bus.server.annotations.Remote;
 @Remote
 public interface ProcessImageService {
 
-    String getProcessInstanceDiagram(String serverTemplateId, String containerId, Long processInstanceId);
+    String getProcessInstanceDiagram(String serverTemplateId,
+                                     String containerId,
+                                     Long processInstanceId);
 
-    String getProcessDiagram(String serverTemplateId, String containerId, String processId);
-
+    String getProcessDiagram(String serverTemplateId,
+                             String containerId,
+                             String processId);
 }

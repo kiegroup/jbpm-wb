@@ -42,10 +42,10 @@ import static org.jboss.errai.common.client.dom.DOMUtil.*;
 import static org.jboss.errai.common.client.dom.Window.*;
 import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 
-
 @Dependent
 @Templated
-public class CaseActionItemView extends AbstractView<CaseActionsPresenter> implements TakesValue<CaseActionSummary>, IsElement {
+public class CaseActionItemView extends AbstractView<CaseActionsPresenter> implements TakesValue<CaseActionSummary>,
+                                                                                      IsElement {
 
     @Inject
     protected TranslationService translationService;
@@ -93,33 +93,38 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
     @Override
     public void setValue(final CaseActionSummary model) {
         this.caseActionSummary.setModel(model);
-        removeCSSClass(actions,"dropup");
+        removeCSSClass(actions,
+                       "dropup");
 
         final CaseActionType actionType = model.getActionType();
         final CaseActionStatus actionStatus = model.getActionStatus();
 
         switch (actionStatus) {
             case AVAILABLE: {
-                prepareAction(model, actionType);
+                prepareAction(model,
+                              actionType);
                 break;
             }
             case IN_PROGRESS: {
-                removeCSSClass(createdOn, "hidden");
+                removeCSSClass(createdOn,
+                               "hidden");
                 if (!isNullOrEmpty(model.getActualOwner())) {
                     actionInfo.setTextContent(" (" + model.getActualOwner() + ") ");
                 }
                 break;
             }
             case COMPLETED: {
-                removeCSSClass(createdOn, "hidden");
+                removeCSSClass(createdOn,
+                               "hidden");
             }
         }
     }
 
-    private void prepareAction(CaseActionSummary model, CaseActionType actionType){
+    private void prepareAction(CaseActionSummary model,
+                               CaseActionType actionType) {
         switch (actionType) {
             case AD_HOC_TASK: {
-                if (isNullOrEmpty(model.getStageId())){
+                if (isNullOrEmpty(model.getStageId())) {
                     actionInfo.setTextContent(translationService.format(AVAILABLE_IN) + ": " + translationService.format(CASE));
                 } else {
                     actionInfo.setTextContent(translationService.format(AVAILABLE_IN) + ": " + model.getStageId());
@@ -135,7 +140,8 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
                         if (isNullOrEmpty(model.getStageId())) {
                             presenter.triggerAdHocAction(model.getName());
                         } else {
-                            presenter.triggerAdHocActionInStage(model.getName(), model.getStageId());
+                            presenter.triggerAdHocActionInStage(model.getName(),
+                                                                model.getStageId());
                         }
                     }
                 });
@@ -160,7 +166,8 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
     }
 
     private void addAction(final CaseActionsPresenter.CaseActionAction action) {
-        removeCSSClass(actions, "hidden");
+        removeCSSClass(actions,
+                       "hidden");
 
         final HTMLElement a = getDocument().createElement("a");
         a.setTextContent(action.label());
@@ -171,8 +178,8 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
         actionsItems.appendChild(li);
     }
 
-    public void setLastElementStyle(){
-        addCSSClass(actions, "dropup");
+    public void setLastElementStyle() {
+        addCSSClass(actions,
+                    "dropup");
     }
-
 }

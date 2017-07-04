@@ -51,11 +51,9 @@ import org.uberfire.mvp.Command;
 @Dependent
 public class VariableHistoryPopup extends BaseModal {
 
-    interface Binder
-            extends
-            UiBinder<Widget, VariableHistoryPopup> {
+    private static Binder uiBinder = GWT.create(Binder.class);
 
-    }
+    private final Constants instance = Constants.INSTANCE;
 
     @UiField
     public FormControlStatic variableNameTextBox;
@@ -66,145 +64,155 @@ public class VariableHistoryPopup extends BaseModal {
     @UiField
     public Pagination pagination;
 
-    private final Constants instance = Constants.INSTANCE;
+    public SimplePager pager;
 
     private ListDataProvider<ProcessVariableSummary> dataProvider = new ListDataProvider<ProcessVariableSummary>();
 
-    public SimplePager pager;
-
     private ColumnSortEvent.ListHandler<ProcessVariableSummary> sortHandler;
 
-    private static Binder uiBinder = GWT.create( Binder.class );
-
     public VariableHistoryPopup() {
-        setTitle( Constants.INSTANCE.History() );
+        setTitle(Constants.INSTANCE.History());
 
-        setBody( uiBinder.createAndBindUi( this ) );
+        setBody(uiBinder.createAndBindUi(this));
         init();
         final GenericModalFooter footer = new GenericModalFooter();
 
-        footer.addButton( Constants.INSTANCE.Ok(),
-                          new Command() {
-                              @Override
-                              public void execute() {
-                                  closePopup();
-                              }
-                          }, null,
-                          ButtonType.PRIMARY );
+        footer.addButton(Constants.INSTANCE.Ok(),
+                         new Command() {
+                             @Override
+                             public void execute() {
+                                 closePopup();
+                             }
+                         },
+                         null,
+                         ButtonType.PRIMARY);
 
-        add( footer );
+        add(footer);
     }
 
     public VariableHistoryPopup(DataGrid<ProcessVariableSummary> processVarListGrid,
                                 Pagination pagination,
                                 FormControlStatic variableNameTextBox) {
-        this.processVarListGrid =processVarListGrid;
+        this.processVarListGrid = processVarListGrid;
         this.pagination = pagination;
-        this.variableNameTextBox =variableNameTextBox;
+        this.variableNameTextBox = variableNameTextBox;
 
         init();
     }
 
     public void init() {
-        pager = new SimplePager( SimplePager.TextLocation.CENTER, false, true );
-        pagination.rebuild( pager );
+        pager = new SimplePager(SimplePager.TextLocation.CENTER,
+                                false,
+                                true);
+        pagination.rebuild(pager);
 
         // Set the message to display when the table is empty.
-        processVarListGrid.setEmptyTableWidget( new HTMLPanel( instance.No_History_For_This_Variable() ) );
+        processVarListGrid.setEmptyTableWidget(new HTMLPanel(instance.No_History_For_This_Variable()));
 
-        sortHandler = new ColumnSortEvent.ListHandler<ProcessVariableSummary>( dataProvider.getList() );
-        processVarListGrid.addColumnSortHandler( sortHandler );
+        sortHandler = new ColumnSortEvent.ListHandler<ProcessVariableSummary>(dataProvider.getList());
+        processVarListGrid.addColumnSortHandler(sortHandler);
 
         // Create a Pager to control the table.
 
-        pager.setDisplay( processVarListGrid );
-        pager.setPageSize( 5 );
+        pager.setDisplay(processVarListGrid);
+        pager.setPageSize(5);
 
         // Setting the RangeChangeHandler
-        processVarListGrid.addRangeChangeHandler( new RangeChangeEvent.Handler() {
+        processVarListGrid.addRangeChangeHandler(new RangeChangeEvent.Handler() {
             @Override
-            public void onRangeChange( RangeChangeEvent event ) {
-                pagination.rebuild( pager );
+            public void onRangeChange(RangeChangeEvent event) {
+                pagination.rebuild(pager);
             }
-        } );
+        });
 
         // Value.
-        com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String> valueColumn = new com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String>( new PopoverTextCell() ) {
+        com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String> valueColumn = new com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String>(new PopoverTextCell()) {
 
             @Override
-            public String getValue( ProcessVariableSummary object ) {
-                return object.getNewValue()!=null? object.getNewValue():"" ;
+            public String getValue(ProcessVariableSummary object) {
+                return object.getNewValue() != null ? object.getNewValue() : "";
             }
         };
 
-        processVarListGrid.addColumn( valueColumn, instance.Value() );
-        valueColumn.setSortable( true );
-        sortHandler.setComparator( valueColumn, new Comparator<ProcessVariableSummary>() {
-            @Override
-            public int compare( ProcessVariableSummary o1,
-                                ProcessVariableSummary o2 ) {
-                String o1NewValue = o1.getNewValue() != null ? o1.getNewValue() :"";
-                String o2NewValue = o2.getNewValue() != null ? o2.getNewValue() :"";
-                return o1NewValue.compareTo( o2NewValue );
-            }
-        } );
+        processVarListGrid.addColumn(valueColumn,
+                                     instance.Value());
+        valueColumn.setSortable(true);
+        sortHandler.setComparator(valueColumn,
+                                  new Comparator<ProcessVariableSummary>() {
+                                      @Override
+                                      public int compare(ProcessVariableSummary o1,
+                                                         ProcessVariableSummary o2) {
+                                          String o1NewValue = o1.getNewValue() != null ? o1.getNewValue() : "";
+                                          String o2NewValue = o2.getNewValue() != null ? o2.getNewValue() : "";
+                                          return o1NewValue.compareTo(o2NewValue);
+                                      }
+                                  });
 
         // Old Value.
-        com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String> oldValueColumn = new com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String>( new PopoverTextCell() ) {
+        com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String> oldValueColumn = new com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String>(new PopoverTextCell()) {
 
             @Override
-            public String getValue( ProcessVariableSummary object ) {
-                return object.getOldValue()!=null? object.getOldValue():"" ;
+            public String getValue(ProcessVariableSummary object) {
+                return object.getOldValue() != null ? object.getOldValue() : "";
             }
         };
-        oldValueColumn.setSortable( true );
+        oldValueColumn.setSortable(true);
 
-        processVarListGrid.addColumn( oldValueColumn, instance.Previous_Value() );
-        sortHandler.setComparator( oldValueColumn, new Comparator<ProcessVariableSummary>() {
-            @Override
-            public int compare( ProcessVariableSummary o1,
-                                ProcessVariableSummary o2 ) {
-                String o1OldValue = o1.getOldValue() != null ? o1.getOldValue() :"";
-                String o2OldValue = o2.getOldValue() != null ? o2.getOldValue() :"";
-                return o1OldValue.compareTo(o2OldValue);
-            }
-        } );
+        processVarListGrid.addColumn(oldValueColumn,
+                                     instance.Previous_Value());
+        sortHandler.setComparator(oldValueColumn,
+                                  new Comparator<ProcessVariableSummary>() {
+                                      @Override
+                                      public int compare(ProcessVariableSummary o1,
+                                                         ProcessVariableSummary o2) {
+                                          String o1OldValue = o1.getOldValue() != null ? o1.getOldValue() : "";
+                                          String o2OldValue = o2.getOldValue() != null ? o2.getOldValue() : "";
+                                          return o1OldValue.compareTo(o2OldValue);
+                                      }
+                                  });
 
         // Last Time Changed Date.
-        com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String> lastTimeChangedColumn = new com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String>( new TextCell() ) {
+        com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String> lastTimeChangedColumn = new com.google.gwt.user.cellview.client.Column<ProcessVariableSummary, String>(new TextCell()) {
 
             @Override
-            public void render( Cell.Context context,
-                                ProcessVariableSummary variableSummary,
-                                SafeHtmlBuilder sb ) {
+            public void render(Cell.Context context,
+                               ProcessVariableSummary variableSummary,
+                               SafeHtmlBuilder sb) {
 
                 String title = DateUtils.getDateTimeStr(new Date(variableSummary.getTimestamp()));
-                sb.append( DataGridUtils.createDivStart( title ) );
-                super.render( context, variableSummary, sb );
-                sb.append( DataGridUtils.createDivEnd() );
+                sb.append(DataGridUtils.createDivStart(title));
+                super.render(context,
+                             variableSummary,
+                             sb);
+                sb.append(DataGridUtils.createDivEnd());
             }
 
             @Override
-            public String getValue( ProcessVariableSummary variable ) {
-                return DataGridUtils.trimToColumnWidth( processVarListGrid, this, DateUtils.getDateTimeStr(new Date(variable.getTimestamp())) );
+            public String getValue(ProcessVariableSummary variable) {
+                return DataGridUtils.trimToColumnWidth(processVarListGrid,
+                                                       this,
+                                                       DateUtils.getDateTimeStr(new Date(variable.getTimestamp())));
             }
         };
-        lastTimeChangedColumn.setSortable( true );
-        sortHandler.setComparator( lastTimeChangedColumn, new Comparator<ProcessVariableSummary>() {
-            @Override
-            public int compare( ProcessVariableSummary o1,
-                                ProcessVariableSummary o2 ) {
-                return new Long( o1.getTimestamp() ).compareTo( new Long( o2.getTimestamp() ) );
-            }
-        } );
+        lastTimeChangedColumn.setSortable(true);
+        sortHandler.setComparator(lastTimeChangedColumn,
+                                  new Comparator<ProcessVariableSummary>() {
+                                      @Override
+                                      public int compare(ProcessVariableSummary o1,
+                                                         ProcessVariableSummary o2) {
+                                          return new Long(o1.getTimestamp()).compareTo(new Long(o2.getTimestamp()));
+                                      }
+                                  });
 
-        processVarListGrid.addColumn( lastTimeChangedColumn, instance.Last_Modification() );
+        processVarListGrid.addColumn(lastTimeChangedColumn,
+                                     instance.Last_Modification());
 
-        dataProvider.addDataDisplay( processVarListGrid );
+        dataProvider.addDataDisplay(processVarListGrid);
     }
 
-    public void show( final String variableId, final List<ProcessVariableSummary> processVariableSummaries ) {
-        this.variableNameTextBox.setText( variableId );
+    public void show(final String variableId,
+                     final List<ProcessVariableSummary> processVariableSummaries) {
+        this.variableNameTextBox.setText(variableId);
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {
@@ -221,7 +229,8 @@ public class VariableHistoryPopup extends BaseModal {
 
     public void refreshTable() {
         processVarListGrid.getColumnSortList().clear();
-        processVarListGrid.getColumnSortList().push( new ColumnSortList.ColumnSortInfo( processVarListGrid.getColumn( 2 ), false ) );
+        processVarListGrid.getColumnSortList().push(new ColumnSortList.ColumnSortInfo(processVarListGrid.getColumn(2),
+                                                                                      false));
         processVarListGrid.redraw();
     }
 
@@ -232,8 +241,13 @@ public class VariableHistoryPopup extends BaseModal {
         pagination.rebuild(pager);
     }
 
-    public ColumnSortEvent.ListHandler<ProcessVariableSummary> getSortHandler(){
+    public ColumnSortEvent.ListHandler<ProcessVariableSummary> getSortHandler() {
         return sortHandler;
     }
 
+    interface Binder
+            extends
+            UiBinder<Widget, VariableHistoryPopup> {
+
+    }
 }

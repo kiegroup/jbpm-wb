@@ -85,7 +85,7 @@ public class DataSetAwareSelect {
                                                     public void callback(final DataSet dataSet) {
                                                         select.refresh(s -> {
                                                             s.removeAllOptions();
-                                                            if(dataSet.getRowCount() == 0){
+                                                            if (dataSet.getRowCount() == 0) {
                                                                 s.disable();
                                                             } else {
                                                                 s.enable();

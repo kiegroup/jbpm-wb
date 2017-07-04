@@ -39,7 +39,11 @@ import static org.jboss.errai.common.client.dom.DOMUtil.*;
 
 @Dependent
 @Templated
-public class CaseStageItemViewImpl extends AbstractView<CaseStagesPresenter> implements TakesValue<CaseStageSummary>, IsElement {
+public class CaseStageItemViewImpl extends AbstractView<CaseStagesPresenter> implements TakesValue<CaseStageSummary>,
+                                                                                        IsElement {
+
+    @Inject
+    protected TranslationService translationService;
 
     @Inject
     @DataField("stage-name")
@@ -54,13 +58,11 @@ public class CaseStageItemViewImpl extends AbstractView<CaseStagesPresenter> imp
     @AutoBound
     private DataBinder<CaseStageSummary> caseStageSummary;
 
-    @Inject
-    protected TranslationService translationService;
-
     @PostConstruct
     public void init() {
         tooltip(name);
     }
+
     @Override
     public HTMLElement getElement() {
         return listGroupItem;
@@ -76,10 +78,8 @@ public class CaseStageItemViewImpl extends AbstractView<CaseStagesPresenter> imp
         this.caseStageSummary.setModel(model);
 
         if (model.getStatus().equals(CaseStageStatus.ACTIVE.getStatus())) {
-            addCSSClass(this.listGroupItem, "active");
+            addCSSClass(this.listGroupItem,
+                        "active");
         }
-
     }
-
-
 }

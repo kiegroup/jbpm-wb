@@ -84,11 +84,17 @@ public class CaseDefinitionSummary implements Comparable<CaseDefinitionSummary> 
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         CaseDefinitionSummary that = (CaseDefinitionSummary) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(containerId, that.containerId);
+        return Objects.equals(id,
+                              that.id) &&
+                Objects.equals(containerId,
+                               that.containerId);
     }
 
     @Override
@@ -140,7 +146,5 @@ public class CaseDefinitionSummary implements Comparable<CaseDefinitionSummary> 
             caseDefinition.setRoles(roles);
             return this;
         }
-
     }
-
 }

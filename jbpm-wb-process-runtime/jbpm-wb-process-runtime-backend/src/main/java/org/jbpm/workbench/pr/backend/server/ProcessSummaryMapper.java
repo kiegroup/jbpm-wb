@@ -25,15 +25,15 @@ public class ProcessSummaryMapper implements Function<ProcessDefinition, Process
 
     @Override
     public ProcessSummary apply(final ProcessDefinition definition) {
-        if(definition == null){
+        if (definition == null) {
             return null;
         }
 
         final ProcessSummary summary = new ProcessSummary(definition.getId(),
-                definition.getName(),
-                definition.getContainerId(),
-                definition.getVersion(),
-                definition.isDynamic());
+                                                          definition.getName(),
+                                                          definition.getContainerId(),
+                                                          definition.getVersion(),
+                                                          definition.isDynamic());
 
         summary.setAssociatedEntities(definition.getAssociatedEntities());
         summary.setProcessVariables(definition.getProcessVariables());

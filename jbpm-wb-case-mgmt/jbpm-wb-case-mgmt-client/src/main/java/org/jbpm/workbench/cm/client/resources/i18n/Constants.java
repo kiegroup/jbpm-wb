@@ -163,5 +163,4 @@ public interface Constants {
 
     @TranslationKey(defaultValue = "")
     String INVALID_ROLE_ASSIGNMENT = "InvalidRoleAssignment";
-
 }

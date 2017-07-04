@@ -61,11 +61,7 @@ import static java.util.stream.Collectors.groupingBy;
 @Dependent
 public class QuickNewProcessInstancePopup extends BaseModal implements FormDisplayerView {
 
-    interface Binder
-            extends
-            UiBinder<Widget, QuickNewProcessInstancePopup> {
-
-    }
+    private static Binder uiBinder = GWT.create(Binder.class);
 
     @UiField
     public FlowPanel processForm;
@@ -92,15 +88,18 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
     public FlowPanel body;
 
     @Inject
+    protected StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
+
+    @Inject
     User identity;
+
+    GenericModalFooter footer = new GenericModalFooter();
 
     @Inject
     private Event<NotificationEvent> notification;
 
     @Inject
     private Caller<ProcessRuntimeDataService> processRuntimeDataService;
-
-    private static Binder uiBinder = GWT.create( Binder.class );
 
     private Long parentProcessInstanceId = -1L;
 
@@ -120,18 +119,13 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
 
     private String processId;
 
-    GenericModalFooter footer = new GenericModalFooter();
-
-    @Inject
-    protected StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
-
     public QuickNewProcessInstancePopup() {
         super();
-        setTitle( Constants.INSTANCE.Start_process_instance() );
-        setBody( uiBinder.createAndBindUi( this ) );
+        setTitle(Constants.INSTANCE.Start_process_instance());
+        setBody(uiBinder.createAndBindUi(this));
     }
 
-    public void show( Long parentProcessInstanceId ) {
+    public void show(Long parentProcessInstanceId) {
         show();
         this.parentProcessInstanceId = parentProcessInstanceId;
     }
@@ -141,13 +135,13 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
         init();
         loadFormValues(serverTemplateId);
 
-        processForm.setVisible( false );
-        basicForm.setVisible( true );
+        processForm.setVisible(false);
+        basicForm.setVisible(true);
         super.show();
     }
 
     private void okButton() {
-        if ( validateForm() ) {
+        if (validateForm()) {
             createNewProcessInstance();
         }
     }
@@ -156,34 +150,35 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
         this.serverTemplateId = serverTemplateId;
         processDefinitionsListBox.clear();
 
-        processRuntimeDataService.call(( List<ProcessSummary> processSummaries ) -> {
+        processRuntimeDataService.call((List<ProcessSummary> processSummaries) -> {
 
             //Skip case definitions (isDynamic == true)
             Map<String, List<ProcessSummary>> defs = processSummaries.stream().filter(p -> p.isDynamic() == false).collect(groupingBy(ProcessSummary::getDeploymentId));
 
-            defs.keySet().stream().sorted().forEach( deploymentId -> {
+            defs.keySet().stream().sorted().forEach(deploymentId -> {
                 final OptGroup group = new OptGroup();
                 group.setLabel(deploymentId);
                 processDefinitionsListBox.add(group);
 
-                defs.get(deploymentId).stream().sorted().forEach( p -> {
+                defs.get(deploymentId).stream().sorted().forEach(p -> {
 
                     final Option option = new Option();
-                    option.setText( p.getProcessDefId() );
-                    option.setValue( p.getProcessDefId() );
-                    group.add( option );
-
+                    option.setText(p.getProcessDefId());
+                    option.setValue(p.getProcessDefId());
+                    group.add(option);
                 });
-
             });
 
-            Scheduler.get().scheduleDeferred( () -> processDefinitionsListBox.refresh() );
-        }).getProcesses(serverTemplateId, 0, 1000, "", true );
-
+            Scheduler.get().scheduleDeferred(() -> processDefinitionsListBox.refresh());
+        }).getProcesses(serverTemplateId,
+                        0,
+                        1000,
+                        "",
+                        true);
     }
 
     private boolean validateForm() {
-        if ( processDefinitionsListBox.getSelectedItem() == null ) {
+        if (processDefinitionsListBox.getSelectedItem() == null) {
 
             errorMessages.setText(Constants.INSTANCE.Select_Process());
             errorMessagesGroup.setValidationState(ValidationState.ERROR);
@@ -195,8 +190,8 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
         }
     }
 
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     private void createNewProcessInstance() {
@@ -207,28 +202,33 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
         processForm.setVisible(true);
         basicForm.setVisible(false);
 
-        ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(serverTemplateId, deploymentId, processId), processId);
-        startProcessDisplayProvider.setup(config, this);
+        ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(serverTemplateId,
+                                                                                            deploymentId,
+                                                                                            processId),
+                                                                   processId);
+        startProcessDisplayProvider.setup(config,
+                                          this);
     }
 
     private void clearErrorMessages() {
-        errorMessages.setText( "" );
+        errorMessages.setText("");
     }
 
     protected void init() {
 
-        removeFooter( this );
+        removeFooter(this);
         footer = new GenericModalFooter();
-        footer.addButton( Constants.INSTANCE.Start(),
-                          new Command() {
-                              @Override
-                              public void execute() {
-                                  okButton();
-                              }
-                          }, IconType.PLUS,
-                          ButtonType.PRIMARY );
+        footer.addButton(Constants.INSTANCE.Start(),
+                         new Command() {
+                             @Override
+                             public void execute() {
+                                 okButton();
+                             }
+                         },
+                         IconType.PLUS,
+                         ButtonType.PRIMARY);
 
-        add( footer );
+        add(footer);
 
         onCloseCommand = new Command() {
             @Override
@@ -239,44 +239,44 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
 
         formContentResizeListener = new FormContentResizeListener() {
             @Override
-            public void resize( int width,
-                                int height ) {
-                if ( initialWidth == -1 && getWidget( 0 ).getOffsetWidth() > 0 ) {
-                    initialWidth = getWidget( 0 ).getOffsetWidth();
+            public void resize(int width,
+                               int height) {
+                if (initialWidth == -1 && getWidget(0).getOffsetWidth() > 0) {
+                    initialWidth = getWidget(0).getOffsetWidth();
                 }
-                if ( width > getWidget( 0 ).getOffsetWidth() ) {
-                    setWidth( width + 40 + "px" );
-                } else if ( initialWidth != -1 ) {
-                    setWidth( initialWidth + "px" );
+                if (width > getWidget(0).getOffsetWidth()) {
+                    setWidth(width + 40 + "px");
+                } else if (initialWidth != -1) {
+                    setWidth(initialWidth + "px");
                 }
             }
         };
 
-        this.addHiddenHandler( new ModalHiddenHandler() {
+        this.addHiddenHandler(new ModalHiddenHandler() {
             @Override
-            public void onHidden( ModalHiddenEvent hiddenEvent ) {
-                if ( initialized ) {
+            public void onHidden(ModalHiddenEvent hiddenEvent) {
+                if (initialized) {
                     closePopup();
                 }
             }
-        } );
+        });
     }
 
     @Override
-    public void display( GenericFormDisplayer displayer ) {
+    public void display(GenericFormDisplayer displayer) {
         currentDisplayer = displayer;
 
         body.clear();
-        body.add( displayer.getContainer() );
-        ( (AbstractStartProcessFormDisplayer) displayer )
-                .setParentProcessInstanceId( this.parentProcessInstanceId );
+        body.add(displayer.getContainer());
+        ((AbstractStartProcessFormDisplayer) displayer)
+                .setParentProcessInstanceId(this.parentProcessInstanceId);
 
-        removeFooter( this );
+        removeFooter(this);
         footer = new GenericModalFooter();
-        if ( displayer.getOpener() == null ) {
-            footer.add( displayer.getFooter() );
+        if (displayer.getOpener() == null) {
+            footer.add(displayer.getFooter());
         }
-        add( footer );
+        add(footer);
 
         initialized = true;
     }
@@ -285,16 +285,15 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
         initialized = false;
         hide();
         super.hide();
-
     }
 
-    private void removeFooter( final ComplexPanel panel ) {
-        for ( Widget widget : panel ) {
-            if ( widget instanceof ModalFooter ) {
+    private void removeFooter(final ComplexPanel panel) {
+        for (Widget widget : panel) {
+            if (widget instanceof ModalFooter) {
                 widget.removeFromParent();
                 break;
-            } else if ( widget instanceof ComplexPanel ) {
-                removeFooter( (ComplexPanel) widget );
+            } else if (widget instanceof ComplexPanel) {
+                removeFooter((ComplexPanel) widget);
             }
         }
     }
@@ -305,7 +304,7 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
     }
 
     @Override
-    public void setOnCloseCommand( Command onCloseCommand ) {
+    public void setOnCloseCommand(Command onCloseCommand) {
         this.onCloseCommand = onCloseCommand;
     }
 
@@ -315,7 +314,7 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
     }
 
     @Override
-    public void setResizeListener( FormContentResizeListener resizeListener ) {
+    public void setResizeListener(FormContentResizeListener resizeListener) {
         formContentResizeListener = resizeListener;
     }
 
@@ -324,4 +323,9 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
         return currentDisplayer;
     }
 
+    interface Binder
+            extends
+            UiBinder<Widget, QuickNewProcessInstancePopup> {
+
+    }
 }

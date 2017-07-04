@@ -28,17 +28,20 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
 
-public class UTCTimeBox extends Composite implements HasValue<Long>, HasValueChangeHandlers<Long>, HasText, HasEnabled {
+public class UTCTimeBox extends Composite implements HasValue<Long>,
+                                                     HasValueChangeHandlers<Long>,
+                                                     HasText,
+                                                     HasEnabled {
 
     public UTCTimeBoxImplHtml4 impl;
-    
+
     /**
      * By default the predefined SHORT time format will be used.
      */
     public UTCTimeBox() {
         this(DateTimeFormat.getFormat(PredefinedFormat.TIME_SHORT));
     }
-    
+
     /**
      * Allows a UTCTimeBox to be created with a specified format.
      */
@@ -48,7 +51,17 @@ public class UTCTimeBox extends Composite implements HasValue<Long>, HasValueCha
         impl.setTimeFormat(timeFormat);
         initWidget(impl.asWidget());
     }
-    
+
+    public static final Long getValueForNextHour() {
+        Date date = new Date();
+        long value = UTCDateBox.date2utc(date);
+
+        // remove anything after an hour and add an hour
+        long hour = 60 * 60 * 1000;
+        value = value % UTCDateBox.DAY_IN_MS;
+        return value - (value % hour) + hour;
+    }
+
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Long> handler) {
         return impl.addValueChangeHandler(handler);
@@ -65,8 +78,10 @@ public class UTCTimeBox extends Composite implements HasValue<Long>, HasValueCha
     }
 
     @Override
-    public void setValue(Long value, boolean fireEvents) {
-        impl.setValue(value, fireEvents);
+    public void setValue(Long value,
+                         boolean fireEvents) {
+        impl.setValue(value,
+                      fireEvents);
     }
 
     @Override
@@ -86,9 +101,10 @@ public class UTCTimeBox extends Composite implements HasValue<Long>, HasValueCha
 
     @Override
     public void setEnabled(boolean enabled) {
-        DomUtils.setEnabled(getElement(), enabled);
-    }    
-    
+        DomUtils.setEnabled(getElement(),
+                            enabled);
+    }
+
     /**
      * The HTML5 implementation will ignore this.
      */
@@ -99,7 +115,10 @@ public class UTCTimeBox extends Composite implements HasValue<Long>, HasValueCha
     public void setTabIndex(int tabIndex) {
         impl.setTabIndex(tabIndex);
     }
-    
+
+    // ----------------------------------------------------------------------
+    // utils
+
     /**
      * If this is a text based control, it will validate the value
      * that has been typed.
@@ -107,18 +126,4 @@ public class UTCTimeBox extends Composite implements HasValue<Long>, HasValueCha
     public void validate() {
         impl.validate();
     }
-    
-    // ----------------------------------------------------------------------
-    // utils
-
-    public static final Long getValueForNextHour() {
-        Date date = new Date();
-        long value = UTCDateBox.date2utc(date);
-
-        // remove anything after an hour and add an hour
-        long hour = 60 * 60 * 1000;
-        value = value % UTCDateBox.DAY_IN_MS;
-        return value - (value % hour) + hour;
-    }
-
 }

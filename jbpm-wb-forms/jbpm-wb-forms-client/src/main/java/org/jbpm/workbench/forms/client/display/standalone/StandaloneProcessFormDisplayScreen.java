@@ -36,6 +36,10 @@ import org.uberfire.mvp.PlaceRequest;
 @WorkbenchScreen(identifier = "Standalone Process Form Display")
 public class StandaloneProcessFormDisplayScreen {
 
+    protected String placeOnClose;
+
+    protected PlaceRequest place;
+
     @Inject
     private PlaceManager placeManager;
 
@@ -44,11 +48,6 @@ public class StandaloneProcessFormDisplayScreen {
 
     @Inject
     private StartProcessFormDisplayProvider processFormDisplayProvider;
-
-
-    protected String placeOnClose;
-
-    protected PlaceRequest place;
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -61,37 +60,44 @@ public class StandaloneProcessFormDisplayScreen {
     }
 
     @OnStartup
-    public void onStartup( final PlaceRequest place ) {
+    public void onStartup(final PlaceRequest place) {
         this.place = place;
     }
 
     @OnOpen
     public void onOpen() {
 
-        placeOnClose = place.getParameter( "onClose", "none" );
+        placeOnClose = place.getParameter("onClose",
+                                          "none");
 
-        String currentProcessId = place.getParameter( "processId", "none" );
-        String currentDeploymentId = place.getParameter( "domainId", "none" );
-        String opener = place.getParameter("opener", null);
+        String currentProcessId = place.getParameter("processId",
+                                                     "none");
+        String currentDeploymentId = place.getParameter("domainId",
+                                                        "none");
+        String opener = place.getParameter("opener",
+                                           null);
 
-        view.setOnCloseCommand( new Command() {
+        view.setOnCloseCommand(new Command() {
             @Override
             public void execute() {
-                if ( !placeOnClose.equals( "none" ) ) {
-                    placeManager.closePlace( place );
-                    placeManager.forceClosePlace( placeOnClose );
+                if (!placeOnClose.equals("none")) {
+                    placeManager.closePlace(place);
+                    placeManager.forceClosePlace(placeOnClose);
                 } else {
-                    placeManager.closePlace( place );
+                    placeManager.closePlace(place);
                 }
             }
-        } );
+        });
 
         if (!currentProcessId.equals("none")) {
-            ProcessDefinitionKey key = new ProcessDefinitionKey(null, currentDeploymentId, currentProcessId);
-            ProcessDisplayerConfig config = new ProcessDisplayerConfig(key, "");
-            config.setFormOpener( opener );
-            processFormDisplayProvider.setup(config, view);
+            ProcessDefinitionKey key = new ProcessDefinitionKey(null,
+                                                                currentDeploymentId,
+                                                                currentProcessId);
+            ProcessDisplayerConfig config = new ProcessDisplayerConfig(key,
+                                                                       "");
+            config.setFormOpener(opener);
+            processFormDisplayProvider.setup(config,
+                                             view);
         }
     }
-
 }

@@ -49,38 +49,47 @@ import static java.util.stream.Collectors.toList;
 public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerService implements ProcessRuntimeDataService {
 
     @Override
-    public ProcessInstanceSummary getProcessInstance(String serverTemplateId, ProcessInstanceKey processInstanceKey) {
+    public ProcessInstanceSummary getProcessInstance(String serverTemplateId,
+                                                     ProcessInstanceKey processInstanceKey) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return null;
         }
 
-        ProcessServicesClient queryServicesClient = getClient(serverTemplateId, ProcessServicesClient.class);
+        ProcessServicesClient queryServicesClient = getClient(serverTemplateId,
+                                                              ProcessServicesClient.class);
 
-        ProcessInstance processInstance = queryServicesClient.getProcessInstance(processInstanceKey.getDeploymentId(), processInstanceKey.getProcessInstanceId());
+        ProcessInstance processInstance = queryServicesClient.getProcessInstance(processInstanceKey.getDeploymentId(),
+                                                                                 processInstanceKey.getProcessInstanceId());
 
         return build(processInstance);
     }
 
     @Override
-    public List<NodeInstanceSummary> getProcessInstanceActiveNodes(String serverTemplateId, String deploymentId, Long processInstanceId) {
+    public List<NodeInstanceSummary> getProcessInstanceActiveNodes(String serverTemplateId,
+                                                                   String deploymentId,
+                                                                   Long processInstanceId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return emptyList();
         }
 
         List<NodeInstanceSummary> instances = new ArrayList<NodeInstanceSummary>();
-        ProcessServicesClient processServicesClient = getClient(serverTemplateId, ProcessServicesClient.class);
+        ProcessServicesClient processServicesClient = getClient(serverTemplateId,
+                                                                ProcessServicesClient.class);
 
-        List<NodeInstance> nodeInstances = processServicesClient.findActiveNodeInstances(deploymentId, processInstanceId, 0, 100);
+        List<NodeInstance> nodeInstances = processServicesClient.findActiveNodeInstances(deploymentId,
+                                                                                         processInstanceId,
+                                                                                         0,
+                                                                                         100);
 
         for (NodeInstance instance : nodeInstances) {
             NodeInstanceSummary summary = new NodeInstanceSummary(instance.getId(),
-                    instance.getProcessInstanceId(),
-                    instance.getName(),
-                    instance.getNodeId(),
-                    instance.getNodeType(),
-                    instance.getDate().toString(),
-                    instance.getConnection(),
-                    false);
+                                                                  instance.getProcessInstanceId(),
+                                                                  instance.getName(),
+                                                                  instance.getNodeId(),
+                                                                  instance.getNodeType(),
+                                                                  instance.getDate().toString(),
+                                                                  instance.getConnection(),
+                                                                  false);
 
             instances.add(summary);
         }
@@ -89,135 +98,198 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
     }
 
     @Override
-    public List<RuntimeLogSummary> getBusinessLogs(String serverTemplateId, String deploymentId, String processName, Long processInstanceId) {
+    public List<RuntimeLogSummary> getBusinessLogs(String serverTemplateId,
+                                                   String deploymentId,
+                                                   String processName,
+                                                   Long processInstanceId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return emptyList();
         }
 
-        List<NodeInstance> processInstanceHistory = getProcessInstanceHistory(serverTemplateId, deploymentId, processInstanceId);
+        List<NodeInstance> processInstanceHistory = getProcessInstanceHistory(serverTemplateId,
+                                                                              deploymentId,
+                                                                              processInstanceId);
         List<TaskEventInstance> allTaskEventsByProcessInstanceId = new ArrayList<TaskEventInstance>();//taskAuditService.getAllTaskEventsByProcessInstanceId(processInstanceId, "");
         List<RuntimeLogSummary> logs = new ArrayList<RuntimeLogSummary>(processInstanceHistory.size() + allTaskEventsByProcessInstanceId.size());
         PrettyTime prettyDateFormatter = new PrettyTime();
 
-        for(int i = processInstanceHistory.size() - 1 ; i >= 0; i--){
+        for (int i = processInstanceHistory.size() - 1; i >= 0; i--) {
             NodeInstance nis = processInstanceHistory.get(i);
 
-            if(nis.getNodeType().equals("HumanTaskNode")){
-                logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(nis.getDate()), "Task '" + nis.getName() + "' was created", "System"));
-                for(TaskEventInstance te : allTaskEventsByProcessInstanceId){
-                    if(te.getWorkItemId() != null && te.getWorkItemId().equals(nis.getId()) &&
-                        (te.getType().equals("CLAIMED") || te.getType().equals("RELEASED") || te.getType().equals("COMPLETED"))){
-                            logs.add(new RuntimeLogSummary(nis.getId(), "- " + prettyDateFormatter.format(te.getLogTime()), "Task '" + nis.getName() +
-                                    "' was " + te.getType().toLowerCase() + " by user " + te.getUserId(), "Human"));
+            if (nis.getNodeType().equals("HumanTaskNode")) {
+                logs.add(new RuntimeLogSummary(nis.getId(),
+                                               prettyDateFormatter.format(nis.getDate()),
+                                               "Task '" + nis.getName() + "' was created",
+                                               "System"));
+                for (TaskEventInstance te : allTaskEventsByProcessInstanceId) {
+                    if (te.getWorkItemId() != null && te.getWorkItemId().equals(nis.getId()) &&
+                            (te.getType().equals("CLAIMED") || te.getType().equals("RELEASED") || te.getType().equals("COMPLETED"))) {
+                        logs.add(new RuntimeLogSummary(nis.getId(),
+                                                       "- " + prettyDateFormatter.format(te.getLogTime()),
+                                                       "Task '" + nis.getName() +
+                                                               "' was " + te.getType().toLowerCase() + " by user " + te.getUserId(),
+                                                       "Human"));
                     }
                 }
-            }else if(nis.getNodeType().equals("StartNode")){
-                logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(nis.getDate()), "Process '" + processName + "' was created", "Human"));
-            }else if(nis.getNodeType().equals("EndNode")){
-                logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(nis.getDate()), "Process '" + processName + "' was completed", "System"));
+            } else if (nis.getNodeType().equals("StartNode")) {
+                logs.add(new RuntimeLogSummary(nis.getId(),
+                                               prettyDateFormatter.format(nis.getDate()),
+                                               "Process '" + processName + "' was created",
+                                               "Human"));
+            } else if (nis.getNodeType().equals("EndNode")) {
+                logs.add(new RuntimeLogSummary(nis.getId(),
+                                               prettyDateFormatter.format(nis.getDate()),
+                                               "Process '" + processName + "' was completed",
+                                               "System"));
             }
-
-
         }
         return logs;
     }
 
     @Override
-    public List<ProcessSummary> getProcesses(String serverTemplateId, Integer page, Integer pageSize, String sort, Boolean sortOrder) {
+    public List<ProcessSummary> getProcesses(String serverTemplateId,
+                                             Integer page,
+                                             Integer pageSize,
+                                             String sort,
+                                             Boolean sortOrder) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return emptyList();
         }
 
-        QueryServicesClient queryServicesClient = getClient(serverTemplateId, QueryServicesClient.class);
+        QueryServicesClient queryServicesClient = getClient(serverTemplateId,
+                                                            QueryServicesClient.class);
 
-        List<ProcessDefinition> processes = queryServicesClient.findProcesses(page, pageSize, sort, sortOrder);
+        List<ProcessDefinition> processes = queryServicesClient.findProcesses(page,
+                                                                              pageSize,
+                                                                              sort,
+                                                                              sortOrder);
 
         return processes.stream().map(new ProcessSummaryMapper()).collect(toList());
     }
 
     @Override
-    public ProcessSummary getProcess(final String serverTemplateId, final ProcessDefinitionKey processDefinitionKey) {
+    public ProcessSummary getProcess(final String serverTemplateId,
+                                     final ProcessDefinitionKey processDefinitionKey) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return null;
         }
 
-        ProcessServicesClient queryServicesClient = getClient(serverTemplateId, ProcessServicesClient.class);
+        ProcessServicesClient queryServicesClient = getClient(serverTemplateId,
+                                                              ProcessServicesClient.class);
 
-        ProcessDefinition definition = queryServicesClient.getProcessDefinition(processDefinitionKey.getDeploymentId(), processDefinitionKey.getProcessId());
+        ProcessDefinition definition = queryServicesClient.getProcessDefinition(processDefinitionKey.getDeploymentId(),
+                                                                                processDefinitionKey.getProcessId());
 
         return new ProcessSummaryMapper().apply(definition);
     }
 
     @Override
-    public List<ProcessSummary> getProcessesByFilter(String serverTemplateId, String textSearch, Integer page, Integer pageSize, String sort, Boolean sortOrder) {
+    public List<ProcessSummary> getProcessesByFilter(String serverTemplateId,
+                                                     String textSearch,
+                                                     Integer page,
+                                                     Integer pageSize,
+                                                     String sort,
+                                                     Boolean sortOrder) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return emptyList();
         }
 
-        QueryServicesClient queryServicesClient = getClient(serverTemplateId, QueryServicesClient.class);
+        QueryServicesClient queryServicesClient = getClient(serverTemplateId,
+                                                            QueryServicesClient.class);
 
-        List<ProcessDefinition> processes = queryServicesClient.findProcesses(textSearch, page, pageSize, sort, sortOrder);
+        List<ProcessDefinition> processes = queryServicesClient.findProcesses(textSearch,
+                                                                              page,
+                                                                              pageSize,
+                                                                              sort,
+                                                                              sortOrder);
 
         return processes.stream().map(new ProcessSummaryMapper()).collect(toList());
     }
 
     @Override
-    public List<TaskDefSummary> getProcessUserTasks(final String serverTemplateId, final String containerId, final String processId){
+    public List<TaskDefSummary> getProcessUserTasks(final String serverTemplateId,
+                                                    final String containerId,
+                                                    final String processId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return emptyList();
         }
 
-        ProcessServicesClient processServicesClient = getClient(serverTemplateId, ProcessServicesClient.class);
+        ProcessServicesClient processServicesClient = getClient(serverTemplateId,
+                                                                ProcessServicesClient.class);
 
-        final UserTaskDefinitionList userTaskDefinitionList = processServicesClient.getUserTaskDefinitions(containerId, processId);
+        final UserTaskDefinitionList userTaskDefinitionList = processServicesClient.getUserTaskDefinitions(containerId,
+                                                                                                           processId);
 
         return userTaskDefinitionList.getItems().stream().map(t -> new TaskDefSummary(t.getName())).collect(toList());
     }
 
     @Override
-    public List<RuntimeLogSummary> getRuntimeLogs(final String serverTemplateId, String deploymentId, final Long processInstanceId) {
+    public List<RuntimeLogSummary> getRuntimeLogs(final String serverTemplateId,
+                                                  String deploymentId,
+                                                  final Long processInstanceId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return emptyList();
         }
 
-        List<NodeInstance> processInstanceHistory = getProcessInstanceHistory(serverTemplateId, deploymentId, processInstanceId);
+        List<NodeInstance> processInstanceHistory = getProcessInstanceHistory(serverTemplateId,
+                                                                              deploymentId,
+                                                                              processInstanceId);
         List<TaskEventInstance> allTaskEventsByProcessInstanceId = new ArrayList<TaskEventInstance>();//taskAuditService.getAllTaskEventsByProcessInstanceId(processInstanceId, "");
         List<RuntimeLogSummary> logs = new ArrayList<RuntimeLogSummary>(processInstanceHistory.size() + allTaskEventsByProcessInstanceId.size());
         PrettyTime prettyDateFormatter = new PrettyTime();
 
-        for(int i = processInstanceHistory.size() - 1 ; i >= 0; i--){
+        for (int i = processInstanceHistory.size() - 1; i >= 0; i--) {
             NodeInstance nis = processInstanceHistory.get(i);
 
-                if(nis.getNodeType().equals("HumanTaskNode")){
-                    logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(nis.getDate()), nis.getName() + "("+nis.getNodeType()+")", "System"));
-                    for(TaskEventInstance te : allTaskEventsByProcessInstanceId){
-                        if(te.getWorkItemId() != null && te.getWorkItemId().equals(nis.getId())){
-                            if(te.getType().equals("ADDED")){
-                                logs.add(new RuntimeLogSummary(nis.getId(), "- " + prettyDateFormatter.format(te.getLogTime()), te.getUserId() + "->" +te.getType(), "System"));
-                            }else{
-                                logs.add(new RuntimeLogSummary(nis.getId(), "- " + prettyDateFormatter.format(te.getLogTime()), te.getUserId() + "->" +te.getType(), "Human"));
-                            }
+            if (nis.getNodeType().equals("HumanTaskNode")) {
+                logs.add(new RuntimeLogSummary(nis.getId(),
+                                               prettyDateFormatter.format(nis.getDate()),
+                                               nis.getName() + "(" + nis.getNodeType() + ")",
+                                               "System"));
+                for (TaskEventInstance te : allTaskEventsByProcessInstanceId) {
+                    if (te.getWorkItemId() != null && te.getWorkItemId().equals(nis.getId())) {
+                        if (te.getType().equals("ADDED")) {
+                            logs.add(new RuntimeLogSummary(nis.getId(),
+                                                           "- " + prettyDateFormatter.format(te.getLogTime()),
+                                                           te.getUserId() + "->" + te.getType(),
+                                                           "System"));
+                        } else {
+                            logs.add(new RuntimeLogSummary(nis.getId(),
+                                                           "- " + prettyDateFormatter.format(te.getLogTime()),
+                                                           te.getUserId() + "->" + te.getType(),
+                                                           "Human"));
                         }
                     }
-                }else if(nis.getNodeType().equals("StartNode")){
-                    logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(nis.getDate()), nis.getName() + "("+nis.getNodeType()+")", "Human"));
-                }else {
-                    logs.add(new RuntimeLogSummary(nis.getId(), prettyDateFormatter.format(nis.getDate()), nis.getName() + "("+nis.getNodeType()+")", "System"));
                 }
-
+            } else if (nis.getNodeType().equals("StartNode")) {
+                logs.add(new RuntimeLogSummary(nis.getId(),
+                                               prettyDateFormatter.format(nis.getDate()),
+                                               nis.getName() + "(" + nis.getNodeType() + ")",
+                                               "Human"));
+            } else {
+                logs.add(new RuntimeLogSummary(nis.getId(),
+                                               prettyDateFormatter.format(nis.getDate()),
+                                               nis.getName() + "(" + nis.getNodeType() + ")",
+                                               "System"));
+            }
         }
         return logs;
     }
 
-    protected List<NodeInstance> getProcessInstanceHistory(final String serverTemplateId, String deploymentId, final Long processInstanceId) {
+    protected List<NodeInstance> getProcessInstanceHistory(final String serverTemplateId,
+                                                           String deploymentId,
+                                                           final Long processInstanceId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return emptyList();
         }
 
-        ProcessServicesClient processServicesClient = getClient(serverTemplateId, ProcessServicesClient.class);
+        ProcessServicesClient processServicesClient = getClient(serverTemplateId,
+                                                                ProcessServicesClient.class);
 
-        return processServicesClient.findNodeInstances(deploymentId, processInstanceId, 0, 100);
-
+        return processServicesClient.findNodeInstances(deploymentId,
+                                                       processInstanceId,
+                                                       0,
+                                                       100);
     }
 
     protected ProcessInstanceSummary build(ProcessInstance processInstance) {
@@ -244,9 +316,9 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
             List<UserTaskSummary> userTaskSummaries = new ArrayList<UserTaskSummary>();
             for (TaskSummary taskSummary : tasks) {
                 UserTaskSummary userTaskSummary = new UserTaskSummary(taskSummary.getId(),
-                        taskSummary.getName(),
-                        taskSummary.getActualOwner(),
-                        taskSummary.getStatus());
+                                                                      taskSummary.getName(),
+                                                                      taskSummary.getActualOwner(),
+                                                                      taskSummary.getStatus());
 
                 userTaskSummaries.add(userTaskSummary);
             }
@@ -255,5 +327,4 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
 
         return summary;
     }
-
 }

@@ -32,7 +32,6 @@ import org.jbpm.workbench.pr.client.util.LogUtils.LogType;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 
-
 @Dependent
 public class RuntimeLogPresenter {
 
@@ -40,75 +39,78 @@ public class RuntimeLogPresenter {
     private String currentProcessName;
     private String currentServerTemplateId;
     private String currentDeploymentId;
-
-    public interface RuntimeLogView extends IsWidget {
-
-        void init( final RuntimeLogPresenter presenter );
-
-        void setLogs( List<String> logs );
-    }
-
     @Inject
     private RuntimeLogView view;
-
     @Inject
     private Caller<ProcessRuntimeDataService> processRuntimeDataService;
 
     @PostConstruct
     public void init() {
-        view.init( this );
+        view.init(this);
     }
 
     public IsWidget getWidget() {
         return view;
     }
 
-    public void refreshProcessInstanceData( final LogOrder logOrder,
-                                            final LogType logType ) {
+    public void refreshProcessInstanceData(final LogOrder logOrder,
+                                           final LogType logType) {
 
-        if ( LogType.TECHNICAL.equals( logType ) ) {
+        if (LogType.TECHNICAL.equals(logType)) {
             processRuntimeDataService.call(new RemoteCallback<List<RuntimeLogSummary>>() {
                 @Override
-                public void callback( List<RuntimeLogSummary> logs ) {
+                public void callback(List<RuntimeLogSummary> logs) {
                     final List<String> logsLine = new ArrayList<String>();
 
-                    if ( logOrder == LogOrder.DESC ) {
-                        Collections.reverse( logs );
+                    if (logOrder == LogOrder.DESC) {
+                        Collections.reverse(logs);
                     }
 
-                    for ( RuntimeLogSummary rls : logs ) {
-                        logsLine.add( rls.getTime() + ": " + rls.getLogLine() + " - " + rls.getType() );
+                    for (RuntimeLogSummary rls : logs) {
+                        logsLine.add(rls.getTime() + ": " + rls.getLogLine() + " - " + rls.getType());
                     }
 
-                    view.setLogs( logsLine );
+                    view.setLogs(logsLine);
                 }
-            } ).getRuntimeLogs(currentServerTemplateId, currentDeploymentId, currentProcessInstanceId);
+            }).getRuntimeLogs(currentServerTemplateId,
+                              currentDeploymentId,
+                              currentProcessInstanceId);
         } else {
             processRuntimeDataService.call(new RemoteCallback<List<RuntimeLogSummary>>() {
                 @Override
-                public void callback( List<RuntimeLogSummary> logs ) {
+                public void callback(List<RuntimeLogSummary> logs) {
                     final List<String> logsLine = new ArrayList<String>();
-                    if ( logOrder == LogOrder.DESC ) {
-                        Collections.reverse( logs );
+                    if (logOrder == LogOrder.DESC) {
+                        Collections.reverse(logs);
                     }
 
-                    for ( RuntimeLogSummary rls : logs ) {
-                        logsLine.add( rls.getTime() + ": " + rls.getLogLine() );
+                    for (RuntimeLogSummary rls : logs) {
+                        logsLine.add(rls.getTime() + ": " + rls.getLogLine());
                     }
 
-                    view.setLogs( logsLine );
+                    view.setLogs(logsLine);
                 }
-            } ).getBusinessLogs(currentServerTemplateId, currentDeploymentId, currentProcessName, currentProcessInstanceId );
+            }).getBusinessLogs(currentServerTemplateId,
+                               currentDeploymentId,
+                               currentProcessName,
+                               currentProcessInstanceId);
         }
     }
 
-    public void onProcessInstanceSelectionEvent( @Observes final ProcessInstanceSelectionEvent event ) {
+    public void onProcessInstanceSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
         this.currentProcessInstanceId = event.getProcessInstanceId();
         this.currentProcessName = event.getProcessDefName();
         this.currentServerTemplateId = event.getServerTemplateId();
         this.currentDeploymentId = event.getDeploymentId();
 
-        refreshProcessInstanceData( LogOrder.ASC, LogType.BUSINESS );
+        refreshProcessInstanceData(LogOrder.ASC,
+                                   LogType.BUSINESS);
     }
 
+    public interface RuntimeLogView extends IsWidget {
+
+        void init(final RuntimeLogPresenter presenter);
+
+        void setLogs(List<String> logs);
+    }
 }

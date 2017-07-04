@@ -22,9 +22,8 @@ import org.jbpm.workbench.ht.client.resources.css.HumanTaskCSS;
 
 public interface HumanTaskResources extends ClientBundle {
 
-    HumanTaskResources INSTANCE = GWT.create( HumanTaskResources.class );
+    HumanTaskResources INSTANCE = GWT.create(HumanTaskResources.class);
 
     @Source("css/human-tasks.css")
     HumanTaskCSS css();
-
 }

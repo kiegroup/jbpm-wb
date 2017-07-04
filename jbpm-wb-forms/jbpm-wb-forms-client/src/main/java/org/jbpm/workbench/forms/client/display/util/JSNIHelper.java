@@ -28,6 +28,7 @@ import java.util.Map;
 
 @Dependent
 public class JSNIHelper {
+
     public static final String FORM_VALIDATOR_FUNCTION = "taskFormValidator()";
 
     public native void publishGetFormValues() /*-{
@@ -49,38 +50,55 @@ public class JSNIHelper {
         Map<String, Object> params = new HashMap<String, Object>();
         for (String key : jsonObject.keySet()) {
             if (!key.startsWith("btn_")) {
-                params.put(key, jsonObject.get(key).isString().stringValue());
+                params.put(key,
+                           jsonObject.get(key).isString().stringValue());
             }
         }
         return params;
     }
 
     public Map<String, String> parseParams(JSONObject jsonParams) {
-        Map<String, String> params = new HashMap<String, String>(  );
+        Map<String, String> params = new HashMap<String, String>();
 
         for (String key : jsonParams.keySet()) {
-            JSONValue value = jsonParams.get( key );
+            JSONValue value = jsonParams.get(key);
             if (value != null) {
-                if (value.isString() != null) params.put( key, value.isString().stringValue() );
-                else params.put( key, value.toString() );
+                if (value.isString() != null) {
+                    params.put(key,
+                               value.isString().stringValue());
+                } else {
+                    params.put(key,
+                               value.toString());
+                }
             }
         }
 
         return params;
     }
 
-    public void notifyErrorMessage(String opener, String message) {
-        if (opener != null) notifyOpener("error", message);
+    public void notifyErrorMessage(String opener,
+                                   String message) {
+        if (opener != null) {
+            notifyOpener("error",
+                         message);
+        }
     }
 
-    public void notifySuccessMessage(String opener, String message) {
-        if (opener != null) notifyOpener("success", message);
+    public void notifySuccessMessage(String opener,
+                                     String message) {
+        if (opener != null) {
+            notifyOpener("success",
+                         message);
+        }
     }
 
-    protected void notifyOpener(String status, String message) {
+    protected void notifyOpener(String status,
+                                String message) {
         JSONObject jsonMessage = new JSONObject();
-        jsonMessage.put("status", new JSONString(status));
-        jsonMessage.put("message", new JSONString(message));
+        jsonMessage.put("status",
+                        new JSONString(status));
+        jsonMessage.put("message",
+                        new JSONString(message));
         notifyOpener(jsonMessage.toString());
     }
 
@@ -95,11 +113,14 @@ public class JSNIHelper {
             int begin = startOfScript(html);
             int end = endOfScript(html);
 
-            String fullScript = html.substring(begin, end);
-            String script = fullScript.substring(fullScript.indexOf(">") + 1, fullScript.lastIndexOf("</"));
+            String fullScript = html.substring(begin,
+                                               end);
+            String script = fullScript.substring(fullScript.indexOf(">") + 1,
+                                                 fullScript.lastIndexOf("</"));
 
             formScripts += script;
-            html = html.replace(fullScript, "");
+            html = html.replace(fullScript,
+                                "");
         }
 
         if (formScripts == null || formScripts.length() == 0) {
@@ -118,6 +139,6 @@ public class JSNIHelper {
 
         int end = html.substring(start).indexOf(">") + 1;
 
-        return  start + end;
+        return start + end;
     }
 }

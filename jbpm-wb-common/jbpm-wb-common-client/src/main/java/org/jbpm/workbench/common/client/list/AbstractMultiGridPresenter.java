@@ -55,11 +55,6 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
         this.dataSetQueryHelper = dataSetQueryHelper;
     }
 
-    @Inject
-    public void setView(V view) {
-        this.view = view;
-    }
-
     public void filterGrid(FilterSettings tableSettings) {
         dataSetQueryHelper.setCurrentTableSettings(tableSettings);
         refreshGrid();
@@ -72,20 +67,22 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
     }
 
     @Override
-    public void onUpdateRefreshInterval(boolean enableAutoRefresh, int newInterval) {
-        super.onUpdateRefreshInterval(enableAutoRefresh, newInterval);
+    public void onUpdateRefreshInterval(boolean enableAutoRefresh,
+                                        int newInterval) {
+        super.onUpdateRefreshInterval(enableAutoRefresh,
+                                      newInterval);
         view.saveRefreshValue(newInterval);
     }
 
     @Override
     public void onGridPreferencesStoreLoaded() {
-        refreshSelectorMenuBuilder.loadOptions( view.getRefreshValue() );
+        refreshSelectorMenuBuilder.loadOptions(view.getRefreshValue());
         clearActiveSearchFilters();
         setupActiveSearchFilters();
         view.selectFirstTabAndEnableQueries();
     }
 
-    public void onRestoreTabs(){
+    public void onRestoreTabs() {
         view.restoreTabs();
         clearActiveSearchFilters();
         setupDefaultActiveSearchFilters();
@@ -102,13 +99,18 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
         return view;
     }
 
+    @Inject
+    public void setView(V view) {
+        this.view = view;
+    }
+
     public abstract FilterSettings createTableSettingsPrototype();
 
     public abstract FilterSettings createSearchTabSettings();
 
     public abstract void setupAdvancedSearchView();
 
-    public void setupActiveSearchFilters(){
+    public void setupActiveSearchFilters() {
         setupDefaultActiveSearchFilters();
     }
 
@@ -127,7 +129,6 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
         view.saveAdvancedSearchFilterSettings(settings);
         view.removeAllActiveFilters();
     }
-
 
     protected void addAdvancedSearchFilter(final ColumnFilter columnFilter) {
         final FilterSettings settings = view.getAdvancedSearchFilterSettings();
@@ -159,8 +160,9 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
     }
 
     public boolean isUserAuthorizedForPerspective(final String perspectiveId) {
-        final ResourceRef resourceRef = new ResourceRef(perspectiveId, ActivityResourceType.PERSPECTIVE);
-        return authorizationManager.authorize(resourceRef, identity);
+        final ResourceRef resourceRef = new ResourceRef(perspectiveId,
+                                                        ActivityResourceType.PERSPECTIVE);
+        return authorizationManager.authorize(resourceRef,
+                                              identity);
     }
-
 }

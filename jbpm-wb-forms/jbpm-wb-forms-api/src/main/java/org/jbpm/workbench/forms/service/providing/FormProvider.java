@@ -22,7 +22,7 @@ public interface FormProvider<C extends FormRenderingSettings> {
 
     int getPriority();
 
-    C render( ProcessRenderingSettings settings );
+    C render(ProcessRenderingSettings settings);
 
-    C render( TaskRenderingSettings settings );
+    C render(TaskRenderingSettings settings);
 }

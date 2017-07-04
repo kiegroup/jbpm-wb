@@ -21,5 +21,6 @@ import org.jbpm.workbench.forms.display.api.HumanTaskDisplayerConfig;
 
 public interface HumanTaskFormDisplayProvider {
 
-    void setup(HumanTaskDisplayerConfig config, FormDisplayerView view);
+    void setup(HumanTaskDisplayerConfig config,
+               FormDisplayerView view);
 }

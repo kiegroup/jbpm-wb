@@ -30,7 +30,10 @@ public class UserTaskSummary {
 
     }
 
-    public UserTaskSummary(Long id, String name, String owner, String status) {
+    public UserTaskSummary(Long id,
+                           String name,
+                           String owner,
+                           String status) {
         this.id = id;
         this.name = name;
         this.owner = owner;

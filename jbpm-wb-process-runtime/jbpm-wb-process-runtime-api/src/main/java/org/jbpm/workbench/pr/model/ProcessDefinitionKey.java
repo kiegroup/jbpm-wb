@@ -27,13 +27,18 @@ public class ProcessDefinitionKey implements ItemKey {
     private String processId;
     private String processDefName;
 
-    public ProcessDefinitionKey(String serverTemplateId, String deploymentId, String processId) {
+    public ProcessDefinitionKey(String serverTemplateId,
+                                String deploymentId,
+                                String processId) {
         this.serverTemplateId = serverTemplateId;
         this.deploymentId = deploymentId;
         this.processId = processId;
     }
 
-    public ProcessDefinitionKey(String serverTemplateId, String deploymentId, String processId, String processDefName) {
+    public ProcessDefinitionKey(String serverTemplateId,
+                                String deploymentId,
+                                String processId,
+                                String processDefName) {
         this.serverTemplateId = serverTemplateId;
         this.deploymentId = deploymentId;
         this.processId = processId;
@@ -52,7 +57,7 @@ public class ProcessDefinitionKey implements ItemKey {
     }
 
     public String getProcessDefName() {
-        if(processDefName!=null){
+        if (processDefName != null) {
             return processDefName;
         }
         return processId;
@@ -99,6 +104,4 @@ public class ProcessDefinitionKey implements ItemKey {
         }
         return true;
     }
-
-
 }

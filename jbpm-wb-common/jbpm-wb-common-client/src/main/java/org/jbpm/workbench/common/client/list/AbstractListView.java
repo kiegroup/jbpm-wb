@@ -52,24 +52,9 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
     @Inject
     protected PlaceManager placeManager;
 
-    @Inject
-    private Caller<UserPreferencesService> preferencesService;
-
     protected V presenter;
 
     protected ExtendedPagedTable<T> listGrid;
-
-    protected RowStyles<T> selectedStyles = new RowStyles<T>() {
-
-        @Override
-        public String getStyleNames( T row,
-                                     int rowIndex ) {
-            if ( rowIndex == selectedRow ) {
-                return CommonResources.INSTANCE.css().selected();
-            }
-            return null;
-        }
-    };
 
     protected NoSelectionModel<T> selectionModel;
 
@@ -77,33 +62,48 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
 
     protected int selectedRow = -1;
 
+    protected RowStyles<T> selectedStyles = new RowStyles<T>() {
+
+        @Override
+        public String getStyleNames(T row,
+                                    int rowIndex) {
+            if (rowIndex == selectedRow) {
+                return CommonResources.INSTANCE.css().selected();
+            }
+            return null;
+        }
+    };
+
     protected DefaultSelectionEventManager<T> noActionColumnManager;
 
-    public void init( final V presenter,
-                      final GridGlobalPreferences preferences ) {
+    @Inject
+    private Caller<UserPreferencesService> preferencesService;
+
+    public void init(final V presenter,
+                     final GridGlobalPreferences preferences) {
         this.presenter = presenter;
-        
-        listGrid = new ExtendedPagedTable<T>( preferences );
-        listGrid.setShowLastPagerButton( true );
-        listGrid.setShowFastFordwardPagerButton( true );
-        initWidget( listGrid );
-        presenter.addDataDisplay( listGrid );
-        preferencesService.call( new RemoteCallback<GridPreferencesStore>() {
+
+        listGrid = new ExtendedPagedTable<T>(preferences);
+        listGrid.setShowLastPagerButton(true);
+        listGrid.setShowFastFordwardPagerButton(true);
+        initWidget(listGrid);
+        presenter.addDataDisplay(listGrid);
+        preferencesService.call(new RemoteCallback<GridPreferencesStore>() {
 
             @Override
-            public void callback( GridPreferencesStore preferencesStore ) {
-                listGrid.setPreferencesService( preferencesService );
-                if ( preferencesStore == null ) {
-                    listGrid.setGridPreferencesStore( new GridPreferencesStore( preferences ) );
+            public void callback(GridPreferencesStore preferencesStore) {
+                listGrid.setPreferencesService(preferencesService);
+                if (preferencesStore == null) {
+                    listGrid.setGridPreferencesStore(new GridPreferencesStore(preferences));
                 } else {
-                    listGrid.setGridPreferencesStore( preferencesStore );
+                    listGrid.setGridPreferencesStore(preferencesStore);
                 }
                 presenter.onGridPreferencesStoreLoaded();
                 initColumns(listGrid);
                 listGrid.loadPageSizePreferences();
             }
-        } ).loadUserPreferences(preferences.getKey() , UserPreferencesType.GRIDPREFERENCES);
-
+        }).loadUserPreferences(preferences.getKey(),
+                               UserPreferencesType.GRIDPREFERENCES);
     }
 
     @Override
@@ -111,18 +111,19 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
 
     }
 
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
-    public void showRestoreDefaultFilterConfirmationPopup(){}
+    public void showRestoreDefaultFilterConfirmationPopup() {
+    }
 
     public ExtendedPagedTable<T> getListGrid() {
         return listGrid;
     }
 
-    public void showBusyIndicator( final String message ) {
-        BusyPopup.showMessage( message );
+    public void showBusyIndicator(final String message) {
+        BusyPopup.showMessage(message);
     }
 
     public void hideBusyIndicator() {
@@ -134,5 +135,4 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
      *  DataGrid columns and how they must be initialized
      */
     public abstract void initColumns(ExtendedPagedTable<T> extendedPagedTable);
-
 }

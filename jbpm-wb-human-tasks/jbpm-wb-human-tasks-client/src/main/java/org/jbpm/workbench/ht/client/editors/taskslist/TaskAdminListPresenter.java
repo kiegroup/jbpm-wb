@@ -35,14 +35,14 @@ import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 public class TaskAdminListPresenter extends AbstractTaskListPresenter<TaskAdminListViewImpl> {
 
     public static final String SCREEN_ID = "Task Admin List";
-    
+
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.Tasks_Admin();
     }
 
     @WorkbenchMenu
-    public Menus getMenus(){ //It's necessary to annotate with @WorkbenchMenu in subclass
+    public Menus getMenus() { //It's necessary to annotate with @WorkbenchMenu in subclass
         return super.getMenus();
     }
 
@@ -54,12 +54,14 @@ public class TaskAdminListPresenter extends AbstractTaskListPresenter<TaskAdminL
 
     @Override
     public FilterSettings createTableSettingsPrototype() {
-        return createStatusSettings(HUMAN_TASKS_WITH_ADMIN_DATASET, null);
+        return createStatusSettings(HUMAN_TASKS_WITH_ADMIN_DATASET,
+                                    null);
     }
 
-    public FilterSettings createAdminTabSettings(){
+    public FilterSettings createAdminTabSettings() {
         //Filter status Admin
-        return createStatusSettings(HUMAN_TASKS_WITH_ADMIN_DATASET, new ArrayList<>(getStatusByType(TaskUtils.TaskType.ADMIN)));
+        return createStatusSettings(HUMAN_TASKS_WITH_ADMIN_DATASET,
+                                    new ArrayList<>(getStatusByType(TaskUtils.TaskType.ADMIN)));
     }
 
     @Override
@@ -76,5 +78,4 @@ public class TaskAdminListPresenter extends AbstractTaskListPresenter<TaskAdminL
     protected Predicate<TaskSummary> getResumeActionCondition() {
         return task -> TASK_STATUS_SUSPENDED.equals(task.getStatus());
     }
-
 }

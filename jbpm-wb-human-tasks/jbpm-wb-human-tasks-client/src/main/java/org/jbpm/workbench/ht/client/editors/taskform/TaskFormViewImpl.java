@@ -32,17 +32,9 @@ import org.jbpm.workbench.forms.client.display.views.EmbeddedFormDisplayView;
 @Dependent
 public class TaskFormViewImpl extends Composite implements TaskFormPresenter.TaskFormView {
 
-    interface Binder
-            extends
-            UiBinder<Widget, TaskFormViewImpl> {
-
-    }
-
     private static Binder uiBinder = GWT.create(Binder.class);
-
     @UiField
     FlowPanel content;
-
     @Inject
     private EmbeddedFormDisplayView view;
 
@@ -55,5 +47,11 @@ public class TaskFormViewImpl extends Composite implements TaskFormPresenter.Tas
     @Override
     public FormDisplayerView getDisplayerView() {
         return view;
+    }
+
+    interface Binder
+            extends
+            UiBinder<Widget, TaskFormViewImpl> {
+
     }
 }

@@ -34,13 +34,186 @@ import org.jbpm.workbench.pr.client.editors.definition.details.BaseProcessDefDet
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 
-
 @Dependent
 public class AdvancedViewProcessDefDetailsPresenter extends
-        BaseProcessDefDetailsPresenter {
+                                                    BaseProcessDefDetailsPresenter {
+
+    private Constants constants = Constants.INSTANCE;
+    @Inject
+    private AdvancedProcessDefDetailsView view;
+    @Inject
+    private Caller<ProcessRuntimeDataService> processRuntimeDataService;
+
+    @Override
+    public IsWidget getWidget() {
+        return view;
+    }
+
+    @Override
+    protected void refreshView(String serverTemplateId,
+                               String processId,
+                               String deploymentId) {
+        view.getProcessIdText().setText(processId);
+        view.getDeploymentIdText().setText(deploymentId);
+    }
+
+    private void refreshServiceTasks(Map<String, String> services) {
+
+        view.getProcessServicesListBox().setText("");
+        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+        if (services.keySet().isEmpty()) {
+            safeHtmlBuilder.appendEscaped(constants.NoServicesRequiredForThisProcess());
+            view.getProcessServicesListBox().setStyleName("muted");
+            view.getProcessServicesListBox().setHTML(
+                    safeHtmlBuilder.toSafeHtml());
+        } else {
+            for (String key : services.keySet()) {
+                safeHtmlBuilder.appendEscapedLines(key + " - "
+                                                           + services.get(key) + "\n");
+            }
+            view.getProcessServicesListBox().setHTML(
+                    safeHtmlBuilder.toSafeHtml());
+        }
+    }
+
+    private void refreshProcessItems(ProcessSummary process) {
+        if (process != null) {
+
+            view.getProcessNameText().setText(process.getName());
+            changeStyleRow(process.getName(),
+                           process.getVersion());
+        } else {
+            // set to empty to ensure it's clear state
+            view.getProcessNameText().setText("");
+        }
+    }
+
+    private void refreshReusableSubProcesses(Collection<String> subprocesses) {
+        view.getSubprocessListBox().setText("");
+        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+        if (subprocesses.isEmpty()) {
+            safeHtmlBuilder.appendEscapedLines(constants.NoSubprocessesRequiredByThisProcess());
+            view.getSubprocessListBox().setStyleName("muted");
+            view.getSubprocessListBox().setHTML(
+                    safeHtmlBuilder.toSafeHtml());
+        } else {
+            for (String key : subprocesses) {
+                safeHtmlBuilder.appendEscapedLines(key + "\n");
+            }
+            view.getSubprocessListBox().setHTML(
+                    safeHtmlBuilder.toSafeHtml());
+        }
+    }
+
+    private void refreshRequiredInputData(Map<String, String> inputs) {
+        view.getProcessDataListBox().setText("");
+        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+        if (inputs.keySet().isEmpty()) {
+            safeHtmlBuilder.appendEscapedLines(constants.NoProcessVariablesDefinedForThisProcess());
+            view.getProcessDataListBox().setStyleName("muted");
+            view.getProcessDataListBox().setHTML(
+                    safeHtmlBuilder.toSafeHtml());
+        } else {
+            for (String key : inputs.keySet()) {
+                safeHtmlBuilder.appendEscapedLines(key + " - "
+                                                           + inputs.get(key) + "\n");
+            }
+            view.getProcessDataListBox().setHTML(
+                    safeHtmlBuilder.toSafeHtml());
+        }
+    }
+
+    private void refreshAssociatedEntities(Map<String, String[]> entities) {
+        view.getUsersGroupsListBox().setText("");
+        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+        if (entities.keySet().isEmpty()) {
+            safeHtmlBuilder
+                    .appendEscapedLines(constants.NoUserOrGroupUsedInThisProcess());
+            view.getUsersGroupsListBox().setStyleName("muted");
+            view.getUsersGroupsListBox().setHTML(
+                    safeHtmlBuilder.toSafeHtml());
+        } else {
+            for (String key : entities.keySet()) {
+                StringBuffer names = new StringBuffer();
+                String[] entityNames = entities.get(key);
+                if (entityNames != null) {
+                    for (String entity : entityNames) {
+                        names.append("'" + entity + "' ");
+                    }
+                }
+                safeHtmlBuilder.appendEscapedLines(names
+                                                           + " - " + key + "\n");
+            }
+            view.getUsersGroupsListBox().setHTML(
+                    safeHtmlBuilder.toSafeHtml());
+        }
+    }
+
+    private void refreshTaskDef(final String serverTemplateId,
+                                final String deploymentId,
+                                final String processId) {
+        view.getNroOfHumanTasksText().setText("");
+        view.getHumanTasksListBox().setText("");
+
+        processRuntimeDataService.call(new RemoteCallback<List<TaskDefSummary>>() {
+
+            @Override
+            public void callback(final List<TaskDefSummary> userTaskSummaries) {
+                view.getNroOfHumanTasksText().setText(String.valueOf(userTaskSummaries.size()));
+
+                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+                if (userTaskSummaries.isEmpty()) {
+                    safeHtmlBuilder.appendEscapedLines(constants.NoUserTasksDefinedInThisProcess());
+                    view.getHumanTasksListBox().setStyleName("muted");
+                    view.getHumanTasksListBox().setHTML(
+                            safeHtmlBuilder.toSafeHtml());
+                } else {
+                    for (TaskDefSummary t : userTaskSummaries) {
+                        safeHtmlBuilder.appendEscapedLines(t.getName() + "\n");
+                    }
+                    view.getHumanTasksListBox().setHTML(
+                            safeHtmlBuilder.toSafeHtml());
+                }
+            }
+        }).getProcessUserTasks(serverTemplateId,
+                               deploymentId,
+                               processId);
+    }
+
+    @Override
+    protected void refreshProcessDef(final String serverTemplateId,
+                                     final String deploymentId,
+                                     final String processId) {
+
+        processRuntimeDataService.call(new RemoteCallback<ProcessSummary>() {
+
+            @Override
+            public void callback(ProcessSummary process) {
+                if (process != null) {
+
+                    refreshTaskDef(serverTemplateId,
+                                   deploymentId,
+                                   processId);
+
+                    refreshAssociatedEntities(process.getAssociatedEntities());
+
+                    refreshRequiredInputData(process.getProcessVariables());
+
+                    refreshReusableSubProcesses(process.getReusableSubProcesses());
+
+                    refreshProcessItems(process);
+
+                    refreshServiceTasks(process.getServiceTasks());
+                }
+            }
+        }).getProcess(serverTemplateId,
+                      new ProcessDefinitionKey(serverTemplateId,
+                                               deploymentId,
+                                               processId));
+    }
 
     public interface AdvancedProcessDefDetailsView extends
-            BaseProcessDefDetailsPresenter.BaseProcessDefDetailsView {
+                                                   BaseProcessDefDetailsPresenter.BaseProcessDefDetailsView {
 
         HTML getNroOfHumanTasksText();
 
@@ -53,173 +226,5 @@ public class AdvancedViewProcessDefDetailsPresenter extends
         HTML getProcessServicesListBox();
 
         HTML getSubprocessListBox();
-    }
-
-    private Constants constants = Constants.INSTANCE;
-
-    @Inject
-    private AdvancedProcessDefDetailsView view;
-
-    @Inject
-    private Caller<ProcessRuntimeDataService> processRuntimeDataService;
-
-    @Override
-    public IsWidget getWidget() {
-        return view;
-    }
-
-    @Override
-    protected void refreshView( String serverTemplateId, String processId, String deploymentId ) {
-        view.getProcessIdText().setText( processId );
-        view.getDeploymentIdText().setText( deploymentId );
-    }
-
-    private void refreshServiceTasks(  Map<String, String> services ) {
-
-        view.getProcessServicesListBox().setText("");
-        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-        if (services.keySet().isEmpty()) {
-            safeHtmlBuilder.appendEscaped(constants.NoServicesRequiredForThisProcess());
-            view.getProcessServicesListBox().setStyleName( "muted" );
-            view.getProcessServicesListBox().setHTML(
-                    safeHtmlBuilder.toSafeHtml() );
-        } else {
-            for (String key : services.keySet()) {
-                safeHtmlBuilder.appendEscapedLines( key + " - "
-                        + services.get( key ) + "\n" );
-            }
-            view.getProcessServicesListBox().setHTML(
-                    safeHtmlBuilder.toSafeHtml() );
-        }
-    }
-
-
-    private void refreshProcessItems( ProcessSummary process ) {
-        if (process != null) {
-
-            view.getProcessNameText().setText( process.getName() );
-            changeStyleRow( process.getName(), process.getVersion() );
-        } else {
-            // set to empty to ensure it's clear state
-            view.getProcessNameText().setText( "" );
-        }
-    }
-
-    private void refreshReusableSubProcesses(Collection<String> subprocesses ) {
-        view.getSubprocessListBox().setText( "" );
-        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-        if (subprocesses.isEmpty()) {
-            safeHtmlBuilder.appendEscapedLines(constants.NoSubprocessesRequiredByThisProcess());
-            view.getSubprocessListBox().setStyleName( "muted" );
-            view.getSubprocessListBox().setHTML(
-                    safeHtmlBuilder.toSafeHtml() );
-        } else {
-            for (String key : subprocesses) {
-                safeHtmlBuilder.appendEscapedLines( key + "\n" );
-            }
-            view.getSubprocessListBox().setHTML(
-                    safeHtmlBuilder.toSafeHtml() );
-        }
-    }
-
-    private void refreshRequiredInputData( Map<String, String> inputs ) {
-        view.getProcessDataListBox().setText( "" );
-        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-        if (inputs.keySet().isEmpty()) {
-            safeHtmlBuilder.appendEscapedLines(constants.NoProcessVariablesDefinedForThisProcess());
-            view.getProcessDataListBox().setStyleName( "muted" );
-            view.getProcessDataListBox().setHTML(
-                    safeHtmlBuilder.toSafeHtml() );
-        } else {
-            for (String key : inputs.keySet()) {
-                safeHtmlBuilder.appendEscapedLines( key + " - "
-                        + inputs.get( key ) + "\n" );
-            }
-            view.getProcessDataListBox().setHTML(
-                    safeHtmlBuilder.toSafeHtml() );
-        }
-    }
-
-
-    private void refreshAssociatedEntities( Map<String, String[]> entities ) {
-        view.getUsersGroupsListBox().setText( "" );
-        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-        if (entities.keySet().isEmpty()) {
-            safeHtmlBuilder
-                    .appendEscapedLines(constants.NoUserOrGroupUsedInThisProcess());
-            view.getUsersGroupsListBox().setStyleName( "muted" );
-            view.getUsersGroupsListBox().setHTML(
-                    safeHtmlBuilder.toSafeHtml() );
-        } else {
-            for (String key : entities.keySet()) {
-                StringBuffer names = new StringBuffer();
-                String[] entityNames = entities.get( key );
-                if (entityNames != null) {
-                    for (String entity : entityNames) {
-                        names.append( "'" + entity + "' " );
-                    }
-                }
-                safeHtmlBuilder.appendEscapedLines( names
-                        + " - " + key + "\n" );
-            }
-            view.getUsersGroupsListBox().setHTML(
-                    safeHtmlBuilder.toSafeHtml() );
-        }
-    }
-
-    private void refreshTaskDef( final String serverTemplateId, final String deploymentId, final String processId ) {
-        view.getNroOfHumanTasksText().setText( "" );
-        view.getHumanTasksListBox().setText( "" );
-
-        processRuntimeDataService.call(new RemoteCallback<List<TaskDefSummary>>() {
-
-            @Override
-            public void callback(final List<TaskDefSummary> userTaskSummaries) {
-                view.getNroOfHumanTasksText().setText( String.valueOf(userTaskSummaries.size()) );
-
-                SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                if (userTaskSummaries.isEmpty()) {
-                    safeHtmlBuilder.appendEscapedLines(constants.NoUserTasksDefinedInThisProcess());
-                    view.getHumanTasksListBox().setStyleName( "muted" );
-                    view.getHumanTasksListBox().setHTML(
-                            safeHtmlBuilder.toSafeHtml() );
-                } else {
-                    for (TaskDefSummary t : userTaskSummaries) {
-                        safeHtmlBuilder.appendEscapedLines( t.getName() + "\n" );
-                    }
-                    view.getHumanTasksListBox().setHTML(
-                            safeHtmlBuilder.toSafeHtml() );
-                }
-            }
-
-        } ).getProcessUserTasks(serverTemplateId, deploymentId, processId);
-
-    }
-
-    @Override
-    protected void refreshProcessDef( final String serverTemplateId, final String deploymentId, final String processId ) {
-
-        processRuntimeDataService.call(new RemoteCallback<ProcessSummary>() {
-
-            @Override
-            public void callback( ProcessSummary process ) {
-                if (process != null) {
-
-                    refreshTaskDef( serverTemplateId, deploymentId, processId );
-
-                    refreshAssociatedEntities( process.getAssociatedEntities() );
-
-                    refreshRequiredInputData( process.getProcessVariables() );
-
-                    refreshReusableSubProcesses( process.getReusableSubProcesses() );
-
-                    refreshProcessItems( process );
-
-                    refreshServiceTasks( process.getServiceTasks() );
-
-                }
-            }
-        } ).getProcess(serverTemplateId, new ProcessDefinitionKey(serverTemplateId, deploymentId, processId));
-
     }
 }

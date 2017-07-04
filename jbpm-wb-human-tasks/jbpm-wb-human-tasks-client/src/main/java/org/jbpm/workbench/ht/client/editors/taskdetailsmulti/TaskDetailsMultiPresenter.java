@@ -54,16 +54,6 @@ import org.uberfire.workbench.model.menu.Menus;
 @WorkbenchScreen(identifier = "Task Details Multi", preferredWidth = 655)
 public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
 
-    public interface TaskDetailsMultiView
-            extends UberView<TaskDetailsMultiPresenter> {
-
-        void setAdminTabVisible(boolean value);
-
-        void displayAllTabs();
-
-        void displayOnlyLogTab();
-    }
-
     @Inject
     private TaskDetailsMultiView view;
 
@@ -162,12 +152,16 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
                 closeDetails();
             }
         });
-        taskFormDisplayProvider.setup(new HumanTaskDisplayerConfig(new TaskKey(serverTemplateId, containerId, taskId)), taskFormPresenter.getTaskFormView().getDisplayerView());
+        taskFormDisplayProvider.setup(new HumanTaskDisplayerConfig(new TaskKey(serverTemplateId,
+                                                                               containerId,
+                                                                               taskId)),
+                                      taskFormPresenter.getTaskFormView().getDisplayerView());
 
         setIsForLog(event.isForLog());
         setIsForAdmin(event.isForAdmin());
 
-        changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place, String.valueOf(taskId) + " - " + processId));
+        changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place,
+                                                               String.valueOf(taskId) + " - " + processId));
 
         if (isForLog()) {
             view.displayOnlyLogTab();
@@ -188,7 +182,12 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
 
     @Override
     public void onRefresh() {
-        taskSelected.fire(new TaskSelectionEvent(serverTemplateId, containerId, taskId, processId, isForAdmin(), isForLog()));
+        taskSelected.fire(new TaskSelectionEvent(serverTemplateId,
+                                                 containerId,
+                                                 taskId,
+                                                 processId,
+                                                 isForAdmin(),
+                                                 isForLog()));
     }
 
     @WorkbenchMenu
@@ -255,4 +254,13 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
         taskAdminPresenter.refreshTaskPotentialOwners();
     }
 
+    public interface TaskDetailsMultiView
+            extends UberView<TaskDetailsMultiPresenter> {
+
+        void setAdminTabVisible(boolean value);
+
+        void displayAllTabs();
+
+        void displayOnlyLogTab();
+    }
 }

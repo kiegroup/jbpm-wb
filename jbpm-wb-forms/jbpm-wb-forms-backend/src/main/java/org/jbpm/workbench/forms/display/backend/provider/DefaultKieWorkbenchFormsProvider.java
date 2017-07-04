@@ -29,11 +29,11 @@ import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
 @DefaultFormProvider
 public class DefaultKieWorkbenchFormsProvider extends AbstractKieWorkbenchFormsProvider implements FormProvider<KieWorkbenchFormRenderingSettings> {
 
-
     @Inject
-    public DefaultKieWorkbenchFormsProvider( ProcessFormsValuesProcessor processFormsValuesProcessor,
-                                             TaskFormValuesProcessor taskFormValuesProcessor ) {
-        super( processFormsValuesProcessor, taskFormValuesProcessor );
+    public DefaultKieWorkbenchFormsProvider(ProcessFormsValuesProcessor processFormsValuesProcessor,
+                                            TaskFormValuesProcessor taskFormValuesProcessor) {
+        super(processFormsValuesProcessor,
+              taskFormValuesProcessor);
     }
 
     @Override
@@ -42,12 +42,14 @@ public class DefaultKieWorkbenchFormsProvider extends AbstractKieWorkbenchFormsP
     }
 
     @Override
-    public KieWorkbenchFormRenderingSettings render( ProcessRenderingSettings settings ) {
-        return processFormsValuesProcessor.generateRenderingContext( settings, true );
+    public KieWorkbenchFormRenderingSettings render(ProcessRenderingSettings settings) {
+        return processFormsValuesProcessor.generateRenderingContext(settings,
+                                                                    true);
     }
 
     @Override
-    public KieWorkbenchFormRenderingSettings render( TaskRenderingSettings settings ) {
-        return taskFormValuesProcessor.generateRenderingContext( settings, true );
+    public KieWorkbenchFormRenderingSettings render(TaskRenderingSettings settings) {
+        return taskFormValuesProcessor.generateRenderingContext(settings,
+                                                                true);
     }
 }

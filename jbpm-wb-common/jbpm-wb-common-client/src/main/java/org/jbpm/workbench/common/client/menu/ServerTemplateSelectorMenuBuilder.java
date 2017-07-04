@@ -69,7 +69,7 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
                 view.addServerTemplate(id);
             }
 
-            if(ids.size() == 1){
+            if (ids.size() == 1) {
                 view.selectServerTemplate(ids.iterator().next());
             } else {
                 final String selectedServerTemplate = view.getSelectedServerTemplate();
@@ -83,7 +83,6 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
             }
 
             view.setVisible(ids.size() > 1);
-
         }).listServerTemplates();
     }
 
@@ -115,7 +114,7 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
     }
 
     public void onServerTemplateUpdated(@Observes final ServerTemplateUpdated serverTemplateUpdated) {
-        if(serverTemplateUpdated.getServerTemplate().getServerInstanceKeys().isEmpty()){
+        if (serverTemplateUpdated.getServerTemplate().getServerInstanceKeys().isEmpty()) {
             loadServerTemplates();
         }
     }
@@ -148,7 +147,5 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
         void removeAllServerTemplates();
 
         void setServerTemplateChangeHandler(ParameterizedCommand<String> command);
-
     }
-
 }

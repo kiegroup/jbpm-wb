@@ -44,18 +44,7 @@ import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
 import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCES;
 
-
 public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView> implements RefreshMenuBuilder.SupportsRefresh {
-
-    public interface BaseProcessDefDetailsMultiView {
-
-        IsWidget getNewInstanceButton();
-
-        void setNewInstanceButtonVisible(boolean visible);
-
-    }
-
-    private Constants constants = GWT.create( Constants.class );
 
     @Inject
     protected PopupFormDisplayerView formDisplayPopUp;
@@ -64,10 +53,14 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
     protected T view;
 
     @Inject
-    private PlaceManager placeManager;
+    protected StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
+
+    protected MenuFactory.CustomMenuBuilder newInstanceMenu;
+
+    private Constants constants = GWT.create(Constants.class);
 
     @Inject
-    protected StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
+    private PlaceManager placeManager;
 
     @Inject
     private Event<ProcessDefSelectionEvent> processDefSelectionEvent;
@@ -87,10 +80,8 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
 
     private boolean dynamic;
 
-    protected MenuFactory.CustomMenuBuilder newInstanceMenu;
-
     @PostConstruct
-    public void init(){
+    public void init() {
         newInstanceMenu = new MenuFactory.CustomMenuBuilder() {
 
             @Override
@@ -115,11 +106,11 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
     }
 
     @OnStartup
-    public void onStartup( final PlaceRequest place ) {
+    public void onStartup(final PlaceRequest place) {
         this.place = place;
     }
 
-    public void onProcessSelectionEvent( @Observes final ProcessDefSelectionEvent event ) {
+    public void onProcessSelectionEvent(@Observes final ProcessDefSelectionEvent event) {
         deploymentId = event.getDeploymentId();
         processId = event.getProcessId();
         processDefName = event.getProcessDefName();
@@ -128,19 +119,27 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
 
         view.setNewInstanceButtonVisible(dynamic == false);
 
-        changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place, String.valueOf(deploymentId) + " - " + processDefName));
+        changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place,
+                                                               String.valueOf(deploymentId) + " - " + processDefName));
     }
 
     public void createNewProcessInstance() {
-        final ProcessDisplayerConfig config = new ProcessDisplayerConfig( new ProcessDefinitionKey( serverTemplateId, deploymentId, processId, processDefName ), processDefName );
+        final ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(serverTemplateId,
+                                                                                                  deploymentId,
+                                                                                                  processId,
+                                                                                                  processDefName),
+                                                                         processDefName);
 
-        formDisplayPopUp.setTitle( processDefName );
-        startProcessDisplayProvider.setup( config, formDisplayPopUp );
+        formDisplayPopUp.setTitle(processDefName);
+        startProcessDisplayProvider.setup(config,
+                                          formDisplayPopUp);
     }
 
     public void goToProcessDefModelPopup() {
-        if ( place != null && !deploymentId.equals( "" ) ) {
-            placeManager.goTo( ProcessDiagramUtil.buildPlaceRequest( serverTemplateId, deploymentId, processId));
+        if (place != null && !deploymentId.equals("")) {
+            placeManager.goTo(ProcessDiagramUtil.buildPlaceRequest(serverTemplateId,
+                                                                   deploymentId,
+                                                                   processId));
         }
     }
 
@@ -148,16 +147,26 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest(PROCESS_INSTANCES);
         placeRequestImpl.addParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID,
                                       processId);
-        placeManager.goTo( placeRequestImpl );
+        placeManager.goTo(placeRequestImpl);
     }
 
     @Override
     public void onRefresh() {
-        processDefSelectionEvent.fire(new ProcessDefSelectionEvent(processId, deploymentId, serverTemplateId, processDefName, dynamic));
+        processDefSelectionEvent.fire(new ProcessDefSelectionEvent(processId,
+                                                                   deploymentId,
+                                                                   serverTemplateId,
+                                                                   processDefName,
+                                                                   dynamic));
     }
 
     public void closeDetails() {
-        placeManager.forceClosePlace( place );
+        placeManager.forceClosePlace(place);
     }
 
+    public interface BaseProcessDefDetailsMultiView {
+
+        IsWidget getNewInstanceButton();
+
+        void setNewInstanceButtonVisible(boolean visible);
+    }
 }

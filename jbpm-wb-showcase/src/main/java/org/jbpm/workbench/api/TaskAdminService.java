@@ -21,6 +21,6 @@ import org.jboss.errai.bus.server.annotations.Remote;
 @Remote
 public interface TaskAdminService {
 
-    void generateMockTasks(String userName, int amountOfTasks);
-
+    void generateMockTasks(String userName,
+                           int amountOfTasks);
 }

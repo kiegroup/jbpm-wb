@@ -17,7 +17,6 @@
 package org.jbpm.workbench.common.client.util;
 
 import java.util.Date;
-import java.util.Optional;
 
 import org.dashbuilder.dataset.DataSet;
 
@@ -29,14 +28,16 @@ public final class DataSetUtils {
     public static Long getColumnLongValue(DataSet currentDataSet,
                                           String columnId,
                                           int index) {
-        Object value = currentDataSet.getValueAt(index, columnId);
+        Object value = currentDataSet.getValueAt(index,
+                                                 columnId);
         return value != null ? Long.parseLong(value.toString()) : null;
     }
 
     public static String getColumnStringValue(DataSet currentDataSet,
                                               String columnId,
                                               int index) {
-        Object value = currentDataSet.getValueAt(index, columnId);
+        Object value = currentDataSet.getValueAt(index,
+                                                 columnId);
         return value != null ? value.toString() : null;
     }
 
@@ -44,23 +45,18 @@ public final class DataSetUtils {
                                           String columnId,
                                           int index) {
         try {
-            return (Date) currentDataSet.getValueAt(index, columnId);
+            return (Date) currentDataSet.getValueAt(index,
+                                                    columnId);
         } catch (Exception e) {
             return null;
         }
     }
 
-    public static Boolean getColumnBooleanValue(DataSet currentDataSet,
-                                                String columnId,
-                                                int index) {
-        return Optional.ofNullable(Boolean.valueOf((String) currentDataSet.getValueAt(index, columnId))).orElse(null);
-    }
-
     public static Integer getColumnIntValue(DataSet currentDataSet,
                                             String columnId,
                                             int index) {
-        Object value = currentDataSet.getValueAt(index, columnId);
+        Object value = currentDataSet.getValueAt(index,
+                                                 columnId);
         return value != null ? Integer.parseInt(value.toString()) : null;
     }
-
 }

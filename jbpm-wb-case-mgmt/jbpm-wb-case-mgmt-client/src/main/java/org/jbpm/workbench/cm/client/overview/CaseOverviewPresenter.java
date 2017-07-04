@@ -62,12 +62,18 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
 
     @OnOpen
     public void onOpen() {
-        view.addCaseDetails(CaseDetailsPresenter.SCREEN_ID, place.getParameters());
-        view.addCaseRoles(CaseRolesPresenter.SCREEN_ID, place.getParameters());
-        view.addCaseComments(CaseCommentsPresenter.SCREEN_ID, place.getParameters());
-        view.addCaseMilestones(CaseMilestoneListPresenter.SCREEN_ID, place.getParameters());
-        view.addCaseStages(CaseStagesPresenter.SCREEN_ID, place.getParameters());
-        view.addCaseActions(CaseActionsPresenter.SCREEN_ID, place.getParameters());
+        view.addCaseDetails(CaseDetailsPresenter.SCREEN_ID,
+                            place.getParameters());
+        view.addCaseRoles(CaseRolesPresenter.SCREEN_ID,
+                          place.getParameters());
+        view.addCaseComments(CaseCommentsPresenter.SCREEN_ID,
+                             place.getParameters());
+        view.addCaseMilestones(CaseMilestoneListPresenter.SCREEN_ID,
+                               place.getParameters());
+        view.addCaseStages(CaseStagesPresenter.SCREEN_ID,
+                           place.getParameters());
+        view.addCaseActions(CaseActionsPresenter.SCREEN_ID,
+                            place.getParameters());
     }
 
     protected void refreshCase() {
@@ -94,7 +100,9 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
                     caseCancelEvent.fire(new CaseCancelEvent(caseId));
                     backToList();
                 }
-        ).cancelCaseInstance(serverTemplateId, containerId, caseId);
+        ).cancelCaseInstance(serverTemplateId,
+                             containerId,
+                             caseId);
     }
 
     protected void destroyCaseInstance() {
@@ -103,7 +111,9 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
                     caseDestroyEvent.fire(new CaseDestroyEvent(caseId));
                     backToList();
                 }
-        ).destroyCaseInstance(serverTemplateId, containerId, caseId);
+        ).destroyCaseInstance(serverTemplateId,
+                              containerId,
+                              caseId);
     }
 
     protected void backToList() {
@@ -133,22 +143,28 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
 
         void setCaseOwner(String caseOwner);
 
-        void addCaseDetails(String placeId, Map<String, String> properties);
+        void addCaseDetails(String placeId,
+                            Map<String, String> properties);
 
-        void addCaseStages(String placeId, Map<String, String> properties);
+        void addCaseStages(String placeId,
+                           Map<String, String> properties);
 
-        void addCaseActions(String placeId, Map<String, String> properties);
+        void addCaseActions(String placeId,
+                            Map<String, String> properties);
 
-        void addCaseComments(String placeId, Map<String, String> properties);
+        void addCaseComments(String placeId,
+                             Map<String, String> properties);
 
-        void addCaseFiles(String placeId, Map<String, String> properties);
+        void addCaseFiles(String placeId,
+                          Map<String, String> properties);
 
-        void addCaseRoles(String placeId, Map<String, String> properties);
+        void addCaseRoles(String placeId,
+                          Map<String, String> properties);
 
-        void addCaseMilestones(String placeId, Map<String, String> properties);
+        void addCaseMilestones(String placeId,
+                               Map<String, String> properties);
 
-        void addCaseActivities(String placeId, Map<String, String> properties);
-
+        void addCaseActivities(String placeId,
+                               Map<String, String> properties);
     }
-
 }

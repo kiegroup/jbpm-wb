@@ -32,15 +32,16 @@ import javax.inject.Inject;
 public class LogoNavBar implements Header {
 
     @Inject
-    private LogoWidgetView logo;
-
-    @Inject
     @DataField
     Div header;
 
+    @Inject
+    private LogoWidgetView logo;
+
     @PostConstruct
-    public void setup(){
-        DOMUtil.appendWidgetToElement( header, logo.asWidget() );
+    public void setup() {
+        DOMUtil.appendWidgetToElement(header,
+                                      logo.asWidget());
     }
 
     @Override
@@ -52,5 +53,4 @@ public class LogoNavBar implements Header {
     public int getOrder() {
         return 3;
     }
-
 }

@@ -30,6 +30,23 @@ public enum CaseStatus {
         this.label = label;
     }
 
+    public static CaseStatus fromName(final String name) {
+        return valueOf(name.toUpperCase());
+    }
+
+    public static CaseStatus fromId(final Integer id) {
+        switch (id) {
+            case 1:
+                return OPEN;
+            case 2:
+                return CLOSED;
+            case 3:
+                return CANCELLED;
+            default:
+                return null;
+        }
+    }
+
     public String getLabel() {
         return label;
     }
@@ -39,24 +56,15 @@ public enum CaseStatus {
     }
 
     public Integer getId() {
-        switch ( this ) {
-            case OPEN : return 1;
-            case CLOSED : return 2;
-            case CANCELLED : return 3;
-            default: return null;
-        }
-    }
-
-    public static CaseStatus fromName(final String name) {
-        return valueOf(name.toUpperCase());
-    }
-
-    public static CaseStatus fromId(final Integer id) {
-        switch ( id ) {
-            case 1 : return OPEN;
-            case 2 : return CLOSED;
-            case 3 : return CANCELLED;
-            default: return null;
+        switch (this) {
+            case OPEN:
+                return 1;
+            case CLOSED:
+                return 2;
+            case CANCELLED:
+                return 3;
+            default:
+                return null;
         }
     }
 

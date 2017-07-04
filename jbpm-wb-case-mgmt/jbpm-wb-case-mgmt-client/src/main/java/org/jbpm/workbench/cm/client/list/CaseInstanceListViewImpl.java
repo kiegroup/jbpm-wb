@@ -76,9 +76,11 @@ public class CaseInstanceListViewImpl extends AbstractView<CaseInstanceListPrese
     public void setCaseInstanceList(final List<CaseInstanceSummary> caseInstanceList) {
         this.caseInstanceList.setModel(caseInstanceList);
         if (caseInstanceList.isEmpty()) {
-            removeCSSClass(emptyContainer, "hidden");
+            removeCSSClass(emptyContainer,
+                           "hidden");
         } else {
-            addCSSClass(emptyContainer, "hidden");
+            addCSSClass(emptyContainer,
+                        "hidden");
         }
     }
 
@@ -86,5 +88,4 @@ public class CaseInstanceListViewImpl extends AbstractView<CaseInstanceListPrese
     public HTMLElement getElement() {
         return viewContainer;
     }
-
 }

@@ -41,9 +41,6 @@ import org.uberfire.workbench.events.NotificationEvent;
 @Templated(value = "ProcessInstanceSignalViewImpl.html")
 public class ProcessInstanceSignalViewImpl extends Composite implements ProcessInstanceSignalPresenter.PopupView {
 
-    private Constants constants = GWT.create( Constants.class );
-
-    private ProcessInstanceSignalPresenter presenter;
     @Inject
     @DataField
     public Button signalButton;
@@ -67,53 +64,56 @@ public class ProcessInstanceSignalViewImpl extends Composite implements ProcessI
     @DataField
     public SuggestBox signalRefText;
 
+    public List<Long> processInstanceIds = new ArrayList<Long>();
+
+    private Constants constants = GWT.create(Constants.class);
+
+    private ProcessInstanceSignalPresenter presenter;
+
     @Inject
     private Event<NotificationEvent> notification;
-
-    public List<Long> processInstanceIds = new ArrayList<Long>();
 
     private MultiWordSuggestOracle oracle;
 
     public ProcessInstanceSignalViewImpl() {
         oracle = new MultiWordSuggestOracle();
-        signalRefText = new SuggestBox( oracle );
-
+        signalRefText = new SuggestBox(oracle);
     }
 
     @Override
-    public void init( ProcessInstanceSignalPresenter presenter ) {
+    public void init(ProcessInstanceSignalPresenter presenter) {
         this.presenter = presenter;
-        clearButton.setText( constants.Clear() );
-        signalButton.setText( constants.Signal() );
-        signalRefLabel.setText( constants.Signal_Name() );
-        eventLabel.setText( constants.Signal_Data() );
+        clearButton.setText(constants.Clear());
+        signalButton.setText(constants.Signal());
+        signalRefLabel.setText(constants.Signal_Name());
+        eventLabel.setText(constants.Signal_Data());
     }
 
     @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     @EventHandler("signalButton")
-    public void signalButton( ClickEvent e ) {
+    public void signalButton(ClickEvent e) {
 
-        for ( Long processInstanceId : this.processInstanceIds ) {
+        for (Long processInstanceId : this.processInstanceIds) {
 
-            displayNotification( constants.Signalling_Process_Instance() + processInstanceId + " " + constants.Signal() + " = "
-                                         + signalRefText.getText() + " - " + constants.Signal_Data() + " = " + eventText.getText() );
+            displayNotification(constants.Signalling_Process_Instance() + processInstanceId + " " + constants.Signal() + " = "
+                                        + signalRefText.getText() + " - " + constants.Signal_Data() + " = " + eventText.getText());
         }
-        presenter.signalProcessInstances( this.processInstanceIds );
+        presenter.signalProcessInstances(this.processInstanceIds);
     }
 
     @EventHandler("clearButton")
-    public void clearButton( ClickEvent e ) {
-        signalRefText.setValue( "" );
-        eventText.setValue( "" );
+    public void clearButton(ClickEvent e) {
+        signalRefText.setValue("");
+        eventText.setValue("");
     }
 
     @Override
-    public void addProcessInstanceId( long processInstanceId ) {
-        this.processInstanceIds.add( processInstanceId );
+    public void addProcessInstanceId(long processInstanceId) {
+        this.processInstanceIds.add(processInstanceId);
     }
 
     @Override
@@ -127,8 +127,7 @@ public class ProcessInstanceSignalViewImpl extends Composite implements ProcessI
     }
 
     @Override
-    public void setAvailableSignals( Collection<String> signals ) {
-        oracle.addAll( signals );
+    public void setAvailableSignals(Collection<String> signals) {
+        oracle.addAll(signals);
     }
-
 }

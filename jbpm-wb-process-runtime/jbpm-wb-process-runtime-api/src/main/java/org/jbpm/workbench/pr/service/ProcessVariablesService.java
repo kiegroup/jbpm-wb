@@ -24,7 +24,10 @@ import org.jbpm.workbench.pr.model.ProcessVariableKey;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 
 @Remote
-public interface ProcessVariablesService extends GenericServiceEntryPoint<ProcessVariableKey, ProcessVariableSummary>{
+public interface ProcessVariablesService extends GenericServiceEntryPoint<ProcessVariableKey, ProcessVariableSummary> {
 
-    List<ProcessVariableSummary> getVariableHistory(String serverTemplateId, String deploymentId, Long processInstanceId, String variableName);
+    List<ProcessVariableSummary> getVariableHistory(String serverTemplateId,
+                                                    String deploymentId,
+                                                    Long processInstanceId,
+                                                    String variableName);
 }

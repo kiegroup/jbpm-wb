@@ -48,24 +48,23 @@ public class RemoteProcessVariablesServiceImpl extends AbstractKieServerService 
         } else {
             response.setTotalRowSizeExact(true);
         }
-        response.setTotalRowSizeExact( true );
-        response.setTotalRowSize( processVariablesSums.size() );
-        if (!processVariablesSums.isEmpty()){
+        response.setTotalRowSizeExact(true);
+        response.setTotalRowSize(processVariablesSums.size());
+        if (!processVariablesSums.isEmpty()) {
             if (processVariablesSums.size() > (filter.getCount() + filter.getOffset())) {
-                response.setPageRowList( new ArrayList<ProcessVariableSummary>( processVariablesSums.subList( filter.getOffset(), filter.getOffset() + filter.getCount() ) ) );
-                response.setLastPage( false );
+                response.setPageRowList(new ArrayList<ProcessVariableSummary>(processVariablesSums.subList(filter.getOffset(),
+                                                                                                           filter.getOffset() + filter.getCount())));
+                response.setLastPage(false);
             } else {
-                response.setPageRowList( new ArrayList<ProcessVariableSummary>( processVariablesSums.subList( filter.getOffset(),processVariablesSums.size()) ) );
-                response.setLastPage( true );
+                response.setPageRowList(new ArrayList<ProcessVariableSummary>(processVariablesSums.subList(filter.getOffset(),
+                                                                                                           processVariablesSums.size())));
+                response.setLastPage(true);
             }
-
         } else {
             response.setPageRowList(new ArrayList<ProcessVariableSummary>(processVariablesSums));
             response.setLastPage(true);
-
         }
         return response;
-
     }
 
     private List<ProcessVariableSummary> getProcessVariables(QueryFilter filter) {
@@ -82,14 +81,21 @@ public class RemoteProcessVariablesServiceImpl extends AbstractKieServerService 
 
         Map<String, String> properties = new HashMap<String, String>();
 
-        ProcessServicesClient processClient = getClient(serverTemplateId, ProcessServicesClient.class);
+        ProcessServicesClient processClient = getClient(serverTemplateId,
+                                                        ProcessServicesClient.class);
 
-        VariablesDefinition vars = processClient.getProcessVariableDefinitions(deploymentId, processId);
+        VariablesDefinition vars = processClient.getProcessVariableDefinitions(deploymentId,
+                                                                               processId);
         properties.putAll(vars.getVariables());
 
-        List<VariableInstance> variables = processClient.findVariablesCurrentState(deploymentId, processInstanceId);
+        List<VariableInstance> variables = processClient.findVariablesCurrentState(deploymentId,
+                                                                                   processInstanceId);
 
-        Collection<ProcessVariableSummary> processVariables = VariableHelper.adaptCollection(variables, properties, processInstanceId, deploymentId, serverTemplateId);
+        Collection<ProcessVariableSummary> processVariables = VariableHelper.adaptCollection(variables,
+                                                                                             properties,
+                                                                                             processInstanceId,
+                                                                                             deploymentId,
+                                                                                             serverTemplateId);
 
         List<ProcessVariableSummary> processVariablesSums = new ArrayList<ProcessVariableSummary>(processVariables.size());
         for (ProcessVariableSummary pv : processVariables) {
@@ -104,11 +110,22 @@ public class RemoteProcessVariablesServiceImpl extends AbstractKieServerService 
     }
 
     @Override
-    public List<ProcessVariableSummary> getVariableHistory(String serverTemplateId, String deploymentId, Long processInstanceId, String variableName) {
-        ProcessServicesClient processClient = getClient(serverTemplateId, ProcessServicesClient.class);
-        List<VariableInstance> variables = processClient.findVariableHistory(deploymentId, processInstanceId, variableName, 0, 100);
+    public List<ProcessVariableSummary> getVariableHistory(String serverTemplateId,
+                                                           String deploymentId,
+                                                           Long processInstanceId,
+                                                           String variableName) {
+        ProcessServicesClient processClient = getClient(serverTemplateId,
+                                                        ProcessServicesClient.class);
+        List<VariableInstance> variables = processClient.findVariableHistory(deploymentId,
+                                                                             processInstanceId,
+                                                                             variableName,
+                                                                             0,
+                                                                             100);
 
-        return VariableHelper.adaptCollection(variables, new HashMap<String, String>(), processInstanceId, deploymentId, serverTemplateId);
+        return VariableHelper.adaptCollection(variables,
+                                              new HashMap<String, String>(),
+                                              processInstanceId,
+                                              deploymentId,
+                                              serverTemplateId);
     }
-
 }

@@ -18,6 +18,7 @@ package org.jbpm.workbench.ht.model;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
@@ -31,14 +32,19 @@ public class CommentSummary implements Serializable {
 
     private Date addedAt;
 
-    public CommentSummary(long id, String text, String addedBy, Date addedAt) {
+    public CommentSummary(long id,
+                          String text,
+                          String addedBy,
+                          Date addedAt) {
         this.id = id;
         this.text = text;
         this.addedBy = addedBy;
         this.addedAt = addedAt;
     }
 
-    public CommentSummary(String text, String addedBy, Date addedAt) {
+    public CommentSummary(String text,
+                          String addedBy,
+                          Date addedAt) {
         this.text = text;
         this.addedBy = addedBy;
         this.addedAt = addedAt;
@@ -83,5 +89,4 @@ public class CommentSummary implements Serializable {
     public String toString() {
         return "CommentSummary{" + "id=" + id + ", text=" + text + ", addedBy=" + addedBy + ", addedAt=" + addedAt + '}';
     }
-
 }

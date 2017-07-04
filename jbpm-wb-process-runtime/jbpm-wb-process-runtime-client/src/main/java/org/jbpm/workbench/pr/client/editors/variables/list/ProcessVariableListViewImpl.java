@@ -62,80 +62,81 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
     public static final String COL_ID_LASTMOD = "lastMod";
     public static final String COL_ID_ACTIONS = "Actions";
 
-    private Constants constants = Constants.INSTANCE;
-
-    private Column actionsColumn;
-
     @Inject
     public VariableEditPopup variableEditPopup;
 
     @Inject
     public VariableHistoryPopup variableHistoryPopup;
 
+    private Constants constants = Constants.INSTANCE;
+
+    private Column actionsColumn;
+
     @Override
-    public void init( final ProcessVariableListPresenter presenter ) {
+    public void init(final ProcessVariableListPresenter presenter) {
         List<String> bannedColumns = new ArrayList<String>();
 
-        bannedColumns.add( COL_ID_VARID );
-        bannedColumns.add( COL_ID_VARVALUE );
-        bannedColumns.add( COL_ID_ACTIONS );
+        bannedColumns.add(COL_ID_VARID);
+        bannedColumns.add(COL_ID_VARVALUE);
+        bannedColumns.add(COL_ID_ACTIONS);
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add( COL_ID_VARID );
-        initColumns.add( COL_ID_VARVALUE );
-        initColumns.add( COL_ID_ACTIONS );
+        initColumns.add(COL_ID_VARID);
+        initColumns.add(COL_ID_VARVALUE);
+        initColumns.add(COL_ID_ACTIONS);
 
-        super.init( presenter, new GridGlobalPreferences( "ProcessVariablesGrid", initColumns, bannedColumns ) );
+        super.init(presenter,
+                   new GridGlobalPreferences("ProcessVariablesGrid",
+                                             initColumns,
+                                             bannedColumns));
 
-        listGrid.setEmptyTableCaption( constants.No_Variables_Available() );
+        listGrid.setEmptyTableCaption(constants.No_Variables_Available());
 
         selectionModel = new NoSelectionModel<ProcessVariableSummary>();
-        selectionModel.addSelectionChangeHandler( new SelectionChangeEvent.Handler() {
+        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             @Override
-            public void onSelectionChange( SelectionChangeEvent event ) {
+            public void onSelectionChange(SelectionChangeEvent event) {
 
-                if ( selectedRow == -1 ) {
-                    listGrid.setRowStyles( selectedStyles );
+                if (selectedRow == -1) {
+                    listGrid.setRowStyles(selectedStyles);
                     selectedRow = listGrid.getKeyboardSelectedRow();
                     listGrid.redraw();
-
-                } else if ( listGrid.getKeyboardSelectedRow() != selectedRow ) {
-                    listGrid.setRowStyles( selectedStyles );
+                } else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
+                    listGrid.setRowStyles(selectedStyles);
                     selectedRow = listGrid.getKeyboardSelectedRow();
                     listGrid.redraw();
                 }
 
                 selectedItem = selectionModel.getLastSelectedObject();
-
             }
-        } );
+        });
 
         noActionColumnManager = DefaultSelectionEventManager
-                .createCustomManager( new DefaultSelectionEventManager.EventTranslator<ProcessVariableSummary>() {
+                .createCustomManager(new DefaultSelectionEventManager.EventTranslator<ProcessVariableSummary>() {
 
                     @Override
-                    public boolean clearCurrentSelection( CellPreviewEvent<ProcessVariableSummary> event ) {
+                    public boolean clearCurrentSelection(CellPreviewEvent<ProcessVariableSummary> event) {
                         return false;
                     }
 
                     @Override
-                    public DefaultSelectionEventManager.SelectAction translateSelectionEvent( CellPreviewEvent<ProcessVariableSummary> event ) {
+                    public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<ProcessVariableSummary> event) {
                         NativeEvent nativeEvent = event.getNativeEvent();
-                        if ( BrowserEvents.CLICK.equals( nativeEvent.getType() ) &&
-                            // Ignore if the event didn't occur in the correct column.
-                            listGrid.getColumnIndex( actionsColumn ) == event.getColumn() ) {
-                                return DefaultSelectionEventManager.SelectAction.IGNORE;
+                        if (BrowserEvents.CLICK.equals(nativeEvent.getType()) &&
+                                // Ignore if the event didn't occur in the correct column.
+                                listGrid.getColumnIndex(actionsColumn) == event.getColumn()) {
+                            return DefaultSelectionEventManager.SelectAction.IGNORE;
                         }
                         return DefaultSelectionEventManager.SelectAction.DEFAULT;
                     }
+                });
 
-                } );
-
-        listGrid.setSelectionModel( selectionModel, noActionColumnManager );
-        listGrid.setRowStyles( selectedStyles );
+        listGrid.setSelectionModel(selectionModel,
+                                   noActionColumnManager);
+        listGrid.setRowStyles(selectedStyles);
     }
 
     @Override
-    public void initColumns( ExtendedPagedTable extendedPagedTable ) {
+    public void initColumns(ExtendedPagedTable extendedPagedTable) {
         Column<ProcessVariableSummary, ?> variableId = initProcessVariableIdColumn();
         Column<ProcessVariableSummary, ?> valueColumn = initProcessVariableValueColumn();
         Column<ProcessVariableSummary, ?> typeColumn = initProcessVariableTypeColumn();
@@ -144,70 +145,74 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
 
         List<ColumnMeta<ProcessVariableSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessVariableSummary>>();
 
-        columnMetas.add( new ColumnMeta<ProcessVariableSummary>( variableId, constants.Name() ) );
-        columnMetas.add( new ColumnMeta<ProcessVariableSummary>( valueColumn, constants.Value() ) );
-        columnMetas.add( new ColumnMeta<ProcessVariableSummary>( typeColumn, constants.Type() ) );
-        columnMetas.add( new ColumnMeta<ProcessVariableSummary>( lastModificationColumn, constants.Last_Modification() ) );
-        columnMetas.add( new ColumnMeta<ProcessVariableSummary>( actionsColumn, constants.Actions() ) );
-        extendedPagedTable.addColumns( columnMetas );
+        columnMetas.add(new ColumnMeta<ProcessVariableSummary>(variableId,
+                                                               constants.Name()));
+        columnMetas.add(new ColumnMeta<ProcessVariableSummary>(valueColumn,
+                                                               constants.Value()));
+        columnMetas.add(new ColumnMeta<ProcessVariableSummary>(typeColumn,
+                                                               constants.Type()));
+        columnMetas.add(new ColumnMeta<ProcessVariableSummary>(lastModificationColumn,
+                                                               constants.Last_Modification()));
+        columnMetas.add(new ColumnMeta<ProcessVariableSummary>(actionsColumn,
+                                                               constants.Actions()));
+        extendedPagedTable.addColumns(columnMetas);
     }
 
     private Column<ProcessVariableSummary, ?> initProcessVariableIdColumn() {
         // Id
-        Column<ProcessVariableSummary, String> variableId = new Column<ProcessVariableSummary, String>( new TextCell() ) {
+        Column<ProcessVariableSummary, String> variableId = new Column<ProcessVariableSummary, String>(new TextCell()) {
 
             @Override
-            public String getValue( ProcessVariableSummary object ) {
+            public String getValue(ProcessVariableSummary object) {
                 return object.getVariableId();
             }
         };
-        variableId.setSortable( true );
-        variableId.setDataStoreName( COL_ID_VARID );
+        variableId.setSortable(true);
+        variableId.setDataStoreName(COL_ID_VARID);
 
         return variableId;
     }
 
     private Column<ProcessVariableSummary, ?> initProcessVariableValueColumn() {
         // Value.
-        Column<ProcessVariableSummary, String> valueColumn = new Column<ProcessVariableSummary, String>( new PopoverTextCell() ) {
+        Column<ProcessVariableSummary, String> valueColumn = new Column<ProcessVariableSummary, String>(new PopoverTextCell()) {
 
             @Override
-            public String getValue( ProcessVariableSummary object ) {
-                return (object.getNewValue()!=null? object.getNewValue():"");
+            public String getValue(ProcessVariableSummary object) {
+                return (object.getNewValue() != null ? object.getNewValue() : "");
             }
         };
-        valueColumn.setSortable( true );
-        valueColumn.setDataStoreName( COL_ID_VARVALUE );
+        valueColumn.setSortable(true);
+        valueColumn.setDataStoreName(COL_ID_VARVALUE);
         return valueColumn;
     }
 
     public Column<ProcessVariableSummary, String> initProcessVariableTypeColumn() {
 
         // Type.
-        Column<ProcessVariableSummary, String> typeColumn = new Column<ProcessVariableSummary, String>( new TextCell() ) {
+        Column<ProcessVariableSummary, String> typeColumn = new Column<ProcessVariableSummary, String>(new TextCell()) {
 
             @Override
-            public String getValue( ProcessVariableSummary object ) {
+            public String getValue(ProcessVariableSummary object) {
                 return object.getType();
             }
         };
-        typeColumn.setSortable( true );
-        typeColumn.setDataStoreName( COL_ID_VARTYPE );
+        typeColumn.setSortable(true);
+        typeColumn.setDataStoreName(COL_ID_VARTYPE);
         return typeColumn;
     }
 
     private Column<ProcessVariableSummary, ?> initProcessVariableLastModifiedColumn() {
         // Last Time Changed Date.
-        Column<ProcessVariableSummary, String> lastModificationColumn = new Column<ProcessVariableSummary, String>( new TextCell() ) {
+        Column<ProcessVariableSummary, String> lastModificationColumn = new Column<ProcessVariableSummary, String>(new TextCell()) {
 
             @Override
-            public String getValue( ProcessVariableSummary object ) {
+            public String getValue(ProcessVariableSummary object) {
                 return DateUtils.getDateTimeStr(new Date(object.getTimestamp()));
-
             }
         };
-        lastModificationColumn.setSortable( true );
-        lastModificationColumn.setDataStoreName( COL_ID_LASTMOD );
+        lastModificationColumn.setSortable(true);
+        lastModificationColumn.setDataStoreName(COL_ID_LASTMOD);
         return lastModificationColumn;
     }
 
@@ -215,66 +220,85 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
 
         List<HasCell<ProcessVariableSummary, ?>> cells = new LinkedList<HasCell<ProcessVariableSummary, ?>>();
 
-        cells.add( new EditVariableActionHasCell( constants.Edit(), new Delegate<ProcessVariableSummary>() {
-            @Override
-            public void execute( ProcessVariableSummary variable ) {
-                variableEditPopup.show( variable.getServerTemplateId(), variable.getDeploymentId(), variable.getProcessInstanceId(), variable.getVariableId(), (variable.getNewValue()!=null?variable.getNewValue():"") );
-            }
-        } ) );
+        cells.add(new EditVariableActionHasCell(constants.Edit(),
+                                                new Delegate<ProcessVariableSummary>() {
+                                                    @Override
+                                                    public void execute(ProcessVariableSummary variable) {
+                                                        variableEditPopup.show(variable.getServerTemplateId(),
+                                                                               variable.getDeploymentId(),
+                                                                               variable.getProcessInstanceId(),
+                                                                               variable.getVariableId(),
+                                                                               (variable.getNewValue() != null ? variable.getNewValue() : ""));
+                                                    }
+                                                }));
 
-        cells.add( new VariableHistoryActionHasCell( constants.History(), new Delegate<ProcessVariableSummary>() {
-            @Override
-            public void execute( final ProcessVariableSummary variable ) {
-                showBusyIndicator(constants.Loading());
-                presenter.loadVariableHistory(new ParameterizedCommand<List<ProcessVariableSummary>>() {
-                    @Override
-                    public void execute(final List<ProcessVariableSummary> processVariableSummaries) {
-                        hideBusyIndicator();
-                        variableHistoryPopup.show(variable.getVariableId(), processVariableSummaries);
-                    }
-                }, variable.getVariableId());
-            }
-        } ) );
+        cells.add(new VariableHistoryActionHasCell(constants.History(),
+                                                   new Delegate<ProcessVariableSummary>() {
+                                                       @Override
+                                                       public void execute(final ProcessVariableSummary variable) {
+                                                           showBusyIndicator(constants.Loading());
+                                                           presenter.loadVariableHistory(new ParameterizedCommand<List<ProcessVariableSummary>>() {
+                                                                                             @Override
+                                                                                             public void execute(final List<ProcessVariableSummary> processVariableSummaries) {
+                                                                                                 hideBusyIndicator();
+                                                                                                 variableHistoryPopup.show(variable.getVariableId(),
+                                                                                                                           processVariableSummaries);
+                                                                                             }
+                                                                                         },
+                                                                                         variable.getVariableId());
+                                                       }
+                                                   }));
 
-        CompositeCell<ProcessVariableSummary> cell = new CompositeCell<ProcessVariableSummary>( cells );
-        Column<ProcessVariableSummary, ProcessVariableSummary> actionsColumn = new Column<ProcessVariableSummary, ProcessVariableSummary>( cell ) {
+        CompositeCell<ProcessVariableSummary> cell = new CompositeCell<ProcessVariableSummary>(cells);
+        Column<ProcessVariableSummary, ProcessVariableSummary> actionsColumn = new Column<ProcessVariableSummary, ProcessVariableSummary>(cell) {
             @Override
-            public ProcessVariableSummary getValue( ProcessVariableSummary object ) {
+            public ProcessVariableSummary getValue(ProcessVariableSummary object) {
                 return object;
             }
         };
-        actionsColumn.setDataStoreName( COL_ID_ACTIONS );
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
     }
 
-    public void formClosed( @Observes ProcessInstancesUpdateEvent closed ) {
+    public void formClosed(@Observes ProcessInstancesUpdateEvent closed) {
         presenter.refreshGrid();
     }
 
     protected class EditVariableActionHasCell extends ButtonActionCell<ProcessVariableSummary> {
 
-        public EditVariableActionHasCell( final String text, final ActionCell.Delegate<ProcessVariableSummary> delegate ) {
-            super( text, delegate );
+        public EditVariableActionHasCell(final String text,
+                                         final ActionCell.Delegate<ProcessVariableSummary> delegate) {
+            super(text,
+                  delegate);
         }
 
         @Override
-        public void render( final Cell.Context context, final ProcessVariableSummary value, final SafeHtmlBuilder sb ) {
-            if ( presenter.getProcessInstanceStatus() == ProcessInstance.STATE_ACTIVE ) {
-               super.render( context, value, sb );
+        public void render(final Cell.Context context,
+                           final ProcessVariableSummary value,
+                           final SafeHtmlBuilder sb) {
+            if (presenter.getProcessInstanceStatus() == ProcessInstance.STATE_ACTIVE) {
+                super.render(context,
+                             value,
+                             sb);
             }
         }
     }
 
     protected class VariableHistoryActionHasCell extends ButtonActionCell<ProcessVariableSummary> {
 
-        public VariableHistoryActionHasCell( final String text, final ActionCell.Delegate<ProcessVariableSummary> delegate ) {
-            super( text, delegate );
+        public VariableHistoryActionHasCell(final String text,
+                                            final ActionCell.Delegate<ProcessVariableSummary> delegate) {
+            super(text,
+                  delegate);
         }
 
         @Override
-        public void render( final Cell.Context context, final ProcessVariableSummary value, final SafeHtmlBuilder sb ) {
-                super.render( context, value, sb );
+        public void render(final Cell.Context context,
+                           final ProcessVariableSummary value,
+                           final SafeHtmlBuilder sb) {
+            super.render(context,
+                         value,
+                         sb);
         }
     }
-
 }

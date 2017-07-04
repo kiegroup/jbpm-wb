@@ -50,7 +50,8 @@ import org.kie.internal.runtime.conf.RuntimeStrategy;
  */
 @XmlRootElement(name = "deployment-descriptor")
 @XmlAccessorType(XmlAccessType.NONE)
-public class DeploymentDescriptorImpl implements DeploymentDescriptor, Serializable {
+public class DeploymentDescriptorImpl implements DeploymentDescriptor,
+                                                 Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -117,7 +118,6 @@ public class DeploymentDescriptorImpl implements DeploymentDescriptor, Serializa
         // fox jaxb only
     }
 
-
     public DeploymentDescriptorImpl(String defaultPU) {
         this.persistenceUnit = defaultPU;
         this.auditPersistenceUnit = defaultPU;
@@ -133,9 +133,12 @@ public class DeploymentDescriptorImpl implements DeploymentDescriptor, Serializa
         Set<String> typeView = new LinkedHashSet<String>();
         Set<String> typeExecute = new LinkedHashSet<String>();
 
-        mappedRoles.put(TYPE_ALL, typeAll);
-        mappedRoles.put(TYPE_VIEW, typeView);
-        mappedRoles.put(TYPE_EXECUTE, typeExecute);
+        mappedRoles.put(TYPE_ALL,
+                        typeAll);
+        mappedRoles.put(TYPE_VIEW,
+                        typeView);
+        mappedRoles.put(TYPE_EXECUTE,
+                        typeExecute);
 
         if (requiredRoles != null && !requiredRoles.isEmpty()) {
 
@@ -157,9 +160,7 @@ public class DeploymentDescriptorImpl implements DeploymentDescriptor, Serializa
                     typeExecute.add(role);
                 }
             }
-
         }
-
     }
 
     @Override
@@ -658,7 +659,6 @@ public class DeploymentDescriptorImpl implements DeploymentDescriptor, Serializa
             public DeploymentDescriptor get() {
                 return descriptor;
             }
-
         };
     }
 
@@ -666,6 +666,4 @@ public class DeploymentDescriptorImpl implements DeploymentDescriptor, Serializa
     public String toXml() {
         return DeploymentDescriptorIO.toXml(this);
     }
-
-
 }

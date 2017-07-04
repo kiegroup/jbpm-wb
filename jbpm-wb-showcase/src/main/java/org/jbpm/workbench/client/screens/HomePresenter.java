@@ -37,21 +37,16 @@ public class HomePresenter {
 
     public static final String SCREEN_ID = "Home Screen";
 
-    public interface HomeView extends UberView<HomePresenter> {
+    @Inject
+    HomeView view;
 
-        void displayNotification( String text );
-
-    }
+    // Retrieve the actions from a service
+    Map<String, String> actions = new HashMap<String, String>();
 
     @Inject
     private PlaceManager placeManager;
 
-    private Constants constants = GWT.create( Constants.class );
-
-    @Inject
-    HomeView view;
-    // Retrieve the actions from a service
-    Map<String, String> actions = new HashMap<String, String>();
+    private Constants constants = GWT.create(Constants.class);
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -63,15 +58,19 @@ public class HomePresenter {
         return view;
     }
 
-    public void doAction( String action ) {
-        String locatedAction = actions.get( action );
-        if ( locatedAction == null || locatedAction.equals( "" ) ) {
-            view.displayNotification(constants.ActionNotImplementedYet() );
+    public void doAction(String action) {
+        String locatedAction = actions.get(action);
+        if (locatedAction == null || locatedAction.equals("")) {
+            view.displayNotification(constants.ActionNotImplementedYet());
             return;
         }
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( locatedAction );
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(locatedAction);
 
-        placeManager.goTo( placeRequestImpl );
+        placeManager.goTo(placeRequestImpl);
     }
 
+    public interface HomeView extends UberView<HomePresenter> {
+
+        void displayNotification(String text);
+    }
 }

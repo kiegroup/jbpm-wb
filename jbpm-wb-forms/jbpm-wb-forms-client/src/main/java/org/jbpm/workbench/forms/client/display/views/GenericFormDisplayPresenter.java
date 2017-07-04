@@ -39,13 +39,11 @@ public class GenericFormDisplayPresenter {
                       final Command onClose) {
 
         view.getDisplayerView().setOnCloseCommand(onClose);
-
     }
 
     public IsWidget getView() {
         return view;
     }
-
 
     public interface GenericFormDisplayView extends IsWidget {
 
@@ -53,5 +51,4 @@ public class GenericFormDisplayPresenter {
 
         void displayNotification(final String text);
     }
-
 }

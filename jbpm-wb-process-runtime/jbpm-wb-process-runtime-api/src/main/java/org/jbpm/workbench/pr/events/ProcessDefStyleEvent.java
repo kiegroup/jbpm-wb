@@ -20,15 +20,16 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class ProcessDefStyleEvent {
-    
+
     private String processDefVersion;
     private String processDefName;
-    
-    public ProcessDefStyleEvent(){
-        
+
+    public ProcessDefStyleEvent() {
+
     }
 
-    public ProcessDefStyleEvent(String processDefName, String processDefVersion) {
+    public ProcessDefStyleEvent(String processDefName,
+                                String processDefVersion) {
         this.processDefVersion = processDefVersion;
         this.processDefName = processDefName;
     }
@@ -40,7 +41,7 @@ public class ProcessDefStyleEvent {
     public void setProcessDefVersion(String processDefVersion) {
         this.processDefVersion = processDefVersion;
     }
-    
+
     public String getProcessDefName() {
         return processDefName;
     }
@@ -48,13 +49,4 @@ public class ProcessDefStyleEvent {
     public void setProcessDefName(String processDefName) {
         this.processDefName = processDefName;
     }
-
-    
-    
-    
-    
-
-    
-    
-    
 }

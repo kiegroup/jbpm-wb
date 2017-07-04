@@ -52,12 +52,7 @@ import org.uberfire.mvp.Command;
 @Dependent
 public class JobDetailsPopup extends BaseModal {
 
-    interface Binder
-            extends
-            UiBinder<Widget, JobDetailsPopup> {
-
-    }
-
+    private static Binder uiBinder = GWT.create(Binder.class);
     final Constants constants = Constants.INSTANCE;
 
     @UiField
@@ -77,70 +72,79 @@ public class JobDetailsPopup extends BaseModal {
 
     private ListDataProvider<RequestParameterSummary> dataProvider = new ListDataProvider<RequestParameterSummary>();
 
-    private static Binder uiBinder = GWT.create( Binder.class );
-
     public JobDetailsPopup() {
-        setTitle( Constants.INSTANCE.Job_Request_Details() );
+        setTitle(Constants.INSTANCE.Job_Request_Details());
 
-        setBody( uiBinder.createAndBindUi( this ) );
+        setBody(uiBinder.createAndBindUi(this));
         init();
         final GenericModalFooter footer = new GenericModalFooter();
-        footer.addButton( Constants.INSTANCE.Ok(),
-                          new Command() {
-                              @Override
-                              public void execute() {
-                                  closePopup();
-                              }
-                          }, null,
-                          ButtonType.PRIMARY );
+        footer.addButton(Constants.INSTANCE.Ok(),
+                         new Command() {
+                             @Override
+                             public void execute() {
+                                 closePopup();
+                             }
+                         },
+                         null,
+                         ButtonType.PRIMARY);
 
-        add( footer );
+        add(footer);
     }
 
-    public void show( String serverTemplateId, String jobId ) {
-        cleanForm( serverTemplateId, jobId );
+    public void show(String serverTemplateId,
+                     String jobId) {
+        cleanForm(serverTemplateId,
+                  jobId);
         super.show();
     }
 
     public void init() {
-        Column<RequestParameterSummary, String> paramKeyColumn = new Column<RequestParameterSummary, String>( new TextCell() ) {
+        Column<RequestParameterSummary, String> paramKeyColumn = new Column<RequestParameterSummary, String>(new TextCell()) {
             @Override
-            public String getValue( RequestParameterSummary rowObject ) {
+            public String getValue(RequestParameterSummary rowObject) {
                 return rowObject.getKey();
             }
         };
-        executionParametersGrid.setHeight( "200px" );
+        executionParametersGrid.setHeight("200px");
 
         // Set the message to display when the table is empty.
-        executionParametersGrid.setEmptyTableWidget( new com.google.gwt.user.client.ui.Label( constants.No_Parameters_added_yet() ) );
-        executionParametersGrid.addColumn( paramKeyColumn, new ResizableHeader<RequestParameterSummary>( constants.Key(),
-                                                                                                         executionParametersGrid, paramKeyColumn ) );
+        executionParametersGrid.setEmptyTableWidget(new com.google.gwt.user.client.ui.Label(constants.No_Parameters_added_yet()));
+        executionParametersGrid.addColumn(paramKeyColumn,
+                                          new ResizableHeader<RequestParameterSummary>(constants.Key(),
+                                                                                       executionParametersGrid,
+                                                                                       paramKeyColumn));
 
-        Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>( new TextCell() ) {
+        Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>(new TextCell()) {
             @Override
-            public String getValue( RequestParameterSummary rowObject ) {
+            public String getValue(RequestParameterSummary rowObject) {
                 return rowObject.getValue();
             }
         };
-        executionParametersGrid.addColumn( paramValueColumn, new ResizableHeader<RequestParameterSummary>( constants.Value(),
-                                                                                                           executionParametersGrid, paramValueColumn ) );
+        executionParametersGrid.addColumn(paramValueColumn,
+                                          new ResizableHeader<RequestParameterSummary>(constants.Value(),
+                                                                                       executionParametersGrid,
+                                                                                       paramValueColumn));
 
-        this.dataProvider.addDataDisplay( executionParametersGrid );
+        this.dataProvider.addDataDisplay(executionParametersGrid);
     }
 
-    public void cleanForm( String serverTemplateId, String requestId ) {
-        this.addShownHandler( new ModalShownHandler() {
+    public void cleanForm(String serverTemplateId,
+                          String requestId) {
+        this.addShownHandler(new ModalShownHandler() {
             @Override
-            public void onShown( ModalShownEvent shownEvent ) {
+            public void onShown(ModalShownEvent shownEvent) {
                 refreshTable();
             }
-        } );
-        this.executorServices.call( new RemoteCallback<RequestDetails>() {
+        });
+        this.executorServices.call(new RemoteCallback<RequestDetails>() {
             @Override
-            public void callback( RequestDetails response ) {
-                setRequest( response.getRequest(), response.getErrors(), response.getParams() );
+            public void callback(RequestDetails response) {
+                setRequest(response.getRequest(),
+                           response.getErrors(),
+                           response.getParams());
             }
-        } ).getRequestDetails( serverTemplateId, Long.valueOf( requestId ) );
+        }).getRequestDetails(serverTemplateId,
+                             Long.valueOf(requestId));
     }
 
     public void closePopup() {
@@ -148,23 +152,23 @@ public class JobDetailsPopup extends BaseModal {
         super.hide();
     }
 
-    public void setRequest( RequestSummary r,
-                            List<ErrorSummary> errors,
-                            List<RequestParameterSummary> params ) {
-        this.jobRetries.setText( String.valueOf( r.getExecutions() ) );
-        if ( errors != null && errors.size() > 0 ) {
-            errorControlGroup.setVisible( true );
-            String html ="";
-            for ( ErrorSummary error : errors ) {
-                html += "<strong>" + error.getMessage() + "</strong><br/>" + error.getStacktrace() +"<br><br>";
+    public void setRequest(RequestSummary r,
+                           List<ErrorSummary> errors,
+                           List<RequestParameterSummary> params) {
+        this.jobRetries.setText(String.valueOf(r.getExecutions()));
+        if (errors != null && errors.size() > 0) {
+            errorControlGroup.setVisible(true);
+            String html = "";
+            for (ErrorSummary error : errors) {
+                html += "<strong>" + error.getMessage() + "</strong><br/>" + error.getStacktrace() + "<br><br>";
             }
-            this.errorsOccurredList.setHTML( SafeHtmlUtils.fromTrustedString( html ) ) ;
+            this.errorsOccurredList.setHTML(SafeHtmlUtils.fromTrustedString(html));
         } else {
-            errorControlGroup.setVisible( false );
+            errorControlGroup.setVisible(false);
         }
-        if ( params != null ) {
+        if (params != null) {
             this.dataProvider.getList().clear();
-            this.dataProvider.getList().addAll( params );
+            this.dataProvider.getList().addAll(params);
             this.dataProvider.refresh();
         }
     }
@@ -173,4 +177,9 @@ public class JobDetailsPopup extends BaseModal {
         executionParametersGrid.redraw();
     }
 
+    interface Binder
+            extends
+            UiBinder<Widget, JobDetailsPopup> {
+
+    }
 }

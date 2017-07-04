@@ -32,7 +32,8 @@ public class NewTaskEvent implements Serializable {
     public NewTaskEvent() {
     }
 
-    public NewTaskEvent(Long newTaskId, String newTaskName) {
+    public NewTaskEvent(Long newTaskId,
+                        String newTaskName) {
         this.newTaskId = newTaskId;
         this.newTaskName = newTaskName;
     }
@@ -67,24 +68,30 @@ public class NewTaskEvent implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         NewTaskEvent other = (NewTaskEvent) obj;
         if (newTaskId == null) {
-            if (other.newTaskId != null)
+            if (other.newTaskId != null) {
                 return false;
-        } else if (!newTaskId.equals(other.newTaskId))
+            }
+        } else if (!newTaskId.equals(other.newTaskId)) {
             return false;
+        }
         if (newTaskName == null) {
-            if (other.newTaskName != null)
+            if (other.newTaskName != null) {
                 return false;
-        } else if (!newTaskName.equals(other.newTaskName))
+            }
+        } else if (!newTaskName.equals(other.newTaskName)) {
             return false;
+        }
         return true;
     }
-
 }

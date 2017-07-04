@@ -44,5 +44,4 @@ public class TaskAdminSettingsPerspective extends Composite {
         p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(TaskAdminSettingsPresenter.SCREEN_ID)));
         return p;
     }
-
 }

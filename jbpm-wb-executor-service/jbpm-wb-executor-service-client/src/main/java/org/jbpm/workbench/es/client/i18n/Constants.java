@@ -29,7 +29,7 @@ import com.google.gwt.i18n.client.Messages;
  */
 public interface Constants extends Messages {
 
-    Constants INSTANCE = GWT.create( Constants.class );
+    Constants INSTANCE = GWT.create(Constants.class);
 
     String Queued();
 
@@ -228,7 +228,6 @@ public interface Constants extends Messages {
     String UnacknowledgedErrors();
 
     String AcknowledgedErrors();
-    
-    String ViewProcessInstance();
 
+    String ViewProcessInstance();
 }

@@ -25,5 +25,4 @@ public interface AppImages
 
     @Source("logo.png")
     ImageResource logo();
-
 }

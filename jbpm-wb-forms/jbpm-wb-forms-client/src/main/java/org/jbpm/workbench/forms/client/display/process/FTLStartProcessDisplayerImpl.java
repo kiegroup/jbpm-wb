@@ -34,16 +34,16 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
 
     @Override
     protected void initDisplayer() {
-        publish( this );
+        publish(this);
 
         jsniHelper.publishGetFormValues();
 
-        jsniHelper.injectFormValidationsScripts( renderingSettings.getFormContent() );
+        jsniHelper.injectFormValidationsScripts(renderingSettings.getFormContent());
     }
 
     @Override
     public IsWidget getFormWidget() {
-        return new HTMLPanel( renderingSettings.getFormContent() );
+        return new HTMLPanel(renderingSettings.getFormContent());
     }
 
     @Override
@@ -55,13 +55,18 @@ public class FTLStartProcessDisplayerImpl extends AbstractStartProcessFormDispla
         }
     }-*/;
 
-    public void startProcess( JavaScriptObject values ) {
-        final Map<String, Object> params = jsniHelper.getParameters( values );
-        processService.call( getStartProcessRemoteCallback(), getUnexpectedErrorCallback() )
-                .startProcess( serverTemplateId, deploymentId, processDefId, getCorrelationKey(), params );
+    public void startProcess(JavaScriptObject values) {
+        final Map<String, Object> params = jsniHelper.getParameters(values);
+        processService.call(getStartProcessRemoteCallback(),
+                            getUnexpectedErrorCallback())
+                .startProcess(serverTemplateId,
+                              deploymentId,
+                              processDefId,
+                              getCorrelationKey(),
+                              params);
     }
 
-    protected native void publish( FTLStartProcessDisplayerImpl ftl )/*-{
+    protected native void publish(FTLStartProcessDisplayerImpl ftl)/*-{
         $wnd.startProcess = function (form) {
             ftl.@org.jbpm.workbench.forms.client.display.process.FTLStartProcessDisplayerImpl::startProcess(Lcom/google/gwt/core/client/JavaScriptObject;)(form);
         }

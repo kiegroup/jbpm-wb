@@ -18,7 +18,8 @@ package org.jbpm.workbench.common.model;
 public interface CalendarListContainer {
 
     void setDayView();
-    void setWeekView();
-    void setMonthView();
 
+    void setWeekView();
+
+    void setMonthView();
 }

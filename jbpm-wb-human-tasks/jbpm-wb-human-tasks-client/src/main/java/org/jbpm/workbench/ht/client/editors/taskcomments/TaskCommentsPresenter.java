@@ -37,25 +37,16 @@ import org.uberfire.client.mvp.UberView;
 @Dependent
 public class TaskCommentsPresenter {
 
-    public interface TaskCommentsView extends UberView<TaskCommentsPresenter> {
-
-        void clearCommentInput();
-
-        void redrawDataGrid();
-
-        void displayNotification(String text);
-    }
-
-    private Constants constants = Constants.INSTANCE;
     private final TaskCommentsView view;
     private final Caller<TaskService> taskService;
     private final ListDataProvider<CommentSummary> dataProvider = new ListDataProvider<CommentSummary>();
+    private Constants constants = Constants.INSTANCE;
     private long currentTaskId = 0;
     private String serverTemplateId;
     private String containerId;
-
     @Inject
-    public TaskCommentsPresenter(TaskCommentsView view, Caller<TaskService> taskService) {
+    public TaskCommentsPresenter(TaskCommentsView view,
+                                 Caller<TaskService> taskService) {
         this.view = view;
         this.taskService = taskService;
     }
@@ -83,18 +74,22 @@ public class TaskCommentsPresenter {
                         view.redrawDataGrid();
                     }
                 }
-        ).getTaskComments(serverTemplateId, containerId, currentTaskId);
+        ).getTaskComments(serverTemplateId,
+                          containerId,
+                          currentTaskId);
     }
 
     public void addTaskComment(final String text) {
         if ("".equals(text.trim())) {
             view.displayNotification(constants.CommentCannotBeEmpty());
         } else {
-            addTaskComment(text, new Date());
+            addTaskComment(text,
+                           new Date());
         }
     }
 
-    private void addTaskComment(final String text, final Date addedOn) {
+    private void addTaskComment(final String text,
+                                final Date addedOn) {
         taskService.call(
                 new RemoteCallback<Void>() {
                     @Override
@@ -103,7 +98,11 @@ public class TaskCommentsPresenter {
                         view.clearCommentInput();
                     }
                 }
-        ).addTaskComment(serverTemplateId, containerId, currentTaskId, text, addedOn);
+        ).addTaskComment(serverTemplateId,
+                         containerId,
+                         currentTaskId,
+                         text,
+                         addedOn);
     }
 
     public void removeTaskComment(long commentId) {
@@ -116,7 +115,10 @@ public class TaskCommentsPresenter {
                         view.displayNotification(constants.CommentDeleted());
                     }
                 }
-        ).deleteTaskComment(serverTemplateId, containerId, currentTaskId, commentId);
+        ).deleteTaskComment(serverTemplateId,
+                            containerId,
+                            currentTaskId,
+                            commentId);
     }
 
     public void addDataDisplay(final HasData<CommentSummary> display) {
@@ -134,5 +136,14 @@ public class TaskCommentsPresenter {
         if (currentTaskId == event.getTaskId()) {
             refreshComments();
         }
+    }
+
+    public interface TaskCommentsView extends UberView<TaskCommentsPresenter> {
+
+        void clearCommentInput();
+
+        void redrawDataGrid();
+
+        void displayNotification(String text);
     }
 }

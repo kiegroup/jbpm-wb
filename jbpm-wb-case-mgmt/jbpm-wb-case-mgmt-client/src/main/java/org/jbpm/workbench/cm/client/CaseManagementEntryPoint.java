@@ -31,5 +31,4 @@ public class CaseManagementEntryPoint {
         PatternFlyBootstrapper.ensurejQueryIsAvailable();
         PatternFlyBootstrapper.ensureBootstrapSelectIsAvailable();
     }
-
 }

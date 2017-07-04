@@ -20,6 +20,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class RequestSelectionEvent {
+
     private Long taskId;
 
     public RequestSelectionEvent() {
@@ -32,5 +33,4 @@ public class RequestSelectionEvent {
     public long getTaskId() {
         return taskId;
     }
-
 }

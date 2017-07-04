@@ -52,6 +52,7 @@ import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mvp.Command;
 
 public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSettings> implements HumanTaskFormDisplayer<S> {
+
     public static final String ACTION_CLAIM_TASK = "claimTask";
     public static final String ACTION_START_TASK = "startTask";
     public static final String ACTION_RELEASE_TASK = "releaseTask";
@@ -65,16 +66,10 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
     protected String serverTemplateId;
     protected String deploymentId;
 
-    protected FormPanel container = GWT.create( FormPanel.class );
-    protected ButtonGroup buttonsContainer = GWT.create( ButtonGroup.class );
-    protected FlowPanel formContainer = GWT.create( FlowPanel.class );
-
-    private Command onClose;
-
-    private Command onRefresh;
-
+    protected FormPanel container = GWT.create(FormPanel.class);
+    protected ButtonGroup buttonsContainer = GWT.create(ButtonGroup.class);
+    protected FlowPanel formContainer = GWT.create(FlowPanel.class);
     protected FormContentResizeListener resizeListener;
-
     protected Constants constants = GWT.create(Constants.class);
 
     @Inject
@@ -95,6 +90,10 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
     @Inject
     protected JSNIHelper jsniHelper;
 
+    private Command onClose;
+
+    private Command onRefresh;
+
     protected abstract void initDisplayer();
 
     protected abstract void completeFromDisplayer();
@@ -110,13 +109,16 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
     @PostConstruct
     protected void init() {
         container.getElement().setId("form-data");
-        container.add( formContainer );
+        container.add(formContainer);
     }
 
     @Override
-    public void init(FormDisplayerConfig<TaskKey, S> config, Command onCloseCommand, Command onRefreshCommand, FormContentResizeListener resizeListener) {
+    public void init(FormDisplayerConfig<TaskKey, S> config,
+                     Command onCloseCommand,
+                     Command onRefreshCommand,
+                     FormContentResizeListener resizeListener) {
 
-        if ( this.renderingSettings != null ) {
+        if (this.renderingSettings != null) {
             clearRenderingSettings();
             clearStatus();
         }
@@ -130,95 +132,97 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
         this.onClose = onCloseCommand;
         this.onRefresh = onRefreshCommand;
 
-        if ( renderingSettings == null ) {
+        if (renderingSettings == null) {
             return;
         }
 
         taskService.call(new RemoteCallback<TaskSummary>() {
-            @Override
-            public void callback(final TaskSummary task) {
-                if (task == null) {
-                    return;
-                }
-                buttonsContainer.clear();
-                taskName = task.getName();
-                deploymentId = task.getDeploymentId();
-                if (opener != null) {
-                    injectEventListener(AbstractHumanTaskFormDisplayer.this);
-                } else {
-                    if (task.getStatus().equals("Ready")) {
-                        Button claimButton = new Button();
-                        claimButton.setType(ButtonType.PRIMARY);
-                        claimButton.setText(constants.Claim());
-                        claimButton.addClickHandler(new ClickHandler() {
-                            @Override
-                            public void onClick(ClickEvent event) {
-                                claimFromDisplayer();
-                            }
-                        });
-                        buttonsContainer.add(claimButton);
-                    }
+                             @Override
+                             public void callback(final TaskSummary task) {
+                                 if (task == null) {
+                                     return;
+                                 }
+                                 buttonsContainer.clear();
+                                 taskName = task.getName();
+                                 deploymentId = task.getDeploymentId();
+                                 if (opener != null) {
+                                     injectEventListener(AbstractHumanTaskFormDisplayer.this);
+                                 } else {
+                                     if (task.getStatus().equals("Ready")) {
+                                         Button claimButton = new Button();
+                                         claimButton.setType(ButtonType.PRIMARY);
+                                         claimButton.setText(constants.Claim());
+                                         claimButton.addClickHandler(new ClickHandler() {
+                                             @Override
+                                             public void onClick(ClickEvent event) {
+                                                 claimFromDisplayer();
+                                             }
+                                         });
+                                         buttonsContainer.add(claimButton);
+                                     }
 
-                    if (task.getStatus().equals("Reserved") && task.getActualOwner().equals(identity.getIdentifier())) {
+                                     if (task.getStatus().equals("Reserved") && task.getActualOwner().equals(identity.getIdentifier())) {
 
-                        Button releaseButton = new Button();
-                        releaseButton.setText(constants.Release());
-                        releaseButton.addClickHandler(new ClickHandler() {
-                            @Override
-                            public void onClick(ClickEvent event) {
-                                releaseFromDisplayer();
-                            }
-                        });
-                        buttonsContainer.add(releaseButton);
+                                         Button releaseButton = new Button();
+                                         releaseButton.setText(constants.Release());
+                                         releaseButton.addClickHandler(new ClickHandler() {
+                                             @Override
+                                             public void onClick(ClickEvent event) {
+                                                 releaseFromDisplayer();
+                                             }
+                                         });
+                                         buttonsContainer.add(releaseButton);
 
-                        Button startButton = new Button();
-                        startButton.setType(ButtonType.PRIMARY);
-                        startButton.setText(constants.Start());
-                        startButton.addClickHandler(new ClickHandler() {
-                            @Override
-                            public void onClick(ClickEvent event) {
-                                startFromDisplayer();
-                            }
-                        });
-                        buttonsContainer.add(startButton);
-                    } else if (task.getStatus().equals("InProgress") && task.getActualOwner().equals(identity.getIdentifier())) {
-                        Button saveButton = new Button();
-                        saveButton.setText(constants.Save());
-                        saveButton.addClickHandler(new ClickHandler() {
-                            @Override
-                            public void onClick(ClickEvent event) {
-                                saveStateFromDisplayer();
+                                         Button startButton = new Button();
+                                         startButton.setType(ButtonType.PRIMARY);
+                                         startButton.setText(constants.Start());
+                                         startButton.addClickHandler(new ClickHandler() {
+                                             @Override
+                                             public void onClick(ClickEvent event) {
+                                                 startFromDisplayer();
+                                             }
+                                         });
+                                         buttonsContainer.add(startButton);
+                                     } else if (task.getStatus().equals("InProgress") && task.getActualOwner().equals(identity.getIdentifier())) {
+                                         Button saveButton = new Button();
+                                         saveButton.setText(constants.Save());
+                                         saveButton.addClickHandler(new ClickHandler() {
+                                             @Override
+                                             public void onClick(ClickEvent event) {
+                                                 saveStateFromDisplayer();
+                                             }
+                                         });
+                                         buttonsContainer.add(saveButton);
 
-                            }
-                        });
-                        buttonsContainer.add(saveButton);
+                                         Button releaseButton = new Button();
+                                         releaseButton.setText(constants.Release());
+                                         releaseButton.addClickHandler(new ClickHandler() {
+                                             @Override
+                                             public void onClick(ClickEvent event) {
+                                                 releaseFromDisplayer();
+                                             }
+                                         });
+                                         buttonsContainer.add(releaseButton);
 
-                        Button releaseButton = new Button();
-                        releaseButton.setText(constants.Release());
-                        releaseButton.addClickHandler(new ClickHandler() {
-                            @Override
-                            public void onClick(ClickEvent event) {
-                                releaseFromDisplayer();
-                            }
-                        });
-                        buttonsContainer.add(releaseButton);
+                                         Button completeButton = new Button();
+                                         completeButton.setType(ButtonType.PRIMARY);
+                                         completeButton.setText(constants.Complete());
+                                         completeButton.addClickHandler(new ClickHandler() {
+                                             @Override
+                                             public void onClick(ClickEvent event) {
+                                                 completeFromDisplayer();
+                                             }
+                                         });
 
-                        Button completeButton = new Button();
-                        completeButton.setType(ButtonType.PRIMARY);
-                        completeButton.setText(constants.Complete());
-                        completeButton.addClickHandler(new ClickHandler() {
-                            @Override
-                            public void onClick(ClickEvent event) {
-                                completeFromDisplayer();
-                            }
-                        });
-
-                        buttonsContainer.add(completeButton);
-                    }
-                }
-                initDisplayer();
-            }
-        }, getUnexpectedErrorCallback()).getTask(serverTemplateId, deploymentId, taskId);
+                                         buttonsContainer.add(completeButton);
+                                     }
+                                 }
+                                 initDisplayer();
+                             }
+                         },
+                         getUnexpectedErrorCallback()).getTask(serverTemplateId,
+                                                               deploymentId,
+                                                               taskId);
     }
 
     protected void clearRenderingSettings() {
@@ -227,28 +231,45 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
 
     @Override
     public void complete(Map<String, Object> params) {
-        taskService.call(getCompleteTaskRemoteCallback(), getUnexpectedErrorCallback())
-                .completeTask(serverTemplateId, deploymentId, taskId, params);
+        taskService.call(getCompleteTaskRemoteCallback(),
+                         getUnexpectedErrorCallback())
+                .completeTask(serverTemplateId,
+                              deploymentId,
+                              taskId,
+                              params);
     }
 
     @Override
     public void claim() {
-        taskService.call(getClaimTaskCallback(), getUnexpectedErrorCallback()).claimTask(serverTemplateId, deploymentId, taskId);
+        taskService.call(getClaimTaskCallback(),
+                         getUnexpectedErrorCallback()).claimTask(serverTemplateId,
+                                                                 deploymentId,
+                                                                 taskId);
     }
 
     @Override
     public void release() {
-        taskService.call(getReleaseTaskRemoteCallback(), getUnexpectedErrorCallback()).releaseTask(serverTemplateId, deploymentId, taskId);
+        taskService.call(getReleaseTaskRemoteCallback(),
+                         getUnexpectedErrorCallback()).releaseTask(serverTemplateId,
+                                                                   deploymentId,
+                                                                   taskId);
     }
 
     @Override
     public void saveState(Map<String, Object> state) {
-        taskService.call(getSaveTaskStateCallback(), getUnexpectedErrorCallback()).saveTaskContent(serverTemplateId, deploymentId, taskId, state);
+        taskService.call(getSaveTaskStateCallback(),
+                         getUnexpectedErrorCallback()).saveTaskContent(serverTemplateId,
+                                                                       deploymentId,
+                                                                       taskId,
+                                                                       state);
     }
 
     @Override
     public void start() {
-        taskService.call(getStartTaskRemoteCallback(), getUnexpectedErrorCallback()).startTask(serverTemplateId, deploymentId, taskId);
+        taskService.call(getStartTaskRemoteCallback(),
+                         getUnexpectedErrorCallback()).startTask(serverTemplateId,
+                                                                 deploymentId,
+                                                                 taskId);
     }
 
     @Override
@@ -263,49 +284,65 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
 
     protected RemoteCallback getStartTaskRemoteCallback() {
         return (RemoteCallback<Void>) nothing -> {
-            taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId, deploymentId, taskId));
-            jsniHelper.notifySuccessMessage(opener, constants.TaskStarted(taskId));
+            taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId,
+                                                      deploymentId,
+                                                      taskId));
+            jsniHelper.notifySuccessMessage(opener,
+                                            constants.TaskStarted(taskId));
             refresh();
         };
     }
 
     protected RemoteCallback getClaimTaskCallback() {
         return (RemoteCallback<Void>) nothing -> {
-            taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId, deploymentId, taskId));
-            jsniHelper.notifySuccessMessage(opener, constants.TaskClaimed(taskId));
+            taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId,
+                                                      deploymentId,
+                                                      taskId));
+            jsniHelper.notifySuccessMessage(opener,
+                                            constants.TaskClaimed(taskId));
             refresh();
         };
     }
 
     protected RemoteCallback getSaveTaskStateCallback() {
         return (RemoteCallback<Long>) contentId -> {
-            taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId, deploymentId, taskId));
-            jsniHelper.notifySuccessMessage(opener, constants.TaskSaved(taskId));
+            taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId,
+                                                      deploymentId,
+                                                      taskId));
+            jsniHelper.notifySuccessMessage(opener,
+                                            constants.TaskSaved(taskId));
             refresh();
         };
     }
 
     protected RemoteCallback getReleaseTaskRemoteCallback() {
         return (RemoteCallback<Void>) nothing -> {
-            taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId, deploymentId, taskId));
-            jsniHelper.notifySuccessMessage(opener, constants.TaskReleased(taskId));
+            taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId,
+                                                      deploymentId,
+                                                      taskId));
+            jsniHelper.notifySuccessMessage(opener,
+                                            constants.TaskReleased(taskId));
             refresh();
         };
     }
 
     protected RemoteCallback<Void> getCompleteTaskRemoteCallback() {
         return nothing -> {
-            taskCompleted.fire(new TaskCompletedEvent(serverTemplateId, deploymentId, taskId));
-            jsniHelper.notifySuccessMessage(opener, constants.TaskCompleted(taskId));
+            taskCompleted.fire(new TaskCompletedEvent(serverTemplateId,
+                                                      deploymentId,
+                                                      taskId));
+            jsniHelper.notifySuccessMessage(opener,
+                                            constants.TaskCompleted(taskId));
             close();
         };
     }
 
     protected ErrorCallback<Message> getUnexpectedErrorCallback() {
-        return ( message, throwable ) -> {
+        return (message, throwable) -> {
             String notification = constants.UnexpectedError(throwable.getMessage());
             errorPopup.showMessage(notification);
-            jsniHelper.notifyErrorMessage(opener, notification);
+            jsniHelper.notifyErrorMessage(opener,
+                                          notification);
             return true;
         };
     }
@@ -320,16 +357,15 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
         this.onRefresh = callback;
     }
 
-
-    protected void refresh(){
-        if(this.onRefresh != null){
+    protected void refresh() {
+        if (this.onRefresh != null) {
             this.onRefresh.execute();
         }
     }
 
     @Override
     public void close() {
-        if(this.onClose != null){
+        if (this.onClose != null) {
             this.onClose.execute();
         }
         clearStatus();
@@ -351,16 +387,25 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
         resizeListener = null;
     }
 
-    protected void eventListener(String origin, String request) {
-        if (origin == null || !origin.endsWith("//" + opener)) return;
+    protected void eventListener(String origin,
+                                 String request) {
+        if (origin == null || !origin.endsWith("//" + opener)) {
+            return;
+        }
 
         ActionRequest actionRequest = JsonUtils.safeEval(request);
 
-        if (ACTION_CLAIM_TASK.equals(actionRequest.getAction())) claimFromDisplayer();
-        else if (ACTION_START_TASK.equals(actionRequest.getAction())) startFromDisplayer();
-        else if (ACTION_RELEASE_TASK.equals(actionRequest.getAction())) releaseFromDisplayer();
-        else if (ACTION_SAVE_TASK.equals(actionRequest.getAction())) saveStateFromDisplayer();
-        else if (ACTION_COMPLETE_TASK.equals(actionRequest.getAction())) completeFromDisplayer();
+        if (ACTION_CLAIM_TASK.equals(actionRequest.getAction())) {
+            claimFromDisplayer();
+        } else if (ACTION_START_TASK.equals(actionRequest.getAction())) {
+            startFromDisplayer();
+        } else if (ACTION_RELEASE_TASK.equals(actionRequest.getAction())) {
+            releaseFromDisplayer();
+        } else if (ACTION_SAVE_TASK.equals(actionRequest.getAction())) {
+            saveStateFromDisplayer();
+        } else if (ACTION_COMPLETE_TASK.equals(actionRequest.getAction())) {
+            completeFromDisplayer();
+        }
     }
 
     private native void injectEventListener(AbstractHumanTaskFormDisplayer fdp) /*-{

@@ -59,5 +59,4 @@ public interface AdvancedSearchFiltersView {
                                             Consumer<T> removeCallback);
 
     void removeAllActiveFilters();
-
 }

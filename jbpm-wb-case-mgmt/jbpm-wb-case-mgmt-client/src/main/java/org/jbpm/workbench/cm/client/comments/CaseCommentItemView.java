@@ -55,7 +55,8 @@ import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 
 @Dependent
 @Templated
-public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> implements TakesValue<CaseCommentSummary>, IsElement {
+public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> implements TakesValue<CaseCommentSummary>,
+                                                                                        IsElement {
 
     @Inject
     @DataField("comment-author")
@@ -113,23 +114,23 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
     Div commentUpdate;
 
     @Inject
+    User identity;
+
+    @Inject
+    ConfirmPopup confirmPopup;
+
+    CaseCommentsPresenter.CaseCommentAction updateCommandAction;
+
+    boolean editMode = false;
+
+    @Inject
     @AutoBound
     private DataBinder<CaseCommentSummary> caseCommentSummary;
 
     @Inject
     private TranslationService translationService;
 
-    @Inject
-    User identity;
-
-    @Inject
-    ConfirmPopup confirmPopup;
-
     private Event<CaseCommentEditEvent> commentEditEvent;
-
-    CaseCommentsPresenter.CaseCommentAction updateCommandAction;
-
-    boolean editMode = false;
 
     @Inject
     public void setCommentEditEvent(final Event<CaseCommentEditEvent> commentEditEvent) {
@@ -137,7 +138,8 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
     }
 
     public void setIconType(final String iconTypeClass) {
-        addCSSClass(this.iconType, iconTypeClass);
+        addCSSClass(this.iconType,
+                    iconTypeClass);
     }
 
     @Override
@@ -146,7 +148,8 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
     }
 
     public void addAction(final CaseCommentsPresenter.CaseCommentAction action) {
-        removeCSSClass(actionsButton, "disabled");
+        removeCSSClass(actionsButton,
+                       "disabled");
 
         final HTMLElement a = getDocument().createElement("a");
         a.setTextContent(action.label());
@@ -166,14 +169,18 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
         this.editMode = editMode;
         updateActions(editMode);
         if (editMode) {
-            addCSSClass(commentShowGroup, "hidden");
-            removeCSSClass(commentUpdate, "hidden");
+            addCSSClass(commentShowGroup,
+                        "hidden");
+            removeCSSClass(commentUpdate,
+                           "hidden");
             updateCommentText.setValue(getValue().getText());
             clearErrorMessages();
             updateCommentText.focus();
         } else {
-            addCSSClass(commentUpdate, "hidden");
-            removeCSSClass(commentShowGroup, "hidden");
+            addCSSClass(commentUpdate,
+                        "hidden");
+            removeCSSClass(commentShowGroup,
+                           "hidden");
         }
     }
 
@@ -204,7 +211,6 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
     @EventHandler("cancel-edition")
     public void onCancelEdtionClick(@ForEvent("click") org.jboss.errai.common.client.dom.Event e) {
         setEditMode(false);
-
     }
 
     @Override
@@ -231,7 +237,8 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
                     @Override
                     public void execute() {
                         if (validateForm()) {
-                            presenter.updateCaseComment(getValue(), updateCommentText.getValue());
+                            presenter.updateCaseComment(getValue(),
+                                                        updateCommentText.getValue());
                         }
                     }
                 });
@@ -268,9 +275,9 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
                 @Override
                 public void execute() {
                     confirmPopup.show(translationService.format(DELETE_COMMENT),
-                            translationService.format(DELETE),
-                            translationService.format(DELETE_THIS_COMMENT),
-                            () -> presenter.deleteCaseComment(getValue()));
+                                      translationService.format(DELETE),
+                                      translationService.format(DELETE_THIS_COMMENT),
+                                      () -> presenter.deleteCaseComment(getValue()));
                 }
             });
         } else {
@@ -288,8 +295,8 @@ public class CaseCommentItemView extends AbstractView<CaseCommentsPresenter> imp
         }
     }
 
-    public void setLastElementStyle(){
-        addCSSClass(actions, "dropup");
+    public void setLastElementStyle() {
+        addCSSClass(actions,
+                    "dropup");
     }
-
 }

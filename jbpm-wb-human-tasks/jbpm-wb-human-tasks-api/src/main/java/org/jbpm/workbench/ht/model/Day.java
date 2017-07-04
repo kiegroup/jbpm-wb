@@ -24,10 +24,12 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class Day implements Serializable {
+
     private final Date date;
     private final String dayOfWeekName;
 
-    public Day(@MapsTo("date") Date date, @MapsTo("dayOfWeekName") String dayOfWeekName) {
+    public Day(@MapsTo("date") Date date,
+               @MapsTo("dayOfWeekName") String dayOfWeekName) {
         this.date = date;
         this.dayOfWeekName = dayOfWeekName;
     }
@@ -43,12 +45,15 @@ public class Day implements Serializable {
     @Override
     @SuppressWarnings("deprecation") // Date needed by GWT
     public boolean equals(Object other) {
-        if (this == other)
+        if (this == other) {
             return true;
-        if (other == null)
+        }
+        if (other == null) {
             return false;
-        if (!(other instanceof Day))
+        }
+        if (!(other instanceof Day)) {
             return false;
+        }
         Date otherDate = ((Day) other).getDate();
         return date.getDate() == otherDate.getDate() &&
                 date.getMonth() == otherDate.getMonth() &&
@@ -67,5 +72,4 @@ public class Day implements Serializable {
         hash = ~~hash;
         return hash;
     }
-
 }

@@ -22,7 +22,8 @@ import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 
 import org.kie.workbench.common.widgets.metadata.client.KieEditorView;
 
-public interface DeploymentDescriptorView extends KieEditorView, IsWidget {
+public interface DeploymentDescriptorView extends KieEditorView,
+                                                  IsWidget {
 
     void setup();
 
@@ -34,14 +35,16 @@ public interface DeploymentDescriptorView extends KieEditorView, IsWidget {
 
     Widget getSourceEditor();
 
-    void setSource( String source );
+    void setSource(String source);
 
-    void addRuntimeStrategy(String runtimeStrategyTitle, String runmimeStrategyValue);
+    void addRuntimeStrategy(String runtimeStrategyTitle,
+                            String runmimeStrategyValue);
 
-    void addPersistenceMode(String persistenceModeTitle, String persistenceModeValue);
+    void addPersistenceMode(String persistenceModeTitle,
+                            String persistenceModeValue);
 
-    void addAuditMode(String auditModeTitle, String auditModeValue);
+    void addAuditMode(String auditModeTitle,
+                      String auditModeValue);
 
     void setSourceTabReadOnly(boolean readOnly);
-
 }

@@ -71,36 +71,30 @@ public class NewCaseProjectHandler
 
     private boolean openEditorOnCreation = true;
     private org.uberfire.client.callbacks.Callback<Project> creationSuccessCallback;
-
-    @Inject
-    public void setCaseProjectService(Caller<CaseProjectService> caseProjectService) {
-        this.caseProjectService = caseProjectService;
-    }
-
-    @Inject
-    public void setNotification(Event<NotificationEvent> notification) {
-        this.notification = notification;
-    }
-
     org.uberfire.client.callbacks.Callback<Project> configureCaseProjectCallback = new org.uberfire.client.callbacks.Callback<Project>() {
         @Override
         public void callback(Project project) {
             if (project != null) {
                 caseProjectService.call(new RemoteCallback<Void>() {
-                    @Override
-                    public void callback(Void aVoid) {
-                        notification.fire(new NotificationEvent(Constants.INSTANCE.ConfigureProjectSuccess(project.getProjectName()), NotificationEvent.NotificationType.SUCCESS));
-                        if (creationSuccessCallback != null) {
-                            creationSuccessCallback.callback(project);
-                        }
-                    }
-                }, new DefaultErrorCallback() {
-                    @Override
-                    public boolean error(Message message, Throwable throwable) {
-                        notification.fire(new NotificationEvent(Constants.INSTANCE.ConfigureProjectFailure(project.getProjectName()), NotificationEvent.NotificationType.ERROR));
-                        return super.error(message, throwable);
-                    }
-                }).configureNewCaseProject(project);
+                                            @Override
+                                            public void callback(Void aVoid) {
+                                                notification.fire(new NotificationEvent(Constants.INSTANCE.ConfigureProjectSuccess(project.getProjectName()),
+                                                                                        NotificationEvent.NotificationType.SUCCESS));
+                                                if (creationSuccessCallback != null) {
+                                                    creationSuccessCallback.callback(project);
+                                                }
+                                            }
+                                        },
+                                        new DefaultErrorCallback() {
+                                            @Override
+                                            public boolean error(Message message,
+                                                                 Throwable throwable) {
+                                                notification.fire(new NotificationEvent(Constants.INSTANCE.ConfigureProjectFailure(project.getProjectName()),
+                                                                                        NotificationEvent.NotificationType.ERROR));
+                                                return super.error(message,
+                                                                   throwable);
+                                            }
+                                        }).configureNewCaseProject(project);
             }
         }
     };
@@ -122,6 +116,16 @@ public class NewCaseProjectHandler
         this.repoStructureService = repoStructureService;
         this.projectController = projectController;
         this.resourceType = resourceType;
+    }
+
+    @Inject
+    public void setCaseProjectService(Caller<CaseProjectService> caseProjectService) {
+        this.caseProjectService = caseProjectService;
+    }
+
+    @Inject
+    public void setNotification(Event<NotificationEvent> notification) {
+        this.notification = notification;
     }
 
     @Override
@@ -209,11 +213,10 @@ public class NewCaseProjectHandler
                             }
                             wizard.initialise(builder.build());
                             wizard.start(configureCaseProjectCallback,
-                                    openEditorOnCreation);
+                                         openEditorOnCreation);
                         }
                     }).load(context.getActiveRepository(),
                             context.getActiveBranch());
-
                 } else {
                     view.showNoRepositorySelectedPleaseSelectARepository();
                 }

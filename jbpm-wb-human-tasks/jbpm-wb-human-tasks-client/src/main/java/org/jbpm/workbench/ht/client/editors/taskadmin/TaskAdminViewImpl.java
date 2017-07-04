@@ -38,8 +38,6 @@ import org.uberfire.workbench.events.NotificationEvent;
 @Templated(value = "TaskAdminViewImpl.html")
 public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.TaskAdminView {
 
-    private TaskAdminPresenter presenter;
-
     @Inject
     @DataField
     public Legend adminDetailsAccordionLabel;
@@ -80,37 +78,39 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
     @DataField
     public Button adminReminderButton;
 
+    private TaskAdminPresenter presenter;
+
     @Inject
     private Event<NotificationEvent> notification;
 
-    private Constants constants = GWT.create( Constants.class );
+    private Constants constants = GWT.create(Constants.class);
 
     @Override
-    public void init( TaskAdminPresenter presenter ) {
+    public void init(TaskAdminPresenter presenter) {
         this.presenter = presenter;
-        adminUserOrGroupLabel.setText( constants.Delegate_User() );
-        adminDetailsAccordionLabel.setText( constants.Details() );
-        adminForwardButton.setText( constants.Forward() );
-        adminUsersGroupsControlsLabel.setText( constants.Potential_Owners() );
+        adminUserOrGroupLabel.setText(constants.Delegate_User());
+        adminDetailsAccordionLabel.setText(constants.Details());
+        adminForwardButton.setText(constants.Forward());
+        adminUsersGroupsControlsLabel.setText(constants.Potential_Owners());
 
-        reminderDetailsAccordionLabel.setText( constants.Reminder_Details() );
-        actualOwnerLabel.setText( constants.Actual_Owner() );
-        adminReminderButton.setText( constants.Reminder() );
+        reminderDetailsAccordionLabel.setText(constants.Reminder_Details());
+        actualOwnerLabel.setText(constants.Actual_Owner());
+        adminReminderButton.setText(constants.Reminder());
     }
 
     @EventHandler("adminForwardButton")
-    public void adminForwardButton( ClickEvent e ) {
+    public void adminForwardButton(ClickEvent e) {
         String userOrGroup = adminUserOrGroupText.getText();
-        if ( !userOrGroup.equals( "" ) ) {
-            presenter.forwardTask( userOrGroup );
-            adminForwardButton.setEnabled( false );
+        if (!userOrGroup.equals("")) {
+            presenter.forwardTask(userOrGroup);
+            adminForwardButton.setEnabled(false);
         } else {
             displayNotification(constants.PleaseEnterUserOrAGroupToDelegate());
         }
     }
 
     @EventHandler("adminReminderButton")
-    public void adminReminderButton( ClickEvent e ) {
+    public void adminReminderButton(ClickEvent e) {
         presenter.reminder();
     }
 
@@ -120,8 +120,8 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
     }
 
     @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     @Override

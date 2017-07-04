@@ -35,24 +35,19 @@ import static java.util.stream.Collectors.toList;
 @Dependent
 public class TaskLogsPresenter {
 
-    public interface TaskLogsView extends IsWidget {
-
-        void displayNotification(String text);
-
-        void setLogTextAreaText(List<String> logs);
-
-    }
-
     private TaskLogsView view;
 
     private Caller<TaskService> taskService;
 
     private long currentTaskId = 0;
+
     private String serverTemplateId;
+
     private String containerId;
 
     @Inject
-    public TaskLogsPresenter( final TaskLogsView view, final Caller<TaskService> taskService) {
+    public TaskLogsPresenter(final TaskLogsView view,
+                             final Caller<TaskService> taskService) {
         this.view = view;
         this.taskService = taskService;
     }
@@ -76,19 +71,28 @@ public class TaskLogsPresenter {
                         return timeStamp + ": Task " + tes.getType() + " (" + additionalDetail + ")";
                     }
                 }
-        ).getTaskEvents( serverTemplateId, containerId, currentTaskId );
+        ).getTaskEvents(serverTemplateId,
+                        containerId,
+                        currentTaskId);
     }
 
-    public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
+    public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
         this.currentTaskId = event.getTaskId();
         this.containerId = event.getContainerId();
         this.serverTemplateId = event.getServerTemplateId();
         refreshLogs();
     }
 
-    public void onTaskRefreshedEvent( @Observes final TaskRefreshedEvent event ) {
-        if ( currentTaskId == event.getTaskId() ) {
+    public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {
+        if (currentTaskId == event.getTaskId()) {
             refreshLogs();
         }
+    }
+
+    public interface TaskLogsView extends IsWidget {
+
+        void displayNotification(String text);
+
+        void setLogTextAreaText(List<String> logs);
     }
 }

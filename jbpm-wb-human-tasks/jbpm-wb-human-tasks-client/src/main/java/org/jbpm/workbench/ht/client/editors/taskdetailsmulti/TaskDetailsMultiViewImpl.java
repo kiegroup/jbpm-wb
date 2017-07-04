@@ -34,17 +34,10 @@ import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 
 @Dependent
 public class TaskDetailsMultiViewImpl extends Composite
-        implements TaskDetailsMultiPresenter.TaskDetailsMultiView, RequiresResize {
-
-    interface Binder
-            extends
-            UiBinder<Widget, TaskDetailsMultiViewImpl> {
-
-    }
+        implements TaskDetailsMultiPresenter.TaskDetailsMultiView,
+                   RequiresResize {
 
     private static Binder uiBinder = GWT.create(Binder.class);
-
-    private Constants constants = GWT.create(Constants.class);
 
     @UiField
     NavTabs navTabs = GWT.create(NavTabs.class);
@@ -52,27 +45,36 @@ public class TaskDetailsMultiViewImpl extends Composite
     @UiField
     TabContent tabContent = GWT.create(TabContent.class);
 
+    private Constants constants = GWT.create(Constants.class);
+
     private TaskDetailsMultiPresenter presenter;
 
     private TabPane genericFormDisplayPane;
+
     private TabListItem genericFormDisplayTab;
 
     private TabPane taskDetailsPane;
+
     private TabListItem taskDetailsTab;
 
     private TabPane processContextPane;
+
     private TabListItem processContextTab;
 
     private TabPane taskAssignmentsPane;
+
     private TabListItem taskAssignmentsTab;
 
     private TabPane taskCommentsPane;
+
     private TabListItem taskCommentsTab;
 
     private TabPane taskAdminPane;
+
     private TabListItem taskAdminTab;
 
     private TabPane taskLogsPane;
+
     private TabListItem taskLogsTab;
 
     @Override
@@ -242,7 +244,6 @@ public class TaskDetailsMultiViewImpl extends Composite
         taskLogsPane.setVisible(true);
         taskLogsTab.setVisible(true);
         taskDetailsTab.showTab();
-
     }
 
     @Override
@@ -250,12 +251,17 @@ public class TaskDetailsMultiViewImpl extends Composite
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {
-                if( genericFormDisplayPane != null ) {
+                if (genericFormDisplayPane != null) {
                     final int height = getParent().getOffsetHeight() - navTabs.getOffsetHeight();
-                    genericFormDisplayPane.setHeight( (height > 0 ? height : 0) + "px");
+                    genericFormDisplayPane.setHeight((height > 0 ? height : 0) + "px");
                 }
             }
         });
     }
 
+    interface Binder
+            extends
+            UiBinder<Widget, TaskDetailsMultiViewImpl> {
+
+    }
 }

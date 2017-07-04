@@ -38,5 +38,4 @@ public class ActionRequest extends JavaScriptObject {
     public final native String getDomainId() /*-{
         return this.domainId;
     }-*/;
-
 }

@@ -30,20 +30,39 @@ import org.jbpm.workbench.pr.model.TaskDefSummary;
 @Remote
 public interface ProcessRuntimeDataService {
 
-    ProcessInstanceSummary getProcessInstance(String serverTemplateId, ProcessInstanceKey processInstanceKey);
+    ProcessInstanceSummary getProcessInstance(String serverTemplateId,
+                                              ProcessInstanceKey processInstanceKey);
 
-    List<NodeInstanceSummary> getProcessInstanceActiveNodes(String serverTemplateId, String deploymentId, Long processInstanceId);
+    List<NodeInstanceSummary> getProcessInstanceActiveNodes(String serverTemplateId,
+                                                            String deploymentId,
+                                                            Long processInstanceId);
 
-    List<RuntimeLogSummary> getRuntimeLogs(String serverTemplateId, String deploymentId, Long processInstanceId);
+    List<RuntimeLogSummary> getRuntimeLogs(String serverTemplateId,
+                                           String deploymentId,
+                                           Long processInstanceId);
 
-    List<RuntimeLogSummary> getBusinessLogs(String serverTemplateId, String deploymentId, String processName, Long processInstanceId);
+    List<RuntimeLogSummary> getBusinessLogs(String serverTemplateId,
+                                            String deploymentId,
+                                            String processName,
+                                            Long processInstanceId);
 
-    List<ProcessSummary> getProcesses(String serverTemplateId, Integer page, Integer pageSize, String sort, Boolean sortOrder);
+    List<ProcessSummary> getProcesses(String serverTemplateId,
+                                      Integer page,
+                                      Integer pageSize,
+                                      String sort,
+                                      Boolean sortOrder);
 
-    ProcessSummary getProcess(String serverTemplateId, ProcessDefinitionKey processDefinitionKey);
+    ProcessSummary getProcess(String serverTemplateId,
+                              ProcessDefinitionKey processDefinitionKey);
 
-    List<ProcessSummary> getProcessesByFilter(String serverTemplateId, String textSearch, Integer page, Integer pageSize, String sort, Boolean sortOrder);
+    List<ProcessSummary> getProcessesByFilter(String serverTemplateId,
+                                              String textSearch,
+                                              Integer page,
+                                              Integer pageSize,
+                                              String sort,
+                                              Boolean sortOrder);
 
-    List<TaskDefSummary> getProcessUserTasks(String serverTemplateId, String containerId, String processId);
-
+    List<TaskDefSummary> getProcessUserTasks(String serverTemplateId,
+                                             String containerId,
+                                             String processId);
 }

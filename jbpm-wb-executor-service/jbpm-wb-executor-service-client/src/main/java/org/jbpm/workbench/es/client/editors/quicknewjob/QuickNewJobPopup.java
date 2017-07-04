@@ -69,11 +69,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 @Dependent
 public class QuickNewJobPopup extends BaseModal {
 
-    interface Binder
-            extends
-            UiBinder<Widget, QuickNewJobPopup> {
-
-    }
+    private static Binder uiBinder = GWT.create(Binder.class);
     private final Constants constants = Constants.INSTANCE;
 
     @UiField
@@ -98,9 +94,6 @@ public class QuickNewJobPopup extends BaseModal {
     public TextBox jobNameText;
 
     @UiField
-    HelpBlock jobNameHelpInline;
-
-    @UiField
     public FormGroup jobDueDateControlGroup;
 
     @UiField
@@ -110,25 +103,16 @@ public class QuickNewJobPopup extends BaseModal {
     public UTCTimeBox jobDueDateTime;
 
     @UiField
-    HelpBlock jobDueDateHelpBlock;
-
-    @UiField
     public FormGroup jobTypeControlGroup;
 
     @UiField
     public TextBox jobTypeText;
 
     @UiField
-    HelpBlock jobTypeHelpInline;
-
-    @UiField
     public FormGroup jobRetriesControlGroup;
 
     @UiField
     public IntegerBox jobRetriesNumber;
-
-    @UiField
-    HelpBlock jobRetriesHelpInline;
 
     @UiField
     public Button newParametersButton;
@@ -142,6 +126,18 @@ public class QuickNewJobPopup extends BaseModal {
     @UiField
     public FormGroup errorMessagesGroup;
 
+    @UiField
+    HelpBlock jobNameHelpInline;
+
+    @UiField
+    HelpBlock jobDueDateHelpBlock;
+
+    @UiField
+    HelpBlock jobTypeHelpInline;
+
+    @UiField
+    HelpBlock jobRetriesHelpInline;
+
     @Inject
     private Event<NotificationEvent> notification;
 
@@ -152,36 +148,34 @@ public class QuickNewJobPopup extends BaseModal {
     private Event<RequestChangedEvent> requestCreatedEvent;
 
     private ListDataProvider<RequestParameterSummary> dataProvider = new ListDataProvider<RequestParameterSummary>();
-
-    private static Binder uiBinder = GWT.create( Binder.class );
-
     private String serverTemplateId;
 
     public QuickNewJobPopup() {
-        setTitle( Constants.INSTANCE.New_Job() );
+        setTitle(Constants.INSTANCE.New_Job());
 
-        setBody( uiBinder.createAndBindUi( QuickNewJobPopup.this ) );
+        setBody(uiBinder.createAndBindUi(QuickNewJobPopup.this));
 
-        basicTab.setDataTargetWidget( basicTabPane );
-        advancedTab.setDataTargetWidget( advancedTabPane );
+        basicTab.setDataTargetWidget(basicTabPane);
+        advancedTab.setDataTargetWidget(advancedTabPane);
 
-        jobDueDate.getDateBox().setContainer( this );
+        jobDueDate.getDateBox().setContainer(this);
 
         init();
         final GenericModalFooter footer = new GenericModalFooter();
-        footer.addButton( Constants.INSTANCE.Create(),
-                new Command() {
-                    @Override
-                    public void execute() {
-                        okButton();
-                    }
-                }, IconType.PLUS,
-                ButtonType.PRIMARY );
+        footer.addButton(Constants.INSTANCE.Create(),
+                         new Command() {
+                             @Override
+                             public void execute() {
+                                 okButton();
+                             }
+                         },
+                         IconType.PLUS,
+                         ButtonType.PRIMARY);
 
-        add( footer );
+        add(footer);
     }
 
-    public void setExecutorService(Caller<ExecutorService> executorServices){
+    public void setExecutorService(Caller<ExecutorService> executorServices) {
         this.executorServices = executorServices;
     }
 
@@ -192,60 +186,59 @@ public class QuickNewJobPopup extends BaseModal {
     }
 
     private void okButton() {
-        if ( validateForm() ) {
+        if (validateForm()) {
             createJob();
         }
     }
 
     public void init() {
 
-        newParametersButton.setText( constants.Add_Parameter() );
+        newParametersButton.setText(constants.Add_Parameter());
 
-        myParametersGrid.setHeight( "200px" );
+        myParametersGrid.setHeight("200px");
 
         // Set the message to display when the table is empty.
-        myParametersGrid.setEmptyTableWidget( new Label( constants.No_Parameters_added_yet() ) );
+        myParametersGrid.setEmptyTableWidget(new Label(constants.No_Parameters_added_yet()));
 
         initGridColumns();
 
-        newParametersButton.addClickHandler( new ClickHandler() {
+        newParametersButton.addClickHandler(new ClickHandler() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void onClick(ClickEvent event) {
                 addNewParameter();
             }
-        } );
-
+        });
     }
 
     public void cleanForm() {
-        basicTab.setActive( true );
-        basicTabPane.setActive( true );
-        advancedTab.setActive( false );
-        advancedTabPane.setActive( false );
+        basicTab.setActive(true);
+        basicTabPane.setActive(true);
+        advancedTab.setActive(false);
+        advancedTabPane.setActive(false);
         basicTab.showTab();
 
         long nextDueDate = System.currentTimeMillis() + 1800 * 1000;
         // 30' minutes in the future
-        jobDueDate.setEnabled( true );
-        jobDueDate.setValue( nextDueDate );
-        jobDueDateTime.setValue( UTCDateBox.date2utc( new Date( nextDueDate ) ) );
-        jobNameText.setText( "" );
-        jobTypeText.setText( "" );
-        jobRetriesNumber.setText( "0" );
+        jobDueDate.setEnabled(true);
+        jobDueDate.setValue(nextDueDate);
+        jobDueDateTime.setValue(UTCDateBox.date2utc(new Date(nextDueDate)));
+        jobNameText.setText("");
+        jobTypeText.setText("");
+        jobRetriesNumber.setText("0");
 
         dataProvider.getList().clear();
         cleanErrorMessages();
     }
 
     private void cleanErrorMessages() {
-        jobNameControlGroup.setValidationState( ValidationState.NONE );
-        jobNameHelpInline.setText( "" );
-        jobDueDateControlGroup.setValidationState( ValidationState.NONE );
-        jobDueDateHelpBlock.setText( "" );
-        jobTypeControlGroup.setValidationState( ValidationState.NONE );
-        jobTypeHelpInline.setText( "" );
-        jobRetriesControlGroup.setValidationState( ValidationState.NONE );
-        jobRetriesHelpInline.setText( "" );
+        jobNameControlGroup.setValidationState(ValidationState.NONE);
+        jobNameHelpInline.setText("");
+        jobDueDateControlGroup.setValidationState(ValidationState.NONE);
+        jobDueDateHelpBlock.setText("");
+        jobTypeControlGroup.setValidationState(ValidationState.NONE);
+        jobTypeHelpInline.setText("");
+        jobRetriesControlGroup.setValidationState(ValidationState.NONE);
+        jobRetriesHelpInline.setText("");
     }
 
     public void closePopup() {
@@ -256,179 +249,203 @@ public class QuickNewJobPopup extends BaseModal {
     boolean validateForm() {
         boolean valid = true;
         cleanErrorMessages();
-        if ( jobNameText.getText() == null || jobNameText.getText().trim().isEmpty() ) {
-            jobNameControlGroup.setValidationState( ValidationState.ERROR );
-            jobNameHelpInline.setText( Constants.INSTANCE.The_Job_Must_Have_A_BusinessKey() );
+        if (jobNameText.getText() == null || jobNameText.getText().trim().isEmpty()) {
+            jobNameControlGroup.setValidationState(ValidationState.ERROR);
+            jobNameHelpInline.setText(Constants.INSTANCE.The_Job_Must_Have_A_BusinessKey());
             valid = false;
         } else {
-            jobNameControlGroup.setValidationState( ValidationState.SUCCESS );
-
+            jobNameControlGroup.setValidationState(ValidationState.SUCCESS);
         }
 
-        if ( UTCDateBox.utc2date( jobDueDate.getValue() + jobDueDateTime.getValue() ).before( new Date() ) ) {
-            jobDueDateControlGroup.setValidationState( ValidationState.ERROR );
-            jobDueDateHelpBlock.setText( Constants.INSTANCE.The_Job_Must_Have_A_Due_Date_In_The_Future() );
+        if (UTCDateBox.utc2date(jobDueDate.getValue() + jobDueDateTime.getValue()).before(new Date())) {
+            jobDueDateControlGroup.setValidationState(ValidationState.ERROR);
+            jobDueDateHelpBlock.setText(Constants.INSTANCE.The_Job_Must_Have_A_Due_Date_In_The_Future());
             valid = false;
         } else {
-            jobDueDateControlGroup.setValidationState( ValidationState.SUCCESS );
-
+            jobDueDateControlGroup.setValidationState(ValidationState.SUCCESS);
         }
-        if ( jobTypeText.getText() == null || jobTypeText.getText().trim().isEmpty() ) {
-            jobTypeControlGroup.setValidationState( ValidationState.ERROR );
-            jobTypeHelpInline.setText( Constants.INSTANCE.The_Job_Must_Have_A_Type() );
+        if (jobTypeText.getText() == null || jobTypeText.getText().trim().isEmpty()) {
+            jobTypeControlGroup.setValidationState(ValidationState.ERROR);
+            jobTypeHelpInline.setText(Constants.INSTANCE.The_Job_Must_Have_A_Type());
             valid = false;
         } else {
-            jobTypeControlGroup.setValidationState( ValidationState.SUCCESS );
-
+            jobTypeControlGroup.setValidationState(ValidationState.SUCCESS);
         }
-        if ( jobRetriesNumber.getValue() == null || jobRetriesNumber.getValue() < 0 ) {
-            jobRetriesControlGroup.setValidationState( ValidationState.ERROR );
-            jobRetriesHelpInline.setText( Constants.INSTANCE.The_Job_Must_Have_A_Positive_Number_Of_Reties() );
+        if (jobRetriesNumber.getValue() == null || jobRetriesNumber.getValue() < 0) {
+            jobRetriesControlGroup.setValidationState(ValidationState.ERROR);
+            jobRetriesHelpInline.setText(Constants.INSTANCE.The_Job_Must_Have_A_Positive_Number_Of_Reties());
             valid = false;
         } else {
-            jobRetriesControlGroup.setValidationState( ValidationState.SUCCESS );
-
+            jobRetriesControlGroup.setValidationState(ValidationState.SUCCESS);
         }
-        if ( !valid ) {
+        if (!valid) {
             basicTab.showTab();
         }
         return valid;
     }
 
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
-    public void makeRowEditable( RequestParameterSummary parameter ) {
-        myParametersGrid.getSelectionModel().setSelected( parameter, true );
+    public void makeRowEditable(RequestParameterSummary parameter) {
+        myParametersGrid.getSelectionModel().setSelected(parameter,
+                                                         true);
     }
 
-    public void removeRow( RequestParameterSummary parameter ) {
-        dataProvider.getList().remove( parameter );
+    public void removeRow(RequestParameterSummary parameter) {
+        dataProvider.getList().remove(parameter);
     }
 
-    public void addRow( RequestParameterSummary parameter ) {
-        dataProvider.getList().add( parameter );
+    public void addRow(RequestParameterSummary parameter) {
+        dataProvider.getList().add(parameter);
     }
 
     private void initGridColumns() {
-        Column<RequestParameterSummary, String> paramKeyColumn = new Column<RequestParameterSummary, String>( new EditTextCell() ) {
+        Column<RequestParameterSummary, String> paramKeyColumn = new Column<RequestParameterSummary, String>(new EditTextCell()) {
             @Override
-            public String getValue( RequestParameterSummary rowObject ) {
+            public String getValue(RequestParameterSummary rowObject) {
                 return rowObject.getKey();
             }
         };
-        paramKeyColumn.setFieldUpdater( new FieldUpdater<RequestParameterSummary, String>() {
+        paramKeyColumn.setFieldUpdater(new FieldUpdater<RequestParameterSummary, String>() {
             @Override
-            public void update( int index,
-                                RequestParameterSummary object,
-                                String value ) {
-                object.setKey( value );
-                dataProvider.getList().set( index, object );
+            public void update(int index,
+                               RequestParameterSummary object,
+                               String value) {
+                object.setKey(value);
+                dataProvider.getList().set(index,
+                                           object);
             }
-        } );
-        myParametersGrid.addColumn( paramKeyColumn, new ResizableHeader<RequestParameterSummary>( constants.Key(), myParametersGrid,
-                                                                                                  paramKeyColumn ) );
+        });
+        myParametersGrid.addColumn(paramKeyColumn,
+                                   new ResizableHeader<RequestParameterSummary>(constants.Key(),
+                                                                                myParametersGrid,
+                                                                                paramKeyColumn));
 
         Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>(
-                new EditTextCell() ) {
+                new EditTextCell()) {
             @Override
-            public String getValue( RequestParameterSummary rowObject ) {
+            public String getValue(RequestParameterSummary rowObject) {
                 return rowObject.getValue();
             }
         };
-        paramValueColumn.setFieldUpdater( new FieldUpdater<RequestParameterSummary, String>() {
+        paramValueColumn.setFieldUpdater(new FieldUpdater<RequestParameterSummary, String>() {
             @Override
-            public void update( int index,
-                                RequestParameterSummary object,
-                                String value ) {
-                object.setValue( value );
-                dataProvider.getList().set( index, object );
+            public void update(int index,
+                               RequestParameterSummary object,
+                               String value) {
+                object.setValue(value);
+                dataProvider.getList().set(index,
+                                           object);
             }
-        } );
-        myParametersGrid.addColumn( paramValueColumn, new ResizableHeader<RequestParameterSummary>( constants.Value(), myParametersGrid,
-                                                                                                    paramValueColumn ) );
+        });
+        myParametersGrid.addColumn(paramValueColumn,
+                                   new ResizableHeader<RequestParameterSummary>(constants.Value(),
+                                                                                myParametersGrid,
+                                                                                paramValueColumn));
 
         // actions (icons)
-        final ButtonCell buttonCell = new ButtonCell( ButtonType.DANGER, IconType.TRASH );
-        final Column<RequestParameterSummary, String> actionsColumn = new Column<RequestParameterSummary, String>( buttonCell ) {
+        final ButtonCell buttonCell = new ButtonCell(ButtonType.DANGER,
+                                                     IconType.TRASH);
+        final Column<RequestParameterSummary, String> actionsColumn = new Column<RequestParameterSummary, String>(buttonCell) {
             @Override
-            public String getValue( final RequestParameterSummary object ) {
+            public String getValue(final RequestParameterSummary object) {
                 return Constants.INSTANCE.Remove();
             }
         };
-        actionsColumn.setFieldUpdater( new FieldUpdater<RequestParameterSummary, String>() {
+        actionsColumn.setFieldUpdater(new FieldUpdater<RequestParameterSummary, String>() {
             @Override
-            public void update( int index, RequestParameterSummary object, String value ) {
-                removeParameter( object );
+            public void update(int index,
+                               RequestParameterSummary object,
+                               String value) {
+                removeParameter(object);
             }
         });
-        actionsColumn.setHorizontalAlignment( HasHorizontalAlignment.ALIGN_CENTER );
+        actionsColumn.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-        myParametersGrid.addColumn( actionsColumn, constants.Actions() );
-        myParametersGrid.setColumnWidth( actionsColumn, 90, Style.Unit.PX );
+        myParametersGrid.addColumn(actionsColumn,
+                                   constants.Actions());
+        myParametersGrid.setColumnWidth(actionsColumn,
+                                        90,
+                                        Style.Unit.PX);
 
-        dataProvider.addDataDisplay( myParametersGrid );
+        dataProvider.addDataDisplay(myParametersGrid);
     }
 
-    public void removeParameter( RequestParameterSummary parameter ) {
-        removeRow( parameter );
+    public void removeParameter(RequestParameterSummary parameter) {
+        removeRow(parameter);
     }
 
     public void addNewParameter() {
-        addRow( new RequestParameterSummary(constants.ClickToEdit(),constants.ClickToEdit()) );
+        addRow(new RequestParameterSummary(constants.ClickToEdit(),
+                                           constants.ClickToEdit()));
     }
 
     public void createJob() {
-        createJob( jobNameText.getText(), UTCDateBox.utc2date( jobDueDate.getValue() + jobDueDateTime.getValue() ),
-                jobTypeText.getText(), jobRetriesNumber.getValue(), dataProvider.getList() );
+        createJob(jobNameText.getText(),
+                  UTCDateBox.utc2date(jobDueDate.getValue() + jobDueDateTime.getValue()),
+                  jobTypeText.getText(),
+                  jobRetriesNumber.getValue(),
+                  dataProvider.getList());
     }
 
-    public void createJob( String jobName,
-                           Date dueDate,
-                           String jobType,
-                           Integer numberOfTries,
-                           List<RequestParameterSummary> parameters ) {
+    public void createJob(String jobName,
+                          Date dueDate,
+                          String jobType,
+                          Integer numberOfTries,
+                          List<RequestParameterSummary> parameters) {
 
         Map<String, String> ctx = new HashMap<String, String>();
-        if ( parameters != null ) {
-            for ( RequestParameterSummary param : parameters ) {
-                ctx.put( param.getKey(), param.getValue() );
+        if (parameters != null) {
+            for (RequestParameterSummary param : parameters) {
+                ctx.put(param.getKey(),
+                        param.getValue());
             }
         }
-        ctx.put(RequestDataSetConstants.COLUMN_RETRIES, String.valueOf( numberOfTries ) ); // TODO make legacy keys hard to repeat by accident
-        ctx.put(RequestDataSetConstants.COLUMN_BUSINESSKEY, jobName ); // TODO make legacy keys hard to repeat by accident
+        ctx.put(RequestDataSetConstants.COLUMN_RETRIES,
+                String.valueOf(numberOfTries)); // TODO make legacy keys hard to repeat by accident
+        ctx.put(RequestDataSetConstants.COLUMN_BUSINESSKEY,
+                jobName); // TODO make legacy keys hard to repeat by accident
 
         executorServices.call(
-            (Long requestId) -> {
-                cleanForm();
-                displayNotification( constants.RequestScheduled( requestId ));
-                requestCreatedEvent.fire( new RequestChangedEvent( requestId ));
-                closePopup();
-            },
-            (Message message,
-             Throwable throwable) -> {
-                cleanErrorMessages();
-                if (isInvalidCommandTypeError( throwable )) {
-                    jobTypeControlGroup.setValidationState( ValidationState.ERROR );
-                    jobTypeHelpInline.setText( Constants.INSTANCE.The_Job_Must_Have_A_Valid_Type() );
-                } else {
-                    errorMessages.setText( throwable.getMessage() );
-                    errorMessagesGroup.setValidationState( ValidationState.ERROR );
-                }
-                basicTab.showTab();
-                return false;
-            } ).scheduleRequest( serverTemplateId, jobType, dueDate, ctx );
+                (Long requestId) -> {
+                    cleanForm();
+                    displayNotification(constants.RequestScheduled(requestId));
+                    requestCreatedEvent.fire(new RequestChangedEvent(requestId));
+                    closePopup();
+                },
+                (Message message,
+                 Throwable throwable) -> {
+                    cleanErrorMessages();
+                    if (isInvalidCommandTypeError(throwable)) {
+                        jobTypeControlGroup.setValidationState(ValidationState.ERROR);
+                        jobTypeHelpInline.setText(Constants.INSTANCE.The_Job_Must_Have_A_Valid_Type());
+                    } else {
+                        errorMessages.setText(throwable.getMessage());
+                        errorMessagesGroup.setValidationState(ValidationState.ERROR);
+                    }
+                    basicTab.showTab();
+                    return false;
+                }).scheduleRequest(serverTemplateId,
+                                   jobType,
+                                   dueDate,
+                                   ctx);
     }
 
     private boolean isInvalidCommandTypeError(Throwable throwable) {
-        String message="";
+        String message = "";
         if (throwable.getMessage() != null) {
             message = throwable.getMessage();
-        } else  if (throwable.getCause() != null) {
+        } else if (throwable.getCause() != null) {
             message = throwable.getCause().getMessage();
         }
         return message.contains("Invalid command type");
     }
 
+    interface Binder
+            extends
+            UiBinder<Widget, QuickNewJobPopup> {
+
+    }
 }

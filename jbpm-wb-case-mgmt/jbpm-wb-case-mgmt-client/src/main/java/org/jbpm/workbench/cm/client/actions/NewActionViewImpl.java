@@ -102,16 +102,16 @@ public class NewActionViewImpl implements CaseActionsPresenter.NewActionView {
     FormLabel processDefinitionsLabel;
 
     @Inject
-    @DataField("action-process-definitions-select")
-    private Select processDefinitionsList;
-
-    @Inject
     @DataField("process-definitions-help")
     Span processDefinitionsHelp;
 
     @Inject
     @DataField("stages-select")
     Select stages;
+
+    @Inject
+    @DataField("action-process-definitions-select")
+    private Select processDefinitionsList;
 
     @Inject
     @DataField("modal")
@@ -135,7 +135,8 @@ public class NewActionViewImpl implements CaseActionsPresenter.NewActionView {
     }
 
     @Override
-    public void show(final CaseActionType caseActionType, final Command okCommand) {
+    public void show(final CaseActionType caseActionType,
+                     final Command okCommand) {
         setCaseActionType(caseActionType);
         clearErrorMessages();
         clearValues();
@@ -152,7 +153,8 @@ public class NewActionViewImpl implements CaseActionsPresenter.NewActionView {
     public void setCaseStagesList(List<CaseStageSummary> caseStagesList) {
         caseStagesList.stream()
                 .filter(s -> s.getStatus().equals(CaseStageStatus.ACTIVE.getStatus()))
-                .forEach(e -> stages.addOption(e.getIdentifier(), e.getName()));
+                .forEach(e -> stages.addOption(e.getIdentifier(),
+                                               e.getName()));
         stages.refresh();
     }
 
@@ -259,28 +261,34 @@ public class NewActionViewImpl implements CaseActionsPresenter.NewActionView {
         return modal.getElement();
     }
 
-
     public void setCaseActionType(CaseActionType caseActionType) {
         this.caseActionType = caseActionType;
         switch (caseActionType) {
             case DYNAMIC_USER_TASK: {
                 modalTitle.setTextContent(translationService.format(NEW_USER_TASK));
-                removeCSSClass(this.actionDescGroup.getElement(), "hidden");
-                removeCSSClass(this.actionUsersGroup.getElement(), "hidden");
-                removeCSSClass(this.actionGroupsGroup.getElement(), "hidden");
-                addCSSClass(this.actionProcessDefinitionsGroup.getElement(), "hidden");
+                removeCSSClass(this.actionDescGroup.getElement(),
+                               "hidden");
+                removeCSSClass(this.actionUsersGroup.getElement(),
+                               "hidden");
+                removeCSSClass(this.actionGroupsGroup.getElement(),
+                               "hidden");
+                addCSSClass(this.actionProcessDefinitionsGroup.getElement(),
+                            "hidden");
                 break;
             }
             case DYNAMIC_SUBPROCESS_TASK: {
                 modalTitle.setTextContent(translationService.format(NEW_PROCESS_TASK));
-                addCSSClass(this.actionDescGroup.getElement(), "hidden");
-                addCSSClass(this.actionUsersGroup.getElement(), "hidden");
-                addCSSClass(this.actionGroupsGroup.getElement(), "hidden");
-                removeCSSClass(this.actionProcessDefinitionsGroup.getElement(), "hidden");
+                addCSSClass(this.actionDescGroup.getElement(),
+                            "hidden");
+                addCSSClass(this.actionUsersGroup.getElement(),
+                            "hidden");
+                addCSSClass(this.actionGroupsGroup.getElement(),
+                            "hidden");
+                removeCSSClass(this.actionProcessDefinitionsGroup.getElement(),
+                               "hidden");
                 break;
             }
         }
-
     }
 
     @EventHandler("addDynamicTask")
@@ -303,5 +311,4 @@ public class NewActionViewImpl implements CaseActionsPresenter.NewActionView {
     public void onCloseClick(final @ForEvent("click") MouseEvent event) {
         hide();
     }
-
 }

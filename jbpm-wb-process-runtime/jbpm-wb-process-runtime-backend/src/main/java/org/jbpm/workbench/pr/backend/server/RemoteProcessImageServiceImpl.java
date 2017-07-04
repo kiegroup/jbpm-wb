@@ -28,17 +28,26 @@ import org.kie.server.client.UIServicesClient;
 public class RemoteProcessImageServiceImpl extends AbstractKieServerService implements ProcessImageService {
 
     @Override
-    public String getProcessInstanceDiagram(String serverTemplateId, String containerId, Long processInstanceId) {
-        UIServicesClient uiServicesClient = getClient(serverTemplateId, containerId, UIServicesClient.class);
+    public String getProcessInstanceDiagram(String serverTemplateId,
+                                            String containerId,
+                                            Long processInstanceId) {
+        UIServicesClient uiServicesClient = getClient(serverTemplateId,
+                                                      containerId,
+                                                      UIServicesClient.class);
 
-        return uiServicesClient.getProcessInstanceImage(containerId, processInstanceId);
+        return uiServicesClient.getProcessInstanceImage(containerId,
+                                                        processInstanceId);
     }
 
     @Override
-    public String getProcessDiagram(String serverTemplateId, String containerId, String processId) {
-        UIServicesClient uiServicesClient = getClient(serverTemplateId, containerId, UIServicesClient.class);
+    public String getProcessDiagram(String serverTemplateId,
+                                    String containerId,
+                                    String processId) {
+        UIServicesClient uiServicesClient = getClient(serverTemplateId,
+                                                      containerId,
+                                                      UIServicesClient.class);
 
-        return uiServicesClient.getProcessImage(containerId, processId);
+        return uiServicesClient.getProcessImage(containerId,
+                                                processId);
     }
-
 }

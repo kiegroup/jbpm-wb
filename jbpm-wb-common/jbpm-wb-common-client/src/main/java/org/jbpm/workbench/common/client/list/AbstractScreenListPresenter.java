@@ -36,14 +36,14 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
 
     protected User identity;
 
-    private String selectedServerTemplate = "";
-
     @Inject
     protected PlaceManager placeManager;
 
     protected PlaceRequest place;
 
     protected ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
+
+    private String selectedServerTemplate = "";
 
     @OnOpen
     public void onOpen() {
@@ -56,7 +56,7 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
     }
 
     @OnStartup
-    public void onStartup( final PlaceRequest place ) {
+    public void onStartup(final PlaceRequest place) {
         this.place = place;
     }
 
@@ -70,19 +70,19 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
         this.serverTemplateSelectorMenuBuilder = serverTemplateSelectorMenuBuilder;
     }
 
-    public void onServerTemplateSelected(@Observes final ServerTemplateSelected serverTemplateSelected ) {
+    public void onServerTemplateSelected(@Observes final ServerTemplateSelected serverTemplateSelected) {
         setSelectedServerTemplate(serverTemplateSelected.getServerTemplateId());
-    }
-
-    protected void setSelectedServerTemplate(final String selectedServerTemplate) {
-        final String newServerTemplate = Optional.ofNullable(selectedServerTemplate).orElse("").trim();
-        if(this.selectedServerTemplate.equals(newServerTemplate) == false){
-            this.selectedServerTemplate = newServerTemplate;
-            refreshGrid();
-        }
     }
 
     public String getSelectedServerTemplate() {
         return selectedServerTemplate;
+    }
+
+    protected void setSelectedServerTemplate(final String selectedServerTemplate) {
+        final String newServerTemplate = Optional.ofNullable(selectedServerTemplate).orElse("").trim();
+        if (this.selectedServerTemplate.equals(newServerTemplate) == false) {
+            this.selectedServerTemplate = newServerTemplate;
+            refreshGrid();
+        }
     }
 }

@@ -15,6 +15,7 @@
  */
 package org.jbpm.workbench.es.client.editors.quicknewjob;
 
+import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.gwtmockito.WithClassesToStub;
 import org.gwtbootstrap3.client.ui.FormGroup;
@@ -29,7 +30,6 @@ import org.jbpm.workbench.es.model.RequestParameterSummary;
 import org.jbpm.workbench.es.service.ExecutorService;
 import org.jbpm.workbench.common.client.util.UTCDateBox;
 import org.jbpm.workbench.common.client.util.UTCTimeBox;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -83,7 +84,7 @@ public class QuickNewJobPopupTest {
     @Mock
     private FormGroup jobTypeControlGroup;
 
-    @Mock
+    @GwtMock
     private HelpBlock jobTypeHelpInline;
 
     @Mock
@@ -153,7 +154,7 @@ public class QuickNewJobPopupTest {
         when(jobNameText.getText()).thenReturn(""); // Return empty string
 
         boolean isValid = quickNewJobPopup.validateForm();
-        Assert.assertFalse("Form with an empty business key should be rejected",
+        assertFalse("Form with an empty business key should be rejected",
                            isValid);
 
         verify(jobNameControlGroup).setValidationState(ValidationState.ERROR);
@@ -165,7 +166,7 @@ public class QuickNewJobPopupTest {
         when(jobTypeText.getText()).thenReturn("  "); //Return string with spaces
 
         boolean isValid = quickNewJobPopup.validateForm();
-        Assert.assertFalse("Form with an empty type should be rejected",
+        assertFalse("Form with an empty type should be rejected",
                            isValid);
 
         verify(jobTypeControlGroup).setValidationState(ValidationState.ERROR);

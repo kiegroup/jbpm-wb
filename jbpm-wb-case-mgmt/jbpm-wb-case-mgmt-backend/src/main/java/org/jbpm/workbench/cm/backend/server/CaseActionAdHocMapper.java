@@ -15,7 +15,6 @@
  */
 package org.jbpm.workbench.cm.backend.server;
 
-
 import java.util.function.Function;
 
 import org.jbpm.workbench.cm.model.CaseActionSummary;
@@ -45,5 +44,4 @@ public class CaseActionAdHocMapper implements Function<CaseAdHocFragment, CaseAc
                 .actionStatus(CaseActionStatus.AVAILABLE)
                 .build();
     }
-
 }

@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.jbpm.workbench.cm.model.CaseActionSummary;
 
-
 public class Actions {
 
     private List<CaseActionSummary> availableActions;
@@ -50,5 +49,4 @@ public class Actions {
     public void setCompleteActions(List<CaseActionSummary> completeActions) {
         this.completeActions = completeActions;
     }
-
 }

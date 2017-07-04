@@ -59,7 +59,7 @@ public interface FiltersConstants extends Messages {
 
     String timeframe_first_month_year();
 
-    String json_displayersettings_dataset_lookup_notspecified() ;
+    String json_displayersettings_dataset_lookup_notspecified();
 
     String json_columnsettings_null_columnid();
 
@@ -86,5 +86,4 @@ public interface FiltersConstants extends Messages {
     String Labels();
 
     String Filter_parameters();
-
 }

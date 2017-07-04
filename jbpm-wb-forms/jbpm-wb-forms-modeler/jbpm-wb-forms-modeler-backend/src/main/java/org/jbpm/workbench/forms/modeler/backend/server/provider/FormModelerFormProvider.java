@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 @Dependent
 public class FormModelerFormProvider implements FormProvider<FormModelerFormRenderingSettings> {
 
-    protected Logger log = LoggerFactory.getLogger( FormModelerFormProvider.class );
+    protected Logger log = LoggerFactory.getLogger(FormModelerFormProvider.class);
 
     private FormSerializationManager formSerializationManager;
 
@@ -47,77 +47,82 @@ public class FormModelerFormProvider implements FormProvider<FormModelerFormRend
     private FormRenderContentMarshallerManager formRenderContentMarshaller;
 
     @Inject
-    public FormModelerFormProvider( FormSerializationManager formSerializationManager,
-                                    FormRenderContextManager formRenderContextManager,
-                                    FormRenderContentMarshallerManager formRenderContentMarshaller ) {
+    public FormModelerFormProvider(FormSerializationManager formSerializationManager,
+                                   FormRenderContextManager formRenderContextManager,
+                                   FormRenderContentMarshallerManager formRenderContentMarshaller) {
         this.formSerializationManager = formSerializationManager;
         this.formRenderContextManager = formRenderContextManager;
         this.formRenderContentMarshaller = formRenderContentMarshaller;
     }
 
     @Override
-    public FormModelerFormRenderingSettings render( ProcessRenderingSettings settings ) {
-        if ( !StringUtils.isEmpty( settings.getFormContent() ) ) {
+    public FormModelerFormRenderingSettings render(ProcessRenderingSettings settings) {
+        if (!StringUtils.isEmpty(settings.getFormContent())) {
             try {
-                Form form = formSerializationManager.loadFormFromXML( settings.getFormContent() );
+                Form form = formSerializationManager.loadFormFromXML(settings.getFormContent());
 
                 Map ctx = new HashMap();
 
-                ctx.put( "process", settings.getProcess() );
+                ctx.put("process",
+                        settings.getProcess());
 
                 // Adding forms to context while forms are'nt available on marshaller classloader
-                FormRenderContext context = formRenderContextManager.newContext( form,
-                                                                                 settings.getProcess().getDeploymentId(),
-                                                                                 ctx,
-                                                                                 new HashMap<String, Object>() );
-                formRenderContentMarshaller.addContentMarshaller( context.getUID(),
-                                                                  settings.getMarshallerContext() );
+                FormRenderContext context = formRenderContextManager.newContext(form,
+                                                                                settings.getProcess().getDeploymentId(),
+                                                                                ctx,
+                                                                                new HashMap<String, Object>());
+                formRenderContentMarshaller.addContentMarshaller(context.getUID(),
+                                                                 settings.getMarshallerContext());
 
-                return new FormModelerFormRenderingSettings( context.getUID() );
-            } catch ( Exception e ) {
-                log.warn( "Error rendering form: ", e );
+                return new FormModelerFormRenderingSettings(context.getUID());
+            } catch (Exception e) {
+                log.warn("Error rendering form: ",
+                         e);
             }
         }
         return null;
     }
 
     @Override
-    public FormModelerFormRenderingSettings render( TaskRenderingSettings settings ) {
-        if ( !StringUtils.isEmpty( settings.getFormContent() ) ) {
+    public FormModelerFormRenderingSettings render(TaskRenderingSettings settings) {
+        if (!StringUtils.isEmpty(settings.getFormContent())) {
             try {
 
                 TaskDefinition task = settings.getTask();
-                Form form = formSerializationManager.loadFormFromXML( settings.getFormContent() );
+                Form form = formSerializationManager.loadFormFromXML(settings.getFormContent());
 
                 Map inputs = new HashMap();
 
                 Map outputs;
-                if ( !task.isOutputIncluded() ) {
+                if (!task.isOutputIncluded()) {
                     outputs = new HashMap();
                 } else {
                     outputs = settings.getOutputs();
                 }
 
                 Map m = settings.getInputs();
-                if ( m != null ) inputs.putAll( m );
+                if (m != null) {
+                    inputs.putAll(m);
+                }
 
-                inputs.put( "task", task );
+                inputs.put("task",
+                           task);
 
                 // Adding forms to context while forms are'nt available on marshaller classloader
-                FormRenderContext context = formRenderContextManager.newContext( form,
-                                                                                 task.getDeploymentId(),
-                                                                                 inputs,
-                                                                                 outputs );
-                formRenderContentMarshaller.addContentMarshaller( context.getUID(),
-                                                                  settings.getMarshallerContext() );
+                FormRenderContext context = formRenderContextManager.newContext(form,
+                                                                                task.getDeploymentId(),
+                                                                                inputs,
+                                                                                outputs);
+                formRenderContentMarshaller.addContentMarshaller(context.getUID(),
+                                                                 settings.getMarshallerContext());
 
                 String status = task.getStatus();
-                boolean readonly = !"InProgress".equals( status );
-                context.setReadonly( readonly );
-                return new FormModelerFormRenderingSettings( context.getUID() );
-
-            } catch ( Exception e ) {
-                log.warn( "Error rendering form: ", e );
+                boolean readonly = !"InProgress".equals(status);
+                context.setReadonly(readonly);
+                return new FormModelerFormRenderingSettings(context.getUID());
+            } catch (Exception e) {
+                log.warn("Error rendering form: ",
+                         e);
             }
         }
         return null;

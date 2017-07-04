@@ -25,5 +25,4 @@ public class CaseProvisioningStartedEvent {
     public String toString() {
         return "CaseProvisioningStartedEvent{}";
     }
-
 }

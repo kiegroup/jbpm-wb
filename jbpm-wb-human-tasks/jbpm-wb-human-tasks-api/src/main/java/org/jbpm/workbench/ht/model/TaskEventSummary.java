@@ -34,7 +34,13 @@ public class TaskEventSummary extends GenericSummary<Long> {
     public TaskEventSummary() {
     }
 
-    public TaskEventSummary(Long eventId, Long taskId, String type, String userId, Long workItemId, Date logTime, String message) {
+    public TaskEventSummary(Long eventId,
+                            Long taskId,
+                            String type,
+                            String userId,
+                            Long workItemId,
+                            Date logTime,
+                            String message) {
         this.id = eventId;
         this.name = taskId + type;
         this.eventId = eventId;

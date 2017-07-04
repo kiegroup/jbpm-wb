@@ -25,29 +25,27 @@ import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
 
 /**
  * Uses an HTML5 input type=date control to implement the UTCDateBox
- * 
  */
 public class UTCDateBoxImplHtml5 extends UTCDateBoxImplShared {
 
     private static final DateTimeFormat dateInputFormat = DateTimeFormat.getFormat(DateUtils.getDateFormatMask());
-    
+
     private DateTimeFormat dateFormat;
     private InputWidget widget;
-    
+
     public UTCDateBoxImplHtml5() {
         widget = new InputWidget("date");
         setDateFormat(dateInputFormat);
-        
+
         widget.addValueChangeHandler(new ValueChangeHandler<String>() {
 
             @Override
             public void onValueChange(ValueChangeEvent<String> event) {
                 fireValueChangeEvent(getValue());
             }
-            
         });
-        
-        initWidget(widget);        
+
+        initWidget(widget);
     }
 
     /**
@@ -65,23 +63,28 @@ public class UTCDateBoxImplHtml5 extends UTCDateBoxImplShared {
     }
 
     // ----------------------------------------------------------------------
-    
+
     @Override
     public Long getValue() {
-        return string2long(widget.getValue(), dateInputFormat); 
+        return string2long(widget.getValue(),
+                           dateInputFormat);
     }
 
     @Override
-    public void setValue(Long value, boolean fireEvents) {
-        String dateInputValue = long2string(value, dateInputFormat);
-        widget.setValue(dateInputValue, fireEvents);
+    public void setValue(Long value,
+                         boolean fireEvents) {
+        String dateInputValue = long2string(value,
+                                            dateInputFormat);
+        widget.setValue(dateInputValue,
+                        fireEvents);
     }
 
     // ----------------------------------------------------------------------
-    
+
     @Override
     public String getText() {
-        return long2string(getValue(), dateFormat != null ? dateFormat : dateInputFormat);
+        return long2string(getValue(),
+                           dateFormat != null ? dateFormat : dateInputFormat);
     }
 
     @Override
@@ -89,16 +92,19 @@ public class UTCDateBoxImplHtml5 extends UTCDateBoxImplShared {
         // attempt to parse using dateInputFormat or dateFormat
         Long value = null;
         if (dateFormat != null) {
-            value = string2long(text, dateFormat);
-        }       
-        if (value == null) {
-            value = string2long(text, dateInputFormat);
+            value = string2long(text,
+                                dateFormat);
         }
-        setValue(value, true);
+        if (value == null) {
+            value = string2long(text,
+                                dateInputFormat);
+        }
+        setValue(value,
+                 true);
     }
 
     // ----------------------------------------------------------------------
-    
+
     @Override
     public boolean isEnabled() {
         return DomUtils.isEnabled(widget.getElement());
@@ -106,48 +112,57 @@ public class UTCDateBoxImplHtml5 extends UTCDateBoxImplShared {
 
     @Override
     public void setEnabled(boolean enabled) {
-        DomUtils.setEnabled(widget.getElement(), enabled);
-    }    
-    
+        DomUtils.setEnabled(widget.getElement(),
+                            enabled);
+    }
+
     // ----------------------------------------------------------------------
-    
+
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Long> handler) {
-        return addHandler(handler, ValueChangeEvent.getType());
+        return addHandler(handler,
+                          ValueChangeEvent.getType());
     }
 
     protected void fireValueChangeEvent(Long value) {
-        ValueChangeEvent.fire(this, value);
+        ValueChangeEvent.fire(this,
+                              value);
     }
 
     // ----------------------------------------------------------------------
-    
+
     /**
      * Parses the supplied text and converts it to a Long
      * corresponding to that midnight in UTC on the specified date.
-     * 
      * @return null if it fails to parsing using the specified
-     *         DateTimeFormat
+     * DateTimeFormat
      */
-    private Long string2long(String text, DateTimeFormat fmt) {
-        
+    private Long string2long(String text,
+                             DateTimeFormat fmt) {
+
         // null or "" returns null
-        if (text == null) return null;
+        if (text == null) {
+            return null;
+        }
         text = text.trim();
-        if (text.length() == 0) return null;
-        
+        if (text.length() == 0) {
+            return null;
+        }
+
         Date date = fmt.parse(text);
         return date != null ? UTCDateBox.date2utc(date) : null;
     }
 
     /**
      * Formats the supplied value using the specified DateTimeFormat.
-     * 
      * @return "" if the value is null
      */
-    private String long2string(Long value, DateTimeFormat fmt) {
+    private String long2string(Long value,
+                               DateTimeFormat fmt) {
         // for html5 inputs, use "" for no value
-        if (value == null) return "";
+        if (value == null) {
+            return "";
+        }
         Date date = UTCDateBox.utc2date(value);
         return date != null ? fmt.format(date) : null;
     }

@@ -32,15 +32,17 @@ public class InputWidget extends FocusWidget implements HasValue<String> {
 
     public InputWidget(String type) {
         super(DOM.createElement("input"));
-        getElement().setAttribute("type", type);
+        getElement().setAttribute("type",
+                                  type);
 
         // fire a change event on change or blur
         addDomHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event) {
-                fireValueChangeHandler(getValue());
-            }
-        }, ChangeEvent.getType());
+                          @Override
+                          public void onChange(ChangeEvent event) {
+                              fireValueChangeHandler(getValue());
+                          }
+                      },
+                      ChangeEvent.getType());
 
         addBlurHandler(new BlurHandler() {
             @Override
@@ -52,7 +54,8 @@ public class InputWidget extends FocusWidget implements HasValue<String> {
 
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
-        return addHandler(handler, ValueChangeEvent.getType());
+        return addHandler(handler,
+                          ValueChangeEvent.getType());
     }
 
     @Override
@@ -62,25 +65,30 @@ public class InputWidget extends FocusWidget implements HasValue<String> {
 
     @Override
     public void setValue(String value) {
-        setValue(value, false);
+        setValue(value,
+                 false);
     }
 
     @Override
-    public void setValue(String value, boolean fireEvents) {
-        if (value == null) value = ""; 
-        getElement().setPropertyString("value", value);
+    public void setValue(String value,
+                         boolean fireEvents) {
+        if (value == null) {
+            value = "";
+        }
+        getElement().setPropertyString("value",
+                                       value);
         if (fireEvents) {
             fireValueChangeHandler(value);
-        }
-        else {
+        } else {
             // we still want to keep track of changes to the value
             lastValue = value;
         }
     }
 
     private void fireValueChangeHandler(String value) {
-        ValueChangeEvent.fireIfNotEqual(this, lastValue, value);
+        ValueChangeEvent.fireIfNotEqual(this,
+                                        lastValue,
+                                        value);
         lastValue = value;
     }
-
 }

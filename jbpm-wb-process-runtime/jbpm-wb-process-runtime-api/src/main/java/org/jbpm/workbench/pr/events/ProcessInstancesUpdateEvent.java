@@ -61,5 +61,4 @@ public class ProcessInstancesUpdateEvent {
         }
         return true;
     }
-
 }

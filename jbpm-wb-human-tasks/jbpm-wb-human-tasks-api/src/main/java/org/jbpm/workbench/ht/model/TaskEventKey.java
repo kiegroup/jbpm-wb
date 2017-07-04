@@ -20,6 +20,6 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.workbench.common.service.ItemKey;
 
 @Portable
-public class TaskEventKey implements ItemKey{
-  
+public class TaskEventKey implements ItemKey {
+
 }

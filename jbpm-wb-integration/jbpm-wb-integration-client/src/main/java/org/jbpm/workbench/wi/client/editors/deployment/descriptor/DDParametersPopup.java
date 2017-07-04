@@ -52,18 +52,14 @@ import static org.jbpm.workbench.wi.client.editors.deployment.descriptor.Deploym
 
 public class DDParametersPopup extends BaseModal {
 
-    interface DDParametersPopupBinder
-            extends
-            UiBinder<Widget, DDParametersPopup> {
+    private static DDParametersPopupBinder uiBinder = GWT.create(DDParametersPopupBinder.class);
 
-    }
-
-    private static DDParametersPopupBinder uiBinder = GWT.create( DDParametersPopupBinder.class );
+    private final Command cancelCommand = () -> hide();
 
     @UiField
     FormGroup parametersGroup;
 
-    @UiField(provided=true)
+    @UiField(provided = true)
     CellTable<Parameter> parametersTable = new CellTable<>(PAGE_SIZE_UNLIMITED);
 
     @UiField
@@ -77,125 +73,129 @@ public class DDParametersPopup extends BaseModal {
 
     private Command callbackCommand;
 
-    private ListDataProvider<Parameter> parametersDataProvider = new ListDataProvider<Parameter>();
-
     private final Command okCommand = new Command() {
         @Override
         public void execute() {
-            if ( callbackCommand != null ) {
+            if (callbackCommand != null) {
                 callbackCommand.execute();
             }
             hide();
         }
     };
+    private final ModalFooterOKCancelButtons footer = new ModalFooterOKCancelButtons(okCommand,
+                                                                                     cancelCommand);
 
-    private final Command cancelCommand = new Command() {
-        @Override
-        public void execute() {
-            hide();
-        }
-    };
-
-    private final ModalFooterOKCancelButtons footer = new ModalFooterOKCancelButtons( okCommand, cancelCommand );
+    private ListDataProvider<Parameter> parametersDataProvider = new ListDataProvider<Parameter>();
 
     public DDParametersPopup() {
-        setTitle( Constants.INSTANCE.DDParametersPopupTitle() );
-        setBody( uiBinder.createAndBindUi( DDParametersPopup.this ) );
+        setTitle(Constants.INSTANCE.DDParametersPopupTitle());
+        setBody(uiBinder.createAndBindUi(DDParametersPopup.this));
         configureParametersTable();
-        add( footer );
-
+        add(footer);
     }
 
-    public void setContent( final Command callbackCommand,
-                            ItemObjectModel model ) {
+    public void setContent(final Command callbackCommand,
+                           ItemObjectModel model) {
         this.callbackCommand = callbackCommand;
-        this.parametersLabel.setTitle( Constants.INSTANCE.DeploymentDescriptorParameters() + model.getName() );
+        this.parametersLabel.setTitle(Constants.INSTANCE.DeploymentDescriptorParameters() + model.getName());
         this.parametersDataProvider.getList().clear();
-        if ( model.getParameters() != null ) {
-            this.parametersDataProvider.setList( model.getParameters() );
+        if (model.getParameters() != null) {
+            this.parametersDataProvider.setList(model.getParameters());
         }
         this.parametersDataProvider.refresh();
     }
 
     public List<Parameter> getContent() {
 
-        return new ArrayList<Parameter>( parametersDataProvider.getList() );
+        return new ArrayList<Parameter>(parametersDataProvider.getList());
     }
 
     @UiHandler("addParameterButton")
-    public void onClickAddParameterButton( final ClickEvent event ) {
-        parametersDataProvider.getList().add( new Parameter( "java.lang.String", "" ) );
+    public void onClickAddParameterButton(final ClickEvent event) {
+        parametersDataProvider.getList().add(new Parameter("java.lang.String",
+                                                           ""));
     }
 
     private void configureParametersTable() {
         //Setup table
-        parametersTable.setStriped( true );
-        parametersTable.setCondensed( true );
-        parametersTable.setBordered( true );
-        parametersTable.setEmptyTableWidget( new Label( Constants.INSTANCE.NoDataDefined() ) );
+        parametersTable.setStriped(true);
+        parametersTable.setCondensed(true);
+        parametersTable.setBordered(true);
+        parametersTable.setEmptyTableWidget(new Label(Constants.INSTANCE.NoDataDefined()));
 
         //Columns
-        final Column<Parameter, String> typeColumn = new Column<Parameter, String>( new EditTextCell() ) {
+        final Column<Parameter, String> typeColumn = new Column<Parameter, String>(new EditTextCell()) {
 
             @Override
-            public String getValue( final Parameter item ) {
+            public String getValue(final Parameter item) {
                 return item.getType();
             }
         };
-        typeColumn.setFieldUpdater( new FieldUpdater<Parameter, String>() {
+        typeColumn.setFieldUpdater(new FieldUpdater<Parameter, String>() {
             @Override
-            public void update( int index,
-                                Parameter object,
-                                String value ) {
-                if ( value.equals( "" ) ) {
+            public void update(int index,
+                               Parameter object,
+                               String value) {
+                if (value.equals("")) {
                     return;
                 }
-                object.setType( value );
+                object.setType(value);
             }
-        } );
+        });
 
-        final Column<Parameter, String> valueColumn = new Column<Parameter, String>( new EditTextCell() ) {
+        final Column<Parameter, String> valueColumn = new Column<Parameter, String>(new EditTextCell()) {
 
             @Override
-            public String getValue( final Parameter item ) {
+            public String getValue(final Parameter item) {
                 return item.getValue();
             }
         };
-        valueColumn.setFieldUpdater( new FieldUpdater<Parameter, String>() {
+        valueColumn.setFieldUpdater(new FieldUpdater<Parameter, String>() {
             @Override
-            public void update( int index,
-                                Parameter object,
-                                String value ) {
-                if ( value.equals( "" ) ) {
+            public void update(int index,
+                               Parameter object,
+                               String value) {
+                if (value.equals("")) {
                     return;
                 }
-                object.setValue( value );
+                object.setValue(value);
             }
-        } );
+        });
 
-        final ButtonCell deleteMSButton = new ButtonCell( IconType.TRASH, ButtonType.DANGER, ButtonSize.SMALL );
-        final Column<Parameter, String> deleteGlobalColumn = new Column<Parameter, String>( deleteMSButton ) {
+        final ButtonCell deleteMSButton = new ButtonCell(IconType.TRASH,
+                                                         ButtonType.DANGER,
+                                                         ButtonSize.SMALL);
+        final Column<Parameter, String> deleteGlobalColumn = new Column<Parameter, String>(deleteMSButton) {
             @Override
-            public String getValue( final Parameter item ) {
+            public String getValue(final Parameter item) {
                 return Constants.INSTANCE.Remove();
             }
         };
-        deleteGlobalColumn.setFieldUpdater( new FieldUpdater<Parameter, String>() {
-            public void update( final int index,
-                                final Parameter item,
-                                final String value ) {
+        deleteGlobalColumn.setFieldUpdater(new FieldUpdater<Parameter, String>() {
+            public void update(final int index,
+                               final Parameter item,
+                               final String value) {
 
-                if ( Window.confirm( Constants.INSTANCE.PromptForRemoval() ) ) {
-                    parametersDataProvider.getList().remove( index );
+                if (Window.confirm(Constants.INSTANCE.PromptForRemoval())) {
+                    parametersDataProvider.getList().remove(index);
                 }
             }
-        } );
+        });
 
-        parametersTable.addColumn( typeColumn, new TextHeader( Constants.INSTANCE.Type() ) );
-        parametersTable.addColumn( valueColumn, new TextHeader( Constants.INSTANCE.Value() ) );
-        parametersTable.addColumn( deleteGlobalColumn, Constants.INSTANCE.Remove() );
+        parametersTable.addColumn(typeColumn,
+                                  new TextHeader(Constants.INSTANCE.Type()));
+        parametersTable.addColumn(valueColumn,
+                                  new TextHeader(Constants.INSTANCE.Value()));
+        parametersTable.addColumn(deleteGlobalColumn,
+                                  Constants.INSTANCE.Remove());
 
         //Link data
-        parametersDataProvider.addDataDisplay( parametersTable );
+        parametersDataProvider.addDataDisplay(parametersTable);
+    }
+
+    interface DDParametersPopupBinder
+            extends
+            UiBinder<Widget, DDParametersPopup> {
+
     }
 }

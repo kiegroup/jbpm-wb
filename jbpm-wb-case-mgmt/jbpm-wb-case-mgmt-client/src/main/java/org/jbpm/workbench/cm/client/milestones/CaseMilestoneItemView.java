@@ -43,7 +43,11 @@ import static org.jboss.errai.common.client.dom.DOMUtil.*;
 
 @Dependent
 @Templated
-public class CaseMilestoneItemView extends AbstractView<CaseMilestoneListPresenter> implements TakesValue<CaseMilestoneSummary>, IsElement {
+public class CaseMilestoneItemView extends AbstractView<CaseMilestoneListPresenter> implements TakesValue<CaseMilestoneSummary>,
+                                                                                               IsElement {
+
+    @Inject
+    protected TranslationService translationService;
 
     @Inject
     @DataField("milestone-name")
@@ -61,9 +65,6 @@ public class CaseMilestoneItemView extends AbstractView<CaseMilestoneListPresent
     @Inject
     @AutoBound
     private DataBinder<CaseMilestoneSummary> caseMilestoneSummary;
-
-    @Inject
-    protected TranslationService translationService;
 
     @PostConstruct
     public void init() {
@@ -87,39 +88,41 @@ public class CaseMilestoneItemView extends AbstractView<CaseMilestoneListPresent
 
         switch (milestoneStatus) {
             case AVAILABLE: {
-                showMilestoneStatus(translationService.format(Constants.MILESTONES_HAS_NOT_BEEN_COMPLETED), "fa-flag", "fa-process-flow-bxms");
+                showMilestoneStatus(translationService.format(Constants.MILESTONES_HAS_NOT_BEEN_COMPLETED),
+                                    "fa-flag",
+                                    "fa-process-flow-bxms");
                 break;
             }
             case COMPLETED: {
                 String achievedAtStr = DateConverter.getDateStr(model.getAchievedAt());
-                showMilestoneStatus(translationService.format(Constants.MILESTONES_HAS_BEEN_COMPLETED ,(achievedAtStr.isEmpty() ? "" : "(" + achievedAtStr + ")")),
-                        "fa-check" ,"kie-milestones__icon--completed");
-                addCSSClass(this.listGroupItem, "kie-milestones__item--completed");
+                showMilestoneStatus(translationService.format(Constants.MILESTONES_HAS_BEEN_COMPLETED,
+                                                              (achievedAtStr.isEmpty() ? "" : "(" + achievedAtStr + ")")),
+                                    "fa-check",
+                                    "kie-milestones__icon--completed");
+                addCSSClass(this.listGroupItem,
+                            "kie-milestones__item--completed");
                 break;
             }
             case TERMINATED: {
                 String achievedAtStr = DateConverter.getDateStr(model.getAchievedAt());
-                showMilestoneStatus(translationService.format(Constants.MILESTONES_HAS_BEEN_TERMINATED, (achievedAtStr.isEmpty() ? "" : "(" + achievedAtStr + ")")),
-                        "fa-close", "kie-milestones__icon--terminated");
-                addCSSClass(this.listGroupItem, "kie-milestones__item--terminated");
+                showMilestoneStatus(translationService.format(Constants.MILESTONES_HAS_BEEN_TERMINATED,
+                                                              (achievedAtStr.isEmpty() ? "" : "(" + achievedAtStr + ")")),
+                                    "fa-close",
+                                    "kie-milestones__icon--terminated");
+                addCSSClass(this.listGroupItem,
+                            "kie-milestones__item--terminated");
                 break;
             }
         }
     }
 
-    public void showMilestoneStatus(final String tooltipTitle, final String... stylesClass) {
-        status.setAttribute("data-original-title", tooltipTitle);
+    public void showMilestoneStatus(final String tooltipTitle,
+                                    final String... stylesClass) {
+        status.setAttribute("data-original-title",
+                            tooltipTitle);
         for (String styleClass : stylesClass) {
-            addCSSClass(this.status, styleClass);
+            addCSSClass(this.status,
+                        styleClass);
         }
     }
-
-    public String convertStatusToStr(final String modelValue) {
-        if (modelValue == null) {
-            return "";
-        } else {
-            return translationService.format(CaseMilestoneStatus.fromStatus(modelValue).getStatus());
-        }
-    }
-
 }

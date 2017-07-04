@@ -44,8 +44,8 @@ public class TaskLogsViewImpl extends Composite implements TaskLogsPresenter.Tas
     private Event<NotificationEvent> notification;
 
     @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     @Override
@@ -57,5 +57,4 @@ public class TaskLogsViewImpl extends Composite implements TaskLogsPresenter.Tas
             logTextArea.appendChild(li);
         });
     }
-
 }

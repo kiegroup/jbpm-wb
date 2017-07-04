@@ -45,21 +45,7 @@ public class ProcessInstanceSignalPresenter {
 
     public static final String SIGNAL_PROCESS_POPUP = "Signal Process Popup";
 
-    private Constants constants = GWT.create( Constants.class );
-
-    public interface PopupView extends UberView<ProcessInstanceSignalPresenter> {
-
-        void displayNotification( String text );
-
-        void addProcessInstanceId( long processInstanceId );
-
-        String getSignalRefText();
-
-        String getEventText();
-
-        void setAvailableSignals( Collection<String> signals );
-
-    }
+    private Constants constants = GWT.create(Constants.class);
 
     @Inject
     private PopupView view;
@@ -69,13 +55,14 @@ public class ProcessInstanceSignalPresenter {
 
     @Inject
     private Event<ProcessInstancesUpdateEvent> processInstancesUpdatedEvent;
-    
+
     private PlaceRequest place;
 
     @Inject
     private Caller<ProcessService> processService;
 
     private String serverTemplateId;
+
     private String[] deploymentId;
 
     @PostConstruct
@@ -84,7 +71,7 @@ public class ProcessInstanceSignalPresenter {
     }
 
     @OnStartup
-    public void onStartup( final PlaceRequest place ) {
+    public void onStartup(final PlaceRequest place) {
         this.place = place;
     }
 
@@ -107,23 +94,30 @@ public class ProcessInstanceSignalPresenter {
                         placeManager.closePlace(place);
                     }
                 }
-        ).signalProcessInstances( serverTemplateId, Arrays.asList(deploymentId), processInstanceIds, view.getSignalRefText(), view.getEventText());
+        ).signalProcessInstances(serverTemplateId,
+                                 Arrays.asList(deploymentId),
+                                 processInstanceIds,
+                                 view.getSignalRefText(),
+                                 view.getEventText());
     }
 
     @OnOpen
     public void onOpen() {
-        serverTemplateId = place.getParameter( "serverTemplateId", "" ).toString();
-        deploymentId = place.getParameter( "deploymentId", "" ).toString().split(",");
-        String processInstanceIds = place.getParameter( "processInstanceId", "-1" ).toString();
-        String[] ids = processInstanceIds.split( "," );
-        for ( String id : ids ) {
-            long processInstanceId = Long.parseLong( id );
-            view.addProcessInstanceId( processInstanceId );
+        serverTemplateId = place.getParameter("serverTemplateId",
+                                              "").toString();
+        deploymentId = place.getParameter("deploymentId",
+                                          "").toString().split(",");
+        String processInstanceIds = place.getParameter("processInstanceId",
+                                                       "-1").toString();
+        String[] ids = processInstanceIds.split(",");
+        for (String id : ids) {
+            long processInstanceId = Long.parseLong(id);
+            view.addProcessInstanceId(processInstanceId);
         }
 
         // for single process instance load available signals
-        if ( ids.length == 1 && Long.parseLong( ids[ 0 ] ) != -1 ) {
-            getAvailableSignals(Long.parseLong( ids[ 0 ] ) );
+        if (ids.length == 1 && Long.parseLong(ids[0]) != -1) {
+            getAvailableSignals(Long.parseLong(ids[0]));
         }
     }
 
@@ -133,9 +127,23 @@ public class ProcessInstanceSignalPresenter {
                     @Override
                     public void callback(Collection<String> signals) {
                         view.setAvailableSignals(signals);
-
                     }
                 }
-        ).getAvailableSignals(serverTemplateId, deploymentId[0], processInstanceId);
+        ).getAvailableSignals(serverTemplateId,
+                              deploymentId[0],
+                              processInstanceId);
+    }
+
+    public interface PopupView extends UberView<ProcessInstanceSignalPresenter> {
+
+        void displayNotification(String text);
+
+        void addProcessInstanceId(long processInstanceId);
+
+        String getSignalRefText();
+
+        String getEventText();
+
+        void setAvailableSignals(Collection<String> signals);
     }
 }

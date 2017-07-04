@@ -16,56 +16,59 @@
 package org.jbpm.workbench.pr.model;
 
 import java.io.Serializable;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class RuntimeLogSummary implements Serializable {
 
-  private long id;
-  private String time;
-  private String logLine;
-  private String type;
+    private long id;
+    private String time;
+    private String logLine;
+    private String type;
 
-  public RuntimeLogSummary() {
-  }
+    public RuntimeLogSummary() {
+    }
 
-  public RuntimeLogSummary(long id, String time, String logLine, String type) {
-    this.id = id;
-    this.time = time;
-    this.logLine = logLine;
-    this.type = type;
-  }
+    public RuntimeLogSummary(long id,
+                             String time,
+                             String logLine,
+                             String type) {
+        this.id = id;
+        this.time = time;
+        this.logLine = logLine;
+        this.type = type;
+    }
 
-  public long getId() {
-    return id;
-  }
+    public long getId() {
+        return id;
+    }
 
-  public void setId(long id) {
-    this.id = id;
-  }
+    public void setId(long id) {
+        this.id = id;
+    }
 
-  public String getTime() {
-    return time;
-  }
+    public String getTime() {
+        return time;
+    }
 
-  public void setTime(String time) {
-    this.time = time;
-  }
+    public void setTime(String time) {
+        this.time = time;
+    }
 
-  public String getLogLine() {
-    return logLine;
-  }
+    public String getLogLine() {
+        return logLine;
+    }
 
-  public void setLogLine(String logLine) {
-    this.logLine = logLine;
-  }
+    public void setLogLine(String logLine) {
+        this.logLine = logLine;
+    }
 
-  public String getType() {
-    return type;
-  }
+    public String getType() {
+        return type;
+    }
 
-  public void setType(String type) {
-    this.type = type;
-  }
-
+    public void setType(String type) {
+        this.type = type;
+    }
 }

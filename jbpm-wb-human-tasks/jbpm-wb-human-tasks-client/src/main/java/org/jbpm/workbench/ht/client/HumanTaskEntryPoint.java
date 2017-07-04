@@ -28,5 +28,4 @@ public class HumanTaskEntryPoint {
     public void init() {
         HumanTaskResources.INSTANCE.css().ensureInjected();
     }
-
 }

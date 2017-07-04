@@ -30,14 +30,8 @@ import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 @Dependent
 public class BasicProcessDefDetailsPresenter extends BaseProcessDefDetailsPresenter {
 
-    public interface BasicProcessDefDetailsView extends
-            BaseProcessDefDetailsPresenter.BaseProcessDefDetailsView {
-
-    }
-
     @Inject
     private BasicProcessDefDetailsView view;
-
     @Inject
     private Caller<ProcessRuntimeDataService> processRuntimeDataService;
 
@@ -47,32 +41,48 @@ public class BasicProcessDefDetailsPresenter extends BaseProcessDefDetailsPresen
     }
 
     @Override
-    protected void refreshView(  final String serverTemplateId, String currentProcessDefId, String currentDeploymentId ) {
-        view.getProcessIdText().setText( currentProcessDefId );
-        view.getDeploymentIdText().setText( currentDeploymentId );
+    protected void refreshView(final String serverTemplateId,
+                               String currentProcessDefId,
+                               String currentDeploymentId) {
+        view.getProcessIdText().setText(currentProcessDefId);
+        view.getDeploymentIdText().setText(currentDeploymentId);
     }
 
-    private void refreshProcessItems( final String serverTemplateId, final String deploymentId, final String processId ) {
+    private void refreshProcessItems(final String serverTemplateId,
+                                     final String deploymentId,
+                                     final String processId) {
 
         processRuntimeDataService.call(new RemoteCallback<ProcessSummary>() {
 
             @Override
-            public void callback( ProcessSummary process ) {
+            public void callback(ProcessSummary process) {
                 if (process != null) {
-                    view.getProcessNameText().setText( process.getName() );
+                    view.getProcessNameText().setText(process.getName());
 
-                    changeStyleRow( process.getName(), process.getVersion() );
+                    changeStyleRow(process.getName(),
+                                   process.getVersion());
                 } else {
                     // set to empty to ensure it's clear state
-                    view.getProcessNameText().setText( "" );
+                    view.getProcessNameText().setText("");
                 }
             }
-        } ).getProcess(serverTemplateId, new ProcessDefinitionKey(serverTemplateId, deploymentId, processId));
-
+        }).getProcess(serverTemplateId,
+                      new ProcessDefinitionKey(serverTemplateId,
+                                               deploymentId,
+                                               processId));
     }
 
     @Override
-    protected void refreshProcessDef(  final String serverTemplateId, String deploymentId, String processId ) {
-        refreshProcessItems( serverTemplateId, deploymentId, processId );
+    protected void refreshProcessDef(final String serverTemplateId,
+                                     String deploymentId,
+                                     String processId) {
+        refreshProcessItems(serverTemplateId,
+                            deploymentId,
+                            processId);
+    }
+
+    public interface BasicProcessDefDetailsView extends
+                                                BaseProcessDefDetailsPresenter.BaseProcessDefDetailsView {
+
     }
 }

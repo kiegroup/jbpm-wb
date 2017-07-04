@@ -34,37 +34,52 @@ public class TaskUtils {
     public static String TASK_STATUS_OBSOLETE = "Obsolete";
     public static String TASK_STATUS_COMPLETED = "Completed";
 
-    public enum TaskType {
-        PERSONAL, ACTIVE, GROUP, ALL, ADMIN
-    }
-
     public static List<String> getStatusByType(TaskType type) {
         ImmutableList<String> status = null;
         switch (type) {
             case ACTIVE:
-                status = ImmutableList.of(TASK_STATUS_READY, TASK_STATUS_RESERVED,
+                status = ImmutableList.of(TASK_STATUS_READY,
+                                          TASK_STATUS_RESERVED,
                                           TASK_STATUS_IN_PROGRESS);
                 break;
             case GROUP:
                 status = ImmutableList.of(TASK_STATUS_READY);
                 break;
             case ALL:
-                status = ImmutableList.of(TASK_STATUS_CREATED, TASK_STATUS_READY, TASK_STATUS_RESERVED,
-                                          TASK_STATUS_IN_PROGRESS, TASK_STATUS_SUSPENDED, TASK_STATUS_FAILED, TASK_STATUS_ERROR,
-                                          TASK_STATUS_EXITED, TASK_STATUS_OBSOLETE, TASK_STATUS_COMPLETED);
+                status = ImmutableList.of(TASK_STATUS_CREATED,
+                                          TASK_STATUS_READY,
+                                          TASK_STATUS_RESERVED,
+                                          TASK_STATUS_IN_PROGRESS,
+                                          TASK_STATUS_SUSPENDED,
+                                          TASK_STATUS_FAILED,
+                                          TASK_STATUS_ERROR,
+                                          TASK_STATUS_EXITED,
+                                          TASK_STATUS_OBSOLETE,
+                                          TASK_STATUS_COMPLETED);
                 break;
             case PERSONAL:
-                status = ImmutableList.of(TASK_STATUS_IN_PROGRESS, TASK_STATUS_CREATED, TASK_STATUS_RESERVED);
+                status = ImmutableList.of(TASK_STATUS_IN_PROGRESS,
+                                          TASK_STATUS_CREATED,
+                                          TASK_STATUS_RESERVED);
                 break;
             case ADMIN:
                 status = ImmutableList.of(TASK_STATUS_READY,
-                                          TASK_STATUS_IN_PROGRESS, TASK_STATUS_CREATED,
-                                          TASK_STATUS_RESERVED, TASK_STATUS_SUSPENDED);
+                                          TASK_STATUS_IN_PROGRESS,
+                                          TASK_STATUS_CREATED,
+                                          TASK_STATUS_RESERVED,
+                                          TASK_STATUS_SUSPENDED);
                 break;
             default:
                 throw new IllegalStateException("Unrecognized view type '" + type + "'!");
-
         }
         return Lists.newArrayList(status);
+    }
+
+    public enum TaskType {
+        PERSONAL,
+        ACTIVE,
+        GROUP,
+        ALL,
+        ADMIN
     }
 }

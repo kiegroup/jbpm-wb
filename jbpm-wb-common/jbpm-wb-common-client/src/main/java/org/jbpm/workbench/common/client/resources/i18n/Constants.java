@@ -62,7 +62,8 @@ public interface Constants extends Messages {
 
     String DataSetNotFound(String dataSet);
 
-    String DataSetError(String dataSet, String errorMessage);
+    String DataSetError(String dataSet,
+                        String errorMessage);
 
     String ServerTemplates();
 
@@ -101,5 +102,4 @@ public interface Constants extends Messages {
     String LastDays(Integer days);
 
     String Custom();
-
 }

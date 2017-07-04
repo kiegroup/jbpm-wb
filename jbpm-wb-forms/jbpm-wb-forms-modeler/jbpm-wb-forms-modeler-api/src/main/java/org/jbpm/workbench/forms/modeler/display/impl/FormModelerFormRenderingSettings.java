@@ -24,7 +24,7 @@ public class FormModelerFormRenderingSettings implements FormRenderingSettings {
 
     private String contextId;
 
-    public FormModelerFormRenderingSettings( @MapsTo( "contextId" ) String contextId ) {
+    public FormModelerFormRenderingSettings(@MapsTo("contextId") String contextId) {
         this.contextId = contextId;
     }
 
@@ -32,7 +32,7 @@ public class FormModelerFormRenderingSettings implements FormRenderingSettings {
         return contextId;
     }
 
-    public void setContextId( String contextId ) {
+    public void setContextId(String contextId) {
         this.contextId = contextId;
     }
 }

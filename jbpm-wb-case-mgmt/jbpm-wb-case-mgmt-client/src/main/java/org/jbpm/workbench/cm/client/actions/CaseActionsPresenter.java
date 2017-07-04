@@ -77,7 +77,8 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
                     final List<String> processDefinitionNames = new ArrayList<>();
                     for (ProcessDefinitionSummary processDefinitionSummary : processDefinitionsSumaries) {
                         processDefinitionNames.add(processDefinitionSummary.getName());
-                        processDefinitionSummaryMap.put(processDefinitionSummary.getName(), processDefinitionSummary);
+                        processDefinitionSummaryMap.put(processDefinitionSummary.getName(),
+                                                        processDefinitionSummary);
                     }
                     Collections.sort(processDefinitionNames);
                     newActionView.setProcessDefinitions(processDefinitionNames);
@@ -88,50 +89,82 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
 
     protected void showDynamicAction(CaseActionType caseActionType) {
         switch (caseActionType) {
-           case DYNAMIC_USER_TASK: {
-                newActionView.show(caseActionType, () ->
-                        addDynamicUserTaskAction(
-                                newActionView.getTaskName(),
-                                newActionView.getDescription(),
-                                newActionView.getActors(),
-                                newActionView.getGroups(),
-                                newActionView.getStageId()));
+            case DYNAMIC_USER_TASK: {
+                newActionView.show(caseActionType,
+                                   () -> addDynamicUserTaskAction(
+                                           newActionView.getTaskName(),
+                                           newActionView.getDescription(),
+                                           newActionView.getActors(),
+                                           newActionView.getGroups(),
+                                           newActionView.getStageId()));
                 break;
             }
             case DYNAMIC_SUBPROCESS_TASK: {
-                newActionView.show(caseActionType, () ->
-                        addDynamicSubprocessTaskAction(
-                                newActionView.getProcessDefinitionName(),
-                                newActionView.getStageId()));
+                newActionView.show(caseActionType,
+                                   () -> addDynamicSubprocessTaskAction(
+                                           newActionView.getProcessDefinitionName(),
+                                           newActionView.getStageId()));
                 break;
             }
-
-        }
-   }
-
-    protected void addDynamicUserTaskAction(final String taskName, final String taskDescription, String actors, String groups, String stageId) {
-        if (isNullOrEmpty(stageId)) {
-            caseService.call((r) -> refreshData(false)).addDynamicUserTask(containerId, caseId, taskName, taskDescription, actors, groups, null);
-        } else {
-            caseService.call((r) -> refreshData(false)).addDynamicUserTaskToStage(containerId, caseId, stageId, taskName, taskDescription, actors, groups, null);
         }
     }
 
-    protected void addDynamicSubprocessTaskAction(final String caseDefinitionName, String stageId) {
+    protected void addDynamicUserTaskAction(final String taskName,
+                                            final String taskDescription,
+                                            String actors,
+                                            String groups,
+                                            String stageId) {
+        if (isNullOrEmpty(stageId)) {
+            caseService.call((r) -> refreshData(false)).addDynamicUserTask(containerId,
+                                                                           caseId,
+                                                                           taskName,
+                                                                           taskDescription,
+                                                                           actors,
+                                                                           groups,
+                                                                           null);
+        } else {
+            caseService.call((r) -> refreshData(false)).addDynamicUserTaskToStage(containerId,
+                                                                                  caseId,
+                                                                                  stageId,
+                                                                                  taskName,
+                                                                                  taskDescription,
+                                                                                  actors,
+                                                                                  groups,
+                                                                                  null);
+        }
+    }
+
+    protected void addDynamicSubprocessTaskAction(final String caseDefinitionName,
+                                                  String stageId) {
         final ProcessDefinitionSummary processDefinitionSummary = processDefinitionSummaryMap.get(caseDefinitionName);
         if (isNullOrEmpty(stageId)) {
-            caseService.call((r) -> refreshData(false)).addDynamicSubProcess(containerId, caseId, processDefinitionSummary.getId(), null);
+            caseService.call((r) -> refreshData(false)).addDynamicSubProcess(containerId,
+                                                                             caseId,
+                                                                             processDefinitionSummary.getId(),
+                                                                             null);
         } else {
-            caseService.call((r) -> refreshData(false)).addDynamicSubProcessToStage(containerId, caseId, stageId, processDefinitionSummary.getId(), null);
+            caseService.call((r) -> refreshData(false)).addDynamicSubProcessToStage(containerId,
+                                                                                    caseId,
+                                                                                    stageId,
+                                                                                    processDefinitionSummary.getId(),
+                                                                                    null);
         }
     }
 
     protected void triggerAdHocAction(final String actionName) {
-        caseService.call((r) -> refreshData(false)).triggerAdHocAction(containerId, caseId, actionName, null);
+        caseService.call((r) -> refreshData(false)).triggerAdHocAction(containerId,
+                                                                       caseId,
+                                                                       actionName,
+                                                                       null);
     }
 
-    protected void triggerAdHocActionInStage(final String actionName, final String stageId) {
-        caseService.call((r) -> refreshData(false)).triggerAdHocActionInStage(containerId, caseId, stageId, actionName, null);
+    protected void triggerAdHocActionInStage(final String actionName,
+                                             final String stageId) {
+        caseService.call((r) -> refreshData(false)).triggerAdHocActionInStage(containerId,
+                                                                              caseId,
+                                                                              stageId,
+                                                                              actionName,
+                                                                              null);
     }
 
     protected void refreshData(final boolean refreshAvailableActions) {
@@ -139,21 +172,24 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
             if (refreshAvailableActions) {
                 List<CaseActionSummary> availableActions = new ArrayList<>();
                 availableActions.add(CaseActionSummary.builder()
-                        .name(translationService.getTranslation(NEW_USER_TASK))
-                        .actionType(CaseActionType.DYNAMIC_USER_TASK)
-                        .actionStatus(CaseActionStatus.AVAILABLE)
-                        .build());
+                                             .name(translationService.getTranslation(NEW_USER_TASK))
+                                             .actionType(CaseActionType.DYNAMIC_USER_TASK)
+                                             .actionStatus(CaseActionStatus.AVAILABLE)
+                                             .build());
                 availableActions.add(CaseActionSummary.builder()
-                        .name(translationService.getTranslation(NEW_PROCESS_TASK))
-                        .actionType(CaseActionType.DYNAMIC_SUBPROCESS_TASK)
-                        .actionStatus(CaseActionStatus.AVAILABLE)
-                        .build());
+                                             .name(translationService.getTranslation(NEW_PROCESS_TASK))
+                                             .actionType(CaseActionType.DYNAMIC_SUBPROCESS_TASK)
+                                             .actionStatus(CaseActionStatus.AVAILABLE)
+                                             .build());
                 availableActions.addAll(actions.getAvailableActions());
                 view.setAvailableActionsList(availableActions);
             }
             view.setInProgressActionsList(actions.getInProgressAction());
             view.setCompletedActionsList(actions.getCompleteActions());
-        }).getCaseActions(serverTemplateId, containerId, caseId, identity.getIdentifier());
+        }).getCaseActions(serverTemplateId,
+                          containerId,
+                          caseId,
+                          identity.getIdentifier());
     }
 
     public interface CaseActionsView extends UberElement<CaseActionsPresenter> {
@@ -167,7 +203,6 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
         void setCompletedActionsList(List<CaseActionSummary> caseActionList);
 
         void updateListHeaders();
-
     }
 
     public interface CaseActionsListView extends UberElement<CaseActionsPresenter> {
@@ -176,13 +211,14 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
 
         void setCaseActionList(List<CaseActionSummary> caseActionList);
 
-        void updateActionsHeader(final String heatherText, final String... stylesClass);
-
+        void updateActionsHeader(final String heatherText,
+                                 final String... stylesClass);
     }
 
     public interface NewActionView extends UberElement<CaseActionsPresenter> {
 
-        void show(CaseActionType caseActionType, Command okCommand);
+        void show(CaseActionType caseActionType,
+                  Command okCommand);
 
         void hide();
 
@@ -201,13 +237,10 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
         void setProcessDefinitions(List<String> processDefinitions);
 
         String getStageId();
-
     }
 
     public interface CaseActionAction extends Command {
 
         String label();
-
     }
-
 }

@@ -55,7 +55,10 @@ public class TaskAssignmentSummary extends GenericSummary<Long> {
                                  final List<String> potOwnersString,
                                  final List<String> businessAdmins,
                                  final String status) {
-        this(taskId, taskName, actualOwner, potOwnersString);
+        this(taskId,
+             taskName,
+             actualOwner,
+             potOwnersString);
         this.createdBy = createdBy;
         this.businessAdmins = businessAdmins;
         this.status = status;
