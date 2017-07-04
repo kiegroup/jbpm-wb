@@ -46,6 +46,8 @@ public class ExecutionErrorTypeConverter implements Converter<ExecutionErrorType
                     return constants.Task();
                 case DB:
                     return constants.DB();
+                case JOB:
+                    return constants.Job();
             }
             return constants.Unknown();
         }

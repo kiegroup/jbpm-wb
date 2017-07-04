@@ -31,7 +31,7 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
-import org.jbpm.workbench.es.model.events.ExecErrorChangedEvent;
+import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,9 +43,11 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.ResourceRef;
 import org.uberfire.security.authz.AuthorizationManager;
 
@@ -76,7 +78,7 @@ public class ExecutionErrorListPresenterTest {
     private ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable;
 
     @Mock
-    private EventSourceMock<ExecErrorChangedEvent> execErrorChangedEvent;
+    private EventSourceMock<ExecutionErrorSelectedEvent> executionErrorSelectedEventMock;
 
     @Mock
     private PlaceManager placeManager;
@@ -360,6 +362,31 @@ public class ExecutionErrorListPresenterTest {
                                          eq(false),
                                          any(Consumer.class),
                                          any(Consumer.class));
+    }
+
+    @Test
+    public void testOnSelectionEvent() {
+        String deploymentId = "evaluation.1.0.1";
+        String errorId = "testErrorId";
+        String processId = "Evaluation";
+        Long processInstanceId = Long.valueOf(1);
+        ExecutionErrorSummary errorSummary =
+                ExecutionErrorSummary.builder()
+                        .errorId(errorId)
+                        .deploymentId(deploymentId)
+                        .processId(processId)
+                        .processInstanceId(processInstanceId)
+                        .build();
+        when(placeManager.getStatus(any(DefaultPlaceRequest.class))).thenReturn(PlaceStatus.CLOSE);
+        presenter.setExecutionErrorSelectedEvent(executionErrorSelectedEventMock);
+        presenter.selectExecutionError(errorSummary,
+                                       true);
+        final ArgumentCaptor<ExecutionErrorSelectedEvent> captor = ArgumentCaptor.forClass(ExecutionErrorSelectedEvent.class);
+        verify(executionErrorSelectedEventMock).fire(captor.capture());
+        assertEquals(deploymentId,
+                     captor.getValue().getDeploymentId());
+        assertEquals(errorId,
+                     captor.getValue().getErrorId());
     }
 
     protected class PerspectiveAnswer implements Answer<Boolean> {

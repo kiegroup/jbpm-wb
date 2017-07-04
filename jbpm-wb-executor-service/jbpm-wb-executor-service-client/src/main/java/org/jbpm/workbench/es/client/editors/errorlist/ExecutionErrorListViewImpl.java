@@ -55,9 +55,9 @@ import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionErrorSummary, ExecutionErrorListPresenter>
         implements ExecutionErrorListPresenter.ExecutionErrorListView {
 
-    private static final String TAB_ALL = EXECUTION_ERROR_LIST_PREFIX + "_0";
-    private static final String TAB_ACK = EXECUTION_ERROR_LIST_PREFIX + "_1";
-    private static final String TAB_NEW = EXECUTION_ERROR_LIST_PREFIX + "_2";
+    public static final String TAB_ALL = EXECUTION_ERROR_LIST_PREFIX + "_0";
+    public static final String TAB_ACK = EXECUTION_ERROR_LIST_PREFIX + "_1";
+    public static final String TAB_NEW = EXECUTION_ERROR_LIST_PREFIX + "_2";
 
     private final Constants constants = Constants.INSTANCE;
 
@@ -75,21 +75,8 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
 
     @Override
     public void init(final ExecutionErrorListPresenter presenter) {
-        final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(COL_ID_SELECT);
-        bannedColumns.add(COLUMN_ERROR_ID);
-        bannedColumns.add(COLUMN_ERROR_TYPE);
-        bannedColumns.add(COLUMN_PROCESS_INST_ID);
-        bannedColumns.add(COLUMN_ERROR_DATE);
-        bannedColumns.add(COL_ID_ACTIONS);
-        final List<String> initColumns = new ArrayList<String>();
-        initColumns.add(COL_ID_SELECT);
-        initColumns.add(COLUMN_ERROR_ID);
-        initColumns.add(COLUMN_ERROR_TYPE);
-        initColumns.add(COLUMN_PROCESS_INST_ID);
-        initColumns.add(COLUMN_ERROR_DATE);
-        initColumns.add(COLUMN_DEPLOYMENT_ID);
-        initColumns.add(COL_ID_ACTIONS);
+        final List<String> bannedColumns = getBannedColumns();
+        final List<String> initColumns = getInitColumns();
         createTabButton.addClickHandler((ClickEvent event) -> {
             final String key = getValidKeyForAdditionalListGrid(EXECUTION_ERROR_LIST_PREFIX + "_");
 
@@ -124,6 +111,26 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                    new GridGlobalPreferences(EXECUTION_ERROR_LIST_PREFIX,
                                              initColumns,
                                              bannedColumns));
+    }
+
+    protected List<String> getBannedColumns(){
+        final List<String> bannedColumns = new ArrayList<String>();
+        bannedColumns.add(COL_ID_SELECT);
+        bannedColumns.add(COLUMN_ERROR_TYPE);
+        bannedColumns.add(COLUMN_PROCESS_INST_ID);
+        bannedColumns.add(COLUMN_ERROR_DATE);
+        bannedColumns.add(COL_ID_ACTIONS);
+        return bannedColumns;
+    }
+    protected List<String> getInitColumns() {
+        final List<String> initColumns = new ArrayList<String>();
+        initColumns.add(COL_ID_SELECT);
+        initColumns.add(COLUMN_ERROR_TYPE);
+        initColumns.add(COLUMN_PROCESS_INST_ID);
+        initColumns.add(COLUMN_ERROR_DATE);
+        initColumns.add(COLUMN_DEPLOYMENT_ID);
+        initColumns.add(COL_ID_ACTIONS);
+        return initColumns;
     }
 
     @Override
