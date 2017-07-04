@@ -57,9 +57,10 @@ public final class DataSetUtils {
     }
 
     public static Integer getColumnIntValue(DataSet currentDataSet,
-                                        String columnId,
-                                        int index) {
+                                            String columnId,
+                                            int index) {
         Object value = currentDataSet.getValueAt(index, columnId);
         return value != null ? Integer.parseInt(value.toString()) : null;
     }
+
 }

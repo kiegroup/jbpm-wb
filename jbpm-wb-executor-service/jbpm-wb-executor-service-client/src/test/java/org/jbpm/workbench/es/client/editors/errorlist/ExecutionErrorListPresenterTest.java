@@ -171,7 +171,7 @@ public class ExecutionErrorListPresenterTest {
         final String activityName = "activityName";
         final Long jobId = 1L;
         final String errorMessage = "errorMessage";
-        final String ack = "false";
+        final Short ack = 0;
         final String ackBy = "ackBy";
         final Date ackAt = new Date();
         final Date errorDate = new Date();
@@ -218,7 +218,7 @@ public class ExecutionErrorListPresenterTest {
                      es.getAcknowledgedAt());
         assertEquals(ackBy,
                      es.getAcknowledgedBy());
-        assertEquals(Boolean.valueOf(ack),
+        assertEquals(Boolean.valueOf(ack != 0),
                      es.isAcknowledged());
         assertEquals(activityId,
                      es.getActivityId());
@@ -242,7 +242,7 @@ public class ExecutionErrorListPresenterTest {
 
         verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Acknowledged()),
                                          eq(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No()),
-                                         eq(String.valueOf(Boolean.FALSE)),
+                                         eq("0"),
                                          any(Consumer.class));
     }
 
@@ -257,7 +257,7 @@ public class ExecutionErrorListPresenterTest {
 
         verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Acknowledged()),
                                          eq(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No()),
-                                         eq(String.valueOf(Boolean.FALSE)),
+                                         eq("0"),
                                          any(Consumer.class));
     }
 

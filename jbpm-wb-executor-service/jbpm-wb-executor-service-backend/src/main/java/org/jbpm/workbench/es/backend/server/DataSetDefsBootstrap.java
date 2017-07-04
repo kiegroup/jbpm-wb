@@ -107,7 +107,7 @@ public class DataSetDefsBootstrap {
                                + "from "
                                + "ExecutionErrorInfo eri ",
                        false)
-                .text(COLUMN_ERROR_ACK)
+                .number(COLUMN_ERROR_ACK)
                 .text(COLUMN_ERROR_ACK_BY)
                 .date(COLUMN_ERROR_ACK_AT)
                 .number(COLUMN_ACTIVITY_ID)
