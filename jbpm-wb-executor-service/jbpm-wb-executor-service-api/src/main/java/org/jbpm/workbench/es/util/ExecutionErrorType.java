@@ -26,6 +26,8 @@ public enum ExecutionErrorType {
 
     DB("DB"),
 
+    JOB("Job"),
+
     UNKNOWN("Unknown");
 
     private String type;

@@ -59,8 +59,8 @@ public class ExecutionErrorSummary extends GenericSummary<String> {
                                  Date acknowledgedAt,
                                  Date errorDate) {
         this.id = errorId;
-        this.name =
-                this.errorId = errorId;
+        this.name = errorId;
+        this.errorId = errorId;
         this.type = ExecutionErrorType.fromType(type);
         this.deploymentId = deploymentId;
         this.processInstanceId = processInstanceId;

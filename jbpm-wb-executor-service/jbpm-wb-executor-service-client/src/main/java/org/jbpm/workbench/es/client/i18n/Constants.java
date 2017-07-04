@@ -221,6 +221,8 @@ public interface Constants extends Messages {
 
     String DB();
 
+    String Job();
+
     String Unknown();
 
     String New();

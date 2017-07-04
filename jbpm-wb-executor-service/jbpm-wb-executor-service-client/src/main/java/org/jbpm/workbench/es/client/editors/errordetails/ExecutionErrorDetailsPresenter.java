@@ -23,7 +23,7 @@ import javax.inject.Inject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
-import org.jbpm.workbench.es.model.events.ExecErrorSelectionEvent;
+import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
 import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -48,8 +48,6 @@ public class ExecutionErrorDetailsPresenter implements RefreshMenuBuilder.Suppor
     public ExecErrorDetailsView view;
     @Inject
     PlaceManager placeManager;
-    @Inject
-    private Event<ExecErrorSelectionEvent> execErrorSelected;
 
     @Inject
     private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
@@ -59,6 +57,7 @@ public class ExecutionErrorDetailsPresenter implements RefreshMenuBuilder.Suppor
     private String serverTemplateId;
     private String deploymentId;
     private String errorId;
+
     @Inject
     private Caller<ExecutorService> executorServices;
 
@@ -82,7 +81,7 @@ public class ExecutionErrorDetailsPresenter implements RefreshMenuBuilder.Suppor
         this.place = place;
     }
 
-    public void onExecErrorSelectionEvent(@Observes ExecErrorSelectionEvent event) {
+    public void onExecutionErrorSelectedEvent(@Observes ExecutionErrorSelectedEvent event) {
         this.serverTemplateId = event.getServerTemplateId();
         this.deploymentId = event.getDeploymentId();
         this.errorId = event.getErrorId();
@@ -90,26 +89,31 @@ public class ExecutionErrorDetailsPresenter implements RefreshMenuBuilder.Suppor
         refreshExecutionErrorDataRemote(serverTemplateId,
                                         deploymentId,
                                         errorId);
-        changeTitleWidgetEvent.fire(
-                new ChangeTitleWidgetEvent(this.place,
-                                           String.valueOf(event.getErrorId() + " - " + event.getDeploymentId())));
+    }
+
+    @Override
+    public void onRefresh() {
+        refreshExecutionErrorDataRemote(serverTemplateId,
+                                        deploymentId,
+                                        errorId);
     }
 
     public void refreshExecutionErrorDataRemote(final String serverTemplateId,
                                                 final String deploymentId,
                                                 final String errorId) {
         executorServices.call(
-                (ExecutionErrorSummary executionErrorSummary) -> view.setValue(executionErrorSummary))
+                (ExecutionErrorSummary executionErrorSummary) -> {
+                    view.setValue(executionErrorSummary);
+                    changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place,
+                                                                           getErrorDetailTitle(executionErrorSummary)));
+                })
                 .getError(serverTemplateId,
                           deploymentId,
                           errorId);
     }
 
-    @Override
-    public void onRefresh() {
-        execErrorSelected.fire(new ExecErrorSelectionEvent(serverTemplateId,
-                                                           deploymentId,
-                                                           errorId));
+    private String getErrorDetailTitle(ExecutionErrorSummary summary) {
+        return summary.getProcessId() + " - " + summary.getProcessInstanceId() + " (" + summary.getDeploymentId() + ")";
     }
 
     @Inject
