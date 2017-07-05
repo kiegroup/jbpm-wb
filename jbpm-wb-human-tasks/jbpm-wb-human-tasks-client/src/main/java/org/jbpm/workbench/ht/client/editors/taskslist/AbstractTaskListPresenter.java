@@ -560,7 +560,21 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
             addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
                                              processInstId));
         } else {
-            super.setupActiveSearchFilters();
+            final Optional<String> taskIdSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_TASK_ID);
+            if (taskIdSearch.isPresent()) {
+                final String taskId = taskIdSearch.get();
+                view.addActiveFilter(
+                        constants.Task(),
+                        taskId,
+                        taskId,
+                        v -> removeAdvancedSearchFilter(equalsTo(COLUMN_TASK_ID,
+                                                                 v))
+                );
+                addAdvancedSearchFilter(equalsTo(COLUMN_TASK_ID,
+                                                 taskId));
+            } else {
+                super.setupActiveSearchFilters();
+            }
         }
     }
 

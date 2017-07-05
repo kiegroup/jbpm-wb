@@ -238,8 +238,9 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                                           38,
                                           Style.Unit.PX);
         extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
-                                          260,
+                                          340,
                                           Style.Unit.PX);
+
         extendedPagedTable.addColumns(columnMetas);
     }
 
@@ -261,6 +262,11 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                 constants.ViewProcessInstance(),
                 errorSummary -> presenter.goToProcessInstance(errorSummary),
                 presenter.getViewProcessInstanceActionCondition()));
+
+        cells.add(new ConditionalButtonActionCell<ExecutionErrorSummary>(
+                constants.ViewTask(),
+                errorSummary -> presenter.goToTask(errorSummary),
+                presenter.getViewTaskActionCondition()));
 
         CompositeCell<ExecutionErrorSummary> cell = new CompositeCell<ExecutionErrorSummary>(cells);
         Column<ExecutionErrorSummary, ExecutionErrorSummary> actionsColumn = new Column<ExecutionErrorSummary, ExecutionErrorSummary>(cell) {

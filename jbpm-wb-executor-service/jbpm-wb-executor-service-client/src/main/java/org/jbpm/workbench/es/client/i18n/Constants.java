@@ -232,4 +232,6 @@ public interface Constants extends Messages {
     String AcknowledgedErrors();
 
     String ViewProcessInstance();
+
+    String ViewTask();
 }
