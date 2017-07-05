@@ -15,7 +15,7 @@
 ~ limitations under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -131,7 +131,7 @@
       <artifactId>dashbuilder-dataset-api</artifactId>
       <scope>provided</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.dashbuilder</groupId>
       <artifactId>dashbuilder-common-client</artifactId>
@@ -214,6 +214,13 @@
     </dependency>
 
     <!-- Test deps -->
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-wb-common-client</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>

@@ -34,6 +34,7 @@ public final class TaskDataSetConstants {
     public static final String COLUMN_PRIORITY = "priority";
     public static final String COLUMN_PROCESS_ID = "processId";
     public static final String COLUMN_PROCESS_INSTANCE_ID = "processInstanceId";
+    public static final String COLUMN_PROCESS_SESSION_ID = "processSessionId";
     public static final String COLUMN_STATUS = "status";
     public static final String COLUMN_TASK_ID = "taskId";
     public static final String COLUMN_WORK_ITEM_ID = "workItemId";

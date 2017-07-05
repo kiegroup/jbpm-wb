@@ -81,6 +81,9 @@ public class TaskSummaryDataSetMapper implements BiFunction<DataSet, Integer, Ta
                 .processInstanceDescription(getColumnStringValue(dataSet,
                                                                  COLUMN_PROCESS_INSTANCE_DESCRIPTION,
                                                                  row))
+                .processSessionId(getColumnLongValue(dataSet,
+                                                     COLUMN_PROCESS_SESSION_ID,
+                                                     row))
                 .isForAdmin(HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet.getUUID()))
                 .build();
     }
