@@ -194,10 +194,24 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         return pis -> isUserAuthorizedForPerspective(PerspectiveIds.PROCESS_INSTANCES) && pis.getProcessInstanceId() != null;
     }
 
+    public Predicate<ExecutionErrorSummary> getViewTaskActionCondition() {
+        return pis -> ((isUserAuthorizedForPerspective(PerspectiveIds.TASKS_ADMIN) ||
+                isUserAuthorizedForPerspective(PerspectiveIds.TASKS)) &&
+                pis.getActivityId() != null  && ExecutionErrorType.TASK.getType().equals(pis.getType().getType()));
+    }
+
     public void goToProcessInstance(final ExecutionErrorSummary errorSummary) {
         navigateToPerspective(PerspectiveIds.PROCESS_INSTANCES,
                               PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
                               errorSummary.getProcessInstanceId().toString());
+    }
+
+    public void goToTask(final ExecutionErrorSummary errorSummary) {
+        navigateToPerspective(isUserAuthorizedForPerspective(PerspectiveIds.TASKS_ADMIN) ?
+                                      PerspectiveIds.TASKS_ADMIN :
+                                      PerspectiveIds.TASKS,
+                              PerspectiveIds.SEARCH_PARAMETER_TASK_ID,
+                              errorSummary.getActivityId().toString());
     }
 
     public void bulkAcknowledge(List<ExecutionErrorSummary> execErrorsSelected) {

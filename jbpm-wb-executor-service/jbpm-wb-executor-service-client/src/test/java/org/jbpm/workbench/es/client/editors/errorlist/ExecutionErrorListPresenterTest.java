@@ -33,6 +33,7 @@ import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
+import org.jbpm.workbench.es.util.ExecutionErrorType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +59,7 @@ import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.kie.workbench.common.workbench.client.PerspectiveIds.JOBS;
 import static org.kie.workbench.common.workbench.client.PerspectiveIds.PROCESS_INSTANCES;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.TASKS_ADMIN;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -340,6 +342,53 @@ public class ExecutionErrorListPresenterTest {
                                             eq(identity))).thenReturn(false);
 
         assertFalse(presenter.getViewProcessInstanceActionCondition().test(new ExecutionErrorSummary()));
+    }
+
+    @Test
+    public void testGoTaskErrorSummary() {
+        doAnswer(new PerspectiveAnswer(TASKS_ADMIN)).when(authorizationManager).authorize(any(ResourceRef.class),
+                                                                                          eq(identity));
+
+        ExecutionErrorSummary errorSummary =
+                ExecutionErrorSummary.builder()
+                        .activityId(Long.valueOf("1"))
+                        .build();
+
+        presenter.goToTask(errorSummary);
+
+        final ArgumentCaptor<PlaceRequest> captor = ArgumentCaptor.forClass(PlaceRequest.class);
+        verify(placeManager).goTo(captor.capture());
+        final PlaceRequest request = captor.getValue();
+        assertEquals(TASKS_ADMIN,
+                     request.getIdentifier());
+        assertEquals(errorSummary.getActivityId().toString(),
+                     request.getParameter(PerspectiveIds.SEARCH_PARAMETER_TASK_ID,
+                                          null));
+    }
+
+    @Test
+    public void testViewTaskActionCondition() {
+        doAnswer(new PerspectiveAnswer(TASKS_ADMIN)).when(authorizationManager).authorize(any(ResourceRef.class),
+                                                                                                eq(identity));
+
+        assertTrue(presenter.getViewTaskActionCondition().test(ExecutionErrorSummary.builder()
+                                                                       .type(ExecutionErrorType.TASK)
+                                                                       .activityId(Long.valueOf(1)).build()));
+
+        assertFalse(presenter.getViewProcessInstanceActionCondition().test(new ExecutionErrorSummary()));
+        assertFalse(presenter.getViewProcessInstanceActionCondition().test(ExecutionErrorSummary.builder()
+                                                                                   .type(ExecutionErrorType.TASK).build()));
+        assertFalse(presenter.getViewTaskActionCondition().test(ExecutionErrorSummary.builder()
+                                                                        .type(ExecutionErrorType.PROCESS)
+                                                                        .activityId(Long.valueOf(1)).build()));
+        when(authorizationManager.authorize(any(ResourceRef.class),
+                                            eq(identity))).thenReturn(false);
+
+        assertFalse(presenter.getViewTaskActionCondition().test(ExecutionErrorSummary.builder()
+                                                                       .type(ExecutionErrorType.TASK)
+                                                                       .activityId(Long.valueOf(1)).build()));
+
+
     }
 
     @Test
