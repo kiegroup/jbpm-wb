@@ -41,7 +41,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 @Templated(value = "TaskDetailsViewImpl.html")
 public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresenter.TaskDetailsView {
 
-    private TaskDetailsPresenter presenter;
+    private static Constants constants = Constants.INSTANCE;
 
     @Inject
     @DataField
@@ -91,9 +91,9 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @DataField
     public FormLabel taskDescriptionLabel;
 
-    private String[] priorities = { "0 - " + constants.High(), "1", "2", "3", "4", "5 - " + constants.Medium(), "6", "7", "8", "9", "10 - " + constants.Low() };
+    private TaskDetailsPresenter presenter;
 
-    private static Constants constants = Constants.INSTANCE;
+    private String[] priorities = {"0 - " + constants.High(), "1", "2", "3", "4", "5 - " + constants.Medium(), "6", "7", "8", "9", "10 - " + constants.Low()};
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -127,10 +127,9 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     public void updateTaskButton(ClickEvent e) {
 
         presenter.updateTask(taskDescriptionTextArea.getText(),
-                userText.getText(),
-                dueDate.getValue() != null && dueDateTime.getValue() != null ? UTCDateBox.utc2date(dueDate.getValue() + dueDateTime.getValue()) : null,
-                Integer.valueOf(taskPriorityListBox.getValue()));
-
+                             userText.getText(),
+                             dueDate.getValue() != null && dueDateTime.getValue() != null ? UTCDateBox.utc2date(dueDate.getValue() + dueDateTime.getValue()) : null,
+                             Integer.valueOf(taskPriorityListBox.getValue()));
     }
 
     @Override
@@ -199,9 +198,7 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     }
 
     @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
-
-
 }

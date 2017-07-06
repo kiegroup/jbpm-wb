@@ -59,38 +59,38 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
 
         formContentResizeListener = new FormContentResizeListener() {
             @Override
-            public void resize( int width,
-                                int height ) {
-                if ( initialWidth == -1 && getWidget( 0 ).getOffsetWidth() > 0 ) {
-                    initialWidth = getWidget( 0 ).getOffsetWidth();
+            public void resize(int width,
+                               int height) {
+                if (initialWidth == -1 && getWidget(0).getOffsetWidth() > 0) {
+                    initialWidth = getWidget(0).getOffsetWidth();
                 }
-                if ( width > getWidget( 0 ).getOffsetWidth() ) {
-                    setWidth( width + 40 + "px" );
-                } else if ( initialWidth != -1 ) {
-                    setWidth( initialWidth + "px" );
+                if (width > getWidget(0).getOffsetWidth()) {
+                    setWidth(width + 40 + "px");
+                } else if (initialWidth != -1) {
+                    setWidth(initialWidth + "px");
                 }
             }
         };
-        setBody( body );
-        add( footer );
-        this.addHiddenHandler( new ModalHiddenHandler() {
+        setBody(body);
+        add(footer);
+        this.addHiddenHandler(new ModalHiddenHandler() {
             @Override
-            public void onHidden( ModalHiddenEvent hiddenEvent ) {
-                if ( initialized ) {
+            public void onHidden(ModalHiddenEvent hiddenEvent) {
+                if (initialized) {
                     closePopup();
                 }
             }
-        } );
+        });
     }
 
     @Override
-    public void display( GenericFormDisplayer displayer ) {
+    public void display(GenericFormDisplayer displayer) {
         currentDisplayer = displayer;
         body.clear();
         footer.clear();
-        body.add( displayer.getContainer() );
-        if ( displayer.getOpener() == null ) {
-            footer.add( displayer.getFooter() );
+        body.add(displayer.getContainer());
+        if (displayer.getOpener() == null) {
+            footer.add(displayer.getFooter());
         }
         initialized = true;
         show();
@@ -98,10 +98,10 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
 
     public void closePopup() {
         hide();
-        if ( childCloseCommand != null ) {
+        if (childCloseCommand != null) {
             childCloseCommand.execute();
         }
-        setWidth( "" );
+        setWidth("");
         initialized = false;
     }
 
@@ -111,7 +111,7 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
     }
 
     @Override
-    public void setOnCloseCommand( Command onCloseCommand ) {
+    public void setOnCloseCommand(Command onCloseCommand) {
         this.childCloseCommand = onCloseCommand;
     }
 
@@ -121,7 +121,7 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
     }
 
     @Override
-    public void setResizeListener( FormContentResizeListener resizeListener ) {
+    public void setResizeListener(FormContentResizeListener resizeListener) {
         formContentResizeListener = resizeListener;
     }
 
@@ -129,5 +129,4 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
     public GenericFormDisplayer getCurrentDisplayer() {
         return currentDisplayer;
     }
-
 }

@@ -45,6 +45,10 @@ public class TaskSummary extends GenericSummary<Long> {
     private Long parentId;
     private Map<String, String> domainData = new HashMap<>();
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public void addDomainData(String key,
                               String value) {
         domainData.put(key,
@@ -164,11 +168,7 @@ public class TaskSummary extends GenericSummary<Long> {
     }
 
     public void setForAdmin(Boolean forAdmin) {
-        isForAdmin = forAdmin;
-    }
-
-    public void setForAdmin(boolean isForAdmin) {
-        this.isForAdmin = isForAdmin;
+        this.isForAdmin = forAdmin;
     }
 
     public boolean isLogOnly() {
@@ -227,16 +227,13 @@ public class TaskSummary extends GenericSummary<Long> {
                 "} " + super.toString();
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     @NonPortable
     public static final class Builder {
 
         private TaskSummary taskSummary = new TaskSummary();
 
-        private Builder(){}
+        private Builder() {
+        }
 
         public TaskSummary build() {
             return taskSummary;

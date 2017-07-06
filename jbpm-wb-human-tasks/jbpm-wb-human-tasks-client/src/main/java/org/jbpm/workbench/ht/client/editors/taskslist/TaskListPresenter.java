@@ -57,7 +57,8 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
 
     @Override
     public FilterSettings createTableSettingsPrototype() {
-        return createStatusSettings(HUMAN_TASKS_WITH_USER_DATASET, null);
+        return createStatusSettings(HUMAN_TASKS_WITH_USER_DATASET,
+                                    null);
     }
 
     public FilterSettings createGroupTabSettings() {
@@ -98,11 +99,13 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
     }
 
     public FilterSettings createAllTabSettings() {
-        return createStatusSettings(HUMAN_TASKS_WITH_USER_DATASET, new ArrayList<>(getStatusByType(TaskUtils.TaskType.ALL)));
+        return createStatusSettings(HUMAN_TASKS_WITH_USER_DATASET,
+                                    new ArrayList<>(getStatusByType(TaskUtils.TaskType.ALL)));
     }
 
     public FilterSettings createActiveTabSettings() {
-        return createStatusSettings(HUMAN_TASKS_WITH_USER_DATASET, new ArrayList<>(getStatusByType(TaskUtils.TaskType.ACTIVE)));
+        return createStatusSettings(HUMAN_TASKS_WITH_USER_DATASET,
+                                    new ArrayList<>(getStatusByType(TaskUtils.TaskType.ACTIVE)));
     }
 
     @Override
@@ -120,5 +123,4 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
         return task -> task.getActualOwner() != null && task.getActualOwner().equals(identity.getIdentifier())
                 && super.getReleaseActionCondition().test(task);
     }
-
 }

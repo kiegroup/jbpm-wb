@@ -40,11 +40,12 @@ public class JGitFileSystemProvider extends org.uberfire.java.nio.fs.jgit.JGitFi
 
         public DefaultProperties(final Properties defaults) {
             super(defaults);
-            setProperty(GIT_DAEMON_ENABLED, "false");
-            setProperty(GIT_SSH_ENABLED, "false");
-            setProperty(GIT_NIO_DIR_NAME, NIOGIT_CASEAPP);
+            setProperty(GIT_DAEMON_ENABLED,
+                        "false");
+            setProperty(GIT_SSH_ENABLED,
+                        "false");
+            setProperty(GIT_NIO_DIR_NAME,
+                        NIOGIT_CASEAPP);
         }
-
     }
-
 }

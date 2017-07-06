@@ -229,6 +229,10 @@
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-backend-cdi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
       <artifactId>uberfire-backend-server</artifactId>
     </dependency>
     <dependency>
@@ -260,8 +264,8 @@
       <artifactId>uberfire-commons</artifactId>
     </dependency>
     <dependency>
-       <groupId>org.uberfire</groupId>
-       <artifactId>uberfire-maven-support</artifactId>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-maven-support</artifactId>
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
@@ -311,6 +315,25 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-servlet-security</artifactId>
+    </dependency>
+    <!-- UberFire Preferences Extension -->
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-preferences-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-preferences-backend</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-preferences-processors</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-preferences-client</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Logs -->
@@ -464,6 +487,8 @@
               <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-backend</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-patternfly</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-backend-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.uberfire:uberfire-preferences-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.uberfire:uberfire-preferences-client</compileSourcesArtifact>
 
               <!-- Kie Server -->
               <compileSourcesArtifact>org.kie:kie-api</compileSourcesArtifact>

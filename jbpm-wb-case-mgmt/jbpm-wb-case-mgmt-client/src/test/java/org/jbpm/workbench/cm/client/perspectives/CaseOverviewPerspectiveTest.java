@@ -23,24 +23,24 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.junit.Assert.*;
 
-
 public class CaseOverviewPerspectiveTest {
 
     CaseOverviewPerspective perspective = new CaseOverviewPerspective();
 
     @Test
-    public void testOnStartup(){
+    public void testOnStartup() {
         final PlaceRequest placeRequest = new DefaultPlaceRequest();
 
         perspective.onStartup(placeRequest);
 
         assertTrue(perspective.getOverview().getParameters().isEmpty());
 
-        placeRequest.addParameter("test", "value");
+        placeRequest.addParameter("test",
+                                  "value");
 
         perspective.onStartup(placeRequest);
 
-        assertEquals(1, perspective.getOverview().getParameters().size());
+        assertEquals(1,
+                     perspective.getOverview().getParameters().size());
     }
-
 }

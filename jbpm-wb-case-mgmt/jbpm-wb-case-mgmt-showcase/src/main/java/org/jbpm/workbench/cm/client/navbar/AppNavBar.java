@@ -40,8 +40,9 @@ public class AppNavBar implements Header {
     private WorkbenchMenuBarPresenter menuBarPresenter;
 
     @PostConstruct
-    public void setup(){
-        DOMUtil.appendWidgetToElement( header, menuBarPresenter.getView().asWidget() );
+    public void setup() {
+        DOMUtil.appendWidgetToElement(header,
+                                      menuBarPresenter.getView().asWidget());
     }
 
     @Override

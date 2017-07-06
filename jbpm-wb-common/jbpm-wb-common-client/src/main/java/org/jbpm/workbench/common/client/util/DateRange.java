@@ -26,18 +26,19 @@ public class DateRange {
     private final Date startDate;
     private final Date endDate;
 
-    public DateRange(Date startDate, Date endDate) {
+    public DateRange(Date startDate,
+                     Date endDate) {
         super();
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
     public Date getStartDate() {
-        return new Date(startDate.getTime());
+        return startDate;
     }
 
     public Date getEndDate() {
-        return new Date(endDate.getTime());
+        return endDate;
     }
 
     @Override
@@ -68,8 +69,6 @@ public class DateRange {
         }
         return true;
     }
-    
-    
 
     @Override
     public String toString() {
@@ -81,5 +80,4 @@ public class DateRange {
         builder.append("]");
         return builder.toString();
     }
-
 }

@@ -54,7 +54,8 @@ public class DeploymentDescriptorIO {
 
             return descriptor;
         } catch (Exception e) {
-            throw new RuntimeException("Unable to read deployment descriptor from xml", e);
+            throw new RuntimeException("Unable to read deployment descriptor from xml",
+                                       e);
         }
     }
 
@@ -67,23 +68,26 @@ public class DeploymentDescriptorIO {
         try {
 
             Marshaller marshaller = getContext().createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "http://www.jboss.org/jbpm deployment-descriptor.xsd");
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
+                                   Boolean.TRUE);
+            marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION,
+                                   "http://www.jboss.org/jbpm deployment-descriptor.xsd");
             marshaller.setSchema(schema);
             StringWriter stringWriter = new StringWriter();
 
             // clone the object and cleanup transients
             DeploymentDescriptor clone = ((DeploymentDescriptorImpl) descriptor).clearClone();
 
-            marshaller.marshal(clone, stringWriter);
+            marshaller.marshal(clone,
+                               stringWriter);
             String output = stringWriter.toString();
 
             return output;
         } catch (Exception e) {
-            throw new RuntimeException("Unable to generate xml from deployment descriptor", e);
+            throw new RuntimeException("Unable to generate xml from deployment descriptor",
+                                       e);
         }
     }
-
 
     public static JAXBContext getContext() throws JAXBException, SAXException {
         if (context == null) {

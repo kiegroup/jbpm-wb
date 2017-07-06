@@ -62,7 +62,8 @@ public interface Constants extends Messages {
 
     String DataSetNotFound(String dataSet);
 
-    String DataSetError(String dataSet, String errorMessage);
+    String DataSetError(String dataSet,
+                        String errorMessage);
 
     String ServerTemplates();
 
@@ -84,15 +85,21 @@ public interface Constants extends Messages {
 
     String AllowedWildcardsForStrings();
 
-    String AsubstituteForASingleCharacter();
+    String ASubstituteForASingleCharacter();
 
     String ASubstituteForZeroOrMoreCharacters();
 
-    String Charlist();
+    String CharList();
 
-    String SetsOfCharactersToMatch();
+    String SetOfCharactersToMatch();
 
     String MatchesOnlyACharacterNOTSpecifiedWithinTheBrackets();
 
+    String LastHour();
 
+    String LastHours(Integer hours);
+
+    String LastDays(Integer days);
+
+    String Custom();
 }

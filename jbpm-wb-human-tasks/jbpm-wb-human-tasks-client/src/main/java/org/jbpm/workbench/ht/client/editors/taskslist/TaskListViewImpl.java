@@ -88,5 +88,4 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
     public String getDataSetTaskListPrefix() {
         return DATA_SET_TASK_LIST_PREFIX;
     }
-
 }

@@ -37,57 +37,61 @@ import org.slf4j.LoggerFactory;
 @Dependent
 public class ProcessFormsValuesProcessor extends KieWorkbenchFormsValuesProcessor<ProcessRenderingSettings> {
 
-    private static final Logger logger = LoggerFactory.getLogger( ProcessFormsValuesProcessor.class );
+    private static final Logger logger = LoggerFactory.getLogger(ProcessFormsValuesProcessor.class);
 
     @Inject
-    public ProcessFormsValuesProcessor( FormDefinitionSerializer formSerializer,
-                                        BackendFormRenderingContextManager contextManager,
-                                        DynamicBPMNFormGenerator dynamicBPMNFormGenerator ) {
-        super( formSerializer, contextManager, dynamicBPMNFormGenerator );
+    public ProcessFormsValuesProcessor(FormDefinitionSerializer formSerializer,
+                                       BackendFormRenderingContextManager contextManager,
+                                       DynamicBPMNFormGenerator dynamicBPMNFormGenerator) {
+        super(formSerializer,
+              contextManager,
+              dynamicBPMNFormGenerator);
     }
 
     @Override
-    protected String getFormName( ProcessRenderingSettings settings ) {
+    protected String getFormName(ProcessRenderingSettings settings) {
         return settings.getProcess().getId();
     }
 
     @Override
-    protected Map<String, Object> getOutputValues( Map<String, Object> values,
-                                                   FormDefinition form,
-                                                   ProcessRenderingSettings context ) {
+    protected Map<String, Object> getOutputValues(Map<String, Object> values,
+                                                  FormDefinition form,
+                                                  ProcessRenderingSettings context) {
 
-        if ( isValid( form ) ) {
+        if (isValid(form)) {
             BusinessProcessFormModel model = (BusinessProcessFormModel) form.getModel();
 
-            values.entrySet().stream().allMatch( entry -> model.getVariables().stream().filter( variable -> variable.getName().equals(
-                    entry.getKey() ) ).findFirst().isPresent() );
+            values.entrySet().stream().allMatch(entry -> model.getVariables().stream().filter(variable -> variable.getName().equals(
+                    entry.getKey())).findFirst().isPresent());
             return values;
         }
-        throw new IllegalArgumentException( "Form not valid to start process" );
+        throw new IllegalArgumentException("Form not valid to start process");
     }
 
     @Override
-    protected void prepareContext( ProcessRenderingSettings settings, BackendFormRenderingContext context ) {
+    protected void prepareContext(ProcessRenderingSettings settings,
+                                  BackendFormRenderingContext context) {
         // Nothing to do for processes
     }
 
     @Override
-    protected boolean isValid( FormDefinition rootForm ) {
+    protected boolean isValid(FormDefinition rootForm) {
         return rootForm != null && rootForm.getModel() instanceof BusinessProcessFormModel;
     }
 
     @Override
-    protected Collection<FormDefinition> generateDefaultFormsForContext( ProcessRenderingSettings settings ) {
+    protected Collection<FormDefinition> generateDefaultFormsForContext(ProcessRenderingSettings settings) {
         List<JBPMVariable> variables = new ArrayList<>();
-        settings.getProcessData().forEach( ( name, type ) -> {
-            variables.add( new JBPMVariable( name, type ) );
-        } );
-        BusinessProcessFormModel formModel = new BusinessProcessFormModel( settings.getProcess().getId(),
-                                                                           settings.getProcess().getName(),
-                                                                           variables );
+        settings.getProcessData().forEach((name, type) -> {
+            variables.add(new JBPMVariable(name,
+                                           type));
+        });
+        BusinessProcessFormModel formModel = new BusinessProcessFormModel(settings.getProcess().getId(),
+                                                                          settings.getProcess().getName(),
+                                                                          variables);
 
-        return dynamicBPMNFormGenerator.generateProcessForms( formModel,
-                                                              settings.getMarshallerContext().getClassloader() );
+        return dynamicBPMNFormGenerator.generateProcessForms(formModel,
+                                                             settings.getMarshallerContext().getClassloader());
     }
 
     @Override

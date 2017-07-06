@@ -42,9 +42,6 @@ import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 @Dependent
 public class ProcessDashboardView extends Composite implements ProcessDashboard.View {
 
-    interface Binder extends UiBinder<Widget, ProcessDashboardView> {
-    }
-
     private static Binder uiBinder = GWT.create(Binder.class);
 
     @UiField
@@ -126,70 +123,99 @@ public class ProcessDashboardView extends Composite implements ProcessDashboard.
         this.processBreadCrumb = presenter.getProcessBreadCrumb();
 
         Map<String, Displayer> dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.total(), totalMetric);
-        totalContainer = createMetricContainer(dmap, false);
+        dmap.put(DashboardConstants.INSTANCE.total(),
+                 totalMetric);
+        totalContainer = createMetricContainer(dmap,
+                                               false);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.processStatusActive(), activeMetric);
-        activeContainer = createMetricContainer(dmap, false);
+        dmap.put(DashboardConstants.INSTANCE.processStatusActive(),
+                 activeMetric);
+        activeContainer = createMetricContainer(dmap,
+                                                false);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.processStatusPending(), pendingMetric);
-        pendingContainer = createMetricContainer(dmap, false);
+        dmap.put(DashboardConstants.INSTANCE.processStatusPending(),
+                 pendingMetric);
+        pendingContainer = createMetricContainer(dmap,
+                                                 false);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.processStatusSuspended(), suspendedMetric);
-        suspendedContainer = createMetricContainer(dmap, false);
+        dmap.put(DashboardConstants.INSTANCE.processStatusSuspended(),
+                 suspendedMetric);
+        suspendedContainer = createMetricContainer(dmap,
+                                                   false);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.processStatusAborted(), abortedMetric);
-        abortedContainer = createMetricContainer(dmap, false);
+        dmap.put(DashboardConstants.INSTANCE.processStatusAborted(),
+                 abortedMetric);
+        abortedContainer = createMetricContainer(dmap,
+                                                 false);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.processStatusCompleted(), completedMetric);
-        completedContainer = createMetricContainer(dmap, false);
+        dmap.put(DashboardConstants.INSTANCE.processStatusCompleted(),
+                 completedMetric);
+        completedContainer = createMetricContainer(dmap,
+                                                   false);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.byType(), processesByType);
-        container1 = createChartContainer(dmap, true);
+        dmap.put(DashboardConstants.INSTANCE.byType(),
+                 processesByType);
+        container1 = createChartContainer(dmap,
+                                          true);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.byStartDate(), processesByStartDate);
-        container2 = createChartContainer(dmap, true);
+        dmap.put(DashboardConstants.INSTANCE.byStartDate(),
+                 processesByStartDate);
+        container2 = createChartContainer(dmap,
+                                          true);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.byUser(), processesByUser);
-        container3 = createChartContainer(dmap, true);
+        dmap.put(DashboardConstants.INSTANCE.byUser(),
+                 processesByUser);
+        container3 = createChartContainer(dmap,
+                                          true);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.byRunningTime(), processesByRunningTime);
-        container4 = createChartContainer(dmap, true);
+        dmap.put(DashboardConstants.INSTANCE.byRunningTime(),
+                 processesByRunningTime);
+        container4 = createChartContainer(dmap,
+                                          true);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.byEndDate(), processesByEndDate);
-        container5 = createChartContainer(dmap, true);
+        dmap.put(DashboardConstants.INSTANCE.byEndDate(),
+                 processesByEndDate);
+        container5 = createChartContainer(dmap,
+                                          true);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.byVersion(), processesByVersion);
-        container6 = createChartContainer(dmap, true);
+        dmap.put(DashboardConstants.INSTANCE.byVersion(),
+                 processesByVersion);
+        container6 = createChartContainer(dmap,
+                                          true);
 
         initWidget(uiBinder.createAndBindUi(this));
     }
 
-    protected DisplayerContainer createMetricContainer(Map<String, Displayer> m, boolean showHeader) {
-        DisplayerContainer container = new DisplayerContainer(m, showHeader);
+    protected DisplayerContainer createMetricContainer(Map<String, Displayer> m,
+                                                       boolean showHeader) {
+        DisplayerContainer container = new DisplayerContainer(m,
+                                                              showHeader);
         Style s = container.getView().getHeaderStyle();
         s.setBackgroundColor("white");
         return container;
     }
 
-    protected DisplayerContainer createChartContainer(Map<String, Displayer> m, boolean showHeader) {
-        DisplayerContainer container = new DisplayerContainer(m, showHeader);
+    protected DisplayerContainer createChartContainer(Map<String, Displayer> m,
+                                                      boolean showHeader) {
+        DisplayerContainer container = new DisplayerContainer(m,
+                                                              showHeader);
         Style s = container.getView().getHeaderStyle();
         s.setBackgroundColor("white");
         s = container.getView().getBodyStyle();
         s.setBackgroundColor("white");
-        s.setPaddingBottom(30, Style.Unit.PX);
+        s.setPaddingBottom(30,
+                           Style.Unit.PX);
         return container;
     }
 
@@ -246,5 +272,9 @@ public class ProcessDashboardView extends Composite implements ProcessDashboard.
         } else {
             presenter.showDashboard();
         }
+    }
+
+    interface Binder extends UiBinder<Widget, ProcessDashboardView> {
+
     }
 }

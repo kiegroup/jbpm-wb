@@ -29,7 +29,6 @@ import static org.uberfire.commons.validation.PortablePreconditions.checkNotNull
 @Dependent
 public class DashboardView extends Composite implements DashboardScreen.View {
 
-    interface Binder extends UiBinder<Widget, DashboardView> {}
     private static Binder uiBinder = GWT.create(Binder.class);
 
     @UiField
@@ -42,8 +41,13 @@ public class DashboardView extends Composite implements DashboardScreen.View {
 
     public void init(DashboardScreen presenter) {
         initWidget(uiBinder.createAndBindUi(this));
-        this.presenter = checkNotNull( "presenter", presenter );
+        this.presenter = checkNotNull("presenter",
+                                      presenter);
         processesPane.add(presenter.getProcessDashboard());
         tasksPane.add(presenter.getTaskDashboard());
+    }
+
+    interface Binder extends UiBinder<Widget, DashboardView> {
+
     }
 }

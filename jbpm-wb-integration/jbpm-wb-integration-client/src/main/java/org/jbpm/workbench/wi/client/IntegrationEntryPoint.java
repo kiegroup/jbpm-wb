@@ -32,5 +32,4 @@ public class IntegrationEntryPoint {
     public void startWorkbench() {
         presenter.verifyCaseAppStatus();
     }
-
 }

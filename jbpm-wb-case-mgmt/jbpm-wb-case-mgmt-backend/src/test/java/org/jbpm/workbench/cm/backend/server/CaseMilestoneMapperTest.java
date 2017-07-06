@@ -28,13 +28,19 @@ import static org.junit.Assert.*;
 
 public class CaseMilestoneMapperTest {
 
-    public static void assertCaseMilestone(final CaseMilestone cm, final CaseMilestoneSummary cis) {
+    public static void assertCaseMilestone(final CaseMilestone cm,
+                                           final CaseMilestoneSummary cis) {
         assertNotNull(cis);
-        assertEquals(cm.getIdentifier(), cis.getIdentifier());
-        assertEquals(cm.getName(), cis.getName());
-        assertEquals(cm.getAchievedAt(), cis.getAchievedAt());
-        assertEquals(cm.getStatus(), cis.getStatus());
-        assertEquals(cm.isAchieved(), cis.isAchieved());
+        assertEquals(cm.getIdentifier(),
+                     cis.getIdentifier());
+        assertEquals(cm.getName(),
+                     cis.getName());
+        assertEquals(cm.getAchievedAt(),
+                     cis.getAchievedAt());
+        assertEquals(cm.getStatus(),
+                     cis.getStatus());
+        assertEquals(cm.isAchieved(),
+                     cis.isAchieved());
     }
 
     @Test
@@ -46,12 +52,12 @@ public class CaseMilestoneMapperTest {
         cm.setAchievedAt(new Date());
         cm.setStatus("OPEN");
 
-        List<CaseMilestone> cmList= new ArrayList();
+        List<CaseMilestone> cmList = new ArrayList();
         cmList.add(cm);
 
         final CaseMilestoneSummary cms = new CaseMilestoneMapper().apply(cm);
 
-        assertCaseMilestone(cm, cms);
+        assertCaseMilestone(cm,
+                            cms);
     }
-
 }

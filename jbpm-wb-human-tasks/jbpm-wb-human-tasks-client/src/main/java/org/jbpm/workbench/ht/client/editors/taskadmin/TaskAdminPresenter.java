@@ -39,22 +39,8 @@ import org.jbpm.workbench.ht.service.TaskService;
 @Dependent
 public class TaskAdminPresenter {
 
-    public interface TaskAdminView extends IsWidget {
-
-        void displayNotification( String text );
-
-        FormControlStatic getUsersGroupsControlsPanel();
-
-        Button getForwardButton();
-
-        TextBox getUserOrGroupText();
-
-        Button getReminderButton();
-
-        FormControlStatic getActualOwnerPanel();
-
-        void init( final TaskAdminPresenter presenter );
-    }
+    @Inject
+    protected Caller<TaskService> taskService;
 
     private Constants constants = Constants.INSTANCE;
 
@@ -64,11 +50,10 @@ public class TaskAdminPresenter {
     @Inject
     private User identity;
 
-    @Inject
-    protected Caller<TaskService> taskService;
-
     private long currentTaskId = 0;
+
     private String serverTemplateId;
+
     private String containerId;
 
     @Inject
@@ -76,7 +61,7 @@ public class TaskAdminPresenter {
 
     @PostConstruct
     public void init() {
-        view.init( this );
+        view.init(this);
     }
 
     public IsWidget getView() {
@@ -92,9 +77,11 @@ public class TaskAdminPresenter {
                         taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
                         refreshTaskPotentialOwners();
                     }
-
                 }
-        ).delegate(serverTemplateId, containerId, currentTaskId, entity);
+        ).delegate(serverTemplateId,
+                   containerId,
+                   currentTaskId,
+                   entity);
     }
 
     public void reminder() {
@@ -105,7 +92,10 @@ public class TaskAdminPresenter {
                         view.displayNotification(constants.ReminderSentTo(identity.getIdentifier()));
                     }
                 }
-        ).executeReminderForTask(serverTemplateId, containerId, currentTaskId, identity.getIdentifier());
+        ).executeReminderForTask(serverTemplateId,
+                                 containerId,
+                                 currentTaskId,
+                                 identity.getIdentifier());
     }
 
     public void refreshTaskPotentialOwners() {
@@ -139,19 +129,38 @@ public class TaskAdminPresenter {
                         }
                     }
                 }
-        ).getTaskAssignmentDetails(serverTemplateId, containerId, currentTaskId);
+        ).getTaskAssignmentDetails(serverTemplateId,
+                                   containerId,
+                                   currentTaskId);
     }
 
-    public void onTaskSelectionEvent( @Observes final TaskSelectionEvent event ) {
+    public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
         this.currentTaskId = event.getTaskId();
         serverTemplateId = event.getServerTemplateId();
         containerId = event.getContainerId();
         refreshTaskPotentialOwners();
     }
 
-    public void onTaskRefreshedEvent( @Observes TaskRefreshedEvent event ) {
-        if ( currentTaskId == event.getTaskId() ) {
+    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
+        if (currentTaskId == event.getTaskId()) {
             refreshTaskPotentialOwners();
         }
+    }
+
+    public interface TaskAdminView extends IsWidget {
+
+        void displayNotification(String text);
+
+        FormControlStatic getUsersGroupsControlsPanel();
+
+        Button getForwardButton();
+
+        TextBox getUserOrGroupText();
+
+        Button getReminderButton();
+
+        FormControlStatic getActualOwnerPanel();
+
+        void init(final TaskAdminPresenter presenter);
     }
 }

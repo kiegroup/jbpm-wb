@@ -24,14 +24,12 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import org.jboss.errai.common.client.dom.Anchor;
 import org.jboss.errai.common.client.dom.DOMTokenList;
-import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.ui.client.local.api.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
-import org.uberfire.client.views.pfly.widgets.Popover;
 
 @Dependent
 @Templated(value = "ProcessInstanceSummaryErrorPopoverCell.html", stylesheet = "ProcessInstanceSummaryErrorPopoverCell.css")
@@ -45,8 +43,8 @@ public class ProcessInstanceSummaryErrorPopoverCell extends AbstractCell<Process
 
     @Inject
     @DataField("popover")
-    private Popover popover;
-     
+    private Anchor popover;
+
     @Inject
     @DataField("popoverContent")
     private Span popoverContent;
@@ -54,75 +52,79 @@ public class ProcessInstanceSummaryErrorPopoverCell extends AbstractCell<Process
     @Inject
     @DataField("contentErrCount")
     private Span contentErrCount;
-    
+
     @Inject
     @DataField(VIEW_ERROR_LINK_NAME)
     private Anchor viewErrAnchor;
-    
+
     private ProcessInstanceListPresenter viewPresenter;
-    
-    public ProcessInstanceSummaryErrorPopoverCell init(final ProcessInstanceListPresenter viewPresenter){
+
+    public ProcessInstanceSummaryErrorPopoverCell init(final ProcessInstanceListPresenter viewPresenter) {
         this.viewPresenter = viewPresenter;
         return this;
     }
 
     @Override
-    public void render(Context context, ProcessInstanceSummary value, SafeHtmlBuilder sb) {
+    public void render(Context context,
+                       ProcessInstanceSummary value,
+                       SafeHtmlBuilder sb) {
         Integer errCount = (value != null && value.getErrorCount() != null ? value.getErrorCount() : 0);
 
-        HTMLElement popoverAnchor = popover.getElement();
-        DOMTokenList popoverClasses = popoverAnchor.getClassList();
-        popoverAnchor.setTextContent(Integer.toString(errCount));
+        DOMTokenList popoverClasses = popover.getClassList();
+        popover.setTextContent(Integer.toString(errCount));
 
-        if(errCount > 0){
+        if (errCount > 0) {
             popoverClasses.add(ERROR_PRESENT_STYLE);
-        }else{
+        } else {
             popoverClasses.remove(ERROR_PRESENT_STYLE);
         }
 
-        if(viewPresenter.getViewErrorsActionCondition().test(value)){
+        if (viewPresenter.getViewErrorsActionCondition().test(value)) {
             viewErrAnchor.setTitle(I18N.ErrorCountViewLink());
             viewErrAnchor.setTextContent(I18N.ErrorCountViewLink());
-            viewErrAnchor.setAttribute(PROCESS_INSTANCE_ATTRIBUTE, Long.toString(value.getProcessInstanceId()));
+            viewErrAnchor.setAttribute(PROCESS_INSTANCE_ATTRIBUTE,
+                                       Long.toString(value.getProcessInstanceId()));
             contentErrCount.setTextContent(I18N.ErrorCountNumber(errCount));
 
             popoverClasses.add(LINK_AVAILABLE_STYLE);
-            popoverAnchor.setAttribute("data-toggle", "popover");
-            Scheduler.get().scheduleDeferred(() -> initPopovers(VIEW_ERROR_LINK_NAME, PROCESS_INSTANCE_ATTRIBUTE));
-        }else{
-            popoverAnchor.removeAttribute("data-toggle");
+            popover.setAttribute("data-toggle",
+                                 "popover");
+            Scheduler.get().scheduleDeferred(() -> initPopovers(VIEW_ERROR_LINK_NAME,
+                                                                PROCESS_INSTANCE_ATTRIBUTE));
+        } else {
+            popover.removeAttribute("data-toggle");
             popoverClasses.remove(LINK_AVAILABLE_STYLE);
         }
 
-        sb.appendHtmlConstant(popoverAnchor.getOuterHTML());
+        sb.appendHtmlConstant(popover.getOuterHTML());
     }
 
     public void openErrorView(final String pid) {
         viewPresenter.openErrorView(pid);
     }
-    
-    public String getPopoverContent(){
+
+    public String getPopoverContent() {
         return popoverContent.getInnerHTML();
     }
-    
-    private native void initPopovers(String linkName, String procIdAttrName) /*-{
+
+    private native void initPopovers(String linkName,
+                                     String procIdAttrName) /*-{
         var thisCellRef = this;
-        $wnd.jQuery(document).ready(function(){
+        $wnd.jQuery(document).ready(function () {
             $wnd.jQuery("[data-toggle='popover']")
-                .popover({
-                    content: thisCellRef.@org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceSummaryErrorPopoverCell::getPopoverContent().bind(thisCellRef)
-                })
-                .off("inserted.bs.popover")
-                .on("inserted.bs.popover", function(){
-                    $wnd.jQuery("[data-field='" + linkName + "']")
-                        .off("click")
-                        .on("click", onViewErrorsClick);                
-                });
-            function onViewErrorsClick(){
+                    .popover({
+                        content: thisCellRef.@org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceSummaryErrorPopoverCell::getPopoverContent().bind(thisCellRef)
+                    })
+                    .off("inserted.bs.popover")
+                    .on("inserted.bs.popover", function () {
+                        $wnd.jQuery("[data-field='" + linkName + "']")
+                                .off("click")
+                                .on("click", onViewErrorsClick);
+                    });
+            function onViewErrorsClick() {
                 var processInstId = $wnd.jQuery(this).attr(procIdAttrName);
                 thisCellRef.@org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceSummaryErrorPopoverCell::openErrorView(Ljava/lang/String;)(processInstId);
             }
         });
     }-*/;
-
 }

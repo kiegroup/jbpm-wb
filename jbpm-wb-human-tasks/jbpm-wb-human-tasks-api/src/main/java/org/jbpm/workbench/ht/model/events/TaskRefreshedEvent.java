@@ -17,25 +17,30 @@
 package org.jbpm.workbench.ht.model.events;
 
 import java.io.Serializable;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class TaskRefreshedEvent implements Serializable {
+
     private String serverTemplateId;
     private String deploymentId;
     private long taskId;
     private String taskName;
-    public TaskRefreshedEvent(long taskId, String taskName) {
+
+    public TaskRefreshedEvent(long taskId,
+                              String taskName) {
         this.taskId = taskId;
         this.taskName = taskName;
-        
     }
 
     public TaskRefreshedEvent(long taskId) {
         this.taskId = taskId;
     }
 
-    public TaskRefreshedEvent(String serverTemplateId, String deploymentId, long taskId) {
+    public TaskRefreshedEvent(String serverTemplateId,
+                              String deploymentId,
+                              long taskId) {
         this.serverTemplateId = serverTemplateId;
         this.deploymentId = deploymentId;
         this.taskId = taskId;
@@ -43,7 +48,6 @@ public class TaskRefreshedEvent implements Serializable {
 
     public TaskRefreshedEvent() {
     }
-
 
     public long getTaskId() {
         return taskId;

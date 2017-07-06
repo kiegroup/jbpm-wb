@@ -143,10 +143,12 @@ public class ShowcaseEntryPoint {
             } else if (kieException.getHttpCode() == 403) {
                 errorPopup.showError(translationService.format(KIE_SERVER_ERROR_403));
             } else {
-                errorPopup.showError(translationService.format(GENERIC_EXCEPTION, kieException.getExceptionMessage()));
+                errorPopup.showError(translationService.format(GENERIC_EXCEPTION,
+                                                               kieException.getExceptionMessage()));
             }
         } else {
-            errorPopup.showError(translationService.format(GENERIC_EXCEPTION, t.getMessage()));
+            errorPopup.showError(translationService.format(GENERIC_EXCEPTION,
+                                                           t.getMessage()));
         }
         LOGGER.error("Uncaught exception encountered",
                      t);

@@ -29,7 +29,7 @@ import com.google.gwt.i18n.client.Messages;
  */
 public interface Constants extends Messages {
 
-    Constants INSTANCE = GWT.create( Constants.class );
+    Constants INSTANCE = GWT.create(Constants.class);
 
     String Queued();
 
@@ -80,6 +80,8 @@ public interface Constants extends Messages {
     String Value();
 
     String Due_On();
+
+    String Due_On_Placeholder();
 
     String Process_Name();
 
@@ -203,6 +205,8 @@ public interface Constants extends Messages {
 
     String ErrorDate();
 
+    String ErrorDatePlaceholder();
+
     String No_Execution_Errors_Found();
 
     String Bulk_Actions();
@@ -217,6 +221,8 @@ public interface Constants extends Messages {
 
     String DB();
 
+    String Job();
+
     String Unknown();
 
     String New();
@@ -224,7 +230,8 @@ public interface Constants extends Messages {
     String UnacknowledgedErrors();
 
     String AcknowledgedErrors();
-    
+
     String ViewProcessInstance();
 
+    String ViewTask();
 }

@@ -43,5 +43,4 @@ public class CaseStageMapper implements Function<CaseStage, CaseStageSummary> {
                                 .collect(toList()))
                 .build();
     }
-
 }

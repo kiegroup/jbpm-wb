@@ -24,11 +24,11 @@ public class CaseRoleAssignmentListLoadEvent {
         this.maxWidth = maxWidth;
     }
 
-    public int getMaxWidth() {
-        return maxWidth;
+    public CaseRoleAssignmentListLoadEvent() {
     }
 
-    public CaseRoleAssignmentListLoadEvent() {
+    public int getMaxWidth() {
+        return maxWidth;
     }
 
     @Override

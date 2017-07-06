@@ -78,13 +78,16 @@ public class TaskAssignmentsPresenterTest {
         task.setPotOwnersString(Arrays.asList(CURRENT_USER));
         task.setDelegationAllowed(true);
 
-        when(taskService.getTaskAssignmentDetails(anyString(), anyString(), eq(TASK_ID))).thenReturn(task);
+        when(taskService.getTaskAssignmentDetails(anyString(),
+                                                  anyString(),
+                                                  eq(TASK_ID))).thenReturn(task);
 
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(1L));
         presenter.delegateTask(OTHER_USER);
 
         verify(viewMock).setDelegateButtonActive(false);
-        verify(viewMock, times(2)).enableDelegateButton(false);
+        verify(viewMock,
+               times(2)).enableDelegateButton(false);
     }
 
     @Test
@@ -92,8 +95,12 @@ public class TaskAssignmentsPresenterTest {
         presenter.delegateTask("");
 
         verify(viewMock).setHelpText(Constants.INSTANCE.DelegationUserInputRequired());
-        verify(taskService, never())
-                .delegate(anyString(), anyString(), anyLong(), anyString());
+        verify(taskService,
+               never())
+                .delegate(anyString(),
+                          anyString(),
+                          anyLong(),
+                          anyString());
     }
 
     @Test
@@ -101,8 +108,12 @@ public class TaskAssignmentsPresenterTest {
         presenter.delegateTask(null);
 
         verify(viewMock).setHelpText(Constants.INSTANCE.DelegationUserInputRequired());
-        verify(taskService, never())
-                .delegate(anyString(), anyString(), anyLong(), anyString());
+        verify(taskService,
+               never())
+                .delegate(anyString(),
+                          anyString(),
+                          anyLong(),
+                          anyString());
     }
 
     @Test
@@ -112,15 +123,21 @@ public class TaskAssignmentsPresenterTest {
         task.setTaskId(COMPLETED_TASK_ID);
         task.setStatus(TASK_STATUS_COMPLETED);
         task.setPotOwnersString(Arrays.asList(CURRENT_USER));
-        when(taskService.getTaskAssignmentDetails(anyString(), anyString(), eq(COMPLETED_TASK_ID))).thenReturn(task);
+        when(taskService.getTaskAssignmentDetails(anyString(),
+                                                  anyString(),
+                                                  eq(COMPLETED_TASK_ID))).thenReturn(task);
 
         // When task in status Completed is selected
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(COMPLETED_TASK_ID));
 
-        verify(viewMock, times(2)).enableDelegateButton(false);
-        verify(viewMock, times(2)).enableUserOrGroupInput(false);
-        verify(viewMock, never()).enableDelegateButton(true);
-        verify(viewMock, never()).enableUserOrGroupInput(true);
+        verify(viewMock,
+               times(2)).enableDelegateButton(false);
+        verify(viewMock,
+               times(2)).enableUserOrGroupInput(false);
+        verify(viewMock,
+               never()).enableDelegateButton(true);
+        verify(viewMock,
+               never()).enableUserOrGroupInput(true);
     }
 
     @Test
@@ -133,15 +150,21 @@ public class TaskAssignmentsPresenterTest {
         task.setActualOwner(OTHER_USER);
         task.setPotOwnersString(Arrays.asList(OTHER_USER));
         task.setDelegationAllowed(false);
-        when(taskService.getTaskAssignmentDetails(anyString(), anyString(), eq(TASK_OWNED_BY_SOMEONE_ELSE_ID))).thenReturn(task);
+        when(taskService.getTaskAssignmentDetails(anyString(),
+                                                  anyString(),
+                                                  eq(TASK_OWNED_BY_SOMEONE_ELSE_ID))).thenReturn(task);
 
         // When task not owned by Current user
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_OWNED_BY_SOMEONE_ELSE_ID));
 
-        verify(viewMock, times(2)).enableDelegateButton(false);
-        verify(viewMock, times(2)).enableUserOrGroupInput(false);
-        verify(viewMock, never()).enableDelegateButton(true);
-        verify(viewMock, never()).enableUserOrGroupInput(true);
+        verify(viewMock,
+               times(2)).enableDelegateButton(false);
+        verify(viewMock,
+               times(2)).enableUserOrGroupInput(false);
+        verify(viewMock,
+               never()).enableDelegateButton(true);
+        verify(viewMock,
+               never()).enableUserOrGroupInput(true);
     }
 
     @Test
@@ -154,7 +177,9 @@ public class TaskAssignmentsPresenterTest {
         task.setActualOwner(CURRENT_USER);
         task.setPotOwnersString(Arrays.asList(CURRENT_USER));
         task.setDelegationAllowed(true);
-        when(taskService.getTaskAssignmentDetails(anyString(), anyString(), eq(TASK_OWNED_BY_CURRENT_USER))).thenReturn(task);
+        when(taskService.getTaskAssignmentDetails(anyString(),
+                                                  anyString(),
+                                                  eq(TASK_OWNED_BY_CURRENT_USER))).thenReturn(task);
 
         // When task not owned by Current user
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_OWNED_BY_CURRENT_USER));
@@ -165,5 +190,4 @@ public class TaskAssignmentsPresenterTest {
         inOrder.verify(viewMock).enableDelegateButton(true);
         inOrder.verify(viewMock).enableUserOrGroupInput(true);
     }
-
 }

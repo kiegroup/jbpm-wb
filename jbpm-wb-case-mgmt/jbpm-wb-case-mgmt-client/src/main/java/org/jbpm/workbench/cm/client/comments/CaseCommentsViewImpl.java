@@ -51,8 +51,8 @@ import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 
 @Dependent
 @Templated
-public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> implements CaseCommentsPresenter.CaseCommentsView {
-
+public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> 
+        implements CaseCommentsPresenter.CaseCommentsView {
 
     @Inject
     @DataField("load-div")
@@ -63,9 +63,28 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
     @SuppressWarnings("PMD.UnusedPrivateField")
     private Button loadMoreComments;
 
+
     @Inject
     @DataField("comments")
     Div commentsContainer;
+
+    @Inject
+    @DataField("comment-creation-input")
+    Input newCommentTextArea;
+
+    @Inject
+    @DataField("comment-creation-help")
+    Span newCommentTextAreaHelp;
+
+    @Inject
+    @DataField("comment-creation-group")
+    FormGroup newCommentTextAreaGroup;
+
+    @Inject
+    @DataField
+    Anchor addCommentButton;
+
+    List<CaseCommentSummary> allCommentsList;
 
     @Inject
     @DataField("sort-alpha-asc")
@@ -89,31 +108,16 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
     private Div emptyContainer;
 
     @Inject
-    @DataField("comment-creation-input")
-    Input newCommentTextArea;
-
-    @Inject
-    @DataField("comment-creation-help")
-    Span newCommentTextAreaHelp;
-
-    @Inject
-    @DataField("comment-creation-group")
-    FormGroup newCommentTextAreaGroup;
-
-    @Inject
-    @DataField
-    Anchor addCommentButton;
-
-    @Inject
     private TranslationService translationService;
-
 
     @PostConstruct
     public void init() {
         tooltip(sortAlphaAsc);
-        sortAlphaAsc.setAttribute("data-original-title", translationService.format(SORT_BY_DATE_DESC));
+        sortAlphaAsc.setAttribute("data-original-title",
+                                  translationService.format(SORT_BY_DATE_DESC));
         tooltip(sortAlphaDesc);
-        sortAlphaDesc.setAttribute("data-original-title", translationService.format(SORT_BY_DATE_ASC));
+        sortAlphaDesc.setAttribute("data-original-title",
+                                   translationService.format(SORT_BY_DATE_ASC));
     }
 
     @Override
@@ -141,7 +145,9 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
     @Override
     public void resetPagination() {
         presenter.setCurrentPage(0);
-        onSortChange(sortAlphaAsc, sortAlphaDesc, false);
+        onSortChange(sortAlphaAsc, 
+                     sortAlphaDesc, 
+                     false);
     }
 
     @Override
@@ -150,9 +156,11 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
         this.caseCommentList.setModel(caseCommentList);
 
         if (caseCommentList.isEmpty()) {
-            removeCSSClass(emptyContainer, "hidden");
+            removeCSSClass(emptyContainer,
+                           "hidden");
         } else {
-            addCSSClass(emptyContainer, "hidden");
+            addCSSClass(emptyContainer,
+                        "hidden");
         }
     }
     
@@ -167,7 +175,7 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
         submitCommentAddition();
     }
 
-    private void submitCommentAddition(){
+    private void submitCommentAddition() {
         if (validateForm()) {
             presenter.addCaseComment(newCommentTextArea.getValue());
         }
@@ -188,17 +196,25 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> im
 
     @EventHandler("sort-alpha-asc")
     public void onSortAlphaAsc(final @ForEvent("click") MouseEvent event) {
-        onSortChange(sortAlphaAsc, sortAlphaDesc, false);
+        onSortChange(sortAlphaAsc,
+                     sortAlphaDesc,
+                     false);
     }
 
     @EventHandler("sort-alpha-desc")
     public void onSortAlphaDesc(final @ForEvent("click") MouseEvent event) {
-        onSortChange(sortAlphaDesc, sortAlphaAsc, true);
+        onSortChange(sortAlphaDesc,
+                     sortAlphaAsc,
+                     true);
     }
 
-    private void onSortChange(final HTMLElement toHide, final HTMLElement toShow, final Boolean sortByAsc){
-        addCSSClass(toHide, "hidden");
-        removeCSSClass(toShow, "hidden");
+    private void onSortChange(final HTMLElement toHide,
+                              final HTMLElement toShow,
+                              final Boolean sortByAsc) {
+        addCSSClass(toHide,
+                    "hidden");
+        removeCSSClass(toShow,
+                       "hidden");
         presenter.sortComments(sortByAsc);
     }
     

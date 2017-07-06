@@ -36,15 +36,18 @@ public class RequestDetailsMapper implements Function<RequestInfoInstance, Reque
     @Override
     public RequestDetails apply(final RequestInfoInstance requestInfoInstance) {
         final Optional<RequestInfoInstance> request = ofNullable(requestInfoInstance);
-        if(request.isPresent() == false){
+        if (request.isPresent() == false) {
             return null;
         }
 
         final RequestSummary summary = request.map(new RequestSummaryMapper()).get();
         final List<ErrorSummary> errors = request.map(r -> r.getErrors()).map(e -> e.getItems()).orElse(emptyList()).stream().map(new ErrorSummaryMapper()).collect(toList());
         final List<RequestParameterSummary> params = request.map(r -> r.getData()).orElse(emptyMap()).entrySet().stream()
-                .map(e -> new RequestParameterSummary(e.getKey(), String.valueOf(e.getValue())))
+                .map(e -> new RequestParameterSummary(e.getKey(),
+                                                      String.valueOf(e.getValue())))
                 .collect(toList());
-        return new RequestDetails(summary, errors, params);
+        return new RequestDetails(summary,
+                                  errors,
+                                  params);
     }
 }

@@ -16,6 +16,10 @@
 
 package org.jbpm.workbench.wi.backend.server.casemgmt.service;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import javax.enterprise.concurrent.ManagedExecutorService;
+
 import org.guvnor.ala.pipeline.Input;
 import org.guvnor.ala.pipeline.Pipeline;
 import org.guvnor.ala.pipeline.execution.PipelineExecutor;
@@ -23,14 +27,19 @@ import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningCompletedEvent;
 import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningFailedEvent;
 import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningStartedEvent;
 import org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningSettings;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.commons.async.DescriptiveThreadFactory;
 
-import static org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningStatus.*;
+import static org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningStatus.COMPLETED;
+import static org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningStatus.DISABLED;
+import static org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningStatus.FAILED;
+import static org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningStatus.STARTED;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -43,8 +52,21 @@ public class CaseProvisioningServiceImplTest {
     @Mock
     private CaseProvisioningSettings settings;
 
+    @Mock
+    private ManagedExecutorService managedExecutorService;
+
     @InjectMocks
     private CaseProvisioningServiceImpl service;
+
+    @Before()
+    public void setUp() {
+        ExecutorService executorService = Executors.newCachedThreadPool(new DescriptiveThreadFactory());
+        doAnswer(invocationOnMock -> {
+            executorService.execute(invocationOnMock.getArgumentAt(0,
+                                                                   Runnable.class));
+            return null;
+        }).when(managedExecutorService).execute(any(Runnable.class));
+    }
 
     @Test
     public void testProvisioningDisabled() {
@@ -52,8 +74,12 @@ public class CaseProvisioningServiceImplTest {
 
         service.init();
 
-        verify(executor, never()).execute(any(PipelineExecutor.class), any(Pipeline.class), any(Input.class));
-        assertEquals(DISABLED, service.getProvisioningStatus());
+        verify(executor,
+               never()).execute(any(PipelineExecutor.class),
+                                any(Pipeline.class),
+                                any(Input.class));
+        assertEquals(DISABLED,
+                     service.getProvisioningStatus());
     }
 
     @Test
@@ -66,8 +92,11 @@ public class CaseProvisioningServiceImplTest {
         service.init();
 
         ArgumentCaptor<Input> captor = ArgumentCaptor.forClass(Input.class);
-        verify(executor).execute(any(PipelineExecutor.class), any(Pipeline.class), captor.capture());
-        assertEquals(path, captor.getValue().get("war-path"));
+        verify(executor).execute(any(PipelineExecutor.class),
+                                 any(Pipeline.class),
+                                 captor.capture());
+        assertEquals(path,
+                     captor.getValue().get("war-path"));
     }
 
     @Test
@@ -80,29 +109,34 @@ public class CaseProvisioningServiceImplTest {
         service.init();
 
         ArgumentCaptor<Input> captor = ArgumentCaptor.forClass(Input.class);
-        verify(executor).execute(any(PipelineExecutor.class), any(Pipeline.class), captor.capture());
-        assertEquals(gav, captor.getValue().get("artifact"));
+        verify(executor).execute(any(PipelineExecutor.class),
+                                 any(Pipeline.class),
+                                 captor.capture());
+        assertEquals(gav,
+                     captor.getValue().get("artifact"));
     }
 
     @Test
     public void testOnCaseManagementProvisioningStartedEvent() {
         service.onCaseManagementProvisioningStartedEvent(new CaseProvisioningStartedEvent());
 
-        assertEquals(STARTED, service.getProvisioningStatus());
+        assertEquals(STARTED,
+                     service.getProvisioningStatus());
     }
 
     @Test
     public void testOnCaseManagementProvisioningCompletedEvent() {
         service.onCaseManagementProvisioningCompletedEvent(new CaseProvisioningCompletedEvent("/context"));
 
-        assertEquals(COMPLETED, service.getProvisioningStatus());
+        assertEquals(COMPLETED,
+                     service.getProvisioningStatus());
     }
 
     @Test
     public void testOnCaseManagementProvisioningFailedEvent() {
         service.onCaseManagementProvisioningFailedEvent(new CaseProvisioningFailedEvent());
 
-        assertEquals(FAILED, service.getProvisioningStatus());
+        assertEquals(FAILED,
+                     service.getProvisioningStatus());
     }
-
 }

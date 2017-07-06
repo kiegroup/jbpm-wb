@@ -57,6 +57,9 @@ public class CaseRoleItemView extends AbstractView<CaseRolesPresenter> implement
     public static String GROUP_LINE_ID = "_groups";
 
     @Inject
+    protected TranslationService translationService;
+
+    @Inject
     @DataField("list-group-item")
     Div listGroupItem;
 
@@ -99,9 +102,6 @@ public class CaseRoleItemView extends AbstractView<CaseRolesPresenter> implement
 
     @Inject
     ConfirmPopup confirmPopup;
-
-    @Inject
-    protected TranslationService translationService;
 
     @Inject
     @AutoBound
@@ -264,7 +264,8 @@ public class CaseRoleItemView extends AbstractView<CaseRolesPresenter> implement
                     "hidden");
         addCSSClass(groupsDiv,
                     "hidden");
-        removeCSSClass(unassignedDiv,"hidden");
+        removeCSSClass(unassignedDiv,
+                       "hidden");
     }
 
     public void addAction(final CaseRolesPresenter.CaseRoleAction action) {

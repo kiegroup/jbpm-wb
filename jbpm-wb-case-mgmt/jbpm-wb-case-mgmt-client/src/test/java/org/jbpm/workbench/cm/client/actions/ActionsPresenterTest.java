@@ -90,8 +90,13 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         cis = CaseInstanceSummary.builder().containerId(containerId).caseId(caseId).caseDefinitionId(caseDefId).build();
         final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().id(caseDefId).build();
 
-        when(caseManagementService.getCaseDefinition(serverTemplateId, cis.getContainerId(), cis.getCaseDefinitionId())).thenReturn(cds);
-        when(caseManagementService.getCaseActions(anyString(), anyString(), anyString(), anyString())).thenReturn(actions);
+        when(caseManagementService.getCaseDefinition(serverTemplateId,
+                                                     cis.getContainerId(),
+                                                     cis.getCaseDefinitionId())).thenReturn(cds);
+        when(caseManagementService.getCaseActions(anyString(),
+                                                  anyString(),
+                                                  anyString(),
+                                                  anyString())).thenReturn(actions);
 
         when(actions.getAvailableActions()).thenReturn(caseActionSummaryList);
         when(actions.getInProgressAction()).thenReturn(caseActionSummaryList);
@@ -100,31 +105,40 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
 
     @Test
     public void testLoadCaseInstance() {
-        String subProcessName ="Subprocess1";
+        String subProcessName = "Subprocess1";
         List<ProcessDefinitionSummary> pdsl = Arrays.asList(ProcessDefinitionSummary.builder().id("processId").name(subProcessName).build());
         when(caseManagementService.getProcessDefinitions(containerId)).thenReturn(pdsl);
 
-        setupCaseInstance(cis, serverTemplateId);
-        verify(caseManagementService).getCaseActions(serverTemplateId, containerId, caseId, identity.getIdentifier());
+        setupCaseInstance(cis,
+                          serverTemplateId);
+        verify(caseManagementService).getCaseActions(serverTemplateId,
+                                                     containerId,
+                                                     caseId,
+                                                     identity.getIdentifier());
 
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
 
         verify(caseAllActionsView).setAvailableActionsList(captor.capture());
-        assertEquals(caseActionSummaryList.size() + 2, captor.getValue().size());
-        assertEquals(CaseActionType.DYNAMIC_USER_TASK, ((CaseActionSummary) captor.getValue().get(0)).getActionType());
-        assertEquals(CaseActionType.DYNAMIC_SUBPROCESS_TASK, ((CaseActionSummary) captor.getValue().get(1)).getActionType());
+        assertEquals(caseActionSummaryList.size() + 2,
+                     captor.getValue().size());
+        assertEquals(CaseActionType.DYNAMIC_USER_TASK,
+                     ((CaseActionSummary) captor.getValue().get(0)).getActionType());
+        assertEquals(CaseActionType.DYNAMIC_SUBPROCESS_TASK,
+                     ((CaseActionSummary) captor.getValue().get(1)).getActionType());
 
         verify(caseAllActionsView).setInProgressActionsList(caseActionSummaryList);
         verify(caseAllActionsView).setCompletedActionsList(caseActionSummaryList);
         verify(actions).getAvailableActions();
         verify(actions).getInProgressAction();
         verify(actions).getCompleteActions();
-        verify(newActionViewMock, times(2)).setCaseStagesList(cis.getStages());
+        verify(newActionViewMock,
+               times(2)).setCaseStagesList(cis.getStages());
         final ArgumentCaptor<List> captor2 = ArgumentCaptor.forClass(List.class);
 
         verify(caseManagementService).getProcessDefinitions(containerId);
         verify(newActionViewMock).setProcessDefinitions(captor.capture());
-        assertEquals(subProcessName,captor.getValue().get(0));
+        assertEquals(subProcessName,
+                     captor.getValue().get(0));
     }
 
     @Test
@@ -133,11 +147,21 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         String actionDescription = "dynAct-name";
         String actionActors = "dynAct-actors";
         String actionGroups = "dynAct-groups";
-        setupCaseInstance(cis, serverTemplateId);
-        presenter.addDynamicUserTaskAction(actionName, actionDescription, actionActors, actionGroups, null);
+        setupCaseInstance(cis,
+                          serverTemplateId);
+        presenter.addDynamicUserTaskAction(actionName,
+                                           actionDescription,
+                                           actionActors,
+                                           actionGroups,
+                                           null);
 
-        verify(caseManagementService).addDynamicUserTask(eq(containerId), eq(caseId), eq(actionName),
-                eq(actionDescription), eq(actionActors), eq(actionGroups), any());
+        verify(caseManagementService).addDynamicUserTask(eq(containerId),
+                                                         eq(caseId),
+                                                         eq(actionName),
+                                                         eq(actionDescription),
+                                                         eq(actionActors),
+                                                         eq(actionGroups),
+                                                         any());
     }
 
     @Test
@@ -147,23 +171,36 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         String actionActors = "dynAct-actors";
         String actionGroups = "dynAct-groups";
         String stageId = "dynAct-groups";
-        setupCaseInstance(cis, serverTemplateId);
+        setupCaseInstance(cis,
+                          serverTemplateId);
 
+        presenter.addDynamicUserTaskAction(actionName,
+                                           actionDescription,
+                                           actionActors,
+                                           actionGroups,
+                                           stageId);
 
-        presenter.addDynamicUserTaskAction(actionName, actionDescription, actionActors, actionGroups, stageId);
-
-        verify(caseManagementService).addDynamicUserTaskToStage(eq(containerId), eq(caseId), eq(stageId), eq(actionName),
-                eq(actionDescription), eq(actionActors), eq(actionGroups), any());
+        verify(caseManagementService).addDynamicUserTaskToStage(eq(containerId),
+                                                                eq(caseId),
+                                                                eq(stageId),
+                                                                eq(actionName),
+                                                                eq(actionDescription),
+                                                                eq(actionActors),
+                                                                eq(actionGroups),
+                                                                any());
     }
 
     @Test
     public void testTriggerAdHocFragment() {
         String adhocFragmentName = "adhocFrag-name";
 
-        setupCaseInstance(cis, serverTemplateId);
+        setupCaseInstance(cis,
+                          serverTemplateId);
         presenter.triggerAdHocAction(adhocFragmentName);
 
-        verify(caseManagementService).triggerAdHocAction(eq(containerId), eq(caseId), eq(adhocFragmentName), any());
+        verify(caseManagementService).triggerAdHocAction(eq(containerId),
+                                                         eq(caseId),
+                                                         eq(adhocFragmentName),
+                                                         any());
     }
-
 }

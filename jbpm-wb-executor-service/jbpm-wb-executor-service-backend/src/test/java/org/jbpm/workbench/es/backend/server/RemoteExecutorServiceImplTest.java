@@ -68,18 +68,25 @@ public class RemoteExecutorServiceImplTest {
     public void testGetRequestDetails() {
         final RequestInfoInstance ri = newRequestInfoInstance();
 
-        when(jobServicesClient.getRequestById(ri.getId(), true, true)).thenReturn(ri);
+        when(jobServicesClient.getRequestById(ri.getId(),
+                                              true,
+                                              true)).thenReturn(ri);
 
-        final RequestDetails rd = executorService.getRequestDetails("", ri.getId());
-        assertRequestDetails(ri, rd);
+        final RequestDetails rd = executorService.getRequestDetails("",
+                                                                    ri.getId());
+        assertRequestDetails(ri,
+                             rd);
     }
 
     @Test
     public void testGetRequestDetailsEmpty() {
         final Long requestId = 1l;
-        when(jobServicesClient.getRequestById(requestId, true, true)).thenReturn(new RequestInfoInstance());
+        when(jobServicesClient.getRequestById(requestId,
+                                              true,
+                                              true)).thenReturn(new RequestInfoInstance());
 
-        final RequestDetails requestDetails = executorService.getRequestDetails("", requestId);
+        final RequestDetails requestDetails = executorService.getRequestDetails("",
+                                                                                requestId);
         assertNotNull(requestDetails);
         assertNotNull(requestDetails.getRequest());
         assertTrue(requestDetails.getErrors().isEmpty());
@@ -88,7 +95,8 @@ public class RemoteExecutorServiceImplTest {
 
     @Test
     public void testGetRequestDetailsNull() {
-        final RequestDetails requestDetails = executorService.getRequestDetails(null, null);
+        final RequestDetails requestDetails = executorService.getRequestDetails(null,
+                                                                                null);
         assertNull(requestDetails);
     }
 
@@ -126,7 +134,5 @@ public class RemoteExecutorServiceImplTest {
                                                     errorInstance.getErrorId());
         assertExecutionErrorSummary(errorInstance,
                                     errorSummary);
-
     }
-
 }

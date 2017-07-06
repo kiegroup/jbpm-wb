@@ -24,7 +24,7 @@ import static org.jbpm.dashboard.renderer.model.DashboardData.*;
 public class TaskDashboardData extends RawDataSet {
 
     public static final TaskDashboardData INSTANCE = new TaskDashboardData(
-            new String[] {
+            new String[]{
                     // Ensure the tests also works with columns in a different case,
                     // which is actually the case when working with some DBs
                     COLUMN_PROCESS_NAME.toUpperCase(),
@@ -38,7 +38,7 @@ public class TaskDashboardData extends RawDataSet {
                     COLUMN_TASK_STATUS.toUpperCase(),
                     COLUMN_TASK_DURATION.toUpperCase(),
                     COLUMN_PROCESS_EXTERNAL_ID.toUpperCase()},
-            new Class[] {
+            new Class[]{
                     String.class,
                     Integer.class,
                     Integer.class,
@@ -50,7 +50,7 @@ public class TaskDashboardData extends RawDataSet {
                     String.class,
                     Integer.class,
                     String.class},
-            new String[][] {
+            new String[][]{
                     {"Process A", "1", "1", "Task 1", "user1", "01/01/19 10:00", "01/01/19 12:00", null, TASK_STATUS_IN_PROGRESS, null, "deploymentId"},
                     {"Process A", "1", "2", "Task 2", "user1", "01/01/19 09:00", "11/01/19 12:00", "01/01/19 13:00", TASK_STATUS_COMPLETED, "9000", "deploymentId"},
                     {"Process A", "1", "3", "Task 3", "user2", "01/01/19 08:00", "10/01/19 12:00", null, TASK_STATUS_SUSPENDED, null, "deploymentId"},
@@ -62,8 +62,11 @@ public class TaskDashboardData extends RawDataSet {
                     {"Process B", "2", "9", "Task 4", "user4", "01/01/19 10:00", "05/11/19 12:00", null, TASK_STATUS_EXITED, null, "deploymentId"}
             });
 
-    public TaskDashboardData(String[] columnIds, Class[] types, String[][] data) {
-        super(columnIds, types, data);
+    public TaskDashboardData(String[] columnIds,
+                             Class[] types,
+                             String[][] data) {
+        super(columnIds,
+              types,
+              data);
     }
-
 }

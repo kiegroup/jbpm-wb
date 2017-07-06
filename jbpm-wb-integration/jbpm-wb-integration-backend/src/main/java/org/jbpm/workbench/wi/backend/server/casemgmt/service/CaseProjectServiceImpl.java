@@ -48,11 +48,9 @@ import org.uberfire.java.nio.file.Path;
 @ApplicationScoped
 public class CaseProjectServiceImpl implements CaseProjectService {
 
-    private static final Logger logger = LoggerFactory.getLogger(CaseProjectServiceImpl.class);
-
     protected static final String CASE_FILE_MARSHALLER = "org.jbpm.casemgmt.impl.marshalling.CaseMarshallerFactory.builder().withDoc().get();";
     protected static final String DOCUMENT_MARSHALLER = "new org.jbpm.document.marshalling.DocumentMarshallingStrategy();";
-
+    private static final Logger logger = LoggerFactory.getLogger(CaseProjectServiceImpl.class);
     private static final String CASE_PROJECT_DOT_FILE = ".caseproject";
     private static final String DEPLOYMENT_DESCRIPTOR_FILE = "kie-deployment-descriptor.xml";
     private static final String WORK_DEFINITION_FILE = "WorkDefinition.wid";
@@ -68,54 +66,73 @@ public class CaseProjectServiceImpl implements CaseProjectService {
     }
 
     @Inject
-    public CaseProjectServiceImpl(DDEditorService ddEditorService, @Named("ioStrategy") IOService ioService) {
+    public CaseProjectServiceImpl(DDEditorService ddEditorService,
+                                  @Named("ioStrategy") IOService ioService) {
         this.ddEditorService = ddEditorService;
         this.ioService = ioService;
     }
 
     @Override
     public void configureNewCaseProject(Project project) {
-        logger.debug("configuring case project {}", project);
+        logger.debug("configuring case project {}",
+                     project);
         KieProject kieProject = (KieProject) project;
         String separator = Paths.convert(project.getRootPath()).getFileSystem().getSeparator();
 
         // add empty .caseproject file as marker
         String rootPathString = project.getRootPath().toURI().toString() + separator + CASE_PROJECT_DOT_FILE;
-        Path rootPath = ioService.get( URI.create(rootPathString) );
-        ioService.write(rootPath, "");
-        logger.debug("Added caseproject marker (dot) file at {}", rootPath);
+        Path rootPath = ioService.get(URI.create(rootPathString));
+        ioService.write(rootPath,
+                        "");
+        logger.debug("Added caseproject marker (dot) file at {}",
+                     rootPath);
 
-        String metaInfPath = Paths.convert( kieProject.getKModuleXMLPath() ).getParent().toUri().toString();
+        String metaInfPath = Paths.convert(kieProject.getKModuleXMLPath()).getParent().toUri().toString();
         // setup kie-deployemnt-descriptor.xml
         String deploymentDescriptorPath = metaInfPath + separator + DEPLOYMENT_DESCRIPTOR_FILE;
-        Path ddVFSPath = ioService.get( URI.create(deploymentDescriptorPath) );
+        Path ddVFSPath = ioService.get(URI.create(deploymentDescriptorPath));
 
         org.uberfire.backend.vfs.Path convertedDDVFSPath = Paths.convert(ddVFSPath);
         if (!ioService.exists(ddVFSPath)) {
             ddEditorService.createIfNotExists(convertedDDVFSPath);
-            logger.debug("Created deployment descriptor in {}", convertedDDVFSPath);
+            logger.debug("Created deployment descriptor in {}",
+                         convertedDDVFSPath);
         }
-        logger.debug("Loading deployment descriptor from {}", convertedDDVFSPath);
+        logger.debug("Loading deployment descriptor from {}",
+                     convertedDDVFSPath);
         DeploymentDescriptorModel descriptorModel = ddEditorService.load(convertedDDVFSPath);
         descriptorModel.setRuntimeStrategy("PER_CASE");
         List<ItemObjectModel> modelList = descriptorModel.getMarshallingStrategies();
         if (modelList == null) {
             modelList = new ArrayList<>();
         }
-        modelList.add(new ItemObjectModel(null, CASE_FILE_MARSHALLER, "mvel", new ArrayList<Parameter>()));
-        modelList.add(new ItemObjectModel(null, DOCUMENT_MARSHALLER, "mvel", new ArrayList<Parameter>()));
+        modelList.add(new ItemObjectModel(null,
+                                          CASE_FILE_MARSHALLER,
+                                          "mvel",
+                                          new ArrayList<Parameter>()));
+        modelList.add(new ItemObjectModel(null,
+                                          DOCUMENT_MARSHALLER,
+                                          "mvel",
+                                          new ArrayList<Parameter>()));
         descriptorModel.setMarshallingStrategies(modelList);
-        logger.debug("Deployment descriptor model updated with case information {}", descriptorModel);
-        ddEditorService.save(convertedDDVFSPath, descriptorModel, null, "Updated with case project configuration");
+        logger.debug("Deployment descriptor model updated with case information {}",
+                     descriptorModel);
+        ddEditorService.save(convertedDDVFSPath,
+                             descriptorModel,
+                             null,
+                             "Updated with case project configuration");
         logger.debug("Updated deployment model saved");
 
         // add WorkDefinition.wid to project and its packages
-        String resourcesPathStr = Paths.convert( kieProject.getKModuleXMLPath() ).getParent().getParent().toUri().toString();
-        Path widFilePath = ioService.get( URI.create(resourcesPathStr + separator + WORK_DEFINITION_FILE) );
-        logger.debug("Adding WorkDefinition.wid file to resources folder {} of the project {}", widFilePath, project);
+        String resourcesPathStr = Paths.convert(kieProject.getKModuleXMLPath()).getParent().getParent().toUri().toString();
+        Path widFilePath = ioService.get(URI.create(resourcesPathStr + separator + WORK_DEFINITION_FILE));
+        logger.debug("Adding WorkDefinition.wid file to resources folder {} of the project {}",
+                     widFilePath,
+                     project);
         addWorkDefinitions(widFilePath);
         logger.debug("Adding WorkDefinition.wid to all packages...");
-        addWorkDefinitionsRecursively(widFilePath.getParent(), separator);
+        addWorkDefinitionsRecursively(widFilePath.getParent(),
+                                      separator);
     }
 
     public void configurePackage(@Observes NewPackageEvent pkg) {
@@ -129,17 +146,19 @@ public class CaseProjectServiceImpl implements CaseProjectService {
         }
     }
 
-    protected void addWorkDefinitionsRecursively(Path startAt, String separator) {
+    protected void addWorkDefinitionsRecursively(Path startAt,
+                                                 String separator) {
         org.uberfire.java.nio.file.DirectoryStream<Path> directoryStream = ioService.newDirectoryStream(startAt,
-                path -> Files.isDirectory(path) && !noWIDDirectories.contains(path.getFileName().toString()));
+                                                                                                        path -> Files.isDirectory(path) && !noWIDDirectories.contains(path.getFileName().toString()));
 
         Iterator<Path> pathIterator = directoryStream.iterator();
         while (pathIterator.hasNext()) {
             Path current = pathIterator.next();
-            Path widFilePath = ioService.get( URI.create(current.toUri() + separator + WORK_DEFINITION_FILE) );
+            Path widFilePath = ioService.get(URI.create(current.toUri() + separator + WORK_DEFINITION_FILE));
             addWorkDefinitions(widFilePath);
 
-            addWorkDefinitionsRecursively(current, separator);
+            addWorkDefinitionsRecursively(current,
+                                          separator);
         }
     }
 
@@ -147,16 +166,21 @@ public class CaseProjectServiceImpl implements CaseProjectService {
 
         try {
             byte[] data = IOUtils.toByteArray(this.getClass().getResourceAsStream(CASE_WORK_DEFINITION_FILE));
-            ioService.write(location, data);
-            logger.debug("WorkDefinition.wid file added to {}", location);
+            ioService.write(location,
+                            data);
+            logger.debug("WorkDefinition.wid file added to {}",
+                         location);
         } catch (IOException e) {
-            logger.error("Error when writing WorkDefinition.wid file in {}", location, e);
+            logger.error("Error when writing WorkDefinition.wid file in {}",
+                         location,
+                         e);
         }
     }
 
     protected boolean isCaseProject(Path rootProjectPath) {
 
-        org.uberfire.java.nio.file.DirectoryStream<Path> found = ioService.newDirectoryStream(rootProjectPath, f -> f.endsWith(CASE_PROJECT_DOT_FILE));
+        org.uberfire.java.nio.file.DirectoryStream<Path> found = ioService.newDirectoryStream(rootProjectPath,
+                                                                                              f -> f.endsWith(CASE_PROJECT_DOT_FILE));
         return found.iterator().hasNext();
     }
 }

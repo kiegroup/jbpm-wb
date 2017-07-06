@@ -16,7 +16,6 @@
 
 package org.jbpm.workbench.cm.client.comments;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
@@ -106,7 +105,7 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
     }
 
     public void sortComments(final boolean sortAsc) {
-        this.sortAsc =sortAsc;
+        this.sortAsc = sortAsc;
         refreshComments();
     }
 
@@ -115,19 +114,32 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
                 (Void) -> {
                     view.resetPagination();
                 }
-        ).addComment(serverTemplateId, containerId, caseId, identity.getIdentifier(), caseCommentText);
+        ).addComment(serverTemplateId,
+                     containerId,
+                     caseId,
+                     identity.getIdentifier(),
+                     caseCommentText);
     }
 
-    protected void updateCaseComment(final CaseCommentSummary caseCommentSummary, String caseCommentNewText) {
+    protected void updateCaseComment(final CaseCommentSummary caseCommentSummary,
+                                     String caseCommentNewText) {
         caseService.call(
                 (Void) -> refreshComments()
-        ).updateComment(serverTemplateId, containerId, caseId, caseCommentSummary.getId(), identity.getIdentifier(), caseCommentNewText);
+        ).updateComment(serverTemplateId,
+                        containerId,
+                        caseId,
+                        caseCommentSummary.getId(),
+                        identity.getIdentifier(),
+                        caseCommentNewText);
     }
 
     protected void deleteCaseComment(final CaseCommentSummary caseCommentSummary) {
         caseService.call(
                 (Void) -> refreshComments()
-        ).removeComment(serverTemplateId, containerId, caseId, caseCommentSummary.getId());
+        ).removeComment(serverTemplateId,
+                        containerId,
+                        caseId,
+                        caseCommentSummary.getId());
     }
 
     public interface CaseCommentsView extends UberElement<CaseCommentsPresenter> {
@@ -145,6 +157,5 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
     public interface CaseCommentAction extends Command {
 
         String label();
-
     }
 }

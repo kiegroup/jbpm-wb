@@ -22,17 +22,18 @@ import org.jbpm.workbench.forms.service.providing.model.TaskDefinition;
 import org.kie.internal.task.api.ContentMarshallerContext;
 
 public class TaskRenderingSettings implements RenderingSettings {
+
     private TaskDefinition task;
     private Map<String, Object> inputs;
     private Map<String, Object> outputs;
     private String formContent;
     private ContentMarshallerContext marshallerContext;
 
-    public TaskRenderingSettings( TaskDefinition task,
-                                  Map<String, Object> inputs,
-                                  Map<String, Object> outputs,
-                                  String formContent,
-                                  ContentMarshallerContext marshallerContext ) {
+    public TaskRenderingSettings(TaskDefinition task,
+                                 Map<String, Object> inputs,
+                                 Map<String, Object> outputs,
+                                 String formContent,
+                                 ContentMarshallerContext marshallerContext) {
         this.task = task;
         this.inputs = inputs;
         this.outputs = outputs;
@@ -44,7 +45,7 @@ public class TaskRenderingSettings implements RenderingSettings {
         return task;
     }
 
-    public void setTask( TaskDefinition task ) {
+    public void setTask(TaskDefinition task) {
         this.task = task;
     }
 
@@ -52,7 +53,7 @@ public class TaskRenderingSettings implements RenderingSettings {
         return inputs;
     }
 
-    public void setInputs( Map<String, Object> inputs ) {
+    public void setInputs(Map<String, Object> inputs) {
         this.inputs = inputs;
     }
 
@@ -60,7 +61,7 @@ public class TaskRenderingSettings implements RenderingSettings {
         return outputs;
     }
 
-    public void setOutputs( Map<String, Object> outputs ) {
+    public void setOutputs(Map<String, Object> outputs) {
         this.outputs = outputs;
     }
 
@@ -70,7 +71,7 @@ public class TaskRenderingSettings implements RenderingSettings {
     }
 
     @Override
-    public void setFormContent( String formContent ) {
+    public void setFormContent(String formContent) {
         this.formContent = formContent;
     }
 
@@ -80,7 +81,7 @@ public class TaskRenderingSettings implements RenderingSettings {
     }
 
     @Override
-    public void setMarshallerContext( ContentMarshallerContext marshallerContext ) {
+    public void setMarshallerContext(ContentMarshallerContext marshallerContext) {
         this.marshallerContext = marshallerContext;
     }
 }

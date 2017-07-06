@@ -22,5 +22,4 @@ public interface CommonCSS extends CssResource {
 
     @ClassName("selected")
     String selected();
-
 }

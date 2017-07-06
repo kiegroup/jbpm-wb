@@ -29,12 +29,17 @@ public class ProcessDefinition {
     private String namespace;
     private String deploymentId;
 
-
     public ProcessDefinition() {
     }
 
-
-    public ProcessDefinition(String id, String name, String version, String packageName, String type, String knowledgeType, String namespace, String deploymentId) {
+    public ProcessDefinition(String id,
+                             String name,
+                             String version,
+                             String packageName,
+                             String type,
+                             String knowledgeType,
+                             String namespace,
+                             String deploymentId) {
         this.id = safeValue(id);
         this.name = safeValue(name);
         this.version = safeValue(version);
@@ -49,8 +54,16 @@ public class ProcessDefinition {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getVersion() {
@@ -59,6 +72,10 @@ public class ProcessDefinition {
 
     public String getPackageName() {
         return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
 
     public String getType() {
@@ -77,18 +94,6 @@ public class ProcessDefinition {
     public String toString() {
         return "ProcessDesc{id=" + id + ", name=" + name + ", version=" + version + ", packageName=" + packageName
                 + ", type=" + type + ", knowledgeType=" + knowledgeType + ", namespace=" + namespace + "}";
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
     }
 
     @Override
@@ -141,16 +146,13 @@ public class ProcessDefinition {
         return true;
     }
 
-
     public String getDeploymentId() {
         return deploymentId;
     }
 
-
     public void setDeploymentId(String deploymentId) {
         this.deploymentId = deploymentId;
     }
-
 
     private String safeValue(String value) {
         if (value == null) {

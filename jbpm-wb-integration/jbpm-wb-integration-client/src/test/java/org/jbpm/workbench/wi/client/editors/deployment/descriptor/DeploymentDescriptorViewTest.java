@@ -54,6 +54,10 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 @RunWith(GwtMockitoTestRunner.class)
 public class DeploymentDescriptorViewTest {
 
+    private static final String jarLocRegexStr = "([\\d\\.]{3})\\S*";
+    private static final Pattern jarLocRegex = Pattern.compile(jarLocRegexStr);
+    private static Random random = new Random();
+
     @Spy
     private DeploymentDescriptorViewImpl view;
 
@@ -69,58 +73,89 @@ public class DeploymentDescriptorViewTest {
     private DeploymentDescriptorModel deploymentDescriptorModel;
 
     private int textBoxUsages = 0;
+
     private int listBoxUsages = 0;
+
     private int checkBoxUsages = 0;
+
+    private static List<Parameter> getParameters() {
+        return Collections.singletonList(new Parameter(UUID.randomUUID().toString(),
+                                                       Integer.toString(random.nextInt(100000))));
+    }
 
     @Before
     public void setup() {
         // test data
         deploymentDescriptorModel = new DeploymentDescriptorModel();
 
-        deploymentDescriptorModel.setAuditPersistenceUnitName("audit-peristence"); ++textBoxUsages;
-        deploymentDescriptorModel.setPersistenceUnitName("save-thingy"); ++textBoxUsages;
+        deploymentDescriptorModel.setAuditPersistenceUnitName("audit-peristence");
+        ++textBoxUsages;
+        deploymentDescriptorModel.setPersistenceUnitName("save-thingy");
+        ++textBoxUsages;
 
-        deploymentDescriptorModel.setPersistenceMode(PersistenceMode.JPA.toString()); ++listBoxUsages;
-        deploymentDescriptorModel.setAuditMode(AuditMode.JMS.toString()); ++listBoxUsages;
-        deploymentDescriptorModel.setRuntimeStrategy(RuntimeStrategy.PER_PROCESS_INSTANCE.toString()); ++listBoxUsages;
+        deploymentDescriptorModel.setPersistenceMode(PersistenceMode.JPA.toString());
+        ++listBoxUsages;
+        deploymentDescriptorModel.setAuditMode(AuditMode.JMS.toString());
+        ++listBoxUsages;
+        deploymentDescriptorModel.setRuntimeStrategy(RuntimeStrategy.PER_PROCESS_INSTANCE.toString());
+        ++listBoxUsages;
 
-        deploymentDescriptorModel.setLimitSerializationClasses(true); ++checkBoxUsages;
+        deploymentDescriptorModel.setLimitSerializationClasses(true);
+        ++checkBoxUsages;
 
         deploymentDescriptorModel.setRemotableClasses(Collections.singletonList("class1"));
 
         deploymentDescriptorModel.setConfiguration(
-                Collections.singletonList(new ItemObjectModel("config", "value", "resolver", getParameters())));
+                Collections.singletonList(new ItemObjectModel("config",
+                                                              "value",
+                                                              "resolver",
+                                                              getParameters())));
         deploymentDescriptorModel.setEnvironmentEntries(
-                Collections.singletonList(new ItemObjectModel("config", "value", "resolver", getParameters())));
+                Collections.singletonList(new ItemObjectModel("config",
+                                                              "value",
+                                                              "resolver",
+                                                              getParameters())));
         deploymentDescriptorModel.setEventListeners(
-                Collections.singletonList(new ItemObjectModel("config", "value", "resolver", getParameters())));
+                Collections.singletonList(new ItemObjectModel("config",
+                                                              "value",
+                                                              "resolver",
+                                                              getParameters())));
         deploymentDescriptorModel.setGlobals(
-                Collections.singletonList(new ItemObjectModel("config", "value", "resolver", getParameters())));
+                Collections.singletonList(new ItemObjectModel("config",
+                                                              "value",
+                                                              "resolver",
+                                                              getParameters())));
         deploymentDescriptorModel.setMarshallingStrategies(
-                Collections.singletonList(new ItemObjectModel("config", "value", "resolver", getParameters())));
+                Collections.singletonList(new ItemObjectModel("config",
+                                                              "value",
+                                                              "resolver",
+                                                              getParameters())));
         deploymentDescriptorModel.setRequiredRoles(
                 Collections.singletonList("roles"));
         deploymentDescriptorModel.setTaskEventListeners(
-                Collections.singletonList(new ItemObjectModel("config", "value", "resolver", getParameters())));
+                Collections.singletonList(new ItemObjectModel("config",
+                                                              "value",
+                                                              "resolver",
+                                                              getParameters())));
         deploymentDescriptorModel.setWorkItemHandlers(
-                Collections.singletonList(new ItemObjectModel("config", "value", "resolver", getParameters())));
-    }
-
-    private static Random random = new Random();
-
-    private static List<Parameter> getParameters() {
-        return Collections.singletonList(new Parameter(UUID.randomUUID().toString(), Integer.toString(random.nextInt(100000))));
+                Collections.singletonList(new ItemObjectModel("config",
+                                                              "value",
+                                                              "resolver",
+                                                              getParameters())));
     }
 
     @Test
     public void setContent() {
         view.setContent(deploymentDescriptorModel);
 
-        verify( textBox, times( textBoxUsages ) ).setText( any( String.class ) );
-        verify( listBox, times( listBoxUsages ) ).getItemCount();
-        verify( checkBox, times( checkBoxUsages ) ).setValue(anyBoolean());
+        verify(textBox,
+               times(textBoxUsages)).setText(any(String.class));
+        verify(listBox,
+               times(listBoxUsages)).getItemCount();
+        verify(checkBox,
+               times(checkBoxUsages)).setValue(anyBoolean());
 
-        String [] listNames = {
+        String[] listNames = {
                 "RemotableClasses",
                 "Configuration",
                 "EnvironmentEntries",
@@ -131,20 +166,24 @@ public class DeploymentDescriptorViewTest {
                 "TaskEventListeners",
                 "WorkItemHandlers"
         };
-        List [][] listListArr = new List [][] {
-                { deploymentDescriptorModel.getConfiguration(), view.configurationDataProvider.getList() },
-                { deploymentDescriptorModel.getEnvironmentEntries(), view.environmentEntriesDataProvider.getList() },
-                { deploymentDescriptorModel.getEventListeners(), view.eventListenersDataProvider.getList() },
-                { deploymentDescriptorModel.getGlobals(), view.globalsDataProvider.getList() },
-                { deploymentDescriptorModel.getMarshallingStrategies(), view.marshalStrategyDataProvider.getList() },
-                { deploymentDescriptorModel.getRemotableClasses(), view.remoteableClassesDataProvider.getList() },
-                { deploymentDescriptorModel.getRequiredRoles(), view.requiredRolesDataProvider.getList() },
-                { deploymentDescriptorModel.getTaskEventListeners(), view.taskEventListenersDataProvider.getList() },
-                { deploymentDescriptorModel.getWorkItemHandlers(), view.workItemHandlersDataProvider.getList() }
+        List[][] listListArr = new List[][]{
+                {deploymentDescriptorModel.getConfiguration(), view.configurationDataProvider.getList()},
+                {deploymentDescriptorModel.getEnvironmentEntries(), view.environmentEntriesDataProvider.getList()},
+                {deploymentDescriptorModel.getEventListeners(), view.eventListenersDataProvider.getList()},
+                {deploymentDescriptorModel.getGlobals(), view.globalsDataProvider.getList()},
+                {deploymentDescriptorModel.getMarshallingStrategies(), view.marshalStrategyDataProvider.getList()},
+                {deploymentDescriptorModel.getRemotableClasses(), view.remoteableClassesDataProvider.getList()},
+                {deploymentDescriptorModel.getRequiredRoles(), view.requiredRolesDataProvider.getList()},
+                {deploymentDescriptorModel.getTaskEventListeners(), view.taskEventListenersDataProvider.getList()},
+                {deploymentDescriptorModel.getWorkItemHandlers(), view.workItemHandlersDataProvider.getList()}
         };
-        for( int i = 0; i < listListArr.length; ++i ) {
-            assertEquals( listNames[i] + " size", listListArr[i][0].size(), listListArr[i][1].size() );
-            assertEquals( listNames[i] + " value", listListArr[i][0].get(0), listListArr[i][1].get(0) );
+        for (int i = 0; i < listListArr.length; ++i) {
+            assertEquals(listNames[i] + " size",
+                         listListArr[i][0].size(),
+                         listListArr[i][1].size());
+            assertEquals(listNames[i] + " value",
+                         listListArr[i][0].get(0),
+                         listListArr[i][1].get(0));
         }
     }
 
@@ -163,36 +202,37 @@ public class DeploymentDescriptorViewTest {
         DeploymentDescriptorModel newModel = new DeploymentDescriptorModel();
         view.updateContent(newModel);
 
-        verify( textBox, times( textBoxUsages ) ).getText();
-        verify( listBox, times( listBoxUsages ) ).getSelectedIndex();
-        verify( checkBox, times( checkBoxUsages ) ).getValue();
+        verify(textBox,
+               times(textBoxUsages)).getText();
+        verify(listBox,
+               times(listBoxUsages)).getSelectedIndex();
+        verify(checkBox,
+               times(checkBoxUsages)).getValue();
 
-        assertFalse( newModel.getConfiguration().isEmpty() );
-        assertFalse( newModel.getEnvironmentEntries().isEmpty());
-        assertFalse( newModel.getEventListeners().isEmpty());
-        assertFalse( newModel.getGlobals().isEmpty());
-        assertFalse( newModel.getMarshallingStrategies().isEmpty());
-        assertFalse( newModel.getRemotableClasses().isEmpty());
-        assertFalse( newModel.getRequiredRoles().isEmpty());
-        assertFalse( newModel.getTaskEventListeners().isEmpty());
-        assertFalse( newModel.getWorkItemHandlers().isEmpty());
-
+        assertFalse(newModel.getConfiguration().isEmpty());
+        assertFalse(newModel.getEnvironmentEntries().isEmpty());
+        assertFalse(newModel.getEventListeners().isEmpty());
+        assertFalse(newModel.getGlobals().isEmpty());
+        assertFalse(newModel.getMarshallingStrategies().isEmpty());
+        assertFalse(newModel.getRemotableClasses().isEmpty());
+        assertFalse(newModel.getRequiredRoles().isEmpty());
+        assertFalse(newModel.getTaskEventListeners().isEmpty());
+        assertFalse(newModel.getWorkItemHandlers().isEmpty());
     }
-
-    private static final String jarLocRegexStr = "([\\d\\.]{3})\\S*";
-    private static final Pattern jarLocRegex = Pattern.compile(jarLocRegexStr);
 
     @Test
     public void changeDefaultLimitSerializationClassesValueToTrueIn7x() throws Exception {
         Properties props = new Properties();
         String testPropsFileName = "test.properties";
         InputStream testPropsStream = this.getClass().getResourceAsStream("/" + testPropsFileName);
-        assertNotNull("Unable to find or open " + testPropsFileName, testPropsFileName);
+        assertNotNull("Unable to find or open " + testPropsFileName,
+                      testPropsFileName);
         props.load(testPropsStream);
         String projectVersionStr = (String) props.get("project.version");
 
         Matcher matcher = jarLocRegex.matcher(projectVersionStr);
-        assertTrue( "Fix regular expression: " + jarLocRegexStr, matcher.matches() );
+        assertTrue("Fix regular expression: " + jarLocRegexStr,
+                   matcher.matches());
         double jarVersion = Double.parseDouble(matcher.group(1));
 
         DeploymentDescriptorViewImpl viewImpl = new DeploymentDescriptorViewImpl();
@@ -203,9 +243,9 @@ public class DeploymentDescriptorViewTest {
 
         boolean limitSerializationClasses = DeploymentDescriptorViewImpl.getLimitSerializationClassesCheckBoxValue(deploymentDescriptorModel);
 
-        assertTrue( "The default value of 'limitSerializationClasses is FALSE in 6.x and TRUE in 7.x",
-                ( jarVersion < 7.0d && ! limitSerializationClasses )
-                || (jarVersion >= 7.0d && limitSerializationClasses ) );
+        assertTrue("The default value of 'limitSerializationClasses is FALSE in 6.x and TRUE in 7.x",
+                   (jarVersion < 7.0d && !limitSerializationClasses)
+                           || (jarVersion >= 7.0d && limitSerializationClasses));
     }
 
     @Test
@@ -213,11 +253,15 @@ public class DeploymentDescriptorViewTest {
         String itemName = "item1_name";
         String itemValue = "item1_value";
 
-        view.addPersistenceMode(itemName,itemValue);
-        view.addAuditMode(itemName,itemValue);
-        view.addRuntimeStrategy(itemName,itemValue);
+        view.addPersistenceMode(itemName,
+                                itemValue);
+        view.addAuditMode(itemName,
+                          itemValue);
+        view.addRuntimeStrategy(itemName,
+                                itemValue);
 
-        verify(listBox,times(3)).addItem(itemName,itemValue);
+        verify(listBox,
+               times(3)).addItem(itemName,
+                                 itemValue);
     }
-
 }

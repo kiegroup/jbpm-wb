@@ -25,18 +25,24 @@ public abstract class AbstractKieServerService {
     @Inject
     private KieServerIntegration kieServerIntegration;
 
-    protected <T> T getClient(final String serverTemplateId, final Class<T> clientType) {
+    protected <T> T getClient(final String serverTemplateId,
+                              final Class<T> clientType) {
         KieServicesClient client = getKieServicesClient(serverTemplateId);
         return client.getServicesClient(clientType);
     }
 
-    protected <T> T getClient(final String serverTemplateId, final String containerId, final Class<T> clientType) {
-        KieServicesClient client = getKieServicesClient(serverTemplateId, containerId);
+    protected <T> T getClient(final String serverTemplateId,
+                              final String containerId,
+                              final Class<T> clientType) {
+        KieServicesClient client = getKieServicesClient(serverTemplateId,
+                                                        containerId);
         return client.getServicesClient(clientType);
     }
 
-    protected KieServicesClient getKieServicesClient(final String serverTemplateId, final String containerId) {
-        KieServicesClient client = kieServerIntegration.getServerClient(serverTemplateId, containerId);
+    protected KieServicesClient getKieServicesClient(final String serverTemplateId,
+                                                     final String containerId) {
+        KieServicesClient client = kieServerIntegration.getServerClient(serverTemplateId,
+                                                                        containerId);
         if (client == null) {
             throw new RuntimeException("No connection to '" + serverTemplateId + "' server(s). Server template configuration requires container '" + containerId + "' to be configured and started");
         }

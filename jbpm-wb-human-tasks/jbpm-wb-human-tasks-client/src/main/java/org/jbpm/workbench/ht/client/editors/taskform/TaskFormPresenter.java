@@ -24,9 +24,6 @@ import org.jbpm.workbench.forms.client.display.views.FormDisplayerView;
 
 @Dependent
 public class TaskFormPresenter {
-    public interface TaskFormView extends IsWidget {
-        FormDisplayerView getDisplayerView();
-    }
 
     @Inject
     TaskFormView view;
@@ -37,5 +34,10 @@ public class TaskFormPresenter {
 
     public IsWidget getView() {
         return view;
+    }
+
+    public interface TaskFormView extends IsWidget {
+
+        FormDisplayerView getDisplayerView();
     }
 }

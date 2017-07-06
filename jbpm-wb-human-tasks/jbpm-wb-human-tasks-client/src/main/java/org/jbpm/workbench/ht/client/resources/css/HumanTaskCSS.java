@@ -37,5 +37,4 @@ public interface HumanTaskCSS extends CssResource {
 
     @ClassName("task-priority-five")
     String taskPriorityFive();
-
 }

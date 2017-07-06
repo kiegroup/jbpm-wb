@@ -40,9 +40,6 @@ import static org.jbpm.workbench.common.client.PerspectiveIds.*;
 public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
 
     @Inject
-    private PlaceManager placeManager;
-
-    @Inject
     public User identity;
 
     @DataField
@@ -65,6 +62,7 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
 
     @Inject
     @DataField
+
     public Anchor authoringLabel;
 
     @Inject
@@ -148,8 +146,12 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
     public Label improveTextLabel;
 
     @Inject
+    private PlaceManager placeManager;
+
+    @Inject
     private Event<NotificationEvent> notification;
-    private Constants constants = GWT.create( Constants.class );
+
+    private Constants constants = GWT.create(Constants.class);
 
     public HomeViewImpl() {
         carouselImg5 = new Image();
@@ -161,40 +163,40 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
     }
 
     @Override
-    public void init( final HomePresenter presenter ) {
+    public void init(final HomePresenter presenter) {
         String url = GWT.getModuleBaseURL();
         // avatar.setUrl(url + "images/avatars/" + identity.getName() + ".png");
         // avatar.setSize("64px", "64px");
 
-        carouselImg5.setUrl( url + "images/mountain.jpg" );
-        carouselImg4.setUrl( url + "images/mountain.jpg" );
-        carouselImg3.setUrl( url + "images/mountain.jpg" );
-        carouselImg2.setUrl( url + "images/mountain.jpg" );
-        carouselImg1.setUrl( url + "images/mountain.jpg" );
-        carouselImg0.setUrl( url + "images/mountain.jpg" );
+        carouselImg5.setUrl(url + "images/mountain.jpg");
+        carouselImg4.setUrl(url + "images/mountain.jpg");
+        carouselImg3.setUrl(url + "images/mountain.jpg");
+        carouselImg2.setUrl(url + "images/mountain.jpg");
+        carouselImg1.setUrl(url + "images/mountain.jpg");
+        carouselImg0.setUrl(url + "images/mountain.jpg");
 
-        authoringLabel.setTextContent( constants.Authoring() );
-        modelProcessAnchor.setTextContent( constants.Business_Processes() );
-        workLabel.setTextContent( constants.Work() );
-        workTaskListAnchor.setTextContent( constants.Tasks_List() );
-        workProcessDefinitionsAnchor.setTextContent( constants.Process_Definitions() );
-        workProcessInstancesAnchor.setTextContent( constants.Process_Instances() );
-        dashboardsLabel.setTextContent( constants.Dashboards() );
-        processDashboardsAnchor.setTextContent( constants.Process_Dashboard() );
-        thejBPMCycle.setTextContent( constants.The_jBPM_Cycle() );
+        authoringLabel.setTextContent(constants.Authoring());
+        modelProcessAnchor.setTextContent(constants.Business_Processes());
+        workLabel.setTextContent(constants.Work());
+        workTaskListAnchor.setTextContent(constants.Tasks_List());
+        workProcessDefinitionsAnchor.setTextContent(constants.Process_Definitions());
+        workProcessInstancesAnchor.setTextContent(constants.Process_Instances());
+        dashboardsLabel.setTextContent(constants.Dashboards());
+        processDashboardsAnchor.setTextContent(constants.Process_Dashboard());
+        thejBPMCycle.setTextContent(constants.The_jBPM_Cycle());
 
-        discoverLabel.setTextContent( constants.Discover() );
-        discoverTextLabel.setTextContent( constants.Discover_Text() );
-        designLabel.setTextContent( constants.Design() );
-        designTextLabel.setTextContent( constants.Design_Text() );
-        deployLabel.setTextContent( constants.Deploy() );
-        deployTextLabel.setTextContent( constants.Deploy_Text() );
-        workTasksLabel.setTextContent( constants.Work() );
-        workTasksTextLabel.setTextContent( constants.Work_Text() );
-        dashboardsCarrouselLabel.setTextContent( constants.Dashboards() );
-        dashboardsCarrouselTextLabel.setTextContent( constants.Dashboards_Text() );
-        improveLabel.setTextContent( constants.Improve() );
-        improveTextLabel.setTextContent( constants.Improve_Text() );
+        discoverLabel.setTextContent(constants.Discover());
+        discoverTextLabel.setTextContent(constants.Discover_Text());
+        designLabel.setTextContent(constants.Design());
+        designTextLabel.setTextContent(constants.Design_Text());
+        deployLabel.setTextContent(constants.Deploy());
+        deployTextLabel.setTextContent(constants.Deploy_Text());
+        workTasksLabel.setTextContent(constants.Work());
+        workTasksTextLabel.setTextContent(constants.Work_Text());
+        dashboardsCarrouselLabel.setTextContent(constants.Dashboards());
+        dashboardsCarrouselTextLabel.setTextContent(constants.Dashboards_Text());
+        improveLabel.setTextContent(constants.Improve());
+        improveTextLabel.setTextContent(constants.Improve_Text());
 
         modelProcessAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(LIBRARY)));
 
@@ -205,12 +207,10 @@ public class HomeViewImpl extends Composite implements HomePresenter.HomeView {
         workProcessInstancesAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(PROCESS_INSTANCES)));
 
         processDashboardsAnchor.setOnclick(e -> placeManager.goTo(new DefaultPlaceRequest(PROCESS_DASHBOARD)));
-
     }
 
     @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
-
 }

@@ -37,22 +37,16 @@ public class TaskAdminSettingsPresenter {
 
     public static final String SCREEN_ID = "Tasks Admin Settings";
 
-    private TaskAdminConstants constants = TaskAdminConstants.INSTANCE;
-
-    public interface TaskAdminSettingsView extends UberView<TaskAdminSettingsPresenter> {
-
-        void displayNotification(String text);
-
-        TextBox getUserNameText();
-
-        Button getGenerateMockTasksButton();
-    }
-
     @Inject
     TaskAdminSettingsView view;
 
     @Inject
     Caller<TaskAdminService> taskAdminServices;
+
+    private TaskAdminConstants constants = TaskAdminConstants.INSTANCE;
+
+    public TaskAdminSettingsPresenter() {
+    }
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -64,14 +58,12 @@ public class TaskAdminSettingsPresenter {
         return view;
     }
 
-    public TaskAdminSettingsPresenter() {
-    }
-
     @PostConstruct
     public void init() {
     }
 
-    public void generateMockTasks(String userName, int amountOfTasks) {
+    public void generateMockTasks(String userName,
+                                  int amountOfTasks) {
         taskAdminServices.call(
                 new RemoteCallback<Long>() {
                     @Override
@@ -79,11 +71,21 @@ public class TaskAdminSettingsPresenter {
                         view.displayNotification(constants.TaskSuccessfullyCreated());
                     }
                 }
-        ).generateMockTasks(userName, amountOfTasks);
+        ).generateMockTasks(userName,
+                            amountOfTasks);
     }
 
     @OnOpen
     public void onOpen() {
         view.getUserNameText().setFocus(true);
+    }
+
+    public interface TaskAdminSettingsView extends UberView<TaskAdminSettingsPresenter> {
+
+        void displayNotification(String text);
+
+        TextBox getUserNameText();
+
+        Button getGenerateMockTasksButton();
     }
 }

@@ -17,6 +17,7 @@
 package org.jbpm.workbench.common.client.list;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -26,13 +27,14 @@ import org.jboss.errai.common.client.dom.KeyboardEvent;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.util.DateRange;
-import org.jbpm.workbench.common.client.util.UTCDateBox;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.uberfire.client.views.pfly.widgets.Moment;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -58,53 +60,36 @@ public class AdvancedSearchFiltersViewImplTest {
     }
 
     @Test
-    public void testDateChangeNoValue() {
-        UTCDateBox fromDate = mock(UTCDateBox.class);
-        when(fromDate.getValue()).thenReturn(null,
-                                             null,
-                                             1l);
-        UTCDateBox toDate = mock(UTCDateBox.class);
-        when(toDate.getValue()).thenReturn(null,
-                                           1l,
-                                           null);
+    public void testDateRangeChange() {
+        final Consumer addCallback = mock(Consumer.class);
+        final String label = "label";
+        final String selectedLabel = "selectedLabel";
+        final Moment startMoment = mock(Moment.class);
+        final Date startDate = new Date();
+        when(startMoment.asDate()).thenReturn(startDate);
+        final Moment endMoment = mock(Moment.class);
+        final Date endDate = new Date();
+        when(endMoment.asDate()).thenReturn(endDate);
 
-        view.onDateValueChange("",
-                               fromDate,
-                               toDate,
-                               null,
-                               null);
-        view.onDateValueChange("",
-                               fromDate,
-                               toDate,
-                               null,
-                               null);
-        view.onDateValueChange("",
-                               fromDate,
-                               toDate,
-                               null,
-                               null);
+        view.onDateRangeValueChange(label,
+                                    selectedLabel,
+                                    startMoment,
+                                    endMoment,
+                                    addCallback,
+                                    null);
 
-        verifyZeroInteractions(dataBinder);
-        verifyZeroInteractions(modelList);
-    }
-
-    @Test
-    public void testDateChange() {
-        UTCDateBox fromDate = mock(UTCDateBox.class);
-        when(fromDate.getValue()).thenReturn(System.currentTimeMillis());
-        UTCDateBox toDate = mock(UTCDateBox.class);
-        when(toDate.getValue()).thenReturn(System.currentTimeMillis());
-        Consumer addCallback = mock(Consumer.class);
-
-        view.onDateValueChange("",
-                               fromDate,
-                               toDate,
-                               addCallback,
-                               null);
-
-        verify(modelList).add(any(ActiveFilterItem.class));
-        verify(fromDate).setValue(null);
-        verify(toDate).setValue(null);
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(modelList).add(captor.capture());
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(label,
+                     captor.getValue().getLabelKey());
+        assertEquals(selectedLabel,
+                     captor.getValue().getLabelValue());
+        assertEquals(startDate,
+                     ((DateRange) captor.getValue().getValue()).getStartDate());
+        assertEquals(endDate,
+                     ((DateRange) captor.getValue().getValue()).getEndDate());
         verify(addCallback).accept(any(DateRange.class));
     }
 

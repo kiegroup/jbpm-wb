@@ -83,23 +83,31 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
 
     protected void selectCaseInstance(final CaseInstanceSummary cis) {
         final Map<String, String> parameters = new HashMap<>();
-        parameters.put(CaseOverviewPresenter.PARAMETER_SERVER_TEMPLATE_ID, "");
-        parameters.put(CaseOverviewPresenter.PARAMETER_CONTAINER_ID, cis.getContainerId());
-        parameters.put(CaseOverviewPresenter.PARAMETER_CASE_ID, cis.getCaseId());
-        final DefaultPlaceRequest overview = new DefaultPlaceRequest(CaseOverviewPerspective.PERSPECTIVE_ID, parameters);
+        parameters.put(CaseOverviewPresenter.PARAMETER_SERVER_TEMPLATE_ID,
+                       "");
+        parameters.put(CaseOverviewPresenter.PARAMETER_CONTAINER_ID,
+                       cis.getContainerId());
+        parameters.put(CaseOverviewPresenter.PARAMETER_CASE_ID,
+                       cis.getCaseId());
+        final DefaultPlaceRequest overview = new DefaultPlaceRequest(CaseOverviewPerspective.PERSPECTIVE_ID,
+                                                                     parameters);
         placeManager.goTo(overview);
     }
 
     protected void cancelCaseInstance(final CaseInstanceSummary caseInstanceSummary) {
         caseService.call(
                 e -> refreshData()
-        ).cancelCaseInstance(null, caseInstanceSummary.getContainerId(), caseInstanceSummary.getCaseId());
+        ).cancelCaseInstance(null,
+                             caseInstanceSummary.getContainerId(),
+                             caseInstanceSummary.getCaseId());
     }
 
     protected void destroyCaseInstance(final CaseInstanceSummary caseInstanceSummary) {
         caseService.call(
                 e -> refreshData()
-        ).destroyCaseInstance(null, caseInstanceSummary.getContainerId(), caseInstanceSummary.getCaseId());
+        ).destroyCaseInstance(null,
+                              caseInstanceSummary.getContainerId(),
+                              caseInstanceSummary.getCaseId());
     }
 
     public void onCaseCreatedEvent(@Observes CaseCreatedEvent event) {
@@ -120,7 +128,5 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
         void setCaseInstanceList(List<CaseInstanceSummary> caseInstanceList);
 
         CaseInstanceSearchRequest getCaseInstanceSearchRequest();
-
     }
-
 }

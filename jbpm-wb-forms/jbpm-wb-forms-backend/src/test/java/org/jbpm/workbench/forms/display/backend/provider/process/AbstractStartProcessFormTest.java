@@ -48,31 +48,34 @@ public abstract class AbstractStartProcessFormTest<PROVIDER extends AbstractKieW
 
     @Test
     public void testFormProvider() {
-        KieWorkbenchFormRenderingSettings result = workbenchFormsProvider.render( generateSettings() );
+        KieWorkbenchFormRenderingSettings result = workbenchFormsProvider.render(generateSettings());
 
-        checkRenderingSettings( result );
+        checkRenderingSettings(result);
     }
 
     @Override
     protected ProcessRenderingSettings generateSettings() {
 
-        when( process.getId() ).thenReturn( "invoices" );
+        when(process.getId()).thenReturn("invoices");
 
         Map<String, String> formData = new HashMap<>();
 
-        formData.put( "invoice", Invoice.class.getName() );
+        formData.put("invoice",
+                     Invoice.class.getName());
 
-        return new ProcessRenderingSettings( process,
-                                             formData,
-                                             getFormContent(),
-                                             marshallerContext );
+        return new ProcessRenderingSettings(process,
+                                            formData,
+                                            getFormContent(),
+                                            marshallerContext);
     }
 
     @Override
-    protected ProcessFormsValuesProcessor getProcessorInstance( FormDefinitionSerializer formSerializer,
-                                                                BackendFormRenderingContextManager contextManager,
-                                                                DynamicBPMNFormGenerator dynamicBPMNFormGenerator ) {
-        return new ProcessFormsValuesProcessor( formSerializer, contextManager, dynamicBPMNFormGenerator );
+    protected ProcessFormsValuesProcessor getProcessorInstance(FormDefinitionSerializer formSerializer,
+                                                               BackendFormRenderingContextManager contextManager,
+                                                               DynamicBPMNFormGenerator dynamicBPMNFormGenerator) {
+        return new ProcessFormsValuesProcessor(formSerializer,
+                                               contextManager,
+                                               dynamicBPMNFormGenerator);
     }
 
     @Override
@@ -80,60 +83,83 @@ public abstract class AbstractStartProcessFormTest<PROVIDER extends AbstractKieW
         Map<String, Object> result = new HashMap<>();
 
         Map<String, Object> client = new HashMap<>();
-        client.put( "id", new Long( 1234 ) );
-        client.put( "name", "John Snow" );
-        client.put( "address", "Winterfell" );
+        client.put("id",
+                   new Long(1234));
+        client.put("name",
+                   "John Snow");
+        client.put("address",
+                   "Winterfell");
 
         List<Map<String, Object>> lines = new ArrayList<>();
 
         Map<String, Object> line = new HashMap<>();
 
-        line.put( "product", "Really Dangerous Sword" );
-        line.put( "quantity", 1 );
-        line.put( "price", 100.5 );
-        line.put( "total", 100.5 );
+        line.put("product",
+                 "Really Dangerous Sword");
+        line.put("quantity",
+                 1);
+        line.put("price",
+                 100.5);
+        line.put("total",
+                 100.5);
 
-        lines.add( line );
+        lines.add(line);
 
         Map<String, Object> invoice = new HashMap<>();
-        invoice.put( "client", client );
-        invoice.put( "lines", lines );
-        invoice.put( "total", 100.5 );
-        invoice.put( "comments", "Everything was perfect" );
-        invoice.put( "date", new Date() );
+        invoice.put("client",
+                    client);
+        invoice.put("lines",
+                    lines);
+        invoice.put("total",
+                    100.5);
+        invoice.put("comments",
+                    "Everything was perfect");
+        invoice.put("date",
+                    new Date());
 
-        result.put( "invoice", invoice );
+        result.put("invoice",
+                   invoice);
 
         return result;
     }
 
     @Override
-    protected void checkRuntimeValues( Map<String, Object> result ) {
-        assertNotNull( "There should be an invoice on the result Map", result.get( "invoice" ) );
+    protected void checkRuntimeValues(Map<String, Object> result) {
+        assertNotNull("There should be an invoice on the result Map",
+                      result.get("invoice"));
 
-        assertTrue( "There should be an invoice on the result Map", result.get( "invoice" ) instanceof Invoice );
+        assertTrue("There should be an invoice on the result Map",
+                   result.get("invoice") instanceof Invoice);
 
-        Invoice invoice = (Invoice) result.get( "invoice" );
+        Invoice invoice = (Invoice) result.get("invoice");
 
-        assertNotNull( "Invoice should have a client", invoice.getClient() );
+        assertNotNull("Invoice should have a client",
+                      invoice.getClient());
 
-        assertEquals( invoice.getClient().getId(), new Long( 1234 ) );
-        assertEquals( "John Snow", invoice.getClient().getName() );
-        assertEquals( "Winterfell", invoice.getClient().getAddress() );
+        assertEquals(invoice.getClient().getId(),
+                     new Long(1234));
+        assertEquals("John Snow",
+                     invoice.getClient().getName());
+        assertEquals("Winterfell",
+                     invoice.getClient().getAddress());
 
-        assertNotNull( invoice.getDate() );
-        assertNotNull( invoice.getComments() );
-        assertEquals( invoice.getTotal(), new Double( 100.5 ) );
+        assertNotNull(invoice.getDate());
+        assertNotNull(invoice.getComments());
+        assertEquals(invoice.getTotal(),
+                     new Double(100.5));
 
-        assertNotNull( invoice.getLines() );
-        assertTrue( invoice.getLines().size() == 1 );
+        assertNotNull(invoice.getLines());
+        assertTrue(invoice.getLines().size() == 1);
 
-        InvoiceLine line = invoice.getLines().get( 0 );
+        InvoiceLine line = invoice.getLines().get(0);
 
-        assertEquals( "Really Dangerous Sword", line.getProduct() );
-        assertEquals( new Integer( 1 ), line.getQuantity() );
-        assertEquals( new Double( 100.5 ), line.getPrice() );
-        assertEquals( new Double( 100.5 ), line.getTotal() );
-
+        assertEquals("Really Dangerous Sword",
+                     line.getProduct());
+        assertEquals(new Integer(1),
+                     line.getQuantity());
+        assertEquals(new Double(100.5),
+                     line.getPrice());
+        assertEquals(new Double(100.5),
+                     line.getTotal());
     }
 }

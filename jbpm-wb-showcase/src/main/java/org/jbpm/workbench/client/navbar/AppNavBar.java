@@ -28,7 +28,6 @@ import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-
 @ApplicationScoped
 @Templated
 public class AppNavBar implements Header {
@@ -41,8 +40,9 @@ public class AppNavBar implements Header {
     private WorkbenchMenuBarPresenter menuBarPresenter;
 
     @PostConstruct
-    public void setup(){
-        DOMUtil.appendWidgetToElement( header, menuBarPresenter.getView().asWidget() );
+    public void setup() {
+        DOMUtil.appendWidgetToElement(header,
+                                      menuBarPresenter.getView().asWidget());
     }
 
     @Override

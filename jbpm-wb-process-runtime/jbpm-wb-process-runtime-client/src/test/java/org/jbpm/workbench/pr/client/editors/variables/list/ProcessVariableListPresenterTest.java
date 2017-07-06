@@ -53,7 +53,8 @@ public class ProcessVariableListPresenterTest {
     @Before
     public void setup() {
         variablesServicesCaller = new CallerMock<ProcessVariablesService>(processVariablesService);
-        presenter = new ProcessVariableListPresenter(view, variablesServicesCaller);
+        presenter = new ProcessVariableListPresenter(view,
+                                                     variablesServicesCaller);
     }
 
     @Test
@@ -62,15 +63,30 @@ public class ProcessVariableListPresenterTest {
         final String variableName = "variable";
         final String deploymentId = "deploymentId";
         final long processInstanceId = 1l;
-        final ProcessVariableSummary summary = new ProcessVariableSummary(variableName, "variableInstanceId", processInstanceId, "oldValue", "newValue", System.currentTimeMillis(), "type");
+        final ProcessVariableSummary summary = new ProcessVariableSummary(variableName,
+                                                                          "variableInstanceId",
+                                                                          processInstanceId,
+                                                                          "oldValue",
+                                                                          "newValue",
+                                                                          System.currentTimeMillis(),
+                                                                          "type");
         final List<ProcessVariableSummary> summaries = Arrays.asList(summary);
-        when(processVariablesService.getVariableHistory(anyString(), eq(deploymentId), eq(processInstanceId), eq(variableName))).thenReturn(summaries);
+        when(processVariablesService.getVariableHistory(anyString(),
+                                                        eq(deploymentId),
+                                                        eq(processInstanceId),
+                                                        eq(variableName))).thenReturn(summaries);
         when(view.getListGrid()).thenReturn(extendedPagedTable);
 
-        final ProcessInstanceSelectionEvent event = new ProcessInstanceSelectionEvent(deploymentId, processInstanceId, "processDefId", "processDefName", 1, "serverTemplateIdTest");
+        final ProcessInstanceSelectionEvent event = new ProcessInstanceSelectionEvent(deploymentId,
+                                                                                      processInstanceId,
+                                                                                      "processDefId",
+                                                                                      "processDefName",
+                                                                                      1,
+                                                                                      "serverTemplateIdTest");
 
         presenter.onProcessInstanceSelectionEvent(event);
-        presenter.loadVariableHistory(callback, variableName);
+        presenter.loadVariableHistory(callback,
+                                      variableName);
 
         verify(callback).execute(summaries);
     }

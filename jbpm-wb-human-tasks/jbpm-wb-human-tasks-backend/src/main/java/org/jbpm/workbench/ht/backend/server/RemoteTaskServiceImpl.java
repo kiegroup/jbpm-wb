@@ -48,14 +48,18 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
     private IdentityProvider identityProvider;
 
     @Override
-    public TaskSummary getTask(String serverTemplateId, String containerId, Long taskId) {
+    public TaskSummary getTask(String serverTemplateId,
+                               String containerId,
+                               Long taskId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return null;
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
         try {
-            TaskInstance task = client.getTaskInstance(containerId, taskId);
+            TaskInstance task = client.getTaskInstance(containerId,
+                                                       taskId);
             return new TaskSummaryMapper().apply(task);
         } catch (KieServicesException e) {
             // task not found
@@ -64,163 +68,252 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
     }
 
     @Override
-    public void updateTask(String serverTemplateId, String containerId, Long taskId, Integer priority, String description, Date dueDate) {
+    public void updateTask(String serverTemplateId,
+                           String containerId,
+                           Long taskId,
+                           Integer priority,
+                           String description,
+                           Date dueDate) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return;
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
         // TODO update only when it actually changed
-        client.setTaskDescription(containerId, taskId, description);
-        client.setTaskPriority(containerId, taskId, priority);
-        client.setTaskExpirationDate(containerId, taskId, dueDate);
+        client.setTaskDescription(containerId,
+                                  taskId,
+                                  description);
+        client.setTaskPriority(containerId,
+                               taskId,
+                               priority);
+        client.setTaskExpirationDate(containerId,
+                                     taskId,
+                                     dueDate);
     }
 
     @Override
-    public void claimTask(String serverTemplateId, String containerId, Long taskId) {
+    public void claimTask(String serverTemplateId,
+                          String containerId,
+                          Long taskId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return;
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
 
-        client.claimTask(containerId, taskId, identityProvider.getName());
+        client.claimTask(containerId,
+                         taskId,
+                         identityProvider.getName());
     }
 
     @Override
-    public void releaseTask(String serverTemplateId, String containerId, Long taskId) {
+    public void releaseTask(String serverTemplateId,
+                            String containerId,
+                            Long taskId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return;
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
 
-        client.releaseTask(containerId, taskId, identityProvider.getName());
+        client.releaseTask(containerId,
+                           taskId,
+                           identityProvider.getName());
     }
 
     @Override
-    public void startTask(String serverTemplateId, String containerId, Long taskId) {
+    public void startTask(String serverTemplateId,
+                          String containerId,
+                          Long taskId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return;
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
 
-        client.startTask(containerId, taskId, identityProvider.getName());
+        client.startTask(containerId,
+                         taskId,
+                         identityProvider.getName());
     }
 
     @Override
-    public void completeTask(String serverTemplateId, String containerId, Long taskId, Map<String, Object> output) {
+    public void completeTask(String serverTemplateId,
+                             String containerId,
+                             Long taskId,
+                             Map<String, Object> output) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return;
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
 
-        client.completeTask(containerId, taskId, identityProvider.getName(), output);
+        client.completeTask(containerId,
+                            taskId,
+                            identityProvider.getName(),
+                            output);
     }
 
     @Override
-    public void resumeTask(String serverTemplateId, String containerId, Long taskId) {
+    public void resumeTask(String serverTemplateId,
+                           String containerId,
+                           Long taskId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return;
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
 
-        client.resumeTask(containerId, taskId, identityProvider.getName());
+        client.resumeTask(containerId,
+                          taskId,
+                          identityProvider.getName());
     }
 
     @Override
-    public void suspendTask(String serverTemplateId, String containerId, Long taskId) {
+    public void suspendTask(String serverTemplateId,
+                            String containerId,
+                            Long taskId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return;
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
 
-        client.suspendTask(containerId, taskId, identityProvider.getName());
+        client.suspendTask(containerId,
+                           taskId,
+                           identityProvider.getName());
     }
 
     @Override
-    public void saveTaskContent(String serverTemplateId, String containerId, Long taskId, Map<String, Object> output) {
+    public void saveTaskContent(String serverTemplateId,
+                                String containerId,
+                                Long taskId,
+                                Map<String, Object> output) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return;
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
 
-        client.saveTaskContent(containerId, taskId, output);
+        client.saveTaskContent(containerId,
+                               taskId,
+                               output);
     }
 
     @Override
-    public void addTaskComment(String serverTemplateId, String containerId, Long taskId, String text, Date addedOn) {
+    public void addTaskComment(String serverTemplateId,
+                               String containerId,
+                               Long taskId,
+                               String text,
+                               Date addedOn) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return;
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
 
-        client.addTaskComment(containerId, taskId, text, identityProvider.getName(), addedOn);
+        client.addTaskComment(containerId,
+                              taskId,
+                              text,
+                              identityProvider.getName(),
+                              addedOn);
     }
 
     @Override
-    public void deleteTaskComment(String serverTemplateId, String containerId, Long taskId, Long commentId) {
+    public void deleteTaskComment(String serverTemplateId,
+                                  String containerId,
+                                  Long taskId,
+                                  Long commentId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return;
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
 
-        client.deleteTaskComment(containerId, taskId, commentId);
+        client.deleteTaskComment(containerId,
+                                 taskId,
+                                 commentId);
     }
 
     @Override
-    public List<CommentSummary> getTaskComments(String serverTemplateId, String containerId, Long taskId) {
+    public List<CommentSummary> getTaskComments(String serverTemplateId,
+                                                String containerId,
+                                                Long taskId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return emptyList();
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
 
-        List<TaskComment> comments = client.getTaskCommentsByTaskId(containerId, taskId);
+        List<TaskComment> comments = client.getTaskCommentsByTaskId(containerId,
+                                                                    taskId);
 
         return comments.stream().map(c -> build(c)).collect(toList());
     }
 
     @Override
-    public List<TaskEventSummary> getTaskEvents(String serverTemplateId, String containerId, Long taskId) {
+    public List<TaskEventSummary> getTaskEvents(String serverTemplateId,
+                                                String containerId,
+                                                Long taskId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return emptyList();
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
 
-        List<TaskEventInstance> events = client.findTaskEvents(containerId, taskId, 0, 1000);
+        List<TaskEventInstance> events = client.findTaskEvents(containerId,
+                                                               taskId,
+                                                               0,
+                                                               1000);
 
         return events.stream().map(e -> build(e)).collect(toList());
     }
 
     @Override
-    public void delegate(String serverTemplateId, String containerId, Long taskId, String entity) {
+    public void delegate(String serverTemplateId,
+                         String containerId,
+                         Long taskId,
+                         String entity) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return;
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
 
-        client.delegateTask(containerId, taskId, identityProvider.getName(), entity);
+        client.delegateTask(containerId,
+                            taskId,
+                            identityProvider.getName(),
+                            entity);
     }
 
     @Override
-    public TaskAssignmentSummary getTaskAssignmentDetails(String serverTemplateId, String containerId, Long taskId) {
+    public TaskAssignmentSummary getTaskAssignmentDetails(String serverTemplateId,
+                                                          String containerId,
+                                                          Long taskId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return null;
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
         try {
-            TaskInstance task = client.getTaskInstance(containerId, taskId, false, false, true);
+            TaskInstance task = client.getTaskInstance(containerId,
+                                                       taskId,
+                                                       false,
+                                                       false,
+                                                       true);
             TaskAssignmentSummary summary = new TaskAssignmentSummary();
             summary.setTaskId(task.getId());
             summary.setActualOwner(task.getActualOwner());
@@ -261,21 +354,25 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
 
         //TODO Needs to check if po or ba string is a group or a user
         final List<String> potentialOwners = task.getPotentialOwners();
-        if (potentialOwners != null && Collections.disjoint(potentialOwners, roles) == false) {
+        if (potentialOwners != null && Collections.disjoint(potentialOwners,
+                                                            roles) == false) {
             return true;
         }
 
         final List<String> businessAdministrators = task.getBusinessAdmins();
-        if (businessAdministrators != null && Collections.disjoint(businessAdministrators, roles) == false) {
+        if (businessAdministrators != null && Collections.disjoint(businessAdministrators,
+                                                                   roles) == false) {
             return true;
         }
 
         return false;
-
     }
 
     @Override
-    public void executeReminderForTask(String serverTemplateId, String containerId, Long taskId, String fromUser) {
+    public void executeReminderForTask(String serverTemplateId,
+                                       String containerId,
+                                       Long taskId,
+                                       String fromUser) {
 
     }
 
@@ -304,5 +401,4 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
 
         return summary;
     }
-
 }

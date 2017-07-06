@@ -25,6 +25,8 @@
   <!-- Uberfire dependencies -->
   <inherits name="org.uberfire.UberfireClientAll"/>
   <inherits name="org.uberfire.client.views.PatternFlyTheme"/>
+  <inherits name="org.uberfire.preferences.UberfirePreferencesAPI"/>
+  <inherits name="org.uberfire.preferences.UberfirePreferencesClient"/>
 
   <!-- Kie Server -->
   <inherits name="org.kie.server.api.KieServerAPI"/>

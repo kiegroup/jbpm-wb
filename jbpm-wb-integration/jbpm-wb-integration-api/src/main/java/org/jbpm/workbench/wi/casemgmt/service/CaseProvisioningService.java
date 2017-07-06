@@ -24,5 +24,4 @@ public interface CaseProvisioningService {
     CaseProvisioningStatus getProvisioningStatus();
 
     String getApplicationContext();
-
 }

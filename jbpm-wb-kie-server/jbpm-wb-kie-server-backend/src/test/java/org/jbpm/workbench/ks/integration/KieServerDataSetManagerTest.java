@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.event.Event;
 
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
@@ -28,21 +31,24 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.server.api.exception.KieServicesException;
-import org.kie.server.common.rest.KieServerHttpRequestException;
 import org.kie.server.api.model.definition.QueryDefinition;
 import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.QueryServicesClient;
+import org.kie.server.common.rest.KieServerHttpRequestException;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.commons.async.DescriptiveThreadFactory;
 import org.uberfire.mocks.EventSourceMock;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KieServerDataSetManagerTest {
 
+    private final List<Object> receivedEvents = new ArrayList<Object>();
 
     private DataSetDefRegistry dataSetDefRegistry;
 
@@ -50,8 +56,10 @@ public class KieServerDataSetManagerTest {
 
     private Event<KieServerDataSetRegistered> event;
 
-    private final List<Object> receivedEvents = new ArrayList<Object>();
+    private ManagedExecutorService managedExecutorService;
+
     private KieServicesClient kieClient;
+
     private QueryServicesClient queryClient;
 
     private KieServerDataSetManager kieServerDataSetManager;
@@ -60,13 +68,13 @@ public class KieServerDataSetManagerTest {
     public void setup() {
         this.dataSetDefRegistry = Mockito.mock(DataSetDefRegistry.class);
         this.kieServerIntegration = Mockito.mock(KieServerIntegration.class);
+        this.managedExecutorService = Mockito.mock(ManagedExecutorService.class);
         this.event = new EventSourceMock<KieServerDataSetRegistered>() {
 
             @Override
-            public void fire( KieServerDataSetRegistered event ) {
+            public void fire(KieServerDataSetRegistered event) {
                 receivedEvents.add(event);
             }
-
         };
 
         this.kieClient = Mockito.mock(KieServicesClient.class);
@@ -75,23 +83,37 @@ public class KieServerDataSetManagerTest {
 
         when(kieServerIntegration.getAdminServerClient(anyString())).thenReturn(kieClient);
 
-        this.kieServerDataSetManager = new KieServerDataSetManager(dataSetDefRegistry, kieServerIntegration, event);
+        ExecutorService executorService = Executors.newCachedThreadPool(new DescriptiveThreadFactory());
+        doAnswer(invocationOnMock -> {
+            executorService.execute(invocationOnMock.getArgumentAt(0,
+                                                                   Runnable.class));
+            return null;
+        }).when(managedExecutorService).execute(any(Runnable.class));
+
+        this.kieServerDataSetManager = new KieServerDataSetManager(dataSetDefRegistry,
+                                                                   kieServerIntegration,
+                                                                   event,
+                                                                   managedExecutorService);
     }
 
     @Test
     public void testRegisterQueriesWithoutRetry() throws Exception {
 
-
         QueryDefinition query = QueryDefinition.builder().name("test").expression("expression").source("jbpm").target("CUSTOM").build();
         Set<QueryDefinition> definitions = new HashSet<>();
         definitions.add(query);
 
-        kieServerDataSetManager.registerQueriesWithRetry("template", "instance", definitions);
+        kieServerDataSetManager.registerQueriesWithRetry("template",
+                                                         "instance",
+                                                         definitions);
 
-        verify(kieServerIntegration, times(1)).getAdminServerClient(anyString());
-        verify(queryClient, times(1)).replaceQuery(any());
+        verify(kieServerIntegration,
+               times(1)).getAdminServerClient(anyString());
+        verify(queryClient,
+               times(1)).replaceQuery(any());
 
-        assertEquals(1, receivedEvents.size());
+        assertEquals(1,
+                     receivedEvents.size());
     }
 
     @Test
@@ -117,14 +139,21 @@ public class KieServerDataSetManagerTest {
 
         doThrow(exception).when(queryClient).replaceQuery(any());
 
-        kieServerDataSetManager.registerQueriesWithRetry("template", "instance", definitions);
+        kieServerDataSetManager.registerQueriesWithRetry("template",
+                                                         "instance",
+                                                         definitions);
 
-        verify(kieServerIntegration, times(1)).getAdminServerClient(anyString());
-        verify(kieServerIntegration, times(1)).getAdminServerClientCheckEndpoints(anyString());
-        verify(queryClient, times(1)).replaceQuery(any());
-        verify(queryClientRecreated, times(1)).replaceQuery(any());
+        verify(kieServerIntegration,
+               times(1)).getAdminServerClient(anyString());
+        verify(kieServerIntegration,
+               times(1)).getAdminServerClientCheckEndpoints(anyString());
+        verify(queryClient,
+               times(1)).replaceQuery(any());
+        verify(queryClientRecreated,
+               times(1)).replaceQuery(any());
 
-        assertEquals(1, receivedEvents.size());
+        assertEquals(1,
+                     receivedEvents.size());
     }
 
     @Test
@@ -136,11 +165,16 @@ public class KieServerDataSetManagerTest {
         Set<QueryDefinition> definitions = new HashSet<>();
         definitions.add(query);
 
-        kieServerDataSetManager.registerQueriesWithRetry("template", "instance", definitions);
+        kieServerDataSetManager.registerQueriesWithRetry("template",
+                                                         "instance",
+                                                         definitions);
 
-        verify(kieServerIntegration, times(1)).getAdminServerClient(anyString());
-        verify(queryClient, never()).replaceQuery(any());
+        verify(kieServerIntegration,
+               times(1)).getAdminServerClient(anyString());
+        verify(queryClient,
+               never()).replaceQuery(any());
 
-        assertEquals(0, receivedEvents.size());
+        assertEquals(0,
+                     receivedEvents.size());
     }
 }

@@ -40,5 +40,4 @@ public class ProcessAdminSettingsPerspective extends Composite {
         p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(ProcessAdminSettingsPresenter.SCREEN_ID)));
         return p;
     }
-
 }

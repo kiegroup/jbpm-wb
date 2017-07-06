@@ -41,67 +41,71 @@ import org.uberfire.mvp.Command;
 @ApplicationScoped
 public class HumanTaskFormDisplayProviderImpl implements HumanTaskFormDisplayProvider {
 
-    protected Constants constants = GWT.create( Constants.class);
-
-    @Inject
-    private Caller<FormServiceEntryPoint> formServices;
+    protected Constants constants = GWT.create(Constants.class);
 
     @Inject
     protected SyncBeanManager iocManager;
 
-    private Map<Class<? extends FormRenderingSettings>, HumanTaskFormDisplayer> taskDisplayers = new HashMap<>();
+    @Inject
+    private Caller<FormServiceEntryPoint> formServices;
 
+    private Map<Class<? extends FormRenderingSettings>, HumanTaskFormDisplayer> taskDisplayers = new HashMap<>();
 
     @PostConstruct
     public void init() {
         taskDisplayers.clear();
 
         final Collection<SyncBeanDef<HumanTaskFormDisplayer>> taskDisplayersBeans = iocManager.lookupBeans(
-                HumanTaskFormDisplayer.class );
-        if ( taskDisplayersBeans != null ) {
-            for ( final SyncBeanDef displayerDef : taskDisplayersBeans ) {
+                HumanTaskFormDisplayer.class);
+        if (taskDisplayersBeans != null) {
+            for (final SyncBeanDef displayerDef : taskDisplayersBeans) {
 
                 HumanTaskFormDisplayer displayer = (HumanTaskFormDisplayer) displayerDef.getInstance();
 
-                taskDisplayers.put( displayer.getSupportedRenderingSettings(), displayer );
+                taskDisplayers.put(displayer.getSupportedRenderingSettings(),
+                                   displayer);
             }
         }
     }
 
     @Override
-    public void setup( final HumanTaskDisplayerConfig config, final FormDisplayerView view ) {
-        display( config, view );
+    public void setup(final HumanTaskDisplayerConfig config,
+                      final FormDisplayerView view) {
+        display(config,
+                view);
     }
 
-    protected void display( final HumanTaskDisplayerConfig config, final FormDisplayerView view ) {
-        if ( taskDisplayers != null ) {
-            formServices.call( new RemoteCallback<FormRenderingSettings>() {
+    protected void display(final HumanTaskDisplayerConfig config,
+                           final FormDisplayerView view) {
+        if (taskDisplayers != null) {
+            formServices.call(new RemoteCallback<FormRenderingSettings>() {
                 @Override
-                public void callback( FormRenderingSettings settings ) {
+                public void callback(FormRenderingSettings settings) {
 
-                    if ( settings == null ) {
-                        ErrorPopup.showMessage( constants.UnableToFindFormForTask( config.getKey().getTaskId() ) );
-
-
+                    if (settings == null) {
+                        ErrorPopup.showMessage(constants.UnableToFindFormForTask(config.getKey().getTaskId()));
                     } else {
-                        HumanTaskFormDisplayer displayer = taskDisplayers.get( settings.getClass() );
+                        HumanTaskFormDisplayer displayer = taskDisplayers.get(settings.getClass());
 
-                        if ( displayer != null ) {
-                            config.setRenderingSettings( settings );
-                            displayer.init( config, view.getOnCloseCommand(), new Command() {
-                                @Override
-                                public void execute() {
-                                    display( config, view );
-                                }
-                            }, view.getResizeListener() );
-                            view.display( displayer );
+                        if (displayer != null) {
+                            config.setRenderingSettings(settings);
+                            displayer.init(config,
+                                           view.getOnCloseCommand(),
+                                           new Command() {
+                                               @Override
+                                               public void execute() {
+                                                   display(config,
+                                                           view);
+                                               }
+                                           },
+                                           view.getResizeListener());
+                            view.display(displayer);
                         }
                     }
                 }
-            } ).getFormDisplayTask( config.getKey().getServerTemplateId(),
-                                    config.getKey().getDeploymentId(),
-                                    config.getKey().getTaskId() );
+            }).getFormDisplayTask(config.getKey().getServerTemplateId(),
+                                  config.getKey().getDeploymentId(),
+                                  config.getKey().getTaskId());
         }
     }
-
 }

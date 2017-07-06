@@ -31,7 +31,12 @@ public class ProcessInstanceSelectionEvent {
     public ProcessInstanceSelectionEvent() {
     }
 
-    public ProcessInstanceSelectionEvent(String deploymentId, Long processInstanceId, String processDefId, String processDefName, Integer processInstanceStatus, String serverTemplateId) {
+    public ProcessInstanceSelectionEvent(String deploymentId,
+                                         Long processInstanceId,
+                                         String processDefId,
+                                         String processDefName,
+                                         Integer processInstanceStatus,
+                                         String serverTemplateId) {
         this.processInstanceId = processInstanceId;
         this.processDefId = processDefId;
         this.deploymentId = deploymentId;
@@ -41,9 +46,19 @@ public class ProcessInstanceSelectionEvent {
         this.forLog = false;
     }
 
-    public ProcessInstanceSelectionEvent(String deploymentId, Long processInstanceId, String processDefId,
-                                         String processDefName, Integer processInstanceStatus, boolean forLog, String serverTemplateId) {
-        this(deploymentId, processInstanceId, processDefId, processDefName, processInstanceStatus, serverTemplateId);
+    public ProcessInstanceSelectionEvent(String deploymentId,
+                                         Long processInstanceId,
+                                         String processDefId,
+                                         String processDefName,
+                                         Integer processInstanceStatus,
+                                         boolean forLog,
+                                         String serverTemplateId) {
+        this(deploymentId,
+             processInstanceId,
+             processDefId,
+             processDefName,
+             processInstanceStatus,
+             serverTemplateId);
         this.forLog = forLog;
     }
 
@@ -123,5 +138,4 @@ public class ProcessInstanceSelectionEvent {
     public boolean isForLog() {
         return forLog;
     }
-
 }

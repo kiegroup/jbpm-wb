@@ -40,28 +40,56 @@ public class KieServerUtils {
 
     public static KieServicesClient createKieServicesClient(final String... capabilities) {
         final String kieServerEndpoint = System.getProperty(KieServerConstants.KIE_SERVER_LOCATION);
-        checkNotNull(kieServerEndpoint, "Missing Kie Server system property " + KieServerConstants.KIE_SERVER_LOCATION);
-        return createKieServicesClient(kieServerEndpoint, null, getCredentialsProvider(), capabilities);
+        checkNotNull(kieServerEndpoint,
+                     "Missing Kie Server system property " + KieServerConstants.KIE_SERVER_LOCATION);
+        return createKieServicesClient(kieServerEndpoint,
+                                       null,
+                                       getCredentialsProvider(),
+                                       capabilities);
     }
 
     public static KieServicesClient createAdminKieServicesClient(final String... capabilities) {
         final String kieServerEndpoint = System.getProperty(KieServerConstants.KIE_SERVER_LOCATION);
-        checkNotNull(kieServerEndpoint, "Missing Kie Server system property " + KieServerConstants.KIE_SERVER_LOCATION);
-        return createKieServicesClient(kieServerEndpoint, null, getAdminCredentialsProvider(), capabilities);
+        checkNotNull(kieServerEndpoint,
+                     "Missing Kie Server system property " + KieServerConstants.KIE_SERVER_LOCATION);
+        return createKieServicesClient(kieServerEndpoint,
+                                       null,
+                                       getAdminCredentialsProvider(),
+                                       capabilities);
     }
 
-    public static KieServicesClient createKieServicesClient(final String endpoint, final ClassLoader classLoader, final String login, final String password, final String... capabilities) {
-        final KieServicesConfiguration configuration = KieServicesFactory.newRestConfiguration(endpoint, login, password);
-        return createKieServicesClient(endpoint, classLoader, configuration, capabilities);
+    public static KieServicesClient createKieServicesClient(final String endpoint,
+                                                            final ClassLoader classLoader,
+                                                            final String login,
+                                                            final String password,
+                                                            final String... capabilities) {
+        final KieServicesConfiguration configuration = KieServicesFactory.newRestConfiguration(endpoint,
+                                                                                               login,
+                                                                                               password);
+        return createKieServicesClient(endpoint,
+                                       classLoader,
+                                       configuration,
+                                       capabilities);
     }
 
-    public static KieServicesClient createKieServicesClient(final String endpoint, final ClassLoader classLoader, final CredentialsProvider credentialsProvider, final String... capabilities) {
-        final KieServicesConfiguration configuration = KieServicesFactory.newRestConfiguration(endpoint, credentialsProvider);
-        return createKieServicesClient(endpoint, classLoader, configuration, capabilities);
+    public static KieServicesClient createKieServicesClient(final String endpoint,
+                                                            final ClassLoader classLoader,
+                                                            final CredentialsProvider credentialsProvider,
+                                                            final String... capabilities) {
+        final KieServicesConfiguration configuration = KieServicesFactory.newRestConfiguration(endpoint,
+                                                                                               credentialsProvider);
+        return createKieServicesClient(endpoint,
+                                       classLoader,
+                                       configuration,
+                                       capabilities);
     }
 
-    public static KieServicesClient createKieServicesClient(final String endpoint, final ClassLoader classLoader, final KieServicesConfiguration configuration, final String... capabilities) {
-        LOGGER.debug("Creating client that will use following endpoint {}", endpoint);
+    public static KieServicesClient createKieServicesClient(final String endpoint,
+                                                            final ClassLoader classLoader,
+                                                            final KieServicesConfiguration configuration,
+                                                            final String... capabilities) {
+        LOGGER.debug("Creating client that will use following endpoint {}",
+                     endpoint);
         configuration.setTimeout(60000);
         configuration.setCapabilities(Arrays.asList(capabilities));
         configuration.setMarshallingFormat(MarshallingFormat.XSTREAM);
@@ -72,9 +100,11 @@ public class KieServerUtils {
         if (classLoader == null) {
             kieServicesClient = KieServicesFactory.newKieServicesClient(configuration);
         } else {
-            kieServicesClient = KieServicesFactory.newKieServicesClient(configuration, classLoader);
+            kieServicesClient = KieServicesFactory.newKieServicesClient(configuration,
+                                                                        classLoader);
         }
-        LOGGER.debug("KieServerClient created successfully for endpoint {}", endpoint);
+        LOGGER.debug("KieServerClient created successfully for endpoint {}",
+                     endpoint);
         return kieServicesClient;
     }
 
@@ -85,7 +115,8 @@ public class KieServerUtils {
         } catch (UnsupportedOperationException e) {
             credentialsProvider = new SubjectCredentialsProvider();
         }
-        LOGGER.debug("{} initialized for the client.", credentialsProvider.getClass().getName());
+        LOGGER.debug("{} initialized for the client.",
+                     credentialsProvider.getClass().getName());
         return credentialsProvider;
     }
 
@@ -93,8 +124,10 @@ public class KieServerUtils {
         if (System.getProperty(KieServerConstants.CFG_KIE_TOKEN) != null) {
             return new EnteredTokenCredentialsProvider(System.getProperty(KieServerConstants.CFG_KIE_TOKEN));
         } else {
-            return new EnteredCredentialsProvider(System.getProperty(KieServerConstants.CFG_KIE_USER, "kieserver"), System.getProperty(KieServerConstants.CFG_KIE_PASSWORD, "kieserver1!"));
+            return new EnteredCredentialsProvider(System.getProperty(KieServerConstants.CFG_KIE_USER,
+                                                                     "kieserver"),
+                                                  System.getProperty(KieServerConstants.CFG_KIE_PASSWORD,
+                                                                     "kieserver1!"));
         }
     }
-
 }

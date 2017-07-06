@@ -21,10 +21,10 @@ import org.uberfire.paging.AbstractPageRow;
 import org.uberfire.paging.PageResponse;
 
 @Remote
-public interface GenericServiceEntryPoint<K extends  ItemKey, T extends AbstractPageRow> {
-  /* 
-   * Get Paged, Sorted and Filtered Data
-  */
-  PageResponse<T> getData(QueryFilter filter);
+public interface GenericServiceEntryPoint<K extends ItemKey, T extends AbstractPageRow> {
 
+    /*
+     * Get Paged, Sorted and Filtered Data
+    */
+    PageResponse<T> getData(QueryFilter filter);
 }

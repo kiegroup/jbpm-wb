@@ -57,25 +57,14 @@ import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 @WorkbenchScreen(identifier = "Process Instance Details Multi", preferredWidth = 500)
 public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
 
-    public interface ProcessInstanceDetailsMultiView
-            extends UberView<ProcessInstanceDetailsMultiPresenter> {
-
-        IsWidget getOptionsButton();
-
-        void selectInstanceDetailsTab();
-
-        void displayAllTabs();
-
-        void displayOnlyLogTab();
-    }
-
     @Inject
     public ProcessInstanceDetailsMultiView view;
 
-    private Constants constants = GWT.create( Constants.class );
+    private Constants constants = GWT.create(Constants.class);
 
     @Inject
     private PlaceManager placeManager;
+
     @Inject
     private Caller<ProcessService> processService;
 
@@ -128,15 +117,13 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
         return CompassPosition.EAST;
     }
 
-
-
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.Details();
     }
 
     @OnStartup
-    public void onStartup( final PlaceRequest place ) {
+    public void onStartup(final PlaceRequest place) {
         this.place = place;
     }
 
@@ -148,7 +135,7 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
         this.forLog = isForLog;
     }
 
-    public void onProcessSelectionEvent( @Observes ProcessInstanceSelectionEvent event ) {
+    public void onProcessSelectionEvent(@Observes ProcessInstanceSelectionEvent event) {
 
         deploymentId = event.getDeploymentId();
         processId = event.getProcessDefId();
@@ -159,7 +146,8 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
         selectedProcessDefName = event.getProcessDefName();
         setIsForLog(event.isForLog());
 
-        changeTitleWidgetEvent.fire( new ChangeTitleWidgetEvent( this.place, String.valueOf(processInstanceId) + " - " + selectedProcessDefName ) );
+        changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place,
+                                                               String.valueOf(processInstanceId) + " - " + selectedProcessDefName));
 
         if (isForLog()) {
             view.displayOnlyLogTab();
@@ -171,35 +159,46 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
 
     @Override
     public void onRefresh() {
-        processInstanceSelected.fire( new ProcessInstanceSelectionEvent( selectedDeploymentId, processInstanceId, processId, selectedProcessDefName, selectedProcessInstanceStatus,isForLog(), serverTemplateId ) );
+        processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedDeploymentId,
+                                                                       processInstanceId,
+                                                                       processId,
+                                                                       selectedProcessDefName,
+                                                                       selectedProcessInstanceStatus,
+                                                                       isForLog(),
+                                                                       serverTemplateId));
     }
 
     public void signalProcessInstance() {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest( "Signal Process Popup" );
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Signal Process Popup");
 
-        placeRequestImpl.addParameter( "processInstanceId", String.valueOf(processInstanceId) );
-        placeRequestImpl.addParameter( "deploymentId", deploymentId );
-        placeRequestImpl.addParameter( "serverTemplateId", serverTemplateId );
-        placeManager.goTo( placeRequestImpl );
-
+        placeRequestImpl.addParameter("processInstanceId",
+                                      String.valueOf(processInstanceId));
+        placeRequestImpl.addParameter("deploymentId",
+                                      deploymentId);
+        placeRequestImpl.addParameter("serverTemplateId",
+                                      serverTemplateId);
+        placeManager.goTo(placeRequestImpl);
     }
 
     public void abortProcessInstance() {
-        if ( Window.confirm( constants.Abort_Process_Instance() ) ) {
+        if (Window.confirm(constants.Abort_Process_Instance())) {
             processService.call(new RemoteCallback<Void>() {
                 @Override
                 public void callback(Void processInstance) {
 
                     processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
-
                 }
-            } ).abortProcessInstance(serverTemplateId, deploymentId, processInstanceId);
+            }).abortProcessInstance(serverTemplateId,
+                                    deploymentId,
+                                    processInstanceId);
         }
     }
 
     public void goToProcessInstanceModelPopup() {
-        if ( place != null && !deploymentId.equals( "" ) ) {
-            placeManager.goTo(ProcessDiagramUtil.buildPlaceRequest(serverTemplateId, deploymentId, processInstanceId));
+        if (place != null && !deploymentId.equals("")) {
+            placeManager.goTo(ProcessDiagramUtil.buildPlaceRequest(serverTemplateId,
+                                                                   deploymentId,
+                                                                   processInstanceId));
         }
     }
 
@@ -226,7 +225,7 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
     }
 
     public void closeDetails() {
-        placeManager.closePlace( place );
+        placeManager.closePlace(place);
     }
 
     public void variableListRefreshGrid() {
@@ -253,4 +252,15 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
         return runtimeLogPresenter.getWidget();
     }
 
+    public interface ProcessInstanceDetailsMultiView
+            extends UberView<ProcessInstanceDetailsMultiPresenter> {
+
+        IsWidget getOptionsButton();
+
+        void selectInstanceDetailsTab();
+
+        void displayAllTabs();
+
+        void displayOnlyLogTab();
+    }
 }

@@ -51,6 +51,10 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
     private static final String CASE_ROLE = "Role";
     private static final String CASE_DEFINITION_ID = "org.jbpm.case";
 
+    final String serverTemplateId = "serverTemplateId";
+
+    final CaseInstanceSummary caseInstance = newCaseInstanceSummary();
+
     @Mock
     CaseRolesPresenter.CaseRolesView view;
 
@@ -63,14 +67,12 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
     @InjectMocks
     CaseRolesPresenter presenter;
 
+    CaseDefinitionSummary caseDefinition;
+
     @Override
     public CaseRolesPresenter getPresenter() {
         return presenter;
     }
-
-    final String serverTemplateId = "serverTemplateId";
-    final CaseInstanceSummary caseInstance = newCaseInstanceSummary();
-    CaseDefinitionSummary caseDefinition;
 
     @Before
     public void setUp() {

@@ -34,7 +34,11 @@ public class ProcessDefSelectionEvent {
         this.processId = processId;
     }
 
-    public ProcessDefSelectionEvent(String processId, String deploymentId, String serverTemplateId, String processDefName, boolean dynamic) {
+    public ProcessDefSelectionEvent(String processId,
+                                    String deploymentId,
+                                    String serverTemplateId,
+                                    String processDefName,
+                                    boolean dynamic) {
         this(processId);
         this.deploymentId = deploymentId;
         this.serverTemplateId = serverTemplateId;

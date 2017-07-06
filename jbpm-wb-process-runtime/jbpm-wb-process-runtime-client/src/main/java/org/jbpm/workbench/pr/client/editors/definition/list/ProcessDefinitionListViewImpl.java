@@ -64,7 +64,10 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         initColumns.add(COL_ID_PROCESSVERSION);
         initColumns.add(COL_ID_PROJECT);
         initColumns.add(COL_ID_ACTIONS);
-        super.init(presenter, new GridGlobalPreferences("ProcessDefinitionsGrid", initColumns, bannedColumns));
+        super.init(presenter,
+                   new GridGlobalPreferences("ProcessDefinitionsGrid",
+                                             initColumns,
+                                             bannedColumns));
 
         selectionModel = new NoSelectionModel<ProcessSummary>();
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
@@ -86,7 +89,8 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
 
                 selectedItem = selectionModel.getLastSelectedObject();
 
-                presenter.selectProcessDefinition(selectedItem, close);
+                presenter.selectProcessDefinition(selectedItem,
+                                                  close);
             }
         });
         final ExtendedPagedTable<ProcessSummary> extendedPagedTable = getListGrid();
@@ -103,21 +107,23 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
                         DefaultSelectionEventManager.SelectAction ret = DefaultSelectionEventManager.SelectAction.DEFAULT;
                         NativeEvent nativeEvent = event.getNativeEvent();
                         if (BrowserEvents.CLICK.equals(nativeEvent.getType()) &&
-                            // Ignore if the event didn't occur in the correct column.
-                            extendedPagedTable.isSelectionIgnoreColumn(event.getColumn())) {
+                                // Ignore if the event didn't occur in the correct column.
+                                extendedPagedTable.isSelectionIgnoreColumn(event.getColumn())) {
                             ret = DefaultSelectionEventManager.SelectAction.IGNORE;
                         }
                         return ret;
                     }
-
                 });
 
-        listGrid.setSelectionModel(selectionModel, noActionColumnManager);
+        listGrid.setSelectionModel(selectionModel,
+                                   noActionColumnManager);
         listGrid.setEmptyTableCaption(constants.No_Process_Definitions_Found());
         listGrid.setRowStyles(selectedStyles);
 
-        listGrid.getElement().getStyle().setPaddingRight(20, Style.Unit.PX);
-        listGrid.getElement().getStyle().setPaddingLeft(20, Style.Unit.PX);
+        listGrid.getElement().getStyle().setPaddingRight(20,
+                                                         Style.Unit.PX);
+        listGrid.getElement().getStyle().setPaddingLeft(20,
+                                                        Style.Unit.PX);
     }
 
     @Override
@@ -130,10 +136,14 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
 
         List<ColumnMeta<ProcessSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessSummary>>();
-        columnMetas.add(new ColumnMeta<ProcessSummary>(processNameColumn, constants.Name()));
-        columnMetas.add(new ColumnMeta<ProcessSummary>(versionColumn, constants.Version()));
-        columnMetas.add(new ColumnMeta<ProcessSummary>(projectColumn, constants.Project()));
-        columnMetas.add(new ColumnMeta<ProcessSummary>(actionsColumn, constants.Actions()));
+        columnMetas.add(new ColumnMeta<ProcessSummary>(processNameColumn,
+                                                       constants.Name()));
+        columnMetas.add(new ColumnMeta<ProcessSummary>(versionColumn,
+                                                       constants.Version()));
+        columnMetas.add(new ColumnMeta<ProcessSummary>(projectColumn,
+                                                       constants.Project()));
+        columnMetas.add(new ColumnMeta<ProcessSummary>(actionsColumn,
+                                                       constants.Actions()));
 
         extendedPagedTable.addColumns(columnMetas);
     }
@@ -179,8 +189,11 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         // actions (icons)
         List<HasCell<ProcessSummary, ?>> cells = new LinkedList<HasCell<ProcessSummary, ?>>();
 
-        cells.add(new StartButtonActionCell(constants.Start(), (ProcessSummary process) ->
-                presenter.openGenericForm(process.getProcessDefId(), process.getDeploymentId(), process.getProcessDefName())
+        cells.add(new StartButtonActionCell(constants.Start(),
+                                            (ProcessSummary process) ->
+                                                    presenter.openGenericForm(process.getProcessDefId(),
+                                                                              process.getDeploymentId(),
+                                                                              process.getProcessDefName())
         ));
 
         CompositeCell<ProcessSummary> cell = new CompositeCell<ProcessSummary>(cells);
@@ -196,14 +209,20 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
 
     protected class StartButtonActionCell extends ButtonActionCell<ProcessSummary> {
 
-        public StartButtonActionCell( final String text, final ActionCell.Delegate<ProcessSummary> delegate ) {
-            super( text, delegate );
+        public StartButtonActionCell(final String text,
+                                     final ActionCell.Delegate<ProcessSummary> delegate) {
+            super(text,
+                  delegate);
         }
 
         @Override
-        public void render(final Cell.Context context, final ProcessSummary summary, final SafeHtmlBuilder sb ) {
-            if ( summary.isDynamic() == false ) {
-                super.render( context, summary, sb );
+        public void render(final Cell.Context context,
+                           final ProcessSummary summary,
+                           final SafeHtmlBuilder sb) {
+            if (summary.isDynamic() == false) {
+                super.render(context,
+                             summary,
+                             sb);
             }
         }
     }

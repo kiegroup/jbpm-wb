@@ -54,13 +54,13 @@ public class ExecutionErrorSummary extends GenericSummary<String> {
                                  String activityName,
                                  Long jobId,
                                  String errorMessage,
-                                 Boolean acknowledged,
+                                 Short acknowledged,
                                  String acknowledgedBy,
                                  Date acknowledgedAt,
                                  Date errorDate) {
         this.id = errorId;
-        this.name =
-                this.errorId = errorId;
+        this.name = errorId;
+        this.errorId = errorId;
         this.type = ExecutionErrorType.fromType(type);
         this.deploymentId = deploymentId;
         this.processInstanceId = processInstanceId;
@@ -69,7 +69,7 @@ public class ExecutionErrorSummary extends GenericSummary<String> {
         this.activityName = activityName;
         this.jobId = jobId;
         this.errorMessage = errorMessage;
-        this.acknowledged = acknowledged;
+        this.acknowledged = (acknowledged != null && acknowledged > 0);
         this.acknowledgedBy = acknowledgedBy;
         this.acknowledgedAt = acknowledgedAt;
         this.errorDate = errorDate;

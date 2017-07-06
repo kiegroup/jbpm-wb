@@ -30,27 +30,29 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 public class TestFormModellerStartProcessDisplayerImpl extends FormModellerStartProcessDisplayerImpl {
 
-    public TestFormModellerStartProcessDisplayerImpl( FormRendererWidget formRenderer, Caller<FormModelerProcessStarterEntryPoint> renderContextServices ) {
-        super( formRenderer, renderContextServices );
+    public TestFormModellerStartProcessDisplayerImpl(FormRendererWidget formRenderer,
+                                                     Caller<FormModelerProcessStarterEntryPoint> renderContextServices) {
+        super(formRenderer,
+              renderContextServices);
     }
 
-    public void setRenderingSettings( FormModelerFormRenderingSettings settings ) {
+    public void setRenderingSettings(FormModelerFormRenderingSettings settings) {
         this.renderingSettings = settings;
     }
 
-    public void setResizeListener( FormContentResizeListener listener ) {
+    public void setResizeListener(FormContentResizeListener listener) {
         this.resizeListener = listener;
     }
 
-    public void setNewProcessInstanceEvent( Event<NewProcessInstanceEvent> newProcessInstanceEvent ) {
+    public void setNewProcessInstanceEvent(Event<NewProcessInstanceEvent> newProcessInstanceEvent) {
         this.newProcessInstanceEvent = newProcessInstanceEvent;
     }
 
-    public void setJSNIHelper( JSNIHelper JSNIHelper ) {
+    public void setJSNIHelper(JSNIHelper JSNIHelper) {
         this.jsniHelper = JSNIHelper;
     }
 
-    public void setNotificationEvent( Event<NotificationEvent> notificationEvent ) {
+    public void setNotificationEvent(Event<NotificationEvent> notificationEvent) {
         this.notificationEvent = notificationEvent;
     }
 }

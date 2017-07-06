@@ -15,7 +15,6 @@
  */
 package org.jbpm.workbench.cm.backend.server;
 
-
 import java.util.function.Function;
 
 import org.jbpm.workbench.cm.model.CaseActionSummary;
@@ -27,7 +26,8 @@ public class CaseActionNodeInstanceMapper implements Function<NodeInstance, Case
     private String actualOwner;
     private CaseActionStatus actionStatus;
 
-    public CaseActionNodeInstanceMapper(String actualOwner, CaseActionStatus actionStatus) {
+    public CaseActionNodeInstanceMapper(String actualOwner,
+                                        CaseActionStatus actionStatus) {
         this.actualOwner = actualOwner;
         this.actionStatus = actionStatus;
     }
@@ -46,5 +46,4 @@ public class CaseActionNodeInstanceMapper implements Function<NodeInstance, Case
                 .actionStatus(actionStatus)
                 .build();
     }
-
 }

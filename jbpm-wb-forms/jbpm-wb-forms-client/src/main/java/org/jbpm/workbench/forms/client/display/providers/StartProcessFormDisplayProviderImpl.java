@@ -66,39 +66,49 @@ public class StartProcessFormDisplayProviderImpl implements StartProcessFormDisp
             for (final SyncBeanDef displayerDef : processDisplayersBeans) {
                 StartProcessFormDisplayer displayer = (StartProcessFormDisplayer) displayerDef.getInstance();
 
-                processDisplayers.put( displayer.getSupportedRenderingSettings(), displayer );
+                processDisplayers.put(displayer.getSupportedRenderingSettings(),
+                                      displayer);
             }
         }
     }
 
     @Override
-    public void setup(final ProcessDisplayerConfig config, final FormDisplayerView view) {
-        display(config, view);
+    public void setup(final ProcessDisplayerConfig config,
+                      final FormDisplayerView view) {
+        display(config,
+                view);
     }
 
-    protected void display(final ProcessDisplayerConfig config, final FormDisplayerView view) {
+    protected void display(final ProcessDisplayerConfig config,
+                           final FormDisplayerView view) {
         if (processDisplayers != null) {
             formServices.call(new RemoteCallback<FormRenderingSettings>() {
                 @Override
                 public void callback(FormRenderingSettings settings) {
-                    if ( settings == null ) {
-                        ErrorPopup.showMessage( constants.UnableToFindFormForProcess( config.getProcessName() ) );
+                    if (settings == null) {
+                        ErrorPopup.showMessage(constants.UnableToFindFormForProcess(config.getProcessName()));
                     } else {
-                        StartProcessFormDisplayer displayer = processDisplayers.get( settings.getClass() );
+                        StartProcessFormDisplayer displayer = processDisplayers.get(settings.getClass());
 
-                        if ( displayer != null ) {
-                            config.setRenderingSettings( settings );
-                            displayer.init( config, view.getOnCloseCommand(), new Command() {
-                                @Override
-                                public void execute() {
-                                    display( config, view );
-                                }
-                            }, view.getResizeListener() );
-                            view.display( displayer );
+                        if (displayer != null) {
+                            config.setRenderingSettings(settings);
+                            displayer.init(config,
+                                           view.getOnCloseCommand(),
+                                           new Command() {
+                                               @Override
+                                               public void execute() {
+                                                   display(config,
+                                                           view);
+                                               }
+                                           },
+                                           view.getResizeListener());
+                            view.display(displayer);
                         }
                     }
                 }
-            }).getFormDisplayProcess(config.getKey().getServerTemplateId(), config.getKey().getDeploymentId(), config.getKey().getProcessId());
+            }).getFormDisplayProcess(config.getKey().getServerTemplateId(),
+                                     config.getKey().getDeploymentId(),
+                                     config.getKey().getProcessId());
         }
     }
 

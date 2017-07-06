@@ -21,6 +21,6 @@ import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
 
 public interface StartProcessFormDisplayProvider {
 
-    void setup(ProcessDisplayerConfig config, FormDisplayerView view);
-
+    void setup(ProcessDisplayerConfig config,
+               FormDisplayerView view);
 }

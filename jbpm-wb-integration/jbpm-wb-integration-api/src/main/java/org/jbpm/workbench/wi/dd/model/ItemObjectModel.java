@@ -37,7 +37,10 @@ public class ItemObjectModel {
 
     }
 
-    public ItemObjectModel(String name, String value, String resolver, List<Parameter> parameters) {
+    public ItemObjectModel(String name,
+                           String value,
+                           String resolver,
+                           List<Parameter> parameters) {
         this.name = name;
         this.value = value;
         this.resolver = resolver;

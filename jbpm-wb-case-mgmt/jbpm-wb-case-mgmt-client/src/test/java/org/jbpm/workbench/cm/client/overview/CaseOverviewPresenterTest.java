@@ -92,7 +92,10 @@ public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest
         verify(view).setCaseTitle("");
         verify(view).setCaseOwner("");
         verifyNoMoreInteractions(view);
-        verify(caseManagementService, never()).getCaseInstance(anyString(), anyString(), anyString());
+        verify(caseManagementService,
+               never()).getCaseInstance(anyString(),
+                                        anyString(),
+                                        anyString());
     }
 
     @Test
@@ -103,7 +106,8 @@ public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest
 
         final ArgumentCaptor<CaseRefreshEvent> captor = ArgumentCaptor.forClass(CaseRefreshEvent.class);
         verify(caseRefreshEvent).fire(captor.capture());
-        assertEquals(cis.getCaseId(), captor.getValue().getCaseId());
+        assertEquals(cis.getCaseId(),
+                     captor.getValue().getCaseId());
     }
 
     @Test
@@ -112,9 +116,14 @@ public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest
 
         presenter.onCaseRefreshEvent(new CaseRefreshEvent(cis.getCaseId()));
 
-        verify(view, times(2)).setCaseId("");
-        verify(view, times(2)).setCaseTitle("");
-        verify(caseManagementService, times(2)).getCaseInstance(serverTemplateId, cis.getContainerId(), cis.getCaseId());
+        verify(view,
+               times(2)).setCaseId("");
+        verify(view,
+               times(2)).setCaseTitle("");
+        verify(caseManagementService,
+               times(2)).getCaseInstance(serverTemplateId,
+                                         cis.getContainerId(),
+                                         cis.getCaseId());
     }
 
     @Test
@@ -123,10 +132,13 @@ public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest
 
         presenter.cancelCaseInstance();
 
-        verify(caseManagementService).cancelCaseInstance(serverTemplateId, cis.getContainerId(), cis.getCaseId());
+        verify(caseManagementService).cancelCaseInstance(serverTemplateId,
+                                                         cis.getContainerId(),
+                                                         cis.getCaseId());
         final ArgumentCaptor<CaseCancelEvent> captor = ArgumentCaptor.forClass(CaseCancelEvent.class);
         verify(caseCancelEvent).fire(captor.capture());
-        assertEquals(cis.getCaseId(), captor.getValue().getCaseId());
+        assertEquals(cis.getCaseId(),
+                     captor.getValue().getCaseId());
     }
 
     @Test
@@ -135,9 +147,12 @@ public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest
 
         presenter.destroyCaseInstance();
 
-        verify(caseManagementService).destroyCaseInstance(serverTemplateId, cis.getContainerId(), cis.getCaseId());
+        verify(caseManagementService).destroyCaseInstance(serverTemplateId,
+                                                          cis.getContainerId(),
+                                                          cis.getCaseId());
         final ArgumentCaptor<CaseDestroyEvent> captor = ArgumentCaptor.forClass(CaseDestroyEvent.class);
         verify(caseDestroyEvent).fire(captor.capture());
-        assertEquals(cis.getCaseId(), captor.getValue().getCaseId());
+        assertEquals(cis.getCaseId(),
+                     captor.getValue().getCaseId());
     }
 }

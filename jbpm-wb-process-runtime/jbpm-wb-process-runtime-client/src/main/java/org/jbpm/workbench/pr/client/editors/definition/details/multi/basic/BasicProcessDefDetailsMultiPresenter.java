@@ -37,12 +37,6 @@ import org.uberfire.workbench.model.menu.Menus;
 @WorkbenchScreen(identifier = "Basic Process Details Multi", preferredWidth = 500)
 public class BasicProcessDefDetailsMultiPresenter extends BaseProcessDefDetailsMultiPresenter<BasicProcessDefDetailsMultiPresenter.BasicProcessDefDetailsMultiView> {
 
-    public interface BasicProcessDefDetailsMultiView extends
-                                                     UberView<BasicProcessDefDetailsMultiPresenter>,
-                                                     BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView {
-
-    }
-
     @Inject
     private BasicProcessDefDetailsPresenter detailsPresenter;
 
@@ -68,5 +62,9 @@ public class BasicProcessDefDetailsMultiPresenter extends BaseProcessDefDetailsM
                 .build();
     }
 
+    public interface BasicProcessDefDetailsMultiView extends
+                                                     UberView<BasicProcessDefDetailsMultiPresenter>,
+                                                     BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView {
 
+    }
 }

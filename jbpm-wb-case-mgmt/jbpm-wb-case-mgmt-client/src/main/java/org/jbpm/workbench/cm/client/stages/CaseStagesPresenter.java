@@ -32,7 +32,6 @@ public class CaseStagesPresenter extends AbstractCaseInstancePresenter<CaseStage
 
     public static final String SCREEN_ID = "Case Stages Screen";
 
-
     @WorkbenchPartTitle
     public String getTitle() {
         return translationService.format(Constants.CASE_STAGES);
@@ -45,7 +44,7 @@ public class CaseStagesPresenter extends AbstractCaseInstancePresenter<CaseStage
 
     @Override
     protected void loadCaseInstance(final CaseInstanceSummary cis) {
-        view.setCaseStagesList( cis.getStages());
+        view.setCaseStagesList(cis.getStages());
     }
 
     public interface CaseStagesView extends UberElement<CaseStagesPresenter> {
@@ -53,7 +52,5 @@ public class CaseStagesPresenter extends AbstractCaseInstancePresenter<CaseStage
         void removeAllStages();
 
         void setCaseStagesList(List<CaseStageSummary> caseStagesList);
-
     }
-
 }

@@ -29,11 +29,11 @@ public abstract class BaseProcessDefDetailsMultiViewImpl extends Composite
 
     private Button newInstanceButton = GWT.create(Button.class);
 
-    public BaseProcessDefDetailsMultiViewImpl(){
-        newInstanceButton.setSize( ButtonSize.SMALL );
-        newInstanceButton.setIcon( IconType.PLAY );
-        newInstanceButton.setText( Constants.INSTANCE.New_Instance() );
-        newInstanceButton.addClickHandler( event -> createNewProcessInstance() );
+    public BaseProcessDefDetailsMultiViewImpl() {
+        newInstanceButton.setSize(ButtonSize.SMALL);
+        newInstanceButton.setIcon(IconType.PLAY);
+        newInstanceButton.setText(Constants.INSTANCE.New_Instance());
+        newInstanceButton.addClickHandler(event -> createNewProcessInstance());
     }
 
     @Override
@@ -51,5 +51,4 @@ public abstract class BaseProcessDefDetailsMultiViewImpl extends Composite
     public void setNewInstanceButtonVisible(boolean visible) {
         newInstanceButton.setVisible(visible);
     }
-
 }

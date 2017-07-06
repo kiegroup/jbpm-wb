@@ -26,19 +26,19 @@ import org.jbpm.workbench.forms.service.providing.TaskRenderingSettings;
 @DefaultFormProvider
 @Dependent
 public class ClasspathFormProvider extends FreemakerFormProvider {
+
     @Override
-    protected InputStream getProcessTemplateInputStream( ProcessRenderingSettings settings ) {
-        return this.getClass().getResourceAsStream( "/forms/DefaultProcess.ftl" );
+    protected InputStream getProcessTemplateInputStream(ProcessRenderingSettings settings) {
+        return this.getClass().getResourceAsStream("/forms/DefaultProcess.ftl");
     }
 
     @Override
-    protected InputStream getTaskTemplateInputStream( TaskRenderingSettings settings ) {
-        return this.getClass().getResourceAsStream( "/forms/DefaultTask.ftl" );
+    protected InputStream getTaskTemplateInputStream(TaskRenderingSettings settings) {
+        return this.getClass().getResourceAsStream("/forms/DefaultTask.ftl");
     }
 
     @Override
     public int getPriority() {
         return 1000;
     }
-
 }

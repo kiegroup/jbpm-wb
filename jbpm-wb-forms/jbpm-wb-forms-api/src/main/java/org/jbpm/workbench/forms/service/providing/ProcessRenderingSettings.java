@@ -22,15 +22,16 @@ import org.jbpm.workbench.forms.service.providing.model.ProcessDefinition;
 import org.kie.internal.task.api.ContentMarshallerContext;
 
 public class ProcessRenderingSettings implements RenderingSettings {
+
     private ProcessDefinition process;
     private Map<String, String> processData;
     private String formContent;
     private ContentMarshallerContext marshallerContext;
 
-    public ProcessRenderingSettings( ProcessDefinition process,
-                                     Map<String, String> processData,
-                                     String formContent,
-                                     ContentMarshallerContext marshallerContext ) {
+    public ProcessRenderingSettings(ProcessDefinition process,
+                                    Map<String, String> processData,
+                                    String formContent,
+                                    ContentMarshallerContext marshallerContext) {
         this.process = process;
         this.processData = processData;
         this.formContent = formContent;
@@ -41,7 +42,7 @@ public class ProcessRenderingSettings implements RenderingSettings {
         return process;
     }
 
-    public void setProcess( ProcessDefinition process ) {
+    public void setProcess(ProcessDefinition process) {
         this.process = process;
     }
 
@@ -49,7 +50,7 @@ public class ProcessRenderingSettings implements RenderingSettings {
         return processData;
     }
 
-    public void setProcessData( Map<String, String> processData ) {
+    public void setProcessData(Map<String, String> processData) {
         this.processData = processData;
     }
 
@@ -59,7 +60,7 @@ public class ProcessRenderingSettings implements RenderingSettings {
     }
 
     @Override
-    public void setFormContent( String formContent ) {
+    public void setFormContent(String formContent) {
         this.formContent = formContent;
     }
 
@@ -69,7 +70,7 @@ public class ProcessRenderingSettings implements RenderingSettings {
     }
 
     @Override
-    public void setMarshallerContext( ContentMarshallerContext marshallerContext ) {
+    public void setMarshallerContext(ContentMarshallerContext marshallerContext) {
         this.marshallerContext = marshallerContext;
     }
 }

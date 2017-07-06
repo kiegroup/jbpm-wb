@@ -47,6 +47,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KieServerDataSetProviderTest {
+
     public static String COLUMN_TEST = "columTest";
 
     @InjectMocks
@@ -78,19 +79,26 @@ public class KieServerDataSetProviderTest {
         String filterValue = "testValue";
 
         DataSetGroup dataSetGroup = new DataSetGroup();
-        dataSetGroup.setColumnGroup(new ColumnGroup(COLUMN_TEST, COLUMN_TEST, GroupStrategy.DYNAMIC));
+        dataSetGroup.setColumnGroup(new ColumnGroup(COLUMN_TEST,
+                                                    COLUMN_TEST,
+                                                    GroupStrategy.DYNAMIC));
         List<Interval> intervalList = new ArrayList<Interval>();
         Interval interval = new Interval(filterValue);
         intervalList.add(interval);
         dataSetGroup.setSelectedIntervalList(intervalList);
 
         List<QueryParam> filterParams = new ArrayList<>();
-        kieServerDataSetProvider.appendIntervalSelection(dataSetGroup, filterParams);
+        kieServerDataSetProvider.appendIntervalSelection(dataSetGroup,
+                                                         filterParams);
 
-        assertEquals(1, filterParams.size());
-        assertEquals(COLUMN_TEST, filterParams.get(0).getColumn());
-        assertEquals("EQUALS_TO",filterParams.get(0).getOperator());
-        assertEquals(filterValue,filterParams.get(0).getValue().get(0));
+        assertEquals(1,
+                     filterParams.size());
+        assertEquals(COLUMN_TEST,
+                     filterParams.get(0).getColumn());
+        assertEquals("EQUALS_TO",
+                     filterParams.get(0).getOperator());
+        assertEquals(filterValue,
+                     filterParams.get(0).getValue().get(0));
     }
 
     @Test
@@ -100,7 +108,9 @@ public class KieServerDataSetProviderTest {
         Long maxValue = Long.valueOf(2);
 
         DataSetGroup dataSetGroup = new DataSetGroup();
-        dataSetGroup.setColumnGroup(new ColumnGroup(COLUMN_TEST, COLUMN_TEST, GroupStrategy.DYNAMIC));
+        dataSetGroup.setColumnGroup(new ColumnGroup(COLUMN_TEST,
+                                                    COLUMN_TEST,
+                                                    GroupStrategy.DYNAMIC));
         List<Interval> intervalList = new ArrayList<Interval>();
         Interval interval = new Interval(filterValue);
         interval.setMinValue(minValue);
@@ -109,13 +119,19 @@ public class KieServerDataSetProviderTest {
         dataSetGroup.setSelectedIntervalList(intervalList);
         List<QueryParam> filterParams = new ArrayList<>();
 
-        kieServerDataSetProvider.appendIntervalSelection(dataSetGroup, filterParams);
+        kieServerDataSetProvider.appendIntervalSelection(dataSetGroup,
+                                                         filterParams);
 
-        assertEquals(1, filterParams.size());
-        assertEquals(COLUMN_TEST, filterParams.get(0).getColumn());
-        assertEquals("BETWEEN",filterParams.get(0).getOperator());
-        assertEquals(Double.valueOf(minValue),filterParams.get(0).getValue().get(0));
-        assertEquals(Double.valueOf(maxValue),filterParams.get(0).getValue().get(1));
+        assertEquals(1,
+                     filterParams.size());
+        assertEquals(COLUMN_TEST,
+                     filterParams.get(0).getColumn());
+        assertEquals("BETWEEN",
+                     filterParams.get(0).getOperator());
+        assertEquals(Double.valueOf(minValue),
+                     filterParams.get(0).getValue().get(0));
+        assertEquals(Double.valueOf(maxValue),
+                     filterParams.get(0).getValue().get(1));
     }
 
     @Test
@@ -124,28 +140,39 @@ public class KieServerDataSetProviderTest {
         lookup.setDataSetUUID("");
         when(dataSetDef.getUUID()).thenReturn("");
 
-        final ColumnFilter testFilter = OR( likeTo("column1","%value%"),likeTo("column2","%value%"));
+        final ColumnFilter testFilter = OR(likeTo("column1",
+                                                  "%value%"),
+                                           likeTo("column2",
+                                                  "%value%"));
 
         DataSetFilter filter = new DataSetFilter();
         filter.addFilterColumn(testFilter);
         lookup.addOperation(filter);
 
-        kieServerDataSetProvider.lookupDataSet(dataSetDef ,ConsoleDataSetLookup.fromInstance(lookup,"servereTemplateId"));
+        kieServerDataSetProvider.lookupDataSet(dataSetDef,
+                                               ConsoleDataSetLookup.fromInstance(lookup,
+                                                                                 "servereTemplateId"));
 
         final ArgumentCaptor<QueryFilterSpec> captorEdit = ArgumentCaptor.forClass(QueryFilterSpec.class);
-        verify(queryServicesClient).query( anyString(),anyString(), captorEdit.capture(), anyInt(),anyInt(), any());
+        verify(queryServicesClient).query(anyString(),
+                                          anyString(),
+                                          captorEdit.capture(),
+                                          anyInt(),
+                                          anyInt(),
+                                          any());
 
         assertNotNull(captorEdit.getValue());
-        QueryParam[] parameters =captorEdit.getValue().getParameters();
-        assertEquals(1,parameters.length);
+        QueryParam[] parameters = captorEdit.getValue().getParameters();
+        assertEquals(1,
+                     parameters.length);
 
-        List<CoreFunctionFilter> expr = (List<CoreFunctionFilter>)parameters[0].getValue();
-        assertEquals("OR",parameters[0].getOperator());
+        List<CoreFunctionFilter> expr = (List<CoreFunctionFilter>) parameters[0].getValue();
+        assertEquals("OR",
+                     parameters[0].getOperator());
 
-        assertEquals("column1 like %value%, true",expr.get(0).toString());
-        assertEquals("column2 like %value%, true",expr.get(1).toString());
-
-
+        assertEquals("column1 like %value%, true",
+                     expr.get(0).toString());
+        assertEquals("column2 like %value%, true",
+                     expr.get(1).toString());
     }
-
 }

@@ -62,11 +62,12 @@ public abstract class AbstractStartProcessFormDisplayerTest {
 
     @Test
     public void testNotificationOnStartProcess() {
-        getStartProcessFormDisplayer().setParentProcessInstanceId( 0L );
-        getStartProcessFormDisplayer().startProcess( new HashMap<String, Object>() );
-        verify( newProcessInstanceEvent ).fire( any( NewProcessInstanceEvent.class ) );
-        ArgumentCaptor<NotificationEvent> argument = ArgumentCaptor.forClass( NotificationEvent.class );
-        verify( notificationEvent ).fire( argument.capture() );
-        assertEquals( NotificationEvent.NotificationType.SUCCESS, argument.getValue().getType() );
+        getStartProcessFormDisplayer().setParentProcessInstanceId(0L);
+        getStartProcessFormDisplayer().startProcess(new HashMap<String, Object>());
+        verify(newProcessInstanceEvent).fire(any(NewProcessInstanceEvent.class));
+        ArgumentCaptor<NotificationEvent> argument = ArgumentCaptor.forClass(NotificationEvent.class);
+        verify(notificationEvent).fire(argument.capture());
+        assertEquals(NotificationEvent.NotificationType.SUCCESS,
+                     argument.getValue().getType());
     }
 }

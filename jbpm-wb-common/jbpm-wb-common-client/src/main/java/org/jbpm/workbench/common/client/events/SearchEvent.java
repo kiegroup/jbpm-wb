@@ -33,5 +33,4 @@ public class SearchEvent {
     public void setFilter(String filter) {
         this.filter = filter;
     }
-
 }

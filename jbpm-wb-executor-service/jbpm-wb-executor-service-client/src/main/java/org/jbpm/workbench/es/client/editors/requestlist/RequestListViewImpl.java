@@ -45,10 +45,8 @@ import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, RequestListPresenter>
         implements RequestListPresenter.RequestListView {
 
-    private final Constants constants = Constants.INSTANCE;
-
-    public static String REQUEST_LIST_PREFIX = "DS_RequestListGrid";
     public static final String COL_ID_ACTIONS = "Actions";
+    public static String REQUEST_LIST_PREFIX = "DS_RequestListGrid";
     private static final String TAB_CANCELLED = REQUEST_LIST_PREFIX + "_6";
     private static final String TAB_COMPLETED = REQUEST_LIST_PREFIX + "_5";
     private static final String TAB_ERROR = REQUEST_LIST_PREFIX + "_4";
@@ -56,6 +54,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     private static final String TAB_RUNNING = REQUEST_LIST_PREFIX + "_2";
     private static final String TAB_QUEUED = REQUEST_LIST_PREFIX + "_1";
     private static final String TAB_ALL = REQUEST_LIST_PREFIX + "_0";
+    private final Constants constants = Constants.INSTANCE;
 
     @Override
     public void init(final RequestListPresenter presenter) {
@@ -77,36 +76,46 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                     @Override
                     public void execute() {
 
-                        final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance(new GridGlobalPreferences(key, initColumns, bannedColumns), key);
+                        final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance(new GridGlobalPreferences(key,
+                                                                                                                                   initColumns,
+                                                                                                                                   bannedColumns),
+                                                                                                         key);
 
                         extendedPagedTable.setDataProvider(presenter.getDataProvider());
 
-                        filterPagedTable.createNewTab(extendedPagedTable, key, createTabButton, new Command() {
-                            @Override
-                            public void execute() {
-                                currentListGrid = extendedPagedTable;
-                                applyFilterOnPresenter(key);
-                            }
-                        } );
+                        filterPagedTable.createNewTab(extendedPagedTable,
+                                                      key,
+                                                      createTabButton,
+                                                      new Command() {
+                                                          @Override
+                                                          public void execute() {
+                                                              currentListGrid = extendedPagedTable;
+                                                              applyFilterOnPresenter(key);
+                                                          }
+                                                      });
                         applyFilterOnPresenter(key);
-
                     }
                 };
                 FilterSettings tableSettings = presenter.createTableSettingsPrototype();
                 tableSettings.setKey(key);
-                dataSetEditorManager.showTableSettingsEditor(filterPagedTable, constants.New_JobList(), tableSettings, addNewGrid);
-
+                dataSetEditorManager.showTableSettingsEditor(filterPagedTable,
+                                                             constants.New_JobList(),
+                                                             tableSettings,
+                                                             addNewGrid);
             }
-        } );
+        });
 
-        super.init(presenter, new GridGlobalPreferences(REQUEST_LIST_PREFIX, initColumns, bannedColumns));
+        super.init(presenter,
+                   new GridGlobalPreferences(REQUEST_LIST_PREFIX,
+                                             initColumns,
+                                             bannedColumns));
     }
 
     @Override
     public void initColumns(ExtendedPagedTable extendedPagedTable) {
         Column actionsColumn = initActionsColumn();
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
-        
+
         final List<ColumnMeta<RequestSummary>> columnMetas = new ArrayList<ColumnMeta<RequestSummary>>();
         columnMetas.add(new ColumnMeta<>(createNumberColumn(COLUMN_ID,
                                                             req -> req.getJobId()),
@@ -148,34 +157,34 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         List<HasCell<RequestSummary, ?>> cells = new LinkedList<HasCell<RequestSummary, ?>>();
 
         cells.add(new ConditionalButtonActionCell<RequestSummary>(
-                                    constants.Details(),
-                                    job -> presenter.showJobDetails(job),
-                                    presenter.getDetailsActionCondition()));
+                constants.Details(),
+                job -> presenter.showJobDetails(job),
+                presenter.getDetailsActionCondition()));
 
         cells.add(new ConditionalButtonActionCell<RequestSummary>(
-                                    constants.Cancel(),
-                                    job -> {
-                                        if (Window.confirm(constants.CancelJob())) {
-                                            presenter.cancelRequest(job.getJobId());
-                                        }
-                                    },
-                                    presenter.getCancelActionCondition()));
+                constants.Cancel(),
+                job -> {
+                    if (Window.confirm(constants.CancelJob())) {
+                        presenter.cancelRequest(job.getJobId());
+                    }
+                },
+                presenter.getCancelActionCondition()));
 
         cells.add(new ConditionalButtonActionCell<RequestSummary>(
-                                    constants.Requeue(),
-                                    job -> {
-                                        if (Window.confirm(constants.RequeueJob())) {
-                                            presenter.requeueRequest(job.getJobId());
-                                        }
-                                    },
-                                    presenter.getRequeueActionCondition()));
-        
+                constants.Requeue(),
+                job -> {
+                    if (Window.confirm(constants.RequeueJob())) {
+                        presenter.requeueRequest(job.getJobId());
+                    }
+                },
+                presenter.getRequeueActionCondition()));
+
         cells.add(new ConditionalButtonActionCell<RequestSummary>(
-                                    constants.ViewProcessInstance(),
-                                    job -> {
-                                        presenter.openProcessInstanceView(Long.toString(job.getProcessInstanceId()));
-                                    },
-                                    presenter.getViewProcessActionCondition()));
+                constants.ViewProcessInstance(),
+                job -> {
+                    presenter.openProcessInstanceView(Long.toString(job.getProcessInstanceId()));
+                },
+                presenter.getViewProcessActionCondition()));
 
         CompositeCell<RequestSummary> cell = new CompositeCell<RequestSummary>(cells);
         Column<RequestSummary, RequestSummary> actionsColumn = new Column<RequestSummary, RequestSummary>(cell) {
@@ -243,7 +252,8 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         tableSettings.setTableName(tabName);
         tableSettings.setTableDescription(tabDesc);
 
-        addNewTab(preferences, tableSettings);
+        addNewTab(preferences,
+                  tableSettings);
     }
 
     @Override
@@ -271,5 +281,4 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                         constants.Cancelled(),
                         constants.FilterCancelled());
     }
-
 }

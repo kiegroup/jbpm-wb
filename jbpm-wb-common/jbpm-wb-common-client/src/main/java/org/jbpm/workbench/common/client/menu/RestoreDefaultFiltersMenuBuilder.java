@@ -30,15 +30,8 @@ import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 public class RestoreDefaultFiltersMenuBuilder implements MenuFactory.CustomMenuBuilder {
 
-    public interface SupportsRestoreDefaultFilters {
-
-        void onRestoreDefaultFilters();
-
-    }
-
-    private SupportsRestoreDefaultFilters supportsRestoreDefaultFilters;
-
     protected Button menuResetTabsButton = GWT.create(Button.class);
+    private SupportsRestoreDefaultFilters supportsRestoreDefaultFilters;
 
     public RestoreDefaultFiltersMenuBuilder(final SupportsRestoreDefaultFilters supportsRestoreDefaultFilters) {
         this.supportsRestoreDefaultFilters = supportsRestoreDefaultFilters;
@@ -81,4 +74,8 @@ public class RestoreDefaultFiltersMenuBuilder implements MenuFactory.CustomMenuB
         });
     }
 
+    public interface SupportsRestoreDefaultFilters {
+
+        void onRestoreDefaultFilters();
+    }
 }

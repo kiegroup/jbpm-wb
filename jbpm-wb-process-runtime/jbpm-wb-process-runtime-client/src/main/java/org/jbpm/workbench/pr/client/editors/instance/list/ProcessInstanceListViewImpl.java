@@ -69,7 +69,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     private ManagedInstance<ProcessInstanceSummaryErrorPopoverCell> popoverCellInstance;
 
     @Override
-    public void init( final ProcessInstanceListPresenter presenter ) {
+    public void init(final ProcessInstanceListPresenter presenter) {
         final List<String> bannedColumns = new ArrayList<String>();
         bannedColumns.add(COL_ID_SELECT);
         bannedColumns.add(COLUMN_PROCESS_INSTANCE_ID);
@@ -86,37 +86,47 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         initColumns.add(COLUMN_ERROR_COUNT);
         initColumns.add(COL_ID_ACTIONS);
 
-        createTabButton.addClickHandler( new ClickHandler() {
-            public void onClick( ClickEvent event ) {
-                final String key = getValidKeyForAdditionalListGrid( PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_" );
+        createTabButton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                final String key = getValidKeyForAdditionalListGrid(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_");
 
                 Command addNewGrid = new Command() {
                     @Override
                     public void execute() {
 
-                        final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable = createGridInstance( new GridGlobalPreferences( key, initColumns, bannedColumns ), key );
+                        final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable = createGridInstance(new GridGlobalPreferences(key,
+                                                                                                                                           initColumns,
+                                                                                                                                           bannedColumns),
+                                                                                                                 key);
 
-                        extendedPagedTable.setDataProvider( presenter.getDataProvider() );
+                        extendedPagedTable.setDataProvider(presenter.getDataProvider());
 
-                        filterPagedTable.createNewTab( extendedPagedTable, key, createTabButton, new Command() {
-                            @Override
-                            public void execute() {
-                                currentListGrid = extendedPagedTable;
-                                applyFilterOnPresenter( key );
-                            }
-                        } );
-                        applyFilterOnPresenter( key );
-
+                        filterPagedTable.createNewTab(extendedPagedTable,
+                                                      key,
+                                                      createTabButton,
+                                                      new Command() {
+                                                          @Override
+                                                          public void execute() {
+                                                              currentListGrid = extendedPagedTable;
+                                                              applyFilterOnPresenter(key);
+                                                          }
+                                                      });
+                        applyFilterOnPresenter(key);
                     }
                 };
                 FilterSettings tableSettings = presenter.createTableSettingsPrototype();
-                tableSettings.setKey( key );
-                dataSetEditorManager.showTableSettingsEditor( filterPagedTable, constants.New_Process_InstanceList(), tableSettings, addNewGrid );
-
+                tableSettings.setKey(key);
+                dataSetEditorManager.showTableSettingsEditor(filterPagedTable,
+                                                             constants.New_Process_InstanceList(),
+                                                             tableSettings,
+                                                             addNewGrid);
             }
-        } );
+        });
 
-        super.init( presenter, new GridGlobalPreferences( PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX, initColumns, bannedColumns ) );
+        super.init(presenter,
+                   new GridGlobalPreferences(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX,
+                                             initColumns,
+                                             bannedColumns));
     }
 
     @Override
@@ -128,7 +138,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     }
 
     @Override
-    public void initColumns( ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
+    public void initColumns(ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
         final ColumnMeta checkColumnMeta = initChecksColumn(extendedPagedTable);
 
         Column<ProcessInstanceSummary, ?> actionsColumn = initActionsColumn();
@@ -181,8 +191,10 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_CORRELATION_KEY,
                                                           process -> process.getCorrelationKey()),
                                          constants.Correlation_Key()));
-        columnMetas.add(new ColumnMeta<>(errorCountColumn, constants.Errors()));
-        columnMetas.add(new ColumnMeta<>(actionsColumn, constants.Actions()));
+        columnMetas.add(new ColumnMeta<>(errorCountColumn,
+                                         constants.Errors()));
+        columnMetas.add(new ColumnMeta<>(actionsColumn,
+                                         constants.Actions()));
 
         List<GridColumnPreference> columPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
 
@@ -198,17 +210,21 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             }
         }
         extendedPagedTable.addColumns(columnMetas);
-        extendedPagedTable.setColumnWidth(checkColumnMeta.getColumn(), 38, Style.Unit.PX);
-        extendedPagedTable.setColumnWidth(errorCountColumn, 65, Style.Unit.PX);
-        
+        extendedPagedTable.setColumnWidth(checkColumnMeta.getColumn(),
+                                          38,
+                                          Style.Unit.PX);
+        extendedPagedTable.setColumnWidth(errorCountColumn,
+                                          65,
+                                          Style.Unit.PX);
+
         extendedPagedTable.storeColumnToPreferences();
     }
-    
-    private boolean isColumnAdded( List<ColumnMeta<ProcessInstanceSummary>> columnMetas,
-                                   String caption ) {
-        if ( caption != null ) {
-            for ( ColumnMeta<ProcessInstanceSummary> colMet : columnMetas ) {
-                if ( caption.equals( colMet.getColumn().getDataStoreName() ) ) {
+
+    private boolean isColumnAdded(List<ColumnMeta<ProcessInstanceSummary>> columnMetas,
+                                  String caption) {
+        if (caption != null) {
+            for (ColumnMeta<ProcessInstanceSummary> colMet : columnMetas) {
+                if (caption.equals(colMet.getColumn().getDataStoreName())) {
                     return true;
                 }
             }
@@ -216,64 +232,67 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         return false;
     }
 
-    public void addDomainSpecifColumns( ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable,
-                                        Set<String> columns ) {
+    public void addDomainSpecifColumns(ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable,
+                                       Set<String> columns) {
 
         extendedPagedTable.storeColumnToPreferences();
 
         HashMap modifiedCaptions = new HashMap<String, String>();
         ArrayList<ColumnMeta> existingExtraColumns = new ArrayList<ColumnMeta>();
-        for ( ColumnMeta<ProcessInstanceSummary> cm : extendedPagedTable.getColumnMetaList() ) {
-            if ( cm.isExtraColumn() ) {
-                existingExtraColumns.add( cm );
-            } else if ( columns.contains( cm.getCaption() ) ) {      //exist a column with the same caption
-                for ( String c : columns ) {
-                    if ( c.equals( cm.getCaption() ) ) {
-                        modifiedCaptions.put( c, "Var_" + c );
+        for (ColumnMeta<ProcessInstanceSummary> cm : extendedPagedTable.getColumnMetaList()) {
+            if (cm.isExtraColumn()) {
+                existingExtraColumns.add(cm);
+            } else if (columns.contains(cm.getCaption())) {      //exist a column with the same caption
+                for (String c : columns) {
+                    if (c.equals(cm.getCaption())) {
+                        modifiedCaptions.put(c,
+                                             "Var_" + c);
                     }
                 }
             }
         }
-        for ( ColumnMeta colMet : existingExtraColumns ) {
-            if ( !columns.contains( colMet.getCaption() ) ) {
-                extendedPagedTable.removeColumnMeta( colMet );
+        for (ColumnMeta colMet : existingExtraColumns) {
+            if (!columns.contains(colMet.getCaption())) {
+                extendedPagedTable.removeColumnMeta(colMet);
             } else {
-                columns.remove( colMet.getCaption() );
+                columns.remove(colMet.getCaption());
             }
         }
 
         List<ColumnMeta<ProcessInstanceSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessInstanceSummary>>();
         String caption = "";
-        for ( String c : columns ) {
+        for (String c : columns) {
             caption = c;
-            if ( modifiedCaptions.get( c ) != null ) {
-                caption = (String) modifiedCaptions.get( c );
+            if (modifiedCaptions.get(c) != null) {
+                caption = (String) modifiedCaptions.get(c);
             }
-            Column genericColumn = initGenericColumn( c );
-            genericColumn.setSortable( false );
+            Column genericColumn = initGenericColumn(c);
+            genericColumn.setSortable(false);
 
-            columnMetas.add( new ColumnMeta<ProcessInstanceSummary>( genericColumn, caption, true, true ) );
+            columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(genericColumn,
+                                                                   caption,
+                                                                   true,
+                                                                   true));
         }
 
-        extendedPagedTable.addColumns( columnMetas );
-
+        extendedPagedTable.addColumns(columnMetas);
     }
 
-    private Column initGenericColumn( final String key ) {
+    private Column initGenericColumn(final String key) {
 
-        Column<ProcessInstanceSummary, String> genericColumn = new Column<ProcessInstanceSummary, String>( new TextCell() ) {
+        Column<ProcessInstanceSummary, String> genericColumn = new Column<ProcessInstanceSummary, String>(new TextCell()) {
             @Override
-            public String getValue( ProcessInstanceSummary object ) {
-                return object.getDomainDataValue( key );
+            public String getValue(ProcessInstanceSummary object) {
+                return object.getDomainDataValue(key);
             }
         };
-        genericColumn.setSortable( true );
+        genericColumn.setSortable(true);
         genericColumn.setDataStoreName(key);
 
         return genericColumn;
     }
 
-    private void initBulkActions( final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable ) {
+    private void initBulkActions(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
         extendedPagedTable.getRightActionsToolbar().clear();
         final AnchorListItem bulkAbortNavLink = GWT.create(AnchorListItem.class);
         bulkAbortNavLink.setText(constants.Bulk_Abort());
@@ -297,50 +316,49 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         bulkDropDown.add(bulkSignalNavLink);
         bulkActions.add(bulkDropDown);
 
-        bulkAbortNavLink.setIcon( IconType.BAN );
-        bulkAbortNavLink.setIconFixedWidth( true );
-        bulkAbortNavLink.addClickHandler( new ClickHandler() {
+        bulkAbortNavLink.setIcon(IconType.BAN);
+        bulkAbortNavLink.setIconFixedWidth(true);
+        bulkAbortNavLink.addClickHandler(new ClickHandler() {
             @Override
-            public void onClick( ClickEvent event ) {
-                if( Window.confirm( constants.Abort_Process_Instances() ) ) {
+            public void onClick(ClickEvent event) {
+                if (Window.confirm(constants.Abort_Process_Instances())) {
                     presenter.bulkAbort(extendedPagedTable.getSelectedItems());
                     extendedPagedTable.deselectAllItems();
                     extendedPagedTable.redraw();
                 }
             }
-        } );
+        });
 
-        bulkSignalNavLink.setIcon( IconType.BELL );
-        bulkSignalNavLink.setIconFixedWidth( true );
-        bulkSignalNavLink.addClickHandler( new ClickHandler() {
+        bulkSignalNavLink.setIcon(IconType.BELL);
+        bulkSignalNavLink.setIconFixedWidth(true);
+        bulkSignalNavLink.addClickHandler(new ClickHandler() {
             @Override
-            public void onClick( ClickEvent event ) {
+            public void onClick(ClickEvent event) {
                 presenter.bulkSignal(extendedPagedTable.getSelectedItems());
                 extendedPagedTable.deselectAllItems();
                 extendedPagedTable.redraw();
             }
-        } );
+        });
 
         extendedPagedTable.getRightActionsToolbar().add(bulkActions);
     }
 
     private Column<ProcessInstanceSummary, ProcessInstanceSummary> initErrorCountColumn() {
-        
+
         Column<ProcessInstanceSummary, ProcessInstanceSummary> column = new Column<ProcessInstanceSummary, ProcessInstanceSummary>(
-                popoverCellInstance.get().init(presenter)){
+                popoverCellInstance.get().init(presenter)) {
 
             @Override
             public ProcessInstanceSummary getValue(ProcessInstanceSummary process) {
                 return process;
             }
-
         };
 
         column.setSortable(true);
         column.setDataStoreName(COLUMN_ERROR_COUNT);
         return column;
     }
-    
+
     private Column<ProcessInstanceSummary, ProcessInstanceSummary> initActionsColumn() {
         List<HasCell<ProcessInstanceSummary, ?>> cells = new LinkedList<HasCell<ProcessInstanceSummary, ?>>();
 
@@ -372,7 +390,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                 processInstance -> presenter.openTaskView(Long.toString(processInstance.getProcessInstanceId())),
                 presenter.getViewTasksActionCondition()
         ));
-        
+
         cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
                 constants.ViewErrors(),
                 processInstance -> presenter.openErrorView(Long.toString(processInstance.getProcessInstanceId())),
@@ -418,26 +436,26 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                              constants.FilterAborted(),
                              preferences);
 
-        filterPagedTable.addAddTableButton( createTabButton );
+        filterPagedTable.addAddTableButton(createTabButton);
     }
 
-    private void initGenericTabFilter( FilterSettings tableSettings,
-                                       final String key,
-                                       String tabName,
-                                       String tabDesc,
-                                       GridGlobalPreferences preferences ) {
+    private void initGenericTabFilter(FilterSettings tableSettings,
+                                      final String key,
+                                      String tabName,
+                                      String tabDesc,
+                                      GridGlobalPreferences preferences) {
 
-        tableSettings.setKey( key );
-        tableSettings.setTableName( tabName );
-        tableSettings.setTableDescription( tabDesc );
-        tableSettings.setUUID( PROCESS_INSTANCE_DATASET );
+        tableSettings.setKey(key);
+        tableSettings.setTableName(tabName);
+        tableSettings.setTableDescription(tabDesc);
+        tableSettings.setUUID(PROCESS_INSTANCE_DATASET);
 
         addNewTab(preferences,
                   tableSettings);
     }
 
     @Override
-    public void resetDefaultFilterTitleAndDescription(){
+    public void resetDefaultFilterTitleAndDescription() {
         super.resetDefaultFilterTitleAndDescription();
         saveTabSettings(TAB_ACTIVE,
                         constants.Active(),
@@ -449,5 +467,4 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                         constants.Aborted(),
                         constants.FilterAborted());
     }
-
 }

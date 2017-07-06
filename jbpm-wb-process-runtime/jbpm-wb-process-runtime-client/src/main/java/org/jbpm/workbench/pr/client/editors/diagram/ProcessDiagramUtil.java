@@ -21,41 +21,63 @@ import org.uberfire.mvp.impl.PathPlaceRequest;
 
 public final class ProcessDiagramUtil {
 
-    public static PlaceRequest buildPlaceRequest( final PlaceRequest input ) {
-        final String deploymentId = input.getParameter( "deploymentId", "" );
-        final String processId = input.getParameter( "processId", "" );
-        final String activeNodes = input.getParameter( "activeNodes", "" );
-        final String completedNodes = input.getParameter( "completedNodes", "" );
+    public static PlaceRequest buildPlaceRequest(final PlaceRequest input) {
+        final String deploymentId = input.getParameter("deploymentId",
+                                                       "");
+        final String processId = input.getParameter("processId",
+                                                    "");
+        final String activeNodes = input.getParameter("activeNodes",
+                                                      "");
+        final String completedNodes = input.getParameter("completedNodes",
+                                                         "");
 
-        final PathPlaceRequest defaultPlaceRequest = new PathPlaceRequest( new DummyProcessPath( processId ), "jbpm.designer.popup" );
+        final PathPlaceRequest defaultPlaceRequest = new PathPlaceRequest(new DummyProcessPath(processId),
+                                                                          "jbpm.designer.popup");
         //Set Parameters here:
-        defaultPlaceRequest.addParameter( "readOnly", "true" );
-        if ( !activeNodes.equals( "" ) ) {
-            defaultPlaceRequest.addParameter( "activeNodes", activeNodes );
+        defaultPlaceRequest.addParameter("readOnly",
+                                         "true");
+        if (!activeNodes.equals("")) {
+            defaultPlaceRequest.addParameter("activeNodes",
+                                             activeNodes);
         }
-        if ( !completedNodes.equals( "" ) ) {
-            defaultPlaceRequest.addParameter( "completedNodes", completedNodes );
+        if (!completedNodes.equals("")) {
+            defaultPlaceRequest.addParameter("completedNodes",
+                                             completedNodes);
         }
-        defaultPlaceRequest.addParameter( "processId", processId );
-        defaultPlaceRequest.addParameter( "deploymentId", deploymentId );
+        defaultPlaceRequest.addParameter("processId",
+                                         processId);
+        defaultPlaceRequest.addParameter("deploymentId",
+                                         deploymentId);
         return defaultPlaceRequest;
     }
 
-    public static PlaceRequest buildPlaceRequest( String serverTemplateId, String deploymentId, String processId ) {
-        final PathPlaceRequest defaultPlaceRequest = new PathPlaceRequest( new DummyProcessPath( processId ), "jBPM Process Diagram" );
+    public static PlaceRequest buildPlaceRequest(String serverTemplateId,
+                                                 String deploymentId,
+                                                 String processId) {
+        final PathPlaceRequest defaultPlaceRequest = new PathPlaceRequest(new DummyProcessPath(processId),
+                                                                          "jBPM Process Diagram");
 
-        defaultPlaceRequest.addParameter( "serverTemplateId", serverTemplateId );
-        defaultPlaceRequest.addParameter( "processId", processId );
-        defaultPlaceRequest.addParameter( "containerId", deploymentId );
+        defaultPlaceRequest.addParameter("serverTemplateId",
+                                         serverTemplateId);
+        defaultPlaceRequest.addParameter("processId",
+                                         processId);
+        defaultPlaceRequest.addParameter("containerId",
+                                         deploymentId);
         return defaultPlaceRequest;
     }
 
-    public static PlaceRequest buildPlaceRequest( String serverTemplateId, String deploymentId, Long processInstanceId ) {
-        final PathPlaceRequest defaultPlaceRequest = new PathPlaceRequest( new DummyProcessPath( processInstanceId.toString() ), "jBPM Process Diagram" );
+    public static PlaceRequest buildPlaceRequest(String serverTemplateId,
+                                                 String deploymentId,
+                                                 Long processInstanceId) {
+        final PathPlaceRequest defaultPlaceRequest = new PathPlaceRequest(new DummyProcessPath(processInstanceId.toString()),
+                                                                          "jBPM Process Diagram");
 
-        defaultPlaceRequest.addParameter( "serverTemplateId", serverTemplateId );
-        defaultPlaceRequest.addParameter( "processInstanceId", processInstanceId.toString() );
-        defaultPlaceRequest.addParameter( "containerId", deploymentId );
+        defaultPlaceRequest.addParameter("serverTemplateId",
+                                         serverTemplateId);
+        defaultPlaceRequest.addParameter("processInstanceId",
+                                         processInstanceId.toString());
+        defaultPlaceRequest.addParameter("containerId",
+                                         deploymentId);
         return defaultPlaceRequest;
     }
 }

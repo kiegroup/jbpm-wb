@@ -28,7 +28,10 @@ public class ErrorSummaryMapper implements Function<ErrorInfoInstance, ErrorSumm
         if (error == null) {
             return null;
         }
-        return new ErrorSummary(error.getId(), error.getErrorDate(), error.getMessage(), error.getStacktrace(),
-                error.getRequestInfoId());
+        return new ErrorSummary(error.getId(),
+                                error.getErrorDate(),
+                                error.getMessage(),
+                                error.getStacktrace(),
+                                error.getRequestInfoId());
     }
 }

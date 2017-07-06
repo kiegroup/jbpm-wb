@@ -27,15 +27,14 @@ import com.google.gwt.core.client.GWT;
 @Dependent
 @Templated(value = "BasicProcessDefDetailsViewImpl.html")
 public class BasicProcessDefDetailsViewImpl extends BaseProcessDefDetailsViewImpl implements
-        BasicProcessDefDetailsPresenter.BasicProcessDefDetailsView {
+                                                                                  BasicProcessDefDetailsPresenter.BasicProcessDefDetailsView {
 
-    private Constants constants = GWT.create( Constants.class );
+    private Constants constants = GWT.create(Constants.class);
 
     @Override
     public void init() {
-        processIdLabel.setText( constants.Process_Definition_Id() );
-        processNameLabel.setText( constants.Process_Definition_Name() );
-        deploymentIdLabel.setText( constants.Deployment_Name() );
+        processIdLabel.setText(constants.Process_Definition_Id());
+        processNameLabel.setText(constants.Process_Definition_Name());
+        deploymentIdLabel.setText(constants.Deployment_Name());
     }
-
 }

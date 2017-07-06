@@ -43,7 +43,8 @@ public class ProcessSummary extends GenericSummary<String> {
                           String deploymentId,
                           String version,
                           boolean dynamic) {
-        super(processDefId, processDefName);
+        super(processDefId,
+              processDefName);
         this.processDefId = processDefId;
         this.processDefName = processDefName;
         this.deploymentId = deploymentId;

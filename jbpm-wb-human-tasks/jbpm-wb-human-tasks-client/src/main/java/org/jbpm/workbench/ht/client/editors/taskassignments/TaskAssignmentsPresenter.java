@@ -39,25 +39,6 @@ import static java.util.Collections.singletonList;
 @Dependent
 public class TaskAssignmentsPresenter {
 
-    public interface TaskAssignmentsView extends IsWidget {
-
-        void init(final TaskAssignmentsPresenter presenter);
-
-        void displayNotification(String text);
-
-        void setPotentialOwnersInfo(List<String> owners);
-
-        void enableDelegateButton(boolean enable);
-
-        void setDelegateButtonActive(boolean enable);
-
-        void clearUserOrGroupInput();
-
-        void enableUserOrGroupInput(boolean enable);
-
-        void setHelpText(String text);
-    }
-
     private Constants constants = Constants.INSTANCE;
     private TaskAssignmentsView view;
     private Caller<TaskService> taskService;
@@ -65,7 +46,6 @@ public class TaskAssignmentsPresenter {
     private long currentTaskId = 0;
     private String serverTemplateId;
     private String containerId;
-
     @Inject
     public TaskAssignmentsPresenter(
             TaskAssignmentsView view,
@@ -105,13 +85,18 @@ public class TaskAssignmentsPresenter {
                 new DefaultErrorCallback() {
 
                     @Override
-                    public boolean error(Message message, Throwable throwable) {
+                    public boolean error(Message message,
+                                         Throwable throwable) {
                         view.setDelegateButtonActive(true);
                         view.setHelpText(constants.DelegationUnable());
-                        return super.error(message, throwable);
+                        return super.error(message,
+                                           throwable);
                     }
                 }
-        ).delegate(serverTemplateId, containerId, currentTaskId, entity);
+        ).delegate(serverTemplateId,
+                   containerId,
+                   currentTaskId,
+                   entity);
     }
 
     public void refreshTaskPotentialOwners() {
@@ -131,8 +116,9 @@ public class TaskAssignmentsPresenter {
                         view.enableUserOrGroupInput(response.isDelegationAllowed());
                     }
                 }
-            }).getTaskAssignmentDetails(serverTemplateId, containerId, currentTaskId);
-
+            }).getTaskAssignmentDetails(serverTemplateId,
+                                        containerId,
+                                        currentTaskId);
         }
     }
 
@@ -151,4 +137,22 @@ public class TaskAssignmentsPresenter {
         }
     }
 
+    public interface TaskAssignmentsView extends IsWidget {
+
+        void init(final TaskAssignmentsPresenter presenter);
+
+        void displayNotification(String text);
+
+        void setPotentialOwnersInfo(List<String> owners);
+
+        void enableDelegateButton(boolean enable);
+
+        void setDelegateButtonActive(boolean enable);
+
+        void clearUserOrGroupInput();
+
+        void enableUserOrGroupInput(boolean enable);
+
+        void setHelpText(String text);
+    }
 }

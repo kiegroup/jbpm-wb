@@ -15,6 +15,7 @@
  */
 package org.jbpm.workbench.es.client.editors.quicknewjob;
 
+import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.gwtmockito.WithClassesToStub;
 import org.gwtbootstrap3.client.ui.FormGroup;
@@ -29,7 +30,6 @@ import org.jbpm.workbench.es.model.RequestParameterSummary;
 import org.jbpm.workbench.es.service.ExecutorService;
 import org.jbpm.workbench.common.client.util.UTCDateBox;
 import org.jbpm.workbench.common.client.util.UTCTimeBox;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -73,7 +74,8 @@ public class QuickNewJobPopupTest {
     @Mock
     private HelpBlock jobNameHelpInline;
 
-    @Mock @SuppressWarnings("unused")
+    @Mock
+    @SuppressWarnings("unused")
     private IntegerBox jobRetriesNumber;
 
     @Mock
@@ -82,10 +84,11 @@ public class QuickNewJobPopupTest {
     @Mock
     private FormGroup jobTypeControlGroup;
 
-    @Mock
+    @GwtMock
     private HelpBlock jobTypeHelpInline;
 
-    @Mock @SuppressWarnings("unused")
+    @Mock
+    @SuppressWarnings("unused")
     private HelpBlock jobDueDateHelpBlock;
 
     @InjectMocks
@@ -108,12 +111,22 @@ public class QuickNewJobPopupTest {
                 assertTrue(invocationOnMock.getArguments()[2].equals(JOB_TYPE));
                 return null;
             }
-        }).when(executorServicesMock).scheduleRequest(anyString(), anyString(), any(Date.class), any(Map.class));
+        }).when(executorServicesMock).scheduleRequest(anyString(),
+                                                      anyString(),
+                                                      any(Date.class),
+                                                      any(Map.class));
 
-        quickNewJobPopup.createJob(JOB_NAME, new Date(), JOB_TYPE, JOB_RETRIES, new ArrayList<RequestParameterSummary>());
+        quickNewJobPopup.createJob(JOB_NAME,
+                                   new Date(),
+                                   JOB_TYPE,
+                                   JOB_RETRIES,
+                                   new ArrayList<RequestParameterSummary>());
 
-        verify(executorServicesMock).scheduleRequest(anyString(),anyString(), any(Date.class), any(HashMap.class));
-   }
+        verify(executorServicesMock).scheduleRequest(anyString(),
+                                                     anyString(),
+                                                     any(Date.class),
+                                                     any(HashMap.class));
+    }
 
     @Test
     public void dueTimeSetToFutureTimeTest() {
@@ -131,7 +144,6 @@ public class QuickNewJobPopupTest {
             }
         }).when(jobDueDateTime).setValue(anyLong());
 
-
         quickNewJobPopup.cleanForm();
 
         verify(jobDueDateTime).setValue(anyLong());
@@ -142,7 +154,8 @@ public class QuickNewJobPopupTest {
         when(jobNameText.getText()).thenReturn(""); // Return empty string
 
         boolean isValid = quickNewJobPopup.validateForm();
-        Assert.assertFalse("Form with an empty business key should be rejected", isValid);
+        assertFalse("Form with an empty business key should be rejected",
+                           isValid);
 
         verify(jobNameControlGroup).setValidationState(ValidationState.ERROR);
         verify(jobNameHelpInline).setText(Constants.INSTANCE.The_Job_Must_Have_A_BusinessKey());
@@ -153,7 +166,8 @@ public class QuickNewJobPopupTest {
         when(jobTypeText.getText()).thenReturn("  "); //Return string with spaces
 
         boolean isValid = quickNewJobPopup.validateForm();
-        Assert.assertFalse("Form with an empty type should be rejected", isValid);
+        assertFalse("Form with an empty type should be rejected",
+                           isValid);
 
         verify(jobTypeControlGroup).setValidationState(ValidationState.ERROR);
         verify(jobTypeHelpInline).setText(Constants.INSTANCE.The_Job_Must_Have_A_Type());
@@ -166,9 +180,16 @@ public class QuickNewJobPopupTest {
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
                 throw (new Exception("Invalid command type"));
             }
-        }).when(executorServicesMock).scheduleRequest(anyString(),anyString(), any(Date.class), any(Map.class));
+        }).when(executorServicesMock).scheduleRequest(anyString(),
+                                                      anyString(),
+                                                      any(Date.class),
+                                                      any(Map.class));
 
-        quickNewJobPopup.createJob(JOB_NAME, new Date(), JOB_TYPE, JOB_RETRIES, new ArrayList());
+        quickNewJobPopup.createJob(JOB_NAME,
+                                   new Date(),
+                                   JOB_TYPE,
+                                   JOB_RETRIES,
+                                   new ArrayList());
 
         verify(quickNewJobPopup.jobTypeControlGroup).setValidationState(ValidationState.ERROR);
         verify(quickNewJobPopup.jobTypeHelpInline).setText(Constants.INSTANCE.The_Job_Must_Have_A_Valid_Type());

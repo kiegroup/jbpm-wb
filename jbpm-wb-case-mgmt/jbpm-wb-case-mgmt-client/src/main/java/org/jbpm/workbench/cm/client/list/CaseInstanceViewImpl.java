@@ -46,7 +46,8 @@ import static org.jboss.errai.common.client.dom.DOMUtil.removeCSSClass;
 
 @Dependent
 @Templated(stylesheet = "CaseInstanceViewImpl.css")
-public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter> implements TakesValue<CaseInstanceSummary>, IsElement {
+public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter> implements TakesValue<CaseInstanceSummary>,
+                                                                                             IsElement {
 
     @Inject
     @DataField("list-item")
@@ -111,11 +112,16 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
     public void setValue(final CaseInstanceSummary model) {
         this.caseInstanceSummary.setModel(model);
         executeOnlyIfActive((c) -> {
-            addCSSClass(this.details, "active");
-            addCSSClass(this.status, "label-success");
-            removeCSSClass(this.status, "label-default");
-            removeCSSClass(this.complete, "hidden");
-            removeCSSClass(this.kebab, "hidden");
+            addCSSClass(this.details,
+                        "active");
+            addCSSClass(this.status,
+                        "label-success");
+            removeCSSClass(this.status,
+                           "label-default");
+            removeCSSClass(this.complete,
+                           "hidden");
+            removeCSSClass(this.kebab,
+                           "hidden");
         });
     }
 
@@ -139,11 +145,10 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
         executeOnlyIfActive((c) -> presenter.selectCaseInstance(c));
     }
 
-    private void executeOnlyIfActive(final Consumer<CaseInstanceSummary> consumer){
+    private void executeOnlyIfActive(final Consumer<CaseInstanceSummary> consumer) {
         final CaseInstanceSummary caseInstanceSummary = this.caseInstanceSummary.getModel();
-        if(caseInstanceSummary.getStatus() == CaseStatus.OPEN){
+        if (caseInstanceSummary.getStatus() == CaseStatus.OPEN) {
             consumer.accept(caseInstanceSummary);
         }
     }
-
 }

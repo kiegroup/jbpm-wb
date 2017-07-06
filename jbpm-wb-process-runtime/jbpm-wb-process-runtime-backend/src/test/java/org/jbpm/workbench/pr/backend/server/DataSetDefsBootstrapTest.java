@@ -56,13 +56,13 @@ public class DataSetDefsBootstrapTest {
     @InjectMocks
     DataSetDefsBootstrap dataSetsBootstrap;
 
-    List<String> deploymentIds = Arrays.asList("role1", "role2");
+    List<String> deploymentIds = Arrays.asList("role1",
+                                               "role2");
 
     @Before
     public void setUp() {
         // The two lines below is Mockito's issue work-around:
         // Can not use @_InjectMocks together with a @Spy annotation => https://github.com/mockito/mockito/issues/169
-
 
         dataSetsBootstrap.registerDataSetDefinitions();
 //        when(deploymentRolesManager.getDeploymentsForUser(identityProvider)).thenReturn(deploymentIds);
@@ -71,12 +71,16 @@ public class DataSetDefsBootstrapTest {
     @Test
     public void registerDataSetDefsTest() {
         ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
-        verify(dataSetRegistry, times(2)).registerDataSetDef(argument.capture());
+        verify(dataSetRegistry,
+               times(2)).registerDataSetDef(argument.capture());
 
         List<DataSetDef> dataSetDefList = argument.getAllValues();
-        assertEquals(dataSetDefList.size(), 2);
-        assertEquals(dataSetDefList.get(0).getUUID(), PROCESS_INSTANCE_DATASET);
-        assertEquals(dataSetDefList.get(1).getUUID(), PROCESS_INSTANCE_WITH_VARIABLES_DATASET);
+        assertEquals(dataSetDefList.size(),
+                     2);
+        assertEquals(dataSetDefList.get(0).getUUID(),
+                     PROCESS_INSTANCE_DATASET);
+        assertEquals(dataSetDefList.get(1).getUUID(),
+                     PROCESS_INSTANCE_WITH_VARIABLES_DATASET);
     }
 
     //TODO Needs redesign as data source is deployed to kie server
@@ -91,9 +95,11 @@ public class DataSetDefsBootstrapTest {
 
 //        verify(deploymentIdsPreprocessor).preprocess(lookup);
         verify(dataSetManager).lookupDataSet(argument.capture());
-        assertEquals(argument.getValue(), DataSetLookupFactory.newDataSetLookupBuilder()
-                .dataset(PROCESS_INSTANCE_DATASET)
-                .filter(in(COLUMN_EXTERNAL_ID, deploymentIds))
-                .buildLookup());
+        assertEquals(argument.getValue(),
+                     DataSetLookupFactory.newDataSetLookupBuilder()
+                             .dataset(PROCESS_INSTANCE_DATASET)
+                             .filter(in(COLUMN_EXTERNAL_ID,
+                                        deploymentIds))
+                             .buildLookup());
     }
 }

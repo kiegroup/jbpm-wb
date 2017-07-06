@@ -44,45 +44,52 @@ public class DataSetDefsBootstrapTest {
     public void registerDataSetDefinitionsTest() {
         dataSetsBootstrap.registerDataSetDefinitions();
         ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
-        verify(dataSetDefRegistryMock, times(4)).registerDataSetDef(argument.capture());
+        verify(dataSetDefRegistryMock,
+               times(4)).registerDataSetDef(argument.capture());
 
         List<DataSetDef> dsList = argument.getAllValues();
-        assertEquals(dsList.size(), 4);
-        assertEquals(dsList.get(0).getUUID(), HUMAN_TASKS_DATASET);
-        assertEquals(dsList.get(1).getUUID(), HUMAN_TASKS_WITH_USER_DATASET);
-        assertEquals(dsList.get(2).getUUID(), HUMAN_TASKS_WITH_ADMIN_DATASET);
-        assertEquals(dsList.get(3).getUUID(), HUMAN_TASKS_WITH_VARIABLES_DATASET);
+        assertEquals(dsList.size(),
+                     4);
+        assertEquals(dsList.get(0).getUUID(),
+                     HUMAN_TASKS_DATASET);
+        assertEquals(dsList.get(1).getUUID(),
+                     HUMAN_TASKS_WITH_USER_DATASET);
+        assertEquals(dsList.get(2).getUUID(),
+                     HUMAN_TASKS_WITH_ADMIN_DATASET);
+        assertEquals(dsList.get(3).getUUID(),
+                     HUMAN_TASKS_WITH_VARIABLES_DATASET);
     }
 
     @Test
     public void noOrderByPresentInDefinitionsSQLTest() {
         dataSetsBootstrap.registerDataSetDefinitions();
         ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
-        verify(dataSetDefRegistryMock, times(4)).registerDataSetDef(argument.capture());
+        verify(dataSetDefRegistryMock,
+               times(4)).registerDataSetDef(argument.capture());
 
         List<DataSetDef> dsList = argument.getAllValues();
         assertFalse(((SQLDataSetDef) dsList.get(0)).getDbSQL().contains("order by"));
         assertFalse(((SQLDataSetDef) dsList.get(1)).getDbSQL().contains("order by"));
         assertFalse(((SQLDataSetDef) dsList.get(2)).getDbSQL().contains("order by"));
         assertFalse(((SQLDataSetDef) dsList.get(3)).getDbSQL().contains("order by"));
-
     }
 
     @Test
     public void columnAliasNotPresentInHumanTaskWithUserDataSet() {
         dataSetsBootstrap.registerDataSetDefinitions();
         ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
-        verify(dataSetDefRegistryMock, times(4)).registerDataSetDef(argument.capture());
+        verify(dataSetDefRegistryMock,
+               times(4)).registerDataSetDef(argument.capture());
 
         List<DataSetDef> dsList = argument.getAllValues();
 
         String strSQL = ((SQLDataSetDef) dsList.get(1)).getDbSQL();
-        String[] columnsStr = strSQL.substring(strSQL.indexOf("select") + 6, strSQL.indexOf("from")).split(",");
+        String[] columnsStr = strSQL.substring(strSQL.indexOf("select") + 6,
+                                               strSQL.indexOf("from")).split(",");
         for (String columnStr : columnsStr) {
             final String[] split = columnStr.trim().split(" ");
-            assertEquals(1, split.length);
+            assertEquals(1,
+                         split.length);
         }
-
     }
-
 }

@@ -93,13 +93,16 @@ public class RequestListPresenterTest {
         when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
 
         presenter = new RequestListPresenter(viewMock,
-                callerMockExecutorService, dataSetQueryHelper, requestChangedEvent);
+                                             callerMockExecutorService,
+                                             dataSetQueryHelper,
+                                             requestChangedEvent);
     }
 
     @Test
     public void getDataTest() {
         presenter.setAddingDefaultFilters(false);
-        presenter.getData(new Range(0, 5));
+        presenter.getData(new Range(0,
+                                    5));
 
         verify(dataSetQueryHelper).setLastSortOrder(ASCENDING);
         verify(viewMock).hideBusyIndicator();
@@ -109,16 +112,20 @@ public class RequestListPresenterTest {
     public void cancelRequestTest() {
         presenter.cancelRequest(REQUEST_ID);
 
-        verify(requestChangedEvent, times(1)).fire(any(RequestChangedEvent.class));
-        verify(executorServiceMock).cancelRequest(anyString(), eq(REQUEST_ID));
+        verify(requestChangedEvent,
+               times(1)).fire(any(RequestChangedEvent.class));
+        verify(executorServiceMock).cancelRequest(anyString(),
+                                                  eq(REQUEST_ID));
     }
 
     @Test
     public void requeueRequestTest() {
         presenter.requeueRequest(REQUEST_ID);
 
-        verify(requestChangedEvent, times(1)).fire(any(RequestChangedEvent.class));
-        verify(executorServiceMock).requeueRequest(anyString(), eq(REQUEST_ID));
+        verify(requestChangedEvent,
+               times(1)).fire(any(RequestChangedEvent.class));
+        verify(executorServiceMock).requeueRequest(anyString(),
+                                                   eq(REQUEST_ID));
     }
 
     @Test
@@ -128,7 +135,8 @@ public class RequestListPresenterTest {
         presenter.onSearchEvent(searchEvent);
 
         verify(viewMock).applyFilterOnPresenter(anyString());
-        assertEquals(searchEvent.getFilter(), presenter.getTextSearchStr());
+        assertEquals(searchEvent.getFilter(),
+                     presenter.getTextSearchStr());
     }
 
     @Test
@@ -138,7 +146,8 @@ public class RequestListPresenterTest {
         presenter.onSearchEvent(searchEvent);
 
         verify(viewMock).applyFilterOnPresenter(anyString());
-        assertEquals(searchEvent.getFilter(), presenter.getTextSearchStr());
+        assertEquals(searchEvent.getFilter(),
+                     presenter.getTextSearchStr());
     }
 
     @Test
@@ -163,10 +172,14 @@ public class RequestListPresenterTest {
     public void testSearchFilterString() {
         final List<ColumnFilter> filters = presenter.getColumnFilters("jobReference");
 
-        assertEquals(3, filters.size());
-        assertEquals(COLUMN_COMMANDNAME, filters.get(0).getColumnId());
-        assertEquals(COLUMN_MESSAGE, filters.get(1).getColumnId());
-        assertEquals(COLUMN_BUSINESSKEY, filters.get(2).getColumnId());
+        assertEquals(3,
+                     filters.size());
+        assertEquals(COLUMN_COMMANDNAME,
+                     filters.get(0).getColumnId());
+        assertEquals(COLUMN_MESSAGE,
+                     filters.get(1).getColumnId());
+        assertEquals(COLUMN_BUSINESSKEY,
+                     filters.get(2).getColumnId());
     }
 
     @Test
@@ -236,20 +249,20 @@ public class RequestListPresenterTest {
     }
 
     @Test
-    public void testDefaultActiveSearchFilters(){
+    public void testDefaultActiveSearchFilters() {
         presenter.setupDefaultActiveSearchFilters();
 
         verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Status()),
                                          eq(Constants.INSTANCE.Running()),
                                          eq(RequestStatus.RUNNING.name()),
                                          any(Consumer.class));
-
     }
 
     @Test
-    public void testActiveSearchFilters(){
+    public void testActiveSearchFilters() {
         final PlaceRequest place = mock(PlaceRequest.class);
-        when(place.getParameter(anyString(), anyString())).thenReturn(null);
+        when(place.getParameter(anyString(),
+                                anyString())).thenReturn(null);
         presenter.onStartup(place);
 
         presenter.setupActiveSearchFilters();
@@ -258,42 +271,41 @@ public class RequestListPresenterTest {
                                          eq(Constants.INSTANCE.Running()),
                                          eq(RequestStatus.RUNNING.name()),
                                          any(Consumer.class));
-
     }
-    
+
     @Test
-    public void testStatusActionConditionPredicates(){
+    public void testStatusActionConditionPredicates() {
         final RequestStatus[] DETAILS_ALLOW_STATUSES = new RequestStatus[]{
-            RequestStatus.QUEUED,
-            RequestStatus.DONE,
-            RequestStatus.CANCELLED,
-            RequestStatus.ERROR,
-            RequestStatus.RETRYING,
-            RequestStatus.RUNNING
+                RequestStatus.QUEUED,
+                RequestStatus.DONE,
+                RequestStatus.CANCELLED,
+                RequestStatus.ERROR,
+                RequestStatus.RETRYING,
+                RequestStatus.RUNNING
         };
         final RequestStatus[] CANCEL_ALLOW_STATUSES = new RequestStatus[]{
-            RequestStatus.QUEUED,
-            RequestStatus.RETRYING,
-            RequestStatus.RUNNING
+                RequestStatus.QUEUED,
+                RequestStatus.RETRYING,
+                RequestStatus.RUNNING
         };
         final RequestStatus[] REQUEUE_ALLOW_STATUSES = new RequestStatus[]{
                 RequestStatus.ERROR,
-                RequestStatus.RUNNING        
+                RequestStatus.RUNNING
         };
         RequestSummary testJob = new RequestSummary();
-        for(RequestStatus status : RequestStatus.values()){
+        for (RequestStatus status : RequestStatus.values()) {
             testJob.setStatus(status.name());
             assertEquals(Arrays.asList(DETAILS_ALLOW_STATUSES).contains(status),
-                    presenter.getDetailsActionCondition().test(testJob));
+                         presenter.getDetailsActionCondition().test(testJob));
             assertEquals(Arrays.asList(CANCEL_ALLOW_STATUSES).contains(status),
-                    presenter.getCancelActionCondition().test(testJob));
+                         presenter.getCancelActionCondition().test(testJob));
             assertEquals(Arrays.asList(REQUEUE_ALLOW_STATUSES).contains(status),
-                    presenter.getRequeueActionCondition().test(testJob));
+                         presenter.getRequeueActionCondition().test(testJob));
         }
     }
-    
+
     @Test
-    public void testViewProcessActionConditionPredicates(){
+    public void testViewProcessActionConditionPredicates() {
         RequestSummary testJob = new RequestSummary();
         testJob.setProcessInstanceId(33L);
         assertTrue(presenter.getViewProcessActionCondition().test(testJob));
@@ -301,5 +313,4 @@ public class RequestListPresenterTest {
         assertFalse(presenter.getViewProcessActionCondition().test(testJob));
         assertFalse(presenter.getViewProcessActionCondition().test(new RequestSummary()));
     }
-
 }

@@ -81,10 +81,15 @@ public class CaseMilestoneSummary {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         CaseMilestoneSummary that = (CaseMilestoneSummary) o;
-        return Objects.equals(identifier, that.getIdentifier());
+        return Objects.equals(identifier,
+                              that.getIdentifier());
     }
 
     @Override
@@ -125,6 +130,7 @@ public class CaseMilestoneSummary {
             caseMilestone.setIdentifier(identifier);
             return this;
         }
+
         public Builder achieved(boolean achieved) {
             caseMilestone.setAchieved(achieved);
             return this;
@@ -139,7 +145,5 @@ public class CaseMilestoneSummary {
             caseMilestone.setStatus(status);
             return this;
         }
-
     }
-
 }

@@ -35,22 +35,22 @@ import static org.mockito.Mockito.*;
 @RunWith(GwtMockitoTestRunner.class)
 public class DeploymentDescriptorEditorPresenterTest {
 
+    @Mock
+    DeploymentDescriptorViewImpl view;
+
+    DeploymentDescriptorEditorPresenter presenter;
+
     private CallerMock<DDEditorService> callerMockDDEditorService;
 
     @Mock
     private DDEditorService ddEditorServiceMock;
 
-    @Mock
-    DeploymentDescriptorViewImpl view;
-
-
-    DeploymentDescriptorEditorPresenter presenter;
-
     @Before
     public void setUp() throws Exception {
         callerMockDDEditorService = new CallerMock<DDEditorService>(ddEditorServiceMock);
         presenter = new DeploymentDescriptorEditorPresenter(view,
-                callerMockDDEditorService, mock(TranslationService.class)) {
+                                                            callerMockDDEditorService,
+                                                            mock(TranslationService.class)) {
             {
                 kieView = mock(KieEditorWrapperView.class);
                 overviewWidget = mock(OverviewWidgetPresenter.class);
@@ -70,14 +70,19 @@ public class DeploymentDescriptorEditorPresenterTest {
 
     @Test
     public void testDeploymentDescriptorEditorSetup() throws Exception {
-        presenter.onStartup(mock(ObservablePath.class), mock(PlaceRequest.class));
+        presenter.onStartup(mock(ObservablePath.class),
+                            mock(PlaceRequest.class));
 
         verify(view).setSourceTabReadOnly(true);
         verify(view).setup();
-        verify(view, times(RuntimeStrategy.values().length)).addRuntimeStrategy(anyString(), anyString());
-        verify(view, times(2)).addPersistenceMode(anyString(), anyString());
-        verify(view, times(3)).addAuditMode(anyString(), anyString());
-
+        verify(view,
+               times(RuntimeStrategy.values().length)).addRuntimeStrategy(anyString(),
+                                                                          anyString());
+        verify(view,
+               times(2)).addPersistenceMode(anyString(),
+                                            anyString());
+        verify(view,
+               times(3)).addAuditMode(anyString(),
+                                      anyString());
     }
-
 }

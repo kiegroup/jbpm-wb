@@ -44,11 +44,11 @@ public class KieWorkbenchFormEntryPointImpl implements KieWorkbenchFormsEntryPoi
     private BackendFormRenderingContextManager contextManager;
 
     @Inject
-    public KieWorkbenchFormEntryPointImpl( ProcessService processService,
-                                           TaskService taskService,
-                                           ProcessFormsValuesProcessor processRenderingSettingsInterpreter,
-                                           TaskFormValuesProcessor taskRenderingSettingsInterpreter,
-                                           BackendFormRenderingContextManager contextManager ) {
+    public KieWorkbenchFormEntryPointImpl(ProcessService processService,
+                                          TaskService taskService,
+                                          ProcessFormsValuesProcessor processRenderingSettingsInterpreter,
+                                          TaskFormValuesProcessor taskRenderingSettingsInterpreter,
+                                          BackendFormRenderingContextManager contextManager) {
         this.processService = processService;
         this.taskService = taskService;
         this.processRenderingSettingsInterpreter = processRenderingSettingsInterpreter;
@@ -57,42 +57,55 @@ public class KieWorkbenchFormEntryPointImpl implements KieWorkbenchFormsEntryPoi
     }
 
     @Override
-    public Long startProcessFromRenderContext( Long timestamp,
-                                               Map<String, Object> formData, String serverTemplateId,
+    public Long startProcessFromRenderContext(Long timestamp,
+                                              Map<String, Object> formData,
+                                              String serverTemplateId,
+                                              String containerId,
+                                              String processId,
+                                              String correlationKey) {
+
+        Map<String, Object> data = processRenderingSettingsInterpreter.generateRuntimeValuesMap(timestamp,
+                                                                                                formData);
+        clearContext(timestamp);
+        return processService.startProcess(serverTemplateId,
+                                           containerId,
+                                           processId,
+                                           correlationKey,
+                                           data);
+    }
+
+    @Override
+    public void saveTaskStateFromRenderContext(Long timestamp,
+                                               Map<String, Object> formData,
+                                               String serverTemplateId,
                                                String containerId,
-                                               String processId,
-                                               String correlationKey ) {
-
-        Map<String, Object> data = processRenderingSettingsInterpreter.generateRuntimeValuesMap( timestamp, formData );
-        clearContext( timestamp );
-        return processService.startProcess( serverTemplateId, containerId, processId, correlationKey, data );
+                                               Long taskId) {
+        Map<String, Object> data = taskRenderingSettingsInterpreter.generateRuntimeValuesMap(timestamp,
+                                                                                             formData);
+        clearContext(timestamp);
+        taskService.saveTaskContent(serverTemplateId,
+                                    containerId,
+                                    taskId,
+                                    data);
     }
 
     @Override
-    public void saveTaskStateFromRenderContext( Long timestamp,
-                                                Map<String, Object> formData,
-                                                String serverTemplateId,
-                                                String containerId,
-                                                Long taskId ) {
-        Map<String, Object> data = taskRenderingSettingsInterpreter.generateRuntimeValuesMap( timestamp, formData );
-        clearContext( timestamp );
-        taskService.saveTaskContent( serverTemplateId, containerId, taskId, data );
-    }
-
-
-    @Override
-    public void completeTaskFromContext( Long timestamp,
-                                         Map<String, Object> formData,
-                                         String serverTemplateId,
-                                         String containerId,
-                                         Long taskId ) {
-        Map<String, Object> data = taskRenderingSettingsInterpreter.generateRuntimeValuesMap( timestamp, formData );
-        clearContext( timestamp );
-        taskService.completeTask( serverTemplateId, containerId, taskId, data );
+    public void completeTaskFromContext(Long timestamp,
+                                        Map<String, Object> formData,
+                                        String serverTemplateId,
+                                        String containerId,
+                                        Long taskId) {
+        Map<String, Object> data = taskRenderingSettingsInterpreter.generateRuntimeValuesMap(timestamp,
+                                                                                             formData);
+        clearContext(timestamp);
+        taskService.completeTask(serverTemplateId,
+                                 containerId,
+                                 taskId,
+                                 data);
     }
 
     @Override
-    public void clearContext( long timestamp ) {
-        contextManager.removeContext( timestamp );
+    public void clearContext(long timestamp) {
+        contextManager.removeContext(timestamp);
     }
 }

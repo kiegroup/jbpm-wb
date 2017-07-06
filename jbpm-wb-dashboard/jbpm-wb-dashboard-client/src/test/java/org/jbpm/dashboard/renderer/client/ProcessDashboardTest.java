@@ -95,33 +95,33 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         super.init();
 
         presenter = new ProcessDashboard(view,
-                processBreadCrumb,
-                clientServices,
-                displayerLocator,
-                displayerCoordinator,
-                placeManager,
-                instanceSelectionEvent,
-                processDashboardFocusEvent,
-                serverTemplateSelectorMenuBuilder);
+                                         processBreadCrumb,
+                                         clientServices,
+                                         displayerLocator,
+                                         displayerCoordinator,
+                                         placeManager,
+                                         instanceSelectionEvent,
+                                         processDashboardFocusEvent,
+                                         serverTemplateSelectorMenuBuilder);
     }
 
     @Test
     public void testDrawAll() {
 
         verify(view).init(presenter,
-                presenter.getTotalMetric(),
-                presenter.getActiveMetric(),
-                presenter.getPendingMetric(),
-                presenter.getSuspendedMetric(),
-                presenter.getAbortedMetric(),
-                presenter.getCompletedMetric(),
-                presenter.getProcessesByType(),
-                presenter.getProcessesByUser(),
-                presenter.getProcessesByStartDate(),
-                presenter.getProcessesByEndDate(),
-                presenter.getProcessesByRunningTime(),
-                presenter.getProcessesByVersion(),
-                presenter.getProcessesTable());
+                          presenter.getTotalMetric(),
+                          presenter.getActiveMetric(),
+                          presenter.getPendingMetric(),
+                          presenter.getSuspendedMetric(),
+                          presenter.getAbortedMetric(),
+                          presenter.getCompletedMetric(),
+                          presenter.getProcessesByType(),
+                          presenter.getProcessesByUser(),
+                          presenter.getProcessesByStartDate(),
+                          presenter.getProcessesByEndDate(),
+                          presenter.getProcessesByRunningTime(),
+                          presenter.getProcessesByVersion(),
+                          presenter.getProcessesTable());
 
         verify(view).showLoading();
 
@@ -144,13 +144,17 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void test_JBPM_4851_Fix() {
-        assertEquals(presenter.getTotalMetric().isFilterOn(), true);
+        assertEquals(presenter.getTotalMetric().isFilterOn(),
+                     true);
     }
 
     @Test
     public void test_JBPM_5834_Fix() {
-        assertEquals(presenter.getTotalMetric().isFilterOn(), true);
-        verify(totalMetricListener, never()).onFilterEnabled(any(), any(DataSetFilter.class));
+        assertEquals(presenter.getTotalMetric().isFilterOn(),
+                     true);
+        verify(totalMetricListener,
+               never()).onFilterEnabled(any(),
+                                        any(DataSetFilter.class));
     }
 
     @Test
@@ -168,50 +172,62 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         presenter.showDashboard();
         verify(view).showDashboard();
         verify(processDashboardFocusEvent).fire(any(ProcessDashboardFocusEvent.class));
-        verify(displayerListener, never()).onRedraw(presenter.getProcessesTable());
+        verify(displayerListener,
+               never()).onRedraw(presenter.getProcessesTable());
     }
 
     @Test
     public void testTotalMetric() {
         Displayer displayer = presenter.getTotalMetric();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
-        assertEquals(dataSet.getValueAt(0, 0), 4d);
+        assertEquals(dataSet.getValueAt(0,
+                                        0),
+                     4d);
     }
 
     @Test
     public void testActiveMetric() {
         Displayer displayer = presenter.getActiveMetric();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
-        assertEquals(dataSet.getValueAt(0, 0), 3d);
+        assertEquals(dataSet.getValueAt(0,
+                                        0),
+                     3d);
     }
 
     @Test
     public void testCompletedMetric() {
         Displayer displayer = presenter.getCompletedMetric();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
-        assertEquals(dataSet.getValueAt(0, 0), 1d);
+        assertEquals(dataSet.getValueAt(0,
+                                        0),
+                     1d);
     }
 
     @Test
     public void testAbortedTotalMetric() {
         Displayer displayer = presenter.getAbortedMetric();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
-        assertEquals(dataSet.getValueAt(0, 0), 0d);
-
+        assertEquals(dataSet.getValueAt(0,
+                                        0),
+                     0d);
     }
 
     @Test
     public void testPendingMetric() {
         Displayer displayer = presenter.getPendingMetric();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
-        assertEquals(dataSet.getValueAt(0, 0), 0d);
+        assertEquals(dataSet.getValueAt(0,
+                                        0),
+                     0d);
     }
 
     @Test
     public void testSuspendedMetric() {
         Displayer displayer = presenter.getSuspendedMetric();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
-        assertEquals(dataSet.getValueAt(0, 0), 0d);
+        assertEquals(dataSet.getValueAt(0,
+                                        0),
+                     0d);
     }
 
     @Test
@@ -219,9 +235,11 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         Displayer displayer = presenter.getProcessesByEndDate();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
 
-        assertDataSetValues(dataSet, new String[][]{
-                {"2019-01-02", "1.00"}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"2019-01-02", "1.00"}
+                            },
+                            0);
     }
 
     @Test
@@ -229,9 +247,11 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         Displayer displayer = presenter.getProcessesByStartDate();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
 
-        assertDataSetValues(dataSet, new String[][]{
-                {"2019-01-01", "4.00"}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"2019-01-01", "4.00"}
+                            },
+                            0);
     }
 
     @Test
@@ -239,9 +259,11 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         Displayer displayer = presenter.getProcessesByRunningTime();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
 
-        assertDataSetValues(dataSet, new String[][]{
-                {"Process B", "1.00", "100,000.00", "Process B", "1.00"}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"Process B", "1.00", "100,000.00", "Process B", "1.00"}
+                            },
+                            0);
     }
 
     @Test
@@ -249,10 +271,12 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         Displayer displayer = presenter.getProcessesByType();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
 
-        assertDataSetValues(dataSet, new String[][]{
-                {"Process A", "2.00"},
-                {"Process B", "2.00"}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"Process A", "2.00"},
+                                    {"Process B", "2.00"}
+                            },
+                            0);
     }
 
     @Test
@@ -260,10 +284,12 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         Displayer displayer = presenter.getProcessesByUser();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
 
-        assertDataSetValues(dataSet, new String[][]{
-                {"user1", "2.00"},
-                {"user2", "2.00"}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"user1", "2.00"},
+                                    {"user2", "2.00"}
+                            },
+                            0);
     }
 
     @Test
@@ -271,9 +297,11 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         Displayer displayer = presenter.getProcessesByVersion();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
 
-        assertDataSetValues(dataSet, new String[][]{
-                {"1", "4.00"}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"1", "4.00"}
+                            },
+                            0);
     }
 
     @Test
@@ -281,12 +309,14 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         Displayer displayer = presenter.getProcessesTable();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
 
-        assertDataSetValues(dataSet, new String[][]{
-                {"1.00", "org.jbpm.test", "1", "Process A", "user1", "1.00", "1", "01/01/19 12:00", "", ""},
-                {"2.00", "org.jbpm.test", "1", "Process A", "user2", "1.00", "1", "01/01/19 12:00", "", ""},
-                {"3.00", "org.jbpm.test", "1", "Process B", "user1", "1.00", "1", "01/01/19 12:00", "", ""},
-                {"4.00", "org.jbpm.test", "1", "Process B", "user2", "2.00", "1", "01/01/19 12:00", "01/02/19 10:00", "100,000.00"}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"1.00", "org.jbpm.test", "1", "Process A", "user1", "1.00", "1", "01/01/19 12:00", "", ""},
+                                    {"2.00", "org.jbpm.test", "1", "Process A", "user2", "1.00", "1", "01/01/19 12:00", "", ""},
+                                    {"3.00", "org.jbpm.test", "1", "Process B", "user1", "1.00", "1", "01/01/19 12:00", "", ""},
+                                    {"4.00", "org.jbpm.test", "1", "Process B", "user2", "2.00", "1", "01/01/19 12:00", "01/02/19 10:00", "100,000.00"}
+                            },
+                            0);
     }
 
     @Test
@@ -294,14 +324,20 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         reset(view);
         reset(displayerListener);
 
-        presenter.getProcessesByType().filterUpdate(COLUMN_PROCESS_NAME, 1);
+        presenter.getProcessesByType().filterUpdate(COLUMN_PROCESS_NAME,
+                                                    1);
         final String process = "Process B";
-        assertEquals(presenter.getSelectedProcess(), process);
+        assertEquals(presenter.getSelectedProcess(),
+                     process);
 
         verify(view).showBreadCrumb(process);
-        verify(view).setHeaderText(i18n.selectedProcessStatusHeader("", process));
-        verify(displayerListener, times(12)).onRedraw(any(Displayer.class));
-        verify(displayerListener, never()).onError(any(Displayer.class), any(ClientRuntimeError.class));
+        verify(view).setHeaderText(i18n.selectedProcessStatusHeader("",
+                                                                    process));
+        verify(displayerListener,
+               times(12)).onRedraw(any(Displayer.class));
+        verify(displayerListener,
+               never()).onError(any(Displayer.class),
+                                any(ClientRuntimeError.class));
     }
 
     @Test
@@ -317,7 +353,8 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         reset(presenter.getSuspendedMetric().getView());
         reset(presenter.getCompletedMetric().getView());
         reset(presenter.getPendingMetric().getView());
-        presenter.getProcessesByType().filterUpdate(COLUMN_PROCESS_NAME, 1);
+        presenter.getProcessesByType().filterUpdate(COLUMN_PROCESS_NAME,
+                                                    1);
 
         verify(displayerListener).onRedraw(presenter.getTotalMetric());
         verify(displayerListener).onRedraw(presenter.getActiveMetric());
@@ -350,19 +387,27 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         MetricDisplayer activeMetric = presenter.getActiveMetric();
         activeMetric.filterApply();
 
-        assertEquals(presenter.getSelectedMetric(), activeMetric);
+        assertEquals(presenter.getSelectedMetric(),
+                     activeMetric);
         verify(view).setHeaderText(i18n.activeProcesses());
-        verify(displayerListener).onFilterEnabled(eq(activeMetric), any(DataSetFilter.class));
-        verify(displayerListener, times(1)).onFilterEnabled(any(Displayer.class), any(DataSetFilter.class));
-        verify(displayerListener, never()).onFilterReset(any(Displayer.class), any(DataSetFilter.class));
+        verify(displayerListener).onFilterEnabled(eq(activeMetric),
+                                                  any(DataSetFilter.class));
+        verify(displayerListener,
+               times(1)).onFilterEnabled(any(Displayer.class),
+                                         any(DataSetFilter.class));
+        verify(displayerListener,
+               never()).onFilterReset(any(Displayer.class),
+                                      any(DataSetFilter.class));
 
         // Check that only processes with status=active are shown
         DataSet dataSet = presenter.getProcessesTable().getDataSetHandler().getLastDataSet();
-        assertDataSetValues(dataSet, new String[][]{
-                {"1.00", "org.jbpm.test", "1", "Process A", "user1", "1.00", "1", "01/01/19 12:00", "", ""},
-                {"2.00", "org.jbpm.test", "1", "Process A", "user2", "1.00", "1", "01/01/19 12:00", "", ""},
-                {"3.00", "org.jbpm.test", "1", "Process B", "user1", "1.00", "1", "01/01/19 12:00", "", ""}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"1.00", "org.jbpm.test", "1", "Process A", "user1", "1.00", "1", "01/01/19 12:00", "", ""},
+                                    {"2.00", "org.jbpm.test", "1", "Process A", "user2", "1.00", "1", "01/01/19 12:00", "", ""},
+                                    {"3.00", "org.jbpm.test", "1", "Process B", "user1", "1.00", "1", "01/01/19 12:00", "", ""}
+                            },
+                            0);
     }
 
     @Test
@@ -370,22 +415,28 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         MetricDisplayer activeMetric = presenter.getActiveMetric();
         activeMetric.filterApply();
 
-        reset(displayerListener, view);
+        reset(displayerListener,
+              view);
         activeMetric.filterReset();
 
         assertNull(presenter.getSelectedMetric());
         verify(view).setHeaderText(i18n.allProcesses());
-        verify(displayerListener).onFilterReset(eq(activeMetric), any(DataSetFilter.class));
-        verify(displayerListener, times(1)).onFilterReset(any(Displayer.class), any(DataSetFilter.class));
+        verify(displayerListener).onFilterReset(eq(activeMetric),
+                                                any(DataSetFilter.class));
+        verify(displayerListener,
+               times(1)).onFilterReset(any(Displayer.class),
+                                       any(DataSetFilter.class));
 
         // Check that only processes with status=active are shown
         DataSet dataSet = presenter.getProcessesTable().getDataSetHandler().getLastDataSet();
-        assertDataSetValues(dataSet, new String[][]{
-                {"1.00", "org.jbpm.test", "1", "Process A", "user1", "1.00", "1", "01/01/19 12:00", "", ""},
-                {"2.00", "org.jbpm.test", "1", "Process A", "user2", "1.00", "1", "01/01/19 12:00", "", ""},
-                {"3.00", "org.jbpm.test", "1", "Process B", "user1", "1.00", "1", "01/01/19 12:00", "", ""},
-                {"4.00", "org.jbpm.test", "1", "Process B", "user2", "2.00", "1", "01/01/19 12:00", "01/02/19 10:00", "100,000.00"}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"1.00", "org.jbpm.test", "1", "Process A", "user1", "1.00", "1", "01/01/19 12:00", "", ""},
+                                    {"2.00", "org.jbpm.test", "1", "Process A", "user2", "1.00", "1", "01/01/19 12:00", "", ""},
+                                    {"3.00", "org.jbpm.test", "1", "Process B", "user1", "1.00", "1", "01/01/19 12:00", "", ""},
+                                    {"4.00", "org.jbpm.test", "1", "Process B", "user2", "2.00", "1", "01/01/19 12:00", "01/02/19 10:00", "100,000.00"}
+                            },
+                            0);
     }
 
     @Test
@@ -394,45 +445,70 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         MetricDisplayer completedMetric = presenter.getCompletedMetric();
         activeMetric.filterApply();
 
-        reset(displayerListener, view, activeMetric.getView());
+        reset(displayerListener,
+              view,
+              activeMetric.getView());
         completedMetric.filterApply();
 
-        assertEquals(presenter.getSelectedMetric(), completedMetric);
+        assertEquals(presenter.getSelectedMetric(),
+                     completedMetric);
         verify(activeMetric.getView()).setHtml(anyString());
-        verify(displayerListener).onFilterReset(eq(activeMetric), any(DataSetFilter.class));
-        verify(displayerListener).onFilterEnabled(eq(completedMetric), any(DataSetFilter.class));
+        verify(displayerListener).onFilterReset(eq(activeMetric),
+                                                any(DataSetFilter.class));
+        verify(displayerListener).onFilterEnabled(eq(completedMetric),
+                                                  any(DataSetFilter.class));
 
         // Check that only processes with status=completed are shown
         DataSet dataSet = presenter.getProcessesTable().getDataSetHandler().getLastDataSet();
-        assertDataSetValues(dataSet, new String[][]{
-                {"4.00", "org.jbpm.test", "1", "Process B", "user2", "2.00", "1", "01/01/19 12:00", "01/02/19 10:00", "100,000.00"}
-        }, 0);
+        assertDataSetValues(dataSet,
+                            new String[][]{
+                                    {"4.00", "org.jbpm.test", "1", "Process B", "user2", "2.00", "1", "01/01/19 12:00", "01/02/19 10:00", "100,000.00"}
+                            },
+                            0);
     }
 
     @Test
     public void testOpenInstanceDetails() {
         when(placeManager.getStatus(ProcessDashboard.PROCESS_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
-        presenter.tableCellSelected(COLUMN_PROCESS_INSTANCE_ID, 3);
+        presenter.tableCellSelected(COLUMN_PROCESS_INSTANCE_ID,
+                                    3);
         verify(instanceSelectionEvent).fire(any(ProcessInstanceSelectionEvent.class));
         verify(processDashboardFocusEvent).fire(any(ProcessDashboardFocusEvent.class));
         verify(placeManager).goTo(ProcessDashboard.PROCESS_DETAILS_SCREEN_ID);
     }
 
     @Test
-    public void testHeaderText(){
+    public void testHeaderText() {
         final String process = "Process Test";
 
-        verifyMetricHeaderText(process, presenter.getTotalMetric(), i18n.selectedProcessStatusHeader("", process));
-        verifyMetricHeaderText(process, presenter.getActiveMetric(), i18n.selectedProcessStatusHeader(i18n.processStatusActive(), process));
-        verifyMetricHeaderText(process, presenter.getPendingMetric(), i18n.selectedProcessStatusHeader(i18n.processStatusPending(), process));
-        verifyMetricHeaderText(process, presenter.getSuspendedMetric(), i18n.selectedProcessStatusHeader(i18n.processStatusSuspended(), process));
-        verifyMetricHeaderText(process, presenter.getAbortedMetric(), i18n.selectedProcessStatusHeader(i18n.processStatusAborted(), process));
-        verifyMetricHeaderText(process, presenter.getCompletedMetric(), i18n.selectedProcessStatusHeader(i18n.processStatusCompleted(), process));
+        verifyMetricHeaderText(process,
+                               presenter.getTotalMetric(),
+                               i18n.selectedProcessStatusHeader("",
+                                                                process));
+        verifyMetricHeaderText(process,
+                               presenter.getActiveMetric(),
+                               i18n.selectedProcessStatusHeader(i18n.processStatusActive(),
+                                                                process));
+        verifyMetricHeaderText(process,
+                               presenter.getPendingMetric(),
+                               i18n.selectedProcessStatusHeader(i18n.processStatusPending(),
+                                                                process));
+        verifyMetricHeaderText(process,
+                               presenter.getSuspendedMetric(),
+                               i18n.selectedProcessStatusHeader(i18n.processStatusSuspended(),
+                                                                process));
+        verifyMetricHeaderText(process,
+                               presenter.getAbortedMetric(),
+                               i18n.selectedProcessStatusHeader(i18n.processStatusAborted(),
+                                                                process));
+        verifyMetricHeaderText(process,
+                               presenter.getCompletedMetric(),
+                               i18n.selectedProcessStatusHeader(i18n.processStatusCompleted(),
+                                                                process));
 
         reset(view);
         presenter.resetCurrentProcess();
         presenter.resetCurrentMetric();
         verify(view).setHeaderText(i18n.allProcesses());
     }
-
 }

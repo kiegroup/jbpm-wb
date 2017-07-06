@@ -19,134 +19,147 @@ package org.jbpm.workbench.common.model;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-
 @Portable
-public class PortableQueryFilter implements QueryFilter, Serializable{
+public class PortableQueryFilter implements QueryFilter,
+                                            Serializable {
 
-  private int offset;
-  private int count;
-  private boolean isSingleResult;
-  private String language;
-  private String orderBy;
-  private boolean isAscending;
-  private String filterParams;
-  private Map<String, Object> params = new HashMap<String, Object>();
+    private int offset;
+    private int count;
+    private boolean isSingleResult;
+    private String language;
+    private String orderBy;
+    private boolean isAscending;
+    private String filterParams;
+    private Map<String, Object> params = new HashMap<String, Object>();
 
-  public PortableQueryFilter() {
-  }
+    public PortableQueryFilter() {
+    }
 
-  public PortableQueryFilter(int offset, int count, boolean isSingleResult, String language, String orderBy, boolean isAscending) {
-    this.offset = offset;
-    this.count = count;
-    this.isSingleResult = isSingleResult;
-    this.language = language;
-    this.orderBy = orderBy;
-    this.isAscending = isAscending;
-  }
+    public PortableQueryFilter(int offset,
+                               int count,
+                               boolean isSingleResult,
+                               String language,
+                               String orderBy,
+                               boolean isAscending) {
+        this.offset = offset;
+        this.count = count;
+        this.isSingleResult = isSingleResult;
+        this.language = language;
+        this.orderBy = orderBy;
+        this.isAscending = isAscending;
+    }
 
-  public PortableQueryFilter(int offset, int count, boolean isSingleResult, String language, String orderBy, boolean isAscending, String filterParams, Map<String, Object> params) {
-    this.offset = offset;
-    this.count = count;
-    this.isSingleResult = isSingleResult;
-    this.language = language;
-    this.orderBy = orderBy;
-    this.isAscending = isAscending;
-    this.filterParams = filterParams;
-    this.params = params;
-  }
-  
-  
-  
-  
-  @Override
-  public Integer getOffset() {
-    return offset;
-  }
+    public PortableQueryFilter(int offset,
+                               int count,
+                               boolean isSingleResult,
+                               String language,
+                               String orderBy,
+                               boolean isAscending,
+                               String filterParams,
+                               Map<String, Object> params) {
+        this.offset = offset;
+        this.count = count;
+        this.isSingleResult = isSingleResult;
+        this.language = language;
+        this.orderBy = orderBy;
+        this.isAscending = isAscending;
+        this.filterParams = filterParams;
+        this.params = params;
+    }
 
-  @Override
-  public Integer getCount() {
-    return count;
-  }
+    @Override
+    public Integer getOffset() {
+        return offset;
+    }
 
-  @Override
-  public boolean isSingleResult() {
-    return isSingleResult;
-  }
+    @Override
+    public void setOffset(Integer offset) {
+        this.offset = offset;
+    }
 
-  @Override
-  public String getLanguage() {
-    return language;
-  }
+    @Override
+    public Integer getCount() {
+        return count;
+    }
 
-  @Override
-  public String getOrderBy() {
-    return orderBy;
-  }
+    @Override
+    public void setCount(Integer count) {
+        this.count = count;
+    }
 
-  @Override
-  public String getFilterParams() {
-    return filterParams;
-  }
+    @Override
+    public boolean isSingleResult() {
+        return isSingleResult;
+    }
 
-  @Override
-  public Map<String, Object> getParams() {
-    return params;
-  }
+    @Override
+    public String getLanguage() {
+        return language;
+    }
 
-  @Override
-  public Boolean isAscending() {
-    return isAscending;
-  }
+    @Override
+    public void setLanguage(String language) {
+        this.language = language;
+    }
 
-  @Override
-  public void setOffset(Integer offset) {
-    this.offset = offset;
-  }
+    @Override
+    public String getOrderBy() {
+        return orderBy;
+    }
 
-  @Override
-  public void setCount(Integer count) {
-    this.count = count;
-  }
+    @Override
+    public void setOrderBy(String orderBy) {
+        this.orderBy = orderBy;
+    }
 
-  @Override
-  public void setIsSingleResult(boolean isSingleResult) {
-    this.isSingleResult = isSingleResult;
-  }
+    @Override
+    public String getFilterParams() {
+        return filterParams;
+    }
 
-  @Override
-  public void setLanguage(String language) {
-    this.language = language;
-  }
+    @Override
+    public void setFilterParams(String filterParams) {
+        this.filterParams = filterParams;
+    }
 
-  @Override
-  public void setOrderBy(String orderBy) {
-    this.orderBy = orderBy;
-  }
+    @Override
+    public Map<String, Object> getParams() {
+        return params;
+    }
 
-  @Override
-  public void setIsAscending(Boolean isAscending) {
-    this.isAscending = isAscending;
-  }
+    @Override
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
+    }
 
-  @Override
-  public void setFilterParams(String filterParams) {
-    this.filterParams = filterParams;
-  }
+    @Override
+    public Boolean isAscending() {
+        return isAscending;
+    }
 
-  @Override
-  public void setParams(Map<String, Object> params) {
-    this.params = params;
-  }
+    @Override
+    public void setIsSingleResult(boolean isSingleResult) {
+        this.isSingleResult = isSingleResult;
+    }
 
-  
-  
-  @Override
-  public String toString() {
-    return "PortableQueryFilter{" + "offset=" + offset + ", count=" + count + ", isSingleResult=" + isSingleResult + ", language=" + language + ", orderBy=" + orderBy + ", isAscending=" + isAscending + ", filterParams=" + filterParams + ", params=" + params + '}';
-  }
-  
-  
-  
+    @Override
+    public void setIsAscending(Boolean isAscending) {
+        this.isAscending = isAscending;
+    }
+
+    @Override
+    public String toString() {
+        return "PortableQueryFilter{" +
+                "offset=" + offset +
+                ", count=" + count +
+                ", isSingleResult=" + isSingleResult +
+                ", language=" + language +
+                ", orderBy=" + orderBy +
+                ", isAscending=" + isAscending +
+                ", filterParams=" + filterParams +
+                ", params=" + params + '}';
+    }
 }

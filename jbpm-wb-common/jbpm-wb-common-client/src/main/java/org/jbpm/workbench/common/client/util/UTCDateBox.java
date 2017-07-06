@@ -31,16 +31,22 @@ import org.uberfire.ext.widgets.common.client.common.DatePicker;
  * the number of milliseconds since January 1, 1970, 00:00:00 GMT <b>at midnight
  * on the day, month, and year selected</b>. This avoids time zone conversion
  * issues encountered using the DateBox.
- *
+ * <p>
  * <p>
  * Note: In keeping with the behavior of the GWT DateBox, null is used to
  * represent no value. This means that you should check for null when calling
  * getValue(), just as you would for DateBox. With auto-boxing Long/long, this
  * may seem strange but is consistent.
  */
-public class UTCDateBox extends Composite implements HasValue<Long>, HasValueChangeHandlers<Long>, HasEnabled {
+public class UTCDateBox extends Composite implements HasValue<Long>,
+                                                     HasValueChangeHandlers<Long>,
+                                                     HasEnabled {
 
+    public static final long DAY_IN_MS = 24L * 60L * 60L * 1000L;
     private DatePicker datePicker;
+
+    // ----------------------------------------------------------------------
+    // HasValue 
 
     /**
      * Creates a new UTCDateBox with the medium date format for the
@@ -52,62 +58,119 @@ public class UTCDateBox extends Composite implements HasValue<Long>, HasValueCha
         initWidget(datePicker);
     }
 
+    public static final long trimTimeToMidnight(long time) {
+        // first trim to midnight
+        return time - time % DAY_IN_MS;
+    }
+
+    /**
+     * Converts a time in UTC to a gwt Date object which is in the timezone of
+     * the current browser.
+     * @return The Date corresponding to the time, adjusted for the timezone of
+     * the current browser. null if the specified time is null or
+     * represents a negative number.
+     */
+    public static final Date utc2date(Long time) {
+
+        // don't accept negative values
+        if (time == null || time < 0) {
+            return null;
+        }
+
+        // add the timezone offset
+        time += timezoneOffsetMillis(new Date(time));
+
+        return new Date(time);
+    }
+
+    /**
+     * Converts a gwt Date in the timezone of the current browser to a time in
+     * UTC.
+     * @return A Long corresponding to the number of milliseconds since January
+     * 1, 1970, 00:00:00 GMT or null if the specified Date is null.
+     */
+    public static final Long date2utc(Date date) {
+
+        // use null for a null date
+        if (date == null) {
+            return null;
+        }
+
+        long time = date.getTime();
+
+        // remove the timezone offset
+        time -= timezoneOffsetMillis(date);
+
+        return time;
+    }
 
     // ----------------------------------------------------------------------
-    // HasValue 
+    // HasEnabled
+
+    public static final Long getValueForToday() {
+        return trimTimeToMidnight(date2utc(new Date()));
+    }
+
+    /**
+     * Returns the timezone offset for the specified Date.
+     */
+    @SuppressWarnings("deprecation")
+    public static final long timezoneOffsetMillis(Date date) {
+        return date.getTimezoneOffset() * 60 * 1000;
+    }
+
+    // ----------------------------------------------------------------------
 
     /**
      * Returns the date value specified by the DateBox measured in number of
      * milliseconds since January 1, 1970, 00:00:00 GMT. This time will always
      * correspond to midnight in GMT on the date selected.
-     *
      * @return The time selected or null if no value is specified by the
-     *         DateBox.
+     * DateBox.
      */
     @Override
     public Long getValue() {
         return UTCDateBox.date2utc(datePicker.getValue());
     }
 
+    // ----------------------------------------------------------------------
+    // conversion methods that convert to dates in UTC time
+
     /**
      * Sets the value in the DateBox.
-     *
-     * @param value
-     *            A time measured in the number of milliseconds since January 1,
-     *            1970, 00:00:00 GMT. This time should be at midnight in GMT for
-     *            the Date selected.
-     *            <p>
-     *            If value is null or represents a negative number, the DateBox
-     *            will have no value.
+     * @param value A time measured in the number of milliseconds since January 1,
+     * 1970, 00:00:00 GMT. This time should be at midnight in GMT for
+     * the Date selected.
+     * <p>
+     * If value is null or represents a negative number, the DateBox
+     * will have no value.
      */
     @Override
     public void setValue(Long value) {
-        setValue(value, false);
+        setValue(value,
+                 false);
     }
 
     /**
      * Sets the value in the DateBox.
-     *
-     * @param value
-     *            A time measured in the number of milliseconds since January 1,
-     *            1970, 00:00:00 GMT. This time should be at midnight in GMT for
-     *            the Date selected.
-     *            <p>
-     *            If value is null or represents a negative number, the DateBox
-     *            will have no value.
+     * @param value A time measured in the number of milliseconds since January 1,
+     * 1970, 00:00:00 GMT. This time should be at midnight in GMT for
+     * the Date selected.
+     * <p>
+     * If value is null or represents a negative number, the DateBox
+     * will have no value.
      */
     @Override
-    public void setValue(Long value, boolean fireEvents) {
-        datePicker.setValue(UTCDateBox.utc2date(value), fireEvents);
+    public void setValue(Long value,
+                         boolean fireEvents) {
+        datePicker.setValue(UTCDateBox.utc2date(value),
+                            fireEvents);
     }
 
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler handler) {
         return datePicker.addValueChangeHandler(handler);
     }
-
-    // ----------------------------------------------------------------------
-    // HasEnabled
 
     @Override
     public boolean isEnabled() {
@@ -119,72 +182,7 @@ public class UTCDateBox extends Composite implements HasValue<Long>, HasValueCha
         datePicker.setEnabled(enabled);
     }
 
-    // ----------------------------------------------------------------------
-
-
     public DatePicker getDateBox() {
         return datePicker;
     }
-
-    // ----------------------------------------------------------------------
-    // conversion methods that convert to dates in UTC time
-
-    public static final long DAY_IN_MS = 24L*60L*60L*1000L;
-
-    public static final long trimTimeToMidnight(long time) {
-        // first trim to midnight
-        return time - time % DAY_IN_MS;
-    }
-
-    /**
-     * Converts a time in UTC to a gwt Date object which is in the timezone of
-     * the current browser.
-     *
-     * @return The Date corresponding to the time, adjusted for the timezone of
-     *         the current browser. null if the specified time is null or
-     *         represents a negative number.
-     */
-    public static final Date utc2date(Long time) {
-
-        // don't accept negative values
-        if (time == null || time < 0) return null;
-
-        // add the timezone offset
-        time += timezoneOffsetMillis(new Date(time));
-
-        return new Date(time);
-    }
-
-    /**
-     * Converts a gwt Date in the timezone of the current browser to a time in
-     * UTC.
-     *
-     * @return A Long corresponding to the number of milliseconds since January
-     *         1, 1970, 00:00:00 GMT or null if the specified Date is null.
-     */
-    public static final Long date2utc(Date date) {
-
-        // use null for a null date
-        if (date == null) return null;
-
-        long time = date.getTime();
-
-        // remove the timezone offset        
-        time -= timezoneOffsetMillis(date);
-
-        return time;
-    }
-
-    public static final Long getValueForToday() {
-        return trimTimeToMidnight(date2utc(new Date()));
-    }
-
-    /**
-     * Returns the timezone offset for the specified Date.
-     */
-    @SuppressWarnings("deprecation")
-    public static final long timezoneOffsetMillis(Date date) {
-        return date.getTimezoneOffset()*60*1000;
-    }
-
 }

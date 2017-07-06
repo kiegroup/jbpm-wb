@@ -52,30 +52,9 @@ import static org.jbpm.dashboard.renderer.model.DashboardData.*;
 public class ProcessDashboard extends AbstractDashboard implements IsWidget {
 
     public static final String PROCESS_DETAILS_SCREEN_ID = "Process Instance Details Multi";
-
-    public interface View extends AbstractDashboard.View {
-
-        void init(ProcessDashboard presenter,
-                  Displayer totalMetric,
-                  Displayer activeMetric,
-                  Displayer pendingMetric,
-                  Displayer suspendedMetric,
-                  Displayer abortedMetric,
-                  Displayer completedMetric,
-                  Displayer processesByType,
-                  Displayer processesByUser,
-                  Displayer processesByStartDate,
-                  Displayer processesByEndDate,
-                  Displayer processesByRunningTime,
-                  Displayer processesByVersion,
-                  Displayer processesTable);
-
-    }
-
     protected View view;
     protected Event<ProcessInstanceSelectionEvent> instanceSelectionEvent;
     protected Event<ProcessDashboardFocusEvent> processDashboardFocusEvent;
-
     protected MetricDisplayer totalMetric;
     protected MetricDisplayer activeMetric;
     protected MetricDisplayer pendingMetric;
@@ -89,10 +68,58 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
     protected AbstractDisplayer processesByRunningTime;
     protected AbstractDisplayer processesByVersion;
     protected TableDisplayer processesTable;
-
     protected List<Displayer> metricsGroup = new ArrayList<>();
     protected List<Displayer> chartsGroup = new ArrayList<>();
     protected String totalProcessesTitle;
+    DisplayerListener dashboardListener = new AbstractDisplayerListener() {
+
+        @Override
+        public void onDraw(Displayer displayer) {
+            if (totalMetric == displayer) {
+                // The dashboard can be considered empty if the total process count is 0
+                DataSet ds = displayer.getDataSetHandler().getLastDataSet();
+                if (ds.getRowCount() == 0) {
+                    showBlankDashboard();
+                }
+            }
+        }
+
+        @Override
+        public void onFilterEnabled(Displayer displayer,
+                                    DataSetGroup groupOp) {
+            if (COLUMN_PROCESS_NAME.equals(groupOp.getColumnGroup().getSourceId())) {
+                Interval interval = groupOp.getSelectedIntervalList().get(0);
+                changeCurrentProcess(interval.getName());
+            }
+        }
+
+        @Override
+        public void onFilterReset(Displayer displayer,
+                                  List<DataSetGroup> groupOps) {
+            for (DataSetGroup groupOp : groupOps) {
+                if (COLUMN_PROCESS_NAME.equals(groupOp.getColumnGroup().getSourceId())) {
+                    resetCurrentProcess();
+                    return;
+                }
+            }
+        }
+
+        @Override
+        public void onFilterEnabled(Displayer displayer,
+                                    DataSetFilter filter) {
+            if (metricsGroup.contains(displayer)) {
+                changeCurrentMetric((MetricDisplayer) displayer);
+            }
+        }
+
+        @Override
+        public void onFilterReset(Displayer displayer,
+                                  DataSetFilter filter) {
+            if (metricsGroup.contains(displayer)) {
+                resetCurrentMetric();
+            }
+        }
+    };
 
     @Inject
     public ProcessDashboard(final View view,
@@ -105,7 +132,13 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
                             final Event<ProcessDashboardFocusEvent> processDashboardFocusEvent,
                             final ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder) {
 
-        super(dataSetClientServices, placeManager, view.getI18nService(), processBreadCrumb, displayerLocator, displayerCoordinator, serverTemplateSelectorMenuBuilder);
+        super(dataSetClientServices,
+              placeManager,
+              view.getI18nService(),
+              processBreadCrumb,
+              displayerLocator,
+              displayerCoordinator,
+              serverTemplateSelectorMenuBuilder);
         this.view = view;
         this.instanceSelectionEvent = instanceSelectionEvent;
         this.processDashboardFocusEvent = processDashboardFocusEvent;
@@ -122,19 +155,22 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
         totalProcessesTitle = totalProcesses.getTitle();
 
         view.init(this,
-                totalMetric = createMetricDisplayer(totalProcesses),
-                activeMetric = createMetricDisplayer(DashboardKpis.processesActive(i18n)),
-                pendingMetric = createMetricDisplayer(DashboardKpis.processesPending(i18n)),
-                suspendedMetric = createMetricDisplayer(DashboardKpis.processesSuspended(i18n)),
-                abortedMetric = createMetricDisplayer(DashboardKpis.processesAborted(i18n)),
-                completedMetric = createMetricDisplayer(DashboardKpis.processesCompleted(i18n)),
-                processesByType = createDisplayer(DashboardKpis.processesByType(i18n)),
-                processesByUser = createDisplayer(DashboardKpis.processesByUser(i18n)),
-                processesByStartDate = createDisplayer(DashboardKpis.processesByStartDate(i18n)),
-                processesByEndDate = createDisplayer(DashboardKpis.processesByEndDate(i18n)),
-                processesByRunningTime = createDisplayer(DashboardKpis.processesByRunningTime(i18n)),
-                processesByVersion = createDisplayer(DashboardKpis.processesByVersion(i18n)),
-                processesTable = createTableDisplayer(DashboardKpis.processesTable(i18n), COLUMN_PROCESS_DURATION, new DurationFormatter(COLUMN_PROCESS_START_DATE, COLUMN_PROCESS_END_DATE)));
+                  totalMetric = createMetricDisplayer(totalProcesses),
+                  activeMetric = createMetricDisplayer(DashboardKpis.processesActive(i18n)),
+                  pendingMetric = createMetricDisplayer(DashboardKpis.processesPending(i18n)),
+                  suspendedMetric = createMetricDisplayer(DashboardKpis.processesSuspended(i18n)),
+                  abortedMetric = createMetricDisplayer(DashboardKpis.processesAborted(i18n)),
+                  completedMetric = createMetricDisplayer(DashboardKpis.processesCompleted(i18n)),
+                  processesByType = createDisplayer(DashboardKpis.processesByType(i18n)),
+                  processesByUser = createDisplayer(DashboardKpis.processesByUser(i18n)),
+                  processesByStartDate = createDisplayer(DashboardKpis.processesByStartDate(i18n)),
+                  processesByEndDate = createDisplayer(DashboardKpis.processesByEndDate(i18n)),
+                  processesByRunningTime = createDisplayer(DashboardKpis.processesByRunningTime(i18n)),
+                  processesByVersion = createDisplayer(DashboardKpis.processesByVersion(i18n)),
+                  processesTable = createTableDisplayer(DashboardKpis.processesTable(i18n),
+                                                        COLUMN_PROCESS_DURATION,
+                                                        new DurationFormatter(COLUMN_PROCESS_START_DATE,
+                                                                              COLUMN_PROCESS_END_DATE)));
 
         totalMetric.setFilterOn(true);
         selectedMetric = totalMetric;
@@ -158,7 +194,8 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
         displayerCoordinator.addDisplayers(chartsGroup);
         displayerCoordinator.addNotificationVeto(metricsGroup);
         displayerCoordinator.addListener(dashboardListener);
-        displayerCoordinator.drawAll(()->view.hideLoading(), ()->view.hideLoading());
+        displayerCoordinator.drawAll(() -> view.hideLoading(),
+                                     () -> view.hideLoading());
     }
 
     public MetricDisplayer getTotalMetric() {
@@ -251,24 +288,34 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
             } else if (completedMetric == selectedMetric) {
                 status = i18n.processStatusCompleted();
             }
-            view.setHeaderText(i18n.selectedProcessStatusHeader(status, selectedProcess));
+            view.setHeaderText(i18n.selectedProcessStatusHeader(status,
+                                                                selectedProcess));
         }
     }
 
-    public void tableCellSelected(String columnId, int rowIndex) {
+    public void tableCellSelected(String columnId,
+                                  int rowIndex) {
         DataSet ds = processesTable.getDataSetHandler().getLastDataSet();
-        String deploymentId = ds.getValueAt(rowIndex, COLUMN_PROCESS_EXTERNAL_ID).toString();
-        Long processInstanceId = Double.valueOf(ds.getValueAt(rowIndex, COLUMN_PROCESS_INSTANCE_ID).toString()).longValue();
-        String processDefId = ds.getValueAt(rowIndex, COLUMN_PROCESS_ID).toString();
-        String processDefName = ds.getValueAt(rowIndex, COLUMN_PROCESS_NAME).toString();
-        Integer processInstanceStatus = Double.valueOf(ds.getValueAt(rowIndex, COLUMN_PROCESS_STATUS).toString()).intValue();
+        String deploymentId = ds.getValueAt(rowIndex,
+                                            COLUMN_PROCESS_EXTERNAL_ID).toString();
+        Long processInstanceId = Double.valueOf(ds.getValueAt(rowIndex,
+                                                              COLUMN_PROCESS_INSTANCE_ID).toString()).longValue();
+        String processDefId = ds.getValueAt(rowIndex,
+                                            COLUMN_PROCESS_ID).toString();
+        String processDefName = ds.getValueAt(rowIndex,
+                                              COLUMN_PROCESS_NAME).toString();
+        Integer processInstanceStatus = Double.valueOf(ds.getValueAt(rowIndex,
+                                                                     COLUMN_PROCESS_STATUS).toString()).intValue();
 
         openProcessDetailsScreen();
 
         instanceSelectionEvent.fire(new ProcessInstanceSelectionEvent(
-                deploymentId, processInstanceId,
-                processDefId, processDefName,
-                processInstanceStatus, true,
+                deploymentId,
+                processInstanceId,
+                processDefId,
+                processDefName,
+                processInstanceStatus,
+                true,
                 serverTemplateSelectorMenuBuilder.getSelectedServerTemplate()));
     }
 
@@ -303,50 +350,22 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
         closeProcessDetailsScreen();
     }
 
-    DisplayerListener dashboardListener = new AbstractDisplayerListener() {
+    public interface View extends AbstractDashboard.View {
 
-        @Override
-        public void onDraw(Displayer displayer) {
-            if (totalMetric == displayer) {
-                // The dashboard can be considered empty if the total process count is 0
-                DataSet ds = displayer.getDataSetHandler().getLastDataSet();
-                if (ds.getRowCount() == 0) {
-                    showBlankDashboard();
-                }
-            }
-        }
-
-        @Override
-        public void onFilterEnabled(Displayer displayer, DataSetGroup groupOp) {
-            if (COLUMN_PROCESS_NAME.equals(groupOp.getColumnGroup().getSourceId())) {
-                Interval interval = groupOp.getSelectedIntervalList().get(0);
-                changeCurrentProcess(interval.getName());
-            }
-        }
-
-        @Override
-        public void onFilterReset(Displayer displayer, List<DataSetGroup> groupOps) {
-            for (DataSetGroup groupOp : groupOps) {
-                if (COLUMN_PROCESS_NAME.equals(groupOp.getColumnGroup().getSourceId())) {
-                    resetCurrentProcess();
-                    return;
-                }
-            }
-        }
-
-        @Override
-        public void onFilterEnabled(Displayer displayer, DataSetFilter filter) {
-            if (metricsGroup.contains(displayer)) {
-                changeCurrentMetric((MetricDisplayer) displayer);
-            }
-        }
-
-        @Override
-        public void onFilterReset(Displayer displayer, DataSetFilter filter) {
-            if (metricsGroup.contains(displayer)) {
-                resetCurrentMetric();
-            }
-        }
-    };
+        void init(ProcessDashboard presenter,
+                  Displayer totalMetric,
+                  Displayer activeMetric,
+                  Displayer pendingMetric,
+                  Displayer suspendedMetric,
+                  Displayer abortedMetric,
+                  Displayer completedMetric,
+                  Displayer processesByType,
+                  Displayer processesByUser,
+                  Displayer processesByStartDate,
+                  Displayer processesByEndDate,
+                  Displayer processesByRunningTime,
+                  Displayer processesByVersion,
+                  Displayer processesTable);
+    }
 }
 

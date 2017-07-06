@@ -28,13 +28,18 @@ import static org.junit.Assert.assertNull;
 
 public class CaseCommentMapperTest {
 
-    public static void assertCaseComment(final CaseComment cc, final CaseCommentSummary ccs) {
+    public static void assertCaseComment(final CaseComment cc,
+                                         final CaseCommentSummary ccs) {
         assertNotNull(ccs);
 
-        assertEquals(cc.getId(), ccs.getId());
-        assertEquals(cc.getAuthor(), ccs.getAuthor());
-        assertEquals(cc.getText(), ccs.getText());
-        assertEquals(cc.getAddedAt(), ccs.getAddedAt());
+        assertEquals(cc.getId(),
+                     ccs.getId());
+        assertEquals(cc.getAuthor(),
+                     ccs.getAuthor());
+        assertEquals(cc.getText(),
+                     ccs.getText());
+        assertEquals(cc.getAddedAt(),
+                     ccs.getAddedAt());
     }
 
     @Test
@@ -48,7 +53,8 @@ public class CaseCommentMapperTest {
 
         final CaseCommentSummary ccs = new CaseCommentMapper().apply(cc);
 
-        assertCaseComment(cc, ccs);
+        assertCaseComment(cc,
+                          ccs);
     }
 
     @Test

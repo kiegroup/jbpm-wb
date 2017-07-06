@@ -68,7 +68,7 @@ public class ProcessAdminSettingsPresenter {
                             .transform(s -> s.getId())
                             .toSet();
                     view.addServerTemplates(stId);
-                } ).listServerTemplates();
+                }).listServerTemplates();
     }
 
     @WorkbenchPartTitle
@@ -81,13 +81,22 @@ public class ProcessAdminSettingsPresenter {
         return view;
     }
 
-    public void generateMockInstances(final String serverTemplateId, final String processId, int amountOfTasks) {
+    public void generateMockInstances(final String serverTemplateId,
+                                      final String processId,
+                                      int amountOfTasks) {
         final ProcessSummary summary = processeSummaryMap.get(processId);
 
-        if (summary == null) return;
+        if (summary == null) {
+            return;
+        }
         instancesAdminServices.call(
                 p -> view.displayNotification(constants.ProcessInstancesSuccessfullyCreated()))
-                .generateMockInstances(serverTemplateId, summary.getDeploymentId(), summary.getProcessDefId(), null, null, amountOfTasks);
+                .generateMockInstances(serverTemplateId,
+                                       summary.getDeploymentId(),
+                                       summary.getProcessDefId(),
+                                       null,
+                                       null,
+                                       amountOfTasks);
     }
 
     public void onServerTemplateSelected(final String serverTemplateId) {
@@ -96,12 +105,17 @@ public class ProcessAdminSettingsPresenter {
                 (List<ProcessSummary> ps) -> {
                     processeSummaryMap.clear();
                     final Set<String> pid = FluentIterable.from(ps).transform(p -> {
-                        processeSummaryMap.put(p.getProcessDefId(), p);
+                        processeSummaryMap.put(p.getProcessDefId(),
+                                               p);
                         return p.getProcessDefId();
                     }).toSet();
                     view.addProcessList(pid);
                 })
-                .getProcesses(serverTemplateId, 0, Integer.MAX_VALUE, "", true);
+                .getProcesses(serverTemplateId,
+                              0,
+                              Integer.MAX_VALUE,
+                              "",
+                              true);
     }
 
     public interface ProcessAdminSettingsView extends UberView<ProcessAdminSettingsPresenter> {
@@ -113,7 +127,5 @@ public class ProcessAdminSettingsPresenter {
         void clearProcessList();
 
         void addProcessList(Set<String> processId);
-
     }
-
 }

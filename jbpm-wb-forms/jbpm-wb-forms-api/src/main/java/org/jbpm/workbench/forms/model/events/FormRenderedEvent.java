@@ -20,6 +20,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class FormRenderedEvent {
+
     private String form;
 
     public FormRenderedEvent() {
@@ -32,5 +33,4 @@ public class FormRenderedEvent {
     public String getForm() {
         return form;
     }
-
 }

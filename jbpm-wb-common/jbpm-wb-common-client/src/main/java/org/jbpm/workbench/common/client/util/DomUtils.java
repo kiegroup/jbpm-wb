@@ -21,36 +21,39 @@ import com.google.gwt.user.client.ui.UIObject;
 /**
  * Created for a uniform implementation of HasEnabled, but will be
  * useful in the future for other DOM related things.
- * 
+ * <p>
  * <p>This is a subclass of UIObject to gain access to the useful
  * setStyleName method of UIObject which is implemented as protected.
- * 
  */
 public class DomUtils extends UIObject {
-    
+
     /**
      * This object is never created.
      */
-    private DomUtils() {}
-    
+    private DomUtils() {
+    }
+
     /**
      * It's enough to just set the disabled attribute on the
      * element, but we want to also add a "disabled" class so that we can
      * style it.
-     *
-     * At some point we'll just be able to use .button:disabled, 
+     * <p>
+     * At some point we'll just be able to use .button:disabled,
      * but that doesn't work in IE8-
      */
-    public static void setEnabled(Element element, boolean enabled) {
-        element.setPropertyBoolean("disabled", !enabled);
-        setStyleName(element, "disabled", !enabled);
+    public static void setEnabled(Element element,
+                                  boolean enabled) {
+        element.setPropertyBoolean("disabled",
+                                   !enabled);
+        setStyleName(element,
+                     "disabled",
+                     !enabled);
     }
 
     /**
      * Returns true if the element has the disabled attribute.
      */
     public static boolean isEnabled(Element element) {
-        return element.getPropertyBoolean("disabled");        
+        return element.getPropertyBoolean("disabled");
     }
-    
 }

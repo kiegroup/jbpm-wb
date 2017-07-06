@@ -32,34 +32,37 @@ public class DeploymentDescriptorModelTest {
     @Test
     public void compareDeploymentDescriptorInterfaceToModel() throws Exception {
 
-        List<String> skipMethods = Arrays.asList(new String [] {
+        List<String> skipMethods = Arrays.asList(new String[]{
                 "getAuditPersistenceUnit", // covered by getAuditPersistenceUnitName
                 "getBuilder", // not needed in the model
                 "toXml", // not needed in the model
                 "getClasses", // covered by getRemotableClasses
                 "getPersistenceUnit" // covered by getPersistenceUnitName
         });
-        Method [] methods = DeploymentDescriptor.class.getMethods();
-        Arrays.sort(methods, new Comparator<Method>() {
-            @Override
-            public int compare( Method o1, Method o2 ) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
+        Method[] methods = DeploymentDescriptor.class.getMethods();
+        Arrays.sort(methods,
+                    new Comparator<Method>() {
+                        @Override
+                        public int compare(Method o1,
+                                           Method o2) {
+                            return o1.getName().compareTo(o2.getName());
+                        }
+                    });
 
-        for( Method method : methods ) {
+        for (Method method : methods) {
             String methodName = method.getName();
-            if( skipMethods.contains(methodName) ) {
+            if (skipMethods.contains(methodName)) {
                 continue;
             }
             boolean found = false;
-            for( Method modelMethod : DeploymentDescriptorModel.class.getMethods() ) {
-                if( modelMethod.getName().equals(methodName) ) {
+            for (Method modelMethod : DeploymentDescriptorModel.class.getMethods()) {
+                if (modelMethod.getName().equals(methodName)) {
                     found = true;
                     break;
                 }
             }
-            assertTrue( "Could not find method '" + methodName + "' in model, is it missing?", found );
+            assertTrue("Could not find method '" + methodName + "' in model, is it missing?",
+                       found);
         }
     }
 }

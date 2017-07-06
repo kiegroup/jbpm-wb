@@ -24,23 +24,33 @@ public class InvoiceLine implements java.io.Serializable {
 
     static final long serialVersionUID = 1L;
 
-    @org.kie.api.definition.type.Label( "Product" )
+    @org.kie.api.definition.type.Label("Product")
     private String product;
-    @org.kie.api.definition.type.Label( "Quantity" )
+    @org.kie.api.definition.type.Label("Quantity")
     private Integer quantity;
-    @org.kie.api.definition.type.Label( "Price" )
+    @org.kie.api.definition.type.Label("Price")
     private Double price;
-    @org.kie.api.definition.type.Label( "Total" )
+    @org.kie.api.definition.type.Label("Total")
     private Double total;
 
     public InvoiceLine() {
+    }
+
+    public InvoiceLine(String product,
+                       Integer quantity,
+                       Double price,
+                       Double total) {
+        this.product = product;
+        this.quantity = quantity;
+        this.price = price;
+        this.total = total;
     }
 
     public Integer getQuantity() {
         return this.quantity;
     }
 
-    public void setQuantity( Integer quantity ) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
@@ -48,7 +58,7 @@ public class InvoiceLine implements java.io.Serializable {
         return this.price;
     }
 
-    public void setPrice( Double price ) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
@@ -56,7 +66,7 @@ public class InvoiceLine implements java.io.Serializable {
         return this.total;
     }
 
-    public void setTotal( Double total ) {
+    public void setTotal(Double total) {
         this.total = total;
     }
 
@@ -64,16 +74,7 @@ public class InvoiceLine implements java.io.Serializable {
         return this.product;
     }
 
-    public void setProduct( String product ) {
+    public void setProduct(String product) {
         this.product = product;
     }
-
-    public InvoiceLine( String product, Integer quantity,
-                        Double price, Double total ) {
-        this.product = product;
-        this.quantity = quantity;
-        this.price = price;
-        this.total = total;
-    }
-
 }

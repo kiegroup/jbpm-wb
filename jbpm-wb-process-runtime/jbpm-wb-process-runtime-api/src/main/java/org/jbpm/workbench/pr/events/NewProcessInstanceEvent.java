@@ -32,7 +32,12 @@ public class NewProcessInstanceEvent implements Serializable {
     public NewProcessInstanceEvent() {
     }
 
-    public NewProcessInstanceEvent(String serverTemplateId, String deploymentId, Long newProcessInstanceId, String newProcessDefId, String processDefName, Integer newProcessInstanceStatus) {
+    public NewProcessInstanceEvent(String serverTemplateId,
+                                   String deploymentId,
+                                   Long newProcessInstanceId,
+                                   String newProcessDefId,
+                                   String processDefName,
+                                   Integer newProcessInstanceStatus) {
         this.serverTemplateId = serverTemplateId;
         this.newProcessInstanceId = newProcessInstanceId;
         this.newProcessDefId = newProcessDefId;
@@ -118,5 +123,4 @@ public class NewProcessInstanceEvent implements Serializable {
     public String toString() {
         return "NewProcessInstanceEvent{serverTemplateId=" + serverTemplateId + ", " + "newProcessInstanceId=" + newProcessInstanceId + ", newProcessDefId=" + newProcessDefId + ", deploymentId=" + deploymentId + ", newProcessInstanceStatus=" + newProcessInstanceStatus + ", processDefName=" + processDefName + '}';
     }
-
 }

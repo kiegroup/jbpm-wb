@@ -25,7 +25,7 @@ public class StaticHTMLFormRenderingSettings implements FormRenderingSettings {
 
     private String formContent;
 
-    public StaticHTMLFormRenderingSettings( @MapsTo( "formContent" ) String formContent ) {
+    public StaticHTMLFormRenderingSettings(@MapsTo("formContent") String formContent) {
         this.formContent = formContent;
     }
 
@@ -33,7 +33,7 @@ public class StaticHTMLFormRenderingSettings implements FormRenderingSettings {
         return formContent;
     }
 
-    public void setFormContent( String formContent ) {
+    public void setFormContent(String formContent) {
         this.formContent = formContent;
     }
 }

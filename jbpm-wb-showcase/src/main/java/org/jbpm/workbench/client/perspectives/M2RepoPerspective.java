@@ -49,13 +49,13 @@ public class M2RepoPerspective {
 
     @PostConstruct
     public void init() {
-        contextualSearch.setPerspectiveSearchBehavior(PerspectiveIds.GUVNOR_M2REPO, new SearchBehavior() {
-            @Override
-            public void execute(String searchFilter) {
-                searchEvents.fire(new M2RepoSearchEvent(searchFilter));
-            }
-
-        });
+        contextualSearch.setPerspectiveSearchBehavior(PerspectiveIds.GUVNOR_M2REPO,
+                                                      new SearchBehavior() {
+                                                          @Override
+                                                          public void execute(String searchFilter) {
+                                                              searchEvents.fire(new M2RepoSearchEvent(searchFilter));
+                                                          }
+                                                      });
     }
 
     @Perspective
@@ -70,5 +70,4 @@ public class M2RepoPerspective {
     public String getTitleText() {
         return Constants.INSTANCE.artifactRepository();
     }
-
 }

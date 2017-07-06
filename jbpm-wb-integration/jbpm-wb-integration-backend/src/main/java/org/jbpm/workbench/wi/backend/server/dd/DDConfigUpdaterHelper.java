@@ -47,58 +47,59 @@ public class DDConfigUpdaterHelper {
     }
 
     @Inject
-    public DDConfigUpdaterHelper( KieProjectService projectService,
-            @Named("ioStrategy") IOService ioService,
-            PersistenceDescriptorService pdService ) {
+    public DDConfigUpdaterHelper(KieProjectService projectService,
+                                 @Named("ioStrategy") IOService ioService,
+                                 PersistenceDescriptorService pdService) {
         this.projectService = projectService;
         this.pdService = pdService;
         this.ioService = ioService;
     }
 
-    public boolean isPersistenceFile( Path path ) {
-        if ( path.getFileName().equals( "persistence.xml" ) ) {
-            KieProject kieProject = projectService.resolveProject( path );
+    public boolean isPersistenceFile(Path path) {
+        if (path.getFileName().equals("persistence.xml")) {
+            KieProject kieProject = projectService.resolveProject(path);
             String persistenceURI;
-            if ( kieProject != null && kieProject.getRootPath() != null ) {
+            if (kieProject != null && kieProject.getRootPath() != null) {
                 //ok, we have a well formed project
                 persistenceURI = kieProject.getRootPath().toURI() + "/src/main/resources/META-INF/persistence.xml";
-                return persistenceURI.equals( path.toURI() );
+                return persistenceURI.equals(path.toURI());
             }
         }
         return false;
     }
 
-    public boolean hasPersistenceFile( Path path ) {
+    public boolean hasPersistenceFile(Path path) {
 
-        KieProject kieProject = projectService.resolveProject( path );
-        if ( kieProject != null && kieProject.getRootPath() != null ) {
+        KieProject kieProject = projectService.resolveProject(path);
+        if (kieProject != null && kieProject.getRootPath() != null) {
             //ok, we have a well formed project
             String persistenceURI = kieProject.getRootPath().toURI() + "/src/main/resources/META-INF/persistence.xml";
-            Path persistencePath = PathFactory.newPath( "persistence.xml", persistenceURI );
-            return ioService.exists( Paths.convert( persistencePath ) );
+            Path persistencePath = PathFactory.newPath("persistence.xml",
+                                                       persistenceURI);
+            return ioService.exists(Paths.convert(persistencePath));
         }
         return false;
     }
 
-
-    public String buildJPAMarshallingStrategyValue( KieProject kieProject ) {
-        PersistenceDescriptorModel pdModel = pdService.load( kieProject );
-        if ( pdModel != null ) {
-            return "new org.drools.persistence.jpa.marshaller.JPAPlaceholderResolverStrategy(\"" +  pdModel.getPersistenceUnit().getName() + "\", classLoader)";
+    public String buildJPAMarshallingStrategyValue(KieProject kieProject) {
+        PersistenceDescriptorModel pdModel = pdService.load(kieProject);
+        if (pdModel != null) {
+            return "new org.drools.persistence.jpa.marshaller.JPAPlaceholderResolverStrategy(\"" + pdModel.getPersistenceUnit().getName() + "\", classLoader)";
         }
         return null;
     }
 
-    public void addJPAMarshallingStrategy( DeploymentDescriptor dd, Path path ) {
-        KieProject kieProject = projectService.resolveProject( path );
+    public void addJPAMarshallingStrategy(DeploymentDescriptor dd,
+                                          Path path) {
+        KieProject kieProject = projectService.resolveProject(path);
         String marshalingValue = null;
-        if ( kieProject != null && ( marshalingValue = buildJPAMarshallingStrategyValue( kieProject )) != null ) {
-            List<ObjectModel> marshallingStrategies = new ArrayList<ObjectModel>(  );
+        if (kieProject != null && (marshalingValue = buildJPAMarshallingStrategyValue(kieProject)) != null) {
+            List<ObjectModel> marshallingStrategies = new ArrayList<ObjectModel>();
             ObjectModel objectModel = new ObjectModel();
-            objectModel.setResolver( "mvel" );
-            objectModel.setIdentifier( marshalingValue );
-            marshallingStrategies.add( objectModel );
-            ((DeploymentDescriptorImpl)dd ).setMarshallingStrategies( marshallingStrategies );
+            objectModel.setResolver("mvel");
+            objectModel.setIdentifier(marshalingValue);
+            marshallingStrategies.add(objectModel);
+            ((DeploymentDescriptorImpl) dd).setMarshallingStrategies(marshallingStrategies);
         }
     }
 }

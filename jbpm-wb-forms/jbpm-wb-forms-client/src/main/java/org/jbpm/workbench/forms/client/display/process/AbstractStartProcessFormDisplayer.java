@@ -68,11 +68,10 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
 
     protected Constants constants = GWT.create(Constants.class);
 
-    protected FormPanel container = GWT.create( FormPanel.class );
-    protected FlowPanel formContainer = GWT.create( FlowPanel.class );
-    protected FlowPanel footerButtons = GWT.create( FlowPanel.class );
-
-    protected TextBox correlationKey = GWT.create( TextBox.class );
+    protected FormPanel container = GWT.create(FormPanel.class);
+    protected FlowPanel formContainer = GWT.create(FlowPanel.class);
+    protected FlowPanel footerButtons = GWT.create(FlowPanel.class);
+    protected TextBox correlationKey = GWT.create(TextBox.class);
 
     protected S renderingSettings;
 
@@ -83,10 +82,6 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
     protected String opener;
     protected FormContentResizeListener resizeListener;
     protected Long parentProcessInstanceId;
-
-    private Command onClose;
-
-    private Command onRefresh;
 
     @Inject
     protected ErrorPopupPresenter errorPopup;
@@ -104,6 +99,9 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
 
     protected FormDisplayerConfig<ProcessDefinitionKey, S> config;
 
+    private Command onClose;
+
+    private Command onRefresh;
 
     @PostConstruct
     protected void init() {
@@ -111,7 +109,10 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
     }
 
     @Override
-    public void init(FormDisplayerConfig<ProcessDefinitionKey, S> config, Command onClose, Command onRefreshCommand, FormContentResizeListener resizeContentListener) {
+    public void init(FormDisplayerConfig<ProcessDefinitionKey, S> config,
+                     Command onClose,
+                     Command onRefreshCommand,
+                     FormContentResizeListener resizeContentListener) {
         this.config = config;
         this.serverTemplateId = config.getKey().getServerTemplateId();
         this.deploymentId = config.getKey().getDeploymentId();
@@ -130,12 +131,13 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
 
         correlationKey = new TextBox();
 
-
-        Button startButton = new Button(constants.Submit(), new ClickHandler() {
-            @Override public void onClick(ClickEvent event) {
-                startProcessFromDisplayer();
-            }
-        });
+        Button startButton = new Button(constants.Submit(),
+                                        new ClickHandler() {
+                                            @Override
+                                            public void onClick(ClickEvent event) {
+                                                startProcessFromDisplayer();
+                                            }
+                                        });
         startButton.setType(ButtonType.PRIMARY);
         footerButtons.add(startButton);
 
@@ -150,79 +152,83 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
         initDisplayer();
 
         final PanelGroup accordion = new PanelGroup();
-        accordion.setId( DOM.createUniqueId() );
+        accordion.setId(DOM.createUniqueId());
 
-        accordion.add( new org.gwtbootstrap3.client.ui.Panel() {{
+        accordion.add(new org.gwtbootstrap3.client.ui.Panel() {{
             final PanelCollapse collapse = new PanelCollapse() {{
-                setIn( false );
-                addHideHandler( new HideHandler() {
+                setIn(false);
+                addHideHandler(new HideHandler() {
                     @Override
-                    public void onHide( final HideEvent hideEvent ) {
+                    public void onHide(final HideEvent hideEvent) {
                         hideEvent.stopPropagation();
                     }
-                } );
-                add( new PanelBody() {{
-                    add( correlationKey );
-                }} );
+                });
+                add(new PanelBody() {{
+                    add(correlationKey);
+                }});
             }};
-            add( new PanelHeader() {{
-                add( new Heading( HeadingSize.H4 ) {{
-                    add( new Anchor() {{
-                        setText( constants.Correlation_Key() );
-                        setDataToggle( Toggle.COLLAPSE );
-                        setDataParent( accordion.getId() );
-                        setDataTargetWidget( collapse );
-                    }} );
-                }} );
-            }} );
-            add( collapse );
-        }} );
+            add(new PanelHeader() {{
+                add(new Heading(HeadingSize.H4) {{
+                    add(new Anchor() {{
+                        setText(constants.Correlation_Key());
+                        setDataToggle(Toggle.COLLAPSE);
+                        setDataParent(accordion.getId());
+                        setDataTargetWidget(collapse);
+                    }});
+                }});
+            }});
+            add(collapse);
+        }});
 
-        accordion.add( new org.gwtbootstrap3.client.ui.Panel() {{
+        accordion.add(new org.gwtbootstrap3.client.ui.Panel() {{
             final PanelCollapse collapse = new PanelCollapse() {{
-                setIn( true );
-                addHideHandler( new HideHandler() {
+                setIn(true);
+                addHideHandler(new HideHandler() {
                     @Override
-                    public void onHide( final HideEvent hideEvent ) {
+                    public void onHide(final HideEvent hideEvent) {
                         hideEvent.stopPropagation();
                     }
-                } );
-                add( new PanelBody() {{
-                    add( getFormWidget() );
-                }} );
+                });
+                add(new PanelBody() {{
+                    add(getFormWidget());
+                }});
             }};
-            add( new PanelHeader() {{
-                add( new Heading( HeadingSize.H4 ) {{
-                    add( new Anchor() {{
-                        setText( constants.Form() );
-                        setDataToggle( Toggle.COLLAPSE );
-                        setDataParent( accordion.getId() );
-                        setDataTargetWidget( collapse );
-                    }} );
-                }} );
-            }} );
-            add( collapse );
-        }} );
+            add(new PanelHeader() {{
+                add(new Heading(HeadingSize.H4) {{
+                    add(new Anchor() {{
+                        setText(constants.Form());
+                        setDataToggle(Toggle.COLLAPSE);
+                        setDataParent(accordion.getId());
+                        setDataTargetWidget(collapse);
+                    }});
+                }});
+            }});
+            add(collapse);
+        }});
 
-        formContainer.add( accordion );
+        formContainer.add(accordion);
 
         doResize();
-
     }
 
     protected abstract void initDisplayer();
 
     public void doResize() {
-        if (resizeListener != null) resizeListener.resize(formContainer.getOffsetWidth(), formContainer.getOffsetHeight());
+        if (resizeListener != null) {
+            resizeListener.resize(formContainer.getOffsetWidth(),
+                                  formContainer.getOffsetHeight());
+        }
     }
 
     protected ErrorCallback<Message> getUnexpectedErrorCallback() {
         return new ErrorCallback<Message>() {
             @Override
-            public boolean error(Message message, Throwable throwable) {
-                String notification = Constants.INSTANCE.UnexpectedError( throwable.getMessage() );
+            public boolean error(Message message,
+                                 Throwable throwable) {
+                String notification = Constants.INSTANCE.UnexpectedError(throwable.getMessage());
                 errorPopup.showMessage(notification);
-                jsniHelper.notifyErrorMessage(opener, notification);
+                jsniHelper.notifyErrorMessage(opener,
+                                              notification);
                 return true;
             }
         };
@@ -241,18 +247,30 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
     @Override
     public void startProcess(Map<String, Object> params) {
 
-        processService.call(getStartProcessRemoteCallback(), getUnexpectedErrorCallback())
-                    .startProcess(serverTemplateId, deploymentId, processDefId, correlationKey.getValue(), params);
+        processService.call(getStartProcessRemoteCallback(),
+                            getUnexpectedErrorCallback())
+                .startProcess(serverTemplateId,
+                              deploymentId,
+                              processDefId,
+                              correlationKey.getValue(),
+                              params);
     }
 
     protected RemoteCallback<Long> getStartProcessRemoteCallback() {
         return new RemoteCallback<Long>() {
             @Override
             public void callback(Long processInstanceId) {
-                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(serverTemplateId, deploymentId, processInstanceId, processDefId, processName, 1));
-                final String message = Constants.INSTANCE.ProcessStarted( processInstanceId );
-                jsniHelper.notifySuccessMessage(opener, message );
-                notificationEvent.fire( new NotificationEvent( message, NotificationEvent.NotificationType.SUCCESS ) );
+                newProcessInstanceEvent.fire(new NewProcessInstanceEvent(serverTemplateId,
+                                                                         deploymentId,
+                                                                         processInstanceId,
+                                                                         processDefId,
+                                                                         processName,
+                                                                         1));
+                final String message = Constants.INSTANCE.ProcessStarted(processInstanceId);
+                jsniHelper.notifySuccessMessage(opener,
+                                                message);
+                notificationEvent.fire(new NotificationEvent(message,
+                                                             NotificationEvent.NotificationType.SUCCESS));
                 close();
             }
         };
@@ -268,8 +286,8 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
         this.onRefresh = callback;
     }
 
-    public void refresh(){
-        if(this.onRefresh != null){
+    public void refresh() {
+        if (this.onRefresh != null) {
             this.onRefresh.execute();
         }
     }
@@ -303,8 +321,8 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
         resizeListener = null;
     }
 
-
-    protected void eventListener(String origin, String request) {
+    protected void eventListener(String origin,
+                                 String request) {
         if (origin == null || !origin.endsWith("//" + opener)) {
             return;
         }

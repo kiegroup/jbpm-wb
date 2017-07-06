@@ -31,7 +31,6 @@ public interface Constants extends Messages {
 
     Constants INSTANCE = GWT.create(Constants.class);
 
-
     String Actions();
 
     String Refresh();
@@ -82,8 +81,7 @@ public interface Constants extends Messages {
 
     String Process_Definition();
 
-    String ProcessStarted( Long processInstanceId );
+    String ProcessStarted(Long processInstanceId);
 
-    String UnableToFindFormForProcess( String processName );
-
+    String UnableToFindFormForProcess(String processName);
 }

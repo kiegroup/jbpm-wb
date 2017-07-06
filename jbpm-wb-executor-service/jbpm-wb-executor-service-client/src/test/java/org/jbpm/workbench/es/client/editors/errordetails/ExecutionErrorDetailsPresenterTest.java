@@ -18,18 +18,19 @@ package org.jbpm.workbench.es.client.editors.errordetails;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
-import org.jbpm.workbench.es.model.events.ExecErrorChangedEvent;
-import org.jbpm.workbench.es.model.events.ExecErrorSelectionEvent;
+import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -44,7 +45,7 @@ public class ExecutionErrorDetailsPresenterTest {
     @Mock
     private ExecutionErrorDetailsViewImpl viewMock;
     @Mock
-    private EventSourceMock<ChangeTitleWidgetEvent> changeTitleWidgetEventEventSourceMock;
+    private EventSourceMock<ChangeTitleWidgetEvent> changeTitleWidgetEventMock;
     @InjectMocks
     private ExecutionErrorDetailsPresenter presenter;
     private ExecutionErrorSummary testError = createTestError(errorId,
@@ -62,7 +63,7 @@ public class ExecutionErrorDetailsPresenterTest {
     public void setupMocks() {
         executorService = new CallerMock<>(executorServiceMock);
         presenter.setExecutorService(executorService);
-        presenter.setChangeTitleWidgetEvent(changeTitleWidgetEventEventSourceMock);
+        presenter.setChangeTitleWidgetEvent(changeTitleWidgetEventMock);
         when(executorServiceMock.getError(serverTemplateId,
                                           deploymentId,
                                           errorId)).thenReturn(testError);
@@ -73,22 +74,28 @@ public class ExecutionErrorDetailsPresenterTest {
         presenter.refreshExecutionErrorDataRemote(serverTemplateId,
                                                   deploymentId,
                                                   errorId);
-
-        verify(executorServiceMock).getError(eq(serverTemplateId),
-                                             eq(deploymentId),
-                                             eq(errorId));
-        verify(viewMock).setValue(eq(testError));
+        assertRefresErrorDetails();
     }
 
     @Test
     public void testErrorSelection() {
-        presenter.onExecErrorSelectionEvent(new ExecErrorSelectionEvent(serverTemplateId,
+        presenter.onExecutionErrorSelectedEvent(new ExecutionErrorSelectedEvent(serverTemplateId,
                                                                         deploymentId,
                                                                         errorId));
+        assertRefresErrorDetails();
+    }
 
+    private void assertRefresErrorDetails(){
         verify(executorServiceMock).getError(eq(serverTemplateId),
                                              eq(deploymentId),
                                              eq(errorId));
         verify(viewMock).setValue(eq(testError));
+
+        final ArgumentCaptor<ChangeTitleWidgetEvent> captor = org.mockito.ArgumentCaptor.forClass(ChangeTitleWidgetEvent.class);
+        verify(changeTitleWidgetEventMock).fire(captor.capture());
+        assertEquals(testError.getProcessId() +
+                             " - " + testError.getProcessInstanceId() +
+                             " (" + testError.getDeploymentId() + ")",
+                     captor.getValue().getTitle());
     }
 }

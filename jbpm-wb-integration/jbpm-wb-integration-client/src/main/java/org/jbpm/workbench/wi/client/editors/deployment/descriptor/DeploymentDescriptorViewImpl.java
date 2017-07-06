@@ -58,19 +58,7 @@ import com.google.gwt.view.client.ListDataProvider;
 public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements DeploymentDescriptorView {
 
     public static final int PAGE_SIZE_UNLIMITED = Integer.MAX_VALUE;
-
-    interface DeploymentDescriptorBinder
-            extends
-            UiBinder<Widget, DeploymentDescriptorViewImpl> {
-
-    }
-
     private static DeploymentDescriptorBinder uiBinder = GWT.create(DeploymentDescriptorBinder.class);
-
-    private Constants constants = Constants.INSTANCE;
-
-    @Inject
-    private DDParametersPopup ddParametersPopup;
 
     @UiField
     FormGroup persistenceUnitGroup;
@@ -270,11 +258,24 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @UiField
     CheckBox limitSerializationClassesCheckBox;
 
+    private Constants constants = Constants.INSTANCE;
+
+    @Inject
+    private DDParametersPopup ddParametersPopup;
+
     @Inject
     private TextEditorView xmlViewer;
 
     public DeploymentDescriptorViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
+    }
+
+    public static boolean getLimitSerializationClassesCheckBoxValue(DeploymentDescriptorModel deploymentDescriptorModel) {
+        Boolean limitSerializationClasses = deploymentDescriptorModel.getLimitSerializationClasses();
+        if (limitSerializationClasses == null) {
+            limitSerializationClasses = true;
+        }
+        return limitSerializationClasses;
     }
 
     @Override
@@ -346,14 +347,6 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
         }
         boolean limitSerializationClasses = getLimitSerializationClassesCheckBoxValue(deploymentDescriptorModel);
         limitSerializationClassesCheckBox.setValue(limitSerializationClasses);
-    }
-
-    public static boolean getLimitSerializationClassesCheckBoxValue(DeploymentDescriptorModel deploymentDescriptorModel) {
-        Boolean limitSerializationClasses = deploymentDescriptorModel.getLimitSerializationClasses();
-        if (limitSerializationClasses == null) {
-            limitSerializationClasses = true;
-        }
-        return limitSerializationClasses;
     }
 
     @Override
@@ -1373,5 +1366,11 @@ public class DeploymentDescriptorViewImpl extends KieEditorViewImpl implements D
     @Override
     public void setSourceTabReadOnly(boolean readOnly) {
         xmlViewer.setReadOnly(readOnly);
+    }
+
+    interface DeploymentDescriptorBinder
+            extends
+            UiBinder<Widget, DeploymentDescriptorViewImpl> {
+
     }
 }

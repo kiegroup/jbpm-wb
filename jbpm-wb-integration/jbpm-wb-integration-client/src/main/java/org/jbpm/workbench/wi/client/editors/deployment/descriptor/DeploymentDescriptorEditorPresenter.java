@@ -94,7 +94,7 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
         fillPersistenceModes();
         fillAuditModes();
         fillRuntimeStrategies(translationService);
-        view.setSourceTabReadOnly(true); 
+        view.setSourceTabReadOnly(true);
         view.setup();
     }
 

@@ -30,7 +30,7 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-@RunWith( GwtMockitoTestRunner.class )
+@RunWith(GwtMockitoTestRunner.class)
 public class ProcessDefinitionListViewTest {
 
     @Mock
@@ -41,20 +41,19 @@ public class ProcessDefinitionListViewTest {
 
     @Test
     public void testDataStoreNameIsSet() {
-        doAnswer( new Answer() {
+        doAnswer(new Answer() {
             @Override
-            public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[ 0 ];
-                for ( ColumnMeta columnMeta : columns ) {
-                    assertNotNull( columnMeta.getColumn().getDataStoreName() );
+            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+                final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[0];
+                for (ColumnMeta columnMeta : columns) {
+                    assertNotNull(columnMeta.getColumn().getDataStoreName());
                 }
                 return null;
             }
-        } ).when( currentListGrid ).addColumns( anyList() );
+        }).when(currentListGrid).addColumns(anyList());
 
-        view.initColumns( currentListGrid );
+        view.initColumns(currentListGrid);
 
-        verify( currentListGrid ).addColumns( anyList() );
+        verify(currentListGrid).addColumns(anyList());
     }
-
 }

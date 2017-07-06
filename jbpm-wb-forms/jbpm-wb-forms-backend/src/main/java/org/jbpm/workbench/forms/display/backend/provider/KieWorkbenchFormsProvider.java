@@ -23,9 +23,10 @@ import javax.inject.Inject;
 public class KieWorkbenchFormsProvider extends AbstractKieWorkbenchFormsProvider {
 
     @Inject
-    public KieWorkbenchFormsProvider( ProcessFormsValuesProcessor processFormsValuesProcessor,
-                                      TaskFormValuesProcessor taskFormValuesProcessor ) {
-        super( processFormsValuesProcessor, taskFormValuesProcessor);
+    public KieWorkbenchFormsProvider(ProcessFormsValuesProcessor processFormsValuesProcessor,
+                                     TaskFormValuesProcessor taskFormValuesProcessor) {
+        super(processFormsValuesProcessor,
+              taskFormValuesProcessor);
     }
 
     @Override

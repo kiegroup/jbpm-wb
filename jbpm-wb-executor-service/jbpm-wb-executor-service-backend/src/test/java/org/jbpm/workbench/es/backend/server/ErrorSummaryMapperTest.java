@@ -26,14 +26,20 @@ import static org.junit.Assert.*;
 
 public class ErrorSummaryMapperTest {
 
-    public static void assertErrorSummary(final ErrorInfoInstance error, final ErrorSummary es) {
+    public static void assertErrorSummary(final ErrorInfoInstance error,
+                                          final ErrorSummary es) {
         assertNotNull(es);
 
-        assertEquals(error.getId(), es.getId());
-        assertEquals(error.getMessage(), es.getMessage());
-        assertEquals(error.getErrorDate(), es.getTime());
-        assertEquals(error.getRequestInfoId(), es.getRequestInfoId());
-        assertEquals(error.getStacktrace(), es.getStacktrace());
+        assertEquals(error.getId(),
+                     es.getId());
+        assertEquals(error.getMessage(),
+                     es.getMessage());
+        assertEquals(error.getErrorDate(),
+                     es.getTime());
+        assertEquals(error.getRequestInfoId(),
+                     es.getRequestInfoId());
+        assertEquals(error.getStacktrace(),
+                     es.getStacktrace());
     }
 
     public static ErrorInfoInstance newErrorInfoInstance() {
@@ -52,12 +58,12 @@ public class ErrorSummaryMapperTest {
 
         final ErrorSummary es = new ErrorSummaryMapper().apply(error);
 
-        assertErrorSummary(error, es);
+        assertErrorSummary(error,
+                           es);
     }
 
     @Test
     public void testErrorSummaryMapperNull() {
         assertNull(new ErrorSummaryMapper().apply(null));
     }
-
 }

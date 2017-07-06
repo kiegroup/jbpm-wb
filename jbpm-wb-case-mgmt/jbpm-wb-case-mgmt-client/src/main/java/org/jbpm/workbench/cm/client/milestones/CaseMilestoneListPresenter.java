@@ -34,8 +34,7 @@ import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 @WorkbenchScreen(identifier = CaseMilestoneListPresenter.SCREEN_ID)
 public class CaseMilestoneListPresenter extends AbstractCaseInstancePresenter<CaseMilestoneListPresenter.CaseMilestoneListView> {
 
-        public static final String SCREEN_ID = "Case Milestone List";
-
+    public static final String SCREEN_ID = "Case Milestone List";
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -59,7 +58,9 @@ public class CaseMilestoneListPresenter extends AbstractCaseInstancePresenter<Ca
     protected void refreshData(String caseId) {
         caseService.call((List<CaseMilestoneSummary> milestones) -> {
             view.setCaseMilestoneList(milestones);
-        }).getCaseMilestones(containerId, caseId, view.getCaseMilestoneSearchRequest());
+        }).getCaseMilestones(containerId,
+                             caseId,
+                             view.getCaseMilestoneSearchRequest());
     }
 
     public interface CaseMilestoneListView extends UberElement<CaseMilestoneListPresenter> {
@@ -69,7 +70,5 @@ public class CaseMilestoneListPresenter extends AbstractCaseInstancePresenter<Ca
         void setCaseMilestoneList(List<CaseMilestoneSummary> caseMilestoneList);
 
         CaseMilestoneSearchRequest getCaseMilestoneSearchRequest();
-
     }
-
 }

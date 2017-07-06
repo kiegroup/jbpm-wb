@@ -131,5 +131,4 @@ public class ServerTemplateSelectorViewImpl extends Composite implements ServerT
             }
         }
     }
-
 }

@@ -28,19 +28,19 @@ import org.jbpm.workbench.forms.service.providing.TaskRenderingSettings;
 public class InMemoryFormProvider extends FreemakerFormProvider {
 
     @Override
-    protected InputStream getProcessTemplateInputStream( ProcessRenderingSettings settings ) {
-        if ( StringUtils.isEmpty( settings.getFormContent() ) ) {
+    protected InputStream getProcessTemplateInputStream(ProcessRenderingSettings settings) {
+        if (StringUtils.isEmpty(settings.getFormContent())) {
             return null;
         }
-        return new ByteArrayInputStream( settings.getFormContent().getBytes() );
+        return new ByteArrayInputStream(settings.getFormContent().getBytes());
     }
 
     @Override
-    protected InputStream getTaskTemplateInputStream( TaskRenderingSettings settings ) {
-        if ( StringUtils.isEmpty( settings.getFormContent() ) ) {
+    protected InputStream getTaskTemplateInputStream(TaskRenderingSettings settings) {
+        if (StringUtils.isEmpty(settings.getFormContent())) {
             return null;
         }
-        return new ByteArrayInputStream( settings.getFormContent().getBytes() );
+        return new ByteArrayInputStream(settings.getFormContent().getBytes());
     }
 
     @Override

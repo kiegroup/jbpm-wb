@@ -43,28 +43,30 @@ public class TaskDetailsMultiPresenterTest {
     private static final String TASK_NAME = "taskName";
 
     @Mock
-    private TaskFormPresenter taskFormPresenter;
-
-    @Mock
     TaskFormPresenter.TaskFormView taskFormViewMock;
 
     @Mock
     FormDisplayerView formDisplayerViewMock;
-
-    @Mock
-    private TaskDetailsMultiViewImpl view;
-
-    @Mock @SuppressWarnings("unused")
-    private HumanTaskFormDisplayProvider taskFormDisplayProvider;
-
-    @Mock @SuppressWarnings("unused")
-    private TaskDetailsPresenter taskDetailsPresenter;
 
     @Spy
     Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent = new EventSourceMock<ChangeTitleWidgetEvent>();
 
     @Spy
     Event<TaskSelectionEvent> taskSelectionEvent = new EventSourceMock<TaskSelectionEvent>();
+
+    @Mock
+    private TaskFormPresenter taskFormPresenter;
+
+    @Mock
+    private TaskDetailsMultiViewImpl view;
+
+    @Mock
+    @SuppressWarnings("unused")
+    private HumanTaskFormDisplayProvider taskFormDisplayProvider;
+
+    @Mock
+    @SuppressWarnings("unused")
+    private TaskDetailsPresenter taskDetailsPresenter;
 
     @InjectMocks
     private TaskDetailsMultiPresenter presenter;
@@ -80,7 +82,12 @@ public class TaskDetailsMultiPresenterTest {
     @Test
     public void isForLogRemainsEnabledAfterRefresh() {
         //When task selected with logOnly
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(null, null, TASK_ID, TASK_NAME, false, true));
+        presenter.onTaskSelectionEvent(new TaskSelectionEvent(null,
+                                                              null,
+                                                              TASK_ID,
+                                                              TASK_NAME,
+                                                              false,
+                                                              true));
 
         //Then only tab log is displayed
         verify(view).displayOnlyLogTab();
@@ -96,7 +103,12 @@ public class TaskDetailsMultiPresenterTest {
     @Test
     public void isForLogRemainsDisabledAfterRefresh() {
         //When task selected without logOnly
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(null, null, TASK_ID, TASK_NAME, false, false));
+        presenter.onTaskSelectionEvent(new TaskSelectionEvent(null,
+                                                              null,
+                                                              TASK_ID,
+                                                              TASK_NAME,
+                                                              false,
+                                                              false));
 
         //Then alltabs are displayed
         verify(view).displayAllTabs();
@@ -108,5 +120,4 @@ public class TaskDetailsMultiPresenterTest {
         assertFalse(presenter.isForAdmin());
         assertFalse(presenter.isForLog());
     }
-
 }

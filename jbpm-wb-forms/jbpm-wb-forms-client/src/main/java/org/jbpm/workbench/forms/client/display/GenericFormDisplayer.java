@@ -28,7 +28,10 @@ public interface GenericFormDisplayer<T extends ItemKey, S extends FormRendering
 
     Class<S> getSupportedRenderingSettings();
 
-    void init(FormDisplayerConfig<T, S> config, Command onCloseCommand, Command onRefreshCommand, FormContentResizeListener formContentResizeListener);
+    void init(FormDisplayerConfig<T, S> config,
+              Command onCloseCommand,
+              Command onRefreshCommand,
+              FormContentResizeListener formContentResizeListener);
 
     Panel getContainer();
 
@@ -41,5 +44,4 @@ public interface GenericFormDisplayer<T extends ItemKey, S extends FormRendering
     void close();
 
     String getOpener();
-
 }

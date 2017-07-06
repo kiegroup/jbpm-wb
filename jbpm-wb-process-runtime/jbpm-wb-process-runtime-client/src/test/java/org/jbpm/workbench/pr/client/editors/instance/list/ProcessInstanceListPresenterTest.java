@@ -644,11 +644,13 @@ public class ProcessInstanceListPresenterTest {
     }
 
     @Test
-    public void testActiveSearchFiltersProcessInstanceId(){
+    public void testActiveSearchFiltersProcessInstanceId() {
         final PlaceRequest place = mock(PlaceRequest.class);
         final String processInstanceId = "1";
-        when(place.getParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID, null)).thenReturn(null);
-        when(place.getParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, null)).thenReturn(processInstanceId);
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID,
+                                null)).thenReturn(null);
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
+                                null)).thenReturn(processInstanceId);
         presenter.onStartup(place);
 
         presenter.setupActiveSearchFilters();
@@ -717,7 +719,7 @@ public class ProcessInstanceListPresenterTest {
 
         assertFalse(presenter.getViewJobsActionCondition().test(new ProcessInstanceSummary()));
     }
-    
+
     @Test
     public void testViewErrorsActionCondition() {
         doAnswer(new PerspectiveAnswer(EXECUTION_ERRORS)).when(authorizationManager).authorize(any(ResourceRef.class),
@@ -727,7 +729,7 @@ public class ProcessInstanceListPresenterTest {
         ProcessInstanceSummary errProcInst = new ProcessInstanceSummary();
         errProcInst.setErrorCount(1);
         Predicate<ProcessInstanceSummary> viewErrCondition = presenter.getViewErrorsActionCondition();
-        
+
         assertFalse(viewErrCondition.test(okProcInst));
         assertTrue(viewErrCondition.test(errProcInst));
 
@@ -750,22 +752,8 @@ public class ProcessInstanceListPresenterTest {
                                            ProcessInstance.STATE_ACTIVE);
     }
 
-    protected class PerspectiveAnswer implements Answer<Boolean> {
-
-        private String perspectiveId;
-
-        public PerspectiveAnswer(String perspectiveId) {
-            this.perspectiveId = perspectiveId;
-        }
-
-        @Override
-        public Boolean answer(InvocationOnMock invocation) throws Throwable {
-            return perspectiveId.equals(((ResourceRef) invocation.getArguments()[0]).getIdentifier());
-        }
-    }
-
     @Test
-    public void testOpenTaskView(){
+    public void testOpenTaskView() {
         when(authorizationManager.authorize(any(ResourceRef.class),
                                             eq(identity))).thenReturn(true,
                                                                       false);
@@ -774,10 +762,14 @@ public class ProcessInstanceListPresenterTest {
         presenter.openTaskView("");
 
         final ArgumentCaptor<PlaceRequest> captor = ArgumentCaptor.forClass(PlaceRequest.class);
-        verify(placeManager, times(2)).goTo(captor.capture());
-        assertEquals(2, captor.getAllValues().size());
-        assertEquals(TASKS_ADMIN, captor.getAllValues().get(0).getIdentifier());
-        assertEquals(TASKS, captor.getAllValues().get(1).getIdentifier());
+        verify(placeManager,
+               times(2)).goTo(captor.capture());
+        assertEquals(2,
+                     captor.getAllValues().size());
+        assertEquals(TASKS_ADMIN,
+                     captor.getAllValues().get(0).getIdentifier());
+        assertEquals(TASKS,
+                     captor.getAllValues().get(1).getIdentifier());
     }
 
     @Test
@@ -791,5 +783,19 @@ public class ProcessInstanceListPresenterTest {
         assertFalse(callback.onError(error));
         verify(viewMock).hideBusyIndicator();
         verify(spy).showErrorPopup(Constants.INSTANCE.ResourceCouldNotBeLoaded(Constants.INSTANCE.Process_Instances()));
+    }
+
+    protected class PerspectiveAnswer implements Answer<Boolean> {
+
+        private String perspectiveId;
+
+        public PerspectiveAnswer(String perspectiveId) {
+            this.perspectiveId = perspectiveId;
+        }
+
+        @Override
+        public Boolean answer(InvocationOnMock invocation) throws Throwable {
+            return perspectiveId.equals(((ResourceRef) invocation.getArguments()[0]).getIdentifier());
+        }
     }
 }

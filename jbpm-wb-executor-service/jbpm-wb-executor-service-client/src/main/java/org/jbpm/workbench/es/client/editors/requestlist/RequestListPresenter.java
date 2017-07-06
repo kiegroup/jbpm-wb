@@ -76,10 +76,6 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
 
     public static final String SCREEN_ID = "Requests List";
 
-    public interface RequestListView extends MultiGridView<RequestSummary, RequestListPresenter> {
-
-    }
-
     private Constants constants = Constants.INSTANCE;
 
     @Inject
@@ -102,8 +98,9 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     }
 
     public RequestListPresenter(RequestListViewImpl view,
-            Caller<ExecutorService> executorServices,
-            DataSetQueryHelper dataSetQueryHelper,Event<RequestChangedEvent> requestChangedEvent
+                                Caller<ExecutorService> executorServices,
+                                DataSetQueryHelper dataSetQueryHelper,
+                                Event<RequestChangedEvent> requestChangedEvent
     ) {
         this.view = view;
         this.executorServices = executorServices;
@@ -117,19 +114,19 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     }
 
     @Override
-    public void getData( final Range visibleRange ) {
+    public void getData(final Range visibleRange) {
         try {
-            if(!isAddingDefaultFilters()) {
+            if (!isAddingDefaultFilters()) {
                 FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
                 currentTableSettings.setServerTemplateId(getSelectedServerTemplate());
-                currentTableSettings.setTablePageSize( view.getListGrid().getPageSize() );
+                currentTableSettings.setTablePageSize(view.getListGrid().getPageSize());
                 ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                if ( columnSortList != null && columnSortList.size() > 0 ) {
-                    dataSetQueryHelper.setLastOrderedColumn( columnSortList.size() > 0 ? columnSortList.get( 0 ).getColumn().getDataStoreName() : "" );
-                    dataSetQueryHelper.setLastSortOrder( columnSortList.size() > 0 && columnSortList.get( 0 ).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING );
+                if (columnSortList != null && columnSortList.size() > 0) {
+                    dataSetQueryHelper.setLastOrderedColumn(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "");
+                    dataSetQueryHelper.setLastSortOrder(columnSortList.size() > 0 && columnSortList.get(0).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
                 } else {
-                    dataSetQueryHelper.setLastOrderedColumn( COLUMN_TIMESTAMP );
-                    dataSetQueryHelper.setLastSortOrder( SortOrder.ASCENDING );
+                    dataSetQueryHelper.setLastOrderedColumn(COLUMN_TIMESTAMP);
+                    dataSetQueryHelper.setLastSortOrder(SortOrder.ASCENDING);
                 }
 
                 final List<ColumnFilter> filters = getColumnFilters(textSearchStr);
@@ -144,31 +141,36 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                 }
 
                 dataSetQueryHelper.setDataSetHandler(currentTableSettings);
-                dataSetQueryHelper.lookupDataSet(visibleRange.getStart(), new AbstractDataSetReadyCallback( errorPopup, view, currentTableSettings.getUUID() ) {
-                    @Override
-                    public void callback(DataSet dataSet) {
-                        if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(currentTableSettings.getKey())) {
-                            List<RequestSummary> myRequestSumaryFromDataSet = new ArrayList<RequestSummary>();
+                dataSetQueryHelper.lookupDataSet(visibleRange.getStart(),
+                                                 new AbstractDataSetReadyCallback(errorPopup,
+                                                                                  view,
+                                                                                  currentTableSettings.getUUID()) {
+                                                     @Override
+                                                     public void callback(DataSet dataSet) {
+                                                         if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(currentTableSettings.getKey())) {
+                                                             List<RequestSummary> myRequestSumaryFromDataSet = new ArrayList<RequestSummary>();
 
-                            for (int i = 0; i < dataSet.getRowCount(); i++) {
-                                myRequestSumaryFromDataSet.add(getRequestSummary(dataSet, i));
-                            }
-                            boolean lastPageExactCount=false;
-                            if( dataSet.getRowCount() < view.getListGrid().getPageSize()) {
-                                lastPageExactCount=true;
-                            }
-                            updateDataOnCallback(myRequestSumaryFromDataSet,visibleRange.getStart(),visibleRange.getStart()+ myRequestSumaryFromDataSet.size(), lastPageExactCount);
-
-                        }
-                    }
-                });
+                                                             for (int i = 0; i < dataSet.getRowCount(); i++) {
+                                                                 myRequestSumaryFromDataSet.add(getRequestSummary(dataSet,
+                                                                                                                  i));
+                                                             }
+                                                             boolean lastPageExactCount = false;
+                                                             if (dataSet.getRowCount() < view.getListGrid().getPageSize()) {
+                                                                 lastPageExactCount = true;
+                                                             }
+                                                             updateDataOnCallback(myRequestSumaryFromDataSet,
+                                                                                  visibleRange.getStart(),
+                                                                                  visibleRange.getStart() + myRequestSumaryFromDataSet.size(),
+                                                                                  lastPageExactCount);
+                                                         }
+                                                     }
+                                                 });
                 view.hideBusyIndicator();
             }
-        } catch ( Exception e ) {
+        } catch (Exception e) {
             view.displayNotification(constants.ErrorRetrievingJobs(e.getMessage()));
-            GWT.log( "Error looking up dataset with UUID [ " + REQUEST_LIST_DATASET + " ]" );
+            GWT.log("Error looking up dataset with UUID [ " + REQUEST_LIST_DATASET + " ]");
         }
-
     }
 
     protected RequestSummary getRequestSummary(final DataSet dataSet,
@@ -213,31 +215,39 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     protected List<ColumnFilter> getColumnFilters(final String searchString) {
         final List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
         if (searchString != null && searchString.trim().length() > 0) {
-            filters.add( likeTo( COLUMN_COMMANDNAME, "%" + searchString.toLowerCase() + "%", false ) );
-            filters.add( likeTo( COLUMN_MESSAGE, "%" + searchString.toLowerCase() + "%", false ) );
-            filters.add( likeTo( COLUMN_BUSINESSKEY, "%" + searchString.toLowerCase() + "%", false ) );
+            filters.add(likeTo(COLUMN_COMMANDNAME,
+                               "%" + searchString.toLowerCase() + "%",
+                               false));
+            filters.add(likeTo(COLUMN_MESSAGE,
+                               "%" + searchString.toLowerCase() + "%",
+                               false));
+            filters.add(likeTo(COLUMN_BUSINESSKEY,
+                               "%" + searchString.toLowerCase() + "%",
+                               false));
         }
         return filters;
     }
 
-    public void cancelRequest( final Long requestId ) {
-        executorServices.call( new RemoteCallback<Void>() {
+    public void cancelRequest(final Long requestId) {
+        executorServices.call(new RemoteCallback<Void>() {
             @Override
-            public void callback( Void nothing ) {
-                view.displayNotification( constants.RequestCancelled(requestId) );
-                requestChangedEvent.fire( new RequestChangedEvent( requestId ) );
+            public void callback(Void nothing) {
+                view.displayNotification(constants.RequestCancelled(requestId));
+                requestChangedEvent.fire(new RequestChangedEvent(requestId));
             }
-        } ).cancelRequest( getSelectedServerTemplate(), requestId );
+        }).cancelRequest(getSelectedServerTemplate(),
+                         requestId);
     }
 
-    public void requeueRequest( final Long requestId ) {
-        executorServices.call( new RemoteCallback<Void>() {
+    public void requeueRequest(final Long requestId) {
+        executorServices.call(new RemoteCallback<Void>() {
             @Override
-            public void callback( Void nothing ) {
-                view.displayNotification( constants.RequestCancelled(requestId) );
-                requestChangedEvent.fire( new RequestChangedEvent( requestId ) );
+            public void callback(Void nothing) {
+                view.displayNotification(constants.RequestCancelled(requestId));
+                requestChangedEvent.fire(new RequestChangedEvent(requestId));
             }
-        } ).requeueRequest( getSelectedServerTemplate(), requestId );
+        }).requeueRequest(getSelectedServerTemplate(),
+                          requestId);
     }
 
     @WorkbenchMenu
@@ -253,7 +263,6 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                         } else {
                             quickNewJobPopup.show(selectedServerTemplate);
                         }
-
                     }
                 })
                 .endMenu()
@@ -265,11 +274,12 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                 .build();
     }
 
-    public void showJobDetails(final RequestSummary job){
-        jobDetailsPopup.show( getSelectedServerTemplate(), String.valueOf( job.getJobId() ) );
+    public void showJobDetails(final RequestSummary job) {
+        jobDetailsPopup.show(getSelectedServerTemplate(),
+                             String.valueOf(job.getJobId()));
     }
 
-    public void requestCreated( @Observes RequestChangedEvent event ) {
+    public void requestCreated(@Observes RequestChangedEvent event) {
         refreshGrid();
     }
 
@@ -354,6 +364,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                                                                              v)));
 
         view.addDateRangeFilter(constants.Due_On(),
+                                constants.Due_On_Placeholder(),
                                 v -> addAdvancedSearchFilter(between(COLUMN_TIMESTAMP,
                                                                      v.getStartDate(),
                                                                      v.getEndDate())),
@@ -361,7 +372,6 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                                                                         v.getStartDate(),
                                                                         v.getEndDate()))
         );
-
     }
 
     @Override
@@ -370,12 +380,14 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         if (processInstIdSearch.isPresent()) {
             final String processInstId = processInstIdSearch.get();
             view.addActiveFilter(
-                constants.Process_Instance_Id(),
-                processInstId,
-                processInstId,
-                v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID, v))
+                    constants.Process_Instance_Id(),
+                    processInstId,
+                    processInstId,
+                    v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                                                             v))
             );
-            addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID, processInstId));
+            addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                                             processInstId));
         } else {
             final Optional<String> jobSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_JOB_ID);
             if (jobSearch.isPresent()) {
@@ -408,7 +420,9 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     }
 
     public void openProcessInstanceView(final String processInstanceId) {
-        navigateToPerspective(PerspectiveIds.PROCESS_INSTANCES, PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID, processInstanceId);
+        navigateToPerspective(PerspectiveIds.PROCESS_INSTANCES,
+                              PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
+                              processInstanceId);
     }
 
     @Override
@@ -419,25 +433,41 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     private FilterSettings createStatusSettings(final RequestStatus status) {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
-        builder.dataset( REQUEST_LIST_DATASET );
-        if ( status != null ) {
-            builder.filter( equalsTo( COLUMN_STATUS, status.name() ) );
+        builder.dataset(REQUEST_LIST_DATASET);
+        if (status != null) {
+            builder.filter(equalsTo(COLUMN_STATUS,
+                                    status.name()));
         }
-        builder.setColumn( COLUMN_ID, constants.Id() );
-        builder.setColumn( COLUMN_TIMESTAMP, constants.Time(), DateUtils.getDateTimeFormatMask() );
-        builder.setColumn( COLUMN_STATUS, constants.Status() );
-        builder.setColumn( COLUMN_COMMANDNAME, constants.CommandName() );
-        builder.setColumn( COLUMN_MESSAGE, constants.Message() );
-        builder.setColumn( COLUMN_BUSINESSKEY, constants.Key() );
-        builder.setColumn( COLUMN_RETRIES, constants.Retries() );
-        builder.setColumn( COLUMN_EXECUTIONS, constants.Executions() );
-        builder.setColumn( COLUMN_PROCESS_NAME, constants.Process_Name() );
-        builder.setColumn( COLUMN_PROCESS_INSTANCE_ID, constants.Process_Instance_Id() );
-        builder.setColumn( COLUMN_PROCESS_INSTANCE_DESCRIPTION, constants.Process_Description() );
+        builder.setColumn(COLUMN_ID,
+                          constants.Id());
+        builder.setColumn(COLUMN_TIMESTAMP,
+                          constants.Time(),
+                          DateUtils.getDateTimeFormatMask());
+        builder.setColumn(COLUMN_STATUS,
+                          constants.Status());
+        builder.setColumn(COLUMN_COMMANDNAME,
+                          constants.CommandName());
+        builder.setColumn(COLUMN_MESSAGE,
+                          constants.Message());
+        builder.setColumn(COLUMN_BUSINESSKEY,
+                          constants.Key());
+        builder.setColumn(COLUMN_RETRIES,
+                          constants.Retries());
+        builder.setColumn(COLUMN_EXECUTIONS,
+                          constants.Executions());
+        builder.setColumn(COLUMN_PROCESS_NAME,
+                          constants.Process_Name());
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID,
+                          constants.Process_Instance_Id());
+        builder.setColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                          constants.Process_Description());
 
-        builder.filterOn( true, true, true );
-        builder.tableOrderEnabled( true );
-        builder.tableOrderDefault( COLUMN_TIMESTAMP, SortOrder.DESCENDING );
+        builder.filterOn(true,
+                         true,
+                         true);
+        builder.tableOrderEnabled(true);
+        builder.tableOrderDefault(COLUMN_TIMESTAMP,
+                                  SortOrder.DESCENDING);
         return builder.buildSettings();
     }
 
@@ -474,39 +504,42 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         return createStatusSettings(RequestStatus.CANCELLED);
     }
 
-    public Predicate<RequestSummary> getDetailsActionCondition(){
+    public Predicate<RequestSummary> getDetailsActionCondition() {
         return getActionConditionFromStatusList(new RequestStatus[]{
-            RequestStatus.QUEUED,
-            RequestStatus.DONE,
-            RequestStatus.CANCELLED,
-            RequestStatus.ERROR,
-            RequestStatus.RETRYING,
-            RequestStatus.RUNNING
+                RequestStatus.QUEUED,
+                RequestStatus.DONE,
+                RequestStatus.CANCELLED,
+                RequestStatus.ERROR,
+                RequestStatus.RETRYING,
+                RequestStatus.RUNNING
         });
     }
 
-    public Predicate<RequestSummary> getCancelActionCondition(){
+    public Predicate<RequestSummary> getCancelActionCondition() {
         return getActionConditionFromStatusList(new RequestStatus[]{
-            RequestStatus.QUEUED,
-            RequestStatus.RETRYING,
-            RequestStatus.RUNNING
+                RequestStatus.QUEUED,
+                RequestStatus.RETRYING,
+                RequestStatus.RUNNING
         });
     }
 
-    public Predicate<RequestSummary> getRequeueActionCondition(){
+    public Predicate<RequestSummary> getRequeueActionCondition() {
         return getActionConditionFromStatusList(new RequestStatus[]{
-            RequestStatus.ERROR,
-            RequestStatus.RUNNING
+                RequestStatus.ERROR,
+                RequestStatus.RUNNING
         });
     }
 
-    public Predicate<RequestSummary> getViewProcessActionCondition(){
+    public Predicate<RequestSummary> getViewProcessActionCondition() {
         return job -> (job.getProcessInstanceId() != null);
     }
 
-    private Predicate<RequestSummary> getActionConditionFromStatusList(RequestStatus[] statusList){
+    private Predicate<RequestSummary> getActionConditionFromStatusList(RequestStatus[] statusList) {
         return value -> Arrays.stream(statusList).anyMatch(
-                    s -> s.name().equals(value.getStatus()));
+                s -> s.name().equals(value.getStatus()));
     }
 
+    public interface RequestListView extends MultiGridView<RequestSummary, RequestListPresenter> {
+
+    }
 }

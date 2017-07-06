@@ -72,10 +72,15 @@ public class CaseCommentSummary {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         CaseCommentSummary that = (CaseCommentSummary) o;
-        return Objects.equals(id, that.id);
+        return Objects.equals(id,
+                              that.id);
     }
 
     @Override
@@ -125,7 +130,5 @@ public class CaseCommentSummary {
             caseComment.setAddedAt(addedAt);
             return this;
         }
-
     }
-
 }

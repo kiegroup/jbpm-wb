@@ -23,6 +23,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import org.jboss.errai.common.client.dom.Anchor;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.Event;
 import org.jboss.errai.common.client.dom.HTMLElement;
@@ -53,6 +54,9 @@ import static org.jboss.errai.common.client.dom.DOMUtil.removeCSSClass;
 @Dependent
 @Templated
 public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresenter> implements NewCaseInstancePresenter.NewCaseInstanceView {
+
+    @Inject
+    private JQueryProducer.JQuery<Popover> jQueryPopover;
 
     @Inject
     @DataField("definition-name-group")
@@ -111,7 +115,7 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
 
     @Inject
     @DataField("roles-help")
-    private Popover rolesHelp;
+    private Anchor rolesHelp;
 
     @Inject
     private TranslationService translationService;
@@ -120,7 +124,9 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
     public void init() {
         caseDefinitionNameLabel.addRequiredIndicator();
         ownerNameLabel.addRequiredIndicator();
-        rolesHelp.setContent(translationService.getTranslation(Constants.ROLES_INFO_TEXT));
+        rolesHelp.setAttribute("data-content",
+                               translationService.getTranslation(Constants.ROLES_INFO_TEXT));
+        jQueryPopover.wrap(rolesHelp).popover();
         notification.setType(InlineNotification.InlineNotificationType.DANGER);
     }
 
@@ -275,7 +281,7 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
         loadCaseRoles();
     }
 
-    private void loadCaseRoles(){
+    private void loadCaseRoles() {
         presenter.loadCaseRoles(caseTemplatesList.getValue());
     }
 }

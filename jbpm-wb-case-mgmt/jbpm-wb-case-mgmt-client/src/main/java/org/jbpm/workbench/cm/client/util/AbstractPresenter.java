@@ -36,5 +36,4 @@ public abstract class AbstractPresenter<V extends UberElement> {
     public V getView() {
         return view;
     }
-
 }

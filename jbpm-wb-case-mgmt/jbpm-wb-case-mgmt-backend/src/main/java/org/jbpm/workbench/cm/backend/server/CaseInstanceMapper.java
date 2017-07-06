@@ -55,5 +55,4 @@ public class CaseInstanceMapper implements Function<CaseInstance, CaseInstanceSu
                                 .collect(toList())).
                 build();
     }
-
 }

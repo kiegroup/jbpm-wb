@@ -37,7 +37,6 @@ import static org.mockito.Mockito.*;
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskCommentsViewImplTest {
 
-
     @Mock
     ListDataProvider<CommentSummary> dataProviderMock;
 
@@ -50,7 +49,6 @@ public class TaskCommentsViewImplTest {
     @Mock
     private TaskCommentsPresenter presenterMock;
 
-
     @Before
     public void setupMocks() {
         when(presenterMock.getDataProvider()).thenReturn(dataProviderMock);
@@ -58,26 +56,30 @@ public class TaskCommentsViewImplTest {
 
     @Test
     public void testDataStoreNameIsSet() {
-        doAnswer( new Answer() {
+        doAnswer(new Answer() {
             @Override
-            public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
+            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
                 final Column column = (Column) invocationOnMock.getArguments()[0];
-                assertNotNull( column.getDataStoreName() );
+                assertNotNull(column.getDataStoreName());
                 return null;
             }
-        } ).when(pagedTableMock).addColumn(any(Column.class), anyString());
+        }).when(pagedTableMock).addColumn(any(Column.class),
+                                          anyString());
 
         view.init(presenterMock);
 
-        verify(pagedTableMock, times(4)).addColumn(any(Column.class), anyString());
+        verify(pagedTableMock,
+               times(4)).addColumn(any(Column.class),
+                                   anyString());
 
         final InOrder inOrder = inOrder(pagedTableMock);
-        inOrder.verify(pagedTableMock).addColumn(any(Column.class), eq(Constants.INSTANCE.Added_By()));
-        inOrder.verify(pagedTableMock).addColumn(any(Column.class), eq(Constants.INSTANCE.At()));
-        inOrder.verify(pagedTableMock).addColumn(any(Column.class), eq(Constants.INSTANCE.Comment()));
-        inOrder.verify(pagedTableMock).addColumn(any(Column.class), eq(""));
-
+        inOrder.verify(pagedTableMock).addColumn(any(Column.class),
+                                                 eq(Constants.INSTANCE.Added_By()));
+        inOrder.verify(pagedTableMock).addColumn(any(Column.class),
+                                                 eq(Constants.INSTANCE.At()));
+        inOrder.verify(pagedTableMock).addColumn(any(Column.class),
+                                                 eq(Constants.INSTANCE.Comment()));
+        inOrder.verify(pagedTableMock).addColumn(any(Column.class),
+                                                 eq(""));
     }
-
-
 }

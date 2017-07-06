@@ -40,7 +40,8 @@ public class DeploymentIT {
     @Deployment(testable = false)
     public static WebArchive create() {
         final String warFile = System.getProperty(ARCHIVE_NAME);
-        return ShrinkWrap.create(ZipImporter.class, warFile)
+        return ShrinkWrap.create(ZipImporter.class,
+                                 warFile)
                 .importFrom(new File("target/" + warFile))
                 .as(WebArchive.class);
     }
@@ -51,12 +52,12 @@ public class DeploymentIT {
         HttpURLConnection c = null;
         try {
             c = (HttpURLConnection) baseURL.openConnection();
-            assertEquals(200, c.getResponseCode());
+            assertEquals(200,
+                         c.getResponseCode());
         } finally {
             if (c != null) {
                 c.disconnect();
             }
         }
     }
-
 }

@@ -60,7 +60,8 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
 
     public static final int PAGE_SIZE_UNLIMITED = Integer.MAX_VALUE;
     public static final String CASE_OWNER_ROLE = "owner";
-    public static final List<String> NODE_TYPE_HUMAN_TASK = Arrays.asList("Human Task", "HumanTaskNode");
+    public static final List<String> NODE_TYPE_HUMAN_TASK = Arrays.asList("Human Task",
+                                                                          "HumanTaskNode");
 
     @Inject
     private CaseServicesClient client;
@@ -70,18 +71,26 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
 
     @Override
     public List<CaseDefinitionSummary> getCaseDefinitions() {
-        final List<CaseDefinition> caseDefinitions = client.getCaseDefinitions(0, PAGE_SIZE_UNLIMITED, CaseServicesClient.SORT_BY_CASE_DEFINITION_NAME, true);
+        final List<CaseDefinition> caseDefinitions = client.getCaseDefinitions(0,
+                                                                               PAGE_SIZE_UNLIMITED,
+                                                                               CaseServicesClient.SORT_BY_CASE_DEFINITION_NAME,
+                                                                               true);
         return caseDefinitions.stream().map(new CaseDefinitionMapper()).collect(toList());
     }
 
     @Override
-    public CaseDefinitionSummary getCaseDefinition(final String serverTemplateId, final String containerId, final String caseDefinitionId) {
-        return ofNullable(client.getCaseDefinition(containerId, caseDefinitionId)).map(new CaseDefinitionMapper()).orElse(null);
+    public CaseDefinitionSummary getCaseDefinition(final String serverTemplateId,
+                                                   final String containerId,
+                                                   final String caseDefinitionId) {
+        return ofNullable(client.getCaseDefinition(containerId,
+                                                   caseDefinitionId)).map(new CaseDefinitionMapper()).orElse(null);
     }
 
     @Override
     public List<CaseInstanceSummary> getCaseInstances(final CaseInstanceSearchRequest request) {
-        final List<CaseInstance> caseInstances = client.getCaseInstances(singletonList(request.getStatus().getName()), 0, PAGE_SIZE_UNLIMITED);
+        final List<CaseInstance> caseInstances = client.getCaseInstances(singletonList(request.getStatus().getName()),
+                                                                         0,
+                                                                         PAGE_SIZE_UNLIMITED);
         final Comparator<CaseInstanceSummary> comparator = getCaseInstanceSummaryComparator(request);
         return caseInstances.stream().map(new CaseInstanceMapper()).sorted(comparator).collect(toList());
     }
@@ -100,75 +109,162 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public String startCaseInstance(final String serverTemplateId, final String containerId, final String caseDefinitionId, final String owner, final List<CaseRoleAssignmentSummary> roleAssignments) {
+    public String startCaseInstance(final String serverTemplateId,
+                                    final String containerId,
+                                    final String caseDefinitionId,
+                                    final String owner,
+                                    final List<CaseRoleAssignmentSummary> roleAssignments) {
         final CaseFile.Builder builder = CaseFile.builder();
-        builder.addUserAssignments(CASE_OWNER_ROLE, owner);
+        builder.addUserAssignments(CASE_OWNER_ROLE,
+                                   owner);
         roleAssignments.forEach(a -> {
-            a.getGroups().forEach(g -> builder.addGroupAssignments(a.getName(), g));
-            a.getUsers().forEach(u -> builder.addUserAssignments(a.getName(), u));
+            a.getGroups().forEach(g -> builder.addGroupAssignments(a.getName(),
+                                                                   g));
+            a.getUsers().forEach(u -> builder.addUserAssignments(a.getName(),
+                                                                 u));
         });
-        return client.startCase(containerId, caseDefinitionId, builder.build());
+        return client.startCase(containerId,
+                                caseDefinitionId,
+                                builder.build());
     }
 
     @Override
-    public void cancelCaseInstance(final String serverTemplateId, final String containerId, final String caseId) {
-        client.cancelCaseInstance(containerId, caseId);
+    public void cancelCaseInstance(final String serverTemplateId,
+                                   final String containerId,
+                                   final String caseId) {
+        client.cancelCaseInstance(containerId,
+                                  caseId);
     }
 
     @Override
-    public void destroyCaseInstance(final String serverTemplateId, final String containerId, final String caseId) {
-        client.destroyCaseInstance(containerId, caseId);
+    public void destroyCaseInstance(final String serverTemplateId,
+                                    final String containerId,
+                                    final String caseId) {
+        client.destroyCaseInstance(containerId,
+                                   caseId);
     }
 
     @Override
-    public CaseInstanceSummary getCaseInstance(final String serverTemplateId, final String containerId, final String caseId) {
-        return ofNullable(client.getCaseInstance(containerId, caseId, true, true, true, true)).map(new CaseInstanceMapper()).orElse(null);
+    public CaseInstanceSummary getCaseInstance(final String serverTemplateId,
+                                               final String containerId,
+                                               final String caseId) {
+        return ofNullable(client.getCaseInstance(containerId,
+                                                 caseId,
+                                                 true,
+                                                 true,
+                                                 true,
+                                                 true))
+                .map(new CaseInstanceMapper())
+                .orElse(null);
     }
 
     @Override
-    public void assignUserToRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String user) {
-        client.assignUserToRole(containerId, caseId, roleName, user);
+    public void assignUserToRole(final String serverTemplateId,
+                                 final String containerId,
+                                 final String caseId,
+                                 final String roleName,
+                                 final String user) {
+        client.assignUserToRole(containerId,
+                                caseId,
+                                roleName,
+                                user);
     }
 
     @Override
-    public void assignGroupToRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String group) {
-        client.assignGroupToRole(containerId, caseId, roleName, group);
+    public void assignGroupToRole(final String serverTemplateId,
+                                  final String containerId,
+                                  final String caseId,
+                                  final String roleName,
+                                  final String group) {
+        client.assignGroupToRole(containerId,
+                                 caseId,
+                                 roleName,
+                                 group);
     }
 
     @Override
-    public void removeUserFromRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String user) {
-        client.removeUserFromRole(containerId, caseId, roleName, user);
+    public void removeUserFromRole(final String serverTemplateId,
+                                   final String containerId,
+                                   final String caseId,
+                                   final String roleName,
+                                   final String user) {
+        client.removeUserFromRole(containerId,
+                                  caseId,
+                                  roleName,
+                                  user);
     }
 
     @Override
-    public void removeGroupFromRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String group) {
-        client.removeGroupFromRole(containerId, caseId, roleName, group);
+    public void removeGroupFromRole(final String serverTemplateId,
+                                    final String containerId,
+                                    final String caseId,
+                                    final String roleName,
+                                    final String group) {
+        client.removeGroupFromRole(containerId,
+                                   caseId,
+                                   roleName,
+                                   group);
     }
 
     @Override
-    public List<CaseCommentSummary> getComments(String serverTemplateId, String containerId, String caseId, int page, int pageSize) {
-        final List<CaseComment> caseComments = client.getComments(containerId, caseId, page, pageSize);
+    public List<CaseCommentSummary> getComments(final String serverTemplateId,
+                                                final String containerId,
+                                                final String caseId,
+                                                final int page,
+                                                final int pageSize) {
+        final List<CaseComment> caseComments = client.getComments(containerId,
+                                                                  caseId,
+                                                                  page,
+                                                                  pageSize);
         return caseComments.stream().map(new CaseCommentMapper()).collect(toList());
     }
 
     @Override
-    public void addComment(final String serverTemplateId, final String containerId, final String caseId, final String author, final String text) {
-        client.addComment(containerId, caseId, author, text);
+
+    public void addComment(final String serverTemplateId,
+                           final String containerId,
+                           final String caseId,
+                           final String author,
+                           final String text) {
+        client.addComment(containerId,
+                          caseId,
+                          author,
+                          text);
     }
 
     @Override
-    public void updateComment(final String serverTemplateId, final String containerId, final String caseId, final String commentId, final String author, final String text) {
-        client.updateComment(containerId, caseId, commentId, author, text);
+    public void updateComment(final String serverTemplateId,
+                              final String containerId,
+                              final String caseId,
+                              final String commentId,
+                              final String author,
+                              final String text) {
+        client.updateComment(containerId,
+                             caseId,
+                             commentId,
+                             author,
+                             text);
     }
 
     @Override
-    public void removeComment(final String serverTemplateId, final String containerId, final String caseId, final String commentId) {
-        client.removeComment(containerId, caseId, commentId);
+    public void removeComment(final String serverTemplateId,
+                              final String containerId,
+                              final String caseId,
+                              final String commentId) {
+        client.removeComment(containerId,
+                             caseId,
+                             commentId);
     }
 
     @Override
-    public List<CaseMilestoneSummary> getCaseMilestones(final String containerId, final String caseId, final CaseMilestoneSearchRequest request) {
-        final List<CaseMilestone> caseMilestones = client.getMilestones(containerId, caseId, false, 0, PAGE_SIZE_UNLIMITED);
+    public List<CaseMilestoneSummary> getCaseMilestones(final String containerId,
+                                                        final String caseId,
+                                                        final CaseMilestoneSearchRequest request) {
+        final List<CaseMilestone> caseMilestones = client.getMilestones(containerId,
+                                                                        caseId,
+                                                                        false,
+                                                                        0,
+                                                                        PAGE_SIZE_UNLIMITED);
         final Comparator<CaseMilestoneSummary> comparator = getCaseMilestoneSummaryComparator(request);
         return caseMilestones.stream().map(new CaseMilestoneMapper()).sorted(comparator).collect(toList());
     }
@@ -179,74 +275,165 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public Actions getCaseActions(String serverTemplateId, String container, String caseId, String userId) {
+    public Actions getCaseActions(String serverTemplateId,
+                                  String container,
+                                  String caseId,
+                                  String userId) {
         Actions actions = new Actions();
-        actions.setAvailableActions(getAdHocActions(serverTemplateId, container, caseId));
-        actions.setInProgressAction(getInProgressActions(container, caseId));
-        actions.setCompleteActions(getCompletedActions(container, caseId));
+        actions.setAvailableActions(getAdHocActions(serverTemplateId,
+                                                    container,
+                                                    caseId));
+        actions.setInProgressAction(getInProgressActions(container,
+                                                         caseId));
+        actions.setCompleteActions(getCompletedActions(container,
+                                                       caseId));
         return actions;
     }
 
-    public List<CaseActionSummary> getInProgressActions(String containerId, String caseId) {
-        List<NodeInstance> activeNodes = client.getActiveNodes(containerId, caseId, 0, PAGE_SIZE_UNLIMITED);
+    public List<CaseActionSummary> getInProgressActions(String containerId,
+                                                        String caseId) {
+        List<NodeInstance> activeNodes = client.getActiveNodes(containerId,
+                                                               caseId,
+                                                               0,
+                                                               PAGE_SIZE_UNLIMITED);
 
         return activeNodes.stream().map(s -> new CaseActionNodeInstanceMapper((NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ? userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() : ""), CaseActionStatus.IN_PROGRESS).apply(s)).collect(toList());
     }
 
-    public List<NodeInstance> getCaseCompletedNodes(String containerId, String caseId) {
-        return client.getCompletedNodes(containerId, caseId, 0, PAGE_SIZE_UNLIMITED);
+    public List<NodeInstance> getCaseCompletedNodes(String containerId,
+                                                    String caseId) {
+        return client.getCompletedNodes(containerId,
+                                        caseId,
+                                        0,
+                                        PAGE_SIZE_UNLIMITED);
     }
 
-    public List<CaseActionSummary> getCompletedActions(String containerId, String caseId) {
-        List<NodeInstance> activeNodes = getCaseCompletedNodes(containerId, caseId);
-        return activeNodes.stream().map(s -> new CaseActionNodeInstanceMapper((NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ? userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() : ""), CaseActionStatus.COMPLETED).apply(s)).collect(toList());
+    public List<CaseActionSummary> getCompletedActions(String containerId,
+                                                       String caseId) {
+        List<NodeInstance> activeNodes = getCaseCompletedNodes(containerId,
+                                                               caseId);
+        return activeNodes.stream()
+                .map(s -> new CaseActionNodeInstanceMapper(
+                        (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
+                                userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
+                                ""),
+                        CaseActionStatus.COMPLETED).apply(s))
+                .collect(toList());
     }
 
-    public List<CaseActionSummary> getAdHocFragments(String containerId, String caseId) {
-        return client.getAdHocFragments(containerId, caseId).stream().map(new CaseActionAdHocMapper("")).collect(toList());
+    public List<CaseActionSummary> getAdHocFragments(String containerId,
+                                                     String caseId) {
+        return client.getAdHocFragments(containerId,
+                                        caseId)
+                .stream()
+                .map(new CaseActionAdHocMapper(""))
+                .collect(toList());
     }
 
-    public List<CaseActionSummary> getAdHocActions(String serverTemplateId, String containerId, String caseId) {
-        List<CaseActionSummary> adHocActions = getAdHocFragments(containerId, caseId);
-        CaseInstanceSummary caseInstanceSummary = getCaseInstance(serverTemplateId, containerId, caseId);
-        caseInstanceSummary.getStages().stream().filter(s -> s.getStatus().equals(CaseStageStatus.ACTIVE.getStatus())).forEach(ah -> {
-            if (ah.getAdHocActions().size() > 0) {
-                adHocActions.addAll(ah.getAdHocActions());
-            }
-            return;
-        });
+    public List<CaseActionSummary> getAdHocActions(String serverTemplateId,
+                                                   String containerId,
+                                                   String caseId) {
+        List<CaseActionSummary> adHocActions = getAdHocFragments(containerId,
+                                                                 caseId);
+        CaseInstanceSummary caseInstanceSummary = getCaseInstance(serverTemplateId,
+                                                                  containerId,
+                                                                  caseId);
+        caseInstanceSummary.getStages().stream()
+                .filter(s -> s.getStatus().equals(CaseStageStatus.ACTIVE.getStatus()))
+                .forEach(ah -> {
+                    if (ah.getAdHocActions().size() > 0) {
+                        adHocActions.addAll(ah.getAdHocActions());
+                    }
+                    return;
+                });
         return adHocActions;
     }
 
-    public void addDynamicUserTask(String containerId, String caseId, String name, String description, String actors, String groups, Map<String, Object> data) {
-        client.addDynamicUserTask(containerId, caseId, name, description, actors, groups, data);
+    public void addDynamicUserTask(String containerId,
+                                   String caseId,
+                                   String name,
+                                   String description,
+                                   String actors,
+                                   String groups,
+                                   Map<String, Object> data) {
+        client.addDynamicUserTask(containerId,
+                                  caseId,
+                                  name,
+                                  description,
+                                  actors,
+                                  groups,
+                                  data);
     }
 
-    public void addDynamicUserTaskToStage(String containerId, String caseId, String stageId, String name, String description, String actors, String groups, Map<String, Object> data) {
-        client.addDynamicUserTaskToStage(containerId, caseId, stageId, name, description, actors, groups, data);
+    public void addDynamicUserTaskToStage(String containerId,
+                                          String caseId,
+                                          String stageId,
+                                          String name,
+                                          String description,
+                                          String actors,
+                                          String groups,
+                                          Map<String, Object> data) {
+        client.addDynamicUserTaskToStage(containerId,
+                                         caseId,
+                                         stageId,
+                                         name,
+                                         description,
+                                         actors,
+                                         groups,
+                                         data);
     }
 
-    public void addDynamicSubProcess(String containerId, String caseId, String processId, Map<String, Object> data) {
-        client.addDynamicSubProcess(containerId, caseId, processId, data);
+    public void addDynamicSubProcess(String containerId,
+                                     String caseId,
+                                     String processId,
+                                     Map<String, Object> data) {
+        client.addDynamicSubProcess(containerId,
+                                    caseId,
+                                    processId,
+                                    data);
     }
 
-    public void addDynamicSubProcessToStage(String containerId, String caseId, String stageId, String processId, Map<String, Object> data) {
-        client.addDynamicSubProcessToStage(containerId, caseId, stageId, processId, data);
+    public void addDynamicSubProcessToStage(String containerId,
+                                            String caseId,
+                                            String stageId,
+                                            String processId,
+                                            Map<String, Object> data) {
+        client.addDynamicSubProcessToStage(containerId,
+                                           caseId,
+                                           stageId,
+                                           processId,
+                                           data);
     }
 
     @Override
-    public void triggerAdHocActionInStage(String containerId, String caseId, String stageId, String adHocName, Map<String, Object> data) {
-        client.triggerAdHocFragmentInStage(containerId, caseId, stageId, adHocName, data);
+    public void triggerAdHocActionInStage(String containerId,
+                                          String caseId,
+                                          String stageId,
+                                          String adHocName,
+                                          Map<String, Object> data) {
+        client.triggerAdHocFragmentInStage(containerId,
+                                           caseId,
+                                           stageId,
+                                           adHocName,
+                                           data);
     }
 
     @Override
-    public void triggerAdHocAction(String containerId, String caseId, String adHocName, Map<String, Object> data) {
-        client.triggerAdHocFragment(containerId, caseId, adHocName, data);
+    public void triggerAdHocAction(String containerId,
+                                   String caseId,
+                                   String adHocName,
+                                   Map<String, Object> data) {
+        client.triggerAdHocFragment(containerId,
+                                    caseId,
+                                    adHocName,
+                                    data);
     }
 
     @Override
     public List<ProcessDefinitionSummary> getProcessDefinitions(String containerId) {
-        final List<ProcessDefinition> processDefinitions = client.findProcessesByContainerId(containerId, 0, PAGE_SIZE_UNLIMITED);
+        final List<ProcessDefinition> processDefinitions = client.findProcessesByContainerId(containerId,
+                                                                                             0,
+                                                                                             PAGE_SIZE_UNLIMITED);
         return processDefinitions.stream().map(new ProcessDefinitionMapper()).collect(toList());
     }
 

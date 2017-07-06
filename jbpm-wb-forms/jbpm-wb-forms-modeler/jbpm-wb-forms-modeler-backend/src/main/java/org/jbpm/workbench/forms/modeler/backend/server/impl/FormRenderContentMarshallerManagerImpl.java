@@ -24,11 +24,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @SessionScoped
 public class FormRenderContentMarshallerManagerImpl implements FormRenderContentMarshallerManager {
+
     private ConcurrentHashMap<String, ContentMarshallerContext> marhsalContexts = new ConcurrentHashMap<String, ContentMarshallerContext>();
 
     @Override
-    public void addContentMarshaller(String id, ContentMarshallerContext context) {
-        marhsalContexts.put(id, context);
+    public void addContentMarshaller(String id,
+                                     ContentMarshallerContext context) {
+        marhsalContexts.put(id,
+                            context);
     }
 
     @Override

@@ -42,10 +42,6 @@ import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 @Dependent
 public class TaskDashboardView extends Composite implements TaskDashboard.View {
 
-    interface Binder extends UiBinder<Widget, TaskDashboardView> {
-
-    }
-
     private static Binder uiBinder = GWT.create(Binder.class);
 
     @UiField
@@ -133,59 +129,84 @@ public class TaskDashboardView extends Composite implements TaskDashboard.View {
         this.processBreadCrumb = presenter.getProcessBreadCrumb();
 
         Map<String, Displayer> dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.total(), totalMetric);
-        header1 = createMetricContainer(dmap, false);
+        dmap.put(DashboardConstants.INSTANCE.total(),
+                 totalMetric);
+        header1 = createMetricContainer(dmap,
+                                        false);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.taskStatusReady(), readyMetric);
-        header2 = createMetricContainer(dmap, false);
+        dmap.put(DashboardConstants.INSTANCE.taskStatusReady(),
+                 readyMetric);
+        header2 = createMetricContainer(dmap,
+                                        false);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.taskStatusReserved(), reservedMetric);
-        header3 = createMetricContainer(dmap, false);
+        dmap.put(DashboardConstants.INSTANCE.taskStatusReserved(),
+                 reservedMetric);
+        header3 = createMetricContainer(dmap,
+                                        false);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.taskStatusInProgress(), inProgressMetric);
-        header4 = createMetricContainer(dmap, false);
+        dmap.put(DashboardConstants.INSTANCE.taskStatusInProgress(),
+                 inProgressMetric);
+        header4 = createMetricContainer(dmap,
+                                        false);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.taskStatusSuspended(), suspendedMetric);
-        header5 = createMetricContainer(dmap, false);
+        dmap.put(DashboardConstants.INSTANCE.taskStatusSuspended(),
+                 suspendedMetric);
+        header5 = createMetricContainer(dmap,
+                                        false);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.taskStatusCompleted(), completedMetric);
-        header6 = createMetricContainer(dmap, false);
+        dmap.put(DashboardConstants.INSTANCE.taskStatusCompleted(),
+                 completedMetric);
+        header6 = createMetricContainer(dmap,
+                                        false);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.byProcess(), tasksByProcess);
-        container1 = createChartContainer(dmap, true);
+        dmap.put(DashboardConstants.INSTANCE.byProcess(),
+                 tasksByProcess);
+        container1 = createChartContainer(dmap,
+                                          true);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.byCreationDate(), tasksByCreationDate);
-        container2 = createChartContainer(dmap, true);
+        dmap.put(DashboardConstants.INSTANCE.byCreationDate(),
+                 tasksByCreationDate);
+        container2 = createChartContainer(dmap,
+                                          true);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.byUser(), tasksByOwner);
-        container3 = createChartContainer(dmap, true);
+        dmap.put(DashboardConstants.INSTANCE.byUser(),
+                 tasksByOwner);
+        container3 = createChartContainer(dmap,
+                                          true);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.byRunningTime(), tasksByRunningTime);
-        container4 = createChartContainer(dmap, true);
+        dmap.put(DashboardConstants.INSTANCE.byRunningTime(),
+                 tasksByRunningTime);
+        container4 = createChartContainer(dmap,
+                                          true);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.byEndDate(), tasksByEndDate);
-        container5 = createChartContainer(dmap, true);
+        dmap.put(DashboardConstants.INSTANCE.byEndDate(),
+                 tasksByEndDate);
+        container5 = createChartContainer(dmap,
+                                          true);
 
         dmap = new HashMap<String, Displayer>();
-        dmap.put(DashboardConstants.INSTANCE.byStatus(), tasksByStatus);
-        container6 = createChartContainer(dmap, true);
+        dmap.put(DashboardConstants.INSTANCE.byStatus(),
+                 tasksByStatus);
+        container6 = createChartContainer(dmap,
+                                          true);
 
         initWidget(uiBinder.createAndBindUi(this));
     }
 
     protected DisplayerContainer createMetricContainer(Map<String, Displayer> m,
                                                        boolean showHeader) {
-        DisplayerContainer container = new DisplayerContainer(m, showHeader);
+        DisplayerContainer container = new DisplayerContainer(m,
+                                                              showHeader);
         Style s = container.getView().getHeaderStyle();
         s.setBackgroundColor("white");
         return container;
@@ -193,12 +214,14 @@ public class TaskDashboardView extends Composite implements TaskDashboard.View {
 
     protected DisplayerContainer createChartContainer(Map<String, Displayer> m,
                                                       boolean showHeader) {
-        DisplayerContainer container = new DisplayerContainer(m, showHeader);
+        DisplayerContainer container = new DisplayerContainer(m,
+                                                              showHeader);
         Style s = container.getView().getHeaderStyle();
         s.setBackgroundColor("white");
         s = container.getView().getBodyStyle();
         s.setBackgroundColor("white");
-        s.setPaddingBottom(30, Style.Unit.PX);
+        s.setPaddingBottom(30,
+                           Style.Unit.PX);
         return container;
     }
 
@@ -255,5 +278,9 @@ public class TaskDashboardView extends Composite implements TaskDashboard.View {
         } else {
             presenter.showDashboard();
         }
+    }
+
+    interface Binder extends UiBinder<Widget, TaskDashboardView> {
+
     }
 }

@@ -56,7 +56,8 @@ public class TaskCommentsPresenterTest {
         //Mock that actually calls the callbacks
         callerMock = new CallerMock<TaskService>(commentsServiceMock);
 
-        presenter = new TaskCommentsPresenter(viewMock, callerMock);
+        presenter = new TaskCommentsPresenter(viewMock,
+                                              callerMock);
     }
 
     @Test
@@ -65,15 +66,21 @@ public class TaskCommentsPresenterTest {
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_ID));
 
         //Then comments for given task loaded & comment grid refreshed
-        verify(commentsServiceMock).getTaskComments(null, null, TASK_ID);
+        verify(commentsServiceMock).getTaskComments(null,
+                                                    null,
+                                                    TASK_ID);
         verify(viewMock).redrawDataGrid();
 
         //When task Refreshed
         presenter.onTaskRefreshedEvent(new TaskRefreshedEvent(TASK_ID));
 
         //Then comments for given task loaded & comment grid refreshed
-        verify(commentsServiceMock, times(2)).getTaskComments(null, null, TASK_ID);
-        verify(viewMock, times(2)).redrawDataGrid();
+        verify(commentsServiceMock,
+               times(2)).getTaskComments(null,
+                                         null,
+                                         TASK_ID);
+        verify(viewMock,
+               times(2)).redrawDataGrid();
     }
 
     @Test
@@ -82,8 +89,13 @@ public class TaskCommentsPresenterTest {
         presenter.addTaskComment("");
 
         //No comment is added toTaskCommentService
-        verify(commentsServiceMock, never())
-                .addTaskComment(anyString(), anyString(), anyLong(), anyString(), any(Date.class));
+        verify(commentsServiceMock,
+               never())
+                .addTaskComment(anyString(),
+                                anyString(),
+                                anyLong(),
+                                anyString(),
+                                any(Date.class));
         //User notified
         verify(viewMock).displayNotification("CommentCannotBeEmpty");
     }
@@ -95,7 +107,11 @@ public class TaskCommentsPresenterTest {
 
         // Comment added
         verify(commentsServiceMock)
-                .addTaskComment(anyString(), anyString(), anyLong(), eq(comment), any(Date.class));
+                .addTaskComment(anyString(),
+                                anyString(),
+                                anyLong(),
+                                eq(comment),
+                                any(Date.class));
         // Input cleared
         verify(viewMock).clearCommentInput();
     }
@@ -106,11 +122,15 @@ public class TaskCommentsPresenterTest {
 
         // Comment removed
         verify(commentsServiceMock)
-                .deleteTaskComment(anyString(), anyString(), anyLong(), eq(COMMENT_ID));
+                .deleteTaskComment(anyString(),
+                                   anyString(),
+                                   anyLong(),
+                                   eq(COMMENT_ID));
         // Input cleared
         verify(viewMock).clearCommentInput();
-        verify(commentsServiceMock).getTaskComments(anyString(), anyString(), anyLong());
+        verify(commentsServiceMock).getTaskComments(anyString(),
+                                                    anyString(),
+                                                    anyLong());
         verify(viewMock).redrawDataGrid();
-
     }
 }

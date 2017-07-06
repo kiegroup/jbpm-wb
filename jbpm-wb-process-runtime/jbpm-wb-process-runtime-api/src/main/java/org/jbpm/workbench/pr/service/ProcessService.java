@@ -24,18 +24,39 @@ import org.jboss.errai.bus.server.annotations.Remote;
 @Remote
 public interface ProcessService {
 
-    void abortProcessInstance(String serverTemplateId, String containerId, Long processInstanceId);
+    void abortProcessInstance(String serverTemplateId,
+                              String containerId,
+                              Long processInstanceId);
 
-    void abortProcessInstances(String serverTemplateId, List<String> containers, List<Long> processInstanceId);
+    void abortProcessInstances(String serverTemplateId,
+                               List<String> containers,
+                               List<Long> processInstanceId);
 
-    Long startProcess(String serverTemplateId, String containerId, String processId, String correlationKey, Map<String, Object> params);
+    Long startProcess(String serverTemplateId,
+                      String containerId,
+                      String processId,
+                      String correlationKey,
+                      Map<String, Object> params);
 
-    List<String> getAvailableSignals(String serverTemplateId, String containerId, Long processInstanceId);
+    List<String> getAvailableSignals(String serverTemplateId,
+                                     String containerId,
+                                     Long processInstanceId);
 
-    void signalProcessInstance(String serverTemplateId, String containerId, Long processInstanceId, String signal, Object event);
+    void signalProcessInstance(String serverTemplateId,
+                               String containerId,
+                               Long processInstanceId,
+                               String signal,
+                               Object event);
 
-    void signalProcessInstances(String serverTemplateId, List<String> containers, List<Long> processInstanceId, String signal, Object event);
+    void signalProcessInstances(String serverTemplateId,
+                                List<String> containers,
+                                List<Long> processInstanceId,
+                                String signal,
+                                Object event);
 
-    void setProcessVariable(String serverTemplateId, String deploymentId, long processInstanceId, String variableName, String value);
-
+    void setProcessVariable(String serverTemplateId,
+                            String deploymentId,
+                            long processInstanceId,
+                            String variableName,
+                            String value);
 }

@@ -39,19 +39,26 @@ import static java.util.Optional.ofNullable;
 @ApplicationScoped
 public class RemoteExecutorServiceImpl extends AbstractKieServerService implements ExecutorService {
 
-
     @Override
-    public RequestDetails getRequestDetails(String serverTemplateId, Long requestId) {
-        JobServicesClient jobClient = getClient(serverTemplateId, JobServicesClient.class);
+    public RequestDetails getRequestDetails(String serverTemplateId,
+                                            Long requestId) {
+        JobServicesClient jobClient = getClient(serverTemplateId,
+                                                JobServicesClient.class);
 
-        Optional<RequestInfoInstance> request = ofNullable(jobClient.getRequestById(requestId, true, true));
+        Optional<RequestInfoInstance> request = ofNullable(jobClient.getRequestById(requestId,
+                                                                                    true,
+                                                                                    true));
 
         return request.map(new RequestDetailsMapper()).orElse(null);
     }
 
     @Override
-    public Long scheduleRequest(String serverTemplateId, String commandName, Date date, Map<String, String> ctx) {
-        JobServicesClient jobClient = getClient(serverTemplateId, JobServicesClient.class);
+    public Long scheduleRequest(String serverTemplateId,
+                                String commandName,
+                                Date date,
+                                Map<String, String> ctx) {
+        JobServicesClient jobClient = getClient(serverTemplateId,
+                                                JobServicesClient.class);
         HashMap<String, Object> data = new HashMap<>();
         if (ctx != null && !ctx.isEmpty()) {
             data = new HashMap<String, Object>(ctx);
@@ -65,14 +72,18 @@ public class RemoteExecutorServiceImpl extends AbstractKieServerService implemen
     }
 
     @Override
-    public void cancelRequest(String serverTemplateId, Long requestId) {
-        JobServicesClient jobClient = getClient(serverTemplateId, JobServicesClient.class);
+    public void cancelRequest(String serverTemplateId,
+                              Long requestId) {
+        JobServicesClient jobClient = getClient(serverTemplateId,
+                                                JobServicesClient.class);
         jobClient.cancelRequest(requestId);
     }
 
     @Override
-    public void requeueRequest(String serverTemplateId, Long requestId) {
-        JobServicesClient jobClient = getClient(serverTemplateId, JobServicesClient.class);
+    public void requeueRequest(String serverTemplateId,
+                               Long requestId) {
+        JobServicesClient jobClient = getClient(serverTemplateId,
+                                                JobServicesClient.class);
         jobClient.requeueRequest(requestId);
     }
 
@@ -96,5 +107,4 @@ public class RemoteExecutorServiceImpl extends AbstractKieServerService implemen
                                                                                                                  errorId));
         return executionErrorInstance.map(new ExecutionErrorSummaryMapper()).orElse(null);
     }
-
 }

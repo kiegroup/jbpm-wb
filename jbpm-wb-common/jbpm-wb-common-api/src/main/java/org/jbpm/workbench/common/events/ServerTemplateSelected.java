@@ -43,13 +43,16 @@ public class ServerTemplateSelected {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         ServerTemplateSelected that = (ServerTemplateSelected) o;
 
         return serverTemplateId.equals(that.serverTemplateId);
-
     }
 
     @Override
@@ -66,5 +69,4 @@ public class ServerTemplateSelected {
                 "serverTemplateId='" + serverTemplateId + '\'' +
                 '}';
     }
-
 }

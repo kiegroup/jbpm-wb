@@ -33,26 +33,22 @@ import org.uberfire.mocks.CallerMock;
 
 import static org.mockito.Mockito.*;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public class CaseStagesPresenterTest extends AbstractCaseInstancePresenterTest {
+
+    final static String serverTemplateId = "serverTemplateId",
+            containerId = "containerId",
+            caseDefId = "caseDefinitionId",
+            caseId = "caseId";
 
     @Mock
     CaseStagesPresenter.CaseStagesView caseStagesView;
 
     @InjectMocks
+
     CaseStagesPresenter presenter;
 
-    @Override
-    public CaseStagesPresenter getPresenter() {
-        return presenter;
-    }
-
     CaseInstanceSummary cis;
-    final static String serverTemplateId = "serverTemplateId",
-            containerId = "containerId",
-            caseDefId ="caseDefinitionId",
-            caseId = "caseId";
 
     private static CaseStageSummary createCaseStageSummary() {
         return CaseStageSummary.builder()
@@ -73,6 +69,11 @@ public class CaseStagesPresenterTest extends AbstractCaseInstancePresenterTest {
                 .build();
     }
 
+    @Override
+    public CaseStagesPresenter getPresenter() {
+        return presenter;
+    }
+
     @Before
     public void init() {
         cis = createCaseInstance();
@@ -83,8 +84,12 @@ public class CaseStagesPresenterTest extends AbstractCaseInstancePresenterTest {
         cis = CaseInstanceSummary.builder().containerId(containerId).caseId(caseId).caseDefinitionId(caseDefId).build();
         final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().id(caseDefId).build();
 
-        when(caseManagementService.getCaseDefinition(serverTemplateId, cis.getContainerId(), cis.getCaseDefinitionId())).thenReturn(cds);
-        when(caseManagementService.getCaseInstance(serverTemplateId,containerId,caseId)).thenReturn(cis);
+        when(caseManagementService.getCaseDefinition(serverTemplateId,
+                                                     cis.getContainerId(),
+                                                     cis.getCaseDefinitionId())).thenReturn(cds);
+        when(caseManagementService.getCaseInstance(serverTemplateId,
+                                                   containerId,
+                                                   caseId)).thenReturn(cis);
     }
 
     @Test
@@ -100,10 +105,10 @@ public class CaseStagesPresenterTest extends AbstractCaseInstancePresenterTest {
 
     @Test
     public void testLoadCaseInstance() {
-        setupCaseInstance(cis, serverTemplateId);
+        setupCaseInstance(cis,
+                          serverTemplateId);
 
         verifyClearCaseInstance();
         verify(caseStagesView).setCaseStagesList(cis.getStages());
     }
-
 }

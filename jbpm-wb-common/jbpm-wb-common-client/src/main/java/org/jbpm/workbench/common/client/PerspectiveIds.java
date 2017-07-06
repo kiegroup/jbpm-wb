@@ -20,6 +20,6 @@ public interface PerspectiveIds extends org.kie.workbench.common.workbench.clien
 
     String SEARCH_PARAMETER_PROCESS_INSTANCE_ID = "processInstanceId";
     String SEARCH_PARAMETER_PROCESS_DEFINITION_ID = "processDefinitionId";
+    String SEARCH_PARAMETER_TASK_ID = "taskId";
     String SEARCH_PARAMETER_JOB_ID = "jobId";
-
 }

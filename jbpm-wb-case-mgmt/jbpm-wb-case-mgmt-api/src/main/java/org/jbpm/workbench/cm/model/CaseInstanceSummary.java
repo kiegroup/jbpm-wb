@@ -131,10 +131,15 @@ public class CaseInstanceSummary {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         CaseInstanceSummary that = (CaseInstanceSummary) o;
-        return Objects.equals(caseId, that.caseId);
+        return Objects.equals(caseId,
+                              that.caseId);
     }
 
     @Override
@@ -220,7 +225,5 @@ public class CaseInstanceSummary {
             caseInstance.setStages(stages);
             return this;
         }
-
     }
-
 }

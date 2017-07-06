@@ -54,12 +54,12 @@ public class CaseRolesViewImpl extends AbstractView<CaseRolesPresenter> implemen
     public static int PAGE_SIZE = 2;
 
     @Inject
-    @DataField("roles")
-    private Div rolesContainer;
-
-    @Inject
     @DataField("roles-badge")
     Span rolesBadge;
+
+    @Inject
+    @DataField("roles")
+    private Div rolesContainer;
 
     @Inject
     @DataField("filter-select")

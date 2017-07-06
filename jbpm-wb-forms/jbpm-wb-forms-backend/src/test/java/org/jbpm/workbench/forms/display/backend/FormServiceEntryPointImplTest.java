@@ -45,7 +45,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-@RunWith( MockitoJUnitRunner.class )
+@RunWith(MockitoJUnitRunner.class)
 public class FormServiceEntryPointImplTest {
 
     protected InMemoryFormProvider inMemoryFormProvider = new InMemoryFormProvider();
@@ -67,31 +67,33 @@ public class FormServiceEntryPointImplTest {
     @Mock
     protected KieServicesClient kieServicesClient;
 
-
     protected FormServiceEntryPointImpl serviceEntryPoint;
 
     protected String formContent;
 
     @Before
     public void init() {
-        Instance<FormProvider<? extends FormRenderingSettings>> instance = mock( Instance.class );
+        Instance<FormProvider<? extends FormRenderingSettings>> instance = mock(Instance.class);
 
-        when( instance.iterator() ).then( result -> Arrays.asList( inMemoryFormProvider ).iterator() );
+        when(instance.iterator()).then(result -> Arrays.asList(inMemoryFormProvider).iterator());
 
-        serviceEntryPoint = new FormServiceEntryPointImpl( instance, classpathFormProvider ) {
+        serviceEntryPoint = new FormServiceEntryPointImpl(instance,
+                                                          classpathFormProvider) {
 
             @Override
-            protected <T> T getClient( String serverTemplateId, String containerId, Class<T> clientType ) {
-                if ( clientType.equals( DocumentServicesClient.class ) ) {
+            protected <T> T getClient(String serverTemplateId,
+                                      String containerId,
+                                      Class<T> clientType) {
+                if (clientType.equals(DocumentServicesClient.class)) {
                     return (T) documentServicesClient;
                 }
-                if ( clientType.equals( UIServicesClient.class ) ) {
+                if (clientType.equals(UIServicesClient.class)) {
                     return (T) uiServicesClient;
                 }
-                if ( clientType.equals( UserTaskServicesClient.class ) ) {
+                if (clientType.equals(UserTaskServicesClient.class)) {
                     return (T) userTaskServicesClient;
                 }
-                if ( clientType.equals( ProcessServicesClient.class ) ) {
+                if (clientType.equals(ProcessServicesClient.class)) {
                     return (T) processServicesClient;
                 }
 
@@ -99,7 +101,8 @@ public class FormServiceEntryPointImplTest {
             }
 
             @Override
-            protected KieServicesClient getKieServicesClient( String serverTemplateId, String containerId ) {
+            protected KieServicesClient getKieServicesClient(String serverTemplateId,
+                                                             String containerId) {
                 return kieServicesClient;
             }
         };
@@ -107,155 +110,212 @@ public class FormServiceEntryPointImplTest {
         formContent = getFormContent();
 
         ProcessDefinition processDefinition = new ProcessDefinition();
-        processDefinition.setId( "testProcess" );
-        processDefinition.setName( "testProcess" );
-        processDefinition.setContainerId( "localhost" );
-        processDefinition.setPackageName( "org.jbpm.test" );
+        processDefinition.setId("testProcess");
+        processDefinition.setName("testProcess");
+        processDefinition.setContainerId("localhost");
+        processDefinition.setPackageName("org.jbpm.test");
 
-        when( processServicesClient.getProcessDefinition( anyString(), anyString() ) ).thenReturn( processDefinition );
+        when(processServicesClient.getProcessDefinition(anyString(),
+                                                        anyString())).thenReturn(processDefinition);
 
-        when( processServicesClient.getUserTaskInputDefinitions( anyString(), anyString(), anyString() ) ).thenReturn(  new TaskInputsDefinition() );
-        when( processServicesClient.getUserTaskOutputDefinitions( anyString(), anyString(), anyString() ) ).thenReturn(  new TaskOutputsDefinition() );
+        when(processServicesClient.getUserTaskInputDefinitions(anyString(),
+                                                               anyString(),
+                                                               anyString())).thenReturn(new TaskInputsDefinition());
+        when(processServicesClient.getUserTaskOutputDefinitions(anyString(),
+                                                                anyString(),
+                                                                anyString())).thenReturn(new TaskOutputsDefinition());
 
         TaskInstance taskInstance = new TaskInstance();
-        taskInstance.setId( new Long(12) );
-        taskInstance.setName( "TaskName" );
-        taskInstance.setFormName( "TaskFormName" );
-        taskInstance.setDescription( "TaskDescription" );
-        taskInstance.setProcessId( "testProcess" );
+        taskInstance.setId(new Long(12));
+        taskInstance.setName("TaskName");
+        taskInstance.setFormName("TaskFormName");
+        taskInstance.setDescription("TaskDescription");
+        taskInstance.setProcessId("testProcess");
 
-        when( userTaskServicesClient.getTaskInstance( anyString(), anyLong(), anyBoolean(), anyBoolean(), anyBoolean() ) ).thenReturn( taskInstance );
+        when(userTaskServicesClient.getTaskInstance(anyString(),
+                                                    anyLong(),
+                                                    anyBoolean(),
+                                                    anyBoolean(),
+                                                    anyBoolean())).thenReturn(taskInstance);
     }
 
     @Test
     public void testRenderProcessForm() {
 
-        when( uiServicesClient.getProcessRawForm( anyString(),
-                                                  anyString() ) ).thenReturn( formContent );
+        when(uiServicesClient.getProcessRawForm(anyString(),
+                                                anyString())).thenReturn(formContent);
 
-        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayProcess( "template",
-                                                                                  "domain",
-                                                                                  "testProcess" );
+        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayProcess("template",
+                                                                                 "domain",
+                                                                                 "testProcess");
 
-        verify( processServicesClient ).getProcessDefinition( anyString(), anyString() );
-        verify( kieServicesClient ).getClassLoader();
-        verify( uiServicesClient ).getProcessRawForm( anyString(), anyString() );
+        verify(processServicesClient).getProcessDefinition(anyString(),
+                                                           anyString());
+        verify(kieServicesClient).getClassLoader();
+        verify(uiServicesClient).getProcessRawForm(anyString(),
+                                                   anyString());
 
-        assertNotNull( "Settings cannot be null", settings );
-        assertTrue( "Settings must be Static HTML", settings instanceof StaticHTMLFormRenderingSettings );
+        assertNotNull("Settings cannot be null",
+                      settings);
+        assertTrue("Settings must be Static HTML",
+                   settings instanceof StaticHTMLFormRenderingSettings);
 
         StaticHTMLFormRenderingSettings htmlSettings = (StaticHTMLFormRenderingSettings) settings;
 
-        assertEquals( "FormContent must be equal", formContent, htmlSettings.getFormContent() );
+        assertEquals("FormContent must be equal",
+                     formContent,
+                     htmlSettings.getFormContent());
     }
 
     @Test
     public void testRenderProcessDefaultForm() {
 
-        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayProcess( "template",
-                                                                                  "domain",
-                                                                                  "testProcess" );
+        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayProcess("template",
+                                                                                 "domain",
+                                                                                 "testProcess");
 
-        verify( processServicesClient ).getProcessDefinition( anyString(), anyString() );
-        verify( kieServicesClient, times( 2 ) ).getClassLoader();
-        verify( uiServicesClient ).getProcessRawForm( anyString(), anyString() );
+        verify(processServicesClient).getProcessDefinition(anyString(),
+                                                           anyString());
+        verify(kieServicesClient,
+               times(2)).getClassLoader();
+        verify(uiServicesClient).getProcessRawForm(anyString(),
+                                                   anyString());
 
-        assertNotNull( "Settings cannot be null", settings );
-        assertTrue( "Settings must be Static HTML", settings instanceof StaticHTMLFormRenderingSettings );
+        assertNotNull("Settings cannot be null",
+                      settings);
+        assertTrue("Settings must be Static HTML",
+                   settings instanceof StaticHTMLFormRenderingSettings);
 
         StaticHTMLFormRenderingSettings htmlSettings = (StaticHTMLFormRenderingSettings) settings;
 
-        assertNotEquals( "FormContent must be equal", formContent, htmlSettings.getFormContent() );
+        assertNotEquals("FormContent must be equal",
+                        formContent,
+                        htmlSettings.getFormContent());
     }
 
     @Test
     public void testRenderProcessDefaultFormWithException() {
 
-        when( uiServicesClient.getProcessRawForm( anyString(), anyString() ) ).thenThrow( new KieServicesException( "Unable to find form" ) );
+        when(uiServicesClient.getProcessRawForm(anyString(),
+                                                anyString())).thenThrow(new KieServicesException("Unable to find form"));
 
-        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayProcess( "template",
-                                                                                  "domain",
-                                                                                  "testProcess" );
+        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayProcess("template",
+                                                                                 "domain",
+                                                                                 "testProcess");
 
-        verify( processServicesClient ).getProcessDefinition( anyString(), anyString() );
-        verify( kieServicesClient ).getClassLoader();
-        verify( uiServicesClient ).getProcessRawForm( anyString(), anyString() );
+        verify(processServicesClient).getProcessDefinition(anyString(),
+                                                           anyString());
+        verify(kieServicesClient).getClassLoader();
+        verify(uiServicesClient).getProcessRawForm(anyString(),
+                                                   anyString());
 
-        assertNotNull( "Settings cannot be null", settings );
-        assertTrue( "Settings must be Static HTML", settings instanceof StaticHTMLFormRenderingSettings );
+        assertNotNull("Settings cannot be null",
+                      settings);
+        assertTrue("Settings must be Static HTML",
+                   settings instanceof StaticHTMLFormRenderingSettings);
 
         StaticHTMLFormRenderingSettings htmlSettings = (StaticHTMLFormRenderingSettings) settings;
 
-        assertNotEquals( "FormContent must be equal", formContent, htmlSettings.getFormContent() );
+        assertNotEquals("FormContent must be equal",
+                        formContent,
+                        htmlSettings.getFormContent());
     }
 
     @Test
     public void testRenderTaskForm() {
 
-        when( uiServicesClient.getTaskRawForm( anyString(),
-                                                  anyLong() ) ).thenReturn( formContent );
+        when(uiServicesClient.getTaskRawForm(anyString(),
+                                             anyLong())).thenReturn(formContent);
 
+        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayTask("template",
+                                                                              "domain",
+                                                                              12);
 
-        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayTask( "template",
-                                                                                  "domain",
-                                                                                  12 );
+        verify(userTaskServicesClient).getTaskInstance(anyString(),
+                                                       anyLong(),
+                                                       anyBoolean(),
+                                                       anyBoolean(),
+                                                       anyBoolean());
+        verify(kieServicesClient).getClassLoader();
+        verify(uiServicesClient).getTaskRawForm(anyString(),
+                                                anyLong());
 
-        verify( userTaskServicesClient ).getTaskInstance( anyString(), anyLong(), anyBoolean(), anyBoolean(), anyBoolean() );
-        verify( kieServicesClient ).getClassLoader();
-        verify( uiServicesClient ).getTaskRawForm( anyString(), anyLong() );
-
-        assertNotNull( "Settings cannot be null", settings );
-        assertTrue( "Settings must be Static HTML", settings instanceof StaticHTMLFormRenderingSettings );
+        assertNotNull("Settings cannot be null",
+                      settings);
+        assertTrue("Settings must be Static HTML",
+                   settings instanceof StaticHTMLFormRenderingSettings);
 
         StaticHTMLFormRenderingSettings htmlSettings = (StaticHTMLFormRenderingSettings) settings;
 
-        assertEquals( "FormContent must be equal", formContent, htmlSettings.getFormContent() );
+        assertEquals("FormContent must be equal",
+                     formContent,
+                     htmlSettings.getFormContent());
     }
 
     @Test
     public void testRenderTaskDefaultForm() {
-        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayTask( "template",
-                                                                               "domain",
-                                                                               12 );
+        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayTask("template",
+                                                                              "domain",
+                                                                              12);
 
-        verify( userTaskServicesClient ).getTaskInstance( anyString(), anyLong(), anyBoolean(), anyBoolean(), anyBoolean() );
-        verify( kieServicesClient, times( 2 ) ).getClassLoader();
-        verify( uiServicesClient ).getTaskRawForm( anyString(), anyLong() );
+        verify(userTaskServicesClient).getTaskInstance(anyString(),
+                                                       anyLong(),
+                                                       anyBoolean(),
+                                                       anyBoolean(),
+                                                       anyBoolean());
+        verify(kieServicesClient,
+               times(2)).getClassLoader();
+        verify(uiServicesClient).getTaskRawForm(anyString(),
+                                                anyLong());
 
-        assertNotNull( "Settings cannot be null", settings );
-        assertTrue( "Settings must be Static HTML", settings instanceof StaticHTMLFormRenderingSettings );
+        assertNotNull("Settings cannot be null",
+                      settings);
+        assertTrue("Settings must be Static HTML",
+                   settings instanceof StaticHTMLFormRenderingSettings);
 
         StaticHTMLFormRenderingSettings htmlSettings = (StaticHTMLFormRenderingSettings) settings;
 
-        assertNotEquals( "FormContent must be equal", formContent, htmlSettings.getFormContent() );
+        assertNotEquals("FormContent must be equal",
+                        formContent,
+                        htmlSettings.getFormContent());
     }
 
     @Test
     public void testRenderTaskDefaultFormWithException() {
-        when( uiServicesClient.getTaskRawForm( anyString(), anyLong() ) ).thenThrow( new KieServicesException( "Unable to find form" ) );
+        when(uiServicesClient.getTaskRawForm(anyString(),
+                                             anyLong())).thenThrow(new KieServicesException("Unable to find form"));
 
-        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayTask( "template",
-                                                                               "domain",
-                                                                               12 );
+        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayTask("template",
+                                                                              "domain",
+                                                                              12);
 
-        verify( userTaskServicesClient ).getTaskInstance( anyString(), anyLong(), anyBoolean(), anyBoolean(), anyBoolean() );
-        verify( kieServicesClient ).getClassLoader();
-        verify( uiServicesClient ).getTaskRawForm( anyString(), anyLong() );
+        verify(userTaskServicesClient).getTaskInstance(anyString(),
+                                                       anyLong(),
+                                                       anyBoolean(),
+                                                       anyBoolean(),
+                                                       anyBoolean());
+        verify(kieServicesClient).getClassLoader();
+        verify(uiServicesClient).getTaskRawForm(anyString(),
+                                                anyLong());
 
-        assertNotNull( "Settings cannot be null", settings );
-        assertTrue( "Settings must be Static HTML", settings instanceof StaticHTMLFormRenderingSettings );
+        assertNotNull("Settings cannot be null",
+                      settings);
+        assertTrue("Settings must be Static HTML",
+                   settings instanceof StaticHTMLFormRenderingSettings);
 
         StaticHTMLFormRenderingSettings htmlSettings = (StaticHTMLFormRenderingSettings) settings;
 
-        assertNotEquals( "FormContent must be equal", formContent, htmlSettings.getFormContent() );
+        assertNotEquals("FormContent must be equal",
+                        formContent,
+                        htmlSettings.getFormContent());
     }
 
     protected String getFormContent() {
         try {
-            return IOUtils.toString( this.getClass().getResourceAsStream(
-                    "/forms/form.ftl" ) );
-        } catch ( IOException ex ) {
-            fail( "Exception thrown getting form content" );
+            return IOUtils.toString(this.getClass().getResourceAsStream(
+                    "/forms/form.ftl"));
+        } catch (IOException ex) {
+            fail("Exception thrown getting form content");
         }
         return "";
     }

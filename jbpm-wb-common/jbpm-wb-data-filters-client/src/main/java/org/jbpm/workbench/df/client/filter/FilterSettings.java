@@ -38,14 +38,25 @@ public class FilterSettings extends DisplayerSettings {
     protected String serverTemplateId;
 
     public FilterSettings() {
-        super( DisplayerType.TABLE );
+        super(DisplayerType.TABLE);
+    }
+
+    public static FilterSettings cloneFrom(DisplayerSettings settings) {
+        FilterSettings tableSettings = new FilterSettings();
+        tableSettings.setType(DisplayerType.TABLE);
+        tableSettings.setUUID(settings.getUUID());
+        tableSettings.setDataSet(settings.getDataSet());
+        tableSettings.setDataSetLookup(settings.getDataSetLookup());
+        tableSettings.setColumnSettingsList(settings.getColumnSettingsList());
+        tableSettings.getSettingsFlatMap().putAll(settings.getSettingsFlatMap());
+        return tableSettings;
     }
 
     public String getTableName() {
         return tableName;
     }
 
-    public void setTableName( String tableName ) {
+    public void setTableName(String tableName) {
         this.tableName = tableName;
     }
 
@@ -53,7 +64,7 @@ public class FilterSettings extends DisplayerSettings {
         return tableDescription;
     }
 
-    public void setTableDescription( String tableDescription ) {
+    public void setTableDescription(String tableDescription) {
         this.tableDescription = tableDescription;
     }
 
@@ -61,7 +72,7 @@ public class FilterSettings extends DisplayerSettings {
         return editable;
     }
 
-    public void setEditable( boolean editable ) {
+    public void setEditable(boolean editable) {
         this.editable = editable;
     }
 
@@ -69,7 +80,7 @@ public class FilterSettings extends DisplayerSettings {
         return key;
     }
 
-    public void setKey( String key ) {
+    public void setKey(String key) {
         this.key = key;
     }
 
@@ -82,13 +93,17 @@ public class FilterSettings extends DisplayerSettings {
     }
 
     @Override
-    public boolean equals( Object obj ) {
+    public boolean equals(Object obj) {
         try {
-            FilterSettings other = ( FilterSettings ) obj;
-            if ( tableName == null || other.tableName == null ) return false;
-            if ( !tableName.equals( other.tableName ) ) return false;
+            FilterSettings other = (FilterSettings) obj;
+            if (tableName == null || other.tableName == null) {
+                return false;
+            }
+            if (!tableName.equals(other.tableName)) {
+                return false;
+            }
             return true;
-        } catch ( ClassCastException e ) {
+        } catch (ClassCastException e) {
             return false;
         }
     }
@@ -98,30 +113,23 @@ public class FilterSettings extends DisplayerSettings {
         return tableName != null ? tableName.hashCode() : 0;
     }
 
-    public static FilterSettings cloneFrom(DisplayerSettings settings ) {
-        FilterSettings tableSettings = new FilterSettings();
-        tableSettings.setType( DisplayerType.TABLE );
-        tableSettings.setUUID( settings.getUUID() );
-        tableSettings.setDataSet( settings.getDataSet() );
-        tableSettings.setDataSetLookup( settings.getDataSetLookup() );
-        tableSettings.setColumnSettingsList( settings.getColumnSettingsList() );
-        tableSettings.getSettingsFlatMap().putAll( settings.getSettingsFlatMap() );
-        return tableSettings;
-    }
-
     public FilterSettings cloneInstance() {
         FilterSettings clone = new FilterSettings();
         clone.UUID = UUID;
         clone.tableName = tableName;
         clone.tableDescription = tableDescription;
-        clone.settings = new HashMap<String, String>( settings );
+        clone.settings = new HashMap<String, String>(settings);
         clone.columnSettingsList = new ArrayList<ColumnSettings>();
 
-        for ( ColumnSettings columnSettings : columnSettingsList ) {
-            clone.columnSettingsList.add( columnSettings.cloneInstance() );
+        for (ColumnSettings columnSettings : columnSettingsList) {
+            clone.columnSettingsList.add(columnSettings.cloneInstance());
         }
-        if ( dataSet != null ) clone.dataSet = dataSet.cloneInstance();
-        if ( dataSetLookup != null ) clone.dataSetLookup = dataSetLookup.cloneInstance();
+        if (dataSet != null) {
+            clone.dataSet = dataSet.cloneInstance();
+        }
+        if (dataSetLookup != null) {
+            clone.dataSetLookup = dataSetLookup.cloneInstance();
+        }
 
         return clone;
     }
@@ -144,10 +152,9 @@ public class FilterSettings extends DisplayerSettings {
         }
     }
 
-    public void removeAllColumnFilters(){
+    public void removeAllColumnFilters() {
         if (getDataSetLookup().getFirstFilterOp() != null) {
             getDataSetLookup().getFirstFilterOp().getColumnFilterList().clear();
         }
     }
-
 }

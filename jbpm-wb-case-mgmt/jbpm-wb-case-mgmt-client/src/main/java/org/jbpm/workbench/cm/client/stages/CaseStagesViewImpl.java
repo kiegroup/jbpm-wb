@@ -51,7 +51,6 @@ public class CaseStagesViewImpl extends AbstractView<CaseStagesPresenter> implem
     @AutoBound
     private DataBinder<List<CaseStageSummary>> caseStageList;
 
-
     @Override
     public void init(final CaseStagesPresenter presenter) {
         super.init(presenter);
@@ -72,5 +71,4 @@ public class CaseStagesViewImpl extends AbstractView<CaseStagesPresenter> implem
     public HTMLElement getElement() {
         return stagesContainer;
     }
-
 }

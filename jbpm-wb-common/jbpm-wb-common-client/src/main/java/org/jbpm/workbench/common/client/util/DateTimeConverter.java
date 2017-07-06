@@ -18,24 +18,12 @@ package org.jbpm.workbench.common.client.util;
 
 import java.util.Date;
 
-import com.google.gwt.i18n.client.DateTimeFormat;
 import org.jboss.errai.databinding.client.api.Converter;
 
-public class DateConverter implements Converter<Date, String> {
-
-    public static String DEFAULT_DATE_FORMAT_MASK = DateUtils.getDateFormatMask();
+public class DateTimeConverter implements Converter<Date, String> {
 
     public static String getDateStr(final Date date) {
-        if (date != null) {
-            final DateTimeFormat format = DateTimeFormat.getFormat(DEFAULT_DATE_FORMAT_MASK);
-            return format.format(date);
-        }
-        return "";
-    }
-
-    public static Date createDate(final String dateString) {
-        final DateTimeFormat fmt = DateTimeFormat.getFormat(DEFAULT_DATE_FORMAT_MASK);
-        return fmt.parse(dateString);
+        return DateUtils.getDateTimeStr(date);
     }
 
     @Override
@@ -44,7 +32,8 @@ public class DateConverter implements Converter<Date, String> {
             return null;
         }
 
-        return createDate(widgetValue);
+        return DateUtils.createDate(widgetValue,
+                                    DateUtils.getDateTimeFormatMask());
     }
 
     @Override

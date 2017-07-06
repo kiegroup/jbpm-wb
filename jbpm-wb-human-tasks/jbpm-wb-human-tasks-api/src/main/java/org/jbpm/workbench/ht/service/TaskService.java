@@ -29,36 +29,77 @@ import org.jbpm.workbench.ht.model.TaskSummary;
 @Remote
 public interface TaskService {
 
-    TaskSummary getTask(String serverTemplateId, String containerId, Long taskId);
+    TaskSummary getTask(String serverTemplateId,
+                        String containerId,
+                        Long taskId);
 
-    void updateTask(String serverTemplateId, String containerId, Long taskId, Integer priority, String description, Date dueDate);
+    void updateTask(String serverTemplateId,
+                    String containerId,
+                    Long taskId,
+                    Integer priority,
+                    String description,
+                    Date dueDate);
 
-    void claimTask(String serverTemplateId, String containerId, Long taskId);
+    void claimTask(String serverTemplateId,
+                   String containerId,
+                   Long taskId);
 
-    void releaseTask(String serverTemplateId, String containerId, Long taskId);
+    void releaseTask(String serverTemplateId,
+                     String containerId,
+                     Long taskId);
 
-    void startTask(String serverTemplateId, String containerId, Long taskId);
+    void startTask(String serverTemplateId,
+                   String containerId,
+                   Long taskId);
 
-    void completeTask(String serverTemplateId, String containerId, Long taskId, Map<String, Object> output);
-    
-    void resumeTask(String serverTemplateId, String containerId, Long taskId);
-    
-    void suspendTask(String serverTemplateId, String containerId, Long taskId);
+    void completeTask(String serverTemplateId,
+                      String containerId,
+                      Long taskId,
+                      Map<String, Object> output);
 
-    void saveTaskContent(String serverTemplateId, String containerId, Long taskId, Map<String, Object> output);
+    void resumeTask(String serverTemplateId,
+                    String containerId,
+                    Long taskId);
 
-    void addTaskComment(String serverTemplateId, String containerId, Long taskId, String text, Date addedOn);
+    void suspendTask(String serverTemplateId,
+                     String containerId,
+                     Long taskId);
 
-    void deleteTaskComment(String serverTemplateId, String containerId, Long taskId, Long commentId);
+    void saveTaskContent(String serverTemplateId,
+                         String containerId,
+                         Long taskId,
+                         Map<String, Object> output);
 
-    List<CommentSummary> getTaskComments(String serverTemplateId, String containerId, Long taskId);
+    void addTaskComment(String serverTemplateId,
+                        String containerId,
+                        Long taskId,
+                        String text,
+                        Date addedOn);
 
-    List<TaskEventSummary> getTaskEvents(String serverTemplateId, String containerId, Long taskId);
+    void deleteTaskComment(String serverTemplateId,
+                           String containerId,
+                           Long taskId,
+                           Long commentId);
 
-    void delegate(String serverTemplateId, String containerId, Long taskId, String entity);
+    List<CommentSummary> getTaskComments(String serverTemplateId,
+                                         String containerId,
+                                         Long taskId);
 
-    TaskAssignmentSummary getTaskAssignmentDetails(String serverTemplateId, String containerId, Long taskId);
+    List<TaskEventSummary> getTaskEvents(String serverTemplateId,
+                                         String containerId,
+                                         Long taskId);
 
-    void executeReminderForTask(String serverTemplateId, String containerId, Long taskId,String fromUser);
+    void delegate(String serverTemplateId,
+                  String containerId,
+                  Long taskId,
+                  String entity);
 
+    TaskAssignmentSummary getTaskAssignmentDetails(String serverTemplateId,
+                                                   String containerId,
+                                                   Long taskId);
+
+    void executeReminderForTask(String serverTemplateId,
+                                String containerId,
+                                Long taskId,
+                                String fromUser);
 }

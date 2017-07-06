@@ -63,7 +63,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
 
     private static int commentIdGenerator = 0;
     private static long actionIdGenerator = 9;
-
+    private final ObjectMapper mapper = new ObjectMapper();
     private List<CaseDefinitionSummary> caseDefinitionList = emptyList();
     private List<CaseInstanceSummary> caseInstanceList = new ArrayList<>();
     private List<CaseStageSummary> caseStageList = new ArrayList<>();
@@ -73,17 +73,23 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     private Map<String, List<CaseActionSummary>> caseActionMap = new HashMap<>();
     private List<CaseActionSummary> caseActionList = new ArrayList<>();
     private List<ProcessDefinitionSummary> processDefinitionList = emptyList();
-    private final ObjectMapper mapper = new ObjectMapper();
 
     @PostConstruct
     public void init() {
-        caseDefinitionList = readJsonValues(CaseDefinitionSummary.class, CASE_DEFINITIONS_JSON);
-        caseMilestoneList = readJsonValues(CaseMilestoneSummary.class, CASE_MILESTONES_JSON);
-        caseCommentList = readJsonValues(CaseCommentSummary.class, CASE_COMMENTS_JSON);
-        caseStageList = readJsonValues(CaseStageSummary.class, CASE_STAGES_JSON);
-        caseActionList = readJsonValues(CaseActionSummary.class, CASE_ACTIONS_JSON);
-        processDefinitionList = readJsonValues(ProcessDefinitionSummary.class, PROCESS_DEFINITION_JSON);
-        LOGGER.info("Loaded {} case definitions", caseDefinitionList.size());
+        caseDefinitionList = readJsonValues(CaseDefinitionSummary.class,
+                                            CASE_DEFINITIONS_JSON);
+        caseMilestoneList = readJsonValues(CaseMilestoneSummary.class,
+                                           CASE_MILESTONES_JSON);
+        caseCommentList = readJsonValues(CaseCommentSummary.class,
+                CASE_COMMENTS_JSON);
+        caseStageList = readJsonValues(CaseStageSummary.class,
+                                       CASE_STAGES_JSON);
+        caseActionList = readJsonValues(CaseActionSummary.class,
+                                        CASE_ACTIONS_JSON);
+        processDefinitionList = readJsonValues(ProcessDefinitionSummary.class,
+                                               PROCESS_DEFINITION_JSON);
+        LOGGER.info("Loaded {} case definitions",
+                    caseDefinitionList.size());
     }
 
     private <T> List<T> readJsonValues(final Class<T> type, final String fileName) {
@@ -97,7 +103,9 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     }
 
     @Override
-    public CaseDefinitionSummary getCaseDefinition(final String serverTemplateId, final String containerId, final String caseDefinitionId) {
+    public CaseDefinitionSummary getCaseDefinition(final String serverTemplateId,
+                                                   final String containerId,
+                                                   final String caseDefinitionId) {
         return caseDefinitionList.stream().filter(c -> c.getId().equals(caseDefinitionId)).findFirst().get();
     }
 
@@ -107,15 +115,33 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     }
 
     @Override
-    public String startCaseInstance(final String serverTemplateId, final String containerId, final String caseDefinitionId, final String owner, final List<CaseRoleAssignmentSummary> roleAssignments) {
-        final CaseInstanceSummary ci = CaseInstanceSummary.builder().caseId("CASE-" + Strings.padStart(String.valueOf(caseInstanceList.size() + 1), 5, '0')).owner(owner).startedAt(new Date()).caseDefinitionId(caseDefinitionId).status(CaseStatus.OPEN).description("New case instance for development").containerId(containerId).stages(caseStageList).roleAssignments(roleAssignments).build();
+    public String startCaseInstance(final String serverTemplateId,
+                                    final String containerId,
+                                    final String caseDefinitionId,
+                                    final String owner,
+                                    final List<CaseRoleAssignmentSummary> roleAssignments) {
+        final CaseInstanceSummary ci = CaseInstanceSummary
+                .builder()
+                .caseId("CASE-" + Strings.padStart(String.valueOf(caseInstanceList.size() + 1),
+                                                   5,
+                                                   '0'))
+                .owner(owner)
+                .startedAt(new Date())
+                .caseDefinitionId(caseDefinitionId)
+                .status(CaseStatus.OPEN)
+                .description("New case instance for development")
+                .containerId(containerId)
+                .stages(caseStageList)
+                .roleAssignments(roleAssignments)
+                .build();
         caseInstanceList.add(ci);
 
         List<CaseActionSummary> actions = new ArrayList<>(caseActionList);
-        caseActionMap.putIfAbsent(ci.getCaseId(), actions.stream().map(s -> {
-            s.setCreatedOn(new Date());
-            return s;
-        }).collect(toList()));
+        caseActionMap.putIfAbsent(ci.getCaseId(),
+                                  actions.stream().map(s -> {
+                                      s.setCreatedOn(new Date());
+                                      return s;
+                                  }).collect(toList()));
 
         List<CaseCommentSummary> comments = new ArrayList<>(caseCommentList);
         caseCommentMap.putIfAbsent(ci.getCaseId(), comments.stream().map(s -> {
@@ -132,22 +158,34 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     }
 
     @Override
-    public CaseInstanceSummary getCaseInstance(final String serverTemplateId, final String containerId, final String caseId) {
+    public CaseInstanceSummary getCaseInstance(final String serverTemplateId,
+                                               final String containerId,
+                                               final String caseId) {
         return caseInstanceList.stream().filter(c -> c.getCaseId().equals(caseId)).findFirst().get();
     }
 
     @Override
-    public void cancelCaseInstance(final String serverTemplateId, final String containerId, final String caseId) {
-        executeOnCaseInstance(caseId, c -> c.setStatus(CaseStatus.CANCELLED));
+    public void cancelCaseInstance(final String serverTemplateId,
+                                   final String containerId,
+                                   final String caseId) {
+        executeOnCaseInstance(caseId,
+                              c -> c.setStatus(CaseStatus.CANCELLED));
     }
 
     @Override
-    public void destroyCaseInstance(final String serverTemplateId, final String containerId, final String caseId) {
-        executeOnCaseInstance(caseId, c -> c.setStatus(CaseStatus.CANCELLED));
+    public void destroyCaseInstance(final String serverTemplateId,
+                                    final String containerId,
+                                    final String caseId) {
+        executeOnCaseInstance(caseId,
+                              c -> c.setStatus(CaseStatus.CANCELLED));
     }
 
     @Override
-    public List<CaseCommentSummary> getComments(final String serverTemplateId, final String containerId, final String caseId, final int page, final int pageSize) {
+    public List<CaseCommentSummary> getComments(final String serverTemplateId, 
+                                                final String containerId, 
+                                                final String caseId, 
+                                                final int page, 
+                                                final int pageSize) {
 
         List<CaseCommentSummary> allComments = caseCommentMap.get(caseId);
         List<CaseCommentSummary> subList = new ArrayList<>();
@@ -164,126 +202,255 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
             subList = allComments.subList(offset, offset + pageSize);
         }
         return new ArrayList<CaseCommentSummary>(subList);
+
     }
 
     @Override
-    public void addComment(final String serverTemplateId, final String containerId, final String caseId, final String author, final String text) {
-        final List<CaseCommentSummary> commentSummaryList = caseCommentMap.getOrDefault(caseId, new ArrayList<>());
+    public void addComment(final String serverTemplateId,
+                           final String containerId,
+                           final String caseId,
+                           final String author,
+                           final String text) {
+        final List<CaseCommentSummary> commentSummaryList = caseCommentMap.getOrDefault(caseId,
+                                                                                        new ArrayList<>());
 
         final String newId = String.valueOf(commentIdGenerator++);
 
         final CaseCommentSummary caseCommentSummary = CaseCommentSummary.builder().id(newId).author(author).text(text).addedAt(new Date()).build();
         commentSummaryList.add(caseCommentSummary);
-        caseCommentMap.putIfAbsent(caseId, commentSummaryList);
+        caseCommentMap.putIfAbsent(caseId,
+                                   commentSummaryList);
     }
 
     @Override
-    public void updateComment(final String serverTemplateId, final String containerId, final String caseId, final String commentId, final String author, final String text) {
+    public void updateComment(final String serverTemplateId,
+                              final String containerId,
+                              final String caseId,
+                              final String commentId,
+                              final String author,
+                              final String text) {
         ofNullable(caseCommentMap.get(caseId)).ifPresent(l -> l.stream().filter(c -> c.getId().equals(commentId)).findFirst().ifPresent(c -> c.setText(text)));
     }
 
     @Override
-    public void removeComment(final String serverTemplateId, final String containerId, final String caseId, final String commentId) {
+    public void removeComment(final String serverTemplateId,
+                              final String containerId,
+                              final String caseId,
+                              final String commentId) {
         ofNullable(caseCommentMap.get(caseId)).ifPresent(l -> l.stream().filter(c -> c.getId().equals(commentId)).findFirst().ifPresent(c -> l.remove(c)));
     }
 
     @Override
-    public void assignUserToRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String user) {
-        executeOnCaseRole(caseId, roleName, r -> r.getUsers().add(user));
+    public void assignUserToRole(final String serverTemplateId,
+                                 final String containerId,
+                                 final String caseId,
+                                 final String roleName,
+                                 final String user) {
+        executeOnCaseRole(caseId,
+                          roleName,
+                          r -> r.getUsers().add(user));
     }
 
     @Override
-    public void assignGroupToRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String group) {
-        executeOnCaseRole(caseId, roleName, r -> r.getGroups().add(group));
+    public void assignGroupToRole(final String serverTemplateId,
+                                  final String containerId,
+                                  final String caseId,
+                                  final String roleName,
+                                  final String group) {
+        executeOnCaseRole(caseId,
+                          roleName,
+                          r -> r.getGroups().add(group));
     }
 
     @Override
-    public void removeUserFromRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String user) {
-        executeOnCaseRole(caseId, roleName, r -> r.getUsers().remove(user));
+    public void removeUserFromRole(final String serverTemplateId,
+                                   final String containerId,
+                                   final String caseId,
+                                   final String roleName,
+                                   final String user) {
+        executeOnCaseRole(caseId,
+                          roleName,
+                          r -> r.getUsers().remove(user));
     }
 
     @Override
-    public void removeGroupFromRole(final String serverTemplateId, final String containerId, final String caseId, final String roleName, final String group) {
-        executeOnCaseRole(caseId, roleName, r -> r.getGroups().remove(group));
+    public void removeGroupFromRole(final String serverTemplateId,
+                                    final String containerId,
+                                    final String caseId,
+                                    final String roleName,
+                                    final String group) {
+        executeOnCaseRole(caseId,
+                          roleName,
+                          r -> r.getGroups().remove(group));
     }
 
-    private void executeOnCaseInstance(final String caseId, final Consumer<CaseInstanceSummary> consumer) {
+    private void executeOnCaseInstance(final String caseId,
+                                       final Consumer<CaseInstanceSummary> consumer) {
         caseInstanceList.stream().filter(c -> c.getCaseId().equals(caseId)).findFirst().ifPresent(consumer);
     }
 
-    private void executeOnCaseRole(final String caseId, final String roleName, final Consumer<CaseRoleAssignmentSummary> consumer) {
-        executeOnCaseInstance(caseId, c -> {
-            final CaseRoleAssignmentSummary role = c.getRoleAssignments().stream().filter(r -> r.getName().equals(roleName)).findFirst().orElseGet(() -> {
-                final CaseRoleAssignmentSummary newRole = CaseRoleAssignmentSummary.builder().name(roleName).build();
-                c.getRoleAssignments().add(newRole);
-                return newRole;
-            });
-            consumer.accept(role);
-        });
+    private void executeOnCaseRole(final String caseId,
+                                   final String roleName,
+                                   final Consumer<CaseRoleAssignmentSummary> consumer) {
+        executeOnCaseInstance(caseId,
+                              c -> {
+                                  final CaseRoleAssignmentSummary role = c.getRoleAssignments().stream()
+                                          .filter(r -> r.getName().equals(roleName)).findFirst()
+                                          .orElseGet(() -> {
+                                              final CaseRoleAssignmentSummary newRole = CaseRoleAssignmentSummary.builder().name(roleName).build();
+                                              c.getRoleAssignments().add(newRole);
+                                              return newRole;
+                                          });
+                                  consumer.accept(role);
+                              }
+        );
     }
 
     @Override
-    public List<CaseMilestoneSummary> getCaseMilestones(final String containerId, final String caseId, final CaseMilestoneSearchRequest request) {
-        return caseMilestoneList.stream().sorted(getCaseMilestoneSummaryComparator(request)).collect(toList());
+    public List<CaseMilestoneSummary> getCaseMilestones(final String containerId,
+                                                        final String caseId,
+                                                        final CaseMilestoneSearchRequest request) {
+        return caseMilestoneList.stream()
+                .sorted(getCaseMilestoneSummaryComparator(request))
+                .collect(toList());
     }
 
-    public List<CaseActionSummary> getAdHocFragments(String containerId, String caseId) {
-        return ofNullable(caseActionMap.get(caseId)).orElse(emptyList()).stream().filter(c -> CaseActionType.AD_HOC_TASK == c.getActionType()).collect(toList());
+    public List<CaseActionSummary> getAdHocFragments(String containerId,
+                                                     String caseId) {
+        return ofNullable(caseActionMap.get(caseId)).orElse(emptyList()).stream()
+                .filter(c -> CaseActionType.AD_HOC_TASK == c.getActionType()).collect(toList());
     }
 
-    public List<CaseActionSummary> getInProgressActions(String containerId, String caseId) {
-        return ofNullable(caseActionMap.get(caseId)).orElse(emptyList()).stream().filter(c -> CaseActionStatus.IN_PROGRESS == c.getActionStatus()).collect(toList());
+    public List<CaseActionSummary> getInProgressActions(String containerId,
+                                                        String caseId) {
+        return ofNullable(caseActionMap.get(caseId)).orElse(emptyList()).stream()
+                .filter(c -> CaseActionStatus.IN_PROGRESS == c.getActionStatus()).collect(toList());
     }
 
-    public List<CaseActionSummary> getCompletedActions(String containerId, String caseId) {
-        return ofNullable(caseActionMap.get(caseId)).orElse(emptyList()).stream().filter(c -> CaseActionStatus.COMPLETED == c.getActionStatus()).collect(toList());
-    }
-
-    @Override
-    public void addDynamicUserTask(String containerId, String caseId, String name, String description, String actors, String groups, Map<String, Object> data) {
-        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
-        final CaseActionSummary action = CaseActionSummary.builder().id(actionIdGenerator++).name(name).actualOwner(actors).type("Human Task").actionStatus(CaseActionStatus.IN_PROGRESS).createdOn(new Date()).build();
-        actionSummaryList.add(action);
-        caseActionMap.putIfAbsent(caseId, actionSummaryList);
-    }
-
-    public void addDynamicUserTaskToStage(String containerId, String caseId, String stageId, String name, String description, String actors, String groups, Map<String, Object> data) {
-        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
-        final CaseActionSummary action = CaseActionSummary.builder().id(actionIdGenerator++).name(name).actualOwner(actors).type("Human Task").actionStatus(CaseActionStatus.IN_PROGRESS).createdOn(new Date()).build();
-        actionSummaryList.add(action);
-        caseActionMap.putIfAbsent(caseId, actionSummaryList);
+    public List<CaseActionSummary> getCompletedActions(String containerId,
+                                                       String caseId) {
+        return ofNullable(caseActionMap.get(caseId)).orElse(emptyList()).stream()
+                .filter(c -> CaseActionStatus.COMPLETED == c.getActionStatus()).collect(toList());
     }
 
     @Override
-    public void triggerAdHocActionInStage(String containerId, String caseId, String stageId, String adHocName, Map<String, Object> data) {
-        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
-        final CaseActionSummary action = CaseActionSummary.builder().id(actionIdGenerator++).name(adHocName).actionStatus(CaseActionStatus.IN_PROGRESS).createdOn(new Date()).build();
+    public void addDynamicUserTask(String containerId,
+                                   String caseId,
+                                   String name,
+                                   String description,
+                                   String actors,
+                                   String groups,
+                                   Map<String, Object> data) {
+        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId,
+                                                                                     new ArrayList<>());
+        final CaseActionSummary action = CaseActionSummary.builder()
+                .id(actionIdGenerator++)
+                .name(name)
+                .actualOwner(actors)
+                .type("Human Task")
+                .actionStatus(CaseActionStatus.IN_PROGRESS)
+                .createdOn(new Date())
+                .build();
         actionSummaryList.add(action);
-        caseActionMap.putIfAbsent(caseId, actionSummaryList);
+        caseActionMap.putIfAbsent(caseId,
+                                  actionSummaryList);
+    }
+
+    public void addDynamicUserTaskToStage(String containerId,
+                                          String caseId,
+                                          String stageId,
+                                          String name,
+                                          String description,
+                                          String actors,
+                                          String groups,
+                                          Map<String, Object> data) {
+        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId,
+                                                                                     new ArrayList<>());
+        final CaseActionSummary action = CaseActionSummary.builder()
+                .id(actionIdGenerator++)
+                .name(name)
+                .actualOwner(actors)
+                .type("Human Task")
+                .actionStatus(CaseActionStatus.IN_PROGRESS)
+                .createdOn(new Date())
+                .build();
+        actionSummaryList.add(action);
+        caseActionMap.putIfAbsent(caseId,
+                                  actionSummaryList);
     }
 
     @Override
-    public void triggerAdHocAction(String containerId, String caseId, String adHocName, Map<String, Object> data) {
-        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
-        final CaseActionSummary action = CaseActionSummary.builder().id(actionIdGenerator++).name(adHocName).actionStatus(CaseActionStatus.IN_PROGRESS).createdOn(new Date()).build();
+    public void triggerAdHocActionInStage(String containerId,
+                                          String caseId,
+                                          String stageId,
+                                          String adHocName,
+                                          Map<String, Object> data) {
+        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId,
+                                                                                     new ArrayList<>());
+        final CaseActionSummary action = CaseActionSummary.builder()
+                .id(actionIdGenerator++)
+                .name(adHocName)
+                .actionStatus(CaseActionStatus.IN_PROGRESS)
+                .createdOn(new Date())
+                .build();
         actionSummaryList.add(action);
-        caseActionMap.putIfAbsent(caseId, actionSummaryList);
+        caseActionMap.putIfAbsent(caseId,
+                                  actionSummaryList);
     }
 
     @Override
-    public void addDynamicSubProcess(String containerId, String caseId, String processId, Map<String, Object> data) {
-        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
-        final CaseActionSummary action = CaseActionSummary.builder().id(actionIdGenerator++).name("subprocess: " + processId).actionStatus(CaseActionStatus.IN_PROGRESS).createdOn(new Date()).build();
+    public void triggerAdHocAction(String containerId,
+                                   String caseId,
+                                   String adHocName,
+                                   Map<String, Object> data) {
+        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId,
+                                                                                     new ArrayList<>());
+        final CaseActionSummary action = CaseActionSummary.builder()
+                .id(actionIdGenerator++)
+                .name(adHocName)
+                .actionStatus(CaseActionStatus.IN_PROGRESS)
+                .createdOn(new Date())
+                .build();
         actionSummaryList.add(action);
-        caseActionMap.putIfAbsent(caseId, actionSummaryList);
+        caseActionMap.putIfAbsent(caseId,
+                                  actionSummaryList);
     }
 
     @Override
-    public void addDynamicSubProcessToStage(String containerId, String caseId, String stageId, String processId, Map<String, Object> data) {
-        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId, new ArrayList<>());
-        final CaseActionSummary action = CaseActionSummary.builder().id(actionIdGenerator++).name("subprocess: " + processId + " inStage:" + stageId).actionStatus(CaseActionStatus.IN_PROGRESS).createdOn(new Date()).build();
+    public void addDynamicSubProcess(String containerId,
+                                     String caseId,
+                                     String processId,
+                                     Map<String, Object> data) {
+        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId,
+                                                                                     new ArrayList<>());
+        final CaseActionSummary action = CaseActionSummary.builder()
+                .id(actionIdGenerator++)
+                .name("subprocess: " + processId)
+                .actionStatus(CaseActionStatus.IN_PROGRESS)
+                .createdOn(new Date())
+                .build();
         actionSummaryList.add(action);
-        caseActionMap.putIfAbsent(caseId, actionSummaryList);
+        caseActionMap.putIfAbsent(caseId,
+                                  actionSummaryList);
+    }
+
+    @Override
+    public void addDynamicSubProcessToStage(String containerId,
+                                            String caseId,
+                                            String stageId,
+                                            String processId,
+                                            Map<String, Object> data) {
+        final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId,
+                                                                                     new ArrayList<>());
+        final CaseActionSummary action = CaseActionSummary.builder()
+                .id(actionIdGenerator++)
+                .name("subprocess: " + processId + " inStage:" + stageId)
+                .actionStatus(CaseActionStatus.IN_PROGRESS)
+                .createdOn(new Date())
+                .build();
+        actionSummaryList.add(action);
+        caseActionMap.putIfAbsent(caseId,
+                                  actionSummaryList);
     }
 
     @Override

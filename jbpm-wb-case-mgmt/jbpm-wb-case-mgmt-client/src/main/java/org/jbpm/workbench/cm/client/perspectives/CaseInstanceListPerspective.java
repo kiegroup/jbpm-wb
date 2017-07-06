@@ -40,5 +40,4 @@ public class CaseInstanceListPerspective {
         p.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(CaseInstanceListPresenter.SCREEN_ID)));
         return p;
     }
-
 }

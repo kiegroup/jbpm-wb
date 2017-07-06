@@ -51,25 +51,6 @@ public abstract class AbstractDashboard {
 
     protected ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
 
-    public interface View extends IsWidget {
-
-        void showBreadCrumb(String processName);
-
-        void hideBreadCrumb();
-
-        void setHeaderText(String text);
-
-        void showLoading();
-
-        void hideLoading();
-
-        void showDashboard();
-
-        void showInstances();
-
-        DashboardI18n getI18nService();
-    }
-
     public AbstractDashboard(final DataSetClientServices dataSetClientServices,
                              final PlaceManager placeManager,
                              final DashboardI18n i18n,
@@ -87,26 +68,35 @@ public abstract class AbstractDashboard {
     }
 
     public MetricDisplayer createMetricDisplayer(DisplayerSettings settings) {
-        checkNotNull("displayerSettings", settings);
+        checkNotNull("displayerSettings",
+                     settings);
         MetricDisplayer metricDisplayer = (MetricDisplayer) displayerLocator.lookupDisplayer(settings);
         metricDisplayer.setDisplayerSettings(settings);
-        metricDisplayer.setDataSetHandler(new DataSetHandlerImpl(dataSetClientServices, getDataSetLookup(settings)));
+        metricDisplayer.setDataSetHandler(new DataSetHandlerImpl(dataSetClientServices,
+                                                                 getDataSetLookup(settings)));
         return metricDisplayer;
     }
 
     private DataSetLookup getDataSetLookup(final DisplayerSettings settings) {
-        return ConsoleDataSetLookup.fromInstance(settings.getDataSetLookup(), serverTemplateSelectorMenuBuilder.getSelectedServerTemplate());
+        return ConsoleDataSetLookup.fromInstance(settings.getDataSetLookup(),
+                                                 serverTemplateSelectorMenuBuilder.getSelectedServerTemplate());
     }
 
-    public TableDisplayer createTableDisplayer(DisplayerSettings settings, final String columnId, final DurationFormatter durationFormatter) {
-        checkNotNull("displayerSettings", settings);
+    public TableDisplayer createTableDisplayer(DisplayerSettings settings,
+                                               final String columnId,
+                                               final DurationFormatter durationFormatter) {
+        checkNotNull("displayerSettings",
+                     settings);
         final TableDisplayer tableDisplayer = (TableDisplayer) displayerLocator.lookupDisplayer(settings);
         tableDisplayer.setDisplayerSettings(settings);
-        tableDisplayer.setDataSetHandler(new DataSetHandlerImpl(dataSetClientServices, getDataSetLookup(settings)));
-        tableDisplayer.addFormatter(columnId, durationFormatter);
+        tableDisplayer.setDataSetHandler(new DataSetHandlerImpl(dataSetClientServices,
+                                                                getDataSetLookup(settings)));
+        tableDisplayer.addFormatter(columnId,
+                                    durationFormatter);
         tableDisplayer.addOnCellSelectedCommand(new Command() {
             public void execute() {
-                tableCellSelected(tableDisplayer.getSelectedCellColumn(), tableDisplayer.getSelectedCellRow());
+                tableCellSelected(tableDisplayer.getSelectedCellColumn(),
+                                  tableDisplayer.getSelectedCellRow());
             }
         });
         return tableDisplayer;
@@ -123,7 +113,8 @@ public abstract class AbstractDashboard {
         updateHeaderText();
     }
 
-    public abstract void tableCellSelected(String columnId, int rowIndex);
+    public abstract void tableCellSelected(String columnId,
+                                           int rowIndex);
 
     public void changeCurrentMetric(MetricDisplayer metric) {
         if (metric.isFilterOn()) {
@@ -162,9 +153,11 @@ public abstract class AbstractDashboard {
     }
 
     public AbstractDisplayer createDisplayer(DisplayerSettings settings) {
-        checkNotNull("displayerSettings", settings);
+        checkNotNull("displayerSettings",
+                     settings);
         AbstractDisplayer displayer = (AbstractDisplayer) displayerLocator.lookupDisplayer(settings);
-        displayer.setDataSetHandler(new DataSetHandlerImpl(dataSetClientServices, getDataSetLookup(settings)));
+        displayer.setDataSetHandler(new DataSetHandlerImpl(dataSetClientServices,
+                                                           getDataSetLookup(settings)));
         return displayer;
     }
 
@@ -180,4 +173,22 @@ public abstract class AbstractDashboard {
         getView().hideBreadCrumb();
     }
 
+    public interface View extends IsWidget {
+
+        void showBreadCrumb(String processName);
+
+        void hideBreadCrumb();
+
+        void setHeaderText(String text);
+
+        void showLoading();
+
+        void hideLoading();
+
+        void showDashboard();
+
+        void showInstances();
+
+        DashboardI18n getI18nService();
+    }
 }

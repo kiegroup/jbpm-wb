@@ -29,5 +29,4 @@ public interface ProcessAdminService {
                                String correlationKey,
                                Map<String, Object> params,
                                Integer amountOfInstances);
-
 }

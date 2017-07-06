@@ -23,11 +23,12 @@ import org.kie.workbench.common.forms.dynamic.service.shared.impl.MapModelRender
 
 @Portable
 public class KieWorkbenchFormRenderingSettings implements FormRenderingSettings {
+
     protected Long timestamp;
     protected MapModelRenderingContext renderingContext;
 
-    public KieWorkbenchFormRenderingSettings( @MapsTo( "timestamp" ) Long timestamp,
-                                              @MapsTo( "renderingContext" ) MapModelRenderingContext renderingContext ) {
+    public KieWorkbenchFormRenderingSettings(@MapsTo("timestamp") Long timestamp,
+                                             @MapsTo("renderingContext") MapModelRenderingContext renderingContext) {
         this.timestamp = timestamp;
         this.renderingContext = renderingContext;
     }
@@ -36,7 +37,7 @@ public class KieWorkbenchFormRenderingSettings implements FormRenderingSettings 
         return timestamp;
     }
 
-    public void setTimestamp( Long timestamp ) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -44,7 +45,7 @@ public class KieWorkbenchFormRenderingSettings implements FormRenderingSettings 
         return renderingContext;
     }
 
-    public void setRenderingContext( MapModelRenderingContext renderingContext ) {
+    public void setRenderingContext(MapModelRenderingContext renderingContext) {
         this.renderingContext = renderingContext;
     }
 }

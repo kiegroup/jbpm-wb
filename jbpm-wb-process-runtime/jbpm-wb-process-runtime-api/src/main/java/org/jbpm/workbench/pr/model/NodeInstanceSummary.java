@@ -17,6 +17,7 @@
 package org.jbpm.workbench.pr.model;
 
 import java.io.Serializable;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
@@ -31,8 +32,14 @@ public class NodeInstanceSummary implements Serializable {
     private String connection;
     private boolean completed;
 
-    public NodeInstanceSummary(long id, long processId, String nodeName, String nodeUniqueName, String type, String timestamp,
-            String connection, boolean completed) {
+    public NodeInstanceSummary(long id,
+                               long processId,
+                               String nodeName,
+                               String nodeUniqueName,
+                               String type,
+                               String timestamp,
+                               String connection,
+                               boolean completed) {
         super();
         this.id = id;
         this.processId = processId;
@@ -51,12 +58,12 @@ public class NodeInstanceSummary implements Serializable {
         return id;
     }
 
-    public long getProcessId() {
-        return processId;
-    }
-
     public void setId(long id) {
         this.id = id;
+    }
+
+    public long getProcessId() {
+        return processId;
     }
 
     public void setProcessId(long processId) {
@@ -106,5 +113,4 @@ public class NodeInstanceSummary implements Serializable {
     public void setCompleted(boolean completed) {
         this.completed = completed;
     }
-
 }

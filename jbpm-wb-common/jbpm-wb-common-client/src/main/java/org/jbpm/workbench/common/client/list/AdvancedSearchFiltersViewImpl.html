@@ -11,10 +11,10 @@
                         <ul data-field="filters" class="dropdown-menu"></ul>
                     </div>
                     <div data-field="filters-input"></div>
-                    <div class="display-flex">
-                      <span class="margin-left-5">
+                    <div class="filters-input">
+                      <span>
                         <a data-field="filters-input-help" class="hidden" role="button" data-toggle="popover" data-trigger="hover click"
-                           data-html="true" title=""  data-placement="bottom" data-container="body">
+                           data-html="true" title="" data-placement="bottom" data-container="body">
                             <i class="fa fa-info-circle"></i>
                         </a>
                       </span>
@@ -36,10 +36,12 @@
             </div>
         </div>
     </form>
-    <div class="toolbar-pf-results" style="border-bottom: 1px solid #d1d1d1;">
-        <div class="col-md-12">
-            <div>
-                <p style="padding-right: 5px;"><span data-field="active-filters-text"></span>: </p>
+    <div class="toolbar-pf-results active-filters-results">
+        <div>
+            <div class="active-filters-label">
+                <p><span data-field="active-filters-text"></span>: </p>
+            </div>
+            <div class="active-filters-container">
                 <ul class="list-inline" data-field="active-filters"></ul>
                 <p><a href="#" data-field="remove-all-filters" class="hidden"></a></p>
             </div>

@@ -44,13 +44,7 @@ import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 public class ProcessInstanceDetailsMultiViewImpl extends Composite
         implements ProcessInstanceDetailsMultiPresenter.ProcessInstanceDetailsMultiView {
 
-    interface Binder
-            extends
-            UiBinder<Widget, ProcessInstanceDetailsMultiViewImpl> {
-
-    }
-
-    private static Binder uiBinder = GWT.create( Binder.class );
+    private static Binder uiBinder = GWT.create(Binder.class);
 
     private final Constants constants = Constants.INSTANCE;
 
@@ -61,22 +55,26 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
     TabContent tabContent;
 
     private TabListItem instanceDetailsTab;
+
     private TabPane instanceDetailsPane;
 
     private TabListItem processVariablesTab;
+
     private TabPane processVariablesPane;
 
     private TabListItem documentTab;
+
     private TabPane documentPane;
 
     private TabListItem logsTab;
+
     private TabPane logsPane;
 
     private ProcessInstanceDetailsMultiPresenter presenter;
 
     @Override
-    public void init( final ProcessInstanceDetailsMultiPresenter presenter ) {
-        initWidget( uiBinder.createAndBindUi( this ) );
+    public void init(final ProcessInstanceDetailsMultiPresenter presenter) {
+        initWidget(uiBinder.createAndBindUi(this));
         this.presenter = presenter;
         initTabs();
     }
@@ -84,45 +82,44 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
     public void initTabs() {
         {
             instanceDetailsPane = GWT.create(TabPane.class);
-            instanceDetailsPane.add( presenter.getProcessIntanceView() );
+            instanceDetailsPane.add(presenter.getProcessIntanceView());
 
             instanceDetailsTab = GWT.create(TabListItem.class);
             instanceDetailsTab.setText(constants.Process_Instance_Details());
             instanceDetailsTab.setDataTargetWidget(instanceDetailsPane);
             instanceDetailsTab.addStyleName("uf-dropdown-tab-list-item");
 
-            tabContent.add( instanceDetailsPane );
-            navTabs.add( instanceDetailsTab );
+            tabContent.add(instanceDetailsPane);
+            navTabs.add(instanceDetailsTab);
         }
 
         {
             processVariablesPane = GWT.create(TabPane.class);
-            processVariablesPane.add( presenter.getProcessVariablesView() );
+            processVariablesPane.add(presenter.getProcessVariablesView());
 
             processVariablesTab = GWT.create(TabListItem.class);
-            processVariablesTab.setText( constants.Process_Variables() );
+            processVariablesTab.setText(constants.Process_Variables());
             processVariablesTab.setDataTargetWidget(processVariablesPane);
             processVariablesTab.addStyleName("uf-dropdown-tab-list-item");
 
-            tabContent.add( processVariablesPane );
-            navTabs.add( processVariablesTab );
+            tabContent.add(processVariablesPane);
+            navTabs.add(processVariablesTab);
             processVariablesTab.addShowHandler(new TabShowHandler() {
                 @Override
                 public void onShow(final TabShowEvent event) {
                     presenter.variableListRefreshGrid();
                 }
             });
-
         }
 
         {
             documentPane = GWT.create(TabPane.class);
-            documentPane.add( presenter.getDocumentView() );
+            documentPane.add(presenter.getDocumentView());
 
             documentTab = GWT.create(TabListItem.class);
-            documentTab.setText( constants.Documents() );
+            documentTab.setText(constants.Documents());
             documentTab.setDataTargetWidget(documentPane);
-            documentTab.addStyleName( "uf-dropdown-tab-list-item" );
+            documentTab.addStyleName("uf-dropdown-tab-list-item");
 
             tabContent.add(documentPane);
             navTabs.add(documentTab);
@@ -137,52 +134,52 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
 
         {
             logsPane = GWT.create(TabPane.class);
-            logsPane.add( presenter.getLogsView() );
+            logsPane.add(presenter.getLogsView());
 
             logsTab = GWT.create(TabListItem.class);
-            logsTab.setText( constants.Logs() );
-            logsTab.setDataTargetWidget( logsPane );
-            logsTab.addStyleName( "uf-dropdown-tab-list-item" );
+            logsTab.setText(constants.Logs());
+            logsTab.setDataTargetWidget(logsPane);
+            logsTab.addStyleName("uf-dropdown-tab-list-item");
 
-            tabContent.add( logsPane );
-            navTabs.add( logsTab );
+            tabContent.add(logsPane);
+            navTabs.add(logsTab);
         }
     }
 
     @Override
     public IsWidget getOptionsButton() {
         return new ButtonGroup() {{
-            add( new Button( constants.Options() ) {{
-                setSize( ButtonSize.SMALL );
-                setDataToggle( Toggle.DROPDOWN );
-            }} );
-            add( new DropDownMenu() {{
-                addStyleName( Styles.DROPDOWN_MENU + "-right" );
-                add( new AnchorListItem( constants.Signal() ) {{
-                    addClickHandler( new ClickHandler() {
+            add(new Button(constants.Options()) {{
+                setSize(ButtonSize.SMALL);
+                setDataToggle(Toggle.DROPDOWN);
+            }});
+            add(new DropDownMenu() {{
+                addStyleName(Styles.DROPDOWN_MENU + "-right");
+                add(new AnchorListItem(constants.Signal()) {{
+                    addClickHandler(new ClickHandler() {
                         @Override
-                        public void onClick( final ClickEvent clickEvent ) {
+                        public void onClick(final ClickEvent clickEvent) {
                             presenter.signalProcessInstance();
                         }
-                    } );
-                }} );
-                add( new AnchorListItem( constants.Abort() ) {{
-                    addClickHandler( new ClickHandler() {
+                    });
+                }});
+                add(new AnchorListItem(constants.Abort()) {{
+                    addClickHandler(new ClickHandler() {
                         @Override
-                        public void onClick( final ClickEvent clickEvent ) {
+                        public void onClick(final ClickEvent clickEvent) {
                             presenter.abortProcessInstance();
                         }
-                    } );
-                }} );
-                add( new AnchorListItem( constants.View_Process_Model() ) {{
-                    addClickHandler( new ClickHandler() {
+                    });
+                }});
+                add(new AnchorListItem(constants.View_Process_Model()) {{
+                    addClickHandler(new ClickHandler() {
                         @Override
-                        public void onClick( final ClickEvent clickEvent ) {
+                        public void onClick(final ClickEvent clickEvent) {
                             presenter.goToProcessInstanceModelPopup();
                         }
-                    } );
-                }} );
-            }} );
+                    });
+                }});
+            }});
         }};
     }
 
@@ -218,5 +215,9 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
         instanceDetailsTab.showTab();
     }
 
+    interface Binder
+            extends
+            UiBinder<Widget, ProcessInstanceDetailsMultiViewImpl> {
 
+    }
 }

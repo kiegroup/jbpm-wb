@@ -71,16 +71,16 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public static final String FILTER_TABLE_SETTINGS = "tableSettings";
     public static final String USER_DEFINED = "ud_";
     public static final String COL_ID_SELECT = "Select";
-
-    interface Binder extends UiBinder<Widget, AbstractMultiGridView> {
-    }
-
-    private static Binder uiBinder = GWT.create( Binder.class );
+    private static Binder uiBinder = GWT.create(Binder.class);
 
     private final Constants constants = Constants.INSTANCE;
 
     @Inject
     public User identity;
+
+    public GridGlobalPreferences currentGlobalPreferences;
+
+    public Button createTabButton = GWT.create(Button.class);
 
     @Inject
     protected Event<NotificationEvent> notification;
@@ -90,13 +90,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     @Inject
     protected PlaceManager placeManager;
 
-    private Caller<UserPreferencesService> preferencesService;
-
     @Inject
     protected AdvancedSearchFiltersViewImpl advancedSearchFiltersView;
-
-    @UiField
-    org.gwtbootstrap3.client.ui.Column column;
 
     protected V presenter;
 
@@ -104,9 +99,10 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     protected ExtendedPagedTable<T> currentListGrid;
 
-    public GridGlobalPreferences currentGlobalPreferences;
+    @UiField
+    org.gwtbootstrap3.client.ui.Column column;
 
-    public Button createTabButton = GWT.create(Button.class);
+    private Caller<UserPreferencesService> preferencesService;
 
     public AbstractMultiGridView() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -120,22 +116,23 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         this.presenter = presenter;
         this.currentGlobalPreferences = preferences;
 
-        preferencesService.call( new RemoteCallback<MultiGridPreferencesStore>() {
+        preferencesService.call(new RemoteCallback<MultiGridPreferencesStore>() {
 
             @Override
-            public void callback( MultiGridPreferencesStore multiGridPreferencesStore ) {
-                if ( multiGridPreferencesStore == null ) {
-                    multiGridPreferencesStore = new MultiGridPreferencesStore( preferences.getKey() );
+            public void callback(MultiGridPreferencesStore multiGridPreferencesStore) {
+                if (multiGridPreferencesStore == null) {
+                    multiGridPreferencesStore = new MultiGridPreferencesStore(preferences.getKey());
                 }
-                filterPagedTable.setMultiGridPreferencesStore( multiGridPreferencesStore );
+                filterPagedTable.setMultiGridPreferencesStore(multiGridPreferencesStore);
                 ArrayList<String> existingGrids = multiGridPreferencesStore.getGridsId();
 
-                if ( existingGrids != null && existingGrids.size() > 0 ) {
+                if (existingGrids != null && existingGrids.size() > 0) {
                     resetDefaultFilterTitleAndDescription();
-                    presenter.setAddingDefaultFilters( true );
-                    for ( int i = 0; i < existingGrids.size(); i++ ) {
-                        final String key = existingGrids.get( i );
-                        final ExtendedPagedTable<T> extendedPagedTable = loadGridInstance( preferences, key );
+                    presenter.setAddingDefaultFilters(true);
+                    for (int i = 0; i < existingGrids.size(); i++) {
+                        final String key = existingGrids.get(i);
+                        final ExtendedPagedTable<T> extendedPagedTable = loadGridInstance(preferences,
+                                                                                          key);
                         extendedPagedTable.setDataProvider(presenter.getDataProvider());
                         filterPagedTable.addTab(extendedPagedTable,
                                                 key,
@@ -146,56 +143,59 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                                 false);
                     }
 
-                    filterPagedTable.addAddTableButton( createTabButton );
-                    presenter.setAddingDefaultFilters( false );
+                    filterPagedTable.addAddTableButton(createTabButton);
+                    presenter.setAddingDefaultFilters(false);
                 } else {
-                    initDefaultFilters( preferences, createTabButton );
+                    initDefaultFilters(preferences,
+                                       createTabButton);
                 }
                 presenter.onGridPreferencesStoreLoaded();
             }
-
-        } ).loadUserPreferences( preferences.getKey(), UserPreferencesType.MULTIGRIDPREFERENCES );
+        }).loadUserPreferences(preferences.getKey(),
+                               UserPreferencesType.MULTIGRIDPREFERENCES);
     }
 
-    public void displayNotification( String text ) {
+    public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
 
     public void showRestoreDefaultFilterConfirmationPopup() {
         YesNoCancelPopup yesNoCancelPopup = YesNoCancelPopup.newYesNoCancelPopup(constants.RestoreDefaultFilters(),
                                                                                  constants.AreYouSureRestoreDefaultFilters(),
-                new Command() {
-                    @Override public void execute() {
-                        showBusyIndicator(constants.Loading());
-                        presenter.onRestoreTabs();
-                    }
-                },
-                null,
-                new Command() {
-                    @Override public void execute() {
-                    }
-                });
+                                                                                 new Command() {
+                                                                                     @Override
+                                                                                     public void execute() {
+                                                                                         showBusyIndicator(constants.Loading());
+                                                                                         presenter.onRestoreTabs();
+                                                                                     }
+                                                                                 },
+                                                                                 null,
+                                                                                 new Command() {
+                                                                                     @Override
+                                                                                     public void execute() {
+                                                                                     }
+                                                                                 });
         yesNoCancelPopup.show();
     }
 
-    public void restoreTabs(){
+    public void restoreTabs() {
         ArrayList<String> existingGrids = getMultiGridPreferencesStore().getGridsId();
-        ArrayList<String> allTabs = new ArrayList<String>( existingGrids.size() );
+        ArrayList<String> allTabs = new ArrayList<String>(existingGrids.size());
 
-        presenter.setAddingDefaultFilters( true );
-        if ( existingGrids != null && existingGrids.size() > 0 ) {
+        presenter.setAddingDefaultFilters(true);
+        if (existingGrids != null && existingGrids.size() > 0) {
 
-            for ( int i = 0; i < existingGrids.size(); i++ ) {
-                allTabs.add( existingGrids.get( i ) );
+            for (int i = 0; i < existingGrids.size(); i++) {
+                allTabs.add(existingGrids.get(i));
             }
 
-            for ( int i = 0; i < allTabs.size(); i++ ) {
-                filterPagedTable.removeTab( allTabs.get( i ) );
+            for (int i = 0; i < allTabs.size(); i++) {
+                filterPagedTable.removeTab(allTabs.get(i));
             }
-
         }
-        filterPagedTable.removeTab( 0 );
-        initDefaultFilters( currentGlobalPreferences, createTabButton );
+        filterPagedTable.removeTab(0);
+        initDefaultFilters(currentGlobalPreferences,
+                           createTabButton);
     }
 
     protected void controlBulkOperations(final ExtendedPagedTable<T> extendedPagedTable) {
@@ -220,20 +220,23 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         }
     }
 
-    public String getValidKeyForAdditionalListGrid( String baseName ) {
-        return filterPagedTable.getValidKeyForAdditionalListGrid( baseName + USER_DEFINED  );
+    public String getValidKeyForAdditionalListGrid(String baseName) {
+        return filterPagedTable.getValidKeyForAdditionalListGrid(baseName + USER_DEFINED);
     }
 
     public ExtendedPagedTable<T> createGridInstance(final GridGlobalPreferences defaultPreferences,
                                                     final String key) {
-        final ExtendedPagedTable<T> newListGrid = createExtendedPagedTable( defaultPreferences, key );
-        newListGrid.setShowLastPagerButton( false );
-        newListGrid.setShowFastFordwardPagerButton( false );
-        newListGrid.setPreferencesService( preferencesService );
-        initColumns( newListGrid );
-        initSelectionModel( newListGrid );
+        final ExtendedPagedTable<T> newListGrid = createExtendedPagedTable(defaultPreferences,
+                                                                           key);
+        newListGrid.setShowLastPagerButton(false);
+        newListGrid.setShowFastFordwardPagerButton(false);
+        newListGrid.setPreferencesService(preferencesService);
+        initColumns(newListGrid);
+        initSelectionModel(newListGrid);
         newListGrid.loadPageSizePreferences();
-        newListGrid.createPageSizesListBox(5, 20, 5);
+        newListGrid.createPageSizesListBox(5,
+                                           20,
+                                           5);
 
         return newListGrid;
     }
@@ -272,23 +275,26 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         newListGrid.setShowLastPagerButton(false);
         newListGrid.setShowFastFordwardPagerButton(false);
         newListGrid.dataGrid.addRedrawHandler(() -> controlBulkOperations(newListGrid));
-        preferencesService.call( new RemoteCallback<GridPreferencesStore>() {
+        preferencesService.call(new RemoteCallback<GridPreferencesStore>() {
 
             @Override
-            public void callback( GridPreferencesStore preferencesStore ) {
-                newListGrid.setPreferencesService( preferencesService );
-                newListGrid.setGridPreferencesStore( preferencesStore );
-                initColumns( newListGrid );
-                initSelectionModel( newListGrid );
+            public void callback(GridPreferencesStore preferencesStore) {
+                newListGrid.setPreferencesService(preferencesService);
+                newListGrid.setGridPreferencesStore(preferencesStore);
+                initColumns(newListGrid);
+                initSelectionModel(newListGrid);
                 newListGrid.loadPageSizePreferences();
-                newListGrid.createPageSizesListBox(5, 20, 5);
+                newListGrid.createPageSizesListBox(5,
+                                                   20,
+                                                   5);
             }
-        } ).loadUserPreferences( newListGrid.getGridPreferencesStore().getPreferenceKey(), UserPreferencesType.GRIDPREFERENCES );
+        }).loadUserPreferences(newListGrid.getGridPreferencesStore().getPreferenceKey(),
+                               UserPreferencesType.GRIDPREFERENCES);
 
         return newListGrid;
     }
 
-    public void showBusyIndicator( final String message ) {
+    public void showBusyIndicator(final String message) {
         BusyPopup.showMessage(message);
     }
 
@@ -304,12 +310,12 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
      * For each specific implementation define the
      *  DataGrid columns and how they must be initialized
      */
-    public abstract void initColumns( ExtendedPagedTable<T> extendedPagedTable );
+    public abstract void initColumns(ExtendedPagedTable<T> extendedPagedTable);
 
-    public abstract void initSelectionModel( ExtendedPagedTable<T> extendedPagedTable );
+    public abstract void initSelectionModel(ExtendedPagedTable<T> extendedPagedTable);
 
     public MultiGridPreferencesStore getMultiGridPreferencesStore() {
-        if ( filterPagedTable != null ) {
+        if (filterPagedTable != null) {
             return filterPagedTable.getMultiGridPreferencesStore();
         }
         return null;
@@ -361,7 +367,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         Scheduler.get().scheduleDeferred(getSelectFirstTabAndEnableQueriesCommand());
     }
 
-    protected Scheduler.ScheduledCommand getSelectFirstTabAndEnableQueriesCommand(){
+    protected Scheduler.ScheduledCommand getSelectFirstTabAndEnableQueriesCommand() {
         return () -> {
             presenter.setAddingDefaultFilters(false);
             getMultiGridPreferencesStore().setSelectedGrid(TAB_SEARCH);
@@ -401,12 +407,12 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         return filterPagedTable.getMultiGridPreferencesStore().getGridSettings(key);
     }
 
-    public void setIdentity(User identity){
+    public void setIdentity(User identity) {
         this.identity = identity;
     }
 
     @Inject
-    public void setPreferencesService(final Caller<UserPreferencesService> preferencesService){
+    public void setPreferencesService(final Caller<UserPreferencesService> preferencesService) {
         this.preferencesService = preferencesService;
         this.filterPagedTable.setPreferencesService(preferencesService);
     }
@@ -416,13 +422,15 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         this.dataSetEditorManager = dataSetEditorManager;
     }
 
-    public void resetDefaultFilterTitleAndDescription(){
+    public void resetDefaultFilterTitleAndDescription() {
         saveTabSettings(TAB_SEARCH,
                         constants.Search(),
                         constants.SearchResults());
     }
 
-    protected void saveTabSettings(final String key, final String name, final String description){
+    protected void saveTabSettings(final String key,
+                                   final String name,
+                                   final String description) {
         final HashMap<String, Object> tabSettingsValues = getGridSettings(key);
         if (tabSettingsValues != null) {
             tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM,
@@ -442,27 +450,29 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         this.filterPagedTable = filterPagedTable;
     }
 
-    public Column<T, String> createTextColumn(final String columnId, final Function<T, String> valueFunction) {
-        Column<T, String> column = new Column<T, String>( new TextCell() ) {
+    public Column<T, String> createTextColumn(final String columnId,
+                                              final Function<T, String> valueFunction) {
+        Column<T, String> column = new Column<T, String>(new TextCell()) {
             @Override
-            public String getValue( T domain ) {
-                return valueFunction.apply( domain );
+            public String getValue(T domain) {
+                return valueFunction.apply(domain);
             }
         };
-        column.setSortable( true );
-        column.setDataStoreName( columnId );
+        column.setSortable(true);
+        column.setDataStoreName(columnId);
         return column;
     }
 
-    public Column<T, Number> createNumberColumn(final String columnId, final Function<T, Number> valueFunction) {
-        Column<T, Number> column = new Column<T, Number>( new NumberCell() ) {
+    public Column<T, Number> createNumberColumn(final String columnId,
+                                                final Function<T, Number> valueFunction) {
+        Column<T, Number> column = new Column<T, Number>(new NumberCell()) {
             @Override
-            public Number getValue( T domain ) {
-                return valueFunction.apply( domain );
+            public Number getValue(T domain) {
+                return valueFunction.apply(domain);
             }
         };
-        column.setSortable( true );
-        column.setDataStoreName( columnId );
+        column.setSortable(true);
+        column.setDataStoreName(columnId);
         return column;
     }
 
@@ -501,8 +511,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         return getMultiGridPreferencesStore().getRefreshInterval();
     }
 
-    public void saveRefreshValue( int newValue ) {
-        filterPagedTable.saveNewRefreshInterval( newValue );
+    public void saveRefreshValue(int newValue) {
+        filterPagedTable.saveNewRefreshInterval(newValue);
     }
 
     @Override
@@ -568,10 +578,13 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                                          removeCallback);
     }
 
+    @Override
     public void addDateRangeFilter(String label,
+                                   String placeholder,
                                    Consumer<DateRange> addCallback,
                                    Consumer<DateRange> removeCallback) {
         advancedSearchFiltersView.addDateRangeFilter(label,
+                                                     placeholder,
                                                      addCallback,
                                                      removeCallback);
     }
@@ -579,5 +592,9 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     @Override
     public void removeAllActiveFilters() {
         advancedSearchFiltersView.removeAllActiveFilters();
+    }
+
+    interface Binder extends UiBinder<Widget, AbstractMultiGridView> {
+
     }
 }

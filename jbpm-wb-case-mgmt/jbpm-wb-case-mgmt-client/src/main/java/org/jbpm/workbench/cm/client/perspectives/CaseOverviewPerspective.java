@@ -49,7 +49,9 @@ public class CaseOverviewPerspective {
     public void onStartup(final PlaceRequest place) {
         overview.getParameters().clear();
         for (final String param : place.getParameterNames()) {
-            overview.addParameter(param, place.getParameter(param, null));
+            overview.addParameter(param,
+                                  place.getParameter(param,
+                                                     null));
         }
     }
 

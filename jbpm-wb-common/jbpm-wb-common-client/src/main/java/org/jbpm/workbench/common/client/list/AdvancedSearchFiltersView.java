@@ -35,6 +35,7 @@ public interface AdvancedSearchFiltersView {
                           Consumer<String> removeCallback);
 
     void addDateRangeFilter(String label,
+                            String placeholder,
                             Consumer<DateRange> addCallback,
                             Consumer<DateRange> removeCallback);
 
@@ -58,5 +59,4 @@ public interface AdvancedSearchFiltersView {
                                             Consumer<T> removeCallback);
 
     void removeAllActiveFilters();
-
 }

@@ -59,12 +59,6 @@ public class RequestListViewImplTest {
     protected ExtendedPagedTable<RequestSummary> currentListGrid;
 
     @Mock
-    FilterPagedTable filterPagedTableMock;
-
-    @Mock
-    MultiGridPreferencesStore multiGridPreferencesStoreMock;
-
-    @Mock
     protected GridPreferencesStore gridPreferencesStoreMock;
 
     @Mock
@@ -74,28 +68,34 @@ public class RequestListViewImplTest {
     protected RequestListPresenter presenter;
 
     @Mock
+    protected UserPreferencesService userPreferencesService;
+
+    @Mock
+    protected Cell.Context cellContext;
+
+    @Mock
+    protected ActionCell.Delegate<RequestSummary> cellDelegate;
+
+    @Mock
+    FilterPagedTable filterPagedTableMock;
+
+    @Mock
+    MultiGridPreferencesStore multiGridPreferencesStoreMock;
+
+    @Mock
     private DataSetEditorManager dataSetEditorManager;
 
     @Mock
     private AsyncDataProvider dataProvider;
-
-    @Mock
-    protected UserPreferencesService userPreferencesService;
 
     @Spy
     private FilterSettings filterSettings;
 
     @InjectMocks
     private RequestListViewImpl view;
-    
-    @Mock
-    protected Cell.Context cellContext;
-    
-    @Mock
-    protected ActionCell.Delegate<RequestSummary> cellDelegate;
 
     @Before
-    public void setup(){
+    public void setup() {
         when(presenter.getDataProvider()).thenReturn(mock(AsyncDataProvider.class));
         when(presenter.createTableSettingsPrototype()).thenReturn(filterSettings);
         when(presenter.createAllTabSettings()).thenReturn(filterSettings);
@@ -113,20 +113,20 @@ public class RequestListViewImplTest {
 
     @Test
     public void testDataStoreNameIsSet() {
-        doAnswer( new Answer() {
+        doAnswer(new Answer() {
             @Override
-            public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[ 0 ];
-                for ( ColumnMeta columnMeta : columns ) {
-                    assertNotNull( columnMeta.getColumn().getDataStoreName() );
+            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+                final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[0];
+                for (ColumnMeta columnMeta : columns) {
+                    assertNotNull(columnMeta.getColumn().getDataStoreName());
                 }
                 return null;
             }
-        } ).when( currentListGrid ).addColumns( anyList() );
+        }).when(currentListGrid).addColumns(anyList());
 
-        view.initColumns( currentListGrid );
+        view.initColumns(currentListGrid);
 
-        verify( currentListGrid ).addColumns( anyList() );
+        verify(currentListGrid).addColumns(anyList());
     }
 
     @Test
@@ -134,29 +134,39 @@ public class RequestListViewImplTest {
         when(filterPagedTableMock.getMultiGridPreferencesStore()).thenReturn(multiGridPreferencesStoreMock);
         view.resetDefaultFilterTitleAndDescription();
 
-        verify(filterPagedTableMock, times(8)).getMultiGridPreferencesStore();
-        verify(filterPagedTableMock, times(8)).saveTabSettings(anyString(), any(HashMap.class));
-        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.TAB_SEARCH), any(HashMap.class));
-        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_0"), any(HashMap.class));
-        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_1"), any(HashMap.class));
-        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_2"), any(HashMap.class));
-        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_3"), any(HashMap.class));
-        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_4"), any(HashMap.class));
-        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_5"), any(HashMap.class));
-        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_6"), any(HashMap.class));
-
+        verify(filterPagedTableMock,
+               times(8)).getMultiGridPreferencesStore();
+        verify(filterPagedTableMock,
+               times(8)).saveTabSettings(anyString(),
+                                         any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.TAB_SEARCH),
+                                                     any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_0"),
+                                                     any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_1"),
+                                                     any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_2"),
+                                                     any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_3"),
+                                                     any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_4"),
+                                                     any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_5"),
+                                                     any(HashMap.class));
+        verify(filterPagedTableMock).saveTabSettings(eq(RequestListViewImpl.REQUEST_LIST_PREFIX + "_6"),
+                                                     any(HashMap.class));
     }
 
     @Test
     public void initColumnsTest() {
-        doAnswer( new Answer() {
+        doAnswer(new Answer() {
             @Override
-            public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[ 0 ];
-                assertTrue(columns.size()==9);
+            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+                final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[0];
+                assertTrue(columns.size() == 9);
                 return null;
             }
-        } ).when( currentListGrid ).addColumns(anyList());
+        }).when(currentListGrid).addColumns(anyList());
 
         ArrayList<GridColumnPreference> columnPreferences = new ArrayList<GridColumnPreference>();
         when(currentListGrid.getGridPreferencesStore()).thenReturn(gridPreferencesStoreMock);
@@ -164,7 +174,7 @@ public class RequestListViewImplTest {
 
         view.initColumns(currentListGrid);
 
-        verify( currentListGrid ).addColumns(anyList());
+        verify(currentListGrid).addColumns(anyList());
     }
 
     @Test
@@ -185,11 +195,15 @@ public class RequestListViewImplTest {
     @Test
     public void initDefaultFiltersOwnTaskFilter() {
         when(presenter.getDataProvider()).thenReturn(dataProvider);
-        view.initDefaultFilters(new GridGlobalPreferences(), mockButton);
+        view.initDefaultFilters(new GridGlobalPreferences(),
+                                mockButton);
 
-        verify(filterPagedTableMock, times(8)).addTab(any(ExtendedPagedTable.class), anyString(), any(Command.class), eq(false));
+        verify(filterPagedTableMock,
+               times(8)).addTab(any(ExtendedPagedTable.class),
+                                anyString(),
+                                any(Command.class),
+                                eq(false));
         verify(filterPagedTableMock).addAddTableButton(mockButton);
         verify(presenter).setAddingDefaultFilters(true);
     }
-
 }

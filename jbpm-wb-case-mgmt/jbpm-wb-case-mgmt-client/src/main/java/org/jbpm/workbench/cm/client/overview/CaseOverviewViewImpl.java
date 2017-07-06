@@ -59,7 +59,6 @@ public class CaseOverviewViewImpl implements CaseOverviewPresenter.CaseOverviewV
     FlowPanel caseComments;
 
     @Inject
-//    @DataField("case-files")
     FlowPanel caseFiles;
 
     @Inject
@@ -109,47 +108,73 @@ public class CaseOverviewViewImpl implements CaseOverviewPresenter.CaseOverviewV
     }
 
     @Override
-    public void addCaseDetails(final String placeId, final Map<String, String> properties) {
-        addWidget(placeId, properties, caseDetails);
+    public void addCaseDetails(final String placeId,
+                               final Map<String, String> properties) {
+        addWidget(placeId,
+                  properties,
+                  caseDetails);
     }
 
     @Override
-    public void addCaseActions(final String placeId, final Map<String, String> properties) {
-        addWidget(placeId, properties, caseActions);
+    public void addCaseActions(final String placeId,
+                               final Map<String, String> properties) {
+        addWidget(placeId,
+                  properties,
+                  caseActions);
     }
 
     @Override
-    public void addCaseStages(final String placeId, final Map<String, String> properties) {
-        addWidget(placeId, properties, caseStages);
+    public void addCaseStages(final String placeId,
+                              final Map<String, String> properties) {
+        addWidget(placeId,
+                  properties,
+                  caseStages);
     }
 
     @Override
-    public void addCaseComments(String placeId, Map<String, String> properties) {
-        addWidget(placeId, properties, caseComments);
+    public void addCaseComments(String placeId,
+                                Map<String, String> properties) {
+        addWidget(placeId,
+                  properties,
+                  caseComments);
     }
 
     @Override
-    public void addCaseFiles(String placeId, Map<String, String> properties) {
-        addWidget(placeId, properties, caseFiles);
+    public void addCaseFiles(String placeId,
+                             Map<String, String> properties) {
+        addWidget(placeId,
+                  properties,
+                  caseFiles);
     }
 
     @Override
-    public void addCaseRoles(String placeId, Map<String, String> properties) {
-        addWidget(placeId, properties, caseRoles);
+    public void addCaseRoles(String placeId,
+                             Map<String, String> properties) {
+        addWidget(placeId,
+                  properties,
+                  caseRoles);
     }
 
     @Override
-    public void addCaseMilestones(String placeId, Map<String, String> properties) {
-        addWidget(placeId, properties, caseMilestones);
+    public void addCaseMilestones(String placeId,
+                                  Map<String, String> properties) {
+        addWidget(placeId,
+                  properties,
+                  caseMilestones);
     }
 
     @Override
-    public void addCaseActivities(String placeId, Map<String, String> properties) {
+    public void addCaseActivities(String placeId,
+                                  Map<String, String> properties) {
         //addWidget(placeId, properties, sideBarRight);
     }
 
-    private void addWidget(final String placeId, final Map<String, String> properties, final HasWidgets widget) {
-        placeManager.goTo(new DefaultPlaceRequest(placeId, properties), widget);
+    private void addWidget(final String placeId,
+                           final Map<String, String> properties,
+                           final HasWidgets widget) {
+        placeManager.goTo(new DefaultPlaceRequest(placeId,
+                                                  properties),
+                          widget);
     }
 
     @Override

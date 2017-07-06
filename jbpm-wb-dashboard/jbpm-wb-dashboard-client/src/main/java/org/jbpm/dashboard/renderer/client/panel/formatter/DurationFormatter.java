@@ -25,18 +25,23 @@ public class DurationFormatter extends AbstractValueFormatter {
     protected String startDateColumn = null;
     protected String endDateColumn = null;
 
-    public DurationFormatter(String startDateColumn, String endDateColumn) {
+    public DurationFormatter(String startDateColumn,
+                             String endDateColumn) {
         this.startDateColumn = startDateColumn;
         this.endDateColumn = endDateColumn;
     }
 
     @Override
-    public String formatValue(DataSet dataSet, int row, int column) {
-        Date end = (Date) dataSet.getValueAt(row, endDateColumn);
+    public String formatValue(DataSet dataSet,
+                              int row,
+                              int column) {
+        Date end = (Date) dataSet.getValueAt(row,
+                                             endDateColumn);
         if (end == null) {
             end = new Date();
         }
-        Date start = (Date) dataSet.getValueAt(row, startDateColumn);
+        Date start = (Date) dataSet.getValueAt(row,
+                                               startDateColumn);
         return formatValue(end.getTime() - start.getTime());
     }
 
@@ -47,19 +52,36 @@ public class DurationFormatter extends AbstractValueFormatter {
             return "0s";
         }
         long milliseconds = ((Number) value).longValue();
-        long seconds = milliseconds / 1000; milliseconds %= 1000;
-        long minutes = seconds / 60; seconds %= 60;
-        long hours = minutes / 60; minutes %= 60;
-        long days = hours / 24; hours %= 24;
-        long weeks = days / 7; days %= 7;
+        long seconds = milliseconds / 1000;
+        milliseconds %= 1000;
+        long minutes = seconds / 60;
+        seconds %= 60;
+        long hours = minutes / 60;
+        minutes %= 60;
+        long days = hours / 24;
+        hours %= 24;
+        long weeks = days / 7;
+        days %= 7;
 
         StringBuilder buf = new StringBuilder();
-        if (weeks > 0) buf.append(weeks).append(" weeks ");
-        if (days > 0) buf.append(days).append("d ");
-        if (hours > 0) buf.append(hours).append("h ");
-        if (minutes > 0) buf.append(minutes).append("m ");
-        if (seconds > 0) buf.append(seconds).append("s");
-        if (buf.length() == 0) return "0s";
+        if (weeks > 0) {
+            buf.append(weeks).append(" weeks ");
+        }
+        if (days > 0) {
+            buf.append(days).append("d ");
+        }
+        if (hours > 0) {
+            buf.append(hours).append("h ");
+        }
+        if (minutes > 0) {
+            buf.append(minutes).append("m ");
+        }
+        if (seconds > 0) {
+            buf.append(seconds).append("s");
+        }
+        if (buf.length() == 0) {
+            return "0s";
+        }
         return buf.toString();
     }
 }

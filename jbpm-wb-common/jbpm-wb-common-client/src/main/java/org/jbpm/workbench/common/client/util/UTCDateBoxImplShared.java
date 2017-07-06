@@ -24,14 +24,15 @@ public abstract class UTCDateBoxImplShared extends Composite implements UTCDateB
      * implementation will ignore this.
      */
     @Override
-    public void setVisibleLength(int length) {}
+    public void setVisibleLength(int length) {
+    }
 
     /**
      * Sets the date value (as milliseconds at midnight UTC since 1/1/1970)
      */
     @Override
     public final void setValue(Long value) {
-        setValue(value, true);
-    }    
-
+        setValue(value,
+                 true);
+    }
 }

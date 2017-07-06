@@ -35,7 +35,7 @@ import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 public class DataSetDefsBootstrap {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSetDefsBootstrap.class);
-    private static final String JBPM_DATA_SOURCE = "${"+ KieServerConstants.CFG_PERSISTANCE_DS + "}";
+    private static final String JBPM_DATA_SOURCE = "${" + KieServerConstants.CFG_PERSISTANCE_DS + "}";
 
     @Inject
     DataSetDefRegistry dataSetDefRegistry;
@@ -61,20 +61,25 @@ public class DataSetDefsBootstrap {
                             "log.correlationKey, " +
                             "log.externalId, " +
                             "log.processInstanceDescription, " +
-                            "COALESCE(info.lastModificationDate,log.end_date) as lastModificationDate, " +
+                            "COALESCE(info.lastModificationDate, log.end_date) as lastModificationDate, " +
                             "COALESCE(" +
                                 "(select COUNT(errInfo.id) " +
-                                    "from ExecutionErrorInfo errInfo " +
-                                    "where errInfo.process_inst_id=log.processInstanceId and errInfo.error_ack!=TRUE " +
-                                    "group by errInfo.process_inst_id)" +
-                            ",0) as " + COLUMN_ERROR_COUNT + " " +
+                                    "from " +
+                                        "ExecutionErrorInfo errInfo " +
+                                    "where " +
+                                        "errInfo.process_inst_id=log.processInstanceId and " +
+                                        "errInfo.error_ack=0 " +
+                                    "group by " +
+                                        "errInfo.process_inst_id)" +
+                            ", 0) as " + COLUMN_ERROR_COUNT + " " +
                        "from " +
-                           "ProcessInstanceLog log " +
+                            "ProcessInstanceLog log " +
                        "left join " +
-                           "ProcessInstanceInfo info " +
+                            "ProcessInstanceInfo info " +
                        "on " +
-                           "info.InstanceId=log.processInstanceId "
-                 , false)
+                            "info.InstanceId=log.processInstanceId "
+                        ,
+                       false)
                 .number(COLUMN_PROCESS_INSTANCE_ID)
                 .label(COLUMN_PROCESS_ID)
                 .date(COLUMN_START)
@@ -103,14 +108,17 @@ public class DataSetDefsBootstrap {
                             "vil.id, " +
                             "vil.variableId, " +
                             "vil.value " +
-                        "from VariableInstanceLog vil " +
+                        "from " +
+                            "VariableInstanceLog vil " +
                         "where " +
                             "vil.id = " +
-                                "(select MAX(v.id) " +
-                                "from VariableInstanceLog v " +
-                                "where " +
-                                "v.variableId = vil.variableId and " +
-                                "v.processInstanceId = vil.processInstanceId)" , false )
+                                        "(select MAX(v.id) " +
+                                    "from " +
+                                        "VariableInstanceLog v " +
+                                    "where " +
+                                        "v.variableId = vil.variableId and " +
+                                        "v.processInstanceId = vil.processInstanceId)",
+                       false)
                 .number(PROCESS_INSTANCE_ID)
                 .label(PROCESS_NAME)
                 .number(VARIABLE_ID)
@@ -129,5 +137,4 @@ public class DataSetDefsBootstrap {
         dataSetDefRegistry.registerDataSetDef(processWithVariablesDef);
         LOGGER.info("Process instance datasets registered");
     }
-
 }

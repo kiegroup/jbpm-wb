@@ -42,5 +42,4 @@ public class TaskDetailsPresenterTest {
         verify(view).setTaskPriorityEnabled(false);
         verify(view).setUpdateTaskVisible(false);
     }
-
 }

@@ -38,9 +38,13 @@ import static java.util.Collections.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public class CaseMilestonesPresenterTest extends AbstractCaseInstancePresenterTest {
+
+    final String serverTemplateId = "serverTemplateId",
+            containerId = "containerId",
+            caseDefId = "caseDefinitionId",
+            caseId = "caseId";
 
     @Mock
     CaseMilestoneListPresenter.CaseMilestoneListView caseMilestoneListView;
@@ -48,17 +52,9 @@ public class CaseMilestonesPresenterTest extends AbstractCaseInstancePresenterTe
     @InjectMocks
     CaseMilestoneListPresenter presenter;
 
-    @Override
-    public CaseMilestoneListPresenter getPresenter() {
-        return presenter;
-    }
-
     List<CaseMilestoneSummary> caseMilestonesSummaryList = Lists.newArrayList(createCaseMilestone());
+
     CaseInstanceSummary cis;
-    final String serverTemplateId = "serverTemplateId",
-            containerId = "containerId",
-            caseDefId ="caseDefinitionId",
-            caseId = "caseId";
 
     private static CaseMilestoneSummary createCaseMilestone() {
         return CaseMilestoneSummary.builder()
@@ -69,20 +65,31 @@ public class CaseMilestonesPresenterTest extends AbstractCaseInstancePresenterTe
                 .build();
     }
 
+    @Override
+    public CaseMilestoneListPresenter getPresenter() {
+        return presenter;
+    }
+
     @Before
     public void init() {
         caseService = new CallerMock<>(caseManagementService);
-        when(caseManagementService.getCaseMilestones(anyString(),anyString(),any(CaseMilestoneSearchRequest.class))).thenReturn(caseMilestonesSummaryList);
+        when(caseManagementService.getCaseMilestones(anyString(),
+                                                     anyString(),
+                                                     any(CaseMilestoneSearchRequest.class))).thenReturn(caseMilestonesSummaryList);
         when(caseMilestoneListView.getCaseMilestoneSearchRequest()).thenReturn(new CaseMilestoneSearchRequest());
         presenter.setCaseService(caseService);
 
         cis = CaseInstanceSummary.builder().containerId(containerId).caseId(caseId).caseDefinitionId(caseDefId).build();
         final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().id(caseDefId).build();
 
-        when(caseManagementService.getCaseDefinition(serverTemplateId, cis.getContainerId(), cis.getCaseDefinitionId())).thenReturn(cds);
+        when(caseManagementService.getCaseDefinition(serverTemplateId,
+                                                     cis.getContainerId(),
+                                                     cis.getCaseDefinitionId())).thenReturn(cds);
 
         List<CaseMilestoneSummary> milestones = singletonList(createCaseMilestone());
-        when(caseManagementService.getCaseMilestones(anyString(), anyString(), any(CaseMilestoneSearchRequest.class))).thenReturn(milestones);
+        when(caseManagementService.getCaseMilestones(anyString(),
+                                                     anyString(),
+                                                     any(CaseMilestoneSearchRequest.class))).thenReturn(milestones);
     }
 
     @Test
@@ -99,9 +106,12 @@ public class CaseMilestonesPresenterTest extends AbstractCaseInstancePresenterTe
     @Test
     public void testLoadCaseInstance() {
         List<CaseMilestoneSummary> milestones = singletonList(createCaseMilestone());
-        when(caseManagementService.getCaseMilestones(anyString(), anyString(), any(CaseMilestoneSearchRequest.class))).thenReturn(milestones);
+        when(caseManagementService.getCaseMilestones(anyString(),
+                                                     anyString(),
+                                                     any(CaseMilestoneSearchRequest.class))).thenReturn(milestones);
 
-        setupCaseInstance(cis, serverTemplateId);
+        setupCaseInstance(cis,
+                          serverTemplateId);
 
         verifyClearCaseInstance();
         verify(caseMilestoneListView).setCaseMilestoneList(milestones);
@@ -109,13 +119,18 @@ public class CaseMilestonesPresenterTest extends AbstractCaseInstancePresenterTe
 
     @Test
     public void testRefreshData() {
-        setupCaseInstance(cis, serverTemplateId);
+        setupCaseInstance(cis,
+                          serverTemplateId);
         presenter.searchCaseMilestones();
 
-        verify(caseManagementService,times(2)).getCaseMilestones(cis.getContainerId(), cis.getCaseId(), caseMilestoneListView.getCaseMilestoneSearchRequest());
+        verify(caseManagementService,
+               times(2)).getCaseMilestones(cis.getContainerId(),
+                                           cis.getCaseId(),
+                                           caseMilestoneListView.getCaseMilestoneSearchRequest());
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
-        verify(caseMilestoneListView,times(2)).setCaseMilestoneList(captor.capture());
-        assertEquals(caseMilestonesSummaryList.size(), captor.getValue().size());
+        verify(caseMilestoneListView,
+               times(2)).setCaseMilestoneList(captor.capture());
+        assertEquals(caseMilestonesSummaryList.size(),
+                     captor.getValue().size());
     }
-
 }

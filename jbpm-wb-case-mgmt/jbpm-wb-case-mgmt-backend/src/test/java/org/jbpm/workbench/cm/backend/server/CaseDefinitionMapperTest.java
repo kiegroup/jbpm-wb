@@ -26,13 +26,18 @@ import static org.junit.Assert.*;
 
 public class CaseDefinitionMapperTest {
 
-    public static void assertCaseDefinition(final CaseDefinition cd, final CaseDefinitionSummary cds) {
+    public static void assertCaseDefinition(final CaseDefinition cd,
+                                            final CaseDefinitionSummary cds) {
         assertNotNull(cds);
 
-        assertEquals(cd.getName(), cds.getName());
-        assertEquals(cd.getIdentifier(), cds.getId());
-        assertEquals(cd.getContainerId(), cds.getContainerId());
-        assertEquals(cd.getRoles(), cds.getRoles());
+        assertEquals(cd.getName(),
+                     cds.getName());
+        assertEquals(cd.getIdentifier(),
+                     cds.getId());
+        assertEquals(cd.getContainerId(),
+                     cds.getContainerId());
+        assertEquals(cd.getRoles(),
+                     cds.getRoles());
     }
 
     @Test
@@ -41,11 +46,13 @@ public class CaseDefinitionMapperTest {
         cd.setIdentifier("org.jbpm.case");
         cd.setName("New case");
         cd.setContainerId("org.jbpm");
-        cd.setRoles(Collections.singletonMap("participant", 2));
+        cd.setRoles(Collections.singletonMap("participant",
+                                             2));
 
         final CaseDefinitionSummary cds = new CaseDefinitionMapper().apply(cd);
 
-        assertCaseDefinition(cd, cds);
+        assertCaseDefinition(cd,
+                             cds);
     }
 
     @Test
@@ -54,5 +61,4 @@ public class CaseDefinitionMapperTest {
         final CaseDefinitionSummary cds = new CaseDefinitionMapper().apply(cd);
         assertNull(cds);
     }
-
 }

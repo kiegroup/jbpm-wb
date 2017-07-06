@@ -65,7 +65,4 @@ public class User extends IdentitySummary {
     public String toString() {
         return "User [typesRole=" + typesRole + ", groups=" + groups + "]";
     }
-
-    
-
 }

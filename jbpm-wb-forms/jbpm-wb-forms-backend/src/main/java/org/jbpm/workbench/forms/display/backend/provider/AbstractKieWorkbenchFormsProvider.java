@@ -27,19 +27,19 @@ public abstract class AbstractKieWorkbenchFormsProvider implements FormProvider<
 
     protected TaskFormValuesProcessor taskFormValuesProcessor;
 
-    public AbstractKieWorkbenchFormsProvider( ProcessFormsValuesProcessor processFormsValuesProcessor,
-                                      TaskFormValuesProcessor taskFormValuesProcessor ) {
+    public AbstractKieWorkbenchFormsProvider(ProcessFormsValuesProcessor processFormsValuesProcessor,
+                                             TaskFormValuesProcessor taskFormValuesProcessor) {
         this.processFormsValuesProcessor = processFormsValuesProcessor;
         this.taskFormValuesProcessor = taskFormValuesProcessor;
     }
 
     @Override
-    public KieWorkbenchFormRenderingSettings render( ProcessRenderingSettings settings ) {
-        return processFormsValuesProcessor.generateRenderingContext( settings );
+    public KieWorkbenchFormRenderingSettings render(ProcessRenderingSettings settings) {
+        return processFormsValuesProcessor.generateRenderingContext(settings);
     }
 
     @Override
-    public KieWorkbenchFormRenderingSettings render( TaskRenderingSettings settings ) {
-        return taskFormValuesProcessor.generateRenderingContext( settings );
+    public KieWorkbenchFormRenderingSettings render(TaskRenderingSettings settings) {
+        return taskFormValuesProcessor.generateRenderingContext(settings);
     }
 }

@@ -20,6 +20,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class FormLoadedEvent {
+
     private String jsonForm;
 
     public FormLoadedEvent() {
@@ -32,5 +33,4 @@ public class FormLoadedEvent {
     public String getJsonForm() {
         return jsonForm;
     }
-
 }

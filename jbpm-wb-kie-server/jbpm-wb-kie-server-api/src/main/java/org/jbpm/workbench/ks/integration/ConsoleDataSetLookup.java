@@ -25,15 +25,8 @@ public class ConsoleDataSetLookup extends DataSetLookup {
 
     private String serverTemplateId;
 
-    public String getServerTemplateId() {
-        return serverTemplateId;
-    }
-
-    public void setServerTemplateId(String serverTemplateId) {
-        this.serverTemplateId = serverTemplateId;
-    }
-
-    public static DataSetLookup fromInstance(DataSetLookup orig, String serverTemplateId) {
+    public static DataSetLookup fromInstance(DataSetLookup orig,
+                                             String serverTemplateId) {
         ConsoleDataSetLookup clone = new ConsoleDataSetLookup();
         clone.setDataSetUUID(orig.getDataSetUUID());
         clone.setRowOffset(orig.getRowOffset());
@@ -45,8 +38,17 @@ public class ConsoleDataSetLookup extends DataSetLookup {
         return clone;
     }
 
+    public String getServerTemplateId() {
+        return serverTemplateId;
+    }
+
+    public void setServerTemplateId(String serverTemplateId) {
+        this.serverTemplateId = serverTemplateId;
+    }
+
     @Override
     public DataSetLookup cloneInstance() {
-        return fromInstance(super.cloneInstance(), getServerTemplateId());
+        return fromInstance(super.cloneInstance(),
+                            getServerTemplateId());
     }
 }

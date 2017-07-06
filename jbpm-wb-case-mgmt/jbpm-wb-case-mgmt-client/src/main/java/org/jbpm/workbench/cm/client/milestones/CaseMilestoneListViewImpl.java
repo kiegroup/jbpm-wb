@@ -72,9 +72,11 @@ public class CaseMilestoneListViewImpl extends AbstractView<CaseMilestoneListPre
     public void setCaseMilestoneList(final List<CaseMilestoneSummary> caseMilestoneList) {
         this.caseMilestoneList.setModel(caseMilestoneList);
         if (caseMilestoneList.isEmpty()) {
-            removeCSSClass(emptyContainer, "hidden");
+            removeCSSClass(emptyContainer,
+                           "hidden");
         } else {
-            addCSSClass(emptyContainer, "hidden");
+            addCSSClass(emptyContainer,
+                        "hidden");
         }
     }
 
@@ -88,7 +90,7 @@ public class CaseMilestoneListViewImpl extends AbstractView<CaseMilestoneListPre
         return milestonesContainer;
     }
 
-    public CaseMilestoneSearchRequest getCaseMilestoneSearchRequest(){
+    public CaseMilestoneSearchRequest getCaseMilestoneSearchRequest() {
         return actions.getCaseInstanceSearchRequest();
     }
 }

@@ -19,6 +19,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class ProcessDefinitionsSearchEvent {
+
     private String filter;
 
     public ProcessDefinitionsSearchEvent() {
@@ -35,6 +36,4 @@ public class ProcessDefinitionsSearchEvent {
     public void setFilter(String filter) {
         this.filter = filter;
     }
-    
-    
 }

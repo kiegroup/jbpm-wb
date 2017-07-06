@@ -46,7 +46,8 @@ public class CaseDetailsPresenter extends AbstractCaseInstancePresenter<CaseDeta
         view.setValue(cis);
     }
 
-    public interface CaseDetailsView extends UberElement<CaseDetailsPresenter>, TakesValue<CaseInstanceSummary> {
+    public interface CaseDetailsView extends UberElement<CaseDetailsPresenter>,
+                                             TakesValue<CaseInstanceSummary> {
 
     }
 }

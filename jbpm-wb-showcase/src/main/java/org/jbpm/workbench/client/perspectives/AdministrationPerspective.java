@@ -73,17 +73,18 @@ public class AdministrationPerspective {
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition perspective = new PerspectiveDefinitionImpl( MultiListWorkbenchPanelPresenter.class.getName() );
-        perspective.setName( constants.Administration() );
+        final PerspectiveDefinition perspective = new PerspectiveDefinitionImpl(MultiListWorkbenchPanelPresenter.class.getName());
+        perspective.setName(constants.Administration());
 
-        perspective.getRoot().addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "RepositoriesEditor" ) ) );
+        perspective.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("RepositoriesEditor")));
 
-        final PanelDefinition west = new PanelDefinitionImpl( SimpleWorkbenchPanelPresenter.class.getName() );
-        west.setWidth( 300 );
-        west.setMinWidth( 200 );
-        west.addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "FileExplorer" ) ) );
+        final PanelDefinition west = new PanelDefinitionImpl(SimpleWorkbenchPanelPresenter.class.getName());
+        west.setWidth(300);
+        west.setMinWidth(200);
+        west.addPart(new PartDefinitionImpl(new DefaultPlaceRequest("FileExplorer")));
 
-        perspective.getRoot().insertChild( CompassPosition.WEST, west );
+        perspective.getRoot().insertChild(CompassPosition.WEST,
+                                          west);
 
         return perspective;
     }
@@ -91,27 +92,31 @@ public class AdministrationPerspective {
     @WorkbenchMenu
     public Menus getMenus() {
         return MenuFactory
-                .newTopLevelMenu( constants.MenuOrganizationalUnits() )
-                .withPermission( OrganizationalUnit.RESOURCE_TYPE, OrganizationalUnitAction.READ )
+                .newTopLevelMenu(constants.MenuOrganizationalUnits())
+                .withPermission(OrganizationalUnit.RESOURCE_TYPE,
+                                OrganizationalUnitAction.READ)
                 .menus()
-                .menu( constants.MenuManageOrganizationalUnits() )
-                .respondsWith( () -> placeManager.goTo( "org.kie.workbench.common.screens.organizationalunit.manager.OrganizationalUnitManager" ) )
+                .menu(constants.MenuManageOrganizationalUnits())
+                .respondsWith(() -> placeManager.goTo("org.kie.workbench.common.screens.organizationalunit.manager.OrganizationalUnitManager"))
                 .endMenu()
                 .endMenus()
                 .endMenu()
-                .newTopLevelMenu( constants.repositories() )
+                .newTopLevelMenu(constants.repositories())
                 .menus()
-                .menu( constants.listRepositories() )
-                .withPermission( Repository.RESOURCE_TYPE, RepositoryAction.READ )
-                .respondsWith( () -> placeManager.goTo( "RepositoriesEditor" ) )
+                .menu(constants.listRepositories())
+                .withPermission(Repository.RESOURCE_TYPE,
+                                RepositoryAction.READ)
+                .respondsWith(() -> placeManager.goTo("RepositoriesEditor"))
                 .endMenu()
-                .menu( constants.cloneRepository() )
-                .withPermission( Repository.RESOURCE_TYPE, RepositoryAction.CREATE )
-                .respondsWith( cloneRepoCommand )
+                .menu(constants.cloneRepository())
+                .withPermission(Repository.RESOURCE_TYPE,
+                                RepositoryAction.CREATE)
+                .respondsWith(cloneRepoCommand)
                 .endMenu()
-                .menu( constants.newRepository() )
-                .withPermission( Repository.RESOURCE_TYPE, RepositoryAction.CREATE )
-                .respondsWith( newRepoCommand )
+                .menu(constants.newRepository())
+                .withPermission(Repository.RESOURCE_TYPE,
+                                RepositoryAction.CREATE)
+                .respondsWith(newRepoCommand)
                 .endMenu()
                 .endMenus()
                 .endMenu().build();
@@ -130,9 +135,9 @@ public class AdministrationPerspective {
             cloneRepositoryPresenter.showForm();
         };
         this.newRepoCommand = () -> {
-            final CreateRepositoryWizard newRepositoryWizard = iocManager.lookupBean( CreateRepositoryWizard.class ).getInstance();
+            final CreateRepositoryWizard newRepositoryWizard = iocManager.lookupBean(CreateRepositoryWizard.class).getInstance();
             // When pop-up is closed destroy bean to avoid memory leak
-            newRepositoryWizard.onCloseCallback(result -> iocManager.destroyBean( newRepositoryWizard ));
+            newRepositoryWizard.onCloseCallback(result -> iocManager.destroyBean(newRepositoryWizard));
             newRepositoryWizard.start();
         };
     }

@@ -61,10 +61,7 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
     protected static final String COL_ADDEDAT = "addedAt";
     protected static final String COL_COMMENT = "comment";
     protected static final String COL_ID_ACTIONS = "Actions";
-
-    private Constants constants = GWT.create( Constants.class );
-
-    private TaskCommentsPresenter presenter;
+    private static final int COMMENTS_PER_PAGE = 10;
 
     @Inject
     @DataField
@@ -81,16 +78,18 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
     @DataField
     public PagedTable<CommentSummary> commentsListGrid = new PagedTable<CommentSummary>(COMMENTS_PER_PAGE);
 
+    private Constants constants = GWT.create(Constants.class);
+
+    private TaskCommentsPresenter presenter;
+
     @Inject
     private Event<NotificationEvent> notification;
 
     private ListHandler<CommentSummary> sortHandler;
 
-    private static final int COMMENTS_PER_PAGE = 10;
-
     @Override
     public void clearCommentInput() {
-        newTaskCommentTextArea.setText( "" );
+        newTaskCommentTextArea.setText("");
     }
 
     @Override
@@ -100,123 +99,131 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
     }
 
     @Override
-    public void init( TaskCommentsPresenter presenter ) {
+    public void init(TaskCommentsPresenter presenter) {
         this.presenter = presenter;
         List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add( COL_COMMENT);
-        bannedColumns.add( COL_ID_ACTIONS );
+        bannedColumns.add(COL_COMMENT);
+        bannedColumns.add(COL_ID_ACTIONS);
 
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add( COL_ADDEDBY );
-        initColumns.add( COL_COMMENT );
-        initColumns.add( COL_ADDEDAT );
+        initColumns.add(COL_ADDEDBY);
+        initColumns.add(COL_COMMENT);
+        initColumns.add(COL_ADDEDAT);
         initColumns.add(COL_ID_ACTIONS);
 
-        commentsListGrid.setGridPreferencesStore( new GridPreferencesStore( new GridGlobalPreferences( "CommentsGrid", initColumns, bannedColumns ) ));
-        commentsListGrid.setEmptyTableCaption( constants.No_Comments_For_This_Task() );
+        commentsListGrid.setGridPreferencesStore(new GridPreferencesStore(new GridGlobalPreferences("CommentsGrid",
+                                                                                                    initColumns,
+                                                                                                    bannedColumns)));
+        commentsListGrid.setEmptyTableCaption(constants.No_Comments_For_This_Task());
         // Attach a column sort handler to the ListDataProvider to sort the list.
-        sortHandler = new ListHandler<CommentSummary>( presenter.getDataProvider().getList() );
-        commentsListGrid.addColumnSortHandler( sortHandler );
+        sortHandler = new ListHandler<CommentSummary>(presenter.getDataProvider().getList());
+        commentsListGrid.addColumnSortHandler(sortHandler);
         initTableColumns();
-        presenter.addDataDisplay( commentsListGrid );
+        presenter.addDataDisplay(commentsListGrid);
 
-        addCommentButton.setText( constants.Add_Comment() );
-        newTaskCommentLabel.setText( constants.Comment() );
+        addCommentButton.setText(constants.Add_Comment());
+        newTaskCommentLabel.setText(constants.Comment());
     }
 
     @EventHandler("addCommentButton")
-    public void addCommentButton( ClickEvent e ) {
-        presenter.addTaskComment( newTaskCommentTextArea.getText() );
+    public void addCommentButton(ClickEvent e) {
+        presenter.addTaskComment(newTaskCommentTextArea.getText());
     }
 
     @Override
-    public void displayNotification( String text ) {
-        notification.fire( new NotificationEvent( text ) );
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     private void initTableColumns() {
         // addedBy
-        Column<CommentSummary, String> addedByColumn = new Column<CommentSummary, String>( new TextCell() ) {
+        Column<CommentSummary, String> addedByColumn = new Column<CommentSummary, String>(new TextCell()) {
             @Override
-            public String getValue( CommentSummary c ) {
+            public String getValue(CommentSummary c) {
                 return c.getAddedBy();
             }
         };
-        addedByColumn.setSortable( false );
+        addedByColumn.setSortable(false);
         addedByColumn.setDataStoreName(COL_ADDEDBY);
-        commentsListGrid.addColumn( addedByColumn, constants.Added_By() );
-
+        commentsListGrid.addColumn(addedByColumn,
+                                   constants.Added_By());
 
         // date
-        Column<CommentSummary, String> addedAtColumn = new Column<CommentSummary, String>( new TextCell() ) {
+        Column<CommentSummary, String> addedAtColumn = new Column<CommentSummary, String>(new TextCell()) {
             @Override
-            public String getValue( CommentSummary c ) {
+            public String getValue(CommentSummary c) {
                 return DateUtils.getDateTimeStr(c.getAddedAt());
             }
         };
-        addedAtColumn.setSortable( true );
+        addedAtColumn.setSortable(true);
         addedAtColumn.setDataStoreName(COL_ADDEDAT);
-        addedAtColumn.setDefaultSortAscending( true );
-        commentsListGrid.addColumn( addedAtColumn, constants.At() );
-        sortHandler.setComparator( addedAtColumn, new Comparator<CommentSummary>() {
-            @Override
-            public int compare( CommentSummary o1,
-                                CommentSummary o2 ) {
-                return o1.getAddedAt().compareTo( o2.getAddedAt() );
-            }
-        } );
+        addedAtColumn.setDefaultSortAscending(true);
+        commentsListGrid.addColumn(addedAtColumn,
+                                   constants.At());
+        sortHandler.setComparator(addedAtColumn,
+                                  new Comparator<CommentSummary>() {
+                                      @Override
+                                      public int compare(CommentSummary o1,
+                                                         CommentSummary o2) {
+                                          return o1.getAddedAt().compareTo(o2.getAddedAt());
+                                      }
+                                  });
 
         // comment text
-        Column<CommentSummary, String> commentTextColumn = new Column<CommentSummary, String>( new TextCell() ) {
+        Column<CommentSummary, String> commentTextColumn = new Column<CommentSummary, String>(new TextCell()) {
             @Override
-            public String getValue( CommentSummary object ) {
+            public String getValue(CommentSummary object) {
                 return object.getText();
             }
         };
-        commentTextColumn.setSortable( false );
+        commentTextColumn.setSortable(false);
         commentTextColumn.setDataStoreName(COL_COMMENT);
-        commentsListGrid.addColumn(commentTextColumn, constants.Comment());
+        commentsListGrid.addColumn(commentTextColumn,
+                                   constants.Comment());
 
         List<HasCell<CommentSummary, ?>> cells = new LinkedList<HasCell<CommentSummary, ?>>();
 
-        cells.add( new DeleteCommentActionHasCell( constants.Delete(), new Delegate<CommentSummary>() {
-            @Override
-            public void execute( CommentSummary comment ) {
-                presenter.removeTaskComment( comment.getId() );
-            }
-        } ) );
+        cells.add(new DeleteCommentActionHasCell(constants.Delete(),
+                                                 new Delegate<CommentSummary>() {
+                                                     @Override
+                                                     public void execute(CommentSummary comment) {
+                                                         presenter.removeTaskComment(comment.getId());
+                                                     }
+                                                 }));
 
-        CompositeCell<CommentSummary> cell = new CompositeCell<CommentSummary>( cells );
+        CompositeCell<CommentSummary> cell = new CompositeCell<CommentSummary>(cells);
         Column<CommentSummary, CommentSummary> actionsColumn = new Column<CommentSummary, CommentSummary>(
-                cell ) {
+                cell) {
             @Override
-            public CommentSummary getValue( CommentSummary object ) {
+            public CommentSummary getValue(CommentSummary object) {
                 return object;
             }
         };
         actionsColumn.setSortable(false);
         actionsColumn.setDataStoreName(COL_ID_ACTIONS);
-        commentsListGrid.addColumn(actionsColumn, "");
+        commentsListGrid.addColumn(actionsColumn,
+                                   "");
     }
 
     private class DeleteCommentActionHasCell implements HasCell<CommentSummary, CommentSummary> {
 
         private ActionCell<CommentSummary> cell;
 
-        public DeleteCommentActionHasCell( String text,
-                                           Delegate<CommentSummary> delegate ) {
-            cell = new ActionCell<CommentSummary>( text, delegate ) {
+        public DeleteCommentActionHasCell(String text,
+                                          Delegate<CommentSummary> delegate) {
+            cell = new ActionCell<CommentSummary>(text,
+                                                  delegate) {
                 @Override
-                public void render( Cell.Context context,
-                                    CommentSummary value,
-                                    SafeHtmlBuilder sb ) {
+                public void render(Cell.Context context,
+                                   CommentSummary value,
+                                   SafeHtmlBuilder sb) {
 
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant( new SimplePanel( new Button( constants.Delete() ) {{
-                        setSize( ButtonSize.SMALL );
-                        setType( ButtonType.DANGER );
-                    }} ).getElement().getInnerHTML() );
-                    sb.append( mysb.toSafeHtml() );
+                    mysb.appendHtmlConstant(new SimplePanel(new Button(constants.Delete()) {{
+                        setSize(ButtonSize.SMALL);
+                        setType(ButtonType.DANGER);
+                    }}).getElement().getInnerHTML());
+                    sb.append(mysb.toSafeHtml());
                 }
             };
         }
@@ -232,7 +239,7 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
         }
 
         @Override
-        public CommentSummary getValue( CommentSummary object ) {
+        public CommentSummary getValue(CommentSummary object) {
             return object;
         }
     }
