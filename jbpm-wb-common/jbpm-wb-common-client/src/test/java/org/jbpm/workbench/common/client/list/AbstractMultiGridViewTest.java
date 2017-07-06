@@ -26,7 +26,7 @@ import com.google.gwtmockito.WithClassesToStub;
 import org.gwtbootstrap3.client.ui.Button;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.list.base.DataSetEditorManager;
+import org.jbpm.workbench.df.client.list.DataSetEditorManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

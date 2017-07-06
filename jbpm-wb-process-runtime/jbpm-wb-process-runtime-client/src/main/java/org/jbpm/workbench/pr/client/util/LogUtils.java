@@ -16,40 +16,14 @@
 
 package org.jbpm.workbench.pr.client.util;
 
-import org.kie.api.runtime.process.ProcessInstance;
-
 public class LogUtils {
 
-    public static String getInstanceStatus(int state) {
-        String statusStr = "Unknown";
-        switch (state) {
-            case ProcessInstance.STATE_ACTIVE:
-                statusStr = "Active";
-                break;
-            case ProcessInstance.STATE_ABORTED:
-                statusStr = "Aborted";
-                break;
-            case ProcessInstance.STATE_COMPLETED:
-                statusStr = "Completed";
-                break;
-            case ProcessInstance.STATE_PENDING:
-                statusStr = "Pending";
-                break;
-            case ProcessInstance.STATE_SUSPENDED:
-                statusStr = "Suspended";
-                break;
-            default:
-                break;
-        }
-        return statusStr;
-    }
-
-    public static enum LogType {
+    public enum LogType {
         TECHNICAL,
         BUSINESS
     }
 
-    public static enum LogOrder {
+    public enum LogOrder {
         DESC,
         ASC
     }

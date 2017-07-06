@@ -29,7 +29,6 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.common.client.util.UTCDateBox;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
-import org.jbpm.workbench.ht.model.events.TaskCalendarEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
@@ -48,8 +47,6 @@ public class TaskDetailsPresenter {
 
     private Event<TaskRefreshedEvent> taskRefreshed;
 
-    private Event<TaskCalendarEvent> taskCalendarEvent;
-
     private long currentTaskId = 0;
 
     private String currentServerTemplateId;
@@ -59,11 +56,9 @@ public class TaskDetailsPresenter {
     @Inject
     public TaskDetailsPresenter(
             TaskDetailsView view,
-            Event<TaskRefreshedEvent> taskRefreshed,
-            Event<TaskCalendarEvent> taskCalendarEvent) {
+            Event<TaskRefreshedEvent> taskRefreshed) {
         this.view = view;
         this.taskRefreshed = taskRefreshed;
-        this.taskCalendarEvent = taskCalendarEvent;
     }
 
     @PostConstruct
@@ -87,7 +82,6 @@ public class TaskDetailsPresenter {
                 public void callback(Void nothing) {
                     view.displayNotification(constants.TaskDetailsUpdatedForTaskId(currentTaskId));
                     taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
-                    taskCalendarEvent.fire(new TaskCalendarEvent(currentTaskId));
                 }
             }).updateTask(currentServerTemplateId,
                           currentContainerId,
