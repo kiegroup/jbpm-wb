@@ -29,7 +29,7 @@ import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.jbpm.workbench.es.model.events.RequestChangedEvent;

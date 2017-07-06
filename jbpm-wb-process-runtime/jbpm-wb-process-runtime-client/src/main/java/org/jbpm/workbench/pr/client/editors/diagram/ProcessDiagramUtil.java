@@ -15,41 +15,11 @@
  */
 package org.jbpm.workbench.pr.client.editors.diagram;
 
-import org.jbpm.workbench.common.model.process.DummyProcessPath;
+import org.jbpm.workbench.pr.client.util.DummyProcessPath;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.PathPlaceRequest;
 
 public final class ProcessDiagramUtil {
-
-    public static PlaceRequest buildPlaceRequest(final PlaceRequest input) {
-        final String deploymentId = input.getParameter("deploymentId",
-                                                       "");
-        final String processId = input.getParameter("processId",
-                                                    "");
-        final String activeNodes = input.getParameter("activeNodes",
-                                                      "");
-        final String completedNodes = input.getParameter("completedNodes",
-                                                         "");
-
-        final PathPlaceRequest defaultPlaceRequest = new PathPlaceRequest(new DummyProcessPath(processId),
-                                                                          "jbpm.designer.popup");
-        //Set Parameters here:
-        defaultPlaceRequest.addParameter("readOnly",
-                                         "true");
-        if (!activeNodes.equals("")) {
-            defaultPlaceRequest.addParameter("activeNodes",
-                                             activeNodes);
-        }
-        if (!completedNodes.equals("")) {
-            defaultPlaceRequest.addParameter("completedNodes",
-                                             completedNodes);
-        }
-        defaultPlaceRequest.addParameter("processId",
-                                         processId);
-        defaultPlaceRequest.addParameter("deploymentId",
-                                         deploymentId);
-        return defaultPlaceRequest;
-    }
 
     public static PlaceRequest buildPlaceRequest(String serverTemplateId,
                                                  String deploymentId,

@@ -24,7 +24,7 @@ import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;

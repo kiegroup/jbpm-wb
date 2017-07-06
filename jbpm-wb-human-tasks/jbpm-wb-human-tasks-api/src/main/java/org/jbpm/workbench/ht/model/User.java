@@ -28,12 +28,9 @@ public class User extends IdentitySummary {
     // TODO only for id, remove it later
     private static final String PREFIX = "user_id";
 
-    private List<TypeRole> typesRole;
-
     private List<Group> groups;
 
     public User() {
-
     }
 
     public User(String description) {
@@ -43,14 +40,6 @@ public class User extends IdentitySummary {
     // TODO please remove it when we have id
     public String getId() {
         return PREFIX + SEPARATOR + super.getName();
-    }
-
-    public List<TypeRole> getTypesRole() {
-        return typesRole;
-    }
-
-    public void setTypesRole(List<TypeRole> typesRole) {
-        this.typesRole = typesRole;
     }
 
     public List<Group> getGroups() {
@@ -63,6 +52,8 @@ public class User extends IdentitySummary {
 
     @Override
     public String toString() {
-        return "User [typesRole=" + typesRole + ", groups=" + groups + "]";
+        return "User{" +
+                "groups=" + groups +
+                "} " + super.toString();
     }
 }
