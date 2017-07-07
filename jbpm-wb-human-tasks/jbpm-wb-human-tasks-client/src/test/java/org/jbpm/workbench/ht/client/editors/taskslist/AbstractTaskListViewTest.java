@@ -20,13 +20,16 @@ import java.util.*;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.view.client.AsyncDataProvider;
 import org.gwtbootstrap3.client.ui.Button;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetEditorManager;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
+import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.junit.Before;
 import org.junit.Test;
@@ -250,5 +253,37 @@ public abstract class AbstractTaskListViewTest {
                      columnPreferences.get(3).getName());
         assertEquals(AbstractTaskListView.COL_ID_ACTIONS,
                      columnPreferences.get(4).getName());
+    }
+
+    @Test
+    public void testStylesNotAppliedDependingOnPriority() {
+        getView().initSelectionModel(currentListGrid);
+
+        final ArgumentCaptor<RowStyles> rowStylesApplied = ArgumentCaptor.forClass(RowStyles.class);
+
+        verify(currentListGrid).setRowStyles(rowStylesApplied.capture());
+        when(currentListGrid.getSelectedRow()).thenReturn(0);
+
+        assertNull( rowStylesApplied.getValue().getStyleNames(TaskSummary.builder()
+                                                                      .status(TaskUtils.TASK_STATUS_READY)
+                                                                      .priority(1)
+                                                                      .build(),
+                                                              1));
+        assertNull( rowStylesApplied.getValue().getStyleNames(TaskSummary.builder()
+                                                                      .status(TaskUtils.TASK_STATUS_READY)
+                                                                      .priority(3)
+                                                                      .build(),
+                                                              1));
+        assertNull( rowStylesApplied.getValue().getStyleNames(TaskSummary.builder()
+                                                                      .status(TaskUtils.TASK_STATUS_READY)
+                                                                      .priority(10)
+                                                                      .build(),
+                                                              1));
+        assertEquals(HumanTaskResources.INSTANCE.css().taskCompleted(),
+                     rowStylesApplied.getValue().getStyleNames(TaskSummary.builder()
+                                                                       .status(TaskUtils.TASK_STATUS_COMPLETED)
+                                                                       .priority(10)
+                                                                       .build(),
+                                                               1));
     }
 }
