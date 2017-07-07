@@ -38,7 +38,7 @@ public class DataSetEditorManager {
     private FilterSettingsJSONMarshaller tableSettingsJSONMarshaller;
 
     public void showTableSettingsEditor(final FilterPagedTable filterPagedTable,
-                                        String popupTitle,
+                                        final String popupTitle,
                                         final FilterSettings tableSettings,
                                         final Command drawCommand) {
         FilterSettings clone = tableSettings.cloneInstance();

@@ -53,6 +53,7 @@ public class ActiveFilterItemView implements TakesValue<ActiveFilterItem>,
 
     @Inject
     private JQueryProducer.JQuery<Popover> jQueryPopover;
+
     @Inject
     @AutoBound
     private DataBinder<ActiveFilterItem> dataBinder;
@@ -74,6 +75,7 @@ public class ActiveFilterItemView implements TakesValue<ActiveFilterItem>,
             options.setHtml(true);
             options.setPlacement("top");
             options.setTrigger("hover click");
+            options.setContainer("body");
             jQueryPopover.wrap(li).popover(options);
         }
     }
