@@ -118,25 +118,8 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                         int rowIndex) {
                 if (rowIndex == extendedPagedTable.getSelectedRow()) {
                     return CommonResources.INSTANCE.css().selected();
-                } else {
-                    if (row.getStatus().equals(TASK_STATUS_IN_PROGRESS) || row.getStatus().equals(TASK_STATUS_READY)) {
-                        switch (row.getPriority()) {
-                            case 5:
-                                return HumanTaskResources.INSTANCE.css().taskPriorityFive();
-                            case 4:
-                                return HumanTaskResources.INSTANCE.css().taskPriorityFour();
-                            case 3:
-                                return HumanTaskResources.INSTANCE.css().taskPriorityThree();
-                            case 2:
-                                return HumanTaskResources.INSTANCE.css().taskPriorityTwo();
-                            case 1:
-                                return HumanTaskResources.INSTANCE.css().taskPriorityOne();
-                            default:
-                                return "";
-                        }
-                    } else if (row.getStatus().equals(TASK_STATUS_COMPLETED)) {
-                        return HumanTaskResources.INSTANCE.css().taskCompleted();
-                    }
+                } else if (row.getStatus().equals(TASK_STATUS_COMPLETED)) {
+                    return HumanTaskResources.INSTANCE.css().taskCompleted();
                 }
                 return null;
             }
