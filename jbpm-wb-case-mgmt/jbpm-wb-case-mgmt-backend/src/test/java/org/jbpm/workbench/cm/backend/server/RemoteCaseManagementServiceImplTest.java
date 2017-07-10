@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.cm.backend.server;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -58,7 +59,6 @@ import static org.jbpm.workbench.cm.backend.server.CaseCommentMapperTest.assertC
 import static org.jbpm.workbench.cm.backend.server.CaseDefinitionMapperTest.assertCaseDefinition;
 import static org.jbpm.workbench.cm.backend.server.CaseInstanceMapperTest.assertCaseInstance;
 import static org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl.CASE_OWNER_ROLE;
-import static org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl.PAGE_SIZE_UNLIMITED;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyList;
@@ -93,10 +93,10 @@ public class RemoteCaseManagementServiceImplTest {
     public void testGetCaseDefinitions_singleCaseDefinition() {
         final CaseDefinition definition = createTestDefinition();
         when(clientMock.getCaseDefinitions(anyInt(),
-                                           anyInt(),
-                                           eq(CaseServicesClient.SORT_BY_CASE_DEFINITION_NAME),
-                                           eq(true)))
-                .thenReturn(singletonList(definition));
+        		                           anyInt(),
+        		                           eq(CaseServicesClient.SORT_BY_CASE_DEFINITION_NAME),
+        		                           eq(true)))
+        	    .thenReturn(singletonList(definition));
 
         List<CaseDefinitionSummary> definitions = testedService.getCaseDefinitions();
         assertNotNull(definitions);
@@ -305,16 +305,75 @@ public class RemoteCaseManagementServiceImplTest {
         when(clientMock.getComments(containerId,
                                     caseId,
                                     0,
-                                    PAGE_SIZE_UNLIMITED)).thenReturn(singletonList(caseComment));
+                                    10)).thenReturn(singletonList(caseComment));
 
         final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId,
                                                                             containerId,
-                                                                            caseId);
+                                                                            caseId,
+                                                                            0,
+                                                                            10);
         assertNotNull(comments);
         assertEquals(1,
                      comments.size());
         assertCaseComment(caseComment,
                           comments.get(0));
+    }
+
+    @Test
+    public void testGetComments_bulkComments() {
+        int pageSize = 20;
+        List<CaseComment> caseComments = new ArrayList<>();
+
+        for (int i = 0; i < 55; i++) {
+            final CaseComment caseComment = createTestComment();
+            caseComments.add(caseComment);
+        }
+        
+        List<CaseComment> firstPage = caseComments.subList(0, 20);
+        List<CaseComment> secondPage = caseComments.subList(20, 40);
+        List<CaseComment> thirdPage = caseComments.subList(40, 55);
+        
+        when(clientMock.getComments(containerId, 
+                                    caseId, 
+                                    0, 
+                                    20)).thenReturn(firstPage);
+        
+        List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId, 
+                                                                      containerId, 
+                                                                      caseId, 
+                                                                      0, 
+                                                                      pageSize);
+        
+        assertNotNull(comments);
+        assertEquals(20, comments.size());
+        
+        when(clientMock.getComments(containerId, 
+                                    caseId, 
+                                    1, 
+                                    20)).thenReturn(secondPage);
+        
+        comments = testedService.getComments(serverTemplateId, 
+                                             containerId, 
+                                             caseId, 
+                                             1, 
+                                             pageSize);
+        
+        assertNotNull(comments);
+        assertEquals(20, comments.size());
+        
+        when(clientMock.getComments(containerId, 
+                                    caseId, 
+                                    2, 
+                                    20)).thenReturn(thirdPage);
+        
+        comments = testedService.getComments(serverTemplateId, 
+                                             containerId, 
+                                             caseId, 
+                                             2, 
+                                             pageSize);
+        
+        assertNotNull(comments);
+        assertEquals(15, comments.size());       
     }
 
     @Test
@@ -326,7 +385,10 @@ public class RemoteCaseManagementServiceImplTest {
 
         final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId,
                                                                             containerId,
-                                                                            caseId);
+                                                                            caseId,
+                                                                            0,
+                                                                            10);
+
         assertNotNull(comments);
         assertTrue(comments.isEmpty());
     }
@@ -442,25 +504,25 @@ public class RemoteCaseManagementServiceImplTest {
 
     private CaseInstance createTestInstance(String caseId) {
         CaseInstance instance = CaseInstance.builder()
-                .caseDescription(caseDescription)
-                .caseId(caseId)
-                .caseStatus(1)
-                .containerId(containerId)
-                .build();
+        		.caseDescription(caseDescription)
+        		.caseId(caseId).caseStatus(1)
+        		.containerId(containerId)
+        		.build();
 
         return instance;
     }
 
     private CaseComment createTestComment() {
         CaseComment comment = CaseComment.builder()
-                .id(commentId)
-                .author(author)
-                .text(text)
-                .addedAt(new Date())
-                .build();
+        		.id(commentId)
+        		.author(author)
+        		.text(text)
+        		.addedAt(new Date())
+        		.build();
 
         return comment;
     }
+
 
     private CaseMilestone createTestMilestone(String caseMilestoneId,
                                               String caseMilestoneName,
@@ -506,12 +568,14 @@ public class RemoteCaseManagementServiceImplTest {
                 .name(stageName)
                 .status(stageStatus)
                 .build();
+        
         return stage;
     }
 
     @Test
     public void getCaseActionsTest() {
         final CaseInstance ci = createTestInstance(caseId);
+
         CaseStage stage1 = createTestCaseStage("stage1",
                                                "stage1-name",
                                                CaseStageStatus.ACTIVE.getStatus());
@@ -580,8 +644,8 @@ public class RemoteCaseManagementServiceImplTest {
                                                                               node4));
 
         TaskInstance t1 = TaskInstance.builder()
-                .actualOwner("Koe")
-                .build();
+        		.actualOwner("Koe")
+        		.build();
         when(userTaskServicesClient.findTaskByWorkItemId(node1WorkItemId)).thenReturn(t1);
         when(userTaskServicesClient.findTaskByWorkItemId(node3WorkItemId)).thenReturn(t1);
 
@@ -679,6 +743,7 @@ public class RemoteCaseManagementServiceImplTest {
     @Test
     public void getAdHocActionsTest() {
         final CaseInstance ci = createTestInstance(caseId);
+        
         CaseStage stage1 = createTestCaseStage("stage1",
                                                "stage1-name",
                                                CaseStageStatus.ACTIVE.getStatus());
