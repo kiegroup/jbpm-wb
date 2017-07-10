@@ -15,18 +15,25 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 
+import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
+import static org.jbpm.workbench.ht.client.editors.taskslist.TaskAdminListViewImpl.TAB_ADMIN;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskAdminListViewImplTest extends AbstractTaskListViewTest {
 
     @InjectMocks
+    @Spy
     private TaskAdminListViewImpl view;
 
     @Mock
@@ -43,12 +50,15 @@ public class TaskAdminListViewImplTest extends AbstractTaskListViewTest {
     }
 
     @Override
-    public int getExpectedDefaultTabFilterCount() {
-        return 2;
+    public List<String> getExpectedTabs() {
+        return Arrays.asList(TAB_SEARCH,
+                             TAB_ADMIN);
     }
 
     @Before
-    public void setup() {
+    @Override
+    public void setupMocks() {
+        super.setupMocks();
         when(presenter.createAdminTabSettings()).thenReturn(filterSettings);
     }
 }

@@ -39,6 +39,7 @@ public class TaskSummary extends GenericSummary<Long> {
     private String processInstanceCorrelationKey;
     private String processInstanceDescription;
     private String processId;
+    private Long processSessionId;
     private String deploymentId;
     private Boolean isForAdmin = Boolean.FALSE;
     private Boolean isLogOnly = Boolean.FALSE;
@@ -203,6 +204,14 @@ public class TaskSummary extends GenericSummary<Long> {
         this.processInstanceDescription = processInstanceDescription;
     }
 
+    public Long getProcessSessionId() {
+        return processSessionId;
+    }
+
+    public void setProcessSessionId(Long processSessionId) {
+        this.processSessionId = processSessionId;
+    }
+
     @Override
     public String toString() {
         return "TaskSummary{" +
@@ -336,6 +345,11 @@ public class TaskSummary extends GenericSummary<Long> {
 
         public Builder domainData(Map<String, String> domainData) {
             this.taskSummary.setDomainData(domainData);
+            return this;
+        }
+
+        public Builder processSessionId(Long processSessionId) {
+            this.taskSummary.setProcessSessionId(processSessionId);
             return this;
         }
     }

@@ -15,8 +15,6 @@
  */
 package org.jbpm.workbench.df.client.list;
 
-import com.google.gwt.user.client.ui.Composite;
-
 import org.jbpm.workbench.df.client.filter.FilterEditorPopup;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsJSONMarshaller;
@@ -29,7 +27,7 @@ import javax.inject.Inject;
 import java.util.HashMap;
 
 @Dependent
-public class DataSetEditorManager extends Composite {
+public class DataSetEditorManager {
 
     public static String FILTER_TABLE_SETTINGS = "tableSettings";
 

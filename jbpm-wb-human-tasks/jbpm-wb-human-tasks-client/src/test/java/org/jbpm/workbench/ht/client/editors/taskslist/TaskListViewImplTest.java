@@ -15,18 +15,29 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
+import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
+import org.uberfire.mvp.Command;
 
+import static org.jbpm.workbench.ht.client.editors.taskslist.TaskListViewImpl.*;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskListViewImplTest extends AbstractTaskListViewTest {
 
     @InjectMocks
+    @Spy
     private TaskListViewImpl view;
 
     @Mock
@@ -43,15 +54,49 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
     }
 
     @Override
-    public int getExpectedDefaultTabFilterCount() {
-        return 5;
+    public List<String> getExpectedTabs() {
+        return Arrays.asList(TAB_SEARCH,
+                             TAB_ALL,
+                             TAB_GROUP,
+                             TAB_PERSONAL,
+                             TAB_ACTIVE);
     }
 
     @Before
-    public void setup() {
+    @Override
+    public void setupMocks() {
+        super.setupMocks();
         when(presenter.createActiveTabSettings()).thenReturn(filterSettings);
         when(presenter.createAllTabSettings()).thenReturn(filterSettings);
         when(presenter.createGroupTabSettings()).thenReturn(filterSettings);
         when(presenter.createPersonalTabSettings()).thenReturn(filterSettings);
+    }
+
+    @Test
+    public void testLoadPreferencesRemovingAdminTab() {
+        final MultiGridPreferencesStore pref = new MultiGridPreferencesStore();
+        pref.getGridsId().add(TAB_ALL);
+        pref.getGridsId().add(TAB_GROUP);
+        pref.getGridsId().add(TAB_PERSONAL);
+        pref.getGridsId().add(TAB_ACTIVE);
+        pref.getGridsId().add(TAB_ADMIN);
+
+        view.loadTabsFromPreferences(pref,
+                                     presenter);
+
+        assertFalse(pref.getGridsId().contains(TAB_ADMIN));
+
+        assertTabAdded(TAB_SEARCH,
+                       TAB_ALL,
+                       TAB_GROUP,
+                       TAB_PERSONAL,
+                       TAB_ACTIVE);
+
+        verify(filterPagedTable,
+               never())
+                .addTab(any(ExtendedPagedTable.class),
+                        eq(TAB_ADMIN),
+                        any(Command.class),
+                        eq(false));
     }
 }
