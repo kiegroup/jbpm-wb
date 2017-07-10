@@ -23,18 +23,4 @@ public interface HumanTaskCSS extends CssResource {
     @ClassName("task-completed")
     String taskCompleted();
 
-    @ClassName("task-priority-one")
-    String taskPriorityOne();
-
-    @ClassName("task-priority-two")
-    String taskPriorityTwo();
-
-    @ClassName("task-priority-three")
-    String taskPriorityThree();
-
-    @ClassName("task-priority-four")
-    String taskPriorityFour();
-
-    @ClassName("task-priority-five")
-    String taskPriorityFive();
 }

@@ -17,40 +17,29 @@ package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import javax.enterprise.context.Dependent;
 
-import org.gwtbootstrap3.client.ui.Button;
-import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
+import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_ADMIN_DATASET;
 
 @Dependent
 public class TaskAdminListViewImpl extends AbstractTaskListView<TaskAdminListPresenter> {
 
     private static final String DATA_SET_TASK_LIST_PREFIX = "DataSetTaskAdminGrid";
-    private static final String TAB_ADMIN = DATA_SET_TASK_LIST_PREFIX + "_0";
+    protected static final String TAB_ADMIN = DATA_SET_TASK_LIST_PREFIX + "_0";
 
     @Override
-    public void initDefaultFilters(final GridGlobalPreferences preferences,
-                                   final Button createTabButton) {
-        super.initDefaultFilters(preferences,
-                                 createTabButton);
+    public void initDefaultFilters() {
+        super.initDefaultFilters();
 
-        initFilterTab(presenter.createAdminTabSettings(),
+        initTabFilter(presenter.createAdminTabSettings(),
                       TAB_ADMIN,
                       constants.Task_Admin(),
                       constants.FilterTaskAdmin(),
-                      preferences);
+                      HUMAN_TASKS_WITH_ADMIN_DATASET);
 
-        filterPagedTable.addAddTableButton(createTabButton);
     }
 
     @Override
-    public void resetDefaultFilterTitleAndDescription() {
-        super.resetDefaultFilterTitleAndDescription();
-        saveTabSettings(TAB_ADMIN,
-                        constants.Task_Admin(),
-                        constants.FilterTaskAdmin());
-    }
-
-    @Override
-    public String getDataSetTaskListPrefix() {
+    public String getGridGlobalPreferencesKey() {
         return DATA_SET_TASK_LIST_PREFIX;
     }
+
 }

@@ -42,7 +42,6 @@ public final class ProcessInstanceDataSetConstants {
     public static final String VARIABLE_NAME = "variableId";
     public static final String VARIABLE_VALUE = "value";
     public static final String VARIABLE_ID = "id";
-    public static final String COL_ID_ACTIONS = "Actions";
 
     private ProcessInstanceDataSetConstants() {
     }

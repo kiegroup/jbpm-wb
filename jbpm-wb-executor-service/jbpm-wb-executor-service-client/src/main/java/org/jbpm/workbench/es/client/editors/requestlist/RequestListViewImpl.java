@@ -17,27 +17,22 @@
 package org.jbpm.workbench.es.client.editors.requestlist;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
-import org.gwtbootstrap3.client.ui.Button;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
-import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
-import org.uberfire.mvp.Command;
 
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 
@@ -45,70 +40,39 @@ import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, RequestListPresenter>
         implements RequestListPresenter.RequestListView {
 
-    public static final String COL_ID_ACTIONS = "Actions";
-    public static String REQUEST_LIST_PREFIX = "DS_RequestListGrid";
-    private static final String TAB_CANCELLED = REQUEST_LIST_PREFIX + "_6";
-    private static final String TAB_COMPLETED = REQUEST_LIST_PREFIX + "_5";
-    private static final String TAB_ERROR = REQUEST_LIST_PREFIX + "_4";
-    private static final String TAB_RETRYING = REQUEST_LIST_PREFIX + "_3";
-    private static final String TAB_RUNNING = REQUEST_LIST_PREFIX + "_2";
-    private static final String TAB_QUEUED = REQUEST_LIST_PREFIX + "_1";
-    private static final String TAB_ALL = REQUEST_LIST_PREFIX + "_0";
+    private static final String REQUEST_LIST_PREFIX = "DS_RequestListGrid";
+    protected static final String TAB_CANCELLED = REQUEST_LIST_PREFIX + "_6";
+    protected static final String TAB_COMPLETED = REQUEST_LIST_PREFIX + "_5";
+    protected static final String TAB_ERROR = REQUEST_LIST_PREFIX + "_4";
+    protected static final String TAB_RETRYING = REQUEST_LIST_PREFIX + "_3";
+    protected static final String TAB_RUNNING = REQUEST_LIST_PREFIX + "_2";
+    protected static final String TAB_QUEUED = REQUEST_LIST_PREFIX + "_1";
+    protected static final String TAB_ALL = REQUEST_LIST_PREFIX + "_0";
     private final Constants constants = Constants.INSTANCE;
 
     @Override
-    public void init(final RequestListPresenter presenter) {
-        final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(COLUMN_ID);
-        bannedColumns.add(COLUMN_COMMANDNAME);
-        bannedColumns.add(COL_ID_ACTIONS);
-        final List<String> initColumns = new ArrayList<String>();
-        initColumns.add(COLUMN_ID);
-        initColumns.add(COLUMN_BUSINESSKEY);
-        initColumns.add(COLUMN_COMMANDNAME);
-        initColumns.add(COL_ID_ACTIONS);
+    public List<String> getInitColumns() {
+        return Arrays.asList(COLUMN_ID,
+                             COLUMN_BUSINESSKEY,
+                             COLUMN_COMMANDNAME,
+                             COL_ID_ACTIONS);
+    }
 
-        createTabButton.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                final String key = getValidKeyForAdditionalListGrid(REQUEST_LIST_PREFIX + "_");
+    @Override
+    public List<String> getBannedColumns() {
+        return Arrays.asList(COLUMN_ID,
+                             COLUMN_COMMANDNAME,
+                             COL_ID_ACTIONS);
+    }
 
-                Command addNewGrid = new Command() {
-                    @Override
-                    public void execute() {
+    @Override
+    public String getGridGlobalPreferencesKey() {
+        return REQUEST_LIST_PREFIX;
+    }
 
-                        final ExtendedPagedTable<RequestSummary> extendedPagedTable = createGridInstance(new GridGlobalPreferences(key,
-                                                                                                                                   initColumns,
-                                                                                                                                   bannedColumns),
-                                                                                                         key);
-
-                        extendedPagedTable.setDataProvider(presenter.getDataProvider());
-
-                        filterPagedTable.createNewTab(extendedPagedTable,
-                                                      key,
-                                                      createTabButton,
-                                                      new Command() {
-                                                          @Override
-                                                          public void execute() {
-                                                              currentListGrid = extendedPagedTable;
-                                                              applyFilterOnPresenter(key);
-                                                          }
-                                                      });
-                        applyFilterOnPresenter(key);
-                    }
-                };
-                FilterSettings tableSettings = presenter.createTableSettingsPrototype();
-                tableSettings.setKey(key);
-                dataSetEditorManager.showTableSettingsEditor(filterPagedTable,
-                                                             constants.New_JobList(),
-                                                             tableSettings,
-                                                             addNewGrid);
-            }
-        });
-
-        super.init(presenter,
-                   new GridGlobalPreferences(REQUEST_LIST_PREFIX,
-                                             initColumns,
-                                             bannedColumns));
+    @Override
+    public String getNewFilterPopupTitle() {
+        return constants.New_JobList();
     }
 
     @Override
@@ -198,87 +162,43 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     }
 
     @Override
-    public void initDefaultFilters(final GridGlobalPreferences preferences,
-                                   final Button createTabButton) {
-        super.initDefaultFilters(preferences,
-                                 createTabButton);
+    public void initDefaultFilters() {
+        super.initDefaultFilters();
 
         initTabFilter(presenter.createAllTabSettings(),
                       TAB_ALL,
                       constants.All(),
                       constants.FilterAll(),
-                      preferences);
+                      REQUEST_LIST_DATASET);
         initTabFilter(presenter.createQueuedTabSettings(),
                       TAB_QUEUED,
                       constants.Queued(),
                       constants.FilterQueued(),
-                      preferences);
+                      REQUEST_LIST_DATASET);
         initTabFilter(presenter.createRunningTabSettings(),
                       TAB_RUNNING,
                       constants.Running(),
                       constants.FilterRunning(),
-                      preferences);
+                      REQUEST_LIST_DATASET);
         initTabFilter(presenter.createRetryingTabSettings(),
                       TAB_RETRYING,
                       constants.Retrying(),
                       constants.FilterRetrying(),
-                      preferences);
+                      REQUEST_LIST_DATASET);
         initTabFilter(presenter.createErrorTabSettings(),
                       TAB_ERROR,
                       constants.Error(),
                       constants.FilterError(),
-                      preferences);
+                      REQUEST_LIST_DATASET);
         initTabFilter(presenter.createCompletedTabSettings(),
                       TAB_COMPLETED,
                       constants.Completed(),
                       constants.FilterCompleted(),
-                      preferences);
+                      REQUEST_LIST_DATASET);
         initTabFilter(presenter.createCancelledTabSettings(),
                       TAB_CANCELLED,
                       constants.Cancelled(),
                       constants.FilterCancelled(),
-                      preferences);
-
-        filterPagedTable.addAddTableButton(createTabButton);
-    }
-
-    private void initTabFilter(FilterSettings tableSettings,
-                               final String key,
-                               String tabName,
-                               String tabDesc,
-                               GridGlobalPreferences preferences) {
-        tableSettings.setUUID(REQUEST_LIST_DATASET);
-        tableSettings.setKey(key);
-        tableSettings.setTableName(tabName);
-        tableSettings.setTableDescription(tabDesc);
-
-        addNewTab(preferences,
-                  tableSettings);
-    }
-
-    @Override
-    public void resetDefaultFilterTitleAndDescription() {
-        super.resetDefaultFilterTitleAndDescription();
-        saveTabSettings(TAB_ALL,
-                        constants.All(),
-                        constants.FilterAll());
-        saveTabSettings(TAB_QUEUED,
-                        constants.Queued(),
-                        constants.FilterQueued());
-        saveTabSettings(TAB_RUNNING,
-                        constants.Running(),
-                        constants.FilterRunning());
-        saveTabSettings(TAB_RETRYING,
-                        constants.Retrying(),
-                        constants.FilterRetrying());
-        saveTabSettings(TAB_ERROR,
-                        constants.Error(),
-                        constants.FilterError());
-        saveTabSettings(TAB_COMPLETED,
-                        constants.Completed(),
-                        constants.FilterCompleted());
-        saveTabSettings(TAB_CANCELLED,
-                        constants.Cancelled(),
-                        constants.FilterCancelled());
+                      REQUEST_LIST_DATASET);
     }
 }

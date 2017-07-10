@@ -56,7 +56,7 @@ import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
-import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.NewTaskEvent;
@@ -661,6 +661,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                           constants.Process_Id());
         builder.setColumn(COLUMN_PROCESS_INSTANCE_ID,
                           constants.Process_Instance_Id());
+        builder.setColumn(COLUMN_PROCESS_SESSION_ID,
+                          constants.ProcessSessionId());
         builder.setColumn(COLUMN_STATUS,
                           constants.Status());
         builder.setColumn(COLUMN_TASK_ID,

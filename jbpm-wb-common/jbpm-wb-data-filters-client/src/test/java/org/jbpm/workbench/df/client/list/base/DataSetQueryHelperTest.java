@@ -25,6 +25,7 @@ import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.displayer.client.DataSetHandler;
 import org.jbpm.workbench.df.client.events.DataSetReadyEvent;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

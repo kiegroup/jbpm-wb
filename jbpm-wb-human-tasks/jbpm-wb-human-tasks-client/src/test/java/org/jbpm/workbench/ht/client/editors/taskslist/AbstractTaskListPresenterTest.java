@@ -45,7 +45,7 @@ import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.list.base.DataSetQueryHelper;
+import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
@@ -66,13 +66,12 @@ import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
 import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
-import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.COLUMN_PROCESS_ID;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.eq;
 
 public abstract class AbstractTaskListPresenterTest {
 
@@ -612,5 +611,38 @@ public abstract class AbstractTaskListPresenterTest {
 
         verify(viewMock).hideBusyIndicator();
         verify(presenter).showErrorPopup(Constants.INSTANCE.TaskListCouldNotBeLoaded());
+    }
+
+    @Test
+    public void testStatusSettingsColumns(){
+        final String dataSetId = "dataSetId";
+        FilterSettings settings = getPresenter().createStatusSettings(dataSetId, null);
+
+        assertEquals(dataSetId, settings.getDataSetLookup().getDataSetUUID());
+        getDataSetExpectedColumns().forEach(c -> assertNotNull(settings.getColumnSettings(c)));
+    }
+
+    protected List<String> getDataSetExpectedColumns() {
+        return Arrays.asList(
+                COLUMN_ACTIVATION_TIME,
+                COLUMN_ACTUAL_OWNER,
+                COLUMN_CREATED_BY,
+                COLUMN_CREATED_ON,
+                COLUMN_DEPLOYMENT_ID,
+                COLUMN_DESCRIPTION,
+                COLUMN_DUE_DATE,
+                COLUMN_NAME,
+                COLUMN_PARENT_ID,
+                COLUMN_PRIORITY,
+                COLUMN_PROCESS_ID,
+                COLUMN_PROCESS_INSTANCE_ID,
+                COLUMN_PROCESS_SESSION_ID,
+                COLUMN_STATUS,
+                COLUMN_TASK_ID,
+                COLUMN_WORK_ITEM_ID,
+                COLUMN_LAST_MODIFICATION_DATE,
+                COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
+                COLUMN_PROCESS_INSTANCE_DESCRIPTION
+        );
     }
 }

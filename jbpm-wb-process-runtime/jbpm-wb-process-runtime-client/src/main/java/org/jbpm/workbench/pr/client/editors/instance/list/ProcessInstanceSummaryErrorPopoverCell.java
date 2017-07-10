@@ -112,19 +112,32 @@ public class ProcessInstanceSummaryErrorPopoverCell extends AbstractCell<Process
         var thisCellRef = this;
         $wnd.jQuery(document).ready(function () {
             $wnd.jQuery("[data-toggle='popover']")
-                    .popover({
-                        content: thisCellRef.@org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceSummaryErrorPopoverCell::getPopoverContent().bind(thisCellRef)
-                    })
-                    .off("inserted.bs.popover")
-                    .on("inserted.bs.popover", function () {
-                        $wnd.jQuery("[data-field='" + linkName + "']")
-                                .off("click")
-                                .on("click", onViewErrorsClick);
-                    });
-            function onViewErrorsClick() {
-                var processInstId = $wnd.jQuery(this).attr(procIdAttrName);
-                thisCellRef.@org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceSummaryErrorPopoverCell::openErrorView(Ljava/lang/String;)(processInstId);
-            }
+                .popover({
+                    content: thisCellRef.@org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceSummaryErrorPopoverCell::getPopoverContent().bind(thisCellRef)
+                })
+                .off("mouseenter click")
+                .on("mouseenter", function () {
+                    $wnd.jQuery(this).popover("toggle");
+                })
+                .on("click", function () {
+                    $wnd.jQuery(this).popover("hide");
+                })
+                .off("inserted.bs.popover")
+                .on("inserted.bs.popover", function () {
+                    var jPopover = $wnd.jQuery(this);
+                    $wnd.jQuery("[data-field='" + linkName + "']")
+                        .off("click")
+                        .on("click", function () {
+                            var processInstId = $wnd.jQuery(this).attr(procIdAttrName);
+                            thisCellRef.@org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceSummaryErrorPopoverCell::openErrorView(Ljava/lang/String;)(processInstId);
+                        })
+                        .parent()
+                        .off("mouseleave click")
+                        .on("mouseleave click", function () {
+                            jPopover.popover("hide");
+                        });
+                });
+            
         });
     }-*/;
 }

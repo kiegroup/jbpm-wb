@@ -17,6 +17,7 @@
 package org.jbpm.workbench.es.client.editors.errorlist;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
@@ -40,14 +41,11 @@ import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.BooleanConverter;
 import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateTimeConverter;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.client.util.ExecutionErrorTypeConverter;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
-import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
-import org.uberfire.mvp.Command;
 
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 
@@ -55,9 +53,10 @@ import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionErrorSummary, ExecutionErrorListPresenter>
         implements ExecutionErrorListPresenter.ExecutionErrorListView {
 
-    public static final String TAB_ALL = EXECUTION_ERROR_LIST_PREFIX + "_0";
-    public static final String TAB_ACK = EXECUTION_ERROR_LIST_PREFIX + "_1";
-    public static final String TAB_NEW = EXECUTION_ERROR_LIST_PREFIX + "_2";
+    private static final String EXECUTION_ERROR_LIST_PREFIX = "DS_ExecutionErrorListGrid";
+    protected static final String TAB_ALL = EXECUTION_ERROR_LIST_PREFIX + "_0";
+    protected static final String TAB_ACK = EXECUTION_ERROR_LIST_PREFIX + "_1";
+    protected static final String TAB_NEW = EXECUTION_ERROR_LIST_PREFIX + "_2";
 
     private final Constants constants = Constants.INSTANCE;
 
@@ -74,63 +73,32 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
     BooleanConverter booleanConverter;
 
     @Override
-    public void init(final ExecutionErrorListPresenter presenter) {
-        final List<String> bannedColumns = getBannedColumns();
-        final List<String> initColumns = getInitColumns();
-        createTabButton.addClickHandler((ClickEvent event) -> {
-            final String key = getValidKeyForAdditionalListGrid(EXECUTION_ERROR_LIST_PREFIX + "_");
-
-            Command addNewGrid = () -> {
-
-                final ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable =
-                        createGridInstance(new GridGlobalPreferences(key,
-                                                                     initColumns,
-                                                                     bannedColumns),
-                                           key);
-
-                extendedPagedTable.setDataProvider(presenter.getDataProvider());
-
-                filterPagedTable.createNewTab(extendedPagedTable,
-                                              key,
-                                              createTabButton,
-                                              (() -> {
-                                                  currentListGrid = extendedPagedTable;
-                                                  applyFilterOnPresenter(key);
-                                              }));
-                applyFilterOnPresenter(key);
-            };
-            FilterSettings tableSettings = presenter.createTableSettingsPrototype();
-            tableSettings.setKey(key);
-            dataSetEditorManager.showTableSettingsEditor(filterPagedTable,
-                                                         constants.New_ErrorList(),
-                                                         tableSettings,
-                                                         addNewGrid);
-        });
-
-        super.init(presenter,
-                   new GridGlobalPreferences(EXECUTION_ERROR_LIST_PREFIX,
-                                             initColumns,
-                                             bannedColumns));
+    public List<String> getInitColumns() {
+        return Arrays.asList(COL_ID_SELECT,
+                             COLUMN_ERROR_TYPE,
+                             COLUMN_PROCESS_INST_ID,
+                             COLUMN_ERROR_DATE,
+                             COLUMN_DEPLOYMENT_ID,
+                             COL_ID_ACTIONS);
     }
 
-    protected List<String> getBannedColumns(){
-        final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(COL_ID_SELECT);
-        bannedColumns.add(COLUMN_ERROR_TYPE);
-        bannedColumns.add(COLUMN_PROCESS_INST_ID);
-        bannedColumns.add(COLUMN_ERROR_DATE);
-        bannedColumns.add(COL_ID_ACTIONS);
-        return bannedColumns;
+    @Override
+    public List<String> getBannedColumns() {
+        return Arrays.asList(COL_ID_SELECT,
+                             COLUMN_ERROR_TYPE,
+                             COLUMN_PROCESS_INST_ID,
+                             COLUMN_ERROR_DATE,
+                             COL_ID_ACTIONS);
     }
-    protected List<String> getInitColumns() {
-        final List<String> initColumns = new ArrayList<String>();
-        initColumns.add(COL_ID_SELECT);
-        initColumns.add(COLUMN_ERROR_TYPE);
-        initColumns.add(COLUMN_PROCESS_INST_ID);
-        initColumns.add(COLUMN_ERROR_DATE);
-        initColumns.add(COLUMN_DEPLOYMENT_ID);
-        initColumns.add(COL_ID_ACTIONS);
-        return initColumns;
+
+    @Override
+    public String getGridGlobalPreferencesKey() {
+        return EXECUTION_ERROR_LIST_PREFIX;
+    }
+
+    @Override
+    public String getNewFilterPopupTitle() {
+        return constants.New_ErrorList();
     }
 
     @Override
@@ -215,13 +183,13 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_ACTIVITY_NAME,
                                                           errorSummary -> errorSummary.getActivityName()),
                                          constants.ActivityName()));
-        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_DEPLOYMENT_ID,
-                                                          errorSummary -> errorSummary.getDeploymentId()),
-                                         constants.DeploymentId()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_ERROR_DATE,
                                                           errorSummary ->
                                                                   dateTimeConverter.toWidgetValue(errorSummary.getErrorDate())),
                                          constants.ErrorDate()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_DEPLOYMENT_ID,
+                                                          errorSummary -> errorSummary.getDeploymentId()),
+                                         constants.DeploymentId()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_ERROR_MSG,
                                                           errorSummary -> errorSummary.getErrorMessage()),
                                          constants.Message()));
@@ -279,59 +247,27 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
         return actionsColumn;
     }
 
-    public void initDefaultFilters(GridGlobalPreferences preferences,
-                                   Button createTabButton) {
-
-        super.initDefaultFilters(preferences,
-                                 createTabButton);
-
-        initGenericTabFilter(presenter.createAllTabSettings(),
-                             TAB_ALL,
-                             constants.All(),
-                             constants.FilterAll(),
-                             preferences);
-
-        initGenericTabFilter(presenter.createNewTabSettings(),
-                             TAB_NEW,
-                             constants.New(),
-                             constants.UnacknowledgedErrors(),
-                             preferences);
-
-        initGenericTabFilter(presenter.createAcknowledgedTabSettings(),
-                             TAB_ACK,
-                             constants.Acknowledged(),
-                             constants.AcknowledgedErrors(),
-                             preferences);
-
-        filterPagedTable.addAddTableButton(createTabButton);
-    }
-
-    private void initGenericTabFilter(FilterSettings tableSettings,
-                                      final String key,
-                                      String tabName,
-                                      String tabDesc,
-                                      GridGlobalPreferences preferences) {
-
-        tableSettings.setKey(key);
-        tableSettings.setTableName(tabName);
-        tableSettings.setTableDescription(tabDesc);
-        tableSettings.setUUID(EXECUTION_ERROR_LIST_DATASET);
-
-        addNewTab(preferences,
-                  tableSettings);
-    }
-
     @Override
-    public void resetDefaultFilterTitleAndDescription() {
-        super.resetDefaultFilterTitleAndDescription();
-        saveTabSettings(TAB_NEW,
-                        constants.New(),
-                        constants.UnacknowledgedErrors());
-        saveTabSettings(TAB_ACK,
-                        constants.Acknowledge(),
-                        constants.AcknowledgedErrors());
-        saveTabSettings(TAB_ALL,
-                        constants.All(),
-                        constants.FilterAll());
+    public void initDefaultFilters() {
+
+        super.initDefaultFilters();
+
+        initTabFilter(presenter.createAllTabSettings(),
+                      TAB_ALL,
+                      constants.All(),
+                      constants.FilterAll(),
+                      EXECUTION_ERROR_LIST_DATASET);
+
+        initTabFilter(presenter.createNewTabSettings(),
+                      TAB_NEW,
+                      constants.New(),
+                      constants.UnacknowledgedErrors(),
+                      EXECUTION_ERROR_LIST_DATASET);
+
+        initTabFilter(presenter.createAcknowledgedTabSettings(),
+                      TAB_ACK,
+                      constants.Acknowledged(),
+                      constants.AcknowledgedErrors(),
+                      EXECUTION_ERROR_LIST_DATASET);
     }
 }

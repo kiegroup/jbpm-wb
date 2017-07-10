@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.df.client.list.base;
-
-import com.google.gwt.user.client.ui.Composite;
+package org.jbpm.workbench.df.client.list;
 
 import org.jbpm.workbench.df.client.filter.FilterEditorPopup;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
@@ -29,7 +27,7 @@ import javax.inject.Inject;
 import java.util.HashMap;
 
 @Dependent
-public class DataSetEditorManager extends Composite {
+public class DataSetEditorManager {
 
     public static String FILTER_TABLE_SETTINGS = "tableSettings";
 

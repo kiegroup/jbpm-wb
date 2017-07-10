@@ -79,6 +79,16 @@ public class DataSetAwareSelectTest {
     }
 
     @Test
+    public void testFilterSettingsWithoutKey() {
+        dataSetAwareSelect.setTableKey("key");
+
+        dataSetAwareSelect.onDataSetReady(new DataSetReadyEvent(filterSettings));
+
+        verifyZeroInteractions(dataSetClientServices);
+        verifyZeroInteractions(select);
+    }
+
+    @Test
     public void testEmptyServerTemplate() {
         filterSettings.setKey("key");
         dataSetAwareSelect.setTableKey("key");
