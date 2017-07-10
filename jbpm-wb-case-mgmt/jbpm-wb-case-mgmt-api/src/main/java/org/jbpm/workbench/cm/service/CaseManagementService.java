@@ -62,8 +62,8 @@ public interface CaseManagementService {
     List<CaseCommentSummary> getComments(String serverTemplateId,
                                          String containerId,
                                          String caseId,
-                                         int currentPage,
-                                         int pageSize);
+                                         Integer currentPage,
+                                         Integer pageSize);
 
     void addComment(String serverTemplateId,
                     String containerId,

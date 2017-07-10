@@ -92,7 +92,11 @@ public class RemoteCaseManagementServiceImplTest {
     @Test
     public void testGetCaseDefinitions_singleCaseDefinition() {
         final CaseDefinition definition = createTestDefinition();
-        when(clientMock.getCaseDefinitions(anyInt(), anyInt(), eq(CaseServicesClient.SORT_BY_CASE_DEFINITION_NAME), eq(true))).thenReturn(singletonList(definition));
+        when(clientMock.getCaseDefinitions(anyInt(),
+        		                           anyInt(),
+        		                           eq(CaseServicesClient.SORT_BY_CASE_DEFINITION_NAME),
+        		                           eq(true)))
+        		                .thenReturn(singletonList(definition));
 
         List<CaseDefinitionSummary> definitions = testedService.getCaseDefinitions();
         assertNotNull(definitions);
@@ -488,7 +492,12 @@ public class RemoteCaseManagementServiceImplTest {
     }
 
     private CaseDefinition createTestDefinition() {
-        CaseDefinition definition = CaseDefinition.builder().id(caseDefinitionId).name(caseName).containerId(containerId).roles(Collections.emptyMap()).build();
+        CaseDefinition definition = CaseDefinition.builder()
+                        .id(caseDefinitionId)
+                        .name(caseName)
+                        .containerId(containerId)
+                        .roles(Collections.emptyMap())
+                        .build();
 
         return definition;
     }
