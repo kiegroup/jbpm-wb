@@ -388,7 +388,6 @@ public class RemoteCaseManagementServiceImplTest {
                                                                             caseId,
                                                                             0,
                                                                             10);
-
         assertNotNull(comments);
         assertTrue(comments.isEmpty());
     }
@@ -505,7 +504,8 @@ public class RemoteCaseManagementServiceImplTest {
     private CaseInstance createTestInstance(String caseId) {
         CaseInstance instance = CaseInstance.builder()
                 .caseDescription(caseDescription)
-                .caseId(caseId).caseStatus(1)
+                .caseId(caseId)
+                .caseStatus(1)
                 .containerId(containerId)
                 .build();
 
@@ -522,7 +522,6 @@ public class RemoteCaseManagementServiceImplTest {
 
         return comment;
     }
-
 
     private CaseMilestone createTestMilestone(String caseMilestoneId,
                                               String caseMilestoneName,
@@ -567,15 +566,13 @@ public class RemoteCaseManagementServiceImplTest {
                 .id(stageId)
                 .name(stageName)
                 .status(stageStatus)
-                .build();
-        
+                .build();     
         return stage;
     }
 
     @Test
     public void getCaseActionsTest() {
         final CaseInstance ci = createTestInstance(caseId);
-
         CaseStage stage1 = createTestCaseStage("stage1",
                                                "stage1-name",
                                                CaseStageStatus.ACTIVE.getStatus());
@@ -742,8 +739,7 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void getAdHocActionsTest() {
-        final CaseInstance ci = createTestInstance(caseId);
-        
+        final CaseInstance ci = createTestInstance(caseId);       
         CaseStage stage1 = createTestCaseStage("stage1",
                                                "stage1-name",
                                                CaseStageStatus.ACTIVE.getStatus());

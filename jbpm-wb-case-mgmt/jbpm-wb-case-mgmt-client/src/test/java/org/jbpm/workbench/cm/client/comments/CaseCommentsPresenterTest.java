@@ -75,7 +75,6 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
                                                cis.getCaseId(), 
                                                0, 
                                                presenter.getPageSize())).thenReturn(
-
                 Collections.singletonList(caseComment));
         when(identity.getIdentifier()).thenReturn(author);
 
@@ -143,7 +142,6 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
                                                cis.getCaseId(), 
                                                0, 
                                                presenter.getPageSize())).thenReturn(
-
                 Collections.singletonList(caseComment));
 
         setupCaseInstance(cis,

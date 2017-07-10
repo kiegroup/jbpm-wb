@@ -55,8 +55,7 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
     }
 
     public void setCurrentPage(int i) {
-        this.currentPage  = i;
-        
+        this.currentPage  = i;        
     }
 
     public int getCurrentPage() {
@@ -90,7 +89,11 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
                                     comparing(CaseCommentSummary::getAddedAt).reversed()))
                             .collect(toList()));
                 }
-        ).getComments(serverTemplateId, containerId, caseId, currentPage, PAGE_SIZE);
+        ).getComments(serverTemplateId, 
+                      containerId, 
+                      caseId, 
+                      currentPage, 
+                      PAGE_SIZE);
     }
 
     public void refreshComments() {

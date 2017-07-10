@@ -222,6 +222,4 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter>
     public void loadMoreComments(final @ForEvent("click") MouseEvent event) {
         presenter.loadMoreCaseComments();
     }
-
-
 }

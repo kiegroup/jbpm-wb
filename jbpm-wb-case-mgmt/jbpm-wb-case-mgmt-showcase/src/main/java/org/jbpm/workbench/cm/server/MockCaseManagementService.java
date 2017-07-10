@@ -209,7 +209,6 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
             subList = allComments.subList(offset, offset + pageSize);
         }
         return new ArrayList<CaseCommentSummary>(subList);
-
     }
 
     @Override
