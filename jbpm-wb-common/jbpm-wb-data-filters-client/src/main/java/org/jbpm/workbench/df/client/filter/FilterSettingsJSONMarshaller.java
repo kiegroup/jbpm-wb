@@ -32,17 +32,17 @@ public class FilterSettingsJSONMarshaller {
     private static final String EDIT_ENABLED = "tableEditEnabled";
 
     @Inject
-    protected DisplayerSettingsJSONMarshaller _displayerJsonMarshaller;
+    protected DisplayerSettingsJSONMarshaller displayerSettingsJSONMarshaller;
 
     public FilterSettingsJSONMarshaller() {
     }
 
     public FilterSettingsJSONMarshaller(DisplayerSettingsJSONMarshaller displayerSettingsJSONMarshaller) {
-        this._displayerJsonMarshaller = displayerSettingsJSONMarshaller;
+        this.displayerSettingsJSONMarshaller = displayerSettingsJSONMarshaller;
     }
 
     public String toJsonString(FilterSettings settings) {
-        JsonObject json = _displayerJsonMarshaller.toJsonObject(settings);
+        JsonObject json = displayerSettingsJSONMarshaller.toJsonObject(settings);
         json.put(TABLE_KEY,
                  settings.getKey() != null ? new JsonString(settings.getKey()) : null);
         json.put(TABLE_NAME,
@@ -55,7 +55,7 @@ public class FilterSettingsJSONMarshaller {
     }
 
     public FilterSettings fromJsonString(String jsonString) {
-        DisplayerSettings displayerSettings = _displayerJsonMarshaller.fromJsonString(jsonString);
+        DisplayerSettings displayerSettings = displayerSettingsJSONMarshaller.fromJsonString(jsonString);
         FilterSettings tableSettings = FilterSettings.cloneFrom(displayerSettings);
 
         JsonObject parseResult = Json.parse(jsonString);

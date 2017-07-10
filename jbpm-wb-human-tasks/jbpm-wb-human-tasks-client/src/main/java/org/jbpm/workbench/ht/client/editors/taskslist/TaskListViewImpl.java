@@ -17,75 +17,67 @@ package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import javax.enterprise.context.Dependent;
 
-import org.gwtbootstrap3.client.ui.Button;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
-import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
+
+import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_USER_DATASET;
 
 @Dependent
 public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
 
     private static final String DATA_SET_TASK_LIST_PREFIX = "DataSetTaskListGrid";
-    private static final String TAB_ALL = DATA_SET_TASK_LIST_PREFIX + "_3";
-    private static final String TAB_GROUP = DATA_SET_TASK_LIST_PREFIX + "_2";
-    private static final String TAB_PERSONAL = DATA_SET_TASK_LIST_PREFIX + "_1";
-    private static final String TAB_ACTIVE = DATA_SET_TASK_LIST_PREFIX + "_0";
+    protected static final String TAB_ALL = DATA_SET_TASK_LIST_PREFIX + "_3";
+    protected static final String TAB_GROUP = DATA_SET_TASK_LIST_PREFIX + "_2";
+    protected static final String TAB_PERSONAL = DATA_SET_TASK_LIST_PREFIX + "_1";
+    protected static final String TAB_ACTIVE = DATA_SET_TASK_LIST_PREFIX + "_0";
+    protected static final String TAB_ADMIN = DATA_SET_TASK_LIST_PREFIX + "_4";
 
     @Override
-    public void initDefaultFilters(final GridGlobalPreferences preferences,
-                                   final Button createTabButton) {
-        super.initDefaultFilters(preferences,
-                                 createTabButton);
+    protected void loadTabsFromPreferences(final MultiGridPreferencesStore multiGridPreferencesStore,
+                                           final TaskListPresenter presenter) {
+        //Remove old Admin tab in case still in the user preferences
+        multiGridPreferencesStore.getGridsId().remove(TAB_ADMIN);
+
+        super.loadTabsFromPreferences(multiGridPreferencesStore,
+                                      presenter);
+    }
+
+    @Override
+    public void initDefaultFilters() {
+        super.initDefaultFilters();
 
         //Filter status Active
-        initFilterTab(presenter.createActiveTabSettings(),
+        initTabFilter(presenter.createActiveTabSettings(),
                       TAB_ACTIVE,
                       Constants.INSTANCE.Active(),
                       Constants.INSTANCE.FilterActive(),
-                      preferences);
+                      HUMAN_TASKS_WITH_USER_DATASET);
 
         //Filter status Personal
-        initFilterTab(presenter.createPersonalTabSettings(),
+        initTabFilter(presenter.createPersonalTabSettings(),
                       TAB_PERSONAL,
                       Constants.INSTANCE.Personal(),
                       Constants.INSTANCE.FilterPersonal(),
-                      preferences);
+                      HUMAN_TASKS_WITH_USER_DATASET);
 
         //Filter status Group
-        initFilterTab(presenter.createGroupTabSettings(),
+        initTabFilter(presenter.createGroupTabSettings(),
                       TAB_GROUP,
                       Constants.INSTANCE.Group(),
                       Constants.INSTANCE.FilterGroup(),
-                      preferences);
+                      HUMAN_TASKS_WITH_USER_DATASET);
 
         //Filter status All
-        initFilterTab(presenter.createAllTabSettings(),
+        initTabFilter(presenter.createAllTabSettings(),
                       TAB_ALL,
                       Constants.INSTANCE.All(),
                       Constants.INSTANCE.FilterAll(),
-                      preferences);
+                      HUMAN_TASKS_WITH_USER_DATASET);
 
-        filterPagedTable.addAddTableButton(createTabButton);
     }
 
     @Override
-    public void resetDefaultFilterTitleAndDescription() {
-        super.resetDefaultFilterTitleAndDescription();
-        saveTabSettings(TAB_ACTIVE,
-                        constants.Active(),
-                        constants.FilterActive());
-        saveTabSettings(TAB_PERSONAL,
-                        constants.Personal(),
-                        constants.FilterPersonal());
-        saveTabSettings(TAB_GROUP,
-                        constants.Group(),
-                        constants.FilterGroup());
-        saveTabSettings(TAB_ALL,
-                        constants.All(),
-                        constants.FilterAll());
-    }
-
-    @Override
-    public String getDataSetTaskListPrefix() {
+    public String getGridGlobalPreferencesKey() {
         return DATA_SET_TASK_LIST_PREFIX;
     }
 }

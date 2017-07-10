@@ -15,11 +15,7 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -44,14 +40,11 @@ import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
-import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
-import org.uberfire.mvp.Command;
 
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
@@ -59,9 +52,9 @@ import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessInstanceSummary, ProcessInstanceListPresenter>
         implements ProcessInstanceListPresenter.ProcessInstanceListView {
 
-    public static final String TAB_ACTIVE = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0";
-    public static final String TAB_COMPLETED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1";
-    public static final String TAB_ABORTED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2";
+    protected static final String TAB_ACTIVE = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0";
+    protected static final String TAB_COMPLETED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1";
+    protected static final String TAB_ABORTED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2";
 
     private final Constants constants = Constants.INSTANCE;
 
@@ -69,64 +62,34 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     private ManagedInstance<ProcessInstanceSummaryErrorPopoverCell> popoverCellInstance;
 
     @Override
-    public void init(final ProcessInstanceListPresenter presenter) {
-        final List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(COL_ID_SELECT);
-        bannedColumns.add(COLUMN_PROCESS_INSTANCE_ID);
-        bannedColumns.add(COLUMN_PROCESS_NAME);
-        bannedColumns.add(COLUMN_PROCESS_INSTANCE_DESCRIPTION);
-        bannedColumns.add(COL_ID_ACTIONS);
-        final List<String> initColumns = new ArrayList<String>();
-        initColumns.add(COL_ID_SELECT);
-        initColumns.add(COLUMN_PROCESS_INSTANCE_ID);
-        initColumns.add(COLUMN_PROCESS_NAME);
-        initColumns.add(COLUMN_PROCESS_INSTANCE_DESCRIPTION);
-        initColumns.add(COLUMN_PROCESS_VERSION);
-        initColumns.add(COLUMN_LAST_MODIFICATION_DATE);
-        initColumns.add(COLUMN_ERROR_COUNT);
-        initColumns.add(COL_ID_ACTIONS);
+    public List<String> getInitColumns() {
+        return Arrays.asList(COL_ID_SELECT,
+                             COLUMN_PROCESS_INSTANCE_ID,
+                             COLUMN_PROCESS_NAME,
+                             COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                             COLUMN_PROCESS_VERSION,
+                             COLUMN_LAST_MODIFICATION_DATE,
+                             COLUMN_ERROR_COUNT,
+                             COL_ID_ACTIONS);
+    }
 
-        createTabButton.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                final String key = getValidKeyForAdditionalListGrid(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_");
+    @Override
+    public List<String> getBannedColumns() {
+        return Arrays.asList(COL_ID_SELECT,
+                             COLUMN_PROCESS_INSTANCE_ID,
+                             COLUMN_PROCESS_NAME,
+                             COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                             COL_ID_ACTIONS);
+    }
 
-                Command addNewGrid = new Command() {
-                    @Override
-                    public void execute() {
+    @Override
+    public String getGridGlobalPreferencesKey() {
+        return PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX;
+    }
 
-                        final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable = createGridInstance(new GridGlobalPreferences(key,
-                                                                                                                                           initColumns,
-                                                                                                                                           bannedColumns),
-                                                                                                                 key);
-
-                        extendedPagedTable.setDataProvider(presenter.getDataProvider());
-
-                        filterPagedTable.createNewTab(extendedPagedTable,
-                                                      key,
-                                                      createTabButton,
-                                                      new Command() {
-                                                          @Override
-                                                          public void execute() {
-                                                              currentListGrid = extendedPagedTable;
-                                                              applyFilterOnPresenter(key);
-                                                          }
-                                                      });
-                        applyFilterOnPresenter(key);
-                    }
-                };
-                FilterSettings tableSettings = presenter.createTableSettingsPrototype();
-                tableSettings.setKey(key);
-                dataSetEditorManager.showTableSettingsEditor(filterPagedTable,
-                                                             constants.New_Process_InstanceList(),
-                                                             tableSettings,
-                                                             addNewGrid);
-            }
-        });
-
-        super.init(presenter,
-                   new GridGlobalPreferences(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX,
-                                             initColumns,
-                                             bannedColumns));
+    @Override
+    public String getNewFilterPopupTitle() {
+        return constants.New_Process_InstanceList();
     }
 
     @Override
@@ -410,61 +373,29 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     }
 
     @Override
-    public void initDefaultFilters(final GridGlobalPreferences preferences,
-                                   final Button createTabButton) {
-        super.initDefaultFilters(preferences,
-                                 createTabButton);
+    public void initDefaultFilters() {
+        super.initDefaultFilters();
 
         //Filter status Active
-        initGenericTabFilter(presenter.createActiveTabSettings(),
-                             TAB_ACTIVE,
-                             constants.Active(),
-                             constants.FilterActive(),
-                             preferences);
+        initTabFilter(presenter.createActiveTabSettings(),
+                      TAB_ACTIVE,
+                      constants.Active(),
+                      constants.FilterActive(),
+                      PROCESS_INSTANCE_DATASET);
 
         //Filter status completed
-        initGenericTabFilter(presenter.createCompletedTabSettings(),
-                             TAB_COMPLETED,
-                             constants.Completed(),
-                             constants.FilterCompleted(),
-                             preferences);
+        initTabFilter(presenter.createCompletedTabSettings(),
+                      TAB_COMPLETED,
+                      constants.Completed(),
+                      constants.FilterCompleted(),
+                      PROCESS_INSTANCE_DATASET);
 
         //Filter status aborted
-        initGenericTabFilter(presenter.createAbortedTabSettings(),
-                             TAB_ABORTED,
-                             constants.Aborted(),
-                             constants.FilterAborted(),
-                             preferences);
-
-        filterPagedTable.addAddTableButton(createTabButton);
+        initTabFilter(presenter.createAbortedTabSettings(),
+                      TAB_ABORTED,
+                      constants.Aborted(),
+                      constants.FilterAborted(),
+                      PROCESS_INSTANCE_DATASET);
     }
 
-    private void initGenericTabFilter(FilterSettings tableSettings,
-                                      final String key,
-                                      String tabName,
-                                      String tabDesc,
-                                      GridGlobalPreferences preferences) {
-
-        tableSettings.setKey(key);
-        tableSettings.setTableName(tabName);
-        tableSettings.setTableDescription(tabDesc);
-        tableSettings.setUUID(PROCESS_INSTANCE_DATASET);
-
-        addNewTab(preferences,
-                  tableSettings);
-    }
-
-    @Override
-    public void resetDefaultFilterTitleAndDescription() {
-        super.resetDefaultFilterTitleAndDescription();
-        saveTabSettings(TAB_ACTIVE,
-                        constants.Active(),
-                        constants.FilterActive());
-        saveTabSettings(TAB_COMPLETED,
-                        constants.Completed(),
-                        constants.FilterCompleted());
-        saveTabSettings(TAB_ABORTED,
-                        constants.Aborted(),
-                        constants.FilterAborted());
-    }
 }
