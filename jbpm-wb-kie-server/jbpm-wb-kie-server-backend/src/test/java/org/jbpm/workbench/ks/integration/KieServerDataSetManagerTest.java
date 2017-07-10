@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.event.Event;
 
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
@@ -56,8 +55,6 @@ public class KieServerDataSetManagerTest {
 
     private Event<KieServerDataSetRegistered> event;
 
-    private ManagedExecutorService managedExecutorService;
-
     private KieServicesClient kieClient;
 
     private QueryServicesClient queryClient;
@@ -68,7 +65,6 @@ public class KieServerDataSetManagerTest {
     public void setup() {
         this.dataSetDefRegistry = Mockito.mock(DataSetDefRegistry.class);
         this.kieServerIntegration = Mockito.mock(KieServerIntegration.class);
-        this.managedExecutorService = Mockito.mock(ManagedExecutorService.class);
         this.event = new EventSourceMock<KieServerDataSetRegistered>() {
 
             @Override
@@ -84,16 +80,11 @@ public class KieServerDataSetManagerTest {
         when(kieServerIntegration.getAdminServerClient(anyString())).thenReturn(kieClient);
 
         ExecutorService executorService = Executors.newCachedThreadPool(new DescriptiveThreadFactory());
-        doAnswer(invocationOnMock -> {
-            executorService.execute(invocationOnMock.getArgumentAt(0,
-                                                                   Runnable.class));
-            return null;
-        }).when(managedExecutorService).execute(any(Runnable.class));
 
         this.kieServerDataSetManager = new KieServerDataSetManager(dataSetDefRegistry,
                                                                    kieServerIntegration,
                                                                    event,
-                                                                   managedExecutorService);
+                                                                   executorService);
     }
 
     @Test
