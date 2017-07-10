@@ -210,8 +210,8 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     public List<CaseCommentSummary> getComments(final String serverTemplateId,
                                                 final String containerId,
                                                 final String caseId,
-                                                final int page,
-                                                final int pageSize) {
+                                                final Integer page,
+                                                final Integer pageSize) {
         final List<CaseComment> caseComments = client.getComments(containerId,
                                                                   caseId,
                                                                   page,
@@ -296,8 +296,13 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                                                                caseId,
                                                                0,
                                                                PAGE_SIZE_UNLIMITED);
-
-        return activeNodes.stream().map(s -> new CaseActionNodeInstanceMapper((NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ? userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() : ""), CaseActionStatus.IN_PROGRESS).apply(s)).collect(toList());
+        return activeNodes.stream()
+                .map(s -> new CaseActionNodeInstanceMapper(
+                        (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
+                                userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
+                                ""),
+                         CaseActionStatus.IN_PROGRESS).apply(s))
+                .collect(toList());
     }
 
     public List<NodeInstance> getCaseCompletedNodes(String containerId,

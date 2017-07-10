@@ -92,7 +92,11 @@ public class RemoteCaseManagementServiceImplTest {
     @Test
     public void testGetCaseDefinitions_singleCaseDefinition() {
         final CaseDefinition definition = createTestDefinition();
-        when(clientMock.getCaseDefinitions(anyInt(), anyInt(), eq(CaseServicesClient.SORT_BY_CASE_DEFINITION_NAME), eq(true))).thenReturn(singletonList(definition));
+        when(clientMock.getCaseDefinitions(anyInt(),
+                                           anyInt(),
+                                           eq(CaseServicesClient.SORT_BY_CASE_DEFINITION_NAME),
+                                           eq(true)))
+                .thenReturn(singletonList(definition));
 
         List<CaseDefinitionSummary> definitions = testedService.getCaseDefinitions();
         assertNotNull(definitions);
@@ -488,19 +492,33 @@ public class RemoteCaseManagementServiceImplTest {
     }
 
     private CaseDefinition createTestDefinition() {
-        CaseDefinition definition = CaseDefinition.builder().id(caseDefinitionId).name(caseName).containerId(containerId).roles(Collections.emptyMap()).build();
+        CaseDefinition definition = CaseDefinition.builder()
+                .id(caseDefinitionId)
+                .name(caseName)
+                .containerId(containerId)
+                .roles(Collections.emptyMap())
+                .build();
 
         return definition;
     }
 
     private CaseInstance createTestInstance(String caseId) {
-        CaseInstance instance = CaseInstance.builder().caseDescription(caseDescription).caseId(caseId).caseStatus(1).containerId(containerId).build();
+        CaseInstance instance = CaseInstance.builder()
+                .caseDescription(caseDescription)
+                .caseId(caseId).caseStatus(1)
+                .containerId(containerId)
+                .build();
 
         return instance;
     }
 
     private CaseComment createTestComment() {
-        CaseComment comment = CaseComment.builder().id(commentId).author(author).text(text).addedAt(new Date()).build();
+        CaseComment comment = CaseComment.builder()
+                .id(commentId)
+                .author(author)
+                .text(text)
+                .addedAt(new Date())
+                .build();
 
         return comment;
     }
@@ -625,7 +643,9 @@ public class RemoteCaseManagementServiceImplTest {
                                           anyInt())).thenReturn(Arrays.asList(node3,
                                                                               node4));
 
-        TaskInstance t1 = TaskInstance.builder().actualOwner("Koe").build();
+        TaskInstance t1 = TaskInstance.builder()
+                .actualOwner("Koe")
+                .build();
         when(userTaskServicesClient.findTaskByWorkItemId(node1WorkItemId)).thenReturn(t1);
         when(userTaskServicesClient.findTaskByWorkItemId(node3WorkItemId)).thenReturn(t1);
 

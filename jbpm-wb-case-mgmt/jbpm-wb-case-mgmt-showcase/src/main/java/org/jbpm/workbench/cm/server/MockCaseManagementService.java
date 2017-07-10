@@ -81,7 +81,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
         caseMilestoneList = readJsonValues(CaseMilestoneSummary.class,
                                            CASE_MILESTONES_JSON);
         caseCommentList = readJsonValues(CaseCommentSummary.class,
-                CASE_COMMENTS_JSON);
+                                         CASE_COMMENTS_JSON);
         caseStageList = readJsonValues(CaseStageSummary.class,
                                        CASE_STAGES_JSON);
         caseActionList = readJsonValues(CaseActionSummary.class,
@@ -92,12 +92,16 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
                     caseDefinitionList.size());
     }
 
-    private <T> List<T> readJsonValues(final Class<T> type, final String fileName) {
+    private <T> List<T> readJsonValues(final Class<T> type,
+                                       final String fileName) {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            final CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, type);
-            return mapper.readValue(inputStream, collectionType);
+            final CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class,
+                                                                                                  type);
+            return mapper.readValue(inputStream,
+                                    collectionType);
         } catch (Exception e) {
-            LOGGER.error("Failed to load json data file", e);
+            LOGGER.error("Failed to load json data file", 
+                         e);
             return emptyList();
         }
     }
@@ -154,7 +158,10 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
 
     @Override
     public List<CaseInstanceSummary> getCaseInstances(final CaseInstanceSearchRequest request) {
-        return caseInstanceList.stream().filter(c -> c.getStatus().equals(request.getStatus())).sorted(getCaseInstanceSummaryComparator(request)).collect(toList());
+        return caseInstanceList.stream()
+                .filter(c -> c.getStatus().equals(request.getStatus()))
+                .sorted(getCaseInstanceSummaryComparator(request))
+                .collect(toList());
     }
 
     @Override
@@ -184,8 +191,8 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     public List<CaseCommentSummary> getComments(final String serverTemplateId, 
                                                 final String containerId, 
                                                 final String caseId, 
-                                                final int page, 
-                                                final int pageSize) {
+                                                final Integer page, 
+                                                final Integer pageSize) {
 
         List<CaseCommentSummary> allComments = caseCommentMap.get(caseId);
         List<CaseCommentSummary> subList = new ArrayList<>();
