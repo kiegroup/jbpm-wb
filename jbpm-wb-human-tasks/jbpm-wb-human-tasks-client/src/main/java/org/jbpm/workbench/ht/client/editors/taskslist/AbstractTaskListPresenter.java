@@ -661,6 +661,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                           constants.Process_Id());
         builder.setColumn(COLUMN_PROCESS_INSTANCE_ID,
                           constants.Process_Instance_Id());
+        builder.setColumn(COLUMN_PROCESS_SESSION_ID,
+                          constants.ProcessSessionId());
         builder.setColumn(COLUMN_STATUS,
                           constants.Status());
         builder.setColumn(COLUMN_TASK_ID,
