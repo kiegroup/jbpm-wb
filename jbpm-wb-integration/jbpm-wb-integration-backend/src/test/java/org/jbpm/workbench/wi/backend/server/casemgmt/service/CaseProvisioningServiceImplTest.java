@@ -18,7 +18,6 @@ package org.jbpm.workbench.wi.backend.server.casemgmt.service;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.enterprise.concurrent.ManagedExecutorService;
 
 import org.guvnor.ala.pipeline.Input;
 import org.guvnor.ala.pipeline.Pipeline;
@@ -53,7 +52,7 @@ public class CaseProvisioningServiceImplTest {
     private CaseProvisioningSettings settings;
 
     @Mock
-    private ManagedExecutorService managedExecutorService;
+    private ExecutorService executorService;
 
     @InjectMocks
     private CaseProvisioningServiceImpl service;
@@ -65,7 +64,7 @@ public class CaseProvisioningServiceImplTest {
             executorService.execute(invocationOnMock.getArgumentAt(0,
                                                                    Runnable.class));
             return null;
-        }).when(managedExecutorService).execute(any(Runnable.class));
+        }).when(this.executorService).execute(any(Runnable.class));
     }
 
     @Test

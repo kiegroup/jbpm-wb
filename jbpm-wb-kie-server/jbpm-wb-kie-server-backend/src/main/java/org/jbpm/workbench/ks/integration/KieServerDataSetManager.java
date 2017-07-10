@@ -19,8 +19,8 @@ package org.jbpm.workbench.ks.integration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
-import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -38,13 +38,14 @@ import org.kie.server.common.rest.KieServerHttpRequestException;
 import org.kie.server.controller.api.model.runtime.ServerInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.commons.concurrent.Managed;
 
 @ApplicationScoped
 public class KieServerDataSetManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KieServerDataSetManager.class);
 
-    private ManagedExecutorService managedExecutorService;
+    private ExecutorService executorService;
 
     private DataSetDefRegistry dataSetDefRegistry;
 
@@ -56,11 +57,11 @@ public class KieServerDataSetManager {
     public KieServerDataSetManager(DataSetDefRegistry dataSetDefRegistry,
                                    KieServerIntegration kieServerIntegration,
                                    Event<KieServerDataSetRegistered> event,
-                                   ManagedExecutorService managedExecutorService) {
+                                   @Managed ExecutorService executorService) {
         this.dataSetDefRegistry = dataSetDefRegistry;
         this.kieServerIntegration = kieServerIntegration;
         this.event = event;
-        this.managedExecutorService = managedExecutorService;
+        this.executorService = executorService;
     }
 
     public void registerInKieServer(@Observes final ServerInstanceRegistered serverInstanceRegistered) {
@@ -79,7 +80,7 @@ public class KieServerDataSetManager {
             return;
         }
 
-        this.managedExecutorService.execute(() -> {
+        this.executorService.execute(() -> {
             try {
                 LOGGER.debug("Registering data set definitions on connected server instance '{}'",
                              serverInstanceId);
