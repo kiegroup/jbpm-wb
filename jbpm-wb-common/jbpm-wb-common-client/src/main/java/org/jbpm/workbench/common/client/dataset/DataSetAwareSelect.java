@@ -68,7 +68,7 @@ public class DataSetAwareSelect {
 
     public void onDataSetReady(@Observes DataSetReadyEvent event) {
         final FilterSettings filterSettings = event.getFilterSettings();
-        if (filterSettings.getKey().equals(this.tableKey) == false) {
+        if (this.tableKey.equals(filterSettings.getKey()) == false) {
             return;
         }
 
