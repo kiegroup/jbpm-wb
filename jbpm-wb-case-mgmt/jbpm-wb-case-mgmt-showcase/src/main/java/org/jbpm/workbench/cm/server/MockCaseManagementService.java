@@ -81,7 +81,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
         caseMilestoneList = readJsonValues(CaseMilestoneSummary.class,
                                            CASE_MILESTONES_JSON);
         caseCommentList = readJsonValues(CaseCommentSummary.class,
-                CASE_COMMENTS_JSON);
+                                         CASE_COMMENTS_JSON);
         caseStageList = readJsonValues(CaseStageSummary.class,
                                        CASE_STAGES_JSON);
         caseActionList = readJsonValues(CaseActionSummary.class,
@@ -158,7 +158,10 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
 
     @Override
     public List<CaseInstanceSummary> getCaseInstances(final CaseInstanceSearchRequest request) {
-        return caseInstanceList.stream().filter(c -> c.getStatus().equals(request.getStatus())).sorted(getCaseInstanceSummaryComparator(request)).collect(toList());
+        return caseInstanceList.stream()
+                .filter(c -> c.getStatus().equals(request.getStatus()))
+                .sorted(getCaseInstanceSummaryComparator(request))
+                .collect(toList());
     }
 
     @Override
