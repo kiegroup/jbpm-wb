@@ -209,11 +209,13 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     @Override
     public List<CaseCommentSummary> getComments(final String serverTemplateId,
                                                 final String containerId,
-                                                final String caseId) {
+                                                final String caseId,
+                                                final Integer page,
+                                                final Integer pageSize) {
         final List<CaseComment> caseComments = client.getComments(containerId,
                                                                   caseId,
-                                                                  0,
-                                                                  PAGE_SIZE_UNLIMITED);
+                                                                  page,
+                                                                  pageSize);
         return caseComments.stream().map(new CaseCommentMapper()).collect(toList());
     }
 
@@ -293,8 +295,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                                                                caseId,
                                                                0,
                                                                PAGE_SIZE_UNLIMITED);
-
-        return activeNodes.stream()
+        return activeNodes.stream()             
                 .map(s -> new CaseActionNodeInstanceMapper(
                         (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
                                 userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
