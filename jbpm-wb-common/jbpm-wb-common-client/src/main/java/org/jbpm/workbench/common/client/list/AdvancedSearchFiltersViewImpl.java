@@ -17,9 +17,9 @@
 package org.jbpm.workbench.common.client.list;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -40,11 +40,14 @@ import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.client.util.DateRange;
 import org.uberfire.client.views.pfly.widgets.DateRangePicker;
 import org.uberfire.client.views.pfly.widgets.DateRangePickerOptions;
+import org.uberfire.client.views.pfly.widgets.JQueryProducer;
 import org.uberfire.client.views.pfly.widgets.Moment;
+import org.uberfire.client.views.pfly.widgets.Popover;
 import org.uberfire.client.views.pfly.widgets.Select;
 
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
 import static org.jboss.errai.common.client.dom.Window.getDocument;
+import static org.jbpm.workbench.common.client.list.DatePickerRange.getDatePickerRangeFromLabel;
 import static org.uberfire.client.views.pfly.widgets.Moment.Builder.moment;
 
 @Dependent
@@ -120,7 +123,8 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     @Inject
     private ManagedInstance<DataSetAwareSelect> dataSetSelectProvider;
 
-    private Map<String, Moment[]> datePickerRanges = new HashMap<>();
+    @Inject
+    private JQueryProducer.JQuery<Popover> jQueryPopover;
 
     @PostConstruct
     public void init() {
@@ -139,33 +143,8 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
 
         filtersInputHelp.setAttribute("data-content",
                                       getInputStringHelpHtml());
-        popover(filtersInputHelp);
 
-        datePickerRanges.put(constants.LastHour(),
-                             new Moment[]{
-                                     moment().subtract(1,
-                                                       "hours"),
-                                     moment().endOf("day")});
-        datePickerRanges.put(constants.Today(),
-                             new Moment[]{
-                                     moment().startOf("day"),
-                                     moment().endOf("day")});
-
-        datePickerRanges.put(constants.LastHours(24),
-                             new Moment[]{
-                                     moment().subtract(24,
-                                                       "hours"),
-                                     moment().endOf("day")});
-        datePickerRanges.put(constants.LastDays(7),
-                             new Moment[]{
-                                     moment().subtract(7,
-                                                       "days").startOf("day"),
-                                     moment().endOf("day")});
-        datePickerRanges.put(constants.LastDays(30),
-                             new Moment[]{
-                                     moment().subtract(30,
-                                                       "days").startOf("day"),
-                                     moment().endOf("day")});
+        jQueryPopover.wrap(filtersInputHelp).popover();
     }
 
     private String getInputStringHelpHtml() {
@@ -252,16 +231,6 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                     removeCallback);
     }
 
-    private String getSelectedRangeLabel(final Moment start,
-                                         final Moment end) {
-        return datePickerRanges.entrySet()
-                .stream()
-                .filter(e -> e.getValue()[0].isSame(start) && e.getValue()[1].isSame(end))
-                .findFirst()
-                .map(e -> e.getKey())
-                .orElse(constants.Custom());
-    }
-
     @Override
     public void addDateRangeFilter(final String label,
                                    final String placeholder,
@@ -278,12 +247,11 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                               null);
 
         dateRangePicker.addApplyListener((e, p) -> {
-            final String rangeLabel = getSelectedRangeLabel(p.getStartDate(),
-                                                            p.getEndDate());
+            final Optional<DatePickerRange> datePickerRange = getDatePickerRangeFromLabel(p.getChosenLabel());
             onDateRangeValueChange(label,
-                                   rangeLabel,
-                                   p.getStartDate(),
-                                   p.getEndDate(),
+                                   datePickerRange.isPresent() ? datePickerRange.get().getLabel() : constants.Custom(),
+                                   datePickerRange.isPresent() ? datePickerRange.get().getStartDate() : p.getStartDate(),
+                                   datePickerRange.isPresent() ? datePickerRange.get().getEndDate() : p.getEndDate(),
                                    addCallback,
                                    removeCallback);
         });
@@ -316,9 +284,11 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
         options.setTimePicker(true);
         options.setTimePickerIncrement(30);
         options.setMaxDate(moment().endOf("day"));
-        datePickerRanges.forEach((key, moments) -> options.addRange(key,
-                                                                    moments[0],
-                                                                    moments[1]));
+        for (DatePickerRange range : DatePickerRange.values()) {
+            options.addRange(range.getLabel(),
+                             range.getStartDate(),
+                             range.getEndDate().endOf("day"));
+        }
         return options;
     }
 
@@ -329,8 +299,9 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                           final Consumer<DateRange> addCallback,
                                           final Consumer<DateRange> removeCallback) {
 
-        final DateRange dateRange = new DateRange(fromDate.asDate(),
-                                                  toDate.asDate());
+        final DateRange dateRange = new DateRange(fromDate.milliseconds(0).asDate(),
+                                                  toDate.milliseconds(0).asDate());
+
         final String hint = constants.From() + ": " + fromDate.format("lll") + "<br>" + constants.To() + ": " + toDate.format("lll");
         addActiveFilter(label,
                         selectedLabel,
@@ -515,7 +486,4 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
         activeFiltersList.getModel().clear();
     }
 
-    protected native void popover(final HTMLElement e) /*-{
-        $wnd.jQuery(e).popover();
-    }-*/;
 }

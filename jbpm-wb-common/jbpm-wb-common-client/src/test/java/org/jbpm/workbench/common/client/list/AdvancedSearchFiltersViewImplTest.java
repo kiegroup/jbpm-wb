@@ -65,9 +65,11 @@ public class AdvancedSearchFiltersViewImplTest {
         final String label = "label";
         final String selectedLabel = "selectedLabel";
         final Moment startMoment = mock(Moment.class);
+        when(startMoment.milliseconds(anyInt())).thenReturn(startMoment);
         final Date startDate = new Date();
         when(startMoment.asDate()).thenReturn(startDate);
         final Moment endMoment = mock(Moment.class);
+        when(endMoment.milliseconds(anyInt())).thenReturn(endMoment);
         final Date endDate = new Date();
         when(endMoment.asDate()).thenReturn(endDate);
 
