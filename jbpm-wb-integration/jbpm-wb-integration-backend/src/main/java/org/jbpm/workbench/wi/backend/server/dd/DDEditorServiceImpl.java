@@ -22,6 +22,7 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.lang.model.SourceVersion;
 
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.guvnor.common.services.backend.util.CommentedOptionFactory;
@@ -41,6 +42,9 @@ import org.kie.internal.runtime.conf.ObjectModel;
 import org.kie.internal.runtime.conf.PersistenceMode;
 import org.kie.internal.runtime.conf.RuntimeStrategy;
 import org.kie.workbench.common.services.backend.service.KieService;
+import org.mvel2.CompileException;
+import org.mvel2.MVEL;
+import org.mvel2.ParserContext;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
@@ -131,8 +135,20 @@ public class DDEditorServiceImpl
                                             DeploymentDescriptorModel content) {
         final List<ValidationMessage> validationMessages = new ArrayList<ValidationMessage>();
         try {
-            unmarshal(path,
-                      content).toXml();
+            DeploymentDescriptor dd = unmarshal(path, content);
+
+            // validate the content of the descriptor
+
+            validationMessages.addAll(validateObjectModels(path, dd.getConfiguration()));
+            validationMessages.addAll(validateObjectModels(path, dd.getEnvironmentEntries()));
+            validationMessages.addAll(validateObjectModels(path, dd.getEventListeners()));
+            validationMessages.addAll(validateObjectModels(path, dd.getGlobals()));
+            validationMessages.addAll(validateObjectModels(path, dd.getMarshallingStrategies()));
+            validationMessages.addAll(validateObjectModels(path, dd.getTaskEventListeners()));
+            validationMessages.addAll(validateObjectModels(path, dd.getWorkItemHandlers()));
+
+            // validate its structure
+            dd.toXml();
         } catch (Exception e) {
             final ValidationMessage msg = new ValidationMessage();
             msg.setPath(path);
@@ -156,6 +172,65 @@ public class DDEditorServiceImpl
     }
 
     // helper methods
+
+    protected List<ValidationMessage> validateObjectModels(Path path, List<? extends ObjectModel> objectModels) {
+
+        final List<ValidationMessage> validationMessages = new ArrayList<ValidationMessage>();
+
+        objectModels.forEach(model -> {
+
+            String identifier = model.getIdentifier();
+
+            if (identifier == null || identifier.isEmpty()) {
+                validationMessages.add(newMessage(path, "Identifier cannot be empty for " + model.getIdentifier(), Level.ERROR));
+            }
+
+            String resolver = model.getResolver();
+            if (resolver == null) {
+                validationMessages.add(newMessage(path, "No resolver selected for " + model.getIdentifier(), Level.ERROR));
+            }
+            else if (resolver.equalsIgnoreCase(ItemObjectModel.MVEL_RESOLVER)) {
+                try {
+                    ParserContext parserContext = new ParserContext();
+                    parserContext.setStrictTypeEnforcement( true );
+                    parserContext.setStrongTyping( true );
+                    MVEL.compileExpression(identifier, parserContext);
+                } catch (CompileException e) {
+                    StringBuilder text = new StringBuilder();
+                    text.append("Could not compile mvel expression '" + model.getIdentifier() +"'.")
+                    .append(" this can be due to invalid syntax of missing classes")
+                    .append("-")
+                    .append(e.getMessage());
+                    validationMessages.add(newMessage(path, text.toString(), Level.WARNING));
+                }
+            } else if (resolver.equalsIgnoreCase(ItemObjectModel.REFLECTION_RESOLVER)) {
+                if (!SourceVersion.isName(identifier)) {
+                    validationMessages.add(newMessage(path, "Identifier is not valid Java class which is required by reflection resolver " + model.getIdentifier(), Level.ERROR));
+                }
+            } else {
+                validationMessages.add(newMessage(path, "Not valid resolver selected for " + model.getIdentifier(), Level.ERROR));
+            }
+
+
+            if (model instanceof NamedObjectModel) {
+                String name = ((NamedObjectModel) model).getName();
+                if (name == null || name.isEmpty()) {
+                    validationMessages.add(newMessage(path, "Name cannot be empty for " + model.getIdentifier(), Level.ERROR));
+                }
+            }
+        });
+
+        return validationMessages;
+    }
+
+    protected ValidationMessage newMessage(Path path, String text, Level level) {
+        final ValidationMessage msg = new ValidationMessage();
+        msg.setPath(path);
+        msg.setLevel(level);
+        msg.setText(text);
+
+        return msg;
+    }
 
     protected DeploymentDescriptorModel marshal(DeploymentDescriptor originDD) {
         DeploymentDescriptorModel ddModel = new DeploymentDescriptorModel();
