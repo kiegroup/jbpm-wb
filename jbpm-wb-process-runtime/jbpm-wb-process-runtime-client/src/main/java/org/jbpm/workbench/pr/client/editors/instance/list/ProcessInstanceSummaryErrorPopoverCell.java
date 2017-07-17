@@ -36,21 +36,22 @@ import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 public class ProcessInstanceSummaryErrorPopoverCell extends AbstractCell<ProcessInstanceSummary> implements IsElement {
 
     private static final Constants I18N = Constants.INSTANCE;
-    private static final String VIEW_ERROR_LINK_NAME = "viewErrAnchor";
+    private static final String POPOVER_NAME = "pisepc-popover";
+    private static final String VIEW_ERROR_LINK_NAME = "pisepc-view-err-anchor";
     private static final String PROCESS_INSTANCE_ATTRIBUTE = "data-jbpm-processInstanceId";
     private static final String ERROR_PRESENT_STYLE = "error-present";
     private static final String LINK_AVAILABLE_STYLE = "link-available";
 
     @Inject
-    @DataField("popover")
+    @DataField(POPOVER_NAME)
     private Anchor popover;
 
     @Inject
-    @DataField("popoverContent")
+    @DataField("pisepc-popover-content")
     private Span popoverContent;
 
     @Inject
-    @DataField("contentErrCount")
+    @DataField("pisepc-content-err-count")
     private Span contentErrCount;
 
     @Inject
@@ -89,7 +90,8 @@ public class ProcessInstanceSummaryErrorPopoverCell extends AbstractCell<Process
             popoverClasses.add(LINK_AVAILABLE_STYLE);
             popover.setAttribute("data-toggle",
                                  "popover");
-            Scheduler.get().scheduleDeferred(() -> initPopovers(VIEW_ERROR_LINK_NAME,
+            Scheduler.get().scheduleDeferred(() -> initPopovers(POPOVER_NAME,
+                                                                VIEW_ERROR_LINK_NAME,
                                                                 PROCESS_INSTANCE_ATTRIBUTE));
         } else {
             popover.removeAttribute("data-toggle");
@@ -107,11 +109,12 @@ public class ProcessInstanceSummaryErrorPopoverCell extends AbstractCell<Process
         return popoverContent.getInnerHTML();
     }
 
-    private native void initPopovers(String linkName,
+    private native void initPopovers(String popoverName,
+                                     String linkName,
                                      String procIdAttrName) /*-{
         var thisCellRef = this;
         $wnd.jQuery(document).ready(function () {
-            $wnd.jQuery("[data-toggle='popover']")
+            $wnd.jQuery("[data-field='" + popoverName + "'][data-toggle='popover']")
                 .popover({
                     content: thisCellRef.@org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceSummaryErrorPopoverCell::getPopoverContent().bind(thisCellRef)
                 })
