@@ -4,10 +4,14 @@
   "model": {
     "processId": "invoices",
     "processName": "invoices",
-    "variables": [
+    "properties": [
       {
         "name": "invoice",
-        "type": "org.jbpm.workbench.forms.display.backend.provider.model.Invoice"
+        "typeInfo": {
+          "type": "OBJECT",
+          "className": "org.jbpm.workbench.forms.display.backend.provider.model.Invoice",
+          "multiple": false
+        }
       }
     ],
     "formModelType": "org.kie.workbench.common.forms.jbpm.model.authoring.process.BusinessProcessFormModel"

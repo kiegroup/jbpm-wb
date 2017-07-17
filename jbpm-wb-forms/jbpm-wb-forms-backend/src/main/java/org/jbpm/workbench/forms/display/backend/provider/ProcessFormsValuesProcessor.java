@@ -16,21 +16,23 @@
 
 package org.jbpm.workbench.forms.display.backend.provider;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jbpm.workbench.forms.service.providing.ProcessRenderingSettings;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContext;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
-import org.kie.workbench.common.forms.jbpm.model.authoring.JBPMVariable;
 import org.kie.workbench.common.forms.jbpm.model.authoring.process.BusinessProcessFormModel;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
+import org.kie.workbench.common.forms.jbpm.service.bpmn.util.BPMNVariableUtils;
 import org.kie.workbench.common.forms.model.FormDefinition;
+import org.kie.workbench.common.forms.model.ModelProperty;
 import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
+import org.kie.workbench.common.forms.service.backend.util.ModelPropertiesGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +63,7 @@ public class ProcessFormsValuesProcessor extends KieWorkbenchFormsValuesProcesso
         if (isValid(form)) {
             BusinessProcessFormModel model = (BusinessProcessFormModel) form.getModel();
 
-            values.entrySet().stream().allMatch(entry -> model.getVariables().stream().filter(variable -> variable.getName().equals(
+            values.entrySet().stream().allMatch(entry -> model.getProperties().stream().filter(variable -> variable.getName().equals(
                     entry.getKey())).findFirst().isPresent());
             return values;
         }
@@ -81,14 +83,13 @@ public class ProcessFormsValuesProcessor extends KieWorkbenchFormsValuesProcesso
 
     @Override
     protected Collection<FormDefinition> generateDefaultFormsForContext(ProcessRenderingSettings settings) {
-        List<JBPMVariable> variables = new ArrayList<>();
-        settings.getProcessData().forEach((name, type) -> {
-            variables.add(new JBPMVariable(name,
-                                           type));
-        });
+
+        List<ModelProperty> properties = settings.getProcessData().entrySet().stream().map(entry -> ModelPropertiesGenerator.createModelProperty(entry.getKey(),
+                                                                                                                                                 BPMNVariableUtils.getRealTypeForInput(entry.getValue()),
+                                                                                                                                                 settings.getMarshallerContext().getClassloader())).collect(Collectors.toList());
         BusinessProcessFormModel formModel = new BusinessProcessFormModel(settings.getProcess().getId(),
                                                                           settings.getProcess().getName(),
-                                                                          variables);
+                                                                          properties);
 
         return dynamicBPMNFormGenerator.generateProcessForms(formModel,
                                                              settings.getMarshallerContext().getClassloader());
