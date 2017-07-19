@@ -37,6 +37,7 @@ import org.guvnor.ala.registry.local.InMemoryRuntimeRegistry;
 import org.guvnor.ala.wildfly.access.WildflyAccessInterface;
 import org.guvnor.ala.wildfly.access.impl.WildflyAccessInterfaceImpl;
 import org.guvnor.ala.wildfly.config.WildflyProviderConfig;
+import org.guvnor.ala.wildfly.config.WildflyRuntimeConfiguration;
 import org.guvnor.ala.wildfly.config.impl.ContextAwareWildflyRuntimeExecConfig;
 import org.guvnor.ala.wildfly.executor.WildflyProviderConfigExecutor;
 import org.guvnor.ala.wildfly.executor.WildflyRuntimeExecExecutor;
@@ -93,15 +94,17 @@ public class CaseProvisioningServiceImpl implements CaseProvisioningService {
         final Pipeline pipeline;
 
         final Input input = new Input();
-        input.put("wildfly-user",
+        input.put(WildflyProviderConfig.WILDFLY_USER,
                   settings.getUsername());
-        input.put("wildfly-password",
+        input.put(WildflyProviderConfig.WILDFLY_PASSWORD,
                   settings.getPassword());
-        input.put("host",
+        input.put(WildflyProviderConfig.HOST,
                   settings.getHost());
-        input.put("management-port",
+        input.put(WildflyProviderConfig.MANAGEMENT_PORT,
                   settings.getManagementPort());
-        input.put("redeploy",
+        input.put(WildflyProviderConfig.PROVIDER_NAME,
+                  "WildFly");
+        input.put(WildflyRuntimeConfiguration.REDEPLOY_STRATEGY,
                   "none");
 
         if (settings.isDeployFromLocalPath()) {
@@ -120,7 +123,7 @@ public class CaseProvisioningServiceImpl implements CaseProvisioningService {
                     .andThen(runtimeExec)
                     .buildAs(PIPELINE_NAME);
 
-            input.put("war-path",
+            input.put(WildflyRuntimeConfiguration.WAR_PATH,
                       settings.getPath());
         } else {
             final Stage<Input, BinaryConfig> mavenConfig = config("Maven Artifact",
