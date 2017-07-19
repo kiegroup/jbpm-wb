@@ -246,8 +246,12 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
     }
 
     protected void makeMenuBar() {
+        if (canUpdateProject()) {
+            fileMenuBuilder
+                    .addSave(versionRecordManager.newSaveMenuItem(() -> onSave()));
+        }
+
         fileMenuBuilder
-                .addSave(versionRecordManager.newSaveMenuItem(() -> onSave()))
                 .addValidate(onValidate())
                 .addNewTopLevelMenu(versionRecordManager.buildMenu());
     }

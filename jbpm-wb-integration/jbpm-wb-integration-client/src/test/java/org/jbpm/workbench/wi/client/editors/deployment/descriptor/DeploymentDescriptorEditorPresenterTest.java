@@ -16,24 +16,48 @@
 package org.jbpm.workbench.wi.client.editors.deployment.descriptor;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.guvnor.common.services.project.client.security.ProjectController;
+import org.guvnor.common.services.project.context.ProjectContext;
+import org.guvnor.common.services.project.model.Project;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.internal.runtime.conf.RuntimeStrategy;
+import org.kie.workbench.common.widgets.client.menu.FileMenuBuilderImpl;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorWrapperView;
 import org.kie.workbench.common.widgets.metadata.client.widget.OverviewWidgetPresenter;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.ext.editor.commons.client.history.VersionRecordManager;
+import org.uberfire.ext.editor.commons.client.menu.BasicFileMenuBuilder;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.workbench.model.menu.MenuItem;
 
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class DeploymentDescriptorEditorPresenterTest {
+
+    @Mock
+    protected BasicFileMenuBuilder menuBuilder;
+
+    @Mock
+    protected VersionRecordManager versionRecordManager;
+
+    @Spy
+    @InjectMocks
+    protected FileMenuBuilderImpl fileMenuBuilder;
+
+    @Mock
+    protected ProjectController projectController;
+
+    @Mock
+    protected ProjectContext workbenchContext;
 
     @Mock
     DeploymentDescriptorViewImpl view;
@@ -56,10 +80,10 @@ public class DeploymentDescriptorEditorPresenterTest {
                 overviewWidget = mock(OverviewWidgetPresenter.class);
                 versionRecordManager = mock(VersionRecordManager.class);
                 concurrentUpdateSessionInfo = null;
-            }
-
-            protected void makeMenuBar() {
-
+                fileMenuBuilder = DeploymentDescriptorEditorPresenterTest.this.fileMenuBuilder;
+                projectController = DeploymentDescriptorEditorPresenterTest.this.projectController;
+                workbenchContext = DeploymentDescriptorEditorPresenterTest.this.workbenchContext;
+                versionRecordManager = DeploymentDescriptorEditorPresenterTest.this.versionRecordManager;
             }
 
             protected void addSourcePage() {
@@ -84,5 +108,26 @@ public class DeploymentDescriptorEditorPresenterTest {
         verify(view,
                times(3)).addAuditMode(anyString(),
                                       anyString());
+    }
+
+    @Test
+    public void testMakeMenuBar() {
+        doReturn(mock(Project.class)).when(workbenchContext).getActiveProject();
+        doReturn(true).when(projectController).canUpdateProject(any());
+
+        presenter.makeMenuBar();
+
+        verify(fileMenuBuilder).addSave(any(MenuItem.class));
+    }
+
+    @Test
+    public void testMakeMenuBarWithoutUpdateProjectPermission() {
+        doReturn(mock(Project.class)).when(workbenchContext).getActiveProject();
+        doReturn(false).when(projectController).canUpdateProject(any());
+
+        presenter.makeMenuBar();
+
+        verify(fileMenuBuilder,
+               never()).addSave(any(MenuItem.class));
     }
 }
