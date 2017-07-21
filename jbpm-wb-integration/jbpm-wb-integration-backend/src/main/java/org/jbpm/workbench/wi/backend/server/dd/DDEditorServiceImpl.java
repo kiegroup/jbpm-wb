@@ -18,6 +18,7 @@ package org.jbpm.workbench.wi.backend.server.dd;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -35,6 +36,7 @@ import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.model.Parameter;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
+import org.jbpm.workbench.wi.dd.type.DDResourceTypeDefinition;
 import org.kie.internal.runtime.conf.AuditMode;
 import org.kie.internal.runtime.conf.DeploymentDescriptor;
 import org.kie.internal.runtime.conf.NamedObjectModel;
@@ -65,6 +67,9 @@ public class DDEditorServiceImpl
 
     @Inject
     private CommentedOptionFactory commentedOptionFactory;
+
+    @Inject
+    private DDResourceTypeDefinition resourceTypeDefinition;
 
     @Override
     public DeploymentDescriptorModel load(Path path) {
@@ -443,6 +448,23 @@ public class DDEditorServiceImpl
             String xmlDescriptor = dd.toXml();
             ioService.write(converted,
                             xmlDescriptor);
+        }
+    }
+
+    @Override
+    public boolean accepts(Path path) {
+        return this.resourceTypeDefinition.accept(path);
+    }
+
+    @Override
+    public List<ValidationMessage> validate(Path path) {
+        try {
+            InputStream input = ioService.newInputStream(Paths.convert(path));
+            DeploymentDescriptorModel ddModel = marshal(DeploymentDescriptorIO.fromXml(input));
+
+            return validate(path, ddModel);
+        } catch (Exception e) {
+            return Arrays.asList(newMessage(path, e.getMessage(), Level.ERROR));
         }
     }
 }
