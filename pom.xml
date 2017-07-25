@@ -51,6 +51,8 @@
 ]]>
     </checkstyle.header.template>
     <findbugs.failOnViolation>true</findbugs.failOnViolation>
+    <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
+    <checkstyle.logViolationsToConsole>true</checkstyle.logViolationsToConsole>
   </properties>
 
   <modules>
@@ -188,8 +190,6 @@
                     </module>
                   </module>
                 </checkstyleRules>
-                <consoleOutput>true</consoleOutput>
-                <failsOnError>true</failsOnError>
               </configuration>
               <goals>
                 <goal>check</goal>
