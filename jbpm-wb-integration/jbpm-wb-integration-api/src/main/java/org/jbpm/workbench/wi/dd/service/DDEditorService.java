@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.wi.dd.service;
 
+import org.guvnor.common.services.project.builder.service.BuildValidationHelper;
 import org.guvnor.common.services.shared.file.SupportsUpdate;
 import org.guvnor.common.services.shared.validation.ValidationService;
 import org.jboss.errai.bus.server.annotations.Remote;
@@ -25,7 +26,8 @@ import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.editor.commons.service.support.SupportsRead;
 
 @Remote
-public interface DDEditorService extends ViewSourceService<DeploymentDescriptorModel>,
+public interface DDEditorService extends BuildValidationHelper,
+                                         ViewSourceService<DeploymentDescriptorModel>,
                                          ValidationService<DeploymentDescriptorModel>,
                                          SupportsRead<DeploymentDescriptorModel>,
                                          SupportsUpdate<DeploymentDescriptorModel> {
