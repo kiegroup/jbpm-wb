@@ -127,7 +127,6 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     public void updateTaskButton(ClickEvent e) {
 
         presenter.updateTask(taskDescriptionTextArea.getText(),
-                             userText.getText(),
                              dueDate.getValue() != null && dueDateTime.getValue() != null ? UTCDateBox.utc2date(dueDate.getValue() + dueDateTime.getValue()) : null,
                              Integer.valueOf(taskPriorityListBox.getValue()));
     }

@@ -17,6 +17,7 @@
 package org.jbpm.workbench.ht.model.events;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
@@ -27,8 +28,16 @@ public class TaskSelectionEvent implements Serializable {
     private String containerId;
     private Long taskId;
     private String taskName;
-    private boolean forAdmin;
-    private boolean forLog;
+    private Boolean forAdmin;
+    private Boolean forLog;
+
+    private String description;
+    private Date expirationTime;
+    private String actualOwner;
+    private String status;
+    private Integer priority;
+    private Long processInstanceId;
+    private String processId;
 
     public TaskSelectionEvent() {
     }
@@ -51,14 +60,70 @@ public class TaskSelectionEvent implements Serializable {
                               String containerId,
                               Long taskId,
                               String taskName,
-                              boolean forAdmin,
-                              boolean forLog) {
+                              Boolean forAdmin,
+                              Boolean forLog) {
         this.serverTemplateId = serverTemplateId;
         this.containerId = containerId;
         this.taskId = taskId;
         this.taskName = taskName;
         this.forAdmin = forAdmin;
         this.forLog = forLog;
+    }
+
+    public TaskSelectionEvent(String serverTemplateId,
+                              String containerId,
+                              Long taskId,
+                              String taskName,
+                              Boolean forAdmin,
+                              Boolean forLog,
+                              String description,
+                              Date expirationTime,
+                              String status,
+                              String actualOwner,
+                              Integer priority,
+                              Long processInstanceId,
+                              String processId) {
+        this.serverTemplateId = serverTemplateId;
+        this.containerId = containerId;
+        this.taskId = taskId;
+        this.taskName = taskName;
+        this.forAdmin = forAdmin;
+        this.forLog = forLog;
+        this.description = description;
+        this.expirationTime = expirationTime;
+        this.status = status;
+        this.actualOwner = actualOwner;
+        this.priority = priority;
+        this.processInstanceId = processInstanceId;
+        this.processId = processId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Date getExpirationTime() {
+        return expirationTime;
+    }
+
+    public String getActualOwner() {
+        return actualOwner;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public Long getProcessInstanceId() {
+        return processInstanceId;
+    }
+
+    public String getProcessId() {
+        return processId;
     }
 
     public String getTaskName() {
@@ -69,11 +134,11 @@ public class TaskSelectionEvent implements Serializable {
         return taskId;
     }
 
-    public boolean isForAdmin() {
+    public Boolean isForAdmin() {
         return forAdmin;
     }
 
-    public boolean isForLog() {
+    public Boolean isForLog() {
         return forLog;
     }
 
