@@ -126,10 +126,12 @@ public class TaskCommentsPresenter {
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
-        currentTaskId = event.getTaskId();
-        serverTemplateId = event.getServerTemplateId();
-        containerId = event.getContainerId();
-        refreshComments();
+        if (!event.isForLog()) {
+            currentTaskId = event.getTaskId();
+            serverTemplateId = event.getServerTemplateId();
+            containerId = event.getContainerId();
+            refreshComments();
+        }
     }
 
     public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {

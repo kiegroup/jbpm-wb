@@ -16,6 +16,7 @@
 package org.jbpm.workbench.ht.client.editors.taskassignments;
 
 import java.util.Arrays;
+import java.util.Date;
 import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
@@ -81,8 +82,22 @@ public class TaskAssignmentsPresenterTest {
         when(taskService.getTaskAssignmentDetails(anyString(),
                                                   anyString(),
                                                   eq(TASK_ID))).thenReturn(task);
+        boolean isForLog = false;
+        TaskSelectionEvent event = new TaskSelectionEvent("serverTemplateId",
+                                                          "containerId",
+                                                          TASK_ID,
+                                                          "task",
+                                                          true,
+                                                          isForLog,
+                                                          "description",
+                                                          new Date(),
+                                                          "Completed",
+                                                          "actualOwner",
+                                                          2,
+                                                          1L,
+                                                          "processId");
 
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(1L));
+        presenter.onTaskSelectionEvent(event);
         presenter.delegateTask(OTHER_USER);
 
         verify(viewMock).setDelegateButtonActive(false);
@@ -128,7 +143,21 @@ public class TaskAssignmentsPresenterTest {
                                                   eq(COMPLETED_TASK_ID))).thenReturn(task);
 
         // When task in status Completed is selected
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(COMPLETED_TASK_ID));
+        boolean isForLog = false;
+        TaskSelectionEvent event = new TaskSelectionEvent("serverTemplateId",
+                                                          "containerId",
+                                                          COMPLETED_TASK_ID,
+                                                          "task",
+                                                          true,
+                                                          isForLog,
+                                                          "description",
+                                                          new Date(),
+                                                          "Completed",
+                                                          "actualOwner",
+                                                          2,
+                                                          1L,
+                                                          "processId");
+        presenter.onTaskSelectionEvent(event);
 
         verify(viewMock,
                times(2)).enableDelegateButton(false);
@@ -155,7 +184,21 @@ public class TaskAssignmentsPresenterTest {
                                                   eq(TASK_OWNED_BY_SOMEONE_ELSE_ID))).thenReturn(task);
 
         // When task not owned by Current user
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_OWNED_BY_SOMEONE_ELSE_ID));
+        boolean isForLog = false;
+        TaskSelectionEvent event = new TaskSelectionEvent("serverTemplateId",
+                                                          "containerId",
+                                                          TASK_OWNED_BY_SOMEONE_ELSE_ID,
+                                                          "task",
+                                                          true,
+                                                          isForLog,
+                                                          "description",
+                                                          new Date(),
+                                                          "Completed",
+                                                          "actualOwner",
+                                                          2,
+                                                          1L,
+                                                          "processId");
+        presenter.onTaskSelectionEvent(event);
 
         verify(viewMock,
                times(2)).enableDelegateButton(false);
@@ -182,12 +225,71 @@ public class TaskAssignmentsPresenterTest {
                                                   eq(TASK_OWNED_BY_CURRENT_USER))).thenReturn(task);
 
         // When task not owned by Current user
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_OWNED_BY_CURRENT_USER));
+
+        boolean isForLog = false;
+        TaskSelectionEvent event = new TaskSelectionEvent("serverTemplateId",
+                                                          "containerId",
+                                                          TASK_OWNED_BY_CURRENT_USER,
+                                                          "task",
+                                                          true,
+                                                          isForLog,
+                                                          "description",
+                                                          new Date(),
+                                                          "Completed",
+                                                          "actualOwner",
+                                                          2,
+                                                          1L,
+                                                          "processId");
+        presenter.onTaskSelectionEvent(event);
 
         final InOrder inOrder = inOrder(viewMock);
         inOrder.verify(viewMock).enableDelegateButton(false);
         inOrder.verify(viewMock).enableUserOrGroupInput(false);
         inOrder.verify(viewMock).enableDelegateButton(true);
         inOrder.verify(viewMock).enableUserOrGroupInput(true);
+    }
+
+    @Test
+    public void taskSelectionEventIsForLogTask() {
+        String serverTemplateId = "serverTemplateId";
+        String containerId = "containerId";
+        Long taskId = 1L;
+        boolean isForLog = true;
+        TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId,
+                                                          containerId,
+                                                          taskId,
+                                                          "task",
+                                                          true,
+                                                          isForLog);
+        TaskAssignmentSummary ts = new TaskAssignmentSummary();
+        ts.setPotOwnersString(Arrays.asList("owner1",
+                                            "owner2"));
+        when(taskService.getTaskAssignmentDetails(eq(serverTemplateId),
+                                                  eq(containerId),
+                                                  eq(taskId))).thenReturn(ts);
+
+        presenter.onTaskSelectionEvent(event);
+
+        verifyNoMoreInteractions(taskService);
+    }
+
+    @Test
+    public void taskSelectionEventNotIsForLogTask() {
+        String serverTemplateId = "serverTemplateId";
+        String containerId = "containerId";
+        Long taskId = 1L;
+        boolean isForLog = false;
+        TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId,
+                                                          containerId,
+                                                          taskId,
+                                                          "task",
+                                                          true,
+                                                          isForLog);
+
+        presenter.onTaskSelectionEvent(event);
+
+        verify(taskService).getTaskAssignmentDetails(serverTemplateId,
+                                                     containerId,
+                                                     taskId);
     }
 }

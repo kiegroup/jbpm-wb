@@ -92,6 +92,8 @@ public class TaskDetailsMultiPresenterTest {
         //Then only tab log is displayed
         verify(view).displayOnlyLogTab();
         verify(view).setAdminTabVisible(false);
+        verify(taskFormPresenter,
+               never()).getTaskFormView();
         assertFalse(presenter.isForAdmin());
         assertTrue(presenter.isForLog());
 
@@ -115,6 +117,8 @@ public class TaskDetailsMultiPresenterTest {
         verify(view).setAdminTabVisible(false);
         assertFalse(presenter.isForAdmin());
         assertFalse(presenter.isForLog());
+        verify(taskFormPresenter,
+               times(2)).getTaskFormView();
 
         presenter.onRefresh();
         assertFalse(presenter.isForAdmin());

@@ -24,9 +24,6 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.FormControlStatic;
-import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -58,6 +55,16 @@ public class TaskAdminPresenter {
 
     @Inject
     private Event<TaskRefreshedEvent> taskRefreshed;
+
+    @Inject
+    public TaskAdminPresenter(TaskAdminPresenter.TaskAdminView view,
+                              Caller<TaskService> taskService,
+                              Event<TaskRefreshedEvent> taskRefreshed
+    ) {
+        this.view = view;
+        this.taskService = taskService;
+        this.taskRefreshed = taskRefreshed;
+    }
 
     @PostConstruct
     public void init() {
@@ -107,25 +114,25 @@ public class TaskAdminPresenter {
                     @Override
                     public void callback(TaskAssignmentSummary ts) {
                         if (ts == null) {
-                            view.getReminderButton().setEnabled(false);
-                            view.getForwardButton().setEnabled(false);
-                            view.getUserOrGroupText().setEnabled(false);
+                            view.enableReminderButton(false);
+                            view.enableForwardButton(false);
+                            view.enableUserOrGroupText(false);
                             return;
                         }
                         if (ts.getPotOwnersString() != null && ts.getPotOwnersString().isEmpty()) {
-                            view.getUsersGroupsControlsPanel().setText(Constants.INSTANCE.No_Potential_Owners());
+                            view.setUsersGroupsControlsPanelText(Constants.INSTANCE.No_Potential_Owners());
                         } else {
-                            view.getUsersGroupsControlsPanel().setText("" + ts.getPotOwnersString().toString());
+                            view.setUsersGroupsControlsPanelText("" + ts.getPotOwnersString().toString());
                         }
-                        view.getForwardButton().setEnabled(true);
-                        view.getUserOrGroupText().setEnabled(true);
+                        view.enableForwardButton(true);
+                        view.enableUserOrGroupText(true);
 
                         if (ts.getActualOwner() == null || ts.getActualOwner().equals("")) {
-                            view.getReminderButton().setEnabled(false);
-                            view.getActualOwnerPanel().setText(Constants.INSTANCE.No_Actual_Owner());
+                            view.enableReminderButton(false);
+                            view.setActualOwnerText(Constants.INSTANCE.No_Actual_Owner());
                         } else {
-                            view.getReminderButton().setEnabled(true);
-                            view.getActualOwnerPanel().setText(ts.getActualOwner());
+                            view.enableReminderButton(true);
+                            view.setActualOwnerText(ts.getActualOwner());
                         }
                     }
                 }
@@ -135,10 +142,12 @@ public class TaskAdminPresenter {
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
-        this.currentTaskId = event.getTaskId();
-        serverTemplateId = event.getServerTemplateId();
-        containerId = event.getContainerId();
-        refreshTaskPotentialOwners();
+        if (!event.isForLog()) {
+            this.currentTaskId = event.getTaskId();
+            serverTemplateId = event.getServerTemplateId();
+            containerId = event.getContainerId();
+            refreshTaskPotentialOwners();
+        }
     }
 
     public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
@@ -151,15 +160,15 @@ public class TaskAdminPresenter {
 
         void displayNotification(String text);
 
-        FormControlStatic getUsersGroupsControlsPanel();
+        void setUsersGroupsControlsPanelText(String text);
 
-        Button getForwardButton();
+        void enableForwardButton(boolean enabled);
 
-        TextBox getUserOrGroupText();
+        void enableUserOrGroupText(boolean enabled);
 
-        Button getReminderButton();
+        void enableReminderButton(boolean enabled);
 
-        FormControlStatic getActualOwnerPanel();
+        void setActualOwnerText(String actualOwnerText);
 
         void init(final TaskAdminPresenter presenter);
     }

@@ -15,10 +15,12 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskcomments;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.ht.client.editors.taskcomments.TaskCommentsPresenter.TaskCommentsView;
+import org.jbpm.workbench.ht.model.CommentSummary;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
@@ -62,12 +64,28 @@ public class TaskCommentsPresenterTest {
 
     @Test
     public void commentsUpdatedWhenTaskSelectedOrRefreshed() {
+        String serverTemplateId = "serverTemplateId";
+        String containerId = "containerId";
+        boolean isForLog = false;
+        TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId,
+                                                          containerId,
+                                                          TASK_ID,
+                                                          "task",
+                                                          true,
+                                                          isForLog,
+                                                          "description",
+                                                          new Date(),
+                                                          "Ready",
+                                                          "actualOwner",
+                                                          2,
+                                                          1L,
+                                                          "processId");
         //When task selected
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_ID));
+        presenter.onTaskSelectionEvent(event);
 
         //Then comments for given task loaded & comment grid refreshed
-        verify(commentsServiceMock).getTaskComments(null,
-                                                    null,
+        verify(commentsServiceMock).getTaskComments(serverTemplateId,
+                                                    containerId,
                                                     TASK_ID);
         verify(viewMock).redrawDataGrid();
 
@@ -76,8 +94,8 @@ public class TaskCommentsPresenterTest {
 
         //Then comments for given task loaded & comment grid refreshed
         verify(commentsServiceMock,
-               times(2)).getTaskComments(null,
-                                         null,
+               times(2)).getTaskComments(serverTemplateId,
+                                         containerId,
                                          TASK_ID);
         verify(viewMock,
                times(2)).redrawDataGrid();
@@ -132,5 +150,57 @@ public class TaskCommentsPresenterTest {
                                                     anyString(),
                                                     anyLong());
         verify(viewMock).redrawDataGrid();
+    }
+
+    @Test
+    public void taskSelectionEventIsForLogTask() {
+        String serverTemplateId = "serverTemplateId";
+        String containerId = "containerId";
+        Long taskId = 1L;
+        boolean isForLog = true;
+        TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId,
+                                                          containerId,
+                                                          taskId,
+                                                          "task",
+                                                          true,
+                                                          isForLog);
+        CommentSummary comment1 = new CommentSummary(1,
+                                                     "commentText",
+                                                     "ByTest",
+                                                     new Date());
+        when(commentsServiceMock.getTaskComments(eq(serverTemplateId),
+                                                 eq(containerId),
+                                                 eq(taskId))).thenReturn(Arrays.asList(comment1));
+
+        presenter.onTaskSelectionEvent(event);
+
+        verifyZeroInteractions(commentsServiceMock);
+    }
+
+    @Test
+    public void taskSelectionEventNotIsForLogTask() {
+        String serverTemplateId = "serverTemplateId";
+        String containerId = "containerId";
+        Long taskId = 1L;
+        boolean isForLog = false;
+        TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId,
+                                                          containerId,
+                                                          taskId,
+                                                          "task",
+                                                          true,
+                                                          isForLog);
+        CommentSummary comment1 = new CommentSummary(1,
+                                                     "commentText",
+                                                     "ByTest",
+                                                     new Date());
+        when(commentsServiceMock.getTaskComments(eq(serverTemplateId),
+                                                 eq(containerId),
+                                                 eq(taskId))).thenReturn(Arrays.asList(comment1));
+
+        presenter.onTaskSelectionEvent(event);
+
+        verify(commentsServiceMock).getTaskComments(serverTemplateId,
+                                                    containerId,
+                                                    taskId);
     }
 }
