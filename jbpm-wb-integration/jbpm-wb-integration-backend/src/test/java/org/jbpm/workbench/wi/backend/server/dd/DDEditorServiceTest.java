@@ -27,6 +27,7 @@ import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
+import org.jbpm.workbench.wi.dd.validation.DeploymentDescriptorValidationMessage;
 import org.jgroups.util.UUID;
 import org.junit.Test;
 import org.kie.internal.runtime.conf.AuditMode;
@@ -168,6 +169,10 @@ public class DDEditorServiceTest extends DDEditorServiceImpl {
         error = validationMessages.get(0);
         assertEquals(Level.ERROR, error.getLevel());
         assertTrue(error.getText().startsWith("Not valid resolver selected"));
+
+
+        assertTrue(error instanceof DeploymentDescriptorValidationMessage);
+        assertEquals(I18N_KEY_NOT_VALID_RESOLVER, ((DeploymentDescriptorValidationMessage) error).getKey());
     }
 
     @Test
@@ -195,6 +200,9 @@ public class DDEditorServiceTest extends DDEditorServiceImpl {
         ValidationMessage error = validationMessages.get(0);
         assertEquals(Level.ERROR, error.getLevel());
         assertTrue(error.getText().startsWith("Identifier is not valid Java class which is required by reflection resolver"));
+
+        assertTrue(error instanceof DeploymentDescriptorValidationMessage);
+        assertEquals(I18N_KEY_NOT_VALID_REFLECTION_IDENTIFIER, ((DeploymentDescriptorValidationMessage) error).getKey());
     }
 
     @Test
@@ -210,9 +218,16 @@ public class DDEditorServiceTest extends DDEditorServiceImpl {
         ValidationMessage error = validationMessages.get(0);
         assertEquals(Level.ERROR, error.getLevel());
         assertTrue(error.getText().startsWith("Identifier cannot be empty"));
+
+        assertTrue(error instanceof DeploymentDescriptorValidationMessage);
+        assertEquals(I18N_KEY_MISSING_IDENTIFIER, ((DeploymentDescriptorValidationMessage) error).getKey());
+
         error = validationMessages.get(1);
         assertEquals(Level.ERROR, error.getLevel());
         assertTrue(error.getText().startsWith("Identifier is not valid Java class which is required by reflection resolver"));
+
+        assertTrue(error instanceof DeploymentDescriptorValidationMessage);
+        assertEquals(I18N_KEY_NOT_VALID_REFLECTION_IDENTIFIER, ((DeploymentDescriptorValidationMessage) error).getKey());
     }
 
     @Test
@@ -228,6 +243,10 @@ public class DDEditorServiceTest extends DDEditorServiceImpl {
         ValidationMessage error = validationMessages.get(0);
         assertEquals(Level.ERROR, error.getLevel());
         assertTrue(error.getText().startsWith("Name cannot be empty"));
+
+
+        assertTrue(error instanceof DeploymentDescriptorValidationMessage);
+        assertEquals(I18N_KEY_MISSING_NAME, ((DeploymentDescriptorValidationMessage) error).getKey());
     }
 
     @Test
@@ -255,5 +274,8 @@ public class DDEditorServiceTest extends DDEditorServiceImpl {
         ValidationMessage error = validationMessages.get(0);
         assertEquals(Level.WARNING, error.getLevel());
         assertTrue(error.getText().startsWith("Could not compile mvel expression"));
+
+        assertTrue(error instanceof DeploymentDescriptorValidationMessage);
+        assertEquals(I18N_KEY_NOT_VALID_MVEL_IDENTIFIER, ((DeploymentDescriptorValidationMessage) error).getKey());
     }
 }

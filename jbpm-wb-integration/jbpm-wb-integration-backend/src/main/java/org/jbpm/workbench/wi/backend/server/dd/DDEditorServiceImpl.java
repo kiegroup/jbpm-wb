@@ -37,6 +37,7 @@ import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.model.Parameter;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
 import org.jbpm.workbench.wi.dd.type.DDResourceTypeDefinition;
+import org.jbpm.workbench.wi.dd.validation.DeploymentDescriptorValidationMessage;
 import org.kie.internal.runtime.conf.AuditMode;
 import org.kie.internal.runtime.conf.DeploymentDescriptor;
 import org.kie.internal.runtime.conf.NamedObjectModel;
@@ -57,6 +58,14 @@ import org.uberfire.java.nio.base.options.CommentedOption;
 public class DDEditorServiceImpl
         extends KieService<DeploymentDescriptorModel>
         implements DDEditorService {
+
+    public static final String I18N_KEY_MISSING_IDENTIFIER = "DDValidationMissingIdentifier";
+    public static final String I18N_KEY_MISSING_RESOLVER = "DDValidationMissingResolver";
+    public static final String I18N_KEY_NOT_VALID_RESOLVER = "DDValidationNotValidResolver";
+    public static final String I18N_KEY_NOT_VALID_REFLECTION_IDENTIFIER = "DDValidationNotValidReflectionIdentifier";
+    public static final String I18N_KEY_NOT_VALID_MVEL_IDENTIFIER = "DDValidationNotValidMvelIdentifier";
+    public static final String I18N_KEY_MISSING_NAME = "DDValidationMissingName";
+    public static final String I18N_KEY_UNEXPECTED_ERROR = "DDValidationUnexpectedError";
 
     @Inject
     @Named("ioStrategy")
@@ -187,12 +196,24 @@ public class DDEditorServiceImpl
             String identifier = model.getIdentifier();
 
             if (identifier == null || identifier.isEmpty()) {
-                validationMessages.add(newMessage(path, "Identifier cannot be empty for " + model.getIdentifier(), Level.ERROR));
+                validationMessages.add(
+                        newMessage(
+                                path,
+                                "Identifier cannot be empty for " + model.getIdentifier(),
+                                Level.ERROR,
+                                I18N_KEY_MISSING_IDENTIFIER,
+                                model.getIdentifier()));
             }
 
             String resolver = model.getResolver();
             if (resolver == null) {
-                validationMessages.add(newMessage(path, "No resolver selected for " + model.getIdentifier(), Level.ERROR));
+                validationMessages.add(
+                        newMessage(
+                                path,
+                                "No resolver selected for " + model.getIdentifier(),
+                                Level.ERROR,
+                                I18N_KEY_MISSING_RESOLVER,
+                                model.getIdentifier()));
             }
             else if (resolver.equalsIgnoreCase(ItemObjectModel.MVEL_RESOLVER)) {
                 try {
@@ -206,21 +227,45 @@ public class DDEditorServiceImpl
                     .append(" this can be due to invalid syntax of missing classes")
                     .append("-")
                     .append(e.getMessage());
-                    validationMessages.add(newMessage(path, text.toString(), Level.WARNING));
+                    validationMessages.add(
+                            newMessage(
+                                    path,
+                                    text.toString(),
+                                    Level.WARNING,
+                                    I18N_KEY_NOT_VALID_MVEL_IDENTIFIER,
+                                    model.getIdentifier(),
+                                    e.getMessage()));
                 }
             } else if (resolver.equalsIgnoreCase(ItemObjectModel.REFLECTION_RESOLVER)) {
                 if (!SourceVersion.isName(identifier)) {
-                    validationMessages.add(newMessage(path, "Identifier is not valid Java class which is required by reflection resolver " + model.getIdentifier(), Level.ERROR));
+                    validationMessages.add(
+                            newMessage(
+                                    path,
+                                    "Identifier is not valid Java class which is required by reflection resolver " + model.getIdentifier(),
+                                    Level.ERROR,
+                                    I18N_KEY_NOT_VALID_REFLECTION_IDENTIFIER,
+                                    model.getIdentifier()));
                 }
             } else {
-                validationMessages.add(newMessage(path, "Not valid resolver selected for " + model.getIdentifier(), Level.ERROR));
+                validationMessages.add(
+                        newMessage(
+                                path,
+                                "Not valid resolver selected for " + model.getIdentifier(),
+                                Level.ERROR,
+                                I18N_KEY_NOT_VALID_RESOLVER,
+                                model.getIdentifier()));
             }
 
 
             if (model instanceof NamedObjectModel) {
                 String name = ((NamedObjectModel) model).getName();
                 if (name == null || name.isEmpty()) {
-                    validationMessages.add(newMessage(path, "Name cannot be empty for " + model.getIdentifier(), Level.ERROR));
+                    validationMessages.add(
+                            newMessage(path,
+                                    "Name cannot be empty for " + model.getIdentifier(),
+                                    Level.ERROR,
+                                    I18N_KEY_MISSING_NAME,
+                                    model.getIdentifier()));
                 }
             }
         });
@@ -228,11 +273,13 @@ public class DDEditorServiceImpl
         return validationMessages;
     }
 
-    protected ValidationMessage newMessage(Path path, String text, Level level) {
-        final ValidationMessage msg = new ValidationMessage();
+    protected ValidationMessage newMessage(Path path, String text, Level level, String key, Object... args) {
+        final DeploymentDescriptorValidationMessage msg = new DeploymentDescriptorValidationMessage();
         msg.setPath(path);
         msg.setLevel(level);
         msg.setText(text);
+        msg.setKey(key);
+        msg.setArgs(args);
 
         return msg;
     }
@@ -464,7 +511,13 @@ public class DDEditorServiceImpl
 
             return validate(path, ddModel);
         } catch (Exception e) {
-            return Arrays.asList(newMessage(path, e.getMessage(), Level.ERROR));
+            return Arrays.asList(
+                    newMessage(
+                            path,
+                            e.getMessage(),
+                            Level.ERROR,
+                            I18N_KEY_UNEXPECTED_ERROR,
+                            e.getMessage()));
         }
     }
 }
