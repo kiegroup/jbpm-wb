@@ -27,6 +27,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.jboss.errai.ui.shared.api.annotations.Bundle;
 import org.jbpm.workbench.client.i18n.Constants;
 import org.jbpm.workbench.client.perspectives.ProcessAdminSettingsPerspective;
 import org.jbpm.workbench.client.perspectives.TaskAdminSettingsPerspective;
@@ -45,6 +46,7 @@ import org.uberfire.workbench.model.menu.Menus;
 import static org.jbpm.workbench.common.client.PerspectiveIds.*;
 
 @EntryPoint
+@Bundle("i18n/HomeConstants.properties")
 public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
 
     protected Constants constants = Constants.INSTANCE;
