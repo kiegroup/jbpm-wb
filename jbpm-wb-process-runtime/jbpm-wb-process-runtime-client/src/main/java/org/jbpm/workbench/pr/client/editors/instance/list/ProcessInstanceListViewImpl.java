@@ -59,7 +59,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     private final Constants constants = Constants.INSTANCE;
 
     @Inject
-    private ManagedInstance<ProcessInstanceSummaryErrorPopoverCell> popoverCellInstance;
+    private ManagedInstance<ProcessInstanceSummaryErrorCountCell> popoverCellInstance;
 
     @Override
     public List<String> getInitColumns() {
