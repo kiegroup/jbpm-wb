@@ -338,6 +338,8 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
 
     @Override
     public void setupActiveSearchFilters() {
+        boolean isDefaultFilters = true;
+        
         final Optional<String> processInstanceSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
         if (processInstanceSearch.isPresent()) {
             final String processInstanceId = processInstanceSearch.get();
@@ -350,7 +352,32 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
 
             addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INST_ID,
                                              processInstanceId));
-        } else {
+            isDefaultFilters = false;
+        }
+        
+        final Optional<String> isErrorAckSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_IS_ERROR_ACK);
+        if (isErrorAckSearch.isPresent()) {
+            final boolean isErrorAck = isErrorAckSearch.get().equalsIgnoreCase(Boolean.toString(true));
+            String errorAckValue = (isErrorAck ? "1" : "0");
+            String valueLabel = (isErrorAck ?
+                        org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Yes()
+                    :
+                        org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No());
+
+            view.addActiveFilter(
+                    constants.Acknowledged(),
+                    valueLabel,
+                    errorAckValue,
+                    v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
+                                                             v))
+            );
+
+            addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
+                                             errorAckValue));
+            isDefaultFilters = false;
+        }
+
+        if (isDefaultFilters) {
             setupDefaultActiveSearchFilters();
         }
     }
@@ -358,7 +385,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     @Override
     public void setupDefaultActiveSearchFilters() {
         view.addActiveFilter(
-                this.constants.Acknowledged(),
+                constants.Acknowledged(),
                 org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No(),
                 "0",
                 v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
