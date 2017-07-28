@@ -123,12 +123,14 @@ public class TaskAssignmentsPresenter {
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
-        this.currentTaskId = event.getTaskId();
-        serverTemplateId = event.getServerTemplateId();
-        containerId = event.getContainerId();
-        view.setHelpText("");
-        view.clearUserOrGroupInput();
-        refreshTaskPotentialOwners();
+        if (!event.isForLog()) {
+            this.currentTaskId = event.getTaskId();
+            serverTemplateId = event.getServerTemplateId();
+            containerId = event.getContainerId();
+            view.setHelpText("");
+            view.clearUserOrGroupInput();
+            refreshTaskPotentialOwners();
+        }
     }
 
     public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {

@@ -15,31 +15,156 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskdetails;
 
+import java.util.Date;
+
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
+import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
+import org.jbpm.workbench.ht.service.TaskService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.uberfire.mocks.CallerMock;
+import org.uberfire.mocks.EventSourceMock;
 
 import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskDetailsPresenterTest {
 
-    @Mock
-    private TaskDetailsViewImpl view;
+    private CallerMock<TaskService> callerMock;
 
-    @InjectMocks
+    @Mock
+    private TaskService taskService;
+
+    @Mock
+    private TaskDetailsPresenter.TaskDetailsView viewMock;
+
+    @Mock
+    private EventSourceMock<TaskRefreshedEvent> taskRefreshedEvent;
+
     private TaskDetailsPresenter presenter;
+
+    @Before
+    public void setup() {
+        callerMock = new CallerMock<TaskService>(taskService);
+        doNothing().when(taskRefreshedEvent).fire(any(TaskRefreshedEvent.class));
+
+        presenter = new TaskDetailsPresenter(viewMock,
+                                             callerMock,
+                                             taskRefreshedEvent);
+    }
 
     @Test
     public void disableTaskDetailEditionTest() {
         presenter.setReadOnlyTaskDetail();
+        verifyReadOnlyMode(1);
+    }
 
-        verify(view).setTaskDescriptionEnabled(false);
-        verify(view).setDueDateEnabled(false);
-        verify(view).setDueDateTimeEnabled(false);
-        verify(view).setTaskPriorityEnabled(false);
-        verify(view).setUpdateTaskVisible(false);
+    @Test
+    public void testSetTaskDetails_statusComplete() {
+        String status = "Completed";
+        String description = "description";
+        String actualOwner = "Owner";
+        Date expirationTime = new Date();
+        String priority = "2";
+
+        presenter.setTaskDetails(status,
+                                 description,
+                                 actualOwner,
+                                 expirationTime,
+                                 priority);
+        verify(viewMock).setDueDate(any());
+        verify(viewMock).setDueDateTime(any());
+        verifySetTaskDetails(actualOwner,
+                             status,
+                             priority);
+        verifyReadOnlyMode(1);
+    }
+
+    @Test
+    public void testSetTaskDetails_statusReady() {
+        String status = "Ready";
+        String description = "description";
+        String actualOwner = "Owner";
+        Date expirationTime = new Date();
+        String priority = "2";
+
+        presenter.setTaskDetails(status,
+                                 description,
+                                 actualOwner,
+                                 expirationTime,
+                                 priority);
+        verify(viewMock).setDueDate(any());
+        verify(viewMock).setDueDateTime(any());
+        verifySetTaskDetails(actualOwner,
+                             status,
+                             priority);
+        verifyReadOnlyMode(0);
+    }
+
+    @Test
+    public void testUpdateDetails() {
+        String serverTemplateId = "serverTemplateId";
+        String containerId = "containerId";
+        Long taskId = 1L;
+        boolean isForLog = false;
+
+        TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId,
+                                                          containerId,
+                                                          taskId,
+                                                          "task",
+                                                          true,
+                                                          isForLog,
+                                                          "description",
+                                                          new Date(),
+                                                          "Completed",
+                                                          "actualOwner",
+                                                          2,
+                                                          1L,
+                                                          "processId");
+        presenter.onTaskSelectionEvent(event);
+
+        String description = "description";
+        Date dueDate = new Date();
+        int priority = 3;
+        presenter.updateTask(description,
+                             dueDate,
+                             priority);
+
+        verify(taskService).updateTask(serverTemplateId,
+                                       containerId,
+                                       taskId,
+                                       priority,
+                                       description,
+                                       dueDate);
+        final ArgumentCaptor<TaskRefreshedEvent> argument = ArgumentCaptor.forClass(TaskRefreshedEvent.class);
+        verify(taskRefreshedEvent).fire(argument.capture());
+        assertEquals(taskId,
+                     argument.getValue().getTaskId());
+    }
+
+    private void verifySetTaskDetails(String actualOwner,
+                                      String status,
+                                      String priority) {
+        verify(viewMock).setUser(actualOwner);
+        verify(viewMock).setTaskStatus(status);
+        verify(viewMock).setTaskPriority(priority);
+    }
+
+    private void verifyReadOnlyMode(int i) {
+        verify(viewMock,
+               times(i)).setTaskDescriptionEnabled(false);
+        verify(viewMock,
+               times(i)).setDueDateEnabled(false);
+        verify(viewMock,
+               times(i)).setDueDateTimeEnabled(false);
+        verify(viewMock,
+               times(i)).setTaskPriorityEnabled(false);
+        verify(viewMock,
+               times(i)).setUpdateTaskVisible(false);
     }
 }

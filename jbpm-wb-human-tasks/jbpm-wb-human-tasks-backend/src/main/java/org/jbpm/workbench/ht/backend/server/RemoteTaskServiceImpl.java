@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.workbench.ht.model.CommentSummary;
 import org.jbpm.workbench.ht.model.TaskAssignmentSummary;
@@ -31,7 +32,7 @@ import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.kie.internal.identity.IdentityProvider;
-import org.kie.server.api.exception.KieServicesException;
+import org.kie.server.api.exception.KieServicesHttpException;
 import org.kie.server.api.model.instance.TaskComment;
 import org.kie.server.api.model.instance.TaskEventInstance;
 import org.kie.server.api.model.instance.TaskInstance;
@@ -43,6 +44,8 @@ import static java.util.stream.Collectors.toList;
 @Service
 @ApplicationScoped
 public class RemoteTaskServiceImpl extends AbstractKieServerService implements TaskService {
+
+    public static int NOT_FOUND_ERROR_CODE = 404;
 
     @Inject
     private IdentityProvider identityProvider;
@@ -61,10 +64,14 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
             TaskInstance task = client.getTaskInstance(containerId,
                                                        taskId);
             return new TaskSummaryMapper().apply(task);
-        } catch (KieServicesException e) {
-            // task not found
-            return null;
+        } catch (KieServicesHttpException kieException) {
+            if (kieException.getHttpCode() == NOT_FOUND_ERROR_CODE) {
+                return null;
+            } else {
+                throw kieException;
+            }
         }
+
     }
 
     @Override
@@ -255,10 +262,18 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
         UserTaskServicesClient client = getClient(serverTemplateId,
                                                   UserTaskServicesClient.class);
 
-        List<TaskComment> comments = client.getTaskCommentsByTaskId(containerId,
-                                                                    taskId);
+        try {
+            List<TaskComment> comments = client.getTaskCommentsByTaskId(containerId,
+                                                                        taskId);
+            return comments.stream().map(c -> build(c)).collect(toList());
+        } catch (KieServicesHttpException kieException) {
+            if (kieException.getHttpCode() == NOT_FOUND_ERROR_CODE) {
+                return emptyList();
+            } else {
+                throw kieException;
+            }
+        }
 
-        return comments.stream().map(c -> build(c)).collect(toList());
     }
 
     @Override
@@ -324,9 +339,12 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
             summary.setStatus(task.getStatus());
             summary.setDelegationAllowed(isDelegationAllowed(task));
             return summary;
-        } catch (KieServicesException e) {
-            // task not found
-            return null;
+        } catch (KieServicesHttpException kieException) {
+            if (kieException.getHttpCode() == NOT_FOUND_ERROR_CODE) {
+                return null;
+            } else {
+                throw kieException;
+            }
         }
     }
 

@@ -43,7 +43,6 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.lifecycle.OnStartup;
-import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
@@ -146,17 +145,13 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
         containerId = event.getContainerId();
         processId = event.getTaskName();
 
-        taskFormPresenter.getTaskFormView().getDisplayerView().setOnCloseCommand(new Command() {
-            @Override
-            public void execute() {
-                closeDetails();
-            }
-        });
-        taskFormDisplayProvider.setup(new HumanTaskDisplayerConfig(new TaskKey(serverTemplateId,
-                                                                               containerId,
-                                                                               taskId)),
-                                      taskFormPresenter.getTaskFormView().getDisplayerView());
-
+        if (!event.isForLog()) {
+            taskFormPresenter.getTaskFormView().getDisplayerView().setOnCloseCommand(() -> closeDetails());
+            taskFormDisplayProvider.setup(new HumanTaskDisplayerConfig(new TaskKey(serverTemplateId,
+                                                                                   containerId,
+                                                                                   taskId)),
+                                          taskFormPresenter.getTaskFormView().getDisplayerView());
+        }
         setIsForLog(event.isForLog());
         setIsForAdmin(event.isForAdmin());
 
@@ -226,16 +221,8 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
         return taskLogsPresenter.getView();
     }
 
-    public void taskDetailsRefresh() {
-        taskDetailsPresenter.refreshTask();
-    }
-
     public void disableTaskDetailsEdition() {
         taskDetailsPresenter.setReadOnlyTaskDetail();
-    }
-
-    public void taskProcessContextRefresh() {
-        taskProcessContextPresenter.refreshProcessContextOfTask();
     }
 
     public void taskAssignmentsRefresh() {
