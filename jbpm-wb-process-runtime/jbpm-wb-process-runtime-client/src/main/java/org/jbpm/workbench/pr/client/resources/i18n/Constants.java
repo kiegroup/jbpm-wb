@@ -313,9 +313,7 @@ public interface Constants extends Messages {
 
     String SelectServerTemplate();
 
-    String ErrorCountNumber(int errCount);
-
-    String ErrorCountViewLink();
+    String ErrorCountNumberView(@PluralCount int errCount);
 
     String FilterByProcessInstanceId();
 
