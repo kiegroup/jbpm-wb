@@ -413,7 +413,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         final DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest("Task Details Multi");
         final PlaceStatus status = placeManager.getStatus(defaultPlaceRequest);
         boolean logOnly = false;
-        if (summary.getStatus().equals(TASK_STATUS_COMPLETED) && summary.isLogOnly()) {
+        if (summary.getStatus().equals(TASK_STATUS_COMPLETED)) {
             logOnly = true;
         }
         if (status == PlaceStatus.CLOSE) {
@@ -423,14 +423,28 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                                                      summary.getId(),
                                                      summary.getName(),
                                                      summary.isForAdmin(),
-                                                     logOnly));
+                                                     logOnly,
+                                                     summary.getDescription(),
+                                                     summary.getExpirationTime(),
+                                                     summary.getStatus(),
+                                                     summary.getActualOwner(),
+                                                     summary.getPriority(),
+                                                     summary.getProcessInstanceId(),
+                                                     summary.getProcessId()));
         } else if (status == PlaceStatus.OPEN && !close) {
             taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
                                                      summary.getDeploymentId(),
                                                      summary.getId(),
                                                      summary.getName(),
                                                      summary.isForAdmin(),
-                                                     logOnly));
+                                                     logOnly,
+                                                     summary.getDescription(),
+                                                     summary.getExpirationTime(),
+                                                     summary.getStatus(),
+                                                     summary.getActualOwner(),
+                                                     summary.getPriority(),
+                                                     summary.getProcessInstanceId(),
+                                                     summary.getProcessId()));
         } else if (status == PlaceStatus.OPEN && close) {
             placeManager.closePlace("Task Details Multi");
         }

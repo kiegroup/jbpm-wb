@@ -16,18 +16,13 @@
 package org.jbpm.workbench.ht.client.editors.taskprocesscontext;
 
 import java.util.Collections;
-import javax.enterprise.event.Event;
+import java.util.Date;
 
 import com.google.common.collect.Sets;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
-import org.jbpm.workbench.ht.service.TaskService;
-import org.jbpm.workbench.pr.events.ProcessInstancesWithDetailsRequestEvent;
-import org.jbpm.workbench.pr.model.ProcessInstanceKey;
-import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
-import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,9 +32,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.mocks.CallerMock;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.Resource;
+import org.uberfire.security.ResourceRef;
 import org.uberfire.security.authz.AuthorizationManager;
 
 import static org.junit.Assert.*;
@@ -49,21 +44,11 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class TaskProcessContextPresenterTest {
 
-    private static final Long TASK_ID_NO_PROCESS = 1L;
-    private static final Long TASK_ID_WITH_PROC = 2L;
-    private static final Long TASK_ID_NULL_DETAILS = 3L;
+    private static final String PROCESS_ID = "ProcessId";
+    private static final Long PROCESS_INSTANCE_ID = 1L;
 
     @Mock
     public User identity;
-
-    TaskSummary taskNoProcess = TaskSummary.builder().id(TASK_ID_NO_PROCESS).name("task without process").build();
-    TaskSummary taskWithProcess = TaskSummary.builder().id(TASK_ID_WITH_PROC).name("task with process").processId("TEST_PROCESS_ID").processInstanceId(123L).build();
-
-    @Mock
-    ProcessRuntimeDataService dataServiceEntryPoint;
-
-    @Mock
-    Event<ProcessInstancesWithDetailsRequestEvent> procNavigationMock;
 
     @Mock
     private TaskProcessContextPresenter.TaskProcessContextView viewMock;
@@ -81,37 +66,25 @@ public class TaskProcessContextPresenterTest {
 
     @Before
     public void before() {
-        //Task query service mock
-        TaskService tqs = mock(TaskService.class);
-        when(tqs.getTask(null,
-                         null,
-                         TASK_ID_NO_PROCESS)).thenReturn(taskNoProcess);
-        when(tqs.getTask(null,
-                         null,
-                         TASK_ID_WITH_PROC)).thenReturn(taskWithProcess);
-        when(tqs.getTask(null,
-                         null,
-                         TASK_ID_NULL_DETAILS)).thenReturn(null);
-        CallerMock<TaskService> taskQueryServiceMock
-                = new CallerMock<TaskService>(tqs);
-
-        // DataService caller mock
-        CallerMock<ProcessRuntimeDataService> dataServiceCallerMock = new CallerMock<ProcessRuntimeDataService>(dataServiceEntryPoint);
-
         presenter = new TaskProcessContextPresenter(
                 viewMock,
                 placeManager,
-                taskQueryServiceMock,
-                dataServiceCallerMock,
-                procNavigationMock,
                 activityManager,
                 authorizationManager,
                 identity);
     }
-
     @Test
-    public void processContextEmpty_whenTaskDetailsNull() {
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_ID_NULL_DETAILS));
+    public void testSetProcessContextData() {
+
+        presenter.setProcessContextData(PROCESS_INSTANCE_ID,
+                                        PROCESS_ID);
+
+        verify(viewMock).setProcessId(PROCESS_ID);
+        verify(viewMock).setProcessInstanceId(PROCESS_INSTANCE_ID.toString());
+        verify(viewMock).enablePIDetailsButton(true);
+
+        presenter.setProcessContextData(null,
+                                        null);
 
         verify(viewMock).setProcessId("None");
         verify(viewMock).setProcessInstanceId("None");
@@ -119,49 +92,85 @@ public class TaskProcessContextPresenterTest {
     }
 
     @Test
-    public void processContextEmpty_whenTaskNotAssociatedWithProcess() {
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_ID_NO_PROCESS));
+    public void processContex_whenTaskSelected() {
+        TaskSelectionEvent testTaskSelectionEvent =
+                new TaskSelectionEvent("serverTemplateId",
+                                       "containerId",
+                                       Long.valueOf(1),
+                                       "taskName",
+                                       true,
+                                       true,
+                                       "description",
+                                       new Date(),
+                                       "Ready",
+                                       "actualOwner",
+                                       3,
+                                       PROCESS_INSTANCE_ID,
+                                       PROCESS_ID);
+        presenter.onTaskSelectionEvent(testTaskSelectionEvent);
+
+        verify(viewMock).setProcessId(PROCESS_ID);
+        verify(viewMock).setProcessInstanceId(PROCESS_INSTANCE_ID.toString());
+        verify(viewMock).enablePIDetailsButton(true);
+    }
+
+    @Test
+    public void processContex_whenTaskSelectedEmptyProcessInstanceId() {
+        TaskSelectionEvent testTaskSelectionEvent =
+                new TaskSelectionEvent("serverTemplateId",
+                                       "containerId",
+                                       Long.valueOf(1),
+                                       "taskName",
+                                       true,
+                                       true,
+                                       "description",
+                                       new Date(),
+                                       "Ready",
+                                       "actualOwner",
+                                       3,
+                                       null,
+                                       null);
+        presenter.onTaskSelectionEvent(testTaskSelectionEvent);
 
         verify(viewMock).setProcessId("None");
         verify(viewMock).setProcessInstanceId("None");
         verify(viewMock).enablePIDetailsButton(false);
     }
 
-    @Test
-    public void processContextShowsProcessInfo_whenTaskDetailsHasProcess() {
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_ID_WITH_PROC));
-
-        verify(viewMock).setProcessId("TEST_PROCESS_ID");
-        verify(viewMock).setProcessInstanceId("123");
-    }
 
     @Test
     public void testGoToProcessInstanceDetails() {
-        final ProcessInstanceSummary summary = new ProcessInstanceSummary();
-        summary.setDeploymentId("deploymentId");
-        summary.setProcessInstanceId(-1l);
-        summary.setProcessId("processId");
-        summary.setProcessName("processName");
-        summary.setState(1);
-        when(dataServiceEntryPoint.getProcessInstance(anyString(),
-                                                      any(ProcessInstanceKey.class))).thenReturn(summary);
+        TaskSelectionEvent testTaskSelectionEvent =
+                new TaskSelectionEvent("serverTemplateId",
+                                       "containerId",
+                                       Long.valueOf(1),
+                                       "taskName",
+                                       true,
+                                       true,
+                                       "description",
+                                       new Date(),
+                                       "Ready",
+                                       "actualOwner",
+                                       3,
+                                       PROCESS_INSTANCE_ID,
+                                       PROCESS_ID);
 
+        when(authorizationManager.authorize(any(ResourceRef.class),
+                                            eq(identity))).thenReturn(true,
+                                                                      false);
+        presenter.onTaskSelectionEvent(testTaskSelectionEvent);
         presenter.goToProcessInstanceDetails();
 
-        verify(placeManager).goTo(PerspectiveIds.PROCESS_INSTANCES);
-        final ArgumentCaptor<ProcessInstancesWithDetailsRequestEvent> eventCaptor = ArgumentCaptor.forClass(ProcessInstancesWithDetailsRequestEvent.class);
-        verify(procNavigationMock).fire(eventCaptor.capture());
-        final ProcessInstancesWithDetailsRequestEvent event = eventCaptor.getValue();
-        assertEquals(summary.getDeploymentId(),
-                     event.getDeploymentId());
-        assertEquals(summary.getProcessInstanceId(),
-                     event.getProcessInstanceId());
-        assertEquals(summary.getProcessId(),
-                     event.getProcessDefId());
-        assertEquals(summary.getProcessName(),
-                     event.getProcessDefName());
-        assertEquals(summary.getState(),
-                     event.getProcessInstanceStatus());
+        final ArgumentCaptor<PlaceRequest> captor = ArgumentCaptor.forClass(PlaceRequest.class);
+        verify(placeManager).goTo(captor.capture());
+        assertEquals(1,
+                     captor.getAllValues().size());
+
+        assertEquals(PerspectiveIds.PROCESS_INSTANCES,
+                     captor.getAllValues().get(0).getIdentifier());
+        assertEquals(PROCESS_INSTANCE_ID.toString(),
+                     captor.getAllValues().get(0).getParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
+                                                               ""));
     }
 
     @Test
