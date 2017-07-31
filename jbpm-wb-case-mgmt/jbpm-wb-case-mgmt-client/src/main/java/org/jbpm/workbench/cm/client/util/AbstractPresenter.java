@@ -26,6 +26,9 @@ public abstract class AbstractPresenter<V extends UberElement> {
 
     @Inject
     protected V view;
+    
+    protected int pageSize;
+    protected int currentPage;
 
     @PostConstruct
     public void init() {
@@ -36,4 +39,19 @@ public abstract class AbstractPresenter<V extends UberElement> {
     public V getView() {
         return view;
     }
+    
+    public abstract void setPageSize(int pageSize);
+    
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setCurrentPage(int i) {
+        this.currentPage = i;
+    }
+
+    public int getCurrentPage() {
+        return this.currentPage;
+    }
+
 }

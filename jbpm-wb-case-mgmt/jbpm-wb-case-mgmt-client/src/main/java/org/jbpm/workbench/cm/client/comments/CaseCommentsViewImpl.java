@@ -164,11 +164,6 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter>
         }
     }
     
-    @Override
-    public void hideLoadButton() {        
-        loadDiv.setHidden(true);
-    }
-
     @EventHandler("addCommentButton")
     @SuppressWarnings("unsued")
     public void addCommentButton(@ForEvent("click") final Event e) {
@@ -221,5 +216,15 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter>
     @EventHandler("load-more-comments")
     public void loadMoreComments(final @ForEvent("click") MouseEvent event) {
         presenter.loadMoreCaseComments();
+    }
+    
+    @Override
+    public void hideLoadButton() {
+        loadDiv.setHidden(true);
+    }
+    
+    @Override
+    public void showLoadButton() {
+        loadDiv.setHidden(false);
     }
 }

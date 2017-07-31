@@ -22,11 +22,11 @@ import org.uberfire.client.mvp.UberElement;
 public abstract class AbstractView<T> implements UberElement<T> {
 
     protected T presenter;
-
+    
     public void init(T presenter) {
         this.presenter = presenter;
     }
-
+    
     protected native void tooltip(final HTMLElement e) /*-{
         $wnd.jQuery(e).tooltip();
     }-*/;

@@ -16,9 +16,11 @@
 
 package org.jbpm.workbench.cm.client.list;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
@@ -41,14 +43,19 @@ import org.uberfire.client.mvp.UberElement;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.jbpm.workbench.cm.client.resources.i18n.Constants.CASES_LIST;
+import static java.util.stream.Collectors.toList;
 
 @Dependent
 @WorkbenchScreen(identifier = CaseInstanceListPresenter.SCREEN_ID)
 public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceListPresenter.CaseInstanceListView> {
 
+    public static final int PAGE_SIZE = 10;
+    
     public static final String SCREEN_ID = "Case List";
 
     private Caller<CaseManagementService> caseService;
+
+    List<CaseInstanceSummary> visibleCaseInstances = new ArrayList<CaseInstanceSummary>();
 
     @Inject
     private PlaceManager placeManager;
@@ -58,6 +65,11 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
 
     @Inject
     private NewCaseInstancePresenter newCaseInstancePresenter;
+    
+    @Override
+    public void setPageSize(int pageSize) {
+    	this.pageSize = PAGE_SIZE;
+    }
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -70,15 +82,34 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
         super.init();
         refreshData();
     }
+    
+    @Override
+    public void setPageSize(int pageSize) {
+    	this.pageSize = PAGE_SIZE;
+    }
 
     public void createCaseInstance() {
         newCaseInstancePresenter.show();
     }
 
-    protected void refreshData() {
+    private void caseInstancesServiceCall() {
         caseService.call((List<CaseInstanceSummary> cases) -> {
-            view.setCaseInstanceList(cases);
-        }).getCaseInstances(view.getCaseInstanceSearchRequest());
+            visibleCaseInstances.addAll(cases);
+            if (cases.size() < getPageSize()) {
+                view.hideLoadButton();
+            }
+            else {
+                view.showLoadButton();
+            }
+            view.setCaseInstanceList(visibleCaseInstances.stream().collect(toList()));
+        }).getCaseInstances(view.getCaseInstanceSearchRequest(),
+                            getCurrentPage(),
+                            getPageSize());
+    }
+
+    protected void refreshData() {
+        visibleCaseInstances.clear();
+        caseInstancesServiceCall();
     }
 
     protected void selectCaseInstance(final CaseInstanceSummary cis) {
@@ -128,5 +159,14 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
         void setCaseInstanceList(List<CaseInstanceSummary> caseInstanceList);
 
         CaseInstanceSearchRequest getCaseInstanceSearchRequest();
+
+        void showLoadButton();
+
+        void hideLoadButton();
+    }
+
+    public void loadMoreCaseInstances() {
+        setCurrentPage(currentPage + 1);
+        caseInstancesServiceCall();
     }
 }
