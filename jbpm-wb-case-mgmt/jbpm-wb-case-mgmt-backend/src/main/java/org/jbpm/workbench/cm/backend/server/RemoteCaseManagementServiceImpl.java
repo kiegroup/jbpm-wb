@@ -87,10 +87,12 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public List<CaseInstanceSummary> getCaseInstances(final CaseInstanceSearchRequest request) {
+    public List<CaseInstanceSummary> getCaseInstances(final CaseInstanceSearchRequest request,
+                                                      Integer page,
+                                                      Integer pageSize) {
         final List<CaseInstance> caseInstances = client.getCaseInstances(singletonList(request.getStatus().getName()),
-                                                                         0,
-                                                                         PAGE_SIZE_UNLIMITED);
+                                                                         page,
+                                                                         pageSize);
         final Comparator<CaseInstanceSummary> comparator = getCaseInstanceSummaryComparator(request);
         return caseInstances.stream().map(new CaseInstanceMapper()).sorted(comparator).collect(toList());
     }
@@ -258,12 +260,14 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     @Override
     public List<CaseMilestoneSummary> getCaseMilestones(final String containerId,
                                                         final String caseId,
-                                                        final CaseMilestoneSearchRequest request) {
+                                                        final CaseMilestoneSearchRequest request,
+                                                        Integer page,
+                                                        Integer pageSize) {
         final List<CaseMilestone> caseMilestones = client.getMilestones(containerId,
                                                                         caseId,
                                                                         false,
-                                                                        0,
-                                                                        PAGE_SIZE_UNLIMITED);
+                                                                        page,
+                                                                        pageSize);
         final Comparator<CaseMilestoneSummary> comparator = getCaseMilestoneSummaryComparator(request);
         return caseMilestones.stream().map(new CaseMilestoneMapper()).sorted(comparator).collect(toList());
     }
@@ -295,8 +299,8 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                                                                caseId,
                                                                0,
                                                                PAGE_SIZE_UNLIMITED);
-        
-        return activeNodes.stream()             
+
+        return activeNodes.stream()
                 .map(s -> new CaseActionNodeInstanceMapper(
                         (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
                                 userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
