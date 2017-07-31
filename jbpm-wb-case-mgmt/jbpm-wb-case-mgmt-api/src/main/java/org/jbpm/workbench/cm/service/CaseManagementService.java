@@ -45,7 +45,9 @@ public interface CaseManagementService {
                              String owner,
                              List<CaseRoleAssignmentSummary> roleAssignments);
 
-    List<CaseInstanceSummary> getCaseInstances(CaseInstanceSearchRequest request);
+    List<CaseInstanceSummary> getCaseInstances(CaseInstanceSearchRequest request,
+                                               Integer page,
+                                               Integer pageSize);
 
     CaseInstanceSummary getCaseInstance(String serverTemplateId,
                                         String containerId,
@@ -109,7 +111,9 @@ public interface CaseManagementService {
 
     List<CaseMilestoneSummary> getCaseMilestones(final String containerId,
                                                  final String caseId,
-                                                 final CaseMilestoneSearchRequest request);
+                                                 final CaseMilestoneSearchRequest request,
+                                                 Integer page,
+                                                 Integer pageSize);
 
     Actions getCaseActions(String templateId,
                            String container,

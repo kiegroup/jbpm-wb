@@ -100,7 +100,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
             return mapper.readValue(inputStream,
                                     collectionType);
         } catch (Exception e) {
-            LOGGER.error("Failed to load json data file", 
+            LOGGER.error("Failed to load json data file",
                          e);
             return emptyList();
         }
@@ -148,19 +148,24 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
                                   }).collect(toList()));
 
         List<CaseCommentSummary> comments = new ArrayList<>(caseCommentList);
-        caseCommentMap.putIfAbsent(ci.getCaseId(), comments.stream().map(s -> {
-            s.setAddedAt(new Date());
-            return s;
-        }).collect(toList()));
+        caseCommentMap.putIfAbsent(ci.getCaseId(),
+                                   comments.stream().map(s -> {
+                                       s.setAddedAt(new Date());
+                                       return s;
+                                   }).collect(toList()));
 
         return ci.getCaseId();
     }
 
     @Override
-    public List<CaseInstanceSummary> getCaseInstances(final CaseInstanceSearchRequest request) {
+    public List<CaseInstanceSummary> getCaseInstances(final CaseInstanceSearchRequest request,
+                                                      Integer page,
+                                                      Integer pageSize) {
         return caseInstanceList.stream()
                 .filter(c -> c.getStatus().equals(request.getStatus()))
                 .sorted(getCaseInstanceSummaryComparator(request))
+                .skip(page * pageSize)
+                .limit(pageSize)
                 .collect(toList());
     }
 
@@ -188,10 +193,10 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     }
 
     @Override
-    public List<CaseCommentSummary> getComments(final String serverTemplateId, 
-                                                final String containerId, 
-                                                final String caseId, 
-                                                final Integer page, 
+    public List<CaseCommentSummary> getComments(final String serverTemplateId,
+                                                final String containerId,
+                                                final String caseId,
+                                                final Integer page,
                                                 final Integer pageSize) {
 
         List<CaseCommentSummary> allComments = caseCommentMap.get(caseId);
@@ -204,9 +209,11 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
         if (allCommentsSize < pageSize) {
             return allComments;
         } else if (pageIndex == page + 1) {
-            subList = allComments.subList(offset, allCommentsSize);
+            subList = allComments.subList(offset,
+                                          allCommentsSize);
         } else {
-            subList = allComments.subList(offset, offset + pageSize);
+            subList = allComments.subList(offset,
+                                          offset + pageSize);
         }
         return new ArrayList<CaseCommentSummary>(subList);
     }
@@ -315,9 +322,13 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     @Override
     public List<CaseMilestoneSummary> getCaseMilestones(final String containerId,
                                                         final String caseId,
-                                                        final CaseMilestoneSearchRequest request) {
+                                                        final CaseMilestoneSearchRequest request,
+                                                        Integer page,
+                                                        Integer pageSize) {
         return caseMilestoneList.stream()
                 .sorted(getCaseMilestoneSummaryComparator(request))
+                .skip(page * pageSize)
+                .limit(pageSize)
                 .collect(toList());
     }
 

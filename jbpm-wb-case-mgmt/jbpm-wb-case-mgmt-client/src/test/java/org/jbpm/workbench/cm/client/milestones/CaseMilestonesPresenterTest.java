@@ -75,7 +75,9 @@ public class CaseMilestonesPresenterTest extends AbstractCaseInstancePresenterTe
         caseService = new CallerMock<>(caseManagementService);
         when(caseManagementService.getCaseMilestones(anyString(),
                                                      anyString(),
-                                                     any(CaseMilestoneSearchRequest.class))).thenReturn(caseMilestonesSummaryList);
+                                                     any(CaseMilestoneSearchRequest.class),
+                                                     eq(0),
+                                                     eq(presenter.getPageSize()))).thenReturn(caseMilestonesSummaryList);
         when(caseMilestoneListView.getCaseMilestoneSearchRequest()).thenReturn(new CaseMilestoneSearchRequest());
         presenter.setCaseService(caseService);
 
@@ -89,7 +91,9 @@ public class CaseMilestonesPresenterTest extends AbstractCaseInstancePresenterTe
         List<CaseMilestoneSummary> milestones = singletonList(createCaseMilestone());
         when(caseManagementService.getCaseMilestones(anyString(),
                                                      anyString(),
-                                                     any(CaseMilestoneSearchRequest.class))).thenReturn(milestones);
+                                                     any(CaseMilestoneSearchRequest.class),
+                                                     eq(0),
+                                                     eq(presenter.getPageSize()))).thenReturn(milestones);
     }
 
     @Test
@@ -108,7 +112,9 @@ public class CaseMilestonesPresenterTest extends AbstractCaseInstancePresenterTe
         List<CaseMilestoneSummary> milestones = singletonList(createCaseMilestone());
         when(caseManagementService.getCaseMilestones(anyString(),
                                                      anyString(),
-                                                     any(CaseMilestoneSearchRequest.class))).thenReturn(milestones);
+                                                     any(CaseMilestoneSearchRequest.class),
+                                                     eq(0),
+                                                     eq(presenter.getPageSize()))).thenReturn(milestones);
 
         setupCaseInstance(cis,
                           serverTemplateId);
@@ -126,11 +132,35 @@ public class CaseMilestonesPresenterTest extends AbstractCaseInstancePresenterTe
         verify(caseManagementService,
                times(2)).getCaseMilestones(cis.getContainerId(),
                                            cis.getCaseId(),
-                                           caseMilestoneListView.getCaseMilestoneSearchRequest());
+                                           caseMilestoneListView.getCaseMilestoneSearchRequest(),
+                                           0,
+                                           presenter.getPageSize());
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
         verify(caseMilestoneListView,
                times(2)).setCaseMilestoneList(captor.capture());
         assertEquals(caseMilestonesSummaryList.size(),
                      captor.getValue().size());
+    }
+
+    @Test
+    public void testLoadMoreCaseMilestones() {
+        setupCaseInstance(cis,
+                          serverTemplateId);
+        presenter.searchCaseMilestones();
+
+        for (int i = 0; i < 25; i++) {
+            caseMilestonesSummaryList.add(createCaseMilestone());
+        }
+
+        presenter.loadMoreCaseMilestones();
+
+        assertEquals(1,
+                     presenter.getCurrentPage());
+        verify(caseManagementService,
+                times(1)).getCaseMilestones(cis.getContainerId(),
+                                            cis.getCaseId(),
+                                            caseMilestoneListView.getCaseMilestoneSearchRequest(),
+                                            1,
+                                            presenter.getPageSize());
     }
 }
