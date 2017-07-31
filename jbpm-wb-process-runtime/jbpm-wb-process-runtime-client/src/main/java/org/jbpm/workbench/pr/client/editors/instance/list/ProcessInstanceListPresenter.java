@@ -706,9 +706,12 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     }
 
     public void openErrorView(final String pid) {
-        navigateToPerspective(EXECUTION_ERRORS,
-                              SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
-                              pid);
+        final PlaceRequest request = new DefaultPlaceRequest(EXECUTION_ERRORS);
+        request.addParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
+                             pid);
+        request.addParameter(SEARCH_PARAMETER_IS_ERROR_ACK,
+                             Boolean.toString(false));
+        placeManager.goTo(request);
     }
 
     public Predicate<ProcessInstanceSummary> getSignalActionCondition() {
