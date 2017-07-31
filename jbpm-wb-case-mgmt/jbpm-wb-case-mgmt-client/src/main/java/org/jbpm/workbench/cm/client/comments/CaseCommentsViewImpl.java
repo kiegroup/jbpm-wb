@@ -51,18 +51,17 @@ import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 
 @Dependent
 @Templated
-public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter> 
-        implements CaseCommentsPresenter.CaseCommentsView {
+public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter>
+    implements CaseCommentsPresenter.CaseCommentsView {
 
     @Inject
     @DataField("load-div")
     Div loadDiv;
-    
+
     @Inject
     @DataField("load-more-comments")
     @SuppressWarnings("PMD.UnusedPrivateField")
     private Button loadMoreComments;
-
 
     @Inject
     @DataField("comments")
@@ -145,14 +144,14 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter>
     @Override
     public void resetPagination() {
         presenter.setCurrentPage(0);
-        onSortChange(sortAlphaAsc, 
-                     sortAlphaDesc, 
+        onSortChange(sortAlphaAsc,
+                     sortAlphaDesc,
                      false);
     }
 
     @Override
     public void setCaseCommentList(final List<CaseCommentSummary> caseCommentList) {
-        
+
         this.caseCommentList.setModel(caseCommentList);
 
         if (caseCommentList.isEmpty()) {
@@ -163,10 +162,15 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter>
                         "hidden");
         }
     }
-    
+
     @Override
-    public void hideLoadButton() {        
+    public void hideLoadButton() {
         loadDiv.setHidden(true);
+    }
+
+    @Override
+    public void showLoadButton() {
+        loadDiv.setHidden(false);
     }
 
     @EventHandler("addCommentButton")
@@ -217,7 +221,7 @@ public class CaseCommentsViewImpl extends AbstractView<CaseCommentsPresenter>
                        "hidden");
         presenter.sortComments(sortByAsc);
     }
-    
+
     @EventHandler("load-more-comments")
     public void loadMoreComments(final @ForEvent("click") MouseEvent event) {
         presenter.loadMoreCaseComments();

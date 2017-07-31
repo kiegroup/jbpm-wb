@@ -27,6 +27,7 @@ import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
 import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
+import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
 import org.jbpm.workbench.cm.util.Actions;
 import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
@@ -42,6 +43,7 @@ import org.kie.server.api.model.cases.CaseFile;
 import org.kie.server.api.model.cases.CaseInstance;
 import org.kie.server.api.model.cases.CaseMilestone;
 import org.kie.server.api.model.cases.CaseStage;
+import org.kie.server.api.model.definition.ProcessDefinition;
 import org.kie.server.api.model.instance.NodeInstance;
 import org.kie.server.api.model.instance.TaskInstance;
 import org.kie.server.client.CaseServicesClient;
@@ -87,15 +89,97 @@ public class RemoteCaseManagementServiceImplTest {
 
     @InjectMocks
     RemoteCaseManagementServiceImpl testedService;
+    
+    /* Helper functions for test setup */
+
+    private CaseDefinition createTestCaseDefinition() {
+        CaseDefinition definition = CaseDefinition.builder()
+            .id(caseDefinitionId)
+            .name(caseName)
+            .containerId(containerId)
+            .roles(Collections.emptyMap())
+            .build();
+
+        return definition;
+    }
+
+    private CaseInstance createTestInstance(String caseId) {
+        CaseInstance instance = CaseInstance.builder()
+            .caseDescription(caseDescription)
+            .caseId(caseId)
+            .caseStatus(1)
+            .containerId(containerId)
+            .build();
+
+        return instance;
+    }
+
+    private CaseComment createTestComment() {
+        CaseComment comment = CaseComment.builder()
+            .id(commentId)
+            .author(author)
+            .text(text)
+            .addedAt(new Date())
+            .build();
+
+        return comment;
+    }
+
+    private CaseMilestone createTestMilestone(String caseMilestoneId,
+                                              String caseMilestoneName,
+                                              String status) {
+        CaseMilestone milestone = CaseMilestone.builder()
+            .name(caseMilestoneName)
+            .status(status)
+            .id(caseMilestoneId)
+            .achieved(false)
+            .build();
+
+        return milestone;
+    }
+
+    private CaseAdHocFragment createTestCaseAdHocFragment(String name,
+                                                          String type) {
+        CaseAdHocFragment caseAdHocFragment = CaseAdHocFragment.builder()
+            .name(name)
+            .type(type)
+            .build();
+
+        return caseAdHocFragment;
+    }
+
+    private NodeInstance createTestNodeInstace(String name,
+                                               String nodeType,
+                                               Long workItemId) {
+        NodeInstance nodeInstance = NodeInstance.builder()
+            .name(name)
+            .nodeType(nodeType)
+            .workItemId(workItemId)
+            .date(new Date())
+            .build();
+
+        return nodeInstance;
+    }
+
+    private CaseStage createTestCaseStage(String stageId,
+                                          String stageName,
+                                          String stageStatus) {
+        CaseStage stage = CaseStage.builder()
+            .id(stageId)
+            .name(stageName)
+            .status(stageStatus)
+            .build();
+        return stage;
+    }
 
     @Test
     public void testGetCaseDefinitions_singleCaseDefinition() {
-        final CaseDefinition definition = createTestDefinition();
+        final CaseDefinition definition = createTestCaseDefinition();
         when(clientMock.getCaseDefinitions(anyInt(),
                                            anyInt(),
                                            eq(CaseServicesClient.SORT_BY_CASE_DEFINITION_NAME),
                                            eq(true)))
-                .thenReturn(singletonList(definition));
+            .thenReturn(singletonList(definition));
 
         List<CaseDefinitionSummary> definitions = testedService.getCaseDefinitions();
         assertNotNull(definitions);
@@ -109,7 +193,7 @@ public class RemoteCaseManagementServiceImplTest {
     public void testGetCaseDefinitions_emptyList() {
         when(clientMock.getCaseDefinitions(anyInt(),
                                            anyInt()))
-                .thenReturn(emptyList());
+            .thenReturn(emptyList());
 
         List<CaseDefinitionSummary> definitions = testedService.getCaseDefinitions();
         assertNotNull(definitions);
@@ -118,10 +202,10 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void getCaseDefinition_whenClientReturnsCaseDefinition() {
-        final CaseDefinition definition = createTestDefinition();
+        final CaseDefinition definition = createTestCaseDefinition();
         when(clientMock.getCaseDefinition(anyString(),
                                           anyString()))
-                .thenReturn(definition);
+            .thenReturn(definition);
 
         CaseDefinitionSummary actualDef = testedService.getCaseDefinition(serverTemplateId,
                                                                           containerId,
@@ -134,7 +218,7 @@ public class RemoteCaseManagementServiceImplTest {
     public void getCaseDefinition_whenClientReturnsNull() {
         when(clientMock.getCaseDefinition(anyString(),
                                           anyString()))
-                .thenReturn(null);
+            .thenReturn(null);
 
         CaseDefinitionSummary shouldBeNull = testedService.getCaseDefinition(serverTemplateId,
                                                                              containerId,
@@ -150,7 +234,9 @@ public class RemoteCaseManagementServiceImplTest {
                                          anyInt(),
                                          anyInt())).thenReturn(singletonList(instance));
 
-        final List<CaseInstanceSummary> instances = testedService.getCaseInstances(request);
+        final List<CaseInstanceSummary> instances = testedService.getCaseInstances(request,
+                                                                                   0,
+                                                                                   10);
         assertNotNull(instances);
         assertEquals(1,
                      instances.size());
@@ -165,7 +251,9 @@ public class RemoteCaseManagementServiceImplTest {
                                          anyInt(),
                                          anyInt())).thenReturn(emptyList());
 
-        final List<CaseInstanceSummary> instances = testedService.getCaseInstances(request);
+        final List<CaseInstanceSummary> instances = testedService.getCaseInstances(request,
+                                                                                   0,
+                                                                                   10);
         assertNotNull(instances);
         assertTrue(instances.isEmpty());
     }
@@ -184,7 +272,9 @@ public class RemoteCaseManagementServiceImplTest {
                                                                              c2));
 
         CaseInstanceSearchRequest defaultSortRequest = new CaseInstanceSearchRequest(); //Default sort is by CASE_ID
-        List<CaseInstanceSummary> sortedInstances = testedService.getCaseInstances(defaultSortRequest);
+        List<CaseInstanceSummary> sortedInstances = testedService.getCaseInstances(defaultSortRequest,
+                                                                                   0,
+                                                                                   10);
         assertEquals("id1",
                      sortedInstances.get(0).getCaseId());
         assertEquals("id2",
@@ -193,13 +283,17 @@ public class RemoteCaseManagementServiceImplTest {
         CaseInstanceSearchRequest sortByIdRequest = new CaseInstanceSearchRequest();
         sortByIdRequest.setSortBy(CaseInstanceSortBy.CASE_ID);
         sortByIdRequest.setSortByAsc(true);
-        sortedInstances = testedService.getCaseInstances(sortByIdRequest);
+        sortedInstances = testedService.getCaseInstances(sortByIdRequest,
+                                                         0,
+                                                         10);
         assertEquals("id1",
                      sortedInstances.get(0).getCaseId());
         assertEquals("id2",
                      sortedInstances.get(1).getCaseId());
         sortByIdRequest.setSortByAsc(false);
-        sortedInstances = testedService.getCaseInstances(sortByIdRequest);
+        sortedInstances = testedService.getCaseInstances(sortByIdRequest,
+                                                         0,
+                                                         10);
         assertEquals("id2",
                      sortedInstances.get(0).getCaseId());
         assertEquals("id1",
@@ -208,13 +302,17 @@ public class RemoteCaseManagementServiceImplTest {
         CaseInstanceSearchRequest sortByStarted = new CaseInstanceSearchRequest();
         sortByStarted.setSortBy(CaseInstanceSortBy.START_TIME);
         sortByStarted.setSortByAsc(true);
-        sortedInstances = testedService.getCaseInstances(sortByStarted);
+        sortedInstances = testedService.getCaseInstances(sortByStarted,
+                                                         0,
+                                                         10);
         assertEquals("id2",
                      sortedInstances.get(0).getCaseId());
         assertEquals("id1",
                      sortedInstances.get(1).getCaseId());
         sortByStarted.setSortByAsc(false);
-        sortedInstances = testedService.getCaseInstances(sortByStarted);
+        sortedInstances = testedService.getCaseInstances(sortByStarted,
+                                                         0,
+                                                         10);
         assertEquals("id1",
                      sortedInstances.get(0).getCaseId());
         assertEquals("id2",
@@ -273,7 +371,7 @@ public class RemoteCaseManagementServiceImplTest {
                                         true,
                                         true,
                                         true))
-                .thenReturn(ci);
+            .thenReturn(ci);
 
         final CaseInstanceSummary cis = testedService.getCaseInstance(serverTemplateId,
                                                                       ci.getContainerId(),
@@ -290,7 +388,7 @@ public class RemoteCaseManagementServiceImplTest {
                                         true,
                                         true,
                                         true))
-                .thenReturn(null);
+            .thenReturn(null);
 
         final CaseInstanceSummary cis = testedService.getCaseInstance(serverTemplateId,
                                                                       containerId,
@@ -316,63 +414,6 @@ public class RemoteCaseManagementServiceImplTest {
                      comments.size());
         assertCaseComment(caseComment,
                           comments.get(0));
-    }
-
-    @Test
-    public void testGetComments_bulkComments() {
-        int pageSize = 20;
-        List<CaseComment> caseComments = new ArrayList<>();
-
-        for (int i = 0; i < 55; i++) {
-            final CaseComment caseComment = createTestComment();
-            caseComments.add(caseComment);
-        }
-        
-        List<CaseComment> firstPage = caseComments.subList(0, 20);
-        List<CaseComment> secondPage = caseComments.subList(20, 40);
-        List<CaseComment> thirdPage = caseComments.subList(40, 55);
-        
-        when(clientMock.getComments(containerId, 
-                                    caseId, 
-                                    0, 
-                                    20)).thenReturn(firstPage);
-        
-        List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId, 
-                                                                      containerId, 
-                                                                      caseId, 
-                                                                      0, 
-                                                                      pageSize);
-        
-        assertNotNull(comments);
-        assertEquals(20, comments.size());
-        
-        when(clientMock.getComments(containerId, 
-                                    caseId, 
-                                    1, 
-                                    20)).thenReturn(secondPage);
-        
-        comments = testedService.getComments(serverTemplateId, 
-                                             containerId, 
-                                             caseId, 
-                                             1, 
-                                             pageSize);
-        
-        assertNotNull(comments);
-        assertEquals(20, comments.size());
-        
-        when(clientMock.getComments(containerId, 
-                                    caseId, 
-                                    2, 
-                                    20)).thenReturn(thirdPage);
-        
-        comments = testedService.getComments(serverTemplateId, 
-                                             containerId, 
-                                             caseId, 
-                                             2, 
-                                             pageSize);
-        
-        assertNotNull(comments);
-        assertEquals(15, comments.size());       
     }
 
     @Test
@@ -456,7 +497,9 @@ public class RemoteCaseManagementServiceImplTest {
         CaseMilestoneSearchRequest defaultSortRequest = new CaseMilestoneSearchRequest(); //Default sort is by MILESTONE_NAME
         List<CaseMilestoneSummary> sortedMilestones = testedService.getCaseMilestones("containerId",
                                                                                       "caseId",
-                                                                                      defaultSortRequest);
+                                                                                      defaultSortRequest,
+                                                                                      0,
+                                                                                      10);
         assertEquals("id1",
                      sortedMilestones.get(0).getIdentifier());
         assertEquals("id2",
@@ -468,7 +511,9 @@ public class RemoteCaseManagementServiceImplTest {
         sortByNameAscRequest.setSortByAsc(true);
         sortedMilestones = testedService.getCaseMilestones("containerId",
                                                            "caseId",
-                                                           sortByNameAscRequest);
+                                                           sortByNameAscRequest,
+                                                           0,
+                                                           10);
         assertEquals("id1",
                      sortedMilestones.get(0).getIdentifier());
         assertEquals("id2",
@@ -480,93 +525,15 @@ public class RemoteCaseManagementServiceImplTest {
         sortByNameDescRequest.setSortByAsc(false);
         sortedMilestones = testedService.getCaseMilestones("containerId",
                                                            "caseId",
-                                                           sortByNameDescRequest);
+                                                           sortByNameDescRequest,
+                                                           0,
+                                                           10);
         assertEquals("id2",
                      sortedMilestones.get(0).getIdentifier());
         assertEquals("id1",
                      sortedMilestones.get(1).getIdentifier());
         assertEquals("id3",
                      sortedMilestones.get(2).getIdentifier());
-    }
-
-    private CaseDefinition createTestDefinition() {
-        CaseDefinition definition = CaseDefinition.builder()
-                .id(caseDefinitionId)
-                .name(caseName)
-                .containerId(containerId)
-                .roles(Collections.emptyMap())
-                .build();
-
-        return definition;
-    }
-
-    private CaseInstance createTestInstance(String caseId) {
-        CaseInstance instance = CaseInstance.builder()
-                .caseDescription(caseDescription)
-                .caseId(caseId)
-                .caseStatus(1)
-                .containerId(containerId)
-                .build();
-
-        return instance;
-    }
-
-    private CaseComment createTestComment() {
-        CaseComment comment = CaseComment.builder()
-                .id(commentId)
-                .author(author)
-                .text(text)
-                .addedAt(new Date())
-                .build();
-
-        return comment;
-    }
-
-    private CaseMilestone createTestMilestone(String caseMilestoneId,
-                                              String caseMilestoneName,
-                                              String status) {
-        CaseMilestone milestone = CaseMilestone.builder()
-                .name(caseMilestoneName)
-                .status(status)
-                .id(caseMilestoneId)
-                .achieved(false)
-                .build();
-
-        return milestone;
-    }
-
-    private CaseAdHocFragment createTestCaseAdHocFragment(String name,
-                                                          String type) {
-        CaseAdHocFragment caseAdHocFragment = CaseAdHocFragment.builder()
-                .name(name)
-                .type(type)
-                .build();
-
-        return caseAdHocFragment;
-    }
-
-    private NodeInstance createTestNodeInstace(String name,
-                                               String nodeType,
-                                               Long workItemId) {
-        NodeInstance nodeInstance = NodeInstance.builder()
-                .name(name)
-                .nodeType(nodeType)
-                .workItemId(workItemId)
-                .date(new Date())
-                .build();
-
-        return nodeInstance;
-    }
-
-    private CaseStage createTestCaseStage(String stageId,
-                                          String stageName,
-                                          String stageStatus) {
-        CaseStage stage = CaseStage.builder()
-                .id(stageId)
-                .name(stageName)
-                .status(stageStatus)
-                .build();     
-        return stage;
     }
 
     @Test
@@ -601,7 +568,7 @@ public class RemoteCaseManagementServiceImplTest {
                                         true,
                                         true,
                                         true))
-                .thenReturn(ci);
+            .thenReturn(ci);
 
         CaseAdHocFragment cAHF1 = createTestCaseAdHocFragment("adHocFragment-name-1",
                                                               "adHocFragment-type-1");
@@ -640,8 +607,8 @@ public class RemoteCaseManagementServiceImplTest {
                                                                               node4));
 
         TaskInstance t1 = TaskInstance.builder()
-                .actualOwner("Koe")
-                .build();
+            .actualOwner("Koe")
+            .build();
         when(userTaskServicesClient.findTaskByWorkItemId(node1WorkItemId)).thenReturn(t1);
         when(userTaskServicesClient.findTaskByWorkItemId(node3WorkItemId)).thenReturn(t1);
 
@@ -704,8 +671,8 @@ public class RemoteCaseManagementServiceImplTest {
                                                    "Service Task",
                                                    node2WorkItemId);
         TaskInstance t1 = TaskInstance.builder()
-                .actualOwner(taskActualOwner)
-                .build();
+            .actualOwner(taskActualOwner)
+            .build();
 
         when(clientMock.getActiveNodes(eq(containerId),
                                        eq(caseId),
@@ -738,7 +705,7 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void getAdHocActionsTest() {
-        final CaseInstance ci = createTestInstance(caseId);       
+        final CaseInstance ci = createTestInstance(caseId);
         CaseStage stage1 = createTestCaseStage("stage1",
                                                "stage1-name",
                                                CaseStageStatus.ACTIVE.getStatus());
@@ -768,7 +735,7 @@ public class RemoteCaseManagementServiceImplTest {
                                         true,
                                         true,
                                         true))
-                .thenReturn(ci);
+            .thenReturn(ci);
 
         CaseAdHocFragment cAHF1 = createTestCaseAdHocFragment("adHocFragment-name-1",
                                                               "adHocFragment-type-1");
@@ -795,5 +762,176 @@ public class RemoteCaseManagementServiceImplTest {
 
         verify(clientMock).getAdHocFragments(containerId,
                                              caseId);
+    }
+    
+    /* Tests for results pagination */
+
+    @Test
+    public void getCaseInstances_bulkCaseInstances() {
+        int pageSize = 20;
+
+        final CaseInstanceSearchRequest request = new CaseInstanceSearchRequest();
+
+        List<CaseInstance> caseInstances = new ArrayList<CaseInstance>();
+
+        for (int i = 0; i < 55; i++) {
+            caseInstances.add(createTestInstance(caseId));
+        }
+
+        List<CaseInstance> expectedFirstPage = caseInstances.subList(0,
+                                                                     20);
+        List<CaseInstance> expectedSecondPage = caseInstances.subList(20,
+                                                                      40);
+        List<CaseInstance> expectedThirdPage = caseInstances.subList(40,
+                                                                     55);
+
+        when(clientMock.getCaseInstances(singletonList(request.getStatus().getName()),
+                                         0,
+                                         pageSize)).thenReturn(expectedFirstPage);
+        List<CaseInstanceSummary> actualFirstPage = testedService.getCaseInstances(request,
+                                                                                   0,
+                                                                                   pageSize);
+        assertEquals(20,
+                     actualFirstPage.size());
+
+        when(clientMock.getCaseInstances(singletonList(request.getStatus().getName()),
+                                         1,
+                                         pageSize)).thenReturn(expectedSecondPage);
+        List<CaseInstanceSummary> actualSecondPage = testedService.getCaseInstances(request,
+                                                                                    1,
+                                                                                    pageSize);
+        assertEquals(20,
+                     actualSecondPage.size());
+
+        when(clientMock.getCaseInstances(singletonList(request.getStatus().getName()),
+                                         2,
+                                         pageSize)).thenReturn(expectedThirdPage);
+        List<CaseInstanceSummary> actualThirdPage = testedService.getCaseInstances(request,
+                                                                                   2,
+                                                                                   pageSize);
+        assertEquals(15,
+                     actualThirdPage.size());
+    }
+
+    @Test
+    public void testGetComments_bulkComments() {
+        int pageSize = 20;
+        List<CaseComment> caseComments = new ArrayList<>();
+
+        for (int i = 0; i < 55; i++) {
+            final CaseComment caseComment = createTestComment();
+            caseComments.add(caseComment);
+        }
+
+        List<CaseComment> expectedFirstPage = caseComments.subList(0,
+                                                                   20);
+        List<CaseComment> expectedSecondPage = caseComments.subList(20,
+                                                                    40);
+        List<CaseComment> expectedThirdPage = caseComments.subList(40,
+                                                                   55);
+
+        when(clientMock.getComments(containerId,
+                                    caseId,
+                                    0,
+                                    20)).thenReturn(expectedFirstPage);
+
+        List<CaseCommentSummary> actualFirstPage = testedService.getComments(serverTemplateId,
+                                                                             containerId,
+                                                                             caseId,
+                                                                             0,
+                                                                             pageSize);
+
+        assertNotNull(actualFirstPage);
+        assertEquals(20,
+                     actualFirstPage.size());
+
+        when(clientMock.getComments(containerId,
+                                    caseId,
+                                    1,
+                                    20)).thenReturn(expectedSecondPage);
+
+        List<CaseCommentSummary> actualSecondPage = testedService.getComments(serverTemplateId,
+                                                                              containerId,
+                                                                              caseId,
+                                                                              1,
+                                                                              pageSize);
+
+        assertNotNull(actualSecondPage);
+        assertEquals(20,
+                     actualSecondPage.size());
+
+        when(clientMock.getComments(containerId,
+                                    caseId,
+                                    2,
+                                    20)).thenReturn(expectedThirdPage);
+
+        List<CaseCommentSummary> actualThirdPage = testedService.getComments(serverTemplateId,
+                                                                             containerId,
+                                                                             caseId,
+                                                                             2,
+                                                                             pageSize);
+
+        assertNotNull(actualThirdPage);
+        assertEquals(15,
+                     actualThirdPage.size());
+    }
+
+    @Test
+    public void getCaseMilestones_bulkMilestones() {
+        int pageSize = 20;
+
+        List<CaseMilestone> caseMilestones = new ArrayList<CaseMilestone>();
+
+        for (int i = 0; i < 55; i++) {
+            caseMilestones.add(createTestMilestone("id" + i,
+                                                   "milestone" + i,
+                                                   "Available"));
+        }
+
+        List<CaseMilestone> expectedFirstPage = caseMilestones.subList(0,
+                                                                       20);
+        List<CaseMilestone> expectedSecondPage = caseMilestones.subList(20,
+                                                                        40);
+        List<CaseMilestone> expectedThirdPage = caseMilestones.subList(40,
+                                                                       55);
+
+        when(clientMock.getMilestones(containerId,
+                                      caseId,
+                                      false,
+                                      0,
+                                      pageSize)).thenReturn(expectedFirstPage);
+        List<CaseMilestoneSummary> actualFirstPage = testedService.getCaseMilestones(containerId,
+                                                                                     caseId,
+                                                                                     new CaseMilestoneSearchRequest(),
+                                                                                     0,
+                                                                                     pageSize);
+        assertEquals(expectedFirstPage.size(),
+                     actualFirstPage.size());
+
+        when(clientMock.getMilestones(containerId,
+                                      caseId,
+                                      false,
+                                      1,
+                                      pageSize)).thenReturn(expectedSecondPage);
+        List<CaseMilestoneSummary> actualSecondPage = testedService.getCaseMilestones(containerId,
+                                                                                      caseId,
+                                                                                      new CaseMilestoneSearchRequest(),
+                                                                                      1,
+                                                                                      pageSize);
+        assertEquals(expectedSecondPage.size(),
+                     actualSecondPage.size());
+
+        when(clientMock.getMilestones(containerId,
+                                      caseId,
+                                      false,
+                                      2,
+                                      pageSize)).thenReturn(expectedThirdPage);
+        List<CaseMilestoneSummary> actualThirdPage = testedService.getCaseMilestones(containerId,
+                                                                                     caseId,
+                                                                                     new CaseMilestoneSearchRequest(),
+                                                                                     2,
+                                                                                     pageSize);
+        assertEquals(expectedThirdPage.size(),
+                     actualThirdPage.size());
     }
 }

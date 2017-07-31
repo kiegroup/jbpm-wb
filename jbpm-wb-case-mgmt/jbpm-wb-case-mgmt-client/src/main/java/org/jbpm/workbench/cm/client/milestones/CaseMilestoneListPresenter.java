@@ -16,7 +16,9 @@
 
 package org.jbpm.workbench.cm.client.milestones;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.enterprise.context.Dependent;
 
 import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenter;
@@ -29,12 +31,21 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberElement;
 
 import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
+import static java.util.stream.Collectors.toList;
 
 @Dependent
 @WorkbenchScreen(identifier = CaseMilestoneListPresenter.SCREEN_ID)
 public class CaseMilestoneListPresenter extends AbstractCaseInstancePresenter<CaseMilestoneListPresenter.CaseMilestoneListView> {
 
+    public static final int PAGE_SIZE = 10;
+
     public static final String SCREEN_ID = "Case Milestone List";
+
+    Set<CaseMilestoneSummary> visibleCaseMilestones = new HashSet<CaseMilestoneSummary>();
+
+    public CaseMilestoneListPresenter() {
+        setPageSize();
+    }
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -48,19 +59,56 @@ public class CaseMilestoneListPresenter extends AbstractCaseInstancePresenter<Ca
 
     @Override
     protected void loadCaseInstance(final CaseInstanceSummary cis) {
-        refreshData(caseId);
+        refreshData();
+    }
+    
+    @Override
+    public void setPageSize() {
+        this.pageSize = PAGE_SIZE;          
     }
 
     protected void searchCaseMilestones() {
-        refreshData(caseId);
+        refreshData();
     }
 
-    protected void refreshData(String caseId) {
+    protected void refreshData() {
+        milestonesServiceCall(caseId,
+                              getCurrentPage());
+    }
+
+    protected void milestonesServiceCall(String caseId,
+                                         int currentPage) {
         caseService.call((List<CaseMilestoneSummary> milestones) -> {
-            view.setCaseMilestoneList(milestones);
+            visibleCaseMilestones.addAll(milestones);
+            view.setCaseMilestoneList(visibleCaseMilestones.stream()
+                                          .collect(toList()));
         }).getCaseMilestones(containerId,
                              caseId,
-                             view.getCaseMilestoneSearchRequest());
+                             view.getCaseMilestoneSearchRequest(),
+                             getCurrentPage(),
+                             getPageSize());
+
+        loadButtonToggle();
+    }
+
+    protected void loadMoreCaseMilestones() {
+        setCurrentPage(getCurrentPage() + 1);
+        milestonesServiceCall(caseId,
+                              getCurrentPage());
+    }
+
+    private void loadButtonToggle() {
+        caseService.call((List<CaseMilestoneSummary> milestones) -> {
+            if (milestones.isEmpty()) {
+                view.hideLoadButton();
+            } else {
+                view.showLoadButton();
+            }
+        }).getCaseMilestones(containerId,
+                             caseId,
+                             view.getCaseMilestoneSearchRequest(),
+                             getCurrentPage() + 1,
+                             getPageSize());
     }
 
     public interface CaseMilestoneListView extends UberElement<CaseMilestoneListPresenter> {
@@ -70,5 +118,9 @@ public class CaseMilestoneListPresenter extends AbstractCaseInstancePresenter<Ca
         void setCaseMilestoneList(List<CaseMilestoneSummary> caseMilestoneList);
 
         CaseMilestoneSearchRequest getCaseMilestoneSearchRequest();
+
+        void hideLoadButton();
+
+        void showLoadButton();
     }
 }

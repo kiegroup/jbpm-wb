@@ -17,8 +17,10 @@
 package org.jbpm.workbench.cm.client.list;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
@@ -41,14 +43,19 @@ import org.uberfire.client.mvp.UberElement;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.jbpm.workbench.cm.client.resources.i18n.Constants.CASES_LIST;
+import static java.util.stream.Collectors.toList;
 
 @Dependent
 @WorkbenchScreen(identifier = CaseInstanceListPresenter.SCREEN_ID)
 public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceListPresenter.CaseInstanceListView> {
 
+    public static final int PAGE_SIZE = 10;
+
     public static final String SCREEN_ID = "Case List";
 
     private Caller<CaseManagementService> caseService;
+
+    Set<CaseInstanceSummary> visibleCaseInstances = new HashSet<CaseInstanceSummary>();
 
     @Inject
     private PlaceManager placeManager;
@@ -68,17 +75,47 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
     @Override
     public void init() {
         super.init();
+        setPageSize();
         refreshData();
+    }
+
+    @Override
+    public void setPageSize() {
+        this.pageSize = PAGE_SIZE;
     }
 
     public void createCaseInstance() {
         newCaseInstancePresenter.show();
     }
 
-    protected void refreshData() {
+    private void loadButtonToggle() {
         caseService.call((List<CaseInstanceSummary> cases) -> {
-            view.setCaseInstanceList(cases);
-        }).getCaseInstances(view.getCaseInstanceSearchRequest());
+            if (cases.isEmpty()) {
+                view.hideLoadButton();
+            } else {
+                view.showLoadButton();
+            }
+        }).getCaseInstances(view.getCaseInstanceSearchRequest(),
+                            getCurrentPage() + 1,
+                            getPageSize());
+    }
+
+    private void caseInstancesServiceCall() {
+        caseService.call((List<CaseInstanceSummary> caseInstances) -> {
+            visibleCaseInstances.addAll(caseInstances);    
+            view.setCaseInstanceList(visibleCaseInstances.stream().collect(toList()));
+        }).getCaseInstances(view.getCaseInstanceSearchRequest(),
+                            getCurrentPage(),
+                            getPageSize());
+        loadButtonToggle();
+
+        if (visibleCaseInstances.isEmpty()) {
+            setCurrentPage(0);
+        }
+    }
+
+    protected void refreshData() {
+        caseInstancesServiceCall();
     }
 
     protected void selectCaseInstance(final CaseInstanceSummary cis) {
@@ -96,7 +133,10 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
 
     protected void cancelCaseInstance(final CaseInstanceSummary caseInstanceSummary) {
         caseService.call(
-                e -> refreshData()
+            e -> {
+                visibleCaseInstances.remove(caseInstanceSummary.getCaseId());
+                refreshData();
+            }
         ).cancelCaseInstance(null,
                              caseInstanceSummary.getContainerId(),
                              caseInstanceSummary.getCaseId());
@@ -104,7 +144,10 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
 
     protected void destroyCaseInstance(final CaseInstanceSummary caseInstanceSummary) {
         caseService.call(
-                e -> refreshData()
+            e -> {
+                visibleCaseInstances.remove(caseInstanceSummary.getCaseId());
+                refreshData();
+            }
         ).destroyCaseInstance(null,
                               caseInstanceSummary.getContainerId(),
                               caseInstanceSummary.getCaseId());
@@ -123,10 +166,19 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
         this.caseService = caseService;
     }
 
+    public void loadMoreCaseInstances() {
+        setCurrentPage(getCurrentPage() + 1);
+        caseInstancesServiceCall();
+    }
+
     public interface CaseInstanceListView extends UberElement<CaseInstanceListPresenter> {
 
         void setCaseInstanceList(List<CaseInstanceSummary> caseInstanceList);
 
         CaseInstanceSearchRequest getCaseInstanceSearchRequest();
+
+        void hideLoadButton();
+
+        void showLoadButton();
     }
 }

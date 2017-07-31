@@ -100,7 +100,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
             return mapper.readValue(inputStream,
                                     collectionType);
         } catch (Exception e) {
-            LOGGER.error("Failed to load json data file", 
+            LOGGER.error("Failed to load json data file",
                          e);
             return emptyList();
         }
@@ -125,19 +125,19 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
                                     final String owner,
                                     final List<CaseRoleAssignmentSummary> roleAssignments) {
         final CaseInstanceSummary ci = CaseInstanceSummary
-                .builder()
-                .caseId("CASE-" + Strings.padStart(String.valueOf(caseInstanceList.size() + 1),
-                                                   5,
-                                                   '0'))
-                .owner(owner)
-                .startedAt(new Date())
-                .caseDefinitionId(caseDefinitionId)
-                .status(CaseStatus.OPEN)
-                .description("New case instance for development")
-                .containerId(containerId)
-                .stages(caseStageList)
-                .roleAssignments(roleAssignments)
-                .build();
+            .builder()
+            .caseId("CASE-" + Strings.padStart(String.valueOf(caseInstanceList.size() + 1),
+                                               5,
+                                               '0'))
+            .owner(owner)
+            .startedAt(new Date())
+            .caseDefinitionId(caseDefinitionId)
+            .status(CaseStatus.OPEN)
+            .description("New case instance for development")
+            .containerId(containerId)
+            .stages(caseStageList)
+            .roleAssignments(roleAssignments)
+            .build();
         caseInstanceList.add(ci);
 
         List<CaseActionSummary> actions = new ArrayList<>(caseActionList);
@@ -148,20 +148,25 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
                                   }).collect(toList()));
 
         List<CaseCommentSummary> comments = new ArrayList<>(caseCommentList);
-        caseCommentMap.putIfAbsent(ci.getCaseId(), comments.stream().map(s -> {
-            s.setAddedAt(new Date());
-            return s;
-        }).collect(toList()));
+        caseCommentMap.putIfAbsent(ci.getCaseId(),
+                                   comments.stream().map(s -> {
+                                       s.setAddedAt(new Date());
+                                       return s;
+                                   }).collect(toList()));
 
         return ci.getCaseId();
     }
 
     @Override
-    public List<CaseInstanceSummary> getCaseInstances(final CaseInstanceSearchRequest request) {
+    public List<CaseInstanceSummary> getCaseInstances(final CaseInstanceSearchRequest request,
+                                                      Integer page,
+                                                      Integer pageSize) {
         return caseInstanceList.stream()
-                .filter(c -> c.getStatus().equals(request.getStatus()))
-                .sorted(getCaseInstanceSummaryComparator(request))
-                .collect(toList());
+            .filter(c -> c.getStatus().equals(request.getStatus()))
+            .sorted(getCaseInstanceSummaryComparator(request))
+            .skip(page * pageSize)
+            .limit(pageSize)
+            .collect(toList());
     }
 
     @Override
@@ -188,27 +193,14 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     }
 
     @Override
-    public List<CaseCommentSummary> getComments(final String serverTemplateId, 
-                                                final String containerId, 
-                                                final String caseId, 
-                                                final Integer page, 
+    public List<CaseCommentSummary> getComments(final String serverTemplateId,
+                                                final String containerId,
+                                                final String caseId,
+                                                final Integer page,
                                                 final Integer pageSize) {
 
         List<CaseCommentSummary> allComments = caseCommentMap.get(caseId);
-        List<CaseCommentSummary> subList = new ArrayList<>();
-
-        int allCommentsSize = allComments.size();
-        int offset = page * pageSize;
-        int pageIndex = (allCommentsSize + pageSize - 1) / pageSize;
-
-        if (allCommentsSize < pageSize) {
-            return allComments;
-        } else if (pageIndex == page + 1) {
-            subList = allComments.subList(offset, allCommentsSize);
-        } else {
-            subList = allComments.subList(offset, offset + pageSize);
-        }
-        return new ArrayList<CaseCommentSummary>(subList);
+        return allComments.stream().skip(page * pageSize).limit(pageSize).collect(toList());
     }
 
     @Override
@@ -301,12 +293,12 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
         executeOnCaseInstance(caseId,
                               c -> {
                                   final CaseRoleAssignmentSummary role = c.getRoleAssignments().stream()
-                                          .filter(r -> r.getName().equals(roleName)).findFirst()
-                                          .orElseGet(() -> {
-                                              final CaseRoleAssignmentSummary newRole = CaseRoleAssignmentSummary.builder().name(roleName).build();
-                                              c.getRoleAssignments().add(newRole);
-                                              return newRole;
-                                          });
+                                      .filter(r -> r.getName().equals(roleName)).findFirst()
+                                      .orElseGet(() -> {
+                                          final CaseRoleAssignmentSummary newRole = CaseRoleAssignmentSummary.builder().name(roleName).build();
+                                          c.getRoleAssignments().add(newRole);
+                                          return newRole;
+                                      });
                                   consumer.accept(role);
                               }
         );
@@ -315,28 +307,32 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     @Override
     public List<CaseMilestoneSummary> getCaseMilestones(final String containerId,
                                                         final String caseId,
-                                                        final CaseMilestoneSearchRequest request) {
+                                                        final CaseMilestoneSearchRequest request,
+                                                        Integer page,
+                                                        Integer pageSize) {
         return caseMilestoneList.stream()
-                .sorted(getCaseMilestoneSummaryComparator(request))
-                .collect(toList());
+            .sorted(getCaseMilestoneSummaryComparator(request))
+            .skip(page * pageSize)
+            .limit(pageSize)
+            .collect(toList());
     }
 
     public List<CaseActionSummary> getAdHocFragments(String containerId,
                                                      String caseId) {
         return ofNullable(caseActionMap.get(caseId)).orElse(emptyList()).stream()
-                .filter(c -> CaseActionType.AD_HOC_TASK == c.getActionType()).collect(toList());
+            .filter(c -> CaseActionType.AD_HOC_TASK == c.getActionType()).collect(toList());
     }
 
     public List<CaseActionSummary> getInProgressActions(String containerId,
                                                         String caseId) {
         return ofNullable(caseActionMap.get(caseId)).orElse(emptyList()).stream()
-                .filter(c -> CaseActionStatus.IN_PROGRESS == c.getActionStatus()).collect(toList());
+            .filter(c -> CaseActionStatus.IN_PROGRESS == c.getActionStatus()).collect(toList());
     }
 
     public List<CaseActionSummary> getCompletedActions(String containerId,
                                                        String caseId) {
         return ofNullable(caseActionMap.get(caseId)).orElse(emptyList()).stream()
-                .filter(c -> CaseActionStatus.COMPLETED == c.getActionStatus()).collect(toList());
+            .filter(c -> CaseActionStatus.COMPLETED == c.getActionStatus()).collect(toList());
     }
 
     @Override
@@ -350,13 +346,13 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
         final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId,
                                                                                      new ArrayList<>());
         final CaseActionSummary action = CaseActionSummary.builder()
-                .id(actionIdGenerator++)
-                .name(name)
-                .actualOwner(actors)
-                .type("Human Task")
-                .actionStatus(CaseActionStatus.IN_PROGRESS)
-                .createdOn(new Date())
-                .build();
+            .id(actionIdGenerator++)
+            .name(name)
+            .actualOwner(actors)
+            .type("Human Task")
+            .actionStatus(CaseActionStatus.IN_PROGRESS)
+            .createdOn(new Date())
+            .build();
         actionSummaryList.add(action);
         caseActionMap.putIfAbsent(caseId,
                                   actionSummaryList);
@@ -373,13 +369,13 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
         final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId,
                                                                                      new ArrayList<>());
         final CaseActionSummary action = CaseActionSummary.builder()
-                .id(actionIdGenerator++)
-                .name(name)
-                .actualOwner(actors)
-                .type("Human Task")
-                .actionStatus(CaseActionStatus.IN_PROGRESS)
-                .createdOn(new Date())
-                .build();
+            .id(actionIdGenerator++)
+            .name(name)
+            .actualOwner(actors)
+            .type("Human Task")
+            .actionStatus(CaseActionStatus.IN_PROGRESS)
+            .createdOn(new Date())
+            .build();
         actionSummaryList.add(action);
         caseActionMap.putIfAbsent(caseId,
                                   actionSummaryList);
@@ -394,11 +390,11 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
         final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId,
                                                                                      new ArrayList<>());
         final CaseActionSummary action = CaseActionSummary.builder()
-                .id(actionIdGenerator++)
-                .name(adHocName)
-                .actionStatus(CaseActionStatus.IN_PROGRESS)
-                .createdOn(new Date())
-                .build();
+            .id(actionIdGenerator++)
+            .name(adHocName)
+            .actionStatus(CaseActionStatus.IN_PROGRESS)
+            .createdOn(new Date())
+            .build();
         actionSummaryList.add(action);
         caseActionMap.putIfAbsent(caseId,
                                   actionSummaryList);
@@ -412,11 +408,11 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
         final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId,
                                                                                      new ArrayList<>());
         final CaseActionSummary action = CaseActionSummary.builder()
-                .id(actionIdGenerator++)
-                .name(adHocName)
-                .actionStatus(CaseActionStatus.IN_PROGRESS)
-                .createdOn(new Date())
-                .build();
+            .id(actionIdGenerator++)
+            .name(adHocName)
+            .actionStatus(CaseActionStatus.IN_PROGRESS)
+            .createdOn(new Date())
+            .build();
         actionSummaryList.add(action);
         caseActionMap.putIfAbsent(caseId,
                                   actionSummaryList);
@@ -430,11 +426,11 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
         final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId,
                                                                                      new ArrayList<>());
         final CaseActionSummary action = CaseActionSummary.builder()
-                .id(actionIdGenerator++)
-                .name("subprocess: " + processId)
-                .actionStatus(CaseActionStatus.IN_PROGRESS)
-                .createdOn(new Date())
-                .build();
+            .id(actionIdGenerator++)
+            .name("subprocess: " + processId)
+            .actionStatus(CaseActionStatus.IN_PROGRESS)
+            .createdOn(new Date())
+            .build();
         actionSummaryList.add(action);
         caseActionMap.putIfAbsent(caseId,
                                   actionSummaryList);
@@ -449,11 +445,11 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
         final List<CaseActionSummary> actionSummaryList = caseActionMap.getOrDefault(caseId,
                                                                                      new ArrayList<>());
         final CaseActionSummary action = CaseActionSummary.builder()
-                .id(actionIdGenerator++)
-                .name("subprocess: " + processId + " inStage:" + stageId)
-                .actionStatus(CaseActionStatus.IN_PROGRESS)
-                .createdOn(new Date())
-                .build();
+            .id(actionIdGenerator++)
+            .name("subprocess: " + processId + " inStage:" + stageId)
+            .actionStatus(CaseActionStatus.IN_PROGRESS)
+            .createdOn(new Date())
+            .build();
         actionSummaryList.add(action);
         caseActionMap.putIfAbsent(caseId,
                                   actionSummaryList);

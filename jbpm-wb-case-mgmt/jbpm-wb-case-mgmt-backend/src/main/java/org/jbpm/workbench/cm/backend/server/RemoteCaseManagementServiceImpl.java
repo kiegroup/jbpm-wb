@@ -87,10 +87,12 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public List<CaseInstanceSummary> getCaseInstances(final CaseInstanceSearchRequest request) {
+    public List<CaseInstanceSummary> getCaseInstances(final CaseInstanceSearchRequest request,
+                                                      Integer page,
+                                                      Integer pageSize) {
         final List<CaseInstance> caseInstances = client.getCaseInstances(singletonList(request.getStatus().getName()),
-                                                                         0,
-                                                                         PAGE_SIZE_UNLIMITED);
+                                                                         page,
+                                                                         pageSize);
         final Comparator<CaseInstanceSummary> comparator = getCaseInstanceSummaryComparator(request);
         return caseInstances.stream().map(new CaseInstanceMapper()).sorted(comparator).collect(toList());
     }
@@ -154,8 +156,8 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                                                  true,
                                                  true,
                                                  true))
-                .map(new CaseInstanceMapper())
-                .orElse(null);
+            .map(new CaseInstanceMapper())
+            .orElse(null);
     }
 
     @Override
@@ -258,12 +260,14 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     @Override
     public List<CaseMilestoneSummary> getCaseMilestones(final String containerId,
                                                         final String caseId,
-                                                        final CaseMilestoneSearchRequest request) {
+                                                        final CaseMilestoneSearchRequest request,
+                                                        Integer page,
+                                                        Integer pageSize) {
         final List<CaseMilestone> caseMilestones = client.getMilestones(containerId,
                                                                         caseId,
                                                                         false,
-                                                                        0,
-                                                                        PAGE_SIZE_UNLIMITED);
+                                                                        page,
+                                                                        pageSize);
         final Comparator<CaseMilestoneSummary> comparator = getCaseMilestoneSummaryComparator(request);
         return caseMilestones.stream().map(new CaseMilestoneMapper()).sorted(comparator).collect(toList());
     }
@@ -295,14 +299,14 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                                                                caseId,
                                                                0,
                                                                PAGE_SIZE_UNLIMITED);
-        
-        return activeNodes.stream()             
-                .map(s -> new CaseActionNodeInstanceMapper(
-                        (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
-                                userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
-                                ""),
-                        CaseActionStatus.IN_PROGRESS).apply(s))
-                .collect(toList());
+
+        return activeNodes.stream()
+            .map(s -> new CaseActionNodeInstanceMapper(
+                (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
+                    userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
+                    ""),
+                CaseActionStatus.IN_PROGRESS).apply(s))
+            .collect(toList());
     }
 
     public List<NodeInstance> getCaseCompletedNodes(String containerId,
@@ -318,21 +322,21 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
         List<NodeInstance> activeNodes = getCaseCompletedNodes(containerId,
                                                                caseId);
         return activeNodes.stream()
-                .map(s -> new CaseActionNodeInstanceMapper(
-                        (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
-                                userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
-                                ""),
-                        CaseActionStatus.COMPLETED).apply(s))
-                .collect(toList());
+            .map(s -> new CaseActionNodeInstanceMapper(
+                (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
+                    userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
+                    ""),
+                CaseActionStatus.COMPLETED).apply(s))
+            .collect(toList());
     }
 
     public List<CaseActionSummary> getAdHocFragments(String containerId,
                                                      String caseId) {
         return client.getAdHocFragments(containerId,
                                         caseId)
-                .stream()
-                .map(new CaseActionAdHocMapper(""))
-                .collect(toList());
+            .stream()
+            .map(new CaseActionAdHocMapper(""))
+            .collect(toList());
     }
 
     public List<CaseActionSummary> getAdHocActions(String serverTemplateId,
@@ -344,13 +348,13 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                                                                   containerId,
                                                                   caseId);
         caseInstanceSummary.getStages().stream()
-                .filter(s -> s.getStatus().equals(CaseStageStatus.ACTIVE.getStatus()))
-                .forEach(ah -> {
-                    if (ah.getAdHocActions().size() > 0) {
-                        adHocActions.addAll(ah.getAdHocActions());
-                    }
-                    return;
-                });
+            .filter(s -> s.getStatus().equals(CaseStageStatus.ACTIVE.getStatus()))
+            .forEach(ah -> {
+                if (ah.getAdHocActions().size() > 0) {
+                    adHocActions.addAll(ah.getAdHocActions());
+                }
+                return;
+            });
         return adHocActions;
     }
 

@@ -78,19 +78,19 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
         view.clearCaseDefinitions();
         caseDefinitions.clear();
         caseService.call(
-                (List<CaseDefinitionSummary> definitions) -> {
-                    if (definitions.isEmpty()) {
-                        notification.fire(new NotificationEvent(translationService.format(Constants.NO_CASE_DEFINITION),
-                                                                NotificationEvent.NotificationType.ERROR));
-                        return;
-                    }
-
-                    caseDefinitions = definitions;
-
-                    view.show();
-                    view.setCaseDefinitions(caseDefinitions);
-                    view.setOwner(identity.getIdentifier());
+            (List<CaseDefinitionSummary> definitions) -> {
+                if (definitions.isEmpty()) {
+                    notification.fire(new NotificationEvent(translationService.format(Constants.NO_CASE_DEFINITION),
+                                                            NotificationEvent.NotificationType.ERROR));
+                    return;
                 }
+
+                caseDefinitions = definitions;
+
+                view.show();
+                view.setCaseDefinitions(caseDefinitions);
+                view.setOwner(identity.getIdentifier());
+            }
         ).getCaseDefinitions();
     }
 
@@ -108,17 +108,17 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
             }
 
             caseService.call(
-                    (String caseId) -> {
-                        view.hide();
-                        notification.fire(new NotificationEvent(translationService.format(Constants.CASE_CREATED_WITH_ID,
-                                                                                          caseId),
-                                                                NotificationEvent.NotificationType.SUCCESS));
-                        newCaseEvent.fire(new CaseCreatedEvent(caseId));
-                    },
-                    (Message message, Throwable t) -> {
-                        view.showError(singletonList(t.getMessage()));
-                        return false;
-                    }
+                (String caseId) -> {
+                    view.hide();
+                    notification.fire(new NotificationEvent(translationService.format(Constants.CASE_CREATED_WITH_ID,
+                                                                                      caseId),
+                                                            NotificationEvent.NotificationType.SUCCESS));
+                    newCaseEvent.fire(new CaseCreatedEvent(caseId));
+                },
+                (Message message, Throwable t) -> {
+                    view.showError(singletonList(t.getMessage()));
+                    return false;
+                }
             ).startCaseInstance(null,
                                 caseDefinition.getContainerId(),
                                 caseDefinition.getId(),

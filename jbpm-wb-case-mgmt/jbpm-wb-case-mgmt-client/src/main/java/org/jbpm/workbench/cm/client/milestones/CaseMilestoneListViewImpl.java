@@ -21,14 +21,18 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import org.jboss.errai.common.client.dom.Button;
 import org.jboss.errai.common.client.dom.Div;
 
 import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.MouseEvent;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.cm.client.util.AbstractView;
 import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
@@ -39,6 +43,15 @@ import static org.jboss.errai.common.client.dom.DOMUtil.*;
 @Dependent
 @Templated
 public class CaseMilestoneListViewImpl extends AbstractView<CaseMilestoneListPresenter> implements CaseMilestoneListPresenter.CaseMilestoneListView {
+
+    @Inject
+    @DataField("load-div")
+    Div loadDiv;
+
+    @Inject
+    @DataField("load-more-case-milestones")
+    @SuppressWarnings("PMD.UnusedPrivateField")
+    private Button loadMoreCaseMilestones;
 
     @Inject
     @DataField("search-actions")
@@ -92,5 +105,20 @@ public class CaseMilestoneListViewImpl extends AbstractView<CaseMilestoneListPre
 
     public CaseMilestoneSearchRequest getCaseMilestoneSearchRequest() {
         return actions.getCaseInstanceSearchRequest();
+    }
+
+    @EventHandler("load-more-case-milestones")
+    public void loadMoreComments(final @ForEvent("click") MouseEvent event) {
+        presenter.loadMoreCaseMilestones();
+    }
+
+    @Override
+    public void hideLoadButton() {
+        loadDiv.setHidden(true);
+    }
+
+    @Override
+    public void showLoadButton() {
+        loadDiv.setHidden(false);
     }
 }

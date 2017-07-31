@@ -73,16 +73,16 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
         newActionView.setCaseStagesList(cis.getStages());
         processDefinitionSummaryMap.clear();
         caseService.call(
-                (List<ProcessDefinitionSummary> processDefinitionsSumaries) -> {
-                    final List<String> processDefinitionNames = new ArrayList<>();
-                    for (ProcessDefinitionSummary processDefinitionSummary : processDefinitionsSumaries) {
-                        processDefinitionNames.add(processDefinitionSummary.getName());
-                        processDefinitionSummaryMap.put(processDefinitionSummary.getName(),
-                                                        processDefinitionSummary);
-                    }
-                    Collections.sort(processDefinitionNames);
-                    newActionView.setProcessDefinitions(processDefinitionNames);
+            (List<ProcessDefinitionSummary> processDefinitionsSumaries) -> {
+                final List<String> processDefinitionNames = new ArrayList<>();
+                for (ProcessDefinitionSummary processDefinitionSummary : processDefinitionsSumaries) {
+                    processDefinitionNames.add(processDefinitionSummary.getName());
+                    processDefinitionSummaryMap.put(processDefinitionSummary.getName(),
+                                                    processDefinitionSummary);
                 }
+                Collections.sort(processDefinitionNames);
+                newActionView.setProcessDefinitions(processDefinitionNames);
+            }
         ).getProcessDefinitions(containerId);
         refreshData(true);
     }
@@ -92,18 +92,18 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
             case DYNAMIC_USER_TASK: {
                 newActionView.show(caseActionType,
                                    () -> addDynamicUserTaskAction(
-                                           newActionView.getTaskName(),
-                                           newActionView.getDescription(),
-                                           newActionView.getActors(),
-                                           newActionView.getGroups(),
-                                           newActionView.getStageId()));
+                                       newActionView.getTaskName(),
+                                       newActionView.getDescription(),
+                                       newActionView.getActors(),
+                                       newActionView.getGroups(),
+                                       newActionView.getStageId()));
                 break;
             }
             case DYNAMIC_SUBPROCESS_TASK: {
                 newActionView.show(caseActionType,
                                    () -> addDynamicSubprocessTaskAction(
-                                           newActionView.getProcessDefinitionName(),
-                                           newActionView.getStageId()));
+                                       newActionView.getProcessDefinitionName(),
+                                       newActionView.getStageId()));
                 break;
             }
         }
@@ -172,15 +172,15 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
             if (refreshAvailableActions) {
                 List<CaseActionSummary> availableActions = new ArrayList<>();
                 availableActions.add(CaseActionSummary.builder()
-                                             .name(translationService.getTranslation(NEW_USER_TASK))
-                                             .actionType(CaseActionType.DYNAMIC_USER_TASK)
-                                             .actionStatus(CaseActionStatus.AVAILABLE)
-                                             .build());
+                                         .name(translationService.getTranslation(NEW_USER_TASK))
+                                         .actionType(CaseActionType.DYNAMIC_USER_TASK)
+                                         .actionStatus(CaseActionStatus.AVAILABLE)
+                                         .build());
                 availableActions.add(CaseActionSummary.builder()
-                                             .name(translationService.getTranslation(NEW_PROCESS_TASK))
-                                             .actionType(CaseActionType.DYNAMIC_SUBPROCESS_TASK)
-                                             .actionStatus(CaseActionStatus.AVAILABLE)
-                                             .build());
+                                         .name(translationService.getTranslation(NEW_PROCESS_TASK))
+                                         .actionType(CaseActionType.DYNAMIC_SUBPROCESS_TASK)
+                                         .actionStatus(CaseActionStatus.AVAILABLE)
+                                         .build());
                 availableActions.addAll(actions.getAvailableActions());
                 view.setAvailableActionsList(availableActions);
             }

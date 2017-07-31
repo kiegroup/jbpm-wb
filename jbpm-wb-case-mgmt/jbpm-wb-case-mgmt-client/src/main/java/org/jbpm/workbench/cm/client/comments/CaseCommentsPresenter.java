@@ -16,8 +16,9 @@
 
 package org.jbpm.workbench.cm.client.comments;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -45,26 +46,22 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
 
     boolean sortAsc = false;
 
-    int currentPage = 0;
     public static final int PAGE_SIZE = 20;
 
-    List<CaseCommentSummary> visibleComments = new ArrayList<CaseCommentSummary>();
-    
-    public int getPageSize() {
-        return PAGE_SIZE;
-    }
+    Set<CaseCommentSummary> visibleCaseComments = new HashSet<CaseCommentSummary>();
 
-    public void setCurrentPage(int i) {
-        this.currentPage  = i;        
-    }
-
-    public int getCurrentPage() {
-        return this.currentPage;
+    public CaseCommentsPresenter() {
+        setPageSize();
     }
 
     @WorkbenchPartTitle
     public String getTittle() {
         return translationService.format(CASE_COMMENTS);
+    }   
+
+    @Override
+    public void setPageSize() {
+        this.pageSize = PAGE_SIZE;
     }
 
     @Override
@@ -75,36 +72,34 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
     protected void loadCaseInstance(final CaseInstanceSummary cis) {
         refreshComments();
     }
-    
-    private void commentsServiceCall(int currentPage) {
+
+    private void commentsServiceCall() {
         caseService.call(
-                (List<CaseCommentSummary> comments) -> {
-                    visibleComments.addAll(comments);
-                    if (comments.size() < PAGE_SIZE) {
-                        view.hideLoadButton();
-                    }
-                    view.setCaseCommentList(visibleComments.stream()
-                            .sorted((sortAsc ?
-                                    comparing(CaseCommentSummary::getAddedAt) :
-                                    comparing(CaseCommentSummary::getAddedAt).reversed()))
-                            .collect(toList()));
-                }
-        ).getComments(serverTemplateId, 
-                      containerId, 
-                      caseId, 
-                      currentPage, 
-                      PAGE_SIZE);
+            (List<CaseCommentSummary> comments) -> {
+                visibleCaseComments.addAll(comments);
+                view.setCaseCommentList(visibleCaseComments.stream()
+                                            .sorted((sortAsc ?
+                                                comparing(CaseCommentSummary::getAddedAt) :
+                                                comparing(CaseCommentSummary::getAddedAt).reversed()))
+                                            .collect(toList()));
+            }
+        ).getComments(serverTemplateId,
+                      containerId,
+                      caseId,
+                      getCurrentPage(),
+                      getPageSize());
+
+        loadButtonToggle();
     }
 
     public void refreshComments() {
         view.clearCommentInputForm();
-        visibleComments.clear();
-        commentsServiceCall(currentPage);
+        commentsServiceCall();
     }
-    
+
     public void loadMoreCaseComments() {
-        this.currentPage = currentPage + 1;
-        commentsServiceCall(currentPage);       
+        setCurrentPage(getCurrentPage() + 1);
+        commentsServiceCall();
     }
 
     public void sortComments(final boolean sortAsc) {
@@ -114,9 +109,9 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
 
     protected void addCaseComment(String caseCommentText) {
         caseService.call(
-                (Void) -> {
-                    view.resetPagination();
-                }
+            (Void) -> {
+                view.resetPagination();
+            }
         ).addComment(serverTemplateId,
                      containerId,
                      caseId,
@@ -127,7 +122,11 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
     protected void updateCaseComment(final CaseCommentSummary caseCommentSummary,
                                      String caseCommentNewText) {
         caseService.call(
-                (Void) -> refreshComments()
+            (Void) -> {
+                visibleCaseComments.remove(caseCommentSummary);
+                visibleCaseComments.add(caseCommentSummary);
+                refreshComments();
+            }
         ).updateComment(serverTemplateId,
                         containerId,
                         caseId,
@@ -138,7 +137,10 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
 
     protected void deleteCaseComment(final CaseCommentSummary caseCommentSummary) {
         caseService.call(
-                (Void) -> refreshComments()
+            (Void) -> {
+                visibleCaseComments.remove(caseCommentSummary);
+                refreshComments();
+            }
         ).removeComment(serverTemplateId,
                         containerId,
                         caseId,
@@ -152,10 +154,25 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
         void setCaseCommentList(List<CaseCommentSummary> caseCommentList);
 
         void resetPagination();
-        
-        void hideLoadButton();
 
+        void hideLoadButton();
+        
+        void showLoadButton();
     }
+
+    private void loadButtonToggle() {
+        caseService.call((List<CaseCommentSummary> comments) -> {
+            if (comments.isEmpty()) {
+                view.hideLoadButton();
+            } else {
+                view.showLoadButton();
+            }
+        }).getComments(serverTemplateId,
+                       containerId,
+                       caseId,
+                       getCurrentPage() + 1,
+                       getPageSize());
+    }   
 
     public interface CaseCommentAction extends Command {
 
