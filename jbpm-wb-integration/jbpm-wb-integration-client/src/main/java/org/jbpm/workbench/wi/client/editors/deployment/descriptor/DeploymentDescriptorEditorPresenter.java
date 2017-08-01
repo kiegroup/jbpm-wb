@@ -132,7 +132,7 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
                             notification.fire(new NotificationEvent(CommonConstants.INSTANCE.ItemValidatedSuccessfully(),
                                                                     NotificationEvent.NotificationType.SUCCESS));
                         } else {
-                            validationPopup.showMessages(results);
+                            validationPopup.showTranslatedMessages(results);
                         }
                     }
                 }).validate(versionRecordManager.getCurrentPath(),
