@@ -57,7 +57,6 @@ public class CaseProvisioningIT {
                 .resolve(
                         "org.guvnor:guvnor-ala-wildfly-provider",
                         "org.guvnor:guvnor-ala-spi",
-                        "org.guvnor:guvnor-ala-registry-local",
                         "org.guvnor:guvnor-ala-services-api",
                         "org.guvnor:guvnor-ala-build-maven",
                         "org.uberfire:uberfire-io",
