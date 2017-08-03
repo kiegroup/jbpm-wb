@@ -25,14 +25,13 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.document.Document;
+import org.jbpm.workbench.common.model.QueryFilter;
 import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.jbpm.workbench.pr.model.DocumentSummary;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
-import org.jbpm.workbench.common.model.QueryFilter;
 import org.jbpm.workbench.pr.service.ProcessDocumentsService;
 import org.jbpm.workbench.pr.service.ProcessVariablesService;
-import org.jbpm.document.Document;
-import org.kie.server.client.DocumentServicesClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.paging.PageResponse;
@@ -107,8 +106,6 @@ public class RemoteProcessDocumentsServiceImpl extends AbstractKieServerService 
     @Override
     public String getDocumentLink(final String serverTemplateId,
                                   final String documentIdentifier) {
-        DocumentServicesClient documentClient = getClient(serverTemplateId,
-                                                          DocumentServicesClient.class);
-        return documentClient.getDocumentLink(documentIdentifier);
+        return "jbpm/documents?templateid=" + serverTemplateId + "&docid=" + documentIdentifier;
     }
 }
