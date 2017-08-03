@@ -149,6 +149,10 @@
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-ala-wildfly-provider</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-ala-openshift-provider</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.uberfire</groupId>
