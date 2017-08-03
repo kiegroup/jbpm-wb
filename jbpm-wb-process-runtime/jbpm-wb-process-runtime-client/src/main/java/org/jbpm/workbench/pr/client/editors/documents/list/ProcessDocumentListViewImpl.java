@@ -261,7 +261,7 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                         setText(constants.download());
                         getElement().setPropertyString("target",
                                                        "_blank");
-                        setHref(value.getDocumentLink());
+                        setHref("jbpm/documents?templateid=" + value.getDocumentServerTemplateId() + "&docid=" + value.getDocumentIdentifier());
                         setSize(ButtonSize.SMALL);
                         getElement().getStyle().setMarginRight(5,
                                                                Style.Unit.PX);

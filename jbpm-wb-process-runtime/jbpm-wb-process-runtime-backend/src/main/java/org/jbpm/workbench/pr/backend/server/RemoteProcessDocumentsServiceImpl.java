@@ -94,6 +94,8 @@ public class RemoteProcessDocumentsServiceImpl extends AbstractKieServerService 
                                      ex);
                     }
                     documents.add(new DocumentSummary(values[0],
+                                                      serverTemplateId,
+                                                      values[3],
                                                       lastModified,
                                                       Long.valueOf(values[1]),
                                                       getDocumentLink(serverTemplateId,
