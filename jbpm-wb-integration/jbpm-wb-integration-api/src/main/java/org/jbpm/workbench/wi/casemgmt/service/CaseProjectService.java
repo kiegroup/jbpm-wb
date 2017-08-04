@@ -16,11 +16,11 @@
 
 package org.jbpm.workbench.wi.casemgmt.service;
 
-import org.guvnor.common.services.project.model.Project;
+import org.guvnor.common.services.project.model.WorkspaceProject;
 import org.jboss.errai.bus.server.annotations.Remote;
 
 @Remote
 public interface CaseProjectService {
 
-    void configureNewCaseProject(final Project project);
+    void configureNewCaseProject(final WorkspaceProject project);
 }

@@ -26,8 +26,8 @@ import org.kie.internal.runtime.conf.DeploymentDescriptor;
 import org.kie.internal.runtime.conf.ObjectModel;
 import org.kie.workbench.common.screens.datamodeller.model.persistence.PersistenceDescriptorModel;
 import org.kie.workbench.common.screens.datamodeller.service.PersistenceDescriptorService;
-import org.kie.workbench.common.services.shared.project.KieProject;
-import org.kie.workbench.common.services.shared.project.KieProjectService;
+import org.kie.workbench.common.services.shared.project.KieModule;
+import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
@@ -36,7 +36,7 @@ import org.uberfire.io.IOService;
 @ApplicationScoped
 public class DDConfigUpdaterHelper {
 
-    private KieProjectService projectService;
+    private KieModuleService moduleService;
 
     private IOService ioService;
 
@@ -47,21 +47,21 @@ public class DDConfigUpdaterHelper {
     }
 
     @Inject
-    public DDConfigUpdaterHelper(KieProjectService projectService,
+    public DDConfigUpdaterHelper(KieModuleService moduleService,
                                  @Named("ioStrategy") IOService ioService,
                                  PersistenceDescriptorService pdService) {
-        this.projectService = projectService;
+        this.moduleService = moduleService;
         this.pdService = pdService;
         this.ioService = ioService;
     }
 
     public boolean isPersistenceFile(Path path) {
         if (path.getFileName().equals("persistence.xml")) {
-            KieProject kieProject = projectService.resolveProject(path);
+            KieModule kieModule = moduleService.resolveModule(path);
             String persistenceURI;
-            if (kieProject != null && kieProject.getRootPath() != null) {
+            if (kieModule != null && kieModule.getRootPath() != null) {
                 //ok, we have a well formed project
-                persistenceURI = kieProject.getRootPath().toURI() + "/src/main/resources/META-INF/persistence.xml";
+                persistenceURI = kieModule.getRootPath().toURI() + "/src/main/resources/META-INF/persistence.xml";
                 return persistenceURI.equals(path.toURI());
             }
         }
@@ -70,10 +70,10 @@ public class DDConfigUpdaterHelper {
 
     public boolean hasPersistenceFile(Path path) {
 
-        KieProject kieProject = projectService.resolveProject(path);
-        if (kieProject != null && kieProject.getRootPath() != null) {
+        KieModule kieModule = moduleService.resolveModule(path);
+        if (kieModule != null && kieModule.getRootPath() != null) {
             //ok, we have a well formed project
-            String persistenceURI = kieProject.getRootPath().toURI() + "/src/main/resources/META-INF/persistence.xml";
+            String persistenceURI = kieModule.getRootPath().toURI() + "/src/main/resources/META-INF/persistence.xml";
             Path persistencePath = PathFactory.newPath("persistence.xml",
                                                        persistenceURI);
             return ioService.exists(Paths.convert(persistencePath));
@@ -81,8 +81,8 @@ public class DDConfigUpdaterHelper {
         return false;
     }
 
-    public String buildJPAMarshallingStrategyValue(KieProject kieProject) {
-        PersistenceDescriptorModel pdModel = pdService.load(kieProject);
+    public String buildJPAMarshallingStrategyValue(KieModule kieModule) {
+        PersistenceDescriptorModel pdModel = pdService.load(kieModule);
         if (pdModel != null) {
             return "new org.drools.persistence.jpa.marshaller.JPAPlaceholderResolverStrategy(\"" + pdModel.getPersistenceUnit().getName() + "\", classLoader)";
         }
@@ -91,9 +91,9 @@ public class DDConfigUpdaterHelper {
 
     public void addJPAMarshallingStrategy(DeploymentDescriptor dd,
                                           Path path) {
-        KieProject kieProject = projectService.resolveProject(path);
+        KieModule kieModule = moduleService.resolveModule(path);
         String marshalingValue = null;
-        if (kieProject != null && (marshalingValue = buildJPAMarshallingStrategyValue(kieProject)) != null) {
+        if (kieModule != null && (marshalingValue = buildJPAMarshallingStrategyValue(kieModule)) != null) {
             List<ObjectModel> marshallingStrategies = new ArrayList<ObjectModel>();
             ObjectModel objectModel = new ObjectModel();
             objectModel.setResolver("mvel");

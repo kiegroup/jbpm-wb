@@ -25,8 +25,8 @@ import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.workbench.common.services.shared.project.KieProject;
-import org.kie.workbench.common.services.shared.project.KieProjectService;
+import org.kie.workbench.common.services.shared.project.KieModule;
+import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -57,7 +57,7 @@ public class DDConfigUpdaterTest {
     private IOService ioService;
 
     @Mock
-    private KieProjectService projectService;
+    private KieModuleService moduleService;
 
     @Mock
     private DDEditorServiceImpl ddEditorService;
@@ -73,19 +73,19 @@ public class DDConfigUpdaterTest {
         model = new DeploymentDescriptorModel();
         model.setOverview(new Overview());
         ddConfigUpdater = new DDConfigUpdater(ddEditorService,
-                                              projectService,
+                                              moduleService,
                                               ioService,
                                               configUpdaterHelper);
 
         Path rootPath = Mockito.mock(Path.class);
-        when(rootPath.toURI()).thenReturn("default://project");
-        KieProject project = Mockito.mock(KieProject.class);
-        when(project.getRootPath()).thenReturn(rootPath);
+        when(rootPath.toURI()).thenReturn("default://");
+        KieModule module = Mockito.mock(KieModule.class);
+        when(module.getRootPath()).thenReturn(rootPath);
 
         when(ioService.exists(any(org.uberfire.java.nio.file.Path.class))).thenReturn(true);
         when(configUpdaterHelper.isPersistenceFile(any(Path.class))).thenReturn(true);
-        when(configUpdaterHelper.buildJPAMarshallingStrategyValue(any(KieProject.class))).thenReturn(JPA_MARSHALLING_STRATEGY);
-        when(projectService.resolveProject(any(Path.class))).thenReturn(project);
+        when(configUpdaterHelper.buildJPAMarshallingStrategyValue(any(KieModule.class))).thenReturn(JPA_MARSHALLING_STRATEGY);
+        when(moduleService.resolveModule(any(Path.class))).thenReturn(module);
         when(ddEditorService.load(any(Path.class))).thenReturn(model);
     }
 

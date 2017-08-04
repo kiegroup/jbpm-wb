@@ -25,6 +25,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.guvnor.common.services.project.events.NewPackageEvent;
+import org.guvnor.common.services.project.model.WorkspaceProject;
+import org.guvnor.structure.organizationalunit.OrganizationalUnit;
+import org.guvnor.structure.repositories.Branch;
+import org.guvnor.structure.repositories.Repository;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
@@ -33,7 +37,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.workbench.common.services.shared.project.KieProject;
+import org.kie.workbench.common.services.shared.project.KieModule;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -62,7 +66,7 @@ public class CaseProjectServiceImplTest {
     @Mock
     Path ddPath;
     @Mock
-    KieProject kieProject;
+    KieModule kieModule;
 
     private CaseProjectServiceImpl caseProjectService;
 
@@ -98,8 +102,8 @@ public class CaseProjectServiceImplTest {
         when(ddEditorService.load(any())).thenReturn(new DeploymentDescriptorModel());
 
         // configure the project
-        when(kieProject.getKModuleXMLPath()).thenReturn(kmodulePath);
-        when(kieProject.getRootPath()).thenReturn(projectPath);
+        when(kieModule.getKModuleXMLPath()).thenReturn(kmodulePath);
+        when(kieModule.getRootPath()).thenReturn(projectPath);
 
         caseProjectService = new CaseProjectServiceImpl(ddEditorService,
                                                         ioService);
@@ -114,7 +118,13 @@ public class CaseProjectServiceImplTest {
                                           any())).thenReturn((DirectoryStream<Path>) directoryStream);
         when(directoryStream.iterator()).thenReturn(new ArrayList().iterator());
 
-        caseProjectService.configureNewCaseProject(kieProject);
+        final Branch branch = mock(Branch.class);
+        doReturn(projectPath).when(branch).getPath();
+
+        caseProjectService.configureNewCaseProject(new WorkspaceProject(mock(OrganizationalUnit.class),
+                                                                        mock(Repository.class),
+                                                                        branch,
+                                                                        kieModule));
         verify(ddEditorService,
                times(1)).save(any(),
                               ddArgumentCaptor.capture(),
@@ -139,7 +149,7 @@ public class CaseProjectServiceImplTest {
                      mappedStrategies.get(CaseProjectServiceImpl.CASE_FILE_MARSHALLER));
         assertEquals("mvel",
                      mappedStrategies.get(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
-        
+
         List<ItemObjectModel> workItemHandlers = updatedDD.getWorkItemHandlers();
         assertEquals(1,
                      workItemHandlers.size());
@@ -165,7 +175,13 @@ public class CaseProjectServiceImplTest {
                                           any())).thenReturn((DirectoryStream<Path>) directoryStream);
         when(directoryStream.iterator()).thenReturn(Arrays.asList(packagePath).iterator());
 
-        caseProjectService.configureNewCaseProject(kieProject);
+        final Branch branch = mock(Branch.class);
+        doReturn(projectPath).when(branch).getPath();
+
+        caseProjectService.configureNewCaseProject(new WorkspaceProject(mock(OrganizationalUnit.class),
+                                                                        mock(Repository.class),
+                                                                        branch,
+                                                                        kieModule));
         verify(ddEditorService,
                times(1)).save(any(),
                               ddArgumentCaptor.capture(),
@@ -207,7 +223,7 @@ public class CaseProjectServiceImplTest {
         when(directoryStream.iterator()).thenReturn(Arrays.asList(packagePath).iterator());
 
         org.guvnor.common.services.project.model.Package pkg = Mockito.mock(org.guvnor.common.services.project.model.Package.class);
-        when(pkg.getProjectRootPath()).thenReturn(projectPath);
+        when(pkg.getModuleRootPath()).thenReturn(projectPath);
         when(pkg.getPackageMainResourcesPath()).thenReturn(projectPath);
 
         NewPackageEvent event = new NewPackageEvent(pkg);
@@ -229,7 +245,13 @@ public class CaseProjectServiceImplTest {
         when(directoryStream.iterator()).thenReturn(new ArrayList().iterator());
         when(ioService.exists(ddPath)).thenReturn(false);
 
-        caseProjectService.configureNewCaseProject(kieProject);
+        final Branch branch = mock(Branch.class);
+        doReturn(projectPath).when(branch).getPath();
+
+        caseProjectService.configureNewCaseProject(new WorkspaceProject(mock(OrganizationalUnit.class),
+                                                                        mock(Repository.class),
+                                                                        branch,
+                                                                        kieModule));
         verify(ddEditorService,
                times(1)).save(any(),
                               ddArgumentCaptor.capture(),
@@ -256,7 +278,7 @@ public class CaseProjectServiceImplTest {
                      mappedStrategies.get(CaseProjectServiceImpl.CASE_FILE_MARSHALLER));
         assertEquals("mvel",
                      mappedStrategies.get(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
-        
+
         List<ItemObjectModel> workItemHandlers = updatedDD.getWorkItemHandlers();
         assertEquals(1,
                      workItemHandlers.size());
