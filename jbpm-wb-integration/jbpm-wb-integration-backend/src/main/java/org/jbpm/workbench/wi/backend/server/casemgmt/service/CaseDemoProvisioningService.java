@@ -27,7 +27,7 @@ import javax.inject.Inject;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.builder.service.BuildService;
 import org.guvnor.common.services.project.model.GAV;
-import org.guvnor.common.services.project.model.Project;
+import org.guvnor.common.services.project.model.WorkspaceProject;
 import org.kie.server.api.model.KieContainerStatus;
 import org.kie.server.api.model.ReleaseId;
 import org.kie.server.controller.api.model.events.ServerTemplateUpdated;
@@ -57,7 +57,7 @@ public class CaseDemoProvisioningService {
 
     private AtomicBoolean deployToServerTemplate = new AtomicBoolean(false);
 
-    private Project newProject;
+    private WorkspaceProject newProject;
 
     @PostConstruct
     public void init() {
@@ -65,9 +65,10 @@ public class CaseDemoProvisioningService {
             final Set<ExampleProject> projects = libraryService.getExampleProjects();
             projects.stream().filter(p -> "itorders".equals(p.getName())).findFirst().ifPresent(p -> {
                 LOGGER.info("Importing IT Orders case management demo project...");
-                newProject = libraryService.importProject(p);
+                newProject = libraryService.importProject(libraryService.getDefaultOrganizationalUnit(),
+                                                          p);
                 LOGGER.info("Building It Orders case management demo project...");
-                final BuildResults results = buildService.buildAndDeploy(newProject);
+                final BuildResults results = buildService.buildAndDeploy(newProject.getMainModule());
                 LOGGER.debug("It Orders project build errors: {}",
                              results.getErrorMessages().size());
                 if (results.getErrorMessages().isEmpty()) {
@@ -80,7 +81,7 @@ public class CaseDemoProvisioningService {
     public void onServerTemplateUpdated(@Observes ServerTemplateUpdated serverTemplateUpdated) {
         if (deployToServerTemplate.compareAndSet(true,
                                                  false)) {
-            final GAV gav = newProject.getPom().getGav();
+            final GAV gav = newProject.getMainModule().getPom().getGav();
             final String containerId = gav.getArtifactId() + "_" + gav.getVersion();
             final ReleaseId releaseId = new ReleaseId(gav.getGroupId(),
                                                       gav.getArtifactId(),

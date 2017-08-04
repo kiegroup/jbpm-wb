@@ -29,14 +29,14 @@ import javax.inject.Named;
 
 import org.apache.commons.io.IOUtils;
 import org.guvnor.common.services.project.events.NewPackageEvent;
-import org.guvnor.common.services.project.model.Project;
+import org.guvnor.common.services.project.model.WorkspaceProject;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.workbench.wi.casemgmt.service.CaseProjectService;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.model.Parameter;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
-import org.kie.workbench.common.services.shared.project.KieProject;
+import org.kie.workbench.common.services.shared.project.KieModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
@@ -75,11 +75,12 @@ public class CaseProjectServiceImpl implements CaseProjectService {
     }
 
     @Override
-    public void configureNewCaseProject(Project project) {
+    public void configureNewCaseProject(WorkspaceProject project) {
         logger.debug("configuring case project {}",
                      project);
-        KieProject kieProject = (KieProject) project;
-        String separator = Paths.convert(project.getRootPath()).getFileSystem().getSeparator();
+        final KieModule kieModule = (KieModule) project.getMainModule();
+        org.uberfire.backend.vfs.Path rootPath1 = project.getRootPath();
+        final String separator = Paths.convert(rootPath1).getFileSystem().getSeparator();
 
         // add empty .caseproject file as marker
         String rootPathString = project.getRootPath().toURI().toString() + separator + CASE_PROJECT_DOT_FILE;
@@ -89,7 +90,7 @@ public class CaseProjectServiceImpl implements CaseProjectService {
         logger.debug("Added caseproject marker (dot) file at {}",
                      rootPath);
 
-        String metaInfPath = Paths.convert(kieProject.getKModuleXMLPath()).getParent().toUri().toString();
+        String metaInfPath = Paths.convert(kieModule.getKModuleXMLPath()).getParent().toUri().toString();
         // setup kie-deployemnt-descriptor.xml
         String deploymentDescriptorPath = metaInfPath + separator + DEPLOYMENT_DESCRIPTOR_FILE;
         Path ddVFSPath = ioService.get(URI.create(deploymentDescriptorPath));
@@ -136,7 +137,7 @@ public class CaseProjectServiceImpl implements CaseProjectService {
         logger.debug("Updated deployment model saved");
 
         // add WorkDefinition.wid to project and its packages
-        String resourcesPathStr = Paths.convert(kieProject.getKModuleXMLPath()).getParent().getParent().toUri().toString();
+        String resourcesPathStr = Paths.convert(kieModule.getKModuleXMLPath()).getParent().getParent().toUri().toString();
         Path widFilePath = ioService.get(URI.create(resourcesPathStr + separator + WORK_DEFINITION_FILE));
         logger.debug("Adding WorkDefinition.wid file to resources folder {} of the project {}",
                      widFilePath,
@@ -149,9 +150,9 @@ public class CaseProjectServiceImpl implements CaseProjectService {
 
     public void configurePackage(@Observes NewPackageEvent pkg) {
 
-        if (isCaseProject(Paths.convert(pkg.getPackage().getProjectRootPath()))) {
+        if (isCaseProject(Paths.convert(pkg.getPackage().getModuleRootPath()))) {
             String resourcesPathStr = Paths.convert(pkg.getPackage().getPackageMainResourcesPath()).toUri().toString();
-            String separator = Paths.convert(pkg.getPackage().getProjectRootPath()).getFileSystem().getSeparator();
+            String separator = Paths.convert(pkg.getPackage().getModuleRootPath()).getFileSystem().getSeparator();
 
             Path resourcesPath = ioService.get(URI.create(resourcesPathStr + separator + WORK_DEFINITION_FILE));
             addWorkDefinitions(resourcesPath);
