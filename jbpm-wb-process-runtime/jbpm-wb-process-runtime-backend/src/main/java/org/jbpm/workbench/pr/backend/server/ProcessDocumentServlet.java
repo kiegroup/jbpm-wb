@@ -17,7 +17,6 @@ package org.jbpm.workbench.pr.backend.server;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -32,7 +31,6 @@ import org.kie.server.client.KieServicesClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.server.util.FileServletUtil;
-import org.uberfire.workbench.events.NotificationEvent;
 
 @WebServlet(name = "ProcessDocumentServlet", urlPatterns = "/jbpm/documents")
 public class ProcessDocumentServlet extends HttpServlet {
@@ -45,9 +43,6 @@ public class ProcessDocumentServlet extends HttpServlet {
 
     @Inject
     private KieServerIntegration kieServerIntegration;
-
-    @Inject
-    private Event<NotificationEvent> notification;
 
     public ProcessDocumentServlet() {
     }
@@ -62,10 +57,6 @@ public class ProcessDocumentServlet extends HttpServlet {
                 logger.error(MessageFormat.format(INVALID_PARAMS,
                                                   templateId,
                                                   docId));
-                notification.fire(new NotificationEvent(MessageFormat.format(INVALID_PARAMS,
-                                                                             templateId,
-                                                                             docId),
-                                                        NotificationEvent.NotificationType.ERROR));
                 return;
             }
 
@@ -82,33 +73,20 @@ public class ProcessDocumentServlet extends HttpServlet {
                 } else {
                     logger.error(MessageFormat.format(INVALID_DOCUMENT,
                                                       docId));
-                    notification.fire(new NotificationEvent(MessageFormat.format(INVALID_DOCUMENT,
-                                                                                 docId),
-                                                            NotificationEvent.NotificationType.ERROR));
                 }
             } else {
                 logger.error(MessageFormat.format(INVALID_SERVICES_CLIENT,
                                                   templateId));
-                notification.fire(new NotificationEvent(MessageFormat.format(INVALID_SERVICES_CLIENT,
-                                                                             templateId),
-                                                        NotificationEvent.NotificationType.ERROR));
                 return;
             }
         } catch (Exception e) {
             logger.error(MessageFormat.format(ERROR_RETRIEVING_DOC,
                                               e.getMessage()));
-            notification.fire(new NotificationEvent(MessageFormat.format(ERROR_RETRIEVING_DOC,
-                                                                         e.getMessage()),
-                                                    NotificationEvent.NotificationType.ERROR));
             return;
         }
     }
 
     // for testing
-    public void setNotification(Event<NotificationEvent> notification) {
-        this.notification = notification;
-    }
-
     public void setKieServerIntegration(KieServerIntegration kieServerIntegration) {
         this.kieServerIntegration = kieServerIntegration;
     }

@@ -24,8 +24,6 @@ import org.jbpm.workbench.common.model.GenericSummary;
 public class DocumentSummary extends GenericSummary<String> {
 
     private String documentId;
-    private String documentServerTemplateId;
-    private String documentIdentifier;
     private Date documentLastModified;
     private Long documentSize;
     private String documentLink;
@@ -34,14 +32,10 @@ public class DocumentSummary extends GenericSummary<String> {
     }
 
     public DocumentSummary(String documentId,
-                           String documentServerTemplateId,
-                           String documentIdentifier,
                            Date documentLastModified,
                            Long documentSize,
                            String documentLink) {
         this.id = documentId;
-        this.documentServerTemplateId = documentServerTemplateId;
-        this.documentIdentifier = documentIdentifier;
         this.name = documentId;
         this.documentId = documentId;
         this.documentLastModified = documentLastModified;
@@ -51,14 +45,6 @@ public class DocumentSummary extends GenericSummary<String> {
 
     public String getDocumentId() {
         return documentId;
-    }
-
-    public String getDocumentServerTemplateId() {
-        return documentServerTemplateId;
-    }
-
-    public String getDocumentIdentifier() {
-        return documentIdentifier;
     }
 
     public Date getDocumentLastModified() {

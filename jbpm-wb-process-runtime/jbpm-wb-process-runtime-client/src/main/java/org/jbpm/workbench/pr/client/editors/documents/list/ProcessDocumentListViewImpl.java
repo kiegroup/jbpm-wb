@@ -43,8 +43,8 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import org.gwtbootstrap3.client.ui.AnchorButton;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.AbstractListView;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.DocumentSummary;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
@@ -261,7 +261,7 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                         setText(constants.download());
                         getElement().setPropertyString("target",
                                                        "_blank");
-                        setHref("jbpm/documents?templateid=" + value.getDocumentServerTemplateId() + "&docid=" + value.getDocumentIdentifier());
+                        setHref(value.getDocumentLink());
                         setSize(ButtonSize.SMALL);
                         getElement().getStyle().setMarginRight(5,
                                                                Style.Unit.PX);
