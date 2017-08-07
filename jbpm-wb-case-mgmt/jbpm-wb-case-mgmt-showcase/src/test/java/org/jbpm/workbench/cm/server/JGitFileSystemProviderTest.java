@@ -20,6 +20,7 @@ import java.util.Properties;
 
 import org.junit.Test;
 import org.uberfire.commons.config.ConfigProperties;
+import static org.uberfire.java.nio.fs.jgit.JGitFileSystemProviderConfiguration.*;
 
 import static org.jbpm.workbench.cm.server.JGitFileSystemProvider.*;
 import static org.junit.Assert.*;
