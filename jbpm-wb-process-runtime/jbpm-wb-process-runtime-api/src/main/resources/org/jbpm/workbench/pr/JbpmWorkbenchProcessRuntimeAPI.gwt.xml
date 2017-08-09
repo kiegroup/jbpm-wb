@@ -20,10 +20,12 @@
     "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
 <module>
 
-  <inherits name='org.uberfire.UberfireAPI' />
+  <inherits name='org.uberfire.UberfireAPI'/>
 
-  <source path="model" />
-  <source path="events" />
-  <source path="service" />
+  <inherits name="org.jbpm.workbench.common.JbpmWorkbenchCommonAPI"/>
+
+  <source path="model"/>
+  <source path="events"/>
+  <source path="service"/>
 
 </module>
