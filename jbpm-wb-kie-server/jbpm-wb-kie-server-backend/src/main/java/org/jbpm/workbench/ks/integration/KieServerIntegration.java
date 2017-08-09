@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.PostConstruct;
@@ -46,6 +47,7 @@ import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
 import org.kie.server.controller.api.model.spec.Capability;
 import org.kie.server.controller.api.model.spec.ContainerSpec;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
+import org.kie.server.controller.impl.client.KieServicesClientProvider;
 import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +69,8 @@ public class KieServerIntegration {
     private ConcurrentMap<String, KieServicesClient> adminClients = new ConcurrentHashMap<String, KieServicesClient>();
     private ConcurrentMap<String, ServerInstanceKey> serverInstancesById = new ConcurrentHashMap<String, ServerInstanceKey>();
 
+    private List<KieServicesClientProvider> clientProviders = new ArrayList<>();
+
     @Inject
     private SpecManagementService specManagementService;
 
@@ -75,6 +79,20 @@ public class KieServerIntegration {
 
     @PostConstruct
     public void createAvailableClients() {
+
+        ServiceLoader<KieServicesClientProvider> loader = ServiceLoader.load(KieServicesClientProvider.class);
+
+        loader.forEach(provider -> {
+            // skip default http/rest based client providers and use admin client created here
+            if (!provider.supports("http")) {
+                clientProviders.add(provider);
+            }
+
+        });
+
+
+        clientProviders.sort((KieServicesClientProvider one, KieServicesClientProvider two) -> one.getPriority().compareTo(two.getPriority()));
+
         kieServices = KieServices.Factory.get();
 
         Collection<ServerTemplate> serverTemplates = specManagementService.listServerTemplates();
@@ -93,8 +111,26 @@ public class KieServerIntegration {
         return serverTemplatesClients.get(serverTemplateId + "|" + containerId);
     }
 
-    public KieServicesClient getAdminServerClient(String serverTemplateId) {
-        return adminClients.get(serverTemplateId);
+    public KieServicesClient getAdminServerClient(String serverTemplateId, String serverInstanceId) {
+        try {
+            ServerInstanceKey instance = specManagementService.getServerTemplate(serverTemplateId).getServerInstanceKeys()
+                    .stream()
+                    .filter(si -> si.getServerInstanceId().equals(serverInstanceId))
+                    .findFirst()
+                    .get();
+            String url = instance.getUrl();
+            KieServicesClient client = clientProviders
+                    .stream()
+                    .filter(provider -> provider.supports(url))
+                    .findFirst()
+                    .get()
+                    .get(url);
+            logger.debug("Using client {}", client);
+            return client;
+        } catch (Exception e) {
+
+            return adminClients.get(serverTemplateId);
+        }
     }
 
     public KieServicesClient getAdminServerClientCheckEndpoints(String serverTemplateId) {

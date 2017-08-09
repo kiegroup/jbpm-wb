@@ -116,7 +116,7 @@ public class KieServerDataSetManager {
         long waitLimit = 5 * 60 * 1000;   // default 5 min
         long elapsed = 0;
         try {
-            QueryServicesClient queryClient = kieServerIntegration.getAdminServerClient(serverTemplateId).getServicesClient(QueryServicesClient.class);
+            QueryServicesClient queryClient = kieServerIntegration.getAdminServerClient(serverTemplateId, serverInstanceId).getServicesClient(QueryServicesClient.class);
 
             while (elapsed < waitLimit) {
                 try {
