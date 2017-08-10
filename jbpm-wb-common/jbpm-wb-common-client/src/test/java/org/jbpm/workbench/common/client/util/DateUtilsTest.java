@@ -23,6 +23,7 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static org.jbpm.workbench.common.client.util.DateUtils.createDate;
 import static org.junit.Assert.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -63,5 +64,22 @@ public class DateUtilsTest {
                      DateUtils.getDateTimeStr(now));
         assertEquals("",
                      DateUtils.getDateTimeStr(null));
+    }
+
+    @Test
+    public void testCreateDateWithDefaultFormat() {
+        Date date = createDate("2013-05-01");
+        assertEquals(2013,
+                     date.getYear() + 1900);
+        assertEquals(05,
+                     date.getMonth() + 1);
+        assertEquals(01,
+                     date.getDate());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateMalformedDateWithDefaultFormat() {
+        // malformed date string
+        createDate("2013-kk-05");
     }
 }
