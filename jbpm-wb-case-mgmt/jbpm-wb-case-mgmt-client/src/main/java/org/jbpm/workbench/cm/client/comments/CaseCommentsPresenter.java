@@ -38,6 +38,8 @@ import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 @WorkbenchScreen(identifier = CaseCommentsPresenter.SCREEN_ID)
 public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCommentsPresenter.CaseCommentsView> {
 
+    public static final int PAGE_SIZE = 20;
+    
     public static final String SCREEN_ID = "Case Comments";
 
     @Inject
@@ -45,23 +47,13 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
 
     boolean sortAsc = false;
 
-    int currentPage = 0;
-    public static final int PAGE_SIZE = 20;
-
     List<CaseCommentSummary> visibleComments = new ArrayList<CaseCommentSummary>();
     
-    public int getPageSize() {
-        return PAGE_SIZE;
+    @Override
+    public void setPageSize(int pageSize) {
+        this.pageSize = PAGE_SIZE;
     }
-
-    public void setCurrentPage(int i) {
-        this.currentPage  = i;        
-    }
-
-    public int getCurrentPage() {
-        return this.currentPage;
-    }
-
+    
     @WorkbenchPartTitle
     public String getTittle() {
         return translationService.format(CASE_COMMENTS);
@@ -76,12 +68,15 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
         refreshComments();
     }
     
-    private void commentsServiceCall(int currentPage) {
+    private void commentsServiceCall() {
         caseService.call(
                 (List<CaseCommentSummary> comments) -> {
                     visibleComments.addAll(comments);
-                    if (comments.size() < PAGE_SIZE) {
+                    if (comments.size() < getPageSize()) {
                         view.hideLoadButton();
+                    }
+                    else {
+                        view.showLoadButton();
                     }
                     view.setCaseCommentList(visibleComments.stream()
                             .sorted((sortAsc ?
@@ -92,19 +87,19 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
         ).getComments(serverTemplateId, 
                       containerId, 
                       caseId, 
-                      currentPage, 
-                      PAGE_SIZE);
+                      getCurrentPage(), 
+                      getPageSize());
     }
 
     public void refreshComments() {
         view.clearCommentInputForm();
         visibleComments.clear();
-        commentsServiceCall(currentPage);
+        commentsServiceCall();
     }
     
     public void loadMoreCaseComments() {
-        this.currentPage = currentPage + 1;
-        commentsServiceCall(currentPage);       
+        setCurrentPage(currentPage + 1);
+        commentsServiceCall();       
     }
 
     public void sortComments(final boolean sortAsc) {
@@ -154,6 +149,8 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
         void resetPagination();
         
         void hideLoadButton();
+        
+        void showLoadButton();
 
     }
 

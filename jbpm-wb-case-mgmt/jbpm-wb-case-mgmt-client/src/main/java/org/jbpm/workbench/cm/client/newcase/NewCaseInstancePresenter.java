@@ -22,12 +22,14 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.cm.client.events.CaseCreatedEvent;
 import org.jbpm.workbench.cm.client.resources.i18n.Constants;
+import org.jbpm.workbench.cm.client.stages.CaseStagesPresenter;
 import org.jbpm.workbench.cm.client.util.AbstractPresenter;
 import org.jbpm.workbench.cm.client.util.CaseRolesValidations;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
@@ -143,6 +145,11 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
     @Inject
     public void setCaseService(final Caller<CaseManagementService> caseService) {
         this.caseService = caseService;
+    }
+    
+    @Override
+    public void setPageSize(int pageSize) {
+        throw new NotImplementedException("setPageSize(int pageSize) is not implemented for " + CaseStagesPresenter.class);
     }
 
     public interface NewCaseInstanceView extends UberElement<NewCaseInstancePresenter> {
