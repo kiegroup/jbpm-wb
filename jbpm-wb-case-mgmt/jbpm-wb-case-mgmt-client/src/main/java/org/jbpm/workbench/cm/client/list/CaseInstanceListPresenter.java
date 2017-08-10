@@ -68,7 +68,7 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
     
     @Override
     public void setPageSize(int pageSize) {
-    	this.pageSize = PAGE_SIZE;
+        this.pageSize = PAGE_SIZE;
     }
 
     @WorkbenchPartTitle
@@ -81,11 +81,6 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
     public void init() {
         super.init();
         refreshData();
-    }
-    
-    @Override
-    public void setPageSize(int pageSize) {
-    	this.pageSize = PAGE_SIZE;
     }
 
     public void createCaseInstance() {

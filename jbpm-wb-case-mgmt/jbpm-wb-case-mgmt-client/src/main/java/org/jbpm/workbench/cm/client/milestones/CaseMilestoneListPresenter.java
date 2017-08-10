@@ -44,7 +44,7 @@ public class CaseMilestoneListPresenter extends AbstractCaseInstancePresenter<Ca
     
     @Override
     public void setPageSize(int pageSize) {
-    	this.pageSize = PAGE_SIZE;
+        this.pageSize = PAGE_SIZE;
     }
     
     @WorkbenchPartTitle

@@ -51,7 +51,7 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
     
     @Override
     public void setPageSize(int pageSize) {
-    	this.pageSize = PAGE_SIZE;
+        this.pageSize = PAGE_SIZE;
     }
     
     @WorkbenchPartTitle
