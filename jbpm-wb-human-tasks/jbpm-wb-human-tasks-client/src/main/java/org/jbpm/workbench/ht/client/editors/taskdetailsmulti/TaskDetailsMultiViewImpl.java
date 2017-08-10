@@ -109,12 +109,6 @@ public class TaskDetailsMultiViewImpl extends Composite
 
             navTabs.add(taskDetailsTab);
             tabContent.add(taskDetailsPane);
-            taskDetailsTab.addShowHandler(new TabShowHandler() {
-                @Override
-                public void onShow(final TabShowEvent event) {
-                    presenter.taskDetailsRefresh();
-                }
-            });
         }
 
         {
@@ -128,12 +122,7 @@ public class TaskDetailsMultiViewImpl extends Composite
 
             navTabs.add(processContextTab);
             tabContent.add(processContextPane);
-            processContextTab.addShowHandler(new TabShowHandler() {
-                @Override
-                public void onShow(final TabShowEvent event) {
-                    presenter.taskProcessContextRefresh();
-                }
-            });
+
         }
 
         {
@@ -240,6 +229,9 @@ public class TaskDetailsMultiViewImpl extends Composite
         }
         taskDetailsPane.setVisible(true);
         taskDetailsTab.setVisible(true);
+
+        processContextTab.setVisible(true);
+        processContextPane.setVisible(true);
 
         taskLogsPane.setVisible(true);
         taskLogsTab.setVisible(true);

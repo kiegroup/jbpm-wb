@@ -89,11 +89,11 @@ public class DataSetDefsBootstrap {
                                     "oe.id " +
                                "from " +
                                     "AuditTaskImpl t " +
-                               "inner join " +
+                               "left join " +
                                     "PeopleAssignments_PotOwners po " +
                                "on " +
                                     "t.taskId=po.task_id " +
-                               "inner join " +
+                               "left join " +
                                     "OrganizationalEntity oe " +
                                "on " +
                                     "po.entity_id=oe.id " +
@@ -112,26 +112,15 @@ public class DataSetDefsBootstrap {
                 .name("FILTERED_BA_TASK-Human tasks and admins")
                 .dataSource(JBPM_DATA_SOURCE)
                 .dbSQL("select " +
-                               SQL_SELECT_COMMON_COLS + ", " +
-                                    "oe.id " +
+                               SQL_SELECT_COMMON_COLS +
                                "from " +
-                                    "AuditTaskImpl t " +
-                               "inner join " +
-                                    "PeopleAssignments_BAs bas " +
-                               "on " +
-                                    "t.taskId=bas.task_id " +
-                               "inner join " +
-                                    "OrganizationalEntity oe " +
-                               "on " +
-                                    "bas.entity_id=oe.id " +
+                               "AuditTaskImpl t  " +
                                "left join " +
                                     "ProcessInstanceLog pil " +
                                "on " +
                                     "pil.id=t.processInstanceId"
                         ,
                        false);
-        builder = addBuilderCommonColumns(builder)
-                .label(COLUMN_ORGANIZATIONAL_ENTITY);
 
         DataSetDef humanTaskWithAdminDef = builder.buildDef();
 

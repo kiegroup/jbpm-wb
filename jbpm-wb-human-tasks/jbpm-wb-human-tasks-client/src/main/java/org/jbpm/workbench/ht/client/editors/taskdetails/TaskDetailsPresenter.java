@@ -25,10 +25,8 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.common.client.util.UTCDateBox;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
-import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
@@ -38,15 +36,12 @@ import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 @Dependent
 public class TaskDetailsPresenter {
 
+    @Inject
+    protected Event<TaskRefreshedEvent> taskRefreshed;
     TaskDetailsView view;
-
     private Constants constants = Constants.INSTANCE;
-
     @Inject
     private Caller<TaskService> taskService;
-
-    private Event<TaskRefreshedEvent> taskRefreshed;
-
     private long currentTaskId = 0;
 
     private String currentServerTemplateId;
@@ -54,10 +49,11 @@ public class TaskDetailsPresenter {
     private String currentContainerId;
 
     @Inject
-    public TaskDetailsPresenter(
-            TaskDetailsView view,
-            Event<TaskRefreshedEvent> taskRefreshed) {
+    public TaskDetailsPresenter(TaskDetailsView view,
+                                Caller<TaskService> taskService,
+                                Event<TaskRefreshedEvent> taskRefreshed) {
         this.view = view;
+        this.taskService = taskService;
         this.taskRefreshed = taskRefreshed;
     }
 
@@ -71,18 +67,14 @@ public class TaskDetailsPresenter {
     }
 
     public void updateTask(final String taskDescription,
-                           final String userId,
                            final Date dueDate,
                            final int priority) {
 
         if (currentTaskId > 0) {
 
-            taskService.call(new RemoteCallback<Void>() {
-                @Override
-                public void callback(Void nothing) {
-                    view.displayNotification(constants.TaskDetailsUpdatedForTaskId(currentTaskId));
-                    taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
-                }
+            taskService.call((Void) -> {
+                view.displayNotification(constants.TaskDetailsUpdatedForTaskId(currentTaskId));
+                taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
             }).updateTask(currentServerTemplateId,
                           currentContainerId,
                           currentTaskId,
@@ -92,31 +84,23 @@ public class TaskDetailsPresenter {
         }
     }
 
-    public void refreshTask() {
-
-        taskService.call(new RemoteCallback<TaskSummary>() {
-            @Override
-            public void callback(TaskSummary details) {
-                if (details == null) {
-                    setReadOnlyTaskDetail();
-                    return;
-                }
-                if (details.getStatus().equals(TASK_STATUS_COMPLETED)) {
-                    setReadOnlyTaskDetail();
-                }
-                view.setTaskDescription(details.getDescription());
-                final Long date = UTCDateBox.date2utc(details.getExpirationTime());
-                if (date != null) {
-                    view.setDueDate(date);
-                    view.setDueDateTime(date);
-                }
-                view.setUser(details.getActualOwner());
-                view.setTaskStatus(details.getStatus());
-                view.setTaskPriority(String.valueOf(details.getPriority()));
-            }
-        }).getTask(currentServerTemplateId,
-                   currentContainerId,
-                   currentTaskId);
+    protected void setTaskDetails(String status,
+                                  String description,
+                                  String actualOwner,
+                                  Date expirationTime,
+                                  String priority) {
+        if (TASK_STATUS_COMPLETED.equals(status)) {
+            setReadOnlyTaskDetail();
+        }
+        view.setTaskDescription(description);
+        final Long date = UTCDateBox.date2utc(expirationTime);
+        if (date != null) {
+            view.setDueDate(date);
+            view.setDueDateTime(date);
+        }
+        view.setUser(actualOwner);
+        view.setTaskStatus(status);
+        view.setTaskPriority(priority);
     }
 
     public void setReadOnlyTaskDetail() {
@@ -131,13 +115,11 @@ public class TaskDetailsPresenter {
         this.currentTaskId = event.getTaskId();
         this.currentServerTemplateId = event.getServerTemplateId();
         this.currentContainerId = event.getContainerId();
-        refreshTask();
-    }
-
-    public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {
-        if (currentTaskId == event.getTaskId()) {
-            refreshTask();
-        }
+        setTaskDetails(event.getStatus(),
+                       event.getDescription(),
+                       event.getActualOwner(),
+                       event.getExpirationTime(),
+                       String.valueOf(event.getPriority()));
     }
 
     public interface TaskDetailsView extends IsWidget {

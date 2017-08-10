@@ -115,8 +115,8 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
     }
 
     @Override
-    public FormControlStatic getUsersGroupsControlsPanel() {
-        return adminUsersGroupsControlsPanel;
+    public void setUsersGroupsControlsPanelText(String text) {
+        adminUsersGroupsControlsPanel.setText(text);
     }
 
     @Override
@@ -125,22 +125,23 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
     }
 
     @Override
-    public Button getForwardButton() {
-        return adminForwardButton;
+    public void enableForwardButton(boolean enabled) {
+        adminForwardButton.setEnabled(enabled);
     }
 
     @Override
-    public TextBox getUserOrGroupText() {
-        return adminUserOrGroupText;
+    public void enableUserOrGroupText(boolean enabled) {
+        adminUserOrGroupText.setEnabled(enabled);
+    }
+
+
+    @Override
+    public void enableReminderButton(boolean enabled) {
+        adminReminderButton.setEnabled(enabled);
     }
 
     @Override
-    public Button getReminderButton() {
-        return adminReminderButton;
-    }
-
-    @Override
-    public FormControlStatic getActualOwnerPanel() {
-        return actualOwnerPanel;
+    public void setActualOwnerText(String actualOwnerText) {
+        actualOwnerPanel.setText(actualOwnerText);
     }
 }

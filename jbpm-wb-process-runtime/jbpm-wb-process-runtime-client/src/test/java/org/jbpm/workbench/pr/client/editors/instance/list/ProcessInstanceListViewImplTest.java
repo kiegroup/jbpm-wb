@@ -41,10 +41,10 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
     private ProcessInstanceListPresenter presenter;
 
     @Spy
-    private ProcessInstanceSummaryErrorPopoverCell popoverCellMock;
+    private ProcessInstanceSummaryErrorCountCell cellMock;
 
     @Mock
-    private ManagedInstance<ProcessInstanceSummaryErrorPopoverCell> popoverCellInstance;
+    private ManagedInstance<ProcessInstanceSummaryErrorCountCell> cellInstance;
 
     @InjectMocks
     @Spy
@@ -101,6 +101,6 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
         when(presenter.createActiveTabSettings()).thenReturn(filterSettings);
         when(presenter.createCompletedTabSettings()).thenReturn(filterSettings);
         when(presenter.createAbortedTabSettings()).thenReturn(filterSettings);
-        when(popoverCellInstance.get()).thenReturn(popoverCellMock);
+        when(cellInstance.get()).thenReturn(cellMock);
     }
 }

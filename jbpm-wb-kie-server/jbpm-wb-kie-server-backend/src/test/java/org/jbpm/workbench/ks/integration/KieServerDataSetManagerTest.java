@@ -77,7 +77,7 @@ public class KieServerDataSetManagerTest {
         this.queryClient = Mockito.mock(QueryServicesClient.class);
         when(kieClient.getServicesClient(any())).thenReturn(queryClient);
 
-        when(kieServerIntegration.getAdminServerClient(anyString())).thenReturn(kieClient);
+        when(kieServerIntegration.getAdminServerClient(anyString(), anyString())).thenReturn(kieClient);
 
         ExecutorService executorService = Executors.newCachedThreadPool(new DescriptiveThreadFactory());
 
@@ -99,7 +99,7 @@ public class KieServerDataSetManagerTest {
                                                          definitions);
 
         verify(kieServerIntegration,
-               times(1)).getAdminServerClient(anyString());
+               times(1)).getAdminServerClient(anyString(), anyString());
         verify(queryClient,
                times(1)).replaceQuery(any());
 
@@ -135,7 +135,7 @@ public class KieServerDataSetManagerTest {
                                                          definitions);
 
         verify(kieServerIntegration,
-               times(1)).getAdminServerClient(anyString());
+               times(1)).getAdminServerClient(anyString(), anyString());
         verify(kieServerIntegration,
                times(1)).getAdminServerClientCheckEndpoints(anyString());
         verify(queryClient,
@@ -161,7 +161,7 @@ public class KieServerDataSetManagerTest {
                                                          definitions);
 
         verify(kieServerIntegration,
-               times(1)).getAdminServerClient(anyString());
+               times(1)).getAdminServerClient(anyString(), anyString());
         verify(queryClient,
                never()).replaceQuery(any());
 

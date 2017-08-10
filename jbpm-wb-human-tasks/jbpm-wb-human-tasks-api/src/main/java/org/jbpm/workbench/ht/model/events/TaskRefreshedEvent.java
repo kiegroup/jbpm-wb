@@ -25,7 +25,7 @@ public class TaskRefreshedEvent implements Serializable {
 
     private String serverTemplateId;
     private String deploymentId;
-    private long taskId;
+    private Long taskId;
     private String taskName;
 
     public TaskRefreshedEvent(long taskId,
@@ -40,7 +40,7 @@ public class TaskRefreshedEvent implements Serializable {
 
     public TaskRefreshedEvent(String serverTemplateId,
                               String deploymentId,
-                              long taskId) {
+                              Long taskId) {
         this.serverTemplateId = serverTemplateId;
         this.deploymentId = deploymentId;
         this.taskId = taskId;
@@ -49,7 +49,7 @@ public class TaskRefreshedEvent implements Serializable {
     public TaskRefreshedEvent() {
     }
 
-    public long getTaskId() {
+    public Long getTaskId() {
         return taskId;
     }
 

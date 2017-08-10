@@ -17,26 +17,17 @@ package org.jbpm.workbench.ht.client.editors.taskprocesscontext;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.jbpm.workbench.pr.model.ProcessInstanceKey;
-import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
-import org.jbpm.workbench.ht.model.TaskSummary;
-import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
-import org.jbpm.workbench.ht.service.TaskService;
-import org.jbpm.workbench.pr.events.ProcessInstancesWithDetailsRequestEvent;
-import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.ResourceRef;
 import org.uberfire.security.authz.AuthorizationManager;
@@ -55,34 +46,17 @@ public class TaskProcessContextPresenter {
 
     private AuthorizationManager authorizationManager;
 
-    private Event<ProcessInstancesWithDetailsRequestEvent> processInstanceSelected;
+    private Long currentProcessInstanceId = -1L;
 
-    private Caller<TaskService> taskService;
-
-    private Caller<ProcessRuntimeDataService> processRuntimeDataService;
-
-    private long currentTaskId = 0;
-
-    private long currentProcessInstanceId = -1L;
-
-    private String serverTemplateId;
-
-    private String containerId;
 
     @Inject
     public TaskProcessContextPresenter(TaskProcessContextView view,
                                        PlaceManager placeManager,
-                                       Caller<TaskService> taskService,
-                                       Caller<ProcessRuntimeDataService> processRuntimeDataService,
-                                       Event<ProcessInstancesWithDetailsRequestEvent> processInstanceSelected,
                                        ActivityManager activityManager,
                                        AuthorizationManager authorizationManager,
                                        User identity) {
         this.view = view;
-        this.taskService = taskService;
-        this.processRuntimeDataService = processRuntimeDataService;
         this.placeManager = placeManager;
-        this.processInstanceSelected = processInstanceSelected;
         this.activityManager = activityManager;
         this.authorizationManager = authorizationManager;
         this.identity = identity;
@@ -104,45 +78,26 @@ public class TaskProcessContextPresenter {
     }
 
     public void goToProcessInstanceDetails() {
-        processRuntimeDataService.call(new RemoteCallback<ProcessInstanceSummary>() {
-                                           @Override
-                                           public void callback(ProcessInstanceSummary summary) {
-                                               placeManager.goTo(PerspectiveIds.PROCESS_INSTANCES);
-                                               processInstanceSelected.fire(new ProcessInstancesWithDetailsRequestEvent(
-                                                       serverTemplateId,
-                                                       summary.getDeploymentId(),
-                                                       summary.getProcessInstanceId(),
-                                                       summary.getProcessId(),
-                                                       summary.getProcessName(),
-                                                       summary.getState())
-                                               );
-                                           }
-                                       }
-        ).getProcessInstance(serverTemplateId,
-                             new ProcessInstanceKey(serverTemplateId,
-                                                    containerId,
-                                                    currentProcessInstanceId));
+        final PlaceRequest request = new DefaultPlaceRequest(PerspectiveIds.PROCESS_INSTANCES);
+        request.addParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
+                             currentProcessInstanceId.toString());
+        placeManager.goTo(request);
     }
 
-    public void refreshProcessContextOfTask() {
-        taskService.call(new RemoteCallback<TaskSummary>() {
-                             @Override
-                             public void callback(TaskSummary details) {
-                                 if (details == null || details.getProcessInstanceId() == null) {
-                                     view.setProcessInstanceId("None");
-                                     view.setProcessId("None");
-                                     view.enablePIDetailsButton(false);
-                                     return;
-                                 }
+    public void setProcessContextData(Long processInstanceId,
+                                      String processId) {
 
-                                 currentProcessInstanceId = details.getProcessInstanceId();
-                                 view.setProcessInstanceId(String.valueOf(currentProcessInstanceId));
-                                 view.setProcessId(details.getProcessId());
-                             }
-                         }
-        ).getTask(serverTemplateId,
-                  containerId,
-                  currentTaskId);
+        if (processInstanceId == null) {
+            view.setProcessInstanceId("None");
+            view.setProcessId("None");
+            view.enablePIDetailsButton(false);
+            return;
+        }
+
+        view.setProcessInstanceId(String.valueOf(processInstanceId));
+        view.setProcessId(processId);
+        view.enablePIDetailsButton(true);
+
     }
 
     boolean hasAccessToPerspective(String perspectiveId) {
@@ -153,16 +108,9 @@ public class TaskProcessContextPresenter {
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
-        this.currentTaskId = event.getTaskId();
-        this.serverTemplateId = event.getServerTemplateId();
-        this.containerId = event.getContainerId();
-        refreshProcessContextOfTask();
-    }
-
-    public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {
-        if (currentTaskId == event.getTaskId()) {
-            refreshProcessContextOfTask();
-        }
+        this.currentProcessInstanceId = event.getProcessInstanceId();
+        setProcessContextData(event.getProcessInstanceId(),
+                              event.getProcessId());
     }
 
     public interface TaskProcessContextView extends UberView<TaskProcessContextPresenter> {
