@@ -31,13 +31,11 @@ import org.jboss.errai.ui.shared.api.annotations.Bundle;
 import org.jbpm.workbench.client.i18n.Constants;
 import org.jbpm.workbench.client.perspectives.ProcessAdminSettingsPerspective;
 import org.jbpm.workbench.client.perspectives.TaskAdminSettingsPerspective;
-import org.kie.workbench.common.screens.search.client.menu.SearchMenuBuilder;
 import org.kie.workbench.common.workbench.client.entrypoint.DefaultWorkbenchEntryPoint;
 import org.kie.workbench.common.workbench.client.menu.DefaultWorkbenchFeaturesMenusHelper;
-import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.views.pfly.menu.MainBrand;
-import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
+import org.uberfire.client.workbench.widgets.menu.megamenu.WorkbenchMegaMenuPresenter;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
@@ -57,7 +55,7 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
 
     protected DefaultWorkbenchFeaturesMenusHelper menusHelper;
 
-    protected WorkbenchMenuBarPresenter menuBar;
+    protected WorkbenchMegaMenuPresenter menuBar;
 
     @Inject
     public ShowcaseEntryPoint(final Caller<AppConfigService> appConfigService,
@@ -65,7 +63,7 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
                               final SyncBeanManager iocManager,
                               final User identity,
                               final DefaultWorkbenchFeaturesMenusHelper menusHelper,
-                              final WorkbenchMenuBarPresenter menuBar) {
+                              final WorkbenchMegaMenuPresenter menuBar) {
         super(appConfigService,
               activityBeansCache);
         this.iocManager = iocManager;
@@ -76,17 +74,13 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
 
     @Override
     protected void setupMenu() {
-
-        final AbstractWorkbenchPerspectiveActivity defaultPerspective = menusHelper.getDefaultPerspectiveActivity();
         final Menus menus = MenuFactory
-                .newTopLevelMenu(constants.Home()).place(new DefaultPlaceRequest(defaultPerspective.getIdentifier())).endMenu()
                 .newTopLevelMenu(constants.Authoring()).withItems(getAuthoringViews()).endMenu()
                 .newTopLevelMenu(constants.Deploy()).withItems(getDeploymentViews()).endMenu()
                 .newTopLevelMenu(constants.Process_Management()).withItems(getProcessManagementViews()).endMenu()
                 .newTopLevelMenu(constants.Work()).withItems(getWorkViews()).endMenu()
                 .newTopLevelMenu(constants.Dashboards()).withItems(getDashboardsViews()).endMenu()
                 .newTopLevelMenu(constants.Extensions()).withItems(menusHelper.getExtensionsViews()).endMenu()
-                .newTopLevelCustomMenu(iocManager.lookupBean(SearchMenuBuilder.class).getInstance()).endMenu()
                 .build();
 
         menuBar.addMenus(menus);
