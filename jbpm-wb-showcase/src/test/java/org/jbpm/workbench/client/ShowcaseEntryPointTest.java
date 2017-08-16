@@ -31,9 +31,8 @@ import org.kie.workbench.common.workbench.client.menu.DefaultWorkbenchFeaturesMe
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityBeansCache;
-import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
+import org.uberfire.client.workbench.widgets.menu.megamenu.WorkbenchMegaMenuPresenter;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.ConstantsAnswerMock;
 import org.uberfire.mocks.IocTestingUtils;
@@ -41,7 +40,6 @@ import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -64,7 +62,7 @@ public class ShowcaseEntryPointTest {
     private DefaultWorkbenchFeaturesMenusHelper menusHelper;
 
     @Mock
-    private WorkbenchMenuBarPresenter menuBar;
+    private WorkbenchMegaMenuPresenter menuBar;
 
     private ShowcaseEntryPoint showcaseEntryPoint;
 
@@ -92,23 +90,21 @@ public class ShowcaseEntryPointTest {
 
         Menus menus = menusCaptor.getValue();
 
-        assertEquals(8,
+        assertEquals(6,
                      menus.getItems().size());
 
-        assertEquals(showcaseEntryPoint.constants.Home(),
-                     menus.getItems().get(0).getCaption());
         assertEquals(showcaseEntryPoint.constants.Authoring(),
-                     menus.getItems().get(1).getCaption());
+                     menus.getItems().get(0).getCaption());
         assertEquals(showcaseEntryPoint.constants.Deploy(),
-                     menus.getItems().get(2).getCaption());
+                     menus.getItems().get(1).getCaption());
         assertEquals(showcaseEntryPoint.constants.Process_Management(),
-                     menus.getItems().get(3).getCaption());
+                     menus.getItems().get(2).getCaption());
         assertEquals(showcaseEntryPoint.constants.Work(),
-                     menus.getItems().get(4).getCaption());
+                     menus.getItems().get(3).getCaption());
         assertEquals(showcaseEntryPoint.constants.Dashboards(),
-                     menus.getItems().get(5).getCaption());
+                     menus.getItems().get(4).getCaption());
         assertEquals(showcaseEntryPoint.constants.Extensions(),
-                     menus.getItems().get(6).getCaption());
+                     menus.getItems().get(5).getCaption());
 
         verify(menusHelper).addRolesMenuItems();
         verify(menusHelper).addGroupsMenuItems();
@@ -185,7 +181,6 @@ public class ShowcaseEntryPointTest {
     }
 
     private void mockMenuHelper() {
-        doReturn(mock(AbstractWorkbenchPerspectiveActivity.class)).when(menusHelper).getDefaultPerspectiveActivity();
         doReturn(Collections.emptyList()).when(menusHelper).getRoles();
         doReturn(Collections.emptyList()).when(menusHelper).getGroups();
         doNothing().when(menusHelper).addWorkbenchConfigurationMenuItem();
