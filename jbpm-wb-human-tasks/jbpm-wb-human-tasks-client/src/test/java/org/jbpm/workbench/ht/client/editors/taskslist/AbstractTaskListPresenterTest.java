@@ -26,7 +26,6 @@ import java.util.function.Predicate;
 import javax.enterprise.event.Event;
 
 import com.google.gwt.view.client.Range;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
@@ -40,7 +39,6 @@ import org.dashbuilder.dataset.filter.LogicalExprType;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.security.shared.api.Group;
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.common.client.util.TaskUtils;
@@ -69,7 +67,6 @@ import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -375,83 +372,6 @@ public abstract class AbstractTaskListPresenterTest {
             assertEquals(HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet),
                          summary.isForAdmin());
         }
-    }
-
-    @Test
-    public void testEmptySearchString() {
-        final SearchEvent searchEvent = new SearchEvent("");
-
-        getPresenter().onSearchEvent(searchEvent);
-
-        verify(viewMock).applyFilterOnPresenter(anyString());
-        assertEquals(searchEvent.getFilter(),
-                     getPresenter().getTextSearchStr());
-    }
-
-    @Test
-    public void testSearchString() {
-        final SearchEvent searchEvent = new SearchEvent(RandomStringUtils.random(10));
-
-        getPresenter().onSearchEvent(searchEvent);
-
-        verify(viewMock).applyFilterOnPresenter(anyString());
-        assertEquals(searchEvent.getFilter(),
-                     getPresenter().getTextSearchStr());
-    }
-
-    @Test
-    public void testSearchFilterEmpty() {
-        final List<ColumnFilter> filters = getPresenter().getColumnFilters("");
-
-        assertTrue(filters.isEmpty());
-    }
-
-    @Test
-    public void testSearchFilterNull() {
-        final List<ColumnFilter> filters = getPresenter().getColumnFilters(null);
-
-        assertTrue(filters.isEmpty());
-    }
-
-    @Test
-    public void testSearchFilterEmptyTrim() {
-        final List<ColumnFilter> filters = getPresenter().getColumnFilters("     ");
-
-        assertTrue(filters.isEmpty());
-    }
-
-    @Test
-    public void testSearchFilterId() {
-        final List<ColumnFilter> filters = getPresenter().getColumnFilters("1");
-
-        assertEquals(1,
-                     filters.size());
-        assertEquals(COLUMN_TASK_ID,
-                     filters.get(0).getColumnId());
-    }
-
-    @Test
-    public void testSearchFilterIdTrim() {
-        final List<ColumnFilter> filters = getPresenter().getColumnFilters(" 1 ");
-
-        assertEquals(1,
-                     filters.size());
-        assertEquals(COLUMN_TASK_ID,
-                     filters.get(0).getColumnId());
-    }
-
-    @Test
-    public void testSearchFilterString() {
-        final List<ColumnFilter> filters = getPresenter().getColumnFilters("taskName");
-
-        assertEquals(3,
-                     filters.size());
-        assertEquals(COLUMN_NAME,
-                     filters.get(0).getColumnId());
-        assertEquals(COLUMN_DESCRIPTION,
-                     filters.get(1).getColumnId());
-        assertEquals(COLUMN_PROCESS_ID,
-                     filters.get(2).getColumnId());
     }
 
     @Test

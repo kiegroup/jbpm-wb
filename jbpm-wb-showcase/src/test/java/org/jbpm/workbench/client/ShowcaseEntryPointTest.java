@@ -27,6 +27,7 @@ import org.jbpm.workbench.client.i18n.Constants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.workbench.client.admin.DefaultAdminPageHelper;
 import org.kie.workbench.common.workbench.client.menu.DefaultWorkbenchFeaturesMenusHelper;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -58,6 +59,9 @@ public class ShowcaseEntryPointTest {
     @Mock
     private User identity;
 
+    @Mock
+    private DefaultAdminPageHelper adminPageHelper;
+
     @Spy
     private DefaultWorkbenchFeaturesMenusHelper menusHelper;
 
@@ -74,6 +78,7 @@ public class ShowcaseEntryPointTest {
                                                         activityBeansCache,
                                                         iocManager,
                                                         identity,
+                                                        adminPageHelper,
                                                         menusHelper,
                                                         menuBar));
         mockMenuHelper();

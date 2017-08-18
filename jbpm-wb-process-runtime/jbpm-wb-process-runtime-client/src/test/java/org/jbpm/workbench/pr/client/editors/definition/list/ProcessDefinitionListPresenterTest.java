@@ -23,23 +23,18 @@ import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-
 import org.jboss.errai.common.client.api.Caller;
-
-import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.events.SearchEvent;
-
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
+import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -105,23 +100,6 @@ public class ProcessDefinitionListPresenterTest {
     }
 
     @Test
-    public void testSearchString() {
-        final String textSearchStr = "textSearch";
-        final SearchEvent searchEvent = new SearchEvent(textSearchStr);
-
-        presenter.onSearchEvent(searchEvent);
-
-        assertEquals(searchEvent.getFilter(),
-                     presenter.getTextSearchStr());
-        verify(processRuntimeDataService).getProcessesByFilter(anyString(),
-                                                               anyString(),
-                                                               anyInt(),
-                                                               anyInt(),
-                                                               anyString(),
-                                                               anyBoolean());
-    }
-
-    @Test
     public void testProcessDefNameDefinitionPropagation() {
         final ProcessSummary processSummary = new ProcessSummary();
         processSummary.setProcessDefId("testProcessDefId");
@@ -164,12 +142,11 @@ public class ProcessDefinitionListPresenterTest {
 
     @Test
     public void testGetData() {
-        when(processRuntimeDataService.getProcessesByFilter(anyString(),
-                                                            anyString(),
-                                                            anyInt(),
-                                                            anyInt(),
-                                                            anyString(),
-                                                            anyBoolean()))
+        when(processRuntimeDataService.getProcesses(anyString(),
+                                                    anyInt(),
+                                                    anyInt(),
+                                                    anyString(),
+                                                    anyBoolean()))
                 .thenReturn(getMockList(10))
                 .thenReturn(getMockList(1));
 

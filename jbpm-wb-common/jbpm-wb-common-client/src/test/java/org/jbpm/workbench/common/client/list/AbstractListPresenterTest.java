@@ -23,12 +23,9 @@ import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
 import static org.junit.Assert.*;
@@ -97,42 +94,6 @@ public class AbstractListPresenterTest {
         testListPresenter.onRestoreDefaultFilters();
 
         verify(viewMock).showRestoreDefaultFilterConfirmationPopup();
-    }
-
-    @Test
-    public void testEmptySearchString() {
-        final SearchEvent searchEvent = new SearchEvent("");
-
-        testListPresenter.onSearchEvent(searchEvent);
-
-        final ArgumentCaptor<Range> captor = ArgumentCaptor.forClass(Range.class);
-        verify(next).setVisibleRangeAndClearData(captor.capture(),
-                                                 eq(true));
-        final Range range = captor.getValue();
-        assertEquals(1,
-                     range.getStart());
-        assertEquals(1,
-                     range.getLength());
-        assertEquals(searchEvent.getFilter(),
-                     testListPresenter.getTextSearchStr());
-    }
-
-    @Test
-    public void testSearchString() {
-        final SearchEvent searchEvent = new SearchEvent(RandomStringUtils.random(10));
-
-        testListPresenter.onSearchEvent(searchEvent);
-
-        final ArgumentCaptor<Range> captor = ArgumentCaptor.forClass(Range.class);
-        verify(next).setVisibleRangeAndClearData(captor.capture(),
-                                                 eq(true));
-        final Range range = captor.getValue();
-        assertEquals(0,
-                     range.getStart());
-        assertEquals(1,
-                     range.getLength());
-        assertEquals(searchEvent.getFilter().toLowerCase(),
-                     testListPresenter.getTextSearchStr());
     }
 
     @Test

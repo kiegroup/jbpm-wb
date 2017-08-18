@@ -31,6 +31,7 @@ import org.jboss.errai.ui.shared.api.annotations.Bundle;
 import org.jbpm.workbench.client.i18n.Constants;
 import org.jbpm.workbench.client.perspectives.ProcessAdminSettingsPerspective;
 import org.jbpm.workbench.client.perspectives.TaskAdminSettingsPerspective;
+import org.kie.workbench.common.workbench.client.admin.DefaultAdminPageHelper;
 import org.kie.workbench.common.workbench.client.entrypoint.DefaultWorkbenchEntryPoint;
 import org.kie.workbench.common.workbench.client.menu.DefaultWorkbenchFeaturesMenusHelper;
 import org.uberfire.client.mvp.ActivityBeansCache;
@@ -57,11 +58,14 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
 
     protected WorkbenchMegaMenuPresenter menuBar;
 
+    protected DefaultAdminPageHelper adminPageHelper;
+
     @Inject
     public ShowcaseEntryPoint(final Caller<AppConfigService> appConfigService,
                               final ActivityBeansCache activityBeansCache,
                               final SyncBeanManager iocManager,
                               final User identity,
+                              final DefaultAdminPageHelper adminPageHelper,
                               final DefaultWorkbenchFeaturesMenusHelper menusHelper,
                               final WorkbenchMegaMenuPresenter menuBar) {
         super(appConfigService,
@@ -70,6 +74,7 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
         this.identity = identity;
         this.menusHelper = menusHelper;
         this.menuBar = menuBar;
+        this.adminPageHelper = adminPageHelper;
     }
 
     @Override
@@ -89,6 +94,11 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
         menusHelper.addGroupsMenuItems();
         menusHelper.addWorkbenchConfigurationMenuItem();
         menusHelper.addUtilitiesMenuItems();
+    }
+
+    @Override
+    protected void setupAdminPage() {
+        adminPageHelper.setup();
     }
 
     protected List<? extends MenuItem> getAuthoringViews() {

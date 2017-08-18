@@ -15,18 +15,13 @@
  */
 package org.jbpm.workbench.common.client.list;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import javax.enterprise.event.Observes;
 
-import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
-import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.model.QueryFilter;
@@ -45,8 +40,6 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
     protected AsyncDataProvider<T> dataProvider;
 
     protected QueryFilter currentFilter;
-
-    protected String textSearchStr = "";
 
     protected boolean addingDefaultFilters = false;
 
@@ -166,27 +159,6 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
         }
     }
 
-    protected void onSearchEvent(@Observes SearchEvent searchEvent) {
-        String filterString = searchEvent.getFilter();
-        textSearchStr = filterString == null ? "" : filterString.toLowerCase();
-        final Map<String, Object> params = new HashMap<String, Object>();
-        params.put("textSearch",
-                   textSearchStr);
-        if (currentFilter != null) {
-            currentFilter.setParams(params);
-        }
-
-        final HasData<T> next = dataProvider.getDataDisplays().iterator().next();
-        if (Strings.isNullOrEmpty(filterString)) {
-            next.setVisibleRangeAndClearData(next.getVisibleRange(),
-                                             true);
-        } else {
-            next.setVisibleRangeAndClearData(new Range(0,
-                                                       next.getVisibleRange().getLength()),
-                                             true);
-        }
-    }
-
     @Override
     public void onRestoreDefaultFilters() {
         getListView().showRestoreDefaultFilterConfirmationPopup();
@@ -215,7 +187,4 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
         }
     }
 
-    public String getTextSearchStr() {
-        return textSearchStr;
-    }
 }
