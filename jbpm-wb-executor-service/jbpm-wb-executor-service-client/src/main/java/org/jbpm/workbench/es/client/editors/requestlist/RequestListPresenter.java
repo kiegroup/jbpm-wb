@@ -35,8 +35,6 @@ import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetLookupFactory;
-import org.dashbuilder.dataset.filter.ColumnFilter;
-import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -129,17 +127,6 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                     dataSetQueryHelper.setLastSortOrder(SortOrder.ASCENDING);
                 }
 
-                final List<ColumnFilter> filters = getColumnFilters(textSearchStr);
-                if (filters.isEmpty() == false) {
-                    if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
-                        currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(OR(filters));
-                    } else {
-                        final DataSetFilter filter = new DataSetFilter();
-                        filter.addFilterColumn(OR(filters));
-                        currentTableSettings.getDataSetLookup().addOperation(filter);
-                    }
-                }
-
                 dataSetQueryHelper.setDataSetHandler(currentTableSettings);
                 dataSetQueryHelper.lookupDataSet(visibleRange.getStart(),
                                                  new AbstractDataSetReadyCallback(errorPopup,
@@ -210,22 +197,6 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                                      COLUMN_PROCESS_INSTANCE_DESCRIPTION,
                                      index)
         );
-    }
-
-    protected List<ColumnFilter> getColumnFilters(final String searchString) {
-        final List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-        if (searchString != null && searchString.trim().length() > 0) {
-            filters.add(likeTo(COLUMN_COMMANDNAME,
-                               "%" + searchString.toLowerCase() + "%",
-                               false));
-            filters.add(likeTo(COLUMN_MESSAGE,
-                               "%" + searchString.toLowerCase() + "%",
-                               false));
-            filters.add(likeTo(COLUMN_BUSINESSKEY,
-                               "%" + searchString.toLowerCase() + "%",
-                               false));
-        }
-        return filters;
     }
 
     public void cancelRequest(final Long requestId) {

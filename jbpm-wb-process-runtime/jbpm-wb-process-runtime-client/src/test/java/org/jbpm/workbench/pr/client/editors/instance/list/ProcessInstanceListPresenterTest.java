@@ -23,18 +23,15 @@ import com.google.common.collect.Lists;
 import com.google.gwt.dev.util.collect.HashSet;
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
-import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsJSONMarshaller;
@@ -442,85 +439,6 @@ public class ProcessInstanceListPresenterTest {
             pIList.add(createProcessInstanceSummary(i));
         }
         return pIList;
-    }
-
-    @Test
-    public void testEmptySearchString() {
-        final SearchEvent searchEvent = new SearchEvent("");
-
-        presenter.onSearchEvent(searchEvent);
-
-        verify(viewMock).applyFilterOnPresenter(anyString());
-        assertEquals(searchEvent.getFilter(),
-                     presenter.getTextSearchStr());
-    }
-
-    @Test
-    public void testSearchString() {
-        final SearchEvent searchEvent = new SearchEvent(RandomStringUtils.random(10));
-
-        presenter.onSearchEvent(searchEvent);
-
-        verify(viewMock).applyFilterOnPresenter(anyString());
-        assertEquals(searchEvent.getFilter(),
-                     presenter.getTextSearchStr());
-    }
-
-    @Test
-    public void testSearchFilterEmpty() {
-        final List<ColumnFilter> filters = presenter.getColumnFilters("");
-
-        assertTrue(filters.isEmpty());
-    }
-
-    @Test
-    public void testSearchFilterNull() {
-        final List<ColumnFilter> filters = presenter.getColumnFilters(null);
-
-        assertTrue(filters.isEmpty());
-    }
-
-    @Test
-    public void testSearchFilterEmptyTrim() {
-        final List<ColumnFilter> filters = presenter.getColumnFilters("     ");
-
-        assertTrue(filters.isEmpty());
-    }
-
-    @Test
-    public void testSearchFilterId() {
-        final List<ColumnFilter> filters = presenter.getColumnFilters("1");
-
-        assertEquals(1,
-                     filters.size());
-        assertEquals(COLUMN_PROCESS_INSTANCE_ID,
-                     filters.get(0).getColumnId());
-    }
-
-    @Test
-    public void testSearchFilterIdTrim() {
-        final List<ColumnFilter> filters = presenter.getColumnFilters(" 1 ");
-
-        assertEquals(1,
-                     filters.size());
-        assertEquals(COLUMN_PROCESS_INSTANCE_ID,
-                     filters.get(0).getColumnId());
-    }
-
-    @Test
-    public void testSearchFilterString() {
-        final List<ColumnFilter> filters = presenter.getColumnFilters("processName");
-
-        assertEquals(4,
-                     filters.size());
-        assertEquals(COLUMN_PROCESS_ID,
-                     filters.get(0).getColumnId());
-        assertEquals(COLUMN_PROCESS_NAME,
-                     filters.get(1).getColumnId());
-        assertEquals(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                     filters.get(2).getColumnId());
-        assertEquals(COLUMN_IDENTITY,
-                     filters.get(3).getColumnId());
     }
 
     @Test

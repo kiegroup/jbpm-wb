@@ -121,17 +121,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                     dataSetQueryHelper.setLastSortOrder(SortOrder.ASCENDING);
                 }
 
-                final List<ColumnFilter> filters = getColumnFilters(textSearchStr);
-                if (filters.isEmpty() == false) {
-                    if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
-                        currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(OR(filters));
-                    } else {
-                        final DataSetFilter filter = new DataSetFilter();
-                        filter.addFilterColumn(OR(filters));
-                        currentTableSettings.getDataSetLookup().addOperation(filter);
-                    }
-                }
-
                 dataSetQueryHelper.setCurrentTableSettings(currentTableSettings);
                 dataSetQueryHelper.setDataSetHandler(currentTableSettings);
                 dataSetQueryHelper.lookupDataSet(visibleRange.getStart(),
@@ -142,30 +131,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
             errorPopup.showMessage(Constants.INSTANCE.UnexpectedError(e.getMessage()));
             view.hideBusyIndicator();
         }
-    }
-
-    protected List<ColumnFilter> getColumnFilters(final String searchString) {
-        final List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-        if (searchString != null && searchString.trim().length() > 0) {
-            try {
-                final Long instanceId = Long.valueOf(searchString.trim());
-                filters.add(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
-                                     instanceId));
-            } catch (NumberFormatException ex) {
-                filters.add(equalsTo(COLUMN_PROCESS_ID,
-                                     searchString));
-                filters.add(likeTo(COLUMN_PROCESS_NAME,
-                                   "%" + searchString.toLowerCase() + "%",
-                                   false));
-                filters.add(likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                   "%" + searchString.toLowerCase() + "%",
-                                   false));
-                filters.add(likeTo(COLUMN_IDENTITY,
-                                   "%" + searchString.toLowerCase() + "%",
-                                   false));
-            }
-        }
-        return filters;
     }
 
     protected DataSetReadyCallback createDataSetDomainSpecificCallback(final int startRange,

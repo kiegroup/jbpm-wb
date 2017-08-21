@@ -15,16 +15,10 @@
  */
 package org.jbpm.workbench.client.perspectives;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 
-import org.guvnor.m2repo.client.event.M2RepoSearchEvent;
 import org.jbpm.workbench.client.i18n.Constants;
 import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.kie.workbench.common.widgets.client.search.ContextualSearch;
-import org.kie.workbench.common.widgets.client.search.SearchBehavior;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -41,23 +35,6 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 @WorkbenchPerspective(identifier = PerspectiveIds.GUVNOR_M2REPO)
 public class M2RepoPerspective {
 
-    @Inject
-    private ContextualSearch contextualSearch;
-
-    @Inject
-    private Event<M2RepoSearchEvent> searchEvents;
-
-    @PostConstruct
-    public void init() {
-        contextualSearch.setPerspectiveSearchBehavior(PerspectiveIds.GUVNOR_M2REPO,
-                                                      new SearchBehavior() {
-                                                          @Override
-                                                          public void execute(String searchFilter) {
-                                                              searchEvents.fire(new M2RepoSearchEvent(searchFilter));
-                                                          }
-                                                      });
-    }
-
     @Perspective
     public PerspectiveDefinition getPerspective() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(MultiListWorkbenchPanelPresenter.class.getName());
@@ -67,6 +44,7 @@ public class M2RepoPerspective {
     }
 
     @WorkbenchPartTitle
+    @SuppressWarnings("unused")
     public String getTitleText() {
         return Constants.INSTANCE.artifactRepository();
     }
