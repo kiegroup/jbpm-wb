@@ -28,7 +28,6 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.common.client.list.AbstractScreenListPresenter;
-import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.common.client.list.ListView;
 import org.jbpm.workbench.common.model.PortableQueryFilter;
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
@@ -158,12 +157,11 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                                                                 Throwable throwable) {
                                                return onRuntimeDataServiceError();
                                            }
-                                       }).getProcessesByFilter(getSelectedServerTemplate(),
-                                                               textSearchStr,
-                                                               visibleRange.getStart() / visibleRange.getLength(),
-                                                               visibleRange.getLength(),
-                                                               currentFilter.getOrderBy(),
-                                                               currentFilter.isAscending());
+                                       }).getProcesses(getSelectedServerTemplate(),
+                                                       visibleRange.getStart() / visibleRange.getLength(),
+                                                       visibleRange.getLength(),
+                                                       currentFilter.getOrderBy(),
+                                                       currentFilter.isAscending());
     }
 
     boolean onRuntimeDataServiceError() {
@@ -231,12 +229,6 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                                                                        newProcessInstance.getProcessDefName(),
                                                                        newProcessInstance.getNewProcessInstanceStatus(),
                                                                        newProcessInstance.getServerTemplateId()));
-    }
-
-    @Override
-    protected void onSearchEvent(@Observes SearchEvent searchEvent) {
-        textSearchStr = searchEvent.getFilter();
-        refreshGrid();
     }
 
     @Inject

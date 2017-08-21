@@ -17,11 +17,9 @@
 package org.jbpm.workbench.common.client.list;
 
 import java.util.Optional;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.dashbuilder.dataset.filter.ColumnFilter;
-import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
@@ -58,12 +56,6 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
     public void filterGrid(FilterSettings tableSettings) {
         dataSetQueryHelper.setCurrentTableSettings(tableSettings);
         refreshGrid();
-    }
-
-    @Override
-    public void onSearchEvent(@Observes SearchEvent searchEvent) {
-        textSearchStr = searchEvent.getFilter();
-        view.applyFilterOnPresenter(dataSetQueryHelper.getCurrentTableSettings().getKey());
     }
 
     @Override

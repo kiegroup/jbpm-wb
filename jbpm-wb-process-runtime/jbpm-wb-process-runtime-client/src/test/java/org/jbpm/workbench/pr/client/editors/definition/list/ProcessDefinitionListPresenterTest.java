@@ -28,7 +28,6 @@ import org.jboss.errai.common.client.api.Caller;
 
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.events.SearchEvent;
 
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
@@ -105,23 +104,6 @@ public class ProcessDefinitionListPresenterTest {
     }
 
     @Test
-    public void testSearchString() {
-        final String textSearchStr = "textSearch";
-        final SearchEvent searchEvent = new SearchEvent(textSearchStr);
-
-        presenter.onSearchEvent(searchEvent);
-
-        assertEquals(searchEvent.getFilter(),
-                     presenter.getTextSearchStr());
-        verify(processRuntimeDataService).getProcessesByFilter(anyString(),
-                                                               anyString(),
-                                                               anyInt(),
-                                                               anyInt(),
-                                                               anyString(),
-                                                               anyBoolean());
-    }
-
-    @Test
     public void testProcessDefNameDefinitionPropagation() {
         final ProcessSummary processSummary = new ProcessSummary();
         processSummary.setProcessDefId("testProcessDefId");
@@ -164,12 +146,11 @@ public class ProcessDefinitionListPresenterTest {
 
     @Test
     public void testGetData() {
-        when(processRuntimeDataService.getProcessesByFilter(anyString(),
-                                                            anyString(),
-                                                            anyInt(),
-                                                            anyInt(),
-                                                            anyString(),
-                                                            anyBoolean()))
+        when(processRuntimeDataService.getProcesses(anyString(),
+                                                    anyInt(),
+                                                    anyInt(),
+                                                    anyString(),
+                                                    anyBoolean()))
                 .thenReturn(getMockList(10))
                 .thenReturn(getMockList(1));
 

@@ -17,11 +17,7 @@
 package org.jbpm.workbench.common.client.perspectives;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 
-import org.jbpm.workbench.common.client.events.SearchEvent;
-import org.kie.workbench.common.widgets.client.search.ContextualSearch;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
 import org.uberfire.lifecycle.OnStartup;
@@ -32,18 +28,10 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 public abstract class AbstractPerspective {
 
-    @Inject
-    private ContextualSearch contextualSearch;
-
-    @Inject
-    private Event<SearchEvent> searchEvents;
-
     private PlaceRequest placeRequest;
 
     @PostConstruct
     protected void init() {
-        contextualSearch.setPerspectiveSearchBehavior(getPerspectiveId(),
-                                                      searchFilter -> searchEvents.fire(new SearchEvent(searchFilter)));
         placeRequest = getPlaceRequest();
     }
 

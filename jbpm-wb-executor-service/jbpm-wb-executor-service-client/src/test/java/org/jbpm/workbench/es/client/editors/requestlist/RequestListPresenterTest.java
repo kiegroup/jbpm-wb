@@ -17,16 +17,12 @@ package org.jbpm.workbench.es.client.editors.requestlist;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.function.Consumer;
 
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
-import org.dashbuilder.dataset.filter.ColumnFilter;
-import org.jbpm.workbench.common.client.events.SearchEvent;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
@@ -126,60 +122,6 @@ public class RequestListPresenterTest {
                times(1)).fire(any(RequestChangedEvent.class));
         verify(executorServiceMock).requeueRequest(anyString(),
                                                    eq(REQUEST_ID));
-    }
-
-    @Test
-    public void testEmptySearchString() {
-        final SearchEvent searchEvent = new SearchEvent("");
-
-        presenter.onSearchEvent(searchEvent);
-
-        verify(viewMock).applyFilterOnPresenter(anyString());
-        assertEquals(searchEvent.getFilter(),
-                     presenter.getTextSearchStr());
-    }
-
-    @Test
-    public void testSearchString() {
-        final SearchEvent searchEvent = new SearchEvent(RandomStringUtils.random(10));
-
-        presenter.onSearchEvent(searchEvent);
-
-        verify(viewMock).applyFilterOnPresenter(anyString());
-        assertEquals(searchEvent.getFilter(),
-                     presenter.getTextSearchStr());
-    }
-
-    @Test
-    public void testSearchFilterNull() {
-        final List<ColumnFilter> filters = presenter.getColumnFilters(null);
-
-        assertTrue(filters.isEmpty());
-    }
-
-    @Test
-    public void testSearchFilterEmpty() {
-        List<ColumnFilter> filters;
-
-        filters = presenter.getColumnFilters("");
-        assertTrue(filters.isEmpty());
-
-        filters = presenter.getColumnFilters("     ");
-        assertTrue(filters.isEmpty());
-    }
-
-    @Test
-    public void testSearchFilterString() {
-        final List<ColumnFilter> filters = presenter.getColumnFilters("jobReference");
-
-        assertEquals(3,
-                     filters.size());
-        assertEquals(COLUMN_COMMANDNAME,
-                     filters.get(0).getColumnId());
-        assertEquals(COLUMN_MESSAGE,
-                     filters.get(1).getColumnId());
-        assertEquals(COLUMN_BUSINESSKEY,
-                     filters.get(2).getColumnId());
     }
 
     @Test

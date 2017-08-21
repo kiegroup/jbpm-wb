@@ -103,16 +103,6 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                     dataSetQueryHelper.setLastSortOrder(SortOrder.ASCENDING);
                 }
 
-                final List<ColumnFilter> filters = getColumnFilters(textSearchStr);
-                if (filters.isEmpty() == false) {
-                    if (currentTableSettings.getDataSetLookup().getFirstFilterOp() != null) {
-                        currentTableSettings.getDataSetLookup().getFirstFilterOp().addFilterColumn(OR(filters));
-                    } else {
-                        final DataSetFilter filter = new DataSetFilter();
-                        filter.addFilterColumn(OR(filters));
-                        currentTableSettings.getDataSetLookup().addOperation(filter);
-                    }
-                }
                 dataSetQueryHelper.setDataSetHandler(currentTableSettings);
                 dataSetQueryHelper.lookupDataSet(visibleRange.getStart(),
                                                  createDataSetTaskCallback(visibleRange.getStart(),
@@ -121,28 +111,6 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         } catch (Exception e) {
             errorPopup.showMessage(constants.UnexpectedError(e.getMessage()));
         }
-    }
-
-    protected List<ColumnFilter> getColumnFilters(final String searchString) {
-        final List<ColumnFilter> filters = new ArrayList<ColumnFilter>();
-        if (searchString != null && searchString.trim().length() > 0) {
-            try {
-                final Long taskId = Long.valueOf(searchString.trim());
-                filters.add(equalsTo(COLUMN_TASK_ID,
-                                     taskId));
-            } catch (NumberFormatException ex) {
-                filters.add(likeTo(COLUMN_NAME,
-                                   "%" + searchString.toLowerCase() + "%",
-                                   false));
-                filters.add(likeTo(COLUMN_DESCRIPTION,
-                                   "%" + searchString.toLowerCase() + "%",
-                                   false));
-                filters.add(likeTo(COLUMN_PROCESS_ID,
-                                   "%" + searchString.toLowerCase() + "%",
-                                   false));
-            }
-        }
-        return filters;
     }
 
     /**
