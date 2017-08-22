@@ -107,7 +107,7 @@ public interface Constants extends Messages {
 
     String Status();
 
-    String RequestsListTitle();
+    String Jobs();
 
     String No_Jobs_Found();
 

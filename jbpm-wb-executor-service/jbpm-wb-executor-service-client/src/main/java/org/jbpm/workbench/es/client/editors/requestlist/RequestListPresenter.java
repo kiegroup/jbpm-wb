@@ -72,7 +72,7 @@ import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 @WorkbenchScreen(identifier = RequestListPresenter.SCREEN_ID)
 public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSummary, RequestListPresenter.RequestListView> {
 
-    public static final String SCREEN_ID = "Requests List";
+    public static final String SCREEN_ID = "Job List";
 
     private Constants constants = Constants.INSTANCE;
 
@@ -108,7 +108,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.RequestsListTitle();
+        return constants.Jobs();
     }
 
     @Override
