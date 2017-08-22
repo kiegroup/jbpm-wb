@@ -41,7 +41,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         implements RequestListPresenter.RequestListView {
 
     private static final String REQUEST_LIST_PREFIX = "DS_RequestListGrid";
-    protected static final String TAB_CANCELLED = REQUEST_LIST_PREFIX + "_6";
+    protected static final String TAB_CANCELED = REQUEST_LIST_PREFIX + "_6";
     protected static final String TAB_COMPLETED = REQUEST_LIST_PREFIX + "_5";
     protected static final String TAB_ERROR = REQUEST_LIST_PREFIX + "_4";
     protected static final String TAB_RETRYING = REQUEST_LIST_PREFIX + "_3";
@@ -195,10 +195,10 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                       constants.Completed(),
                       constants.FilterCompleted(),
                       REQUEST_LIST_DATASET);
-        initTabFilter(presenter.createCancelledTabSettings(),
-                      TAB_CANCELLED,
-                      constants.Cancelled(),
-                      constants.FilterCancelled(),
+        initTabFilter(presenter.createCanceledTabSettings(),
+                      TAB_CANCELED,
+                      constants.Canceled(),
+                      constants.FilterCanceled(),
                       REQUEST_LIST_DATASET);
     }
 }
