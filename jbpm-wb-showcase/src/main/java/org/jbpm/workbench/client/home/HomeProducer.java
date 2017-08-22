@@ -43,25 +43,25 @@ public class HomeProducer implements HomeModelProvider {
                                               translationService.format(HomeConstants.SubHeading),
                                               "images/home_bg.jpg");
 
-        model.addShortcut(ModelUtils.makeShortcut("pficon-blueprint",
+        model.addShortcut(ModelUtils.makeShortcut("pficon pficon-blueprint",
                                                   translationService.format(HomeConstants.Design),
                                                   translationService.format(HomeConstants.DesignDescription),
                                                   () -> placeManager.goTo(LIBRARY),
                                                   LIBRARY,
                                                   PERSPECTIVE));
-        model.addShortcut(ModelUtils.makeShortcut("pficon-build",
+        model.addShortcut(ModelUtils.makeShortcut("fa fa-gears",
                                                   translationService.format(HomeConstants.DevOps),
                                                   translationService.format(HomeConstants.DevOpsDescription),
                                                   () -> placeManager.goTo(SERVER_MANAGEMENT),
                                                   SERVER_MANAGEMENT,
                                                   PERSPECTIVE));
-        model.addShortcut(ModelUtils.makeShortcut("fa-briefcase",
+        model.addShortcut(ModelUtils.makeShortcut("fa fa-briefcase",
                                                   translationService.format(HomeConstants.Manage),
                                                   translationService.format(HomeConstants.ManageDescription),
                                                   () -> placeManager.goTo(PROCESS_INSTANCES),
                                                   PROCESS_INSTANCES,
                                                   PERSPECTIVE));
-        model.addShortcut(ModelUtils.makeShortcut("pficon-trend-up",
+        model.addShortcut(ModelUtils.makeShortcut("pficon pficon-trend-up",
                                                   translationService.format(HomeConstants.Track),
                                                   translationService.format(HomeConstants.TrackDescription),
                                                   () -> placeManager.goTo(PROCESS_DASHBOARD),
