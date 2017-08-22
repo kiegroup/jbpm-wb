@@ -57,7 +57,7 @@ public class RequestListViewImplTest extends AbstractMultiGridViewTest<RequestSu
     @Override
     public List<String> getExpectedTabs() {
         return Arrays.asList(TAB_SEARCH,
-                             TAB_CANCELLED,
+                             TAB_CANCELED,
                              TAB_COMPLETED,
                              TAB_ERROR,
                              TAB_RETRYING,
@@ -91,7 +91,7 @@ public class RequestListViewImplTest extends AbstractMultiGridViewTest<RequestSu
     public void setupMocks() {
         super.setupMocks();
         when(presenter.createAllTabSettings()).thenReturn(filterSettings);
-        when(presenter.createCancelledTabSettings()).thenReturn(filterSettings);
+        when(presenter.createCanceledTabSettings()).thenReturn(filterSettings);
         when(presenter.createCompletedTabSettings()).thenReturn(filterSettings);
         when(presenter.createErrorTabSettings()).thenReturn(filterSettings);
         when(presenter.createQueuedTabSettings()).thenReturn(filterSettings);
