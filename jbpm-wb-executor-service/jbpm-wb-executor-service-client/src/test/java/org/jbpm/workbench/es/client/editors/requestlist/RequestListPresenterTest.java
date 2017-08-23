@@ -220,7 +220,7 @@ public class RequestListPresenterTest {
         final RequestStatus[] DETAILS_ALLOW_STATUSES = new RequestStatus[]{
                 RequestStatus.QUEUED,
                 RequestStatus.DONE,
-                RequestStatus.CANCELLED,
+                RequestStatus.CANCELED,
                 RequestStatus.ERROR,
                 RequestStatus.RETRYING,
                 RequestStatus.RUNNING

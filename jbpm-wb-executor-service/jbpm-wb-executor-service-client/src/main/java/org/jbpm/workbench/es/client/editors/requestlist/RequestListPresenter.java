@@ -203,7 +203,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         executorServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
-                view.displayNotification(constants.RequestCancelled(requestId));
+                view.displayNotification(constants.RequestCanceled(requestId));
                 requestChangedEvent.fire(new RequestChangedEvent(requestId));
             }
         }).cancelRequest(getSelectedServerTemplate(),
@@ -214,7 +214,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         executorServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
-                view.displayNotification(constants.RequestCancelled(requestId));
+                view.displayNotification(constants.RequestCanceled(requestId));
                 requestChangedEvent.fire(new RequestChangedEvent(requestId));
             }
         }).requeueRequest(getSelectedServerTemplate(),
@@ -295,8 +295,8 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         );
 
         final Map<String, String> status = new HashMap<>();
-        status.put(RequestStatus.CANCELLED.name(),
-                   constants.Cancelled());
+        status.put(RequestStatus.CANCELED.name(),
+                   constants.Canceled());
         status.put(RequestStatus.DONE.name(),
                    constants.Completed());
         status.put(RequestStatus.ERROR.name(),
@@ -471,15 +471,15 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         return createStatusSettings(RequestStatus.DONE);
     }
 
-    public FilterSettings createCancelledTabSettings() {
-        return createStatusSettings(RequestStatus.CANCELLED);
+    public FilterSettings createCanceledTabSettings() {
+        return createStatusSettings(RequestStatus.CANCELED);
     }
 
     public Predicate<RequestSummary> getDetailsActionCondition() {
         return getActionConditionFromStatusList(new RequestStatus[]{
                 RequestStatus.QUEUED,
                 RequestStatus.DONE,
-                RequestStatus.CANCELLED,
+                RequestStatus.CANCELED,
                 RequestStatus.ERROR,
                 RequestStatus.RETRYING,
                 RequestStatus.RUNNING

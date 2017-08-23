@@ -57,9 +57,9 @@ public interface Constants extends Messages {
 
     String Showing();
 
-    String Cancelled();
+    String Canceled();
 
-    String FilterCancelled();
+    String FilterCanceled();
 
     String Settings();
 
@@ -153,7 +153,7 @@ public interface Constants extends Messages {
 
     String RequestScheduled(Long requestId);
 
-    String RequestCancelled(Long requestId);
+    String RequestCanceled(Long requestId);
 
     String ErrorRetrievingJobs(String message);
 

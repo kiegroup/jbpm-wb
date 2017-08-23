@@ -20,7 +20,7 @@ public enum RequestStatus {
 
     QUEUED,
     DONE,
-    CANCELLED,
+    CANCELED,
     ERROR,
     RETRYING,
     RUNNING

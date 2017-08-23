@@ -176,7 +176,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
                                    final String containerId,
                                    final String caseId) {
         executeOnCaseInstance(caseId,
-                              c -> c.setStatus(CaseStatus.CANCELLED));
+                              c -> c.setStatus(CaseStatus.CANCELED));
     }
 
     @Override
@@ -184,7 +184,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
                                     final String containerId,
                                     final String caseId) {
         executeOnCaseInstance(caseId,
-                              c -> c.setStatus(CaseStatus.CANCELLED));
+                              c -> c.setStatus(CaseStatus.CANCELED));
     }
 
     @Override
