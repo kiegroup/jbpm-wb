@@ -19,6 +19,7 @@ package org.jbpm.workbench.es.backend.server;
 import java.util.function.Function;
 
 import org.jbpm.workbench.es.model.RequestSummary;
+import org.jbpm.workbench.es.util.RequestStatus;
 import org.kie.server.api.model.instance.RequestInfoInstance;
 
 public class RequestSummaryMapper implements Function<RequestInfoInstance, RequestSummary> {
@@ -30,7 +31,7 @@ public class RequestSummaryMapper implements Function<RequestInfoInstance, Reque
         }
         return new RequestSummary(request.getId(),
                                   request.getScheduledDate(),
-                                  request.getStatus(),
+                                  request.getStatus() == null ? null : RequestStatus.valueOf(request.getStatus()),
                                   request.getCommandName(),
                                   request.getMessage(),
                                   request.getBusinessKey(),

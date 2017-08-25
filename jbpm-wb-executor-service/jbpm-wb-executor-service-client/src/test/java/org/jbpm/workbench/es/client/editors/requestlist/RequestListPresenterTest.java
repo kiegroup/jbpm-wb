@@ -128,7 +128,7 @@ public class RequestListPresenterTest {
     public void testGetRequestSummary() {
         final Long id = 1l;
         final String message = "message";
-        final String status = "status";
+        final String status = "DONE";
         final String commandName = "commandName";
         final String businessKey = "businessKey";
         final Integer retries = 2;
@@ -170,7 +170,7 @@ public class RequestListPresenterTest {
                      rs.getId());
         assertEquals(time,
                      rs.getTime());
-        assertEquals(status,
+        assertEquals(RequestStatus.DONE,
                      rs.getStatus());
         assertEquals(commandName,
                      rs.getCommandName());
@@ -220,7 +220,7 @@ public class RequestListPresenterTest {
         final RequestStatus[] DETAILS_ALLOW_STATUSES = new RequestStatus[]{
                 RequestStatus.QUEUED,
                 RequestStatus.DONE,
-                RequestStatus.CANCELED,
+                RequestStatus.CANCELLED,
                 RequestStatus.ERROR,
                 RequestStatus.RETRYING,
                 RequestStatus.RUNNING
@@ -236,7 +236,7 @@ public class RequestListPresenterTest {
         };
         RequestSummary testJob = new RequestSummary();
         for (RequestStatus status : RequestStatus.values()) {
-            testJob.setStatus(status.name());
+            testJob.setStatus(status);
             assertEquals(Arrays.asList(DETAILS_ALLOW_STATUSES).contains(status),
                          presenter.getDetailsActionCondition().test(testJob));
             assertEquals(Arrays.asList(CANCEL_ALLOW_STATUSES).contains(status),

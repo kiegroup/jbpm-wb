@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
-
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -169,9 +168,9 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                 getColumnDateValue(dataSet,
                                    COLUMN_TIMESTAMP,
                                    index),
-                getColumnStringValue(dataSet,
-                                     COLUMN_STATUS,
-                                     index),
+                RequestStatus.valueOf(getColumnStringValue(dataSet,
+                                                           COLUMN_STATUS,
+                                                           index)),
                 getColumnStringValue(dataSet,
                                      COLUMN_COMMANDNAME,
                                      index),
@@ -295,7 +294,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         );
 
         final Map<String, String> status = new HashMap<>();
-        status.put(RequestStatus.CANCELED.name(),
+        status.put(RequestStatus.CANCELLED.name(),
                    constants.Canceled());
         status.put(RequestStatus.DONE.name(),
                    constants.Completed());
@@ -472,18 +471,11 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     }
 
     public FilterSettings createCanceledTabSettings() {
-        return createStatusSettings(RequestStatus.CANCELED);
+        return createStatusSettings(RequestStatus.CANCELLED);
     }
 
     public Predicate<RequestSummary> getDetailsActionCondition() {
-        return getActionConditionFromStatusList(new RequestStatus[]{
-                RequestStatus.QUEUED,
-                RequestStatus.DONE,
-                RequestStatus.CANCELED,
-                RequestStatus.ERROR,
-                RequestStatus.RETRYING,
-                RequestStatus.RUNNING
-        });
+        return getActionConditionFromStatusList(RequestStatus.values());
     }
 
     public Predicate<RequestSummary> getCancelActionCondition() {
@@ -507,7 +499,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
 
     private Predicate<RequestSummary> getActionConditionFromStatusList(RequestStatus[] statusList) {
         return value -> Arrays.stream(statusList).anyMatch(
-                s -> s.name().equals(value.getStatus()));
+                s -> s.equals(value.getStatus()));
     }
 
     public interface RequestListView extends MultiGridView<RequestSummary, RequestListPresenter> {
