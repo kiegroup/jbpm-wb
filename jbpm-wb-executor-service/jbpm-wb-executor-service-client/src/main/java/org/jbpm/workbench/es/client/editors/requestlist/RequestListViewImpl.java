@@ -92,7 +92,24 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                                                           req -> req.getCommandName()),
                                          constants.Type()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_STATUS,
-                                                          req -> req.getStatus()),
+                                                          req -> {
+                                                              switch (req.getStatus()) {
+                                                                  case QUEUED:
+                                                                      return constants.Queued();
+                                                                  case DONE:
+                                                                      return constants.Completed();
+                                                                  case CANCELLED:
+                                                                      return constants.Canceled();
+                                                                  case ERROR:
+                                                                      return constants.Error();
+                                                                  case RETRYING:
+                                                                      return constants.Retrying();
+                                                                  case RUNNING:
+                                                                      return constants.Running();
+                                                                  default:
+                                                                      return "";
+                                                              }
+                                                          }),
                                          constants.Status()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_TIMESTAMP,
                                                           req -> DateUtils.getDateTimeStr(req.getTime())),
