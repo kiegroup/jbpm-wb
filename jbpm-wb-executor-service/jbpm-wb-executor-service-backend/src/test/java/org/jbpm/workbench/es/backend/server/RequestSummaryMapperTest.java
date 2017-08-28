@@ -38,8 +38,12 @@ public class RequestSummaryMapperTest {
                      rs.getJobId());
         assertEquals(request.getId(),
                      rs.getId());
-        assertEquals(request.getStatus(),
-                     rs.getStatus());
+        if (request.getStatus() == null) {
+            assertNull(rs.getStatus());
+        } else {
+            assertEquals(request.getStatus(),
+                         rs.getStatus().name());
+        }
         assertEquals(request.getCommandName(),
                      rs.getCommandName());
         assertEquals(request.getBusinessKey(),
@@ -70,7 +74,7 @@ public class RequestSummaryMapperTest {
                 .message("message")
                 .retries(2)
                 .scheduledDate(new Date())
-                .status("status")
+                .status("DONE")
                 .responseData(singletonMap("responseKey",
                                            "responseData"))
                 .build();

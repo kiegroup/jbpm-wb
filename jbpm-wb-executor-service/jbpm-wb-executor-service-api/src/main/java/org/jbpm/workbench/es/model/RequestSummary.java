@@ -20,13 +20,14 @@ import java.util.Date;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.workbench.common.model.GenericSummary;
+import org.jbpm.workbench.es.util.RequestStatus;
 
 @Portable
 public class RequestSummary extends GenericSummary<Long> {
 
     private Long jobId;
     private Date time;
-    private String status;
+    private RequestStatus status;
     private String commandName;
     private String message;
     // Business Key for callback
@@ -44,7 +45,7 @@ public class RequestSummary extends GenericSummary<Long> {
 
     public RequestSummary(Long jobId,
                           Date time,
-                          String status,
+                          RequestStatus status,
                           String commandName,
                           String message,
                           String key,
@@ -83,11 +84,11 @@ public class RequestSummary extends GenericSummary<Long> {
         this.time = time;
     }
 
-    public String getStatus() {
+    public RequestStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(RequestStatus status) {
         this.status = status;
     }
 
