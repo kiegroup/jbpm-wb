@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.enterprise.inject.Instance;
 
 import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
@@ -31,6 +32,7 @@ import org.jbpm.workbench.forms.service.providing.RenderingSettings;
 import org.junit.Before;
 import org.junit.Test;
 import org.kie.internal.task.api.ContentMarshallerContext;
+import org.kie.soup.project.datamodel.commons.util.RawMVELEvaluator;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.BackendFormRenderingContextManagerImpl;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.FormValuesProcessorImpl;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.fieldProcessors.MultipleSubFormFieldValueProcessor;
@@ -105,7 +107,8 @@ public abstract class AbstractFormsValuesProcessorTest<PROCESSOR extends KieWork
         backendFormRenderingContextManager = new BackendFormRenderingContextManagerImpl(formValuesProcessor,
                                                                                         new ContextModelConstraintsExtractorImpl());
 
-        runtimeFormGeneratorService = new BPMNRuntimeFormGeneratorService(new TestFieldManager());
+        runtimeFormGeneratorService = new BPMNRuntimeFormGeneratorService(new TestFieldManager(),
+                                                                          new RawMVELEvaluator());
 
         dynamicBPMNFormGenerator = new DynamicBPMNFormGeneratorImpl(runtimeFormGeneratorService);
 
