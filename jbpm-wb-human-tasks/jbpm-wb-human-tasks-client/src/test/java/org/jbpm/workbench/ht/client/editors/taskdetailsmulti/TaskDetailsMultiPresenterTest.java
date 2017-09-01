@@ -15,21 +15,27 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskdetailsmulti;
 
+import java.util.Date;
 import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.forms.client.display.views.FormDisplayerView;
 import org.jbpm.workbench.ht.client.editors.taskdetails.TaskDetailsPresenter;
 import org.jbpm.workbench.ht.client.editors.taskform.TaskFormPresenter;
 import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayProvider;
+import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
+import org.jbpm.workbench.ht.service.TaskService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
+import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 
 import static org.mockito.Mockito.*;
@@ -41,6 +47,11 @@ public class TaskDetailsMultiPresenterTest {
 
     private static final Long TASK_ID = 1L;
     private static final String TASK_NAME = "taskName";
+
+    @Mock
+    TaskService taskServiceMock;
+
+    Caller<TaskService> taskService;
 
     @Mock
     TaskFormPresenter.TaskFormView taskFormViewMock;
@@ -73,6 +84,12 @@ public class TaskDetailsMultiPresenterTest {
 
     @Before
     public void setupMocks() {
+        taskService = new CallerMock<>(taskServiceMock);
+        presenter.setTaskDataService(taskService);
+        when(taskServiceMock.getTask(anyString(),
+                                     anyString(),
+                                     anyLong())).thenReturn(mock(TaskSummary.class));
+
         when(taskFormPresenter.getTaskFormView()).thenReturn(taskFormViewMock);
         when(taskFormViewMock.getDisplayerView()).thenReturn(formDisplayerViewMock);
         doNothing().when(changeTitleWidgetEvent).fire(any(ChangeTitleWidgetEvent.class));
@@ -123,5 +140,72 @@ public class TaskDetailsMultiPresenterTest {
         presenter.onRefresh();
         assertFalse(presenter.isForAdmin());
         assertFalse(presenter.isForLog());
+    }
+
+    @Test
+    public void refreshTest() {
+        Long taskId = 1L;
+        String containerId = "container1.2";
+        String serverTemplateId = "serverTemplateId";
+        TaskSummary taskSummary =
+                TaskSummary.builder()
+                        .deploymentId(containerId)
+                        .id(taskId)
+                        .name("name")
+                        .description("description")
+                        .expirationTime(new Date())
+                        .status("Completed")
+                        .actualOwner("Rob")
+                        .priority(5)
+                        .processInstanceId(2L)
+                        .processId("Evaluation")
+                        .build();
+
+        when(taskServiceMock.getTask(serverTemplateId,
+                                     containerId,
+                                     taskId)).thenReturn(taskSummary);
+        presenter.onTaskSelectionEvent(new TaskSelectionEvent(serverTemplateId,
+                                                              taskSummary.getDeploymentId(),
+                                                              taskSummary.getId(),
+                                                              taskSummary.getName(),
+                                                              false,
+                                                              false,
+                                                              taskSummary.getDescription(),
+                                                              taskSummary.getExpirationTime(),
+                                                              taskSummary.getStatus(),
+                                                              taskSummary.getActualOwner(),
+                                                              taskSummary.getPriority(),
+                                                              taskSummary.getProcessInstanceId(),
+                                                              taskSummary.getProcessId()));
+        presenter.onRefresh();
+
+        verify(taskServiceMock).getTask(eq(serverTemplateId),
+                                        eq(containerId),
+                                        eq(taskId));
+
+        final ArgumentCaptor<TaskSelectionEvent> taskSelectionEventArgumentCaptor = ArgumentCaptor.forClass(TaskSelectionEvent.class);
+        verify(taskSelectionEvent).fire(taskSelectionEventArgumentCaptor.capture());
+        assertEquals(serverTemplateId,
+                     taskSelectionEventArgumentCaptor.getValue().getServerTemplateId());
+        assertEquals(taskSummary.getDeploymentId(),
+                     taskSelectionEventArgumentCaptor.getValue().getContainerId());
+        assertEquals(taskSummary.getId(),
+                     taskSelectionEventArgumentCaptor.getValue().getTaskId());
+        assertEquals(taskSummary.getName(),
+                     taskSelectionEventArgumentCaptor.getValue().getTaskName());
+        assertEquals(taskSummary.getDescription(),
+                     taskSelectionEventArgumentCaptor.getValue().getDescription());
+        assertEquals(taskSummary.getExpirationTime(),
+                     taskSelectionEventArgumentCaptor.getValue().getExpirationTime());
+        assertEquals(taskSummary.getStatus(),
+                     taskSelectionEventArgumentCaptor.getValue().getStatus());
+        assertEquals(taskSummary.getActualOwner(),
+                     taskSelectionEventArgumentCaptor.getValue().getActualOwner());
+        assertEquals(taskSummary.getPriority(),
+                     taskSelectionEventArgumentCaptor.getValue().getPriority());
+        assertEquals(taskSummary.getProcessInstanceId(),
+                     taskSelectionEventArgumentCaptor.getValue().getProcessInstanceId());
+        assertEquals(taskSummary.getProcessId(),
+                     taskSelectionEventArgumentCaptor.getValue().getProcessId());
     }
 }

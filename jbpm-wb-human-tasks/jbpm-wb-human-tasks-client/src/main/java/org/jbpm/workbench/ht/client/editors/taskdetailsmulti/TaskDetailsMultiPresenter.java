@@ -21,6 +21,9 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.ht.model.TaskSummary;
+import org.jbpm.workbench.ht.service.TaskService;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.ht.client.editors.taskadmin.TaskAdminPresenter;
 import org.jbpm.workbench.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
@@ -52,6 +55,8 @@ import org.uberfire.workbench.model.menu.Menus;
 @Dependent
 @WorkbenchScreen(identifier = "Task Details Multi", preferredWidth = 655)
 public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
+
+    private Caller<TaskService> taskDataService;
 
     @Inject
     private TaskDetailsMultiView view;
@@ -177,12 +182,24 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
 
     @Override
     public void onRefresh() {
-        taskSelected.fire(new TaskSelectionEvent(serverTemplateId,
-                                                 containerId,
-                                                 taskId,
-                                                 processId,
-                                                 isForAdmin(),
-                                                 isForLog()));
+        taskDataService.call((TaskSummary taskSummary) -> {
+            taskSelected.fire(new TaskSelectionEvent(serverTemplateId,
+                                                     taskSummary.getDeploymentId(),
+                                                     taskSummary.getId(),
+                                                     taskSummary.getName(),
+                                                     isForAdmin(),
+                                                     isForLog(),
+                                                     taskSummary.getDescription(),
+                                                     taskSummary.getExpirationTime(),
+                                                     taskSummary.getStatus(),
+                                                     taskSummary.getActualOwner(),
+                                                     taskSummary.getPriority(),
+                                                     taskSummary.getProcessInstanceId(),
+                                                     taskSummary.getProcessId()));
+        }).getTask(serverTemplateId,
+                   containerId,
+                   taskId);
+
     }
 
     @WorkbenchMenu
@@ -239,6 +256,11 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
 
     public void taskAdminRefresh() {
         taskAdminPresenter.refreshTaskPotentialOwners();
+    }
+
+    @Inject
+    public void setTaskDataService(final Caller<TaskService> taskDataService) {
+        this.taskDataService = taskDataService;
     }
 
     public interface TaskDetailsMultiView
