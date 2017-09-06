@@ -22,7 +22,7 @@ public enum CaseStatus {
 
     CLOSED("Closed"),
 
-    CANCELED("Canceled");
+    CANCELLED("Canceled");
 
     private String label;
 
@@ -41,7 +41,7 @@ public enum CaseStatus {
             case 2:
                 return CLOSED;
             case 3:
-                return CANCELED;
+                return CANCELLED;
             default:
                 return null;
         }
@@ -61,7 +61,7 @@ public enum CaseStatus {
                 return 1;
             case CLOSED:
                 return 2;
-            case CANCELED:
+            case CANCELLED:
                 return 3;
             default:
                 return null;
