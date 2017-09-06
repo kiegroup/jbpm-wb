@@ -28,6 +28,8 @@ import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.dashboard.renderer.client.panel.DashboardKpis;
+import org.jbpm.workbench.ht.model.TaskSummary;
+import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
@@ -66,9 +68,9 @@ public class TaskDashboardTest extends AbstractDashboardTest {
     Event<TaskDashboardFocusEvent> taskDashboardFocusEvent;
 
     @Mock
-    ProcessRuntimeDataService processRuntimeDataService;
+    TaskService taskService;
 
-    Caller<ProcessRuntimeDataService> processRuntimeDataServiceCaller;
+    Caller<TaskService> taskServiceCaller;
 
     @Mock
     Event<NotificationEvent> notificationEvent;
@@ -109,7 +111,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
     public void init() throws Exception {
         super.init();
 
-        processRuntimeDataServiceCaller = new CallerMock<ProcessRuntimeDataService>(processRuntimeDataService);
+        taskServiceCaller = new CallerMock<TaskService>(taskService);
 
         presenter = new TaskDashboard(view,
                                       processBreadCrumb,
@@ -120,7 +122,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
                                       taskSelectionEvent,
                                       taskDashboardFocusEvent,
                                       serverTemplateSelectorMenuBuilder,
-                                      processRuntimeDataServiceCaller,
+                                      taskServiceCaller,
                                       notificationEvent);
     }
 
@@ -490,8 +492,9 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testTaskInstanceNoDetailsStatusExited() {
-        when(processRuntimeDataService.getProcessInstance(anyString(),
-                                                          any(ProcessInstanceKey.class))).thenReturn(mock(ProcessInstanceSummary.class));
+        when(taskService.getTask(anyString(),
+                                 anyString(),
+                                 anyLong())).thenReturn(mock(TaskSummary.class));
         when(placeManager.getStatus(TaskDashboard.TASK_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
         tableDisplayer.selectCell(COLUMN_TASK_ID,
@@ -512,8 +515,9 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testTaskInstanceNoDetailsStatusComplete() {
-        when(processRuntimeDataService.getProcessInstance(anyString(),
-                                                          any(ProcessInstanceKey.class))).thenReturn(mock(ProcessInstanceSummary.class));
+        when(taskService.getTask(anyString(),
+                                 anyString(),
+                                 anyLong())).thenReturn(mock(TaskSummary.class));
         when(placeManager.getStatus(TaskDashboard.TASK_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
         tableDisplayer.selectCell(COLUMN_TASK_ID,
@@ -534,8 +538,9 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testOpenInstanceDetails() {
-        when(processRuntimeDataService.getProcessInstance(anyString(),
-                                                          any(ProcessInstanceKey.class))).thenReturn(mock(ProcessInstanceSummary.class));
+        when(taskService.getTask(anyString(),
+                                 anyString(),
+                                 anyLong())).thenReturn(mock(TaskSummary.class));
         when(placeManager.getStatus(TaskDashboard.TASK_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
         tableDisplayer.selectCell(COLUMN_TASK_ID,

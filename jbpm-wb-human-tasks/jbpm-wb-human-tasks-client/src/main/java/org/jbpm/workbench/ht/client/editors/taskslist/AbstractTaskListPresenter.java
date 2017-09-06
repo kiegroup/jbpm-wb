@@ -307,10 +307,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                 }).releaseTask(getSelectedServerTemplate(),
                                task.getDeploymentId(),
                                task.getId());
-        taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
-                                                 task.getDeploymentId(),
-                                                 task.getId(),
-                                                 task.getName()));
+        fireTaskSelectionEvent(task,
+                               false);
     }
 
     public void claimTask(final TaskSummary task) {
@@ -325,10 +323,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         ).claimTask(getSelectedServerTemplate(),
                     task.getDeploymentId(),
                     task.getId());
-        taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
-                                                 task.getDeploymentId(),
-                                                 task.getId(),
-                                                 task.getName()));
+        fireTaskSelectionEvent(task,
+                               false);
     }
 
     public void resumeTask(final TaskSummary task) {
@@ -343,10 +339,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         ).resumeTask(getSelectedServerTemplate(),
                      task.getDeploymentId(),
                      task.getId());
-        taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
-                                                 task.getDeploymentId(),
-                                                 task.getId(),
-                                                 task.getName()));
+        fireTaskSelectionEvent(task,
+                               false);
     }
 
     public void suspendTask(final TaskSummary task) {
@@ -361,10 +355,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         ).suspendTask(getSelectedServerTemplate(),
                       task.getDeploymentId(),
                       task.getId());
-        taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
-                                                 task.getDeploymentId(),
-                                                 task.getId(),
-                                                 task.getName()));
+        fireTaskSelectionEvent(task,
+                               false);
     }
 
     public Menus getMenus() { //To be used by subclass methods annotated with @WorkbenchMenu
@@ -386,36 +378,31 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         }
         if (status == PlaceStatus.CLOSE) {
             placeManager.goTo(defaultPlaceRequest);
-            taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
-                                                     summary.getDeploymentId(),
-                                                     summary.getId(),
-                                                     summary.getName(),
-                                                     summary.isForAdmin(),
-                                                     logOnly,
-                                                     summary.getDescription(),
-                                                     summary.getExpirationTime(),
-                                                     summary.getStatus(),
-                                                     summary.getActualOwner(),
-                                                     summary.getPriority(),
-                                                     summary.getProcessInstanceId(),
-                                                     summary.getProcessId()));
+            fireTaskSelectionEvent(summary,
+                                   logOnly);
         } else if (status == PlaceStatus.OPEN && !close) {
-            taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
-                                                     summary.getDeploymentId(),
-                                                     summary.getId(),
-                                                     summary.getName(),
-                                                     summary.isForAdmin(),
-                                                     logOnly,
-                                                     summary.getDescription(),
-                                                     summary.getExpirationTime(),
-                                                     summary.getStatus(),
-                                                     summary.getActualOwner(),
-                                                     summary.getPriority(),
-                                                     summary.getProcessInstanceId(),
-                                                     summary.getProcessId()));
+            fireTaskSelectionEvent(summary,
+                                   logOnly);
         } else if (status == PlaceStatus.OPEN && close) {
             placeManager.closePlace("Task Details Multi");
         }
+    }
+
+    private void fireTaskSelectionEvent(TaskSummary summary,
+                                        boolean logOnly) {
+        taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
+                                                 summary.getDeploymentId(),
+                                                 summary.getId(),
+                                                 summary.getName(),
+                                                 summary.isForAdmin(),
+                                                 logOnly,
+                                                 summary.getDescription(),
+                                                 summary.getExpirationTime(),
+                                                 summary.getStatus(),
+                                                 summary.getActualOwner(),
+                                                 summary.getPriority(),
+                                                 summary.getProcessInstanceId(),
+                                                 summary.getProcessId()));
     }
 
     public void refreshNewTask(@Observes NewTaskEvent newTask) {
