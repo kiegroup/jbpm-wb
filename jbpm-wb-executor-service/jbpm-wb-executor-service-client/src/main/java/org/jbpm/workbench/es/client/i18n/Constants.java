@@ -234,4 +234,6 @@ public interface Constants extends Messages {
     String ViewProcessInstance();
 
     String ViewTask();
+
+    String RequestRequeued(Long requestId);
 }

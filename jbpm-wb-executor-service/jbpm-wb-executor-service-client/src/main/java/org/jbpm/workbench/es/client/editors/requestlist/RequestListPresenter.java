@@ -194,11 +194,14 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                                    index),
                 getColumnStringValue(dataSet,
                                      COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                     index)
+                                     index),
+                getColumnStringValue(dataSet,
+                                    COLUMN_JOB_DEPLOYMENT_ID,
+                                    index)
         );
     }
 
-    public void cancelRequest(final Long requestId) {
+    public void cancelRequest(final String deploymentId, final Long requestId) {
         executorServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
@@ -206,17 +209,19 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                 requestChangedEvent.fire(new RequestChangedEvent(requestId));
             }
         }).cancelRequest(getSelectedServerTemplate(),
+                         deploymentId,
                          requestId);
     }
 
-    public void requeueRequest(final Long requestId) {
+    public void requeueRequest(final String deploymentId, final Long requestId) {
         executorServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
-                view.displayNotification(constants.RequestCanceled(requestId));
+                view.displayNotification(constants.RequestRequeued(requestId));
                 requestChangedEvent.fire(new RequestChangedEvent(requestId));
             }
         }).requeueRequest(getSelectedServerTemplate(),
+                          deploymentId,
                           requestId);
     }
 
@@ -246,6 +251,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
 
     public void showJobDetails(final RequestSummary job) {
         jobDetailsPopup.show(getSelectedServerTemplate(),
+                             job.getDeploymentId(),
                              String.valueOf(job.getJobId()));
     }
 
@@ -431,6 +437,8 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                           constants.Process_Instance_Id());
         builder.setColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
                           constants.Process_Description());
+        builder.setColumn(COLUMN_JOB_DEPLOYMENT_ID,
+                          constants.DeploymentId());
 
         builder.filterOn(true,
                          true,

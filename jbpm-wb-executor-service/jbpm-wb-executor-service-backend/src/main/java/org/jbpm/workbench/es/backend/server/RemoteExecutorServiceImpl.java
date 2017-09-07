@@ -41,11 +41,19 @@ public class RemoteExecutorServiceImpl extends AbstractKieServerService implemen
 
     @Override
     public RequestDetails getRequestDetails(String serverTemplateId,
+                                            String deploymentId,
                                             Long requestId) {
-        JobServicesClient jobClient = getClient(serverTemplateId,
-                                                JobServicesClient.class);
-
-        Optional<RequestInfoInstance> request = ofNullable(jobClient.getRequestById(requestId,
+        JobServicesClient jobClient = null;
+        if (deploymentId != null && !deploymentId.isEmpty()) {
+            jobClient = getClient(serverTemplateId,
+                                  deploymentId,
+                                  JobServicesClient.class);
+        } else {
+            jobClient = getClient(serverTemplateId,
+                                  JobServicesClient.class);
+        }
+        Optional<RequestInfoInstance> request = ofNullable(jobClient.getRequestById(deploymentId,
+                                                                                    requestId,
                                                                                     true,
                                                                                     true));
 
@@ -68,23 +76,29 @@ public class RemoteExecutorServiceImpl extends AbstractKieServerService implemen
                 .data(data)
                 .scheduledDate(date)
                 .build();
-        return jobClient.scheduleRequest(jobRequest);
+        return jobClient.scheduleRequest((String)data.get("containerId"), jobRequest);
     }
 
     @Override
     public void cancelRequest(String serverTemplateId,
+                              String deploymentId,
                               Long requestId) {
+                
         JobServicesClient jobClient = getClient(serverTemplateId,
                                                 JobServicesClient.class);
-        jobClient.cancelRequest(requestId);
+        
+        jobClient.cancelRequest(deploymentId, requestId);
+    
     }
 
     @Override
     public void requeueRequest(String serverTemplateId,
+                               String deploymentId,
                                Long requestId) {
         JobServicesClient jobClient = getClient(serverTemplateId,
-                                                JobServicesClient.class);
-        jobClient.requeueRequest(requestId);
+                                                    JobServicesClient.class);
+        jobClient.requeueRequest(deploymentId, requestId);
+        
     }
 
     @Override
