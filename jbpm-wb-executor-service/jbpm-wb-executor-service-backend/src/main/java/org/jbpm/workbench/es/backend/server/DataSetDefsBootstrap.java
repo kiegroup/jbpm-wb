@@ -58,7 +58,8 @@ public class DataSetDefsBootstrap {
                                     + "ri.executions, "
                                     + "pil.processName, "
                                     + "pil.processInstanceId, "
-                                    + "pil.processInstanceDescription "
+                                    + "pil.processInstanceDescription, "
+                                    + "ri.deploymentId "
                                + "from "
                                     + "RequestInfo ri "
                                + "left join "
@@ -77,6 +78,7 @@ public class DataSetDefsBootstrap {
                 .label(COLUMN_PROCESS_NAME)
                 .number(COLUMN_PROCESS_INSTANCE_ID)
                 .label(COLUMN_PROCESS_INSTANCE_DESCRIPTION)
+                .label(COLUMN_JOB_DEPLOYMENT_ID)
                 .buildDef();
 
         // Hide all these internal data set from end user view
