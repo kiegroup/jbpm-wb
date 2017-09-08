@@ -16,10 +16,19 @@
 
 package org.jbpm.workbench.wi.backend.server.dd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
+
+import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.shared.metadata.model.Overview;
+import org.jbpm.designer.notification.DesignerWorkitemInstalledEvent;
+import org.jbpm.workbench.wi.backend.server.builder.BPMPostBuildHandler;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
-import org.jbpm.designer.notification.DesignerWorkitemInstalledEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,14 +37,10 @@ import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.uberfire.io.IOService;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.io.IOService;
 import org.uberfire.rpc.SessionInfo;
 import org.uberfire.workbench.events.ResourceAddedEvent;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DDConfigUpdaterTest {
@@ -301,5 +306,31 @@ public class DDConfigUpdaterTest {
         assertEquals("reflection",
                      ddConfigUpdater.getWorkitemResolver("new com.myhandlers.MyHandler()",
                                                          null));
+    }
+    
+    
+    @Test
+    public void testBPMPostBuildHandler() {
+        
+        DeploymentDescriptorModel ddModel = new DeploymentDescriptorModel();
+        ddModel.setPersistenceUnitName("test");
+        ddModel.setAuditPersistenceUnitName("test");        
+        ddModel.setRuntimeStrategy("PerProcessInstance");
+        
+        when(ioService.get(any())).thenReturn(null);
+        when(ddEditorService.load(any())).thenReturn(ddModel);
+        
+        BPMPostBuildHandler handler = new BPMPostBuildHandler();
+        handler.setDeploymentDescriptorService(ddEditorService);
+        handler.setIoService(ioService);
+        
+        BuildResults results = new BuildResults();
+        results.addParameter("RootPath", "default://test-project");
+        
+        handler.process(results);
+        
+        String strategy = results.getParameter("RuntimeStrategy");
+        assertEquals("PerProcessInstance", strategy);
+        
     }
 }
