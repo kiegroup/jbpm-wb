@@ -44,10 +44,9 @@ import org.jbpm.dashboard.renderer.client.panel.events.TaskDashboardFocusEvent;
 import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
+import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
-import org.jbpm.workbench.pr.model.ProcessInstanceKey;
-import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
-import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
+import org.jbpm.workbench.ht.service.TaskService;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -134,7 +133,7 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
             }
         }
     };
-    private Caller<ProcessRuntimeDataService> processRuntimeDataService;
+    private Caller<TaskService> taskDataService;
     private Event<NotificationEvent> notificationEvent;
 
     @Inject
@@ -147,7 +146,7 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
                          final Event<TaskSelectionEvent> taskSelectionEvent,
                          final Event<TaskDashboardFocusEvent> taskDashboardFocusEvent,
                          final ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder,
-                         final Caller<ProcessRuntimeDataService> processRuntimeDataService,
+                         final Caller<TaskService> taskDataService,
                          final Event<NotificationEvent> notificationEvent) {
         super(dataSetClientServices,
               placeManager,
@@ -160,7 +159,7 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
         this.view = view;
         this.taskSelectionEvent = taskSelectionEvent;
         this.taskDashboardFocusEvent = taskDashboardFocusEvent;
-        this.processRuntimeDataService = processRuntimeDataService;
+        this.taskDataService = taskDataService;
         this.notificationEvent = notificationEvent;
 
         this.init();
@@ -368,26 +367,29 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
 
         final Long taskId = Double.valueOf(ds.getValueAt(rowIndex,
                                                          COLUMN_TASK_ID).toString()).longValue();
-        final String taskName = ds.getValueAt(rowIndex,
-                                              COLUMN_TASK_NAME).toString();
         final String deploymentId = ds.getValueAt(rowIndex,
                                                   COLUMN_PROCESS_EXTERNAL_ID).toString();
-        final Long processInstanceId = Double.valueOf(ds.getValueAt(rowIndex,
-                                                                    COLUMN_PROCESS_INSTANCE_ID).toString()).longValue();
+
         final String serverTemplateId = serverTemplateSelectorMenuBuilder.getSelectedServerTemplate();
 
-        processRuntimeDataService.call((ProcessInstanceSummary p) -> {
+        taskDataService.call((TaskSummary taskSummary) -> {
             openTaskDetailsScreen();
             taskSelectionEvent.fire(new TaskSelectionEvent(serverTemplateId,
-                                                           p.getDeploymentId(),
-                                                           taskId,
-                                                           taskName,
+                                                           taskSummary.getDeploymentId(),
+                                                           taskSummary.getId(),
+                                                           taskSummary.getName(),
                                                            false,
-                                                           true));
-        }).getProcessInstance(serverTemplateId,
-                              new ProcessInstanceKey(serverTemplateId,
-                                                     deploymentId,
-                                                     processInstanceId));
+                                                           true,
+                                                           taskSummary.getDescription(),
+                                                           taskSummary.getExpirationTime(),
+                                                           taskSummary.getStatus(),
+                                                           taskSummary.getActualOwner(),
+                                                           taskSummary.getPriority(),
+                                                           taskSummary.getProcessInstanceId(),
+                                                           taskSummary.getProcessId()));
+        }).getTask(serverTemplateId,
+                   deploymentId,
+                   taskId);
     }
 
     public void showDashboard() {
