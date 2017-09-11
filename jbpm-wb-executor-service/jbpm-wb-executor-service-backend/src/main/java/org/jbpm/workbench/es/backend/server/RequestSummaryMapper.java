@@ -39,6 +39,7 @@ public class RequestSummaryMapper implements Function<RequestInfoInstance, Reque
                                   request.getExecutions(),
                                   null,
                                   null,
-                                  null);
+                                  null,
+                                  request.getContainerId());
     }
 }

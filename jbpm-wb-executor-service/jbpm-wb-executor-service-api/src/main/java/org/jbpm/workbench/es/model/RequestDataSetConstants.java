@@ -30,4 +30,5 @@ public interface RequestDataSetConstants {
     String COLUMN_PROCESS_NAME = "processName";
     String COLUMN_PROCESS_INSTANCE_ID = "processInstanceId";
     String COLUMN_PROCESS_INSTANCE_DESCRIPTION = "processInstanceDescription";
+    String COLUMN_JOB_DEPLOYMENT_ID = "deploymentId";
 }

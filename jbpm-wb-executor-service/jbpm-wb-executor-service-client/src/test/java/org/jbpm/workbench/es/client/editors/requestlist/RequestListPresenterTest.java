@@ -106,21 +106,45 @@ public class RequestListPresenterTest {
 
     @Test
     public void cancelRequestTest() {
-        presenter.cancelRequest(REQUEST_ID);
+        presenter.cancelRequest(null, REQUEST_ID);
 
         verify(requestChangedEvent,
                times(1)).fire(any(RequestChangedEvent.class));
-        verify(executorServiceMock).cancelRequest(anyString(),
+        verify(executorServiceMock).cancelRequest(anyString(), 
+                                                  eq(null),
                                                   eq(REQUEST_ID));
     }
 
     @Test
     public void requeueRequestTest() {
-        presenter.requeueRequest(REQUEST_ID);
+        presenter.requeueRequest(null, REQUEST_ID);
+
+        verify(requestChangedEvent,
+               times(1)).fire(any(RequestChangedEvent.class));
+        verify(executorServiceMock).requeueRequest(anyString(), 
+                                                   eq(null),
+                                                   eq(REQUEST_ID));
+    }
+    
+    @Test
+    public void cancelRequestTestWithDeploymentId() {
+        presenter.cancelRequest("test", REQUEST_ID);
+
+        verify(requestChangedEvent,
+               times(1)).fire(any(RequestChangedEvent.class));
+        verify(executorServiceMock).cancelRequest(anyString(), 
+                                                  eq("test"),
+                                                  eq(REQUEST_ID));
+    }
+
+    @Test
+    public void requeueRequestTestWithDeploymentId() {
+        presenter.requeueRequest("test", REQUEST_ID);
 
         verify(requestChangedEvent,
                times(1)).fire(any(RequestChangedEvent.class));
         verify(executorServiceMock).requeueRequest(anyString(),
+                                                   eq("test"),
                                                    eq(REQUEST_ID));
     }
 
@@ -137,6 +161,7 @@ public class RequestListPresenterTest {
         final String processName = "myProcessName";
         final Long processInstanceId = Long.valueOf(33);
         final String processInstanceDescription = "myProcessInstanceDescription";
+        final String deploymentId = "test";
 
         final DataSet dataSet = mock(DataSet.class);
 
@@ -162,6 +187,8 @@ public class RequestListPresenterTest {
                                 COLUMN_PROCESS_INSTANCE_ID)).thenReturn(processInstanceId);
         when(dataSet.getValueAt(0,
                                 COLUMN_PROCESS_INSTANCE_DESCRIPTION)).thenReturn(processInstanceDescription);
+        when(dataSet.getValueAt(0,
+                                COLUMN_JOB_DEPLOYMENT_ID)).thenReturn(deploymentId);
 
         final RequestSummary rs = presenter.getRequestSummary(dataSet,
                                                               0);
@@ -188,6 +215,8 @@ public class RequestListPresenterTest {
                      rs.getProcessInstanceId());
         assertEquals(processInstanceDescription,
                      rs.getProcessInstanceDescription());
+        assertEquals(deploymentId,
+                     rs.getDeploymentId());
     }
 
     @Test
