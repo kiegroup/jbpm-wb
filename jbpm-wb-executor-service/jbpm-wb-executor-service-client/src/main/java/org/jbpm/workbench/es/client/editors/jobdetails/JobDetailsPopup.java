@@ -92,8 +92,10 @@ public class JobDetailsPopup extends BaseModal {
     }
 
     public void show(String serverTemplateId,
+                     String deploymentId,
                      String jobId) {
         cleanForm(serverTemplateId,
+                  deploymentId,
                   jobId);
         super.show();
     }
@@ -129,6 +131,7 @@ public class JobDetailsPopup extends BaseModal {
     }
 
     public void cleanForm(String serverTemplateId,
+                          String deploymentId,
                           String requestId) {
         this.addShownHandler(new ModalShownHandler() {
             @Override
@@ -144,6 +147,7 @@ public class JobDetailsPopup extends BaseModal {
                            response.getParams());
             }
         }).getRequestDetails(serverTemplateId,
+                             deploymentId,
                              Long.valueOf(requestId));
     }
 

@@ -146,7 +146,8 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                 constants.Cancel(),
                 job -> {
                     if (Window.confirm(constants.CancelJob())) {
-                        presenter.cancelRequest(job.getJobId());
+                        presenter.cancelRequest(job.getDeploymentId(), 
+                                                job.getJobId());
                     }
                 },
                 presenter.getCancelActionCondition()));
@@ -155,7 +156,8 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                 constants.Requeue(),
                 job -> {
                     if (Window.confirm(constants.RequeueJob())) {
-                        presenter.requeueRequest(job.getJobId());
+                        presenter.requeueRequest(job.getDeploymentId(), 
+                                                 job.getJobId());
                     }
                 },
                 presenter.getRequeueActionCondition()));

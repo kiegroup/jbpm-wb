@@ -16,9 +16,21 @@
 
 package org.jbpm.workbench.es.backend.server;
 
+import static org.jbpm.workbench.es.backend.server.ExecutionErrorSummaryMapperTest.assertExecutionErrorSummary;
+import static org.jbpm.workbench.es.backend.server.ExecutionErrorSummaryMapperTest.createTestError;
+import static org.jbpm.workbench.es.backend.server.RequestDetailsMapperTest.assertRequestDetails;
+import static org.jbpm.workbench.es.backend.server.RequestSummaryMapperTest.newRequestInfoInstance;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
-import org.jbpm.workbench.ks.integration.KieServerIntegration;
 import org.jbpm.workbench.es.model.RequestDetails;
+import org.jbpm.workbench.ks.integration.KieServerIntegration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,16 +42,6 @@ import org.kie.server.client.admin.ProcessAdminServicesClient;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import static org.jbpm.workbench.es.backend.server.RequestDetailsMapperTest.assertRequestDetails;
-import static org.jbpm.workbench.es.backend.server.RequestSummaryMapperTest.newRequestInfoInstance;
-import static org.jbpm.workbench.es.backend.server.ExecutionErrorSummaryMapperTest.createTestError;
-import static org.jbpm.workbench.es.backend.server.ExecutionErrorSummaryMapperTest.assertExecutionErrorSummary;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RemoteExecutorServiceImplTest {
@@ -68,11 +70,13 @@ public class RemoteExecutorServiceImplTest {
     public void testGetRequestDetails() {
         final RequestInfoInstance ri = newRequestInfoInstance();
 
-        when(jobServicesClient.getRequestById(ri.getId(),
+        when(jobServicesClient.getRequestById("",
+                                              ri.getId(),
                                               true,
                                               true)).thenReturn(ri);
 
         final RequestDetails rd = executorService.getRequestDetails("",
+                                                                    "",
                                                                     ri.getId());
         assertRequestDetails(ri,
                              rd);
@@ -81,11 +85,13 @@ public class RemoteExecutorServiceImplTest {
     @Test
     public void testGetRequestDetailsEmpty() {
         final Long requestId = 1l;
-        when(jobServicesClient.getRequestById(requestId,
+        when(jobServicesClient.getRequestById("",
+                                              requestId,
                                               true,
                                               true)).thenReturn(new RequestInfoInstance());
 
         final RequestDetails requestDetails = executorService.getRequestDetails("",
+                                                                                "",
                                                                                 requestId);
         assertNotNull(requestDetails);
         assertNotNull(requestDetails.getRequest());
@@ -96,6 +102,7 @@ public class RemoteExecutorServiceImplTest {
     @Test
     public void testGetRequestDetailsNull() {
         final RequestDetails requestDetails = executorService.getRequestDetails(null,
+                                                                                null,
                                                                                 null);
         assertNull(requestDetails);
     }

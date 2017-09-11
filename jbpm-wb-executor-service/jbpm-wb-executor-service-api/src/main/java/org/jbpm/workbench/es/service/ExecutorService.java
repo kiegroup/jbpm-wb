@@ -27,6 +27,7 @@ import org.jbpm.workbench.es.model.RequestDetails;
 public interface ExecutorService {
 
     RequestDetails getRequestDetails(String serverTemplateId,
+                                     String deploymentId,
                                      Long requestId);
 
     Long scheduleRequest(String serverTemplateId,
@@ -35,9 +36,11 @@ public interface ExecutorService {
                          Map<String, String> ctx);
 
     void cancelRequest(String serverTemplateId,
+                       String deploymentId,
                        Long requestId);
 
     void requeueRequest(String serverTemplateId,
+                        String deploymentId,
                         Long requestId);
 
     void acknowledgeError(String serverTemplateId,
