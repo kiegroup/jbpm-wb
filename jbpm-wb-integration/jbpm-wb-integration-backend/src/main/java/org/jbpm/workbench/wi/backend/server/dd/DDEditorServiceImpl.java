@@ -218,6 +218,7 @@ public class DDEditorServiceImpl
             else if (resolver.equalsIgnoreCase(ItemObjectModel.MVEL_RESOLVER)) {
                 try {
                     ParserContext parserContext = new ParserContext();
+                    addPredefinedInputsToContext(parserContext);
                     parserContext.setStrictTypeEnforcement( true );
                     parserContext.setStrongTyping( true );
                     MVEL.compileExpression(identifier, parserContext);
@@ -519,5 +520,13 @@ public class DDEditorServiceImpl
                             I18N_KEY_UNEXPECTED_ERROR,
                             e.getMessage()));
         }
+    }
+
+    private void addPredefinedInputsToContext(ParserContext context) {
+        context.addInput("ksession", Object.class);
+        context.addInput("taskService", Object.class);
+        context.addInput("runtimeManager", Object.class);
+        context.addInput("classLoader", Object.class);
+        context.addInput("entityManagerFactory", Object.class);
     }
 }
