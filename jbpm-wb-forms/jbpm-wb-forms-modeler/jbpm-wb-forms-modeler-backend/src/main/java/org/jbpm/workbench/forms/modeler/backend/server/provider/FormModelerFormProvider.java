@@ -22,16 +22,16 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jbpm.workbench.forms.service.providing.FormProvider;
-import org.jbpm.workbench.forms.service.providing.ProcessRenderingSettings;
-import org.jbpm.workbench.forms.service.providing.TaskRenderingSettings;
-import org.jbpm.workbench.forms.service.providing.model.TaskDefinition;
-import org.jbpm.workbench.forms.modeler.display.impl.FormModelerFormRenderingSettings;
 import org.jbpm.formModeler.api.client.FormRenderContext;
 import org.jbpm.formModeler.api.client.FormRenderContextManager;
 import org.jbpm.formModeler.api.model.Form;
 import org.jbpm.formModeler.core.config.FormSerializationManager;
 import org.jbpm.formModeler.kie.services.FormRenderContentMarshallerManager;
+import org.jbpm.workbench.forms.modeler.display.impl.FormModelerFormRenderingSettings;
+import org.jbpm.workbench.forms.service.providing.FormProvider;
+import org.jbpm.workbench.forms.service.providing.ProcessRenderingSettings;
+import org.jbpm.workbench.forms.service.providing.TaskRenderingSettings;
+import org.jbpm.workbench.forms.service.providing.model.TaskDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,9 +68,9 @@ public class FormModelerFormProvider implements FormProvider<FormModelerFormRend
 
                 // Adding forms to context while forms are'nt available on marshaller classloader
                 FormRenderContext context = formRenderContextManager.newContext(form,
-                                                                                settings.getProcess().getDeploymentId(),
+                                                                                settings.getServerTemplateId(),
                                                                                 ctx,
-                                                                                new HashMap<String, Object>());
+                                                                                new HashMap<>());
                 formRenderContentMarshaller.addContentMarshaller(context.getUID(),
                                                                  settings.getMarshallerContext());
 
@@ -110,7 +110,7 @@ public class FormModelerFormProvider implements FormProvider<FormModelerFormRend
 
                 // Adding forms to context while forms are'nt available on marshaller classloader
                 FormRenderContext context = formRenderContextManager.newContext(form,
-                                                                                task.getDeploymentId(),
+                                                                                settings.getServerTemplateId(),
                                                                                 inputs,
                                                                                 outputs);
                 formRenderContentMarshaller.addContentMarshaller(context.getUID(),

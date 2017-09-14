@@ -26,6 +26,11 @@ import org.kie.internal.task.api.ContentMarshallerContext;
 public interface RenderingSettings extends Serializable {
 
     /**
+     * Retrieves the Servler Template Id for the current settings
+     */
+    String getServerTemplateId();
+
+    /**
      * Retrieves the actual content of the form to be rendered
      */
     String getFormContent();

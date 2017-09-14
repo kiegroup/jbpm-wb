@@ -65,6 +65,7 @@ public abstract class AbstractStartProcessFormTest<PROVIDER extends AbstractKieW
 
         return new ProcessRenderingSettings(process,
                                             formData,
+                                            SERVER_TEMPLATE_ID,
                                             FormContentReader.getStartProcessForms(),
                                             marshallerContext);
     }
