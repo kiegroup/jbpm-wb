@@ -257,23 +257,32 @@ public class DDEditorServiceTest extends DDEditorServiceImpl {
     }
 
     @Test
-    public void testValidateMvelResolverWithSupportedParameters() {
+    public void testValidateMvelResolverWithValidParameters() {
         List<ValidationMessage> validationMessages = validateObjectModels(null,
                                                                           Collections.singletonList(
                                                                                   new NamedObjectModel(ItemObjectModel.MVEL_RESOLVER,
                                                                                                        "item-name",
                                                                                                        "java.util.Arrays.asList(ksession, taskService, runtimeManager, classLoader, entityManagerFactory);")));
         assertThat(validationMessages).isEmpty();
+
+
+        List<ValidationMessage> secondValidationMessages = validateObjectModels(null,
+                                                                          Collections.singletonList(
+                                                                                  new NamedObjectModel(ItemObjectModel.MVEL_RESOLVER,
+                                                                                                       "item-name",
+                                                                                                       "org.jbpm.process.workitem.bpmn2.ServiceTaskHandler(ksession, classLoader)")));
+        assertThat(secondValidationMessages).isEmpty();
+
     }
 
     @Test
-    public void testValidateMvelResolverWithUnSupportedParameters() {
+    public void testValidateMvelResolverWithInvalidParameters() {
 
         List<ValidationMessage> validationMessages = validateObjectModels(null,
                                                                           Collections.singletonList(
                                                                                   new NamedObjectModel(ItemObjectModel.MVEL_RESOLVER,
                                                                                                        "item-name",
-                                                                                                       "java.util.Arrays.asList(unsupportedParamName);")));
+                                                                                                       "java.util.Arrays.asList(invalidParamExpr[);")));
 
         assertThat(validationMessages).hasSize(1);
 
@@ -292,7 +301,7 @@ public class DDEditorServiceTest extends DDEditorServiceImpl {
                                                                           Collections.singletonList(
                                                                                   new NamedObjectModel(ItemObjectModel.MVEL_RESOLVER,
                                                                                                        "item-name",
-                                                                                                       "handler-classname")));
+                                                                                                       "org.jbpm.process.workitem.bpmn2.ServiceTaskHandler(ksession, classLoader")));
         assertThat(validationMessages).hasSize(1);
 
         ValidationMessage error = validationMessages.get(0);
