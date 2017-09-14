@@ -142,6 +142,7 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
             TaskRenderingSettings settings = new TaskRenderingSettings(taskInstance,
                                                                        inputs,
                                                                        outputs,
+                                                                       serverTemplateId,
                                                                        formContent,
                                                                        new ContentMarshallerContext(null,
                                                                                                     kieServicesClient.getClassLoader()));
@@ -159,13 +160,15 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
                          e.getMessage());
         }
 
-        return renderDefaultTaskForm(taskInstance,
+        return renderDefaultTaskForm(serverTemplateId,
+                                     taskInstance,
                                      inputs,
                                      outputs,
                                      kieServicesClient);
     }
 
-    private FormRenderingSettings renderDefaultTaskForm(TaskDefinition taskInstance,
+    private FormRenderingSettings renderDefaultTaskForm(String serverTemplateId,
+                                                        TaskDefinition taskInstance,
                                                         Map<String, Object> inputs,
                                                         Map<String, Object> outputs,
                                                         KieServicesClient kieServicesClient) {
@@ -173,6 +176,7 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
             return defaultFormProvider.render(new TaskRenderingSettings(taskInstance,
                                                                         inputs,
                                                                         outputs,
+                                                                        serverTemplateId,
                                                                         "",
                                                                         new ContentMarshallerContext(null,
                                                                                                      kieServicesClient.getClassLoader())));
@@ -219,6 +223,7 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
                                                                     processId);
             ProcessRenderingSettings settings = new ProcessRenderingSettings(processDesc,
                                                                              processData,
+                                                                             serverTemplateId,
                                                                              formContent,
                                                                              new ContentMarshallerContext(null,
                                                                                                           kieServicesClient.getClassLoader()));
@@ -238,17 +243,20 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
                          e.getMessage());
         }
 
-        return renderDefaultProcessForm(processDesc,
+        return renderDefaultProcessForm(serverTemplateId,
+                                        processDesc,
                                         processData,
                                         kieServicesClient);
     }
 
-    private FormRenderingSettings renderDefaultProcessForm(org.jbpm.workbench.forms.service.providing.model.ProcessDefinition processDesc,
+    private FormRenderingSettings renderDefaultProcessForm(String serverTemplateId,
+                                                           org.jbpm.workbench.forms.service.providing.model.ProcessDefinition processDesc,
                                                            Map<String, String> processData,
                                                            KieServicesClient kieServicesClient) {
         try {
             return defaultFormProvider.render(new ProcessRenderingSettings(processDesc,
                                                                            processData,
+                                                                           serverTemplateId,
                                                                            "",
                                                                            new ContentMarshallerContext(null,
                                                                                                         kieServicesClient.getClassLoader())));

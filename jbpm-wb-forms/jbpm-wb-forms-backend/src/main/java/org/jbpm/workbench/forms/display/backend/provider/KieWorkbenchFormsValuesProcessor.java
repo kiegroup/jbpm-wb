@@ -28,8 +28,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.apache.commons.lang3.StringUtils;
-import org.jbpm.workbench.forms.service.providing.RenderingSettings;
 import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
+import org.jbpm.workbench.forms.service.providing.RenderingSettings;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContext;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
@@ -40,7 +40,9 @@ import org.slf4j.Logger;
 
 public abstract class KieWorkbenchFormsValuesProcessor<T extends RenderingSettings> {
 
-    public static String SETTINGS_ATRA_NAME = "_rendering_settings";
+    public static final String SERVER_TEMPLATE_ID = "serverTemplateId";
+
+    public static final String SETTINGS_ATRA_NAME = "_rendering_settings";
 
     protected FormDefinitionSerializer formSerializer;
 
@@ -76,11 +78,15 @@ public abstract class KieWorkbenchFormsValuesProcessor<T extends RenderingSettin
                 Map<String, Object> rawData = generateRawFormData(settings,
                                                                   forms.getRootForm());
 
+                Map<String, String> params = new HashMap<>();
+                params.put(SERVER_TEMPLATE_ID,
+                           settings.getServerTemplateId());
+
                 BackendFormRenderingContext context = contextManager.registerContext(forms.getRootForm(),
                                                                                      rawData,
                                                                                      settings.getMarshallerContext().getClassloader(),
-                                                                                     forms.getNestedForms().toArray(
-                                                                                             new FormDefinition[forms.getNestedForms().size()]));
+                                                                                     params,
+                                                                                     forms.getNestedForms().toArray(new FormDefinition[forms.getNestedForms().size()]));
 
                 prepareContext(settings,
                                context);

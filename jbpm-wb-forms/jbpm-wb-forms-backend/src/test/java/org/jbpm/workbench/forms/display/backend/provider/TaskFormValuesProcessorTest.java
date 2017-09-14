@@ -95,6 +95,7 @@ public class TaskFormValuesProcessorTest extends AbstractFormsValuesProcessorTes
         return new TaskRenderingSettings(task,
                                          inputs,
                                          new HashMap<>(),
+                                         SERVER_TEMPLATE_ID,
                                          formContent,
                                          marshallerContext);
     }
