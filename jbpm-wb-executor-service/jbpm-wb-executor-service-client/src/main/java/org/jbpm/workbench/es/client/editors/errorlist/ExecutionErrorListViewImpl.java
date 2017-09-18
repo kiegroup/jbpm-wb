@@ -222,14 +222,14 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                 presenter.getAcknowledgeActionCondition()));
 
         cells.add(new ConditionalButtonActionCell<ExecutionErrorSummary>(
-                constants.ViewJob(),
-                errorSummary -> presenter.goToJob(errorSummary),
-                presenter.getViewJobActionCondition()));
-
-        cells.add(new ConditionalButtonActionCell<ExecutionErrorSummary>(
                 constants.ViewProcessInstance(),
                 errorSummary -> presenter.goToProcessInstance(errorSummary),
                 presenter.getViewProcessInstanceActionCondition()));
+
+        cells.add(new ConditionalButtonActionCell<ExecutionErrorSummary>(
+                constants.ViewJob(),
+                errorSummary -> presenter.goToJob(errorSummary),
+                presenter.getViewJobActionCondition()));
 
         cells.add(new ConditionalButtonActionCell<ExecutionErrorSummary>(
                 constants.ViewTask(),
