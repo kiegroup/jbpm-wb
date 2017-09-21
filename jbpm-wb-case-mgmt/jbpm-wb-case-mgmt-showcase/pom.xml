@@ -99,6 +99,12 @@
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-cdi-jboss</artifactId>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>ant</groupId>
+          <artifactId>ant</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jboss.errai</groupId>
@@ -201,6 +207,7 @@
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-identity-session-provider</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <!-- Kie Server -->
     <dependency>
@@ -215,6 +222,7 @@
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-security</artifactId>
+      <scope>runtime</scope>
     </dependency>
 
     <!-- UberFire -->
@@ -230,10 +238,12 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-backend-cdi</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-backend-server</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
@@ -266,6 +276,10 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-maven-support</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-maven-integration</artifactId>
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
@@ -315,6 +329,7 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-servlet-security</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <!-- UberFire Preferences Extension -->
     <dependency>
@@ -324,6 +339,7 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-preferences-backend</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
