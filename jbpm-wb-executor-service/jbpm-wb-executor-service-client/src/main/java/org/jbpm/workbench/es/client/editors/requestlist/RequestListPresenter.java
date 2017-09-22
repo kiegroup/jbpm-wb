@@ -289,7 +289,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                                                                   false))
         );
 
-        view.addTextFilter(constants.Process_Description(),
+        view.addTextFilter(constants.Process_Instance_Description(),
                            constants.FilterByProcessDescription(),
                            v -> addAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
                                                                v,
@@ -436,7 +436,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         builder.setColumn(COLUMN_PROCESS_INSTANCE_ID,
                           constants.Process_Instance_Id());
         builder.setColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                          constants.Process_Description());
+                          constants.Process_Instance_Description());
         builder.setColumn(COLUMN_JOB_DEPLOYMENT_ID,
                           constants.DeploymentId());
 

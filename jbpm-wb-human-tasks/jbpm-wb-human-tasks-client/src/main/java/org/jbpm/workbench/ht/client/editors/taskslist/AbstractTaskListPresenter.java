@@ -573,7 +573,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                 .sort(COLUMN_PROCESS_ID,
                       SortOrder.ASCENDING)
                 .buildLookup();
-        view.addDataSetSelectFilter(constants.Process_Name(),
+        view.addDataSetSelectFilter(constants.Process_Definition_Id(),
                                     AbstractMultiGridView.TAB_SEARCH,
                                     dataSetLookup,
                                     COLUMN_PROCESS_ID,
@@ -627,7 +627,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         builder.setColumn(COLUMN_PRIORITY,
                           constants.Priority());
         builder.setColumn(COLUMN_PROCESS_ID,
-                          constants.Process_Id());
+                          constants.Process_Definition_Id());
         builder.setColumn(COLUMN_PROCESS_INSTANCE_ID,
                           constants.Process_Instance_Id());
         builder.setColumn(COLUMN_PROCESS_SESSION_ID,
