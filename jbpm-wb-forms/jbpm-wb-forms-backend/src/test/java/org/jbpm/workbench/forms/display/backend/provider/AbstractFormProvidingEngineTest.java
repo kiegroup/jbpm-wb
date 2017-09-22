@@ -32,6 +32,7 @@ import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.fieldProcessors.MultipleSubFormFieldValueProcessor;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.fieldProcessors.SubFormFieldValueProcessor;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.validation.impl.ContextModelConstraintsExtractorImpl;
+import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContext;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.FieldValueProcessor;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.FormValuesProcessor;
@@ -45,11 +46,14 @@ import org.kie.workbench.common.forms.serialization.impl.FormDefinitionSerialize
 import org.kie.workbench.common.forms.serialization.impl.FormModelSerializer;
 import org.mockito.Mock;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertNotNull;
 import static org.mockito.Mockito.*;
 
 public abstract class AbstractFormProvidingEngineTest<SETTINGS extends RenderingSettings, PROCESSOR extends KieWorkbenchFormsValuesProcessor<SETTINGS>, PROVIDER extends AbstractKieWorkbenchFormsProvider> {
+
+    protected static final String SERVER_TEMPLATE_ID = "serverTemplateId";
 
     @Mock
     protected ContentMarshallerContext marshallerContext;
@@ -128,8 +132,16 @@ public abstract class AbstractFormProvidingEngineTest<SETTINGS extends Rendering
         assertNotNull("Settings cannot be null",
                       settings);
 
+        BackendFormRenderingContext context = contextManager.getContext(settings.getTimestamp());
+
         assertNotNull("There should be a backend context",
-                      contextManager.getContext(settings.getTimestamp()));
+                      context);
+
+        assertFalse(context.getAttributes().isEmpty());
+        assertEquals(2,
+                     context.getAttributes().size());
+        assertNotNull(context.getAttributes().get(KieWorkbenchFormsValuesProcessor.SETTINGS_ATRA_NAME));
+        assertNotNull(context.getAttributes().get(KieWorkbenchFormsValuesProcessor.SERVER_TEMPLATE_ID));
 
         assertFalse("There should exist some forms...",
                     settings.getRenderingContext().getAvailableForms().isEmpty());

@@ -26,17 +26,20 @@ public class TaskRenderingSettings implements RenderingSettings {
     private TaskDefinition task;
     private Map<String, Object> inputs;
     private Map<String, Object> outputs;
+    private String serverTemplateId;
     private String formContent;
     private ContentMarshallerContext marshallerContext;
 
     public TaskRenderingSettings(TaskDefinition task,
                                  Map<String, Object> inputs,
                                  Map<String, Object> outputs,
+                                 String serverTemplateId,
                                  String formContent,
                                  ContentMarshallerContext marshallerContext) {
         this.task = task;
         this.inputs = inputs;
         this.outputs = outputs;
+        this.serverTemplateId = serverTemplateId;
         this.formContent = formContent;
         this.marshallerContext = marshallerContext;
     }
@@ -63,6 +66,11 @@ public class TaskRenderingSettings implements RenderingSettings {
 
     public void setOutputs(Map<String, Object> outputs) {
         this.outputs = outputs;
+    }
+
+    @Override
+    public String getServerTemplateId() {
+        return serverTemplateId;
     }
 
     @Override

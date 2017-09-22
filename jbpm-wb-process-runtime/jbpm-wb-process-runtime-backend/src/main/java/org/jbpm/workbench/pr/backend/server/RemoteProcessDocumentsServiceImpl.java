@@ -26,6 +26,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.document.Document;
+import org.jbpm.document.service.impl.util.DocumentDownloadLinkGenerator;
 import org.jbpm.workbench.common.model.QueryFilter;
 import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.jbpm.workbench.pr.model.DocumentSummary;
@@ -95,8 +96,8 @@ public class RemoteProcessDocumentsServiceImpl extends AbstractKieServerService 
                     documents.add(new DocumentSummary(values[0],
                                                       lastModified,
                                                       Long.valueOf(values[1]),
-                                                      getDocumentLink(serverTemplateId,
-                                                                      values[3])));
+                                                      DocumentDownloadLinkGenerator.generateDownloadLink(serverTemplateId,
+                                                                                                         values[3])));
                 }
             }
         }
