@@ -110,12 +110,12 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         columnMetas.add(new ColumnMeta<>(
                 createTextColumn(COLUMN_PROCESS_ID,
                                  task -> task.getProcessId()),
-                constants.Process_Name()
+                constants.Process_Definition_Id()
         ));
         columnMetas.add(new ColumnMeta<>(
                 createNumberColumn(COLUMN_PROCESS_INSTANCE_ID,
                                    task -> task.getProcessInstanceId()),
-                constants.Process_Id()
+                constants.Process_Instance_Id()
         ));
         columnMetas.add(new ColumnMeta<>(
                 createNumberColumn(COLUMN_PRIORITY,

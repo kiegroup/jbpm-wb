@@ -122,7 +122,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                                          constants.Process_Instance_Id()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
                                                           req -> req.getProcessInstanceDescription()),
-                                         constants.Process_Description()));
+                                         constants.Process_Instance_Description()));
         columnMetas.add(new ColumnMeta<>(actionsColumn,
                                          constants.Actions()));
 
