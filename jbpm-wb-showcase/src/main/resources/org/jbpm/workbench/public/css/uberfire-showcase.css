@@ -1,3 +1,8 @@
 html, body {
     height: 100%;
 }
+
+/* Override PatternFly default css so border isn't duplicated */
+.navbar-pf.navbar-context-menu {
+    border-top-width: 0;
+}
