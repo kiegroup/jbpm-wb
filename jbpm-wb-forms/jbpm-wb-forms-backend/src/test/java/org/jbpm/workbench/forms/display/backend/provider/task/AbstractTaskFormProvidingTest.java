@@ -87,6 +87,7 @@ public abstract class AbstractTaskFormProvidingTest<PROVIDER extends AbstractKie
         return new TaskRenderingSettings(task,
                                          inputs,
                                          new HashMap<>(),
+                                         SERVER_TEMPLATE_ID,
                                          FormContentReader.getTaskForms(),
                                          marshallerContext);
     }

@@ -76,6 +76,7 @@ public class ProcessFormsValuesProcessorTest extends AbstractFormsValuesProcesso
 
         return new ProcessRenderingSettings(process,
                                             formData,
+                                            SERVER_TEMPLATE_ID,
                                             formContent,
                                             marshallerContext);
     }

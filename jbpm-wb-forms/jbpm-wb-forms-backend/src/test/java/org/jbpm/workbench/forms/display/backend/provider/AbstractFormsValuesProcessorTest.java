@@ -57,21 +57,23 @@ import static org.mockito.Mockito.*;
 
 public abstract class AbstractFormsValuesProcessorTest<PROCESSOR extends KieWorkbenchFormsValuesProcessor<SETTINGS>, SETTINGS extends RenderingSettings> {
 
-    static final String ID = "id";
-    static final String NAME = "name";
-    static final String ADDRESS = "address";
-    static final String PRODUCT = "product";
-    static final String QUANTITY = "quantity";
-    static final String PRICE = "price";
-    static final String TOTAL = "total";
-    static final String CLIENT = "client";
-    static final String LINES = "lines";
-    static final String COMMENTS = "comments";
-    static final String DATE = "date";
-    static final String INVOICE = "invoice";
+    protected static final String SERVER_TEMPLATE_ID = "serverTemplateId";
 
-    static final int EXPECTED_MODEL_VALIDATIONS = 3;
-    static final int EXPECTED_FORMS = 4;
+    protected static final String ID = "id";
+    protected static final String NAME = "name";
+    protected static final String ADDRESS = "address";
+    protected static final String PRODUCT = "product";
+    protected static final String QUANTITY = "quantity";
+    protected static final String PRICE = "price";
+    protected static final String TOTAL = "total";
+    protected static final String CLIENT = "client";
+    protected static final String LINES = "lines";
+    protected static final String COMMENTS = "comments";
+    protected static final String DATE = "date";
+    protected static final String INVOICE = "invoice";
+
+    protected static final int EXPECTED_MODEL_VALIDATIONS = 3;
+    protected static final int EXPECTED_FORMS = 4;
 
     @Mock
     ContentMarshallerContext marshallerContext;
