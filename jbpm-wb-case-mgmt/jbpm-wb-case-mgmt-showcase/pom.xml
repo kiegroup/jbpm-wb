@@ -32,7 +32,7 @@
   <properties>
     <gwt.memory.settings>-Xmx3g -Xms1g -Xss1M</gwt.memory.settings>
     <!-- Add the absolute path for $JBOSS_HOME below to manage another instance -->
-    <jboss.home>${project.build.directory}/wildfly-${version.org.wildfly.gwt.sdm}</jboss.home>
+    <jboss.home>${project.build.directory}/wildfly-${version.org.jboss.errai.wildfly}</jboss.home>
   </properties>
 
   <dependencies>
@@ -575,9 +575,9 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.wildfly</groupId>
+                  <groupId>org.jboss.errai</groupId>
                   <artifactId>wildfly-dist</artifactId>
-                  <version>${version.org.wildfly.gwt.sdm}</version>
+                  <version>${version.org.jboss.errai.wildfly}</version>
                   <type>zip</type>
                   <overWrite>false</overWrite>
                   <outputDirectory>${project.build.directory}</outputDirectory>
