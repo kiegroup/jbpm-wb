@@ -16,12 +16,14 @@
 
 package org.jbpm.workbench.common.client.dataset;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.client.DataSetClientServices;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.jboss.errai.common.client.dom.OptionsCollection;
 import org.jbpm.workbench.df.client.events.DataSetReadyEvent;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.ks.integration.ConsoleDataSetLookup;
@@ -40,9 +42,13 @@ import org.uberfire.client.views.pfly.widgets.Select;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DataSetAwareSelectTest {
+
+    private static final String VALUE_COLUMN_ID = "value";
+    private static final String TEXT_COLUMN_ID = "text";
 
     @Mock
     DataSetClientServices dataSetClientServices;
@@ -65,6 +71,11 @@ public class DataSetAwareSelectTest {
                 return null;
             }
         }).when(select).refresh(any(Consumer.class));
+        final OptionsCollection options = mock(OptionsCollection.class);
+        final AtomicInteger optionsLength = new AtomicInteger(0);
+        when(options.getLength()).thenAnswer(a -> optionsLength.get());
+        when(select.getOptions()).thenReturn(options);
+        doAnswer(invocationOnMock -> optionsLength.incrementAndGet()).when(select).addOption(anyString(), anyString());
     }
 
     @Test
@@ -113,8 +124,8 @@ public class DataSetAwareSelectTest {
         final DataSetLookup lookup = mock(DataSetLookup.class);
         when(lookup.getDataSetUUID()).thenReturn(dataUUID);
         dataSetAwareSelect.setDataSetLookup(lookup);
-        dataSetAwareSelect.setValueColumnId("value");
-        dataSetAwareSelect.setTextColumnId("test");
+        dataSetAwareSelect.setValueColumnId(VALUE_COLUMN_ID);
+        dataSetAwareSelect.setTextColumnId(TEXT_COLUMN_ID);
 
         doAnswer(new Answer() {
             @Override
@@ -122,9 +133,66 @@ public class DataSetAwareSelectTest {
                 final DataSet dataSet = mock(DataSet.class);
                 when(dataSet.getRowCount()).thenReturn(1);
                 when(dataSet.getValueAt(0,
-                                        "value")).thenReturn(columnValue);
+                                        VALUE_COLUMN_ID)).thenReturn(columnValue);
                 when(dataSet.getValueAt(0,
-                                        "test")).thenReturn(columnText);
+                                        TEXT_COLUMN_ID)).thenReturn(columnText);
+                ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSet);
+                return null;
+            }
+        }).when(dataSetClientServices).lookupDataSet(any(DataSetLookup.class),
+                                                     any(DataSetReadyCallback.class));
+
+        dataSetAwareSelect.onDataSetReady(new DataSetReadyEvent(filterSettings));
+
+        final ArgumentCaptor<DataSetLookup> captor = ArgumentCaptor.forClass(DataSetLookup.class);
+        verify(dataSetClientServices).lookupDataSet(captor.capture(),
+                                                    any(DataSetReadyCallback.class));
+        assertTrue(captor.getValue() instanceof ConsoleDataSetLookup);
+        final ConsoleDataSetLookup cdsl = (ConsoleDataSetLookup) captor.getValue();
+        assertEquals(serverTemplateId,
+                     cdsl.getServerTemplateId());
+        assertEquals(dataUUID,
+                     cdsl.getDataSetUUID());
+        verify(select).addOption(columnText,
+                                 columnValue);
+        verify(select).enable();
+        verify(select).removeAllOptions();
+    }
+
+    @Test
+    public void testLookupDataSetEmptyStringOrNull() throws Exception {
+        final String key = "key";
+        final String serverTemplateId = "test";
+        final String dataUUID = "dataUUID";
+        final String columnValue = "processNameValue";
+        final String columnText = "processNameText";
+
+        filterSettings.setKey(key);
+        dataSetAwareSelect.setTableKey(key);
+        filterSettings.setServerTemplateId(serverTemplateId);
+        final DataSetLookup lookup = mock(DataSetLookup.class);
+        when(lookup.getDataSetUUID()).thenReturn(dataUUID);
+        dataSetAwareSelect.setDataSetLookup(lookup);
+        dataSetAwareSelect.setValueColumnId(VALUE_COLUMN_ID);
+        dataSetAwareSelect.setTextColumnId(TEXT_COLUMN_ID);
+
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                final DataSet dataSet = mock(DataSet.class);
+                when(dataSet.getRowCount()).thenReturn(3);
+                when(dataSet.getValueAt(0,
+                                        VALUE_COLUMN_ID)).thenReturn(columnValue);
+                when(dataSet.getValueAt(0,
+                                        TEXT_COLUMN_ID)).thenReturn(columnText);
+                when(dataSet.getValueAt(1,
+                                        VALUE_COLUMN_ID)).thenReturn("");
+                when(dataSet.getValueAt(1,
+                                        TEXT_COLUMN_ID)).thenReturn("");
+                when(dataSet.getValueAt(2,
+                                        VALUE_COLUMN_ID)).thenReturn(null);
+                when(dataSet.getValueAt(2,
+                                        TEXT_COLUMN_ID)).thenReturn(null);
                 ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSet);
                 return null;
             }

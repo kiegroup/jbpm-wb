@@ -33,6 +33,8 @@ import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCall
 import org.uberfire.client.views.pfly.widgets.ErrorPopup;
 import org.uberfire.client.views.pfly.widgets.Select;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 @Dependent
 public class DataSetAwareSelect {
 
@@ -85,18 +87,20 @@ public class DataSetAwareSelect {
                                                     public void callback(final DataSet dataSet) {
                                                         select.refresh(s -> {
                                                             s.removeAllOptions();
-                                                            if (dataSet.getRowCount() == 0) {
-                                                                s.disable();
-                                                            } else {
-                                                                s.enable();
-                                                                for (int i = 0; i < dataSet.getRowCount(); i++) {
-                                                                    final String text = (String) dataSet.getValueAt(i,
-                                                                                                                    textColumnId);
-                                                                    final String value = (String) dataSet.getValueAt(i,
-                                                                                                                     valueColumnId);
+                                                            for (int i = 0; i < dataSet.getRowCount(); i++) {
+                                                                final String text = (String) dataSet.getValueAt(i,
+                                                                                                                textColumnId);
+                                                                final String value = (String) dataSet.getValueAt(i,
+                                                                                                                 valueColumnId);
+                                                                if(isNullOrEmpty(text) == false && isNullOrEmpty(value) == false){
                                                                     s.addOption(text,
                                                                                 value);
                                                                 }
+                                                            }
+                                                            if(s.getOptions().getLength() > 0){
+                                                                s.enable();
+                                                            } else {
+                                                                s.disable();
                                                             }
                                                         });
                                                     }
