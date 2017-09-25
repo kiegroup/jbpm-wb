@@ -36,6 +36,7 @@ public interface AdvancedSearchFiltersView {
 
     void addDateRangeFilter(String label,
                             String placeholder,
+                            Boolean useMaxDate,
                             Consumer<DateRange> addCallback,
                             Consumer<DateRange> removeCallback);
 

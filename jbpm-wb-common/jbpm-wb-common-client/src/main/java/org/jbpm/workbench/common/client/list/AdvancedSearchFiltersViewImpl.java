@@ -234,6 +234,7 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     @Override
     public void addDateRangeFilter(final String label,
                                    final String placeholder,
+                                   final Boolean useMaxDate,
                                    final Consumer<DateRange> addCallback,
                                    final Consumer<DateRange> removeCallback) {
         final DateRangePicker dateRangePicker = dateRangePickerProvider.get();
@@ -241,7 +242,7 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
         dateRangePicker.getElement().setAttribute("placeholder",
                                                   placeholder);
         dateRangePicker.getElement().getClassList().add("form-control");
-        final DateRangePickerOptions options = getDateRangePickerOptions();
+        final DateRangePickerOptions options = getDateRangePickerOptions(useMaxDate);
 
         dateRangePicker.setup(options,
                               null);
@@ -277,13 +278,15 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
         }
     }
 
-    protected DateRangePickerOptions getDateRangePickerOptions() {
+    protected DateRangePickerOptions getDateRangePickerOptions(final Boolean useMaxDate) {
         final DateRangePickerOptions options = DateRangePickerOptions.create();
         options.setAutoUpdateInput(false);
         options.setAutoApply(true);
         options.setTimePicker(true);
         options.setTimePickerIncrement(30);
-        options.setMaxDate(moment().endOf("day"));
+        if(useMaxDate) {
+            options.setMaxDate(moment().endOf("day"));
+        }
         for (DatePickerRange range : DatePickerRange.values()) {
             options.addRange(range.getLabel(),
                              range.getStartDate(),
