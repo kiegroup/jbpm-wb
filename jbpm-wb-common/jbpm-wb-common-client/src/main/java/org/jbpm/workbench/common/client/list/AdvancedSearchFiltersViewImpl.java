@@ -152,8 +152,6 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                 " <ul>\n" +
                 "   <li><code>_</code> - " + constants.ASubstituteForASingleCharacter() + "</li>\n" +
                 "   <li><code>%</code> - " + constants.ASubstituteForZeroOrMoreCharacters() + "</li>\n" +
-                "   <li><code>[" + constants.CharList() + "]</code> - " + constants.SetOfCharactersToMatch() + "</li>\n" +
-                "   <li><code>[^" + constants.CharList() + "]</code> - " + constants.MatchesOnlyACharacterNOTSpecifiedWithinTheBrackets() + "</li>\n" +
                 " </ul>\n";
     }
 
