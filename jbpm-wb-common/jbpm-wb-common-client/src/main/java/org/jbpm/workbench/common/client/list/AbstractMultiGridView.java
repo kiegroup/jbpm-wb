@@ -592,10 +592,12 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     @Override
     public void addDateRangeFilter(String label,
                                    String placeholder,
+                                   Boolean useMaxDate,
                                    Consumer<DateRange> addCallback,
                                    Consumer<DateRange> removeCallback) {
         advancedSearchFiltersView.addDateRangeFilter(label,
                                                      placeholder,
+                                                     useMaxDate,
                                                      addCallback,
                                                      removeCallback);
     }
