@@ -89,12 +89,6 @@ public interface Constants extends Messages {
 
     String ASubstituteForZeroOrMoreCharacters();
 
-    String CharList();
-
-    String SetOfCharactersToMatch();
-
-    String MatchesOnlyACharacterNOTSpecifiedWithinTheBrackets();
-
     String LastHour();
 
     String LastHours(Integer hours);
