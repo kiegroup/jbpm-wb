@@ -23,7 +23,6 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.workbench.ht.model.CommentSummary;
 import org.jbpm.workbench.ht.model.TaskAssignmentSummary;
@@ -311,6 +310,24 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
                             taskId,
                             identityProvider.getName(),
                             entity);
+    }
+
+    @Override
+    public void forward(String serverTemplateId,
+                        String containerId,
+                        Long taskId,
+                        String entity) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return;
+        }
+
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
+
+        client.forwardTask(containerId,
+                           taskId,
+                           identityProvider.getName(),
+                           entity);
     }
 
     @Override

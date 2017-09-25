@@ -22,12 +22,15 @@ import java.util.Date;
 
 import org.jbpm.workbench.ht.model.TaskEventSummary;
 import org.jbpm.workbench.ht.service.TaskService;
+import org.jbpm.workbench.ks.integration.KieServerIntegration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.internal.identity.IdentityProvider;
 import org.kie.server.api.model.instance.TaskEventInstance;
 import org.kie.server.api.model.instance.TaskInstance;
+import org.kie.server.client.KieServicesClient;
+import org.kie.server.client.UserTaskServicesClient;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -45,12 +48,23 @@ public class RemoteTaskServiceImplTest {
     @Mock
     IdentityProvider identityProvider;
 
+    @Mock
+    KieServerIntegration kieServerIntegration;
+
+    @Mock
+    KieServicesClient kieServicesClient;
+
+    @Mock
+    UserTaskServicesClient userTaskServicesClient;
+
     @InjectMocks
     private RemoteTaskServiceImpl remoteTaskService;
 
     @Before
     public void initMocks() {
         when(identityProvider.getName()).thenReturn(CURRENT_USER);
+        when(kieServerIntegration.getServerClient(anyString())).thenReturn(kieServicesClient);
+        when(kieServicesClient.getServicesClient(UserTaskServicesClient.class)).thenReturn(userTaskServicesClient);
     }
 
     @Test
@@ -197,5 +211,24 @@ public class RemoteTaskServiceImplTest {
                               method.getName()),
                        result);
         }
+    }
+
+    @Test
+    public void testForward() {
+        final String containerId = "containerId";
+        final long taskId = 1l;
+        final String userId = "user";
+        final String serverTemplateId = "serverTemplateId";
+
+        remoteTaskService.forward(serverTemplateId,
+                                  containerId,
+                                  taskId,
+                                  userId);
+
+        verify(userTaskServicesClient).forwardTask(containerId,
+                                                   taskId,
+                                                   CURRENT_USER,
+                                                   userId);
+        verify(kieServerIntegration).getServerClient(serverTemplateId);
     }
 }
