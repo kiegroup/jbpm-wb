@@ -120,4 +120,26 @@ public class TaskAdminPresenterTest {
         verify(viewMock).setActualOwnerText(CURRENT_USER);
         verify(viewMock).setUsersGroupsControlsPanelText("[" + OTHER_USER + ", " + OTHER_USER2 + "]");
     }
+
+    @Test
+    public void testForwardTask() {
+        final String serverTemplateId = "serverTemplateId";
+        final String containerId = "containerId";
+        final Long taskId = 1L;
+        final String entity = "user";
+        final TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId,
+                                                                containerId,
+                                                                taskId,
+                                                                "task",
+                                                                true,
+                                                                false);
+
+        presenter.onTaskSelectionEvent(event);
+        presenter.forwardTask(entity);
+
+        verify(taskService).forward(serverTemplateId,
+                                    containerId,
+                                    taskId,
+                                    entity);
+    }
 }

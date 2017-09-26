@@ -94,6 +94,11 @@ public interface TaskService {
                   Long taskId,
                   String entity);
 
+    void forward(String serverTemplateId,
+                 String containerId,
+                 Long taskId,
+                 String entity);
+
     TaskAssignmentSummary getTaskAssignmentDetails(String serverTemplateId,
                                                    String containerId,
                                                    Long taskId);
