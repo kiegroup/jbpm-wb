@@ -59,8 +59,7 @@ public class TaskAdminPresenter {
     @Inject
     public TaskAdminPresenter(TaskAdminPresenter.TaskAdminView view,
                               Caller<TaskService> taskService,
-                              Event<TaskRefreshedEvent> taskRefreshed
-    ) {
+                              Event<TaskRefreshedEvent> taskRefreshed) {
         this.view = view;
         this.taskService = taskService;
         this.taskRefreshed = taskRefreshed;
@@ -75,7 +74,7 @@ public class TaskAdminPresenter {
         return view;
     }
 
-    public void forwardTask(String entity) {
+    public void forwardTask(final String entity) {
         taskService.call(
                 new RemoteCallback<Void>() {
                     @Override
@@ -85,10 +84,10 @@ public class TaskAdminPresenter {
                         refreshTaskPotentialOwners();
                     }
                 }
-        ).delegate(serverTemplateId,
-                   containerId,
-                   currentTaskId,
-                   entity);
+        ).forward(serverTemplateId,
+                  containerId,
+                  currentTaskId,
+                  entity);
     }
 
     public void reminder() {
