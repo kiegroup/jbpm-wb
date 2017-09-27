@@ -15,11 +15,15 @@
  */
 package org.jbpm.workbench.client.screens;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.Button;
@@ -27,6 +31,11 @@ import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
+import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.databinding.client.components.ListComponent;
+import org.jboss.errai.databinding.client.components.ListContainer;
+import org.jboss.errai.ui.shared.api.annotations.AutoBound;
+import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -59,6 +68,14 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
 
     @Inject
     @DataField
+    public FormLabel correlationKeyLabel;
+
+    @Inject
+    @DataField
+    public TextBox correlationKeyText;
+
+    @Inject
+    @DataField
     public Select serverTemplate;
 
     @Inject
@@ -68,6 +85,17 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
     @Inject
     @DataField
     public Select processList;
+
+    @Inject
+    @Bound
+    @ListContainer("tbody")
+    @DataField("variables")
+    @SuppressWarnings("unused")
+    private ListComponent<ProcessVariableSummary, ProcessVariableSummaryViewImpl> processVariables;
+
+    @Inject
+    @AutoBound
+    private DataBinder<List<ProcessVariableSummary>> processVariablesList;
 
     private ProcessAdminSettingsPresenter presenter;
 
@@ -90,16 +118,22 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
         amountOfTasksLabel.setShowRequiredIndicator(true);
         amountOfTasksText.setText("1");
 
+        correlationKeyLabel.setText(constants.Correlation_Key());
+
         generateMockInstancesButton.setText(constants.Generate_Mock_Instances());
         resetButton.setText(constants.Reset());
 
         serverTemplate.addValueChangeHandler(e -> presenter.onServerTemplateSelected(serverTemplate.getValue()));
+
+        processList.addValueChangeHandler(e -> presenter.onProcessSelected(serverTemplate.getValue(),
+                                                                           processList.getValue()));
     }
 
     @EventHandler("resetButton")
     public void resetClick(ClickEvent e) {
         serverTemplate.setValue("");
         amountOfTasksText.setText("1");
+        correlationKeyText.setText("");
         clearProcessList();
     }
 
@@ -107,7 +141,9 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
     public void generateMockInstancesButton(ClickEvent e) {
         presenter.generateMockInstances(serverTemplate.getValue(),
                                         processList.getValue(),
-                                        Integer.parseInt(amountOfTasksText.getText()));
+                                        Integer.parseInt(amountOfTasksText.getText()),
+                                        correlationKeyText.getText(),
+                                        processVariablesList.getModel());
     }
 
     @Override
@@ -118,16 +154,24 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
     @Override
     public void addServerTemplates(final Set<String> serverTemplateIds) {
         serverTemplate.clear();
-        serverTemplate.setValue("");
 
         for (final String serverTemplateId : serverTemplateIds) {
-            final Option option = new Option();
+            final Option option = GWT.create(Option.class);
             option.setText(serverTemplateId);
             option.setValue(serverTemplateId);
             serverTemplate.add(option);
         }
 
-        serverTemplate.refresh();
+        Scheduler.get().scheduleDeferred(() -> {
+            serverTemplate.refresh();
+            serverTemplate.setValue("");
+            serverTemplateIds.stream().findFirst().ifPresent(serverTemplateId -> serverTemplate.setValue(serverTemplateId, true));
+        });
+    }
+
+    @Override
+    public void addProcessVariables(final List<ProcessVariableSummary> variables) {
+        processVariablesList.setModel(variables);
     }
 
     @Override
@@ -135,6 +179,7 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
         processList.clear();
         processList.setValue("");
         processList.refresh();
+        processVariablesList.setModel(Collections.emptyList());
     }
 
     @Override
@@ -148,6 +193,11 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
             processList.add(option);
         }
 
-        processList.refresh();
+
+        Scheduler.get().scheduleDeferred(() -> {
+            processList.refresh();
+            processList.setValue("");
+            processIds.stream().findFirst().ifPresent(processId -> processList.setValue(processId, true));
+        });
     }
 }
