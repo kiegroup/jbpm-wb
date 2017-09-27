@@ -46,4 +46,7 @@ public interface ProcessAdminConstants extends Messages {
     String ServerTemplate();
 
     String Reset();
+
+    String Correlation_Key();
+
 }
