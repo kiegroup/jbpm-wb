@@ -29,12 +29,15 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.SuggestBox;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
+import org.uberfire.client.views.pfly.widgets.FormGroup;
+import org.uberfire.client.views.pfly.widgets.ValidationState;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
@@ -64,8 +67,13 @@ public class ProcessInstanceSignalViewImpl extends Composite implements ProcessI
     @DataField
     public SuggestBox signalRefText;
 
+    @Inject
+    @DataField
+    public HelpBlock signalRefTextHelpBlock;
     public List<Long> processInstanceIds = new ArrayList<Long>();
-
+    @Inject
+    @DataField
+    FormGroup signalRefTextGroup;
     private Constants constants = GWT.create(Constants.class);
 
     private ProcessInstanceSignalPresenter presenter;
@@ -86,7 +94,9 @@ public class ProcessInstanceSignalViewImpl extends Composite implements ProcessI
         clearButton.setText(constants.Clear());
         signalButton.setText(constants.Signal());
         signalRefLabel.setText(constants.Signal_Name());
+        signalRefLabel.setShowRequiredIndicator(true);
         eventLabel.setText(constants.Signal_Data());
+        clearFields();
     }
 
     @Override
@@ -96,19 +106,19 @@ public class ProcessInstanceSignalViewImpl extends Composite implements ProcessI
 
     @EventHandler("signalButton")
     public void signalButton(ClickEvent e) {
-
-        for (Long processInstanceId : this.processInstanceIds) {
-
-            displayNotification(constants.Signalling_Process_Instance() + processInstanceId + " " + constants.Signal() + " = "
-                                        + signalRefText.getText() + " - " + constants.Signal_Data() + " = " + eventText.getText());
-        }
         presenter.signalProcessInstances(this.processInstanceIds);
     }
 
     @EventHandler("clearButton")
     public void clearButton(ClickEvent e) {
+        clearFields();
+    }
+
+    private void clearFields() {
         signalRefText.setValue("");
         eventText.setValue("");
+        signalRefTextHelpBlock.setText("");
+        signalRefTextGroup.clearValidationState();
     }
 
     @Override
@@ -129,5 +139,11 @@ public class ProcessInstanceSignalViewImpl extends Composite implements ProcessI
     @Override
     public void setAvailableSignals(Collection<String> signals) {
         oracle.addAll(signals);
+    }
+
+    @Override
+    public void setHelpText(String text) {
+        signalRefTextGroup.setValidationState(ValidationState.ERROR);
+        signalRefTextHelpBlock.setText(text);
     }
 }
