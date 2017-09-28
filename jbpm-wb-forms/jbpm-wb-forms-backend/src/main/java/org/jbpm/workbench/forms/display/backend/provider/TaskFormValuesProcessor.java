@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -30,11 +31,14 @@ import org.jbpm.workbench.forms.service.providing.model.TaskDefinition;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContext;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
 import org.kie.workbench.common.forms.dynamic.service.shared.RenderMode;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textArea.type.TextAreaFieldType;
 import org.kie.workbench.common.forms.jbpm.model.authoring.task.TaskFormModel;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.util.BPMNVariableUtils;
 import org.kie.workbench.common.forms.model.FormDefinition;
 import org.kie.workbench.common.forms.model.ModelProperty;
+import org.kie.workbench.common.forms.model.impl.meta.entries.FieldReadOnlyEntry;
+import org.kie.workbench.common.forms.model.impl.meta.entries.FieldTypeEntry;
 import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
 import org.kie.workbench.common.forms.service.backend.util.ModelPropertiesGenerator;
 import org.slf4j.Logger;
@@ -117,15 +121,41 @@ public class TaskFormValuesProcessor extends KieWorkbenchFormsValuesProcessor<Ta
         taskData.forEach((name, type) -> {
             // filter not needed variables
             if (BPMNVariableUtils.isValidInputName(name)) {
-                properties.add(ModelPropertiesGenerator.createModelProperty(name,
-                                                                            BPMNVariableUtils.getRealTypeForInput(type),
-                                                                            settings.getMarshallerContext().getClassloader()));
+                ModelProperty property = ModelPropertiesGenerator.createModelProperty(name,
+                                                                                      BPMNVariableUtils.getRealTypeForInput(type),
+                                                                                      settings.getMarshallerContext().getClassloader());
+                if (task.getTaskInputDefinitions().containsKey(name) && !task.getTaskOutputDefinitions().containsKey(name)) {
+                    property.getMetaData().addEntry(new FieldReadOnlyEntry(true));
+                }
+
+                if (property.getTypeInfo().getClassName().equals(Object.class.getName())) {
+                    property.getMetaData().addEntry(new FieldTypeEntry(TextAreaFieldType.NAME));
+                }
+
+                properties.add(property);
             }
         });
 
         TaskFormModel formModel = new TaskFormModel(task.getProcessId(),
                                                     task.getFormName(),
-                                                    properties);
+                                                    properties.stream().sorted((variable1, variable2) -> {
+                                                        boolean variable1OnlyInput = task.getTaskInputDefinitions().containsKey(variable1.getName()) && !task.getTaskOutputDefinitions().containsKey(variable1.getName());
+                                                        boolean variable2OnlyInput = task.getTaskInputDefinitions().containsKey(variable2.getName()) && !task.getTaskOutputDefinitions().containsKey(variable2.getName());
+
+                                                        if (variable1OnlyInput) {
+                                                            if (variable2OnlyInput) {
+                                                                return variable1.getName().compareToIgnoreCase(variable2.getName());
+                                                            } else {
+                                                                return -1;
+                                                            }
+                                                        }
+
+                                                        if (variable2OnlyInput) {
+                                                            return 1;
+                                                        }
+
+                                                        return variable1.getName().compareToIgnoreCase(variable2.getName());
+                                                    }).collect(Collectors.toList()));
 
         Collection<FormDefinition> forms = dynamicBPMNFormGenerator.generateTaskForms(formModel,
                                                                                       settings.getMarshallerContext().getClassloader());

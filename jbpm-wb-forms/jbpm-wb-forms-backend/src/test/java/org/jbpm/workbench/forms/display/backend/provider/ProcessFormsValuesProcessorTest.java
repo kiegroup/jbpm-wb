@@ -25,6 +25,7 @@ import org.jbpm.workbench.forms.service.providing.ProcessRenderingSettings;
 import org.jbpm.workbench.forms.service.providing.model.ProcessDefinition;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
+import org.kie.workbench.common.forms.fields.test.TestMetaDataEntryManager;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
 import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
 import org.kie.workbench.common.forms.serialization.impl.FieldSerializer;
@@ -53,7 +54,8 @@ public class ProcessFormsValuesProcessorTest extends AbstractFormsValuesProcesso
                                                      BackendFormRenderingContextManager backendFormRenderingContextManager,
                                                      DynamicBPMNFormGenerator dynamicBPMNFormGenerator) {
         return new ProcessFormsValuesProcessor(new FormDefinitionSerializerImpl(new FieldSerializer(),
-                                                                                new FormModelSerializer()),
+                                                                                new FormModelSerializer(),
+                                                                                new TestMetaDataEntryManager()),
                                                backendFormRenderingContextManager,
                                                dynamicBPMNFormGenerator);
     }
