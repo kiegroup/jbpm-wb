@@ -58,12 +58,16 @@ public class ProcessInstanceSignalPresenter {
 
     private PlaceRequest place;
 
-    @Inject
     private Caller<ProcessService> processService;
 
     private String serverTemplateId;
 
     private String[] deploymentId;
+
+    @Inject
+    public void setProcessService(final Caller<ProcessService> processService) {
+        this.processService = processService;
+    }
 
     @PostConstruct
     public void init() {
@@ -86,14 +90,18 @@ public class ProcessInstanceSignalPresenter {
     }
 
     public void signalProcessInstances(List<Long> processInstanceIds) {
-        processService.call(
-                new RemoteCallback<Void>() {
-                    @Override
-                    public void callback(Void v) {
-                        processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
-                        placeManager.closePlace(place);
-                    }
-                }
+        if (view.getSignalRefText() == null || view.getSignalRefText().isEmpty()) {
+            view.setHelpText(constants.Signal_Name_Required());
+            return;
+        }
+        for (Long processInstanceId : processInstanceIds) {
+            view.displayNotification(constants.Signalling_Process_Instance() + processInstanceId + " " + constants.Signal() + " = "
+                                             + view.getSignalRefText() + " - " + constants.Signal_Data() + " = " + view.getEventText());
+        }
+        processService.call((Void v) -> {
+                                processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
+                                placeManager.closePlace(place);
+                            }
         ).signalProcessInstances(serverTemplateId,
                                  Arrays.asList(deploymentId),
                                  processInstanceIds,
@@ -145,5 +153,7 @@ public class ProcessInstanceSignalPresenter {
         String getEventText();
 
         void setAvailableSignals(Collection<String> signals);
+
+        void setHelpText(String text);
     }
 }
