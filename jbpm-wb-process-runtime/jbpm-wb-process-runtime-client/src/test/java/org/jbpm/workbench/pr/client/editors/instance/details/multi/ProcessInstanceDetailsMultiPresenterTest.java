@@ -19,14 +19,20 @@ import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
+import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
+import org.jbpm.workbench.pr.service.ProcessService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
+import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.Command;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -42,11 +48,21 @@ public class ProcessInstanceDetailsMultiPresenterTest {
     @Mock
     public ProcessInstanceDetailsMultiPresenter.ProcessInstanceDetailsMultiView view;
 
+    @Mock
+    ConfirmPopup confirmPopup;
+
+    @Spy
+    Event<ProcessInstancesUpdateEvent> processInstancesUpdatedEvent = new EventSourceMock<>();
     @Spy
     Event<ProcessInstanceSelectionEvent> processInstanceSelected = new EventSourceMock<ProcessInstanceSelectionEvent>();
 
     @Spy
     Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent = new EventSourceMock<ChangeTitleWidgetEvent>();
+
+    private CallerMock<ProcessService> remoteProcessServiceCaller;
+
+    @Mock
+    private ProcessService processService;
 
     @InjectMocks
     private ProcessInstanceDetailsMultiPresenter presenter;
@@ -55,6 +71,7 @@ public class ProcessInstanceDetailsMultiPresenterTest {
     public void setupMocks() {
         doNothing().when(changeTitleWidgetEvent).fire(any(ChangeTitleWidgetEvent.class));
         doNothing().when(processInstanceSelected).fire(any(ProcessInstanceSelectionEvent.class));
+        doNothing().when(processInstancesUpdatedEvent).fire(any(ProcessInstancesUpdateEvent.class));
     }
 
     @Test
@@ -92,5 +109,30 @@ public class ProcessInstanceDetailsMultiPresenterTest {
 
         presenter.onRefresh();
         assertFalse(presenter.isForLog());
+    }
+
+    @Test
+    public void confirmPopupTest() {
+        presenter.onProcessSelectionEvent(new ProcessInstanceSelectionEvent(PI_DEPLOYMENT_ID,
+                                                                            PI_ID,
+                                                                            PI_PROCESS_DEF_ID,
+                                                                            PI_PROCESS_DEF_NAME,
+                                                                            0,
+                                                                            true,
+                                                                            SERVER_TEMPLATE_ID));
+        presenter.abortProcessInstance();
+        ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
+        verify(confirmPopup).show(any(),
+                                  any(),
+                                  any(),
+                                  captureCommand.capture());
+
+        remoteProcessServiceCaller = new CallerMock<ProcessService>(processService);
+        presenter.setProcessService(remoteProcessServiceCaller);
+        captureCommand.getValue().execute();
+
+        verify(processService).abortProcessInstance(eq(SERVER_TEMPLATE_ID),
+                                                    eq(PI_DEPLOYMENT_ID),
+                                                    eq(PI_ID));
     }
 }

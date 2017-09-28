@@ -21,10 +21,8 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.workbench.pr.client.editors.documents.list.ProcessDocumentListPresenter;
 import org.jbpm.workbench.pr.client.editors.instance.details.ProcessInstanceDetailsPresenter;
@@ -41,6 +39,7 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.lifecycle.OnStartup;
@@ -60,12 +59,14 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
     @Inject
     public ProcessInstanceDetailsMultiView view;
 
+    @Inject
+    ConfirmPopup confirmPopup;
+
     private Constants constants = GWT.create(Constants.class);
 
     @Inject
     private PlaceManager placeManager;
 
-    @Inject
     private Caller<ProcessService> processService;
 
     @Inject
@@ -106,6 +107,11 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
     private String serverTemplateId = "";
 
     private boolean forLog = false;
+
+    @Inject
+    public void setProcessService(final Caller<ProcessService> processService) {
+        this.processService = processService;
+    }
 
     @WorkbenchPartView
     public UberView<ProcessInstanceDetailsMultiPresenter> getView() {
@@ -181,17 +187,16 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
     }
 
     public void abortProcessInstance() {
-        if (Window.confirm(constants.Abort_Process_Instance())) {
-            processService.call(new RemoteCallback<Void>() {
-                @Override
-                public void callback(Void processInstance) {
-
-                    processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
-                }
-            }).abortProcessInstance(serverTemplateId,
-                                    deploymentId,
-                                    processInstanceId);
-        }
+        confirmPopup.show(constants.Abort_Confirmation(),
+                          constants.Abort(),
+                          constants.Abort_Process_Instance(),
+                          () -> processService.call(
+                                  (Void processInstance) ->
+                                          processInstancesUpdatedEvent
+                                                  .fire(new ProcessInstancesUpdateEvent(0L)))
+                                  .abortProcessInstance(serverTemplateId,
+                                                        deploymentId,
+                                                        processInstanceId));
     }
 
     public void goToProcessInstanceModelPopup() {
