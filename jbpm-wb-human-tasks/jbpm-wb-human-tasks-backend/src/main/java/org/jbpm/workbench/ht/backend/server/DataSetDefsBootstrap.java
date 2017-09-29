@@ -122,6 +122,7 @@ public class DataSetDefsBootstrap {
                         ,
                        false);
 
+        builder = addBuilderCommonColumns(builder);
         DataSetDef humanTaskWithAdminDef = builder.buildDef();
 
         DataSetDef humanTasksWithUserDomainDef = DataSetDefFactory.newSQLDataSetDef()       //Add to this dataset TaskName? to apply with the specified filter
