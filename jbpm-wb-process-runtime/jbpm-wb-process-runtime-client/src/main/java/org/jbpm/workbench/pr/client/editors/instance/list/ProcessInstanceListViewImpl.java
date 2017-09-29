@@ -27,7 +27,6 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.Window;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.ButtonGroup;
@@ -43,6 +42,7 @@ import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
@@ -57,6 +57,9 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     protected static final String TAB_ABORTED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2";
 
     private final Constants constants = Constants.INSTANCE;
+
+    @Inject
+    ConfirmPopup confirmPopup;
 
     @Inject
     private ManagedInstance<ProcessInstanceSummaryErrorCountCell> popoverCellInstance;
@@ -284,11 +287,14 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         bulkAbortNavLink.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                if (Window.confirm(constants.Abort_Process_Instances())) {
-                    presenter.bulkAbort(extendedPagedTable.getSelectedItems());
-                    extendedPagedTable.deselectAllItems();
-                    extendedPagedTable.redraw();
-                }
+                confirmPopup.show(constants.Abort_Confirmation(),
+                                  constants.Abort(),
+                                  constants.Abort_Process_Instances(),
+                                  () -> {
+                                      presenter.bulkAbort(extendedPagedTable.getSelectedItems());
+                                      extendedPagedTable.deselectAllItems();
+                                      extendedPagedTable.redraw();
+                                  });
             }
         });
 
@@ -334,10 +340,11 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
                 constants.Abort(),
                 processInstance -> {
-                    if (Window.confirm(constants.Abort_Process_Instance())) {
-                        presenter.abortProcessInstance(processInstance.getDeploymentId(),
-                                                       processInstance.getProcessInstanceId());
-                    }
+                    confirmPopup.show(constants.Abort_Confirmation(),
+                                      constants.Abort(),
+                                      constants.Abort_Process_Instance(),
+                                      () -> presenter.abortProcessInstance(processInstance.getDeploymentId(),
+                                                                           processInstance.getProcessInstanceId()));
                 },
                 presenter.getAbortActionCondition()
         ));
