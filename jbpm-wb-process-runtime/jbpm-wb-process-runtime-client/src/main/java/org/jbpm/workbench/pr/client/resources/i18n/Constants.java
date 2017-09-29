@@ -89,6 +89,8 @@ public interface Constants extends Messages {
 
     String Signaling_Process_Instance();
 
+    String Signal_Name_Required();
+
     String Signaling_Process_Instance_Not_Allowed(Object id);
 
     String Bulk_Signal();
