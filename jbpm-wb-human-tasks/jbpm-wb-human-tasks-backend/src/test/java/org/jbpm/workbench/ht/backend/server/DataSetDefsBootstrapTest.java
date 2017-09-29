@@ -17,6 +17,7 @@ package org.jbpm.workbench.ht.backend.server;
 
 import java.util.List;
 
+import org.dashbuilder.dataset.def.DataColumnDef;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.dashbuilder.dataset.def.SQLDataSetDef;
@@ -91,5 +92,21 @@ public class DataSetDefsBootstrapTest {
             assertEquals(1,
                          split.length);
         }
+    }
+
+    @Test
+    public void columnsAddedInHumanTaskWithAdminDataSet() {
+        dataSetsBootstrap.registerDataSetDefinitions();
+
+        ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
+        verify(dataSetDefRegistryMock,
+               times(4)).registerDataSetDef(argument.capture());
+
+        List<DataSetDef> dsList = argument.getAllValues();
+        DataSetDef humanTaskWithAdminDataSet =
+                dsList.stream().filter(a -> a.getUUID().equals(HUMAN_TASKS_WITH_ADMIN_DATASET)).findFirst().get();
+        List<DataColumnDef> dataSetColumns = humanTaskWithAdminDataSet.getColumns();
+        assertEquals(19,
+                     dataSetColumns.size());
     }
 }
