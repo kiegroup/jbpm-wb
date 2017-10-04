@@ -506,7 +506,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         };
 
         selectPageHeader.setUpdater(value -> {
-            getListGrid().getVisibleItems().forEach(pis -> pis.setSelected(value));
+            getListGrid().getVisibleItems().forEach(pis -> extendedPagedTable.setItemSelection(pis,
+                                                                                               value));
             getListGrid().redraw();
         });
 

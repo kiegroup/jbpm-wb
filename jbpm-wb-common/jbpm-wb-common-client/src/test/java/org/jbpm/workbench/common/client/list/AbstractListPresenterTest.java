@@ -55,6 +55,7 @@ public class AbstractListPresenterTest {
     public void setupMocks() {
         testListPresenter = spy(AbstractScreenListPresenter.class);
         when(testListPresenter.getListView()).thenReturn(viewMock);
+        when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(next.getVisibleRange()).thenReturn(new Range(1,
                                                           1));
         testListPresenter.initDataProvider();
@@ -113,6 +114,7 @@ public class AbstractListPresenterTest {
                                                 false);
         verify(dataProviderMock).updateRowData(0,
                                                instanceSummaries);
+        verify(extendedPagedTable).setVisibleSelectedItems();
     }
 
     @Test
@@ -132,6 +134,7 @@ public class AbstractListPresenterTest {
                                                 true);
         verify(dataProviderMock).updateRowData(startRange,
                                                instanceSummaries);
+        when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
     }
 
     @Test
