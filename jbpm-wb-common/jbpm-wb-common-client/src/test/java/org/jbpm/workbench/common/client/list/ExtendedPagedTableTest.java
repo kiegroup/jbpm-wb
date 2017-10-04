@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.common.client.list;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
@@ -78,19 +79,70 @@ public class ExtendedPagedTableTest {
     }
 
     @Test
-    public void testGetSelectedItems() {
-        GenericSummary gs = mock(GenericSummary.class);
-        when(gs.isSelected()).thenReturn(true,
-                                         false);
-        when(dataGrid.getVisibleItems()).thenReturn(asList(gs,
-                                                           gs));
+    public void setItemSelectedSelectionTest() {
+        GenericSummary gs_selected = mock(GenericSummary.class);
 
-        List<GenericSummary> selected = table.getSelectedItems();
+        List<GenericSummary> selectedItems = new ArrayList<>();
+        selectedItems.add(gs_selected);
+        table.setSelectedItems(selectedItems);
+        checkSelectedItemsContent(1,
+                                  (GenericSummary) table.getSelectedItems().get(0));
 
-        assertNotNull(selected);
-        assertEquals(1,
-                     selected.size());
+        table.setItemSelection(gs_selected,
+                               true);
+        checkSelectedItemsContent(1,
+                                  (GenericSummary) table.getSelectedItems().get(0));
+
+        table.setItemSelection(gs_selected,
+                               false);
+        checkSelectedItemsContent(0);
     }
+
+    @Test
+    public void setItemNotSelectedSelectionTest() {
+        GenericSummary gs_selected = mock(GenericSummary.class);
+        GenericSummary gs_new_selection = mock(GenericSummary.class);
+        List<GenericSummary> selectedItems = new ArrayList<>();
+        selectedItems.add(gs_selected);
+        table.setSelectedItems(selectedItems);
+        checkSelectedItemsContent(1,
+                                  (GenericSummary) table.getSelectedItems().get(0));
+        table.setItemSelection(gs_new_selection,
+                               true);
+        checkSelectedItemsContent(2,
+                                  (GenericSummary) table.getSelectedItems().get(0),
+                                  (GenericSummary) table.getSelectedItems().get(1));
+        table.setItemSelection(gs_new_selection,
+                               false);
+        checkSelectedItemsContent(1,
+                                  (GenericSummary) table.getSelectedItems().get(0));
+    }
+
+    private void checkSelectedItemsContent(int size,
+                                           GenericSummary... genericSummary) {
+        assertEquals(size,
+                     table.getSelectedItems().size());
+        for (int i = 0; i < genericSummary.length; i++) {
+            assertEquals(genericSummary[i],
+                         table.getSelectedItems().get(i));
+        }
+    }
+
+    @Test
+    public void testSetVisibleSelectedItems() {
+        GenericSummary gs_selected = mock(GenericSummary.class);
+        GenericSummary gs_not_selected = mock(GenericSummary.class);
+        List<GenericSummary> selectedItems = new ArrayList<>();
+        selectedItems.add(gs_selected);
+        table.setSelectedItems(selectedItems);
+
+        when(dataGrid.getVisibleItems()).thenReturn(asList(gs_selected,
+                                                           gs_not_selected));
+        table.setVisibleSelectedItems();
+        verify(gs_selected).setSelected(true);
+        verify(gs_not_selected).setSelected(false);
+    }
+
 
     @Test
     public void testIsAllItemsSelected() {
