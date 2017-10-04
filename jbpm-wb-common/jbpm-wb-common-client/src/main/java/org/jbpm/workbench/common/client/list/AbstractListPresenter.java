@@ -113,12 +113,10 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
     }
 
     public void updateDataOnCallback(PageResponse response) {
-        getListView().hideBusyIndicator();
-        dataProvider.updateRowCount(response.getTotalRowSize(),
-                                    response.isTotalRowSizeExact());
-        dataProvider.updateRowData(response.getStartRowIndex(),
-                                   response.getPageRowList());
-        updateRefreshTimer();
+        updateDataOnCallback(response.getPageRowList(),
+                             response.getStartRowIndex(),
+                             response.getTotalRowSize(),
+                             response.isTotalRowSizeExact());
     }
 
     public void updateDataOnCallback(List<T> instanceSummaries,
@@ -133,6 +131,7 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
                                    instanceSummaries);
 
         updateRefreshTimer();
+        getListView().getListGrid().setVisibleSelectedItems();
     }
 
     public void addDataDisplay(final HasData<T> display) {
