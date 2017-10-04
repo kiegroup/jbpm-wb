@@ -26,11 +26,13 @@ import javax.inject.Inject;
 import org.jbpm.workbench.forms.service.providing.ProcessRenderingSettings;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContext;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textArea.type.TextAreaFieldType;
 import org.kie.workbench.common.forms.jbpm.model.authoring.process.BusinessProcessFormModel;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.util.BPMNVariableUtils;
 import org.kie.workbench.common.forms.model.FormDefinition;
 import org.kie.workbench.common.forms.model.ModelProperty;
+import org.kie.workbench.common.forms.model.impl.meta.entries.FieldTypeEntry;
 import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
 import org.kie.workbench.common.forms.service.backend.util.ModelPropertiesGenerator;
 import org.slf4j.Logger;
@@ -84,9 +86,19 @@ public class ProcessFormsValuesProcessor extends KieWorkbenchFormsValuesProcesso
     @Override
     protected Collection<FormDefinition> generateDefaultFormsForContext(ProcessRenderingSettings settings) {
 
-        List<ModelProperty> properties = settings.getProcessData().entrySet().stream().map(entry -> ModelPropertiesGenerator.createModelProperty(entry.getKey(),
-                                                                                                                                                 BPMNVariableUtils.getRealTypeForInput(entry.getValue()),
-                                                                                                                                                 settings.getMarshallerContext().getClassloader())).collect(Collectors.toList());
+        List<ModelProperty> properties = settings.getProcessData().entrySet().stream().map(entry -> {
+            ModelProperty property = ModelPropertiesGenerator.createModelProperty(entry.getKey(),
+                                                                                  BPMNVariableUtils.getRealTypeForInput(entry.getValue()),
+                                                                                  settings.getMarshallerContext().getClassloader());
+
+
+            if(property.getTypeInfo().getClassName().equals(Object.class.getName())) {
+                property.getMetaData().addEntry(new FieldTypeEntry(TextAreaFieldType.NAME));
+            }
+
+            return property;
+        }).sorted((property1, property2) -> property1.getName().compareToIgnoreCase(property2.getName())).collect(Collectors.toList());
+
         BusinessProcessFormModel formModel = new BusinessProcessFormModel(settings.getProcess().getId(),
                                                                           settings.getProcess().getName(),
                                                                           properties);
