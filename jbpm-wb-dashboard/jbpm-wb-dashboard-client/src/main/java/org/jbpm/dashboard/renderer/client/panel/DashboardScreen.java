@@ -17,10 +17,13 @@ package org.jbpm.dashboard.renderer.client.panel;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import org.jbpm.dashboard.renderer.client.panel.events.ProcessDashboardFocusEvent;
+import org.jbpm.dashboard.renderer.client.panel.events.TaskDashboardFocusEvent;
 import org.jbpm.workbench.common.events.ServerTemplateSelected;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
@@ -39,20 +42,30 @@ public class DashboardScreen {
 
     protected static final String SCREEN_ID = "DashboardScreen";
 
-    @Inject
-    ProcessDashboard processDashboard;
-
-    @Inject
-    TaskDashboard taskDashboard;
-
-    @Inject
     DashboardView view;
-
-    @Inject
+    ProcessDashboard processDashboard;
+    TaskDashboard taskDashboard;
     PlaceManager placeManager;
+    ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
+    Event<ProcessDashboardFocusEvent> processDashboardFocusEvent;
+    Event<TaskDashboardFocusEvent> taskDashboardFocusEvent;
 
     @Inject
-    private ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
+    public DashboardScreen(DashboardView view,
+                           ProcessDashboard processDashboard,
+                           TaskDashboard taskDashboard,
+                           PlaceManager placeManager,
+                           ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder,
+                           Event<ProcessDashboardFocusEvent> processDashboardFocusEvent,
+                           Event<TaskDashboardFocusEvent> taskDashboardFocusEvent) {
+        this.view = view;
+        this.processDashboard = processDashboard;
+        this.taskDashboard = taskDashboard;
+        this.placeManager = placeManager;
+        this.serverTemplateSelectorMenuBuilder = serverTemplateSelectorMenuBuilder;
+        this.processDashboardFocusEvent = processDashboardFocusEvent;
+        this.taskDashboardFocusEvent = taskDashboardFocusEvent;
+    }
 
     @PostConstruct
     public void init() {
@@ -69,6 +82,14 @@ public class DashboardScreen {
         return view;
     }
 
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return MenuFactory
+                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder)
+                .endMenu()
+                .build();
+    }
+
     public IsWidget getProcessDashboard() {
         return processDashboard;
     }
@@ -77,12 +98,12 @@ public class DashboardScreen {
         return taskDashboard;
     }
 
-    @WorkbenchMenu
-    public Menus getMenus() {
-        return MenuFactory
-                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder)
-                .endMenu()
-                .build();
+    public void showProcesses() {
+        processDashboardFocusEvent.fire(new ProcessDashboardFocusEvent());
+    }
+
+    public void showTasks() {
+        taskDashboardFocusEvent.fire(new TaskDashboardFocusEvent());
     }
 
     public void onServerTemplateSelected(@Observes final ServerTemplateSelected serverTemplateSelected) {
