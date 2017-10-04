@@ -31,7 +31,6 @@ import org.jbpm.workbench.forms.service.providing.RenderingSettings;
 import org.junit.Before;
 import org.junit.Test;
 import org.kie.internal.task.api.ContentMarshallerContext;
-import org.kie.workbench.common.forms.commons.shared.layout.impl.DynamicFormLayoutTemplateGenerator;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.BackendFormRenderingContextManagerImpl;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.FormValuesProcessorImpl;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.fieldProcessors.MultipleSubFormFieldValueProcessor;
@@ -42,6 +41,7 @@ import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.FormValuesProcessor;
 import org.kie.workbench.common.forms.dynamic.service.shared.impl.MapModelRenderingContext;
 import org.kie.workbench.common.forms.fields.test.TestFieldManager;
+import org.kie.workbench.common.forms.fields.test.TestMetaDataEntryManager;
 import org.kie.workbench.common.forms.jbpm.server.service.formGeneration.impl.runtime.BPMNRuntimeFormGeneratorService;
 import org.kie.workbench.common.forms.jbpm.server.service.impl.DynamicBPMNFormGeneratorImpl;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
@@ -105,13 +105,13 @@ public abstract class AbstractFormsValuesProcessorTest<PROCESSOR extends KieWork
         backendFormRenderingContextManager = new BackendFormRenderingContextManagerImpl(formValuesProcessor,
                                                                                         new ContextModelConstraintsExtractorImpl());
 
-        runtimeFormGeneratorService = new BPMNRuntimeFormGeneratorService(new TestFieldManager(),
-                                                                          new DynamicFormLayoutTemplateGenerator());
+        runtimeFormGeneratorService = new BPMNRuntimeFormGeneratorService(new TestFieldManager());
 
         dynamicBPMNFormGenerator = new DynamicBPMNFormGeneratorImpl(runtimeFormGeneratorService);
 
         processor = getProcessorInstance(new FormDefinitionSerializerImpl(new FieldSerializer(),
-                                                                          new FormModelSerializer()),
+                                                                          new FormModelSerializer(),
+                                                                          new TestMetaDataEntryManager()),
                                          backendFormRenderingContextManager,
                                          dynamicBPMNFormGenerator);
 
