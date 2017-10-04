@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import com.google.gwt.dom.client.BrowserEvents;
@@ -46,6 +45,8 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
 
     private int selectedRow = -1;
 
+    private List<T> selectedItems;
+
     private BiConsumer<T, Boolean> selectionCallback = null;
 
     public ExtendedPagedTable(final GridGlobalPreferences gridPreferences) {
@@ -54,6 +55,7 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
               gridPreferences,
               true);
 
+        selectedItems = new ArrayList<T>();
         dataGrid.addColumnSortHandler(new AsyncHandler(dataGrid));
         setSelectionModel(createSelectionModel(),
                           createNoActionColumnManager());
@@ -111,8 +113,15 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
     }
 
     public List<T> getSelectedItems() {
-        return StreamSupport.stream(this.getVisibleItems().spliterator(),
-                                    false).filter(domain -> domain.isSelected()).collect(Collectors.toList());
+        return selectedItems;
+    }
+
+    public void setSelectedItems(List<T> selectedItems) {
+        this.selectedItems = selectedItems;
+    }
+
+    public boolean isItemSelected(T item) {
+        return selectedItems.contains(item);
     }
 
     public boolean hasSelectedItems() {
@@ -122,6 +131,7 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
 
     public void deselectAllItems() {
         this.getVisibleItems().forEach(pis -> pis.setSelected(false));
+        selectedItems = new ArrayList<T>();
     }
 
     public boolean isAllItemsSelected() {
@@ -153,6 +163,11 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
         return selectionModel;
     }
 
+    public void setVisibleSelectedItems() {
+        getVisibleItems().forEach(item -> item.setSelected(isItemSelected(item)));
+        redraw();
+    }
+
     protected DefaultSelectionEventManager<T> createNoActionColumnManager() {
         final ExtendedPagedTable<T> extendedPagedTable = this;
         return DefaultSelectionEventManager.createCustomManager(new DefaultSelectionEventManager.EventTranslator<T>() {
@@ -180,10 +195,12 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
                             final T domain = event.getValue();
                             if (domain.isSelected()) {
                                 input.setChecked(false);
-                                domain.setSelected(false);
+                                setItemSelection(domain,
+                                                 false);
                             } else {
                                 input.setChecked(true);
-                                domain.setSelected(true);
+                                setItemSelection(domain,
+                                                 true);
                             }
                             extendedPagedTable.redraw();
                             ret = DefaultSelectionEventManager.SelectAction.IGNORE;
@@ -201,5 +218,20 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
 
     public int getSelectedRow() {
         return selectedRow;
+    }
+
+    public void setItemSelection(T item,
+                                 boolean newValue) {
+        if (item == null || selectedItems == null) {
+            return;
+        }
+        boolean prevSelected = isItemSelected(item);
+        if (newValue && !prevSelected) {
+            selectedItems.add(item);
+        }
+        if (!newValue && prevSelected) {
+            selectedItems.remove(item);
+        }
+        item.setSelected(newValue);
     }
 }
