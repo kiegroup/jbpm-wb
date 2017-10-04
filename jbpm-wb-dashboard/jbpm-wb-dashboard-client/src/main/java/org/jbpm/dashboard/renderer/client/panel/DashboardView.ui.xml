@@ -25,8 +25,8 @@
       <b:Column size="MD_12">
         <b:TabPanel addStyleNames="uf-tabbar-panel">
           <b:NavTabs addStyleNames="uf-tabbar-panel-nav-tabs nav-tabs-pf">
-            <b:TabListItem active="true" dataTarget="#processes" text="{i18n.processes}"/>
-            <b:TabListItem dataTarget="#tasks" text="{i18n.tasks}"/>
+            <b:TabListItem ui:field="processesTab" active="true" dataTarget="#processes" text="{i18n.processes}"/>
+            <b:TabListItem ui:field="tasksTab" dataTarget="#tasks" text="{i18n.tasks}"/>
           </b:NavTabs>
           <b:TabContent>
             <b:TabPane ui:field="processesPane" active="true" b:id="processes" />
