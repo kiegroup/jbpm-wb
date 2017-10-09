@@ -42,6 +42,7 @@ public final class TaskDataSetConstants {
     public static final String COLUMN_LAST_MODIFICATION_DATE = "lastModificationDate";
     public static final String COLUMN_PROCESS_INSTANCE_CORRELATION_KEY = "correlationKey";
     public static final String COLUMN_PROCESS_INSTANCE_DESCRIPTION = "processInstanceDescription";
+    public static final String COLUMN_EXCLUDED_OWNER = "entity_id";
 
     public static final String COLUMN_TASK_VARIABLE_TASK_ID = "taskId";
     public static final String COLUMN_TASK_VARIABLE_TASK_NAME = "TASKNAME";
