@@ -86,7 +86,8 @@ public class DataSetDefsBootstrap {
                 .dataSource(JBPM_DATA_SOURCE)
                 .dbSQL("select " +
                                SQL_SELECT_COMMON_COLS + ", " +
-                                    "oe.id " +
+                                    "oe.id, " +
+                                    "eo.entity_id " +
                                "from " +
                                     "AuditTaskImpl t " +
                                "left join " +
@@ -100,11 +101,16 @@ public class DataSetDefsBootstrap {
                                "left join " +
                                     "ProcessInstanceLog pil " +
                                "on " +
-                                    "pil.id=t.processInstanceId"
+                                    "pil.id=t.processInstanceId " +
+                               "left join " +
+                                    "PeopleAssignments_ExclOwners eo " +
+                               "on " +
+                                    "t.taskId=eo.task_id"
                         ,
                        false);
         builder = addBuilderCommonColumns(builder)
-                .label(COLUMN_ORGANIZATIONAL_ENTITY);
+                .label(COLUMN_ORGANIZATIONAL_ENTITY)
+                .label(COLUMN_EXCLUDED_OWNER);
         DataSetDef humanTasksWithUserDef = builder.buildDef();
 
         builder = DataSetDefFactory.newSQLDataSetDef()
