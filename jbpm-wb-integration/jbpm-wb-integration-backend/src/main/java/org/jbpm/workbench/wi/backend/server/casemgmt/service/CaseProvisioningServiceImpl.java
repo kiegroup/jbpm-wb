@@ -23,13 +23,10 @@ import javax.inject.Inject;
 
 import org.guvnor.ala.build.maven.config.impl.MavenDependencyConfigImpl;
 import org.guvnor.ala.build.maven.executor.MavenDependencyConfigExecutor;
-import org.guvnor.ala.config.BinaryConfig;
-import org.guvnor.ala.config.ProviderConfig;
-import org.guvnor.ala.config.RuntimeConfig;
 import org.guvnor.ala.pipeline.Input;
 import org.guvnor.ala.pipeline.Pipeline;
+import org.guvnor.ala.pipeline.PipelineConfigStage;
 import org.guvnor.ala.pipeline.PipelineFactory;
-import org.guvnor.ala.pipeline.Stage;
 import org.guvnor.ala.pipeline.execution.PipelineExecutor;
 import org.guvnor.ala.registry.BuildRegistry;
 import org.guvnor.ala.registry.inmemory.InMemoryBuildRegistry;
@@ -54,7 +51,6 @@ import org.uberfire.commons.services.cdi.Startup;
 import org.uberfire.commons.services.cdi.StartupType;
 
 import static java.util.Arrays.asList;
-import static org.guvnor.ala.pipeline.StageUtil.config;
 import static org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningStatus.*;
 
 @ApplicationScoped
@@ -87,8 +83,8 @@ public class CaseProvisioningServiceImpl implements CaseProvisioningService {
         final InMemoryRuntimeRegistry runtimeRegistry = new InMemoryRuntimeRegistry();
         final WildflyAccessInterface wildflyAccessInterface = new WildflyAccessInterfaceImpl();
 
-        final Stage<ProviderConfig, RuntimeConfig> runtimeExec = config("Wildfly Runtime Exec",
-                                                                        (s) -> new ContextAwareWildflyRuntimeExecConfig());
+        final PipelineConfigStage runtimeExec = new PipelineConfigStage("Wildfly Runtime Exec",
+                                                                        new ContextAwareWildflyRuntimeExecConfig());
 
         final PipelineExecutor pipelineExecutor;
         final Pipeline pipeline;
@@ -108,9 +104,9 @@ public class CaseProvisioningServiceImpl implements CaseProvisioningService {
                   "none");
 
         if (settings.isDeployFromLocalPath()) {
-            final Stage<Input, ProviderConfig> providerConfig = config("Wildfly Provider Config",
-                                                                       (s) -> new WildflyProviderConfig() {
-                                                                       });
+            final PipelineConfigStage providerConfig = new PipelineConfigStage("Wildfly Provider Config",
+                                                                               new WildflyProviderConfig() {
+                                                                               });
 
             pipelineExecutor = new PipelineExecutor(asList(
                     new WildflyProviderConfigExecutor(runtimeRegistry),
@@ -119,18 +115,19 @@ public class CaseProvisioningServiceImpl implements CaseProvisioningService {
             ));
 
             pipeline = PipelineFactory
-                    .startFrom(providerConfig)
-                    .andThen(runtimeExec)
+                    .newBuilder()
+                    .addConfigStage(providerConfig)
+                    .addConfigStage(runtimeExec)
                     .buildAs(PIPELINE_NAME);
 
             input.put(WildflyRuntimeConfiguration.WAR_PATH,
                       settings.getPath());
         } else {
-            final Stage<Input, BinaryConfig> mavenConfig = config("Maven Artifact",
-                                                                  (s) -> new MavenDependencyConfigImpl());
-            final Stage<BinaryConfig, ProviderConfig> providerConfig = config("Wildfly Provider Config",
-                                                                              (s) -> new WildflyProviderConfig() {
-                                                                              });
+            final PipelineConfigStage mavenConfig = new PipelineConfigStage("Maven Artifact",
+                                                                            new MavenDependencyConfigImpl());
+            final PipelineConfigStage providerConfig = new PipelineConfigStage("Wildfly Provider Config",
+                                                                               new WildflyProviderConfig() {
+                                                                               });
             final BuildRegistry buildRegistry = new InMemoryBuildRegistry();
 
             pipelineExecutor = new PipelineExecutor(asList(
@@ -141,9 +138,10 @@ public class CaseProvisioningServiceImpl implements CaseProvisioningService {
             ));
 
             pipeline = PipelineFactory
-                    .startFrom(mavenConfig)
-                    .andThen(providerConfig)
-                    .andThen(runtimeExec)
+                    .newBuilder()
+                    .addConfigStage(mavenConfig)
+                    .addConfigStage(providerConfig)
+                    .addConfigStage(runtimeExec)
                     .buildAs(PIPELINE_NAME);
 
             input.put("artifact",
