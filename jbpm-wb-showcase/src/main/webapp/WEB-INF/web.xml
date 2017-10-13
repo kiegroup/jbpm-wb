@@ -160,22 +160,6 @@ profile in pom.xml to use that. -->
   </mime-mapping>
   <!-- end jBPM Designer -->
 
-  <!-- start form-modeler component -->
-  <servlet>
-    <servlet-name>Controller</servlet-name>
-    <servlet-class>org.jbpm.formModeler.service.bb.mvc.controller.ControllerServlet</servlet-class>
-    <init-param>
-      <param-name>base.app.dir</param-name>
-      <param-value>${project.basedir}/target/${project.artifactId}-${project.version}</param-value>
-    </init-param>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>Controller</servlet-name>
-    <url-pattern>/org.jbpm.workbench.jBPMShowcase/Controller</url-pattern>
-  </servlet-mapping>
-  <!-- end form-modeler component -->
-
   <!-- Container based security -->
   <security-constraint>
     <web-resource-collection>
@@ -184,20 +168,6 @@ profile in pom.xml to use that. -->
       <url-pattern>/uf_security_check</url-pattern>
       <url-pattern>*.erraiBus</url-pattern>
       <url-pattern>/org.jbpm.workbench.jBPMShowcase/*</url-pattern>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>admin</role-name>
-      <role-name>analyst</role-name>
-      <role-name>developer</role-name>
-      <role-name>user</role-name>
-      <role-name>manager</role-name>
-    </auth-constraint>
-  </security-constraint>
-
-  <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>formModeler</web-resource-name>
-      <url-pattern>/formModeler/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>admin</role-name>
