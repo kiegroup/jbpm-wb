@@ -17,6 +17,5 @@
     <module>jbpm-wb-forms-api</module>
     <module>jbpm-wb-forms-backend</module>
     <module>jbpm-wb-forms-client</module>
-    <module>jbpm-wb-forms-modeler</module>
   </modules>
 </project>
