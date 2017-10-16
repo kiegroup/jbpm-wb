@@ -231,6 +231,14 @@
       <artifactId>uberfire-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.kie.soup</groupId>
+      <artifactId>kie-soup-project-datamodel-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.soup</groupId>
+      <artifactId>kie-soup-project-datamodel-commons</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-js</artifactId>
       <scope>provided</scope>
@@ -272,6 +280,10 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.soup</groupId>
+      <artifactId>kie-soup-commons</artifactId>
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
@@ -489,12 +501,15 @@
             <hostedWebapp>src/main/webapp</hostedWebapp>
             <draftCompile>true</draftCompile>
             <compileSourcesArtifacts>
+              <compileSourcesArtifact>org.kie.soup:kie-soup-commons</compileSourcesArtifact>
               <!-- UberFire -->
               <compileSourcesArtifact>org.uberfire:uberfire-maven-support</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-nio2-model</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-io</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.soup:kie-soup-project-datamodel-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.soup:kie-soup-project-datamodel-commons</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-js</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-security-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-security-client</compileSourcesArtifact>

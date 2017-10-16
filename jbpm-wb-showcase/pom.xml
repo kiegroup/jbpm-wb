@@ -155,6 +155,10 @@
       <artifactId>uberfire-commons</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.kie.soup</groupId>
+      <artifactId>kie-soup-commons</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-io</artifactId>
     </dependency>
@@ -1714,6 +1718,8 @@
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-properties-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-properties-editor-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-simple-docks-client</compileSourcesArtifact>
+
+            <compileSourcesArtifact>org.kie.soup:kie-soup-commons</compileSourcesArtifact>
 
             <!-- UberFire -->
             <compileSourcesArtifact>org.uberfire:uberfire-maven-support</compileSourcesArtifact>            

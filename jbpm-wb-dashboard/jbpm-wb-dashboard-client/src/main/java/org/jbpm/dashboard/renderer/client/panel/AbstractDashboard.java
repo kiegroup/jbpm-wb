@@ -35,7 +35,7 @@ import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.Command;
 
-import static org.uberfire.commons.validation.PortablePreconditions.*;
+import static org.kie.soup.commons.validation.PortablePreconditions.*;
 
 public abstract class AbstractDashboard {
 
