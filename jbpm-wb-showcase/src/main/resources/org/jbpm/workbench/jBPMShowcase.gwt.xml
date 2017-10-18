@@ -73,7 +73,6 @@
   <inherits name="org.kie.workbench.common.forms.data.modeller.FormDataModellerIntegrationClient"/>
   <inherits name="org.kie.workbench.common.forms.jbpm.FormJBPMIntegrationClient"/>
   <inherits name="org.jbpm.workbench.forms.JbpmWorkbenchFormsClient"/>
-  <inherits name="org.jbpm.workbench.forms.modeler.JbpmWorkbenchFormsModelerClient"/>
 
   <!-- kie server -->
   <inherits name="org.kie.workbench.common.screens.server.management.ServerManagementAPI"/>
@@ -82,10 +81,6 @@
   <!-- designer -->
   <inherits name="org.jbpm.designer.jBPMDesignerAPI"/>
   <inherits name="org.jbpm.designer.jBPMDesignerClient"/>
-
-  <!-- Form-Modelere -->
-  <inherits name="org.jbpm.formModeler.editor.FormModelerEditorClient"/>
-  <inherits name="org.jbpm.formModeler.renderer.FormRendererClient"/>
 
   <!-- Dashbuilder -->
   <inherits name="org.dashbuilder.DashbuilderClientAll"/>
