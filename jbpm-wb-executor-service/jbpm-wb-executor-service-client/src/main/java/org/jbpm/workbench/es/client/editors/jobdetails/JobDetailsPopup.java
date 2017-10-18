@@ -22,17 +22,16 @@ import javax.inject.Inject;
 
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import org.gwtbootstrap3.client.shared.event.ModalShownEvent;
 import org.gwtbootstrap3.client.shared.event.ModalShownHandler;
 import org.gwtbootstrap3.client.ui.FormControlStatic;
 import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.TextArea;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.gwt.DataGrid;
 import org.jboss.errai.common.client.api.Caller;
@@ -62,7 +61,7 @@ public class JobDetailsPopup extends BaseModal {
     public DataGrid<RequestParameterSummary> executionParametersGrid;
 
     @UiField
-    public HTML errorsOccurredList;
+    public TextArea errorsOccurredTextArea;
 
     @UiField
     public FormGroup errorControlGroup;
@@ -128,6 +127,9 @@ public class JobDetailsPopup extends BaseModal {
                                                                                        paramValueColumn));
 
         this.dataProvider.addDataDisplay(executionParametersGrid);
+
+        errorsOccurredTextArea.setVisibleLines(10);
+        errorsOccurredTextArea.setReadOnly(true);
     }
 
     public void cleanForm(String serverTemplateId,
@@ -162,11 +164,12 @@ public class JobDetailsPopup extends BaseModal {
         this.jobRetries.setText(String.valueOf(r.getExecutions()));
         if (errors != null && errors.size() > 0) {
             errorControlGroup.setVisible(true);
-            String html = "";
+            String textAreaContent = "";
             for (ErrorSummary error : errors) {
-                html += "<strong>" + error.getMessage() + "</strong><br/>" + error.getStacktrace() + "<br><br>";
+                textAreaContent += error.getMessage() + "\n" +
+                        error.getStacktrace() + "\n\n";
             }
-            this.errorsOccurredList.setHTML(SafeHtmlUtils.fromTrustedString(html));
+            this.errorsOccurredTextArea.setText(textAreaContent);
         } else {
             errorControlGroup.setVisible(false);
         }

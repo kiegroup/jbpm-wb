@@ -19,11 +19,10 @@ package org.jbpm.workbench.es.client.editors.jobdetails;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.gwtmockito.WithClassesToStub;
+import org.gwtbootstrap3.client.ui.TextArea;
 import org.gwtbootstrap3.client.ui.html.Text;
 
 import org.jbpm.workbench.es.model.ErrorSummary;
@@ -39,7 +38,7 @@ import static org.mockito.Mockito.*;
 public class JobDetailsPopupTest {
 
     @GwtMock
-    public HTML errorsOccurredList;
+    public TextArea errorsOccurredTextArea;
 
     @InjectMocks
     private JobDetailsPopup jobDetailsPopup;
@@ -58,6 +57,7 @@ public class JobDetailsPopupTest {
                                    errors,
                                    null);
 
-        verify(errorsOccurredList).setHTML(SafeHtmlUtils.fromTrustedString("<strong>" + error.getMessage() + "</strong><br/>" + error.getStacktrace() + "<br><br>"));
+        verify(errorsOccurredTextArea).setText("errorMessage\n" +
+                                                       "stackTrace\n\n");
     }
 }
