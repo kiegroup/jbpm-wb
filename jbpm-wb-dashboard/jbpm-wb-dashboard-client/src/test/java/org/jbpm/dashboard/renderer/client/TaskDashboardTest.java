@@ -20,6 +20,7 @@ import javax.enterprise.event.Event;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.displayer.ColumnSettings;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.client.AbstractDisplayer;
 import org.dashbuilder.displayer.client.Displayer;
@@ -291,6 +292,18 @@ public class TaskDashboardTest extends AbstractDashboardTest {
     public void testTasksByRunningTime() {
         Displayer displayer = presenter.getTasksByRunningTime();
         DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
+        DisplayerSettings displayerSettings = displayer.getDisplayerSettings();
+
+        ColumnSettings taskDurationSettings = displayerSettings.getColumnSettings(COLUMN_TASK_DURATION);
+        assertNotNull(taskDurationSettings);
+        assertEquals("value/60000", taskDurationSettings.getValueExpression());
+        assertEquals("#,##0 min", taskDurationSettings.getValuePattern());
+
+        assertEquals(COLUMN_PROCESS_NAME, dataSet.getColumnByIndex(0).getId());
+        assertEquals("Tasks", dataSet.getColumnByIndex(1).getId());
+        assertEquals(COLUMN_TASK_DURATION, dataSet.getColumnByIndex(2).getId());
+        assertEquals(COLUMN_PROCESS_NAME, dataSet.getColumnByIndex(3).getId());
+        assertEquals("Tasks", dataSet.getColumnByIndex(4).getId());
 
         assertDataSetValues(dataSet,
                             new String[][]{

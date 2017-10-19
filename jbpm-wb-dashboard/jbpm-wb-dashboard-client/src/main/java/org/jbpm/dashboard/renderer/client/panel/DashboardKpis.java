@@ -832,8 +832,10 @@ public class DashboardKpis {
                         i18n.tasks(),
                         NO_DECIMALS)
                 .column(COLUMN_TASK_DURATION,
-                        AVERAGE).format(i18n.taskAverageDuration(),
-                                        "#,##0 min").expression("value/60000")
+                        AVERAGE,
+                        COLUMN_TASK_DURATION)
+                .format(i18n.taskAverageDuration(),
+                        "#,##0 min").expression("value/60000")
                 .column(COLUMN_PROCESS_NAME).format(i18n.process())
                 .column(COLUMN_TASK_ID,
                         COUNT,
