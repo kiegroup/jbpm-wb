@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 
 import org.uberfire.commons.async.DescriptiveThreadFactory;
 import org.uberfire.commons.config.ConfigProperties;
+import org.uberfire.java.nio.fs.jgit.JGitFileSystemProviderConfiguration;
 
 public class JGitFileSystemProvider extends org.uberfire.java.nio.fs.jgit.JGitFileSystemProvider {
 
@@ -44,11 +45,11 @@ public class JGitFileSystemProvider extends org.uberfire.java.nio.fs.jgit.JGitFi
 
         public DefaultProperties(final Properties defaults) {
             super(defaults);
-            setProperty(GIT_DAEMON_ENABLED,
+            setProperty(JGitFileSystemProviderConfiguration.GIT_DAEMON_ENABLED,
                         "false");
-            setProperty(GIT_SSH_ENABLED,
+            setProperty(JGitFileSystemProviderConfiguration.GIT_SSH_ENABLED,
                         "false");
-            setProperty(GIT_NIO_DIR_NAME,
+            setProperty(JGitFileSystemProviderConfiguration.GIT_NIO_DIR_NAME,
                         NIOGIT_CASEAPP);
         }
     }
