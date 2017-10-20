@@ -18,13 +18,19 @@ package org.jbpm.workbench.forms.display.backend;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
 import javax.enterprise.inject.Instance;
 
 import org.apache.commons.io.IOUtils;
 import org.jbpm.workbench.forms.display.FormRenderingSettings;
-import org.jbpm.workbench.forms.display.backend.provider.ClasspathFormProvider;
-import org.jbpm.workbench.forms.display.backend.provider.InMemoryFormProvider;
-import org.jbpm.workbench.forms.display.impl.StaticHTMLFormRenderingSettings;
+import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
+import org.jbpm.workbench.forms.display.backend.provider.DefaultKieWorkbenchFormsProvider;
+import org.jbpm.workbench.forms.display.backend.provider.KieWorkbenchFormsProvider;
+import org.jbpm.workbench.forms.display.backend.provider.ProcessFormsValuesProcessor;
+import org.jbpm.workbench.forms.display.backend.provider.TaskFormValuesProcessor;
+import org.jbpm.workbench.forms.display.backend.provider.util.FormContentReader;
 import org.jbpm.workbench.forms.service.providing.FormProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +45,24 @@ import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.ProcessServicesClient;
 import org.kie.server.client.UIServicesClient;
 import org.kie.server.client.UserTaskServicesClient;
+import org.kie.soup.project.datamodel.commons.util.RawMVELEvaluator;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.BackendFormRenderingContextManagerImpl;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.FormValuesProcessorImpl;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.fieldProcessors.MultipleSubFormFieldValueProcessor;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.fieldProcessors.SubFormFieldValueProcessor;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.validation.impl.ContextModelConstraintsExtractorImpl;
+import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.FieldValueProcessor;
+import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.FormValuesProcessor;
+import org.kie.workbench.common.forms.fields.test.TestFieldManager;
+import org.kie.workbench.common.forms.fields.test.TestMetaDataEntryManager;
+import org.kie.workbench.common.forms.jbpm.server.service.formGeneration.impl.runtime.BPMNRuntimeFormGeneratorService;
+import org.kie.workbench.common.forms.jbpm.server.service.impl.DynamicBPMNFormGeneratorImpl;
+import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
+import org.kie.workbench.common.forms.model.FieldDefinition;
+import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
+import org.kie.workbench.common.forms.serialization.impl.FieldSerializer;
+import org.kie.workbench.common.forms.serialization.impl.FormDefinitionSerializerImpl;
+import org.kie.workbench.common.forms.serialization.impl.FormModelSerializer;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -48,37 +72,80 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class FormServiceEntryPointImplTest {
 
-    protected InMemoryFormProvider inMemoryFormProvider = new InMemoryFormProvider();
+    private KieWorkbenchFormsProvider kieWorkbenchFormsProvider;
 
-    protected ClasspathFormProvider classpathFormProvider = new ClasspathFormProvider();
-
-    @Mock
-    protected DocumentServicesClient documentServicesClient;
+    private DefaultKieWorkbenchFormsProvider defaultProvider;
 
     @Mock
-    protected UIServicesClient uiServicesClient;
+    private DocumentServicesClient documentServicesClient;
 
     @Mock
-    protected UserTaskServicesClient userTaskServicesClient;
+    private UIServicesClient uiServicesClient;
 
     @Mock
-    protected ProcessServicesClient processServicesClient;
+    private UserTaskServicesClient userTaskServicesClient;
 
     @Mock
-    protected KieServicesClient kieServicesClient;
+    private ProcessServicesClient processServicesClient;
 
-    protected FormServiceEntryPointImpl serviceEntryPoint;
+    @Mock
+    private KieServicesClient kieServicesClient;
 
-    protected String formContent;
+    private FormValuesProcessor formValuesProcessor;
+
+    private DynamicBPMNFormGenerator dynamicBPMNFormGenerator;
+
+    private BackendFormRenderingContextManagerImpl backendFormRenderingContextManager;
+
+    private BPMNRuntimeFormGeneratorService runtimeFormGeneratorService;
+
+    private FormServiceEntryPointImpl serviceEntryPoint;
+
+    private String formContent;
 
     @Before
     public void init() {
+        List<FieldValueProcessor> processors = Arrays.asList(new SubFormFieldValueProcessor(),
+                                                             new MultipleSubFormFieldValueProcessor());
+
+        Instance<FieldValueProcessor<? extends FieldDefinition, ?, ?>> fieldValueProcessors = mock(Instance.class);
+        when(fieldValueProcessors.iterator()).then(proc -> processors.iterator());
+
+        formValuesProcessor = new FormValuesProcessorImpl(fieldValueProcessors);
+
         Instance<FormProvider<? extends FormRenderingSettings>> instance = mock(Instance.class);
 
-        when(instance.iterator()).then(result -> Arrays.asList(inMemoryFormProvider).iterator());
+        backendFormRenderingContextManager = new BackendFormRenderingContextManagerImpl(formValuesProcessor,
+                                                                                        new ContextModelConstraintsExtractorImpl());
+
+        runtimeFormGeneratorService = new BPMNRuntimeFormGeneratorService(new TestFieldManager(),
+                                                                          new RawMVELEvaluator());
+
+        dynamicBPMNFormGenerator = new DynamicBPMNFormGeneratorImpl(runtimeFormGeneratorService);
+
+        FormDefinitionSerializer serializer = new FormDefinitionSerializerImpl(new FieldSerializer(),
+                                                                               new FormModelSerializer(),
+                                                                               new TestMetaDataEntryManager());
+
+        ProcessFormsValuesProcessor processValuesProcessor = new ProcessFormsValuesProcessor(serializer,
+                                                                                             backendFormRenderingContextManager,
+                                                                                             dynamicBPMNFormGenerator);
+        TaskFormValuesProcessor taskValuesProcessor = new TaskFormValuesProcessor(serializer,
+                                                                                  backendFormRenderingContextManager,
+                                                                                  dynamicBPMNFormGenerator);
+
+        kieWorkbenchFormsProvider = new KieWorkbenchFormsProvider(processValuesProcessor,
+                                                                  taskValuesProcessor);
+
+        defaultProvider = new DefaultKieWorkbenchFormsProvider(processValuesProcessor,
+                                                               taskValuesProcessor);
+
+        when(kieServicesClient.getClassLoader()).thenReturn(this.getClass().getClassLoader());
+
+        when(instance.iterator()).then(result -> Arrays.asList(kieWorkbenchFormsProvider).iterator());
 
         serviceEntryPoint = new FormServiceEntryPointImpl(instance,
-                                                          classpathFormProvider) {
+                                                          defaultProvider) {
 
             @Override
             protected <T> T getClient(String serverTemplateId,
@@ -107,11 +174,9 @@ public class FormServiceEntryPointImplTest {
             }
         };
 
-        formContent = getFormContent();
-
         ProcessDefinition processDefinition = new ProcessDefinition();
-        processDefinition.setId("testProcess");
-        processDefinition.setName("testProcess");
+        processDefinition.setId("invoices");
+        processDefinition.setName("invoices");
         processDefinition.setContainerId("localhost");
         processDefinition.setPackageName("org.jbpm.test");
 
@@ -127,10 +192,12 @@ public class FormServiceEntryPointImplTest {
 
         TaskInstance taskInstance = new TaskInstance();
         taskInstance.setId(new Long(12));
-        taskInstance.setName("TaskName");
-        taskInstance.setFormName("TaskFormName");
-        taskInstance.setDescription("TaskDescription");
-        taskInstance.setProcessId("testProcess");
+        taskInstance.setName("modify");
+        taskInstance.setFormName("modify");
+        taskInstance.setDescription("modify");
+        taskInstance.setProcessId("invoices");
+        taskInstance.setInputData(new HashMap<>());
+        taskInstance.setOutputData(new HashMap<>());
 
         when(userTaskServicesClient.getTaskInstance(anyString(),
                                                     anyLong(),
@@ -142,12 +209,14 @@ public class FormServiceEntryPointImplTest {
     @Test
     public void testRenderProcessForm() {
 
+        formContent = FormContentReader.getStartProcessForms();
+
         when(uiServicesClient.getProcessRawForm(anyString(),
                                                 anyString())).thenReturn(formContent);
 
         FormRenderingSettings settings = serviceEntryPoint.getFormDisplayProcess("template",
                                                                                  "domain",
-                                                                                 "testProcess");
+                                                                                 "invoices");
 
         verify(processServicesClient).getProcessDefinition(anyString(),
                                                            anyString());
@@ -155,16 +224,7 @@ public class FormServiceEntryPointImplTest {
         verify(uiServicesClient).getProcessRawForm(anyString(),
                                                    anyString());
 
-        assertNotNull("Settings cannot be null",
-                      settings);
-        assertTrue("Settings must be Static HTML",
-                   settings instanceof StaticHTMLFormRenderingSettings);
-
-        StaticHTMLFormRenderingSettings htmlSettings = (StaticHTMLFormRenderingSettings) settings;
-
-        assertEquals("FormContent must be equal",
-                     formContent,
-                     htmlSettings.getFormContent());
+        checkRenderingSettings(settings);
     }
 
     @Test
@@ -172,7 +232,7 @@ public class FormServiceEntryPointImplTest {
 
         FormRenderingSettings settings = serviceEntryPoint.getFormDisplayProcess("template",
                                                                                  "domain",
-                                                                                 "testProcess");
+                                                                                 "invoices");
 
         verify(processServicesClient).getProcessDefinition(anyString(),
                                                            anyString());
@@ -181,16 +241,29 @@ public class FormServiceEntryPointImplTest {
         verify(uiServicesClient).getProcessRawForm(anyString(),
                                                    anyString());
 
-        assertNotNull("Settings cannot be null",
-                      settings);
-        assertTrue("Settings must be Static HTML",
-                   settings instanceof StaticHTMLFormRenderingSettings);
+        checkRenderingSettings(settings);
+    }
 
-        StaticHTMLFormRenderingSettings htmlSettings = (StaticHTMLFormRenderingSettings) settings;
+    @Test
+    public void testRenderProcessFormFromWrongFormContent() {
 
-        assertNotEquals("FormContent must be equal",
-                        formContent,
-                        htmlSettings.getFormContent());
+        formContent = "this form content is wrong and a default form should be generated";
+
+        when(uiServicesClient.getProcessRawForm(anyString(),
+                                                anyString())).thenReturn(formContent);
+
+        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayProcess("template",
+                                                                                 "domain",
+                                                                                 "invoices");
+
+        verify(processServicesClient).getProcessDefinition(anyString(),
+                                                           anyString());
+        verify(kieServicesClient,
+               times(2)).getClassLoader();
+        verify(uiServicesClient).getProcessRawForm(anyString(),
+                                                   anyString());
+
+        checkRenderingSettings(settings);
     }
 
     @Test
@@ -201,7 +274,7 @@ public class FormServiceEntryPointImplTest {
 
         FormRenderingSettings settings = serviceEntryPoint.getFormDisplayProcess("template",
                                                                                  "domain",
-                                                                                 "testProcess");
+                                                                                 "invoices");
 
         verify(processServicesClient).getProcessDefinition(anyString(),
                                                            anyString());
@@ -209,20 +282,13 @@ public class FormServiceEntryPointImplTest {
         verify(uiServicesClient).getProcessRawForm(anyString(),
                                                    anyString());
 
-        assertNotNull("Settings cannot be null",
-                      settings);
-        assertTrue("Settings must be Static HTML",
-                   settings instanceof StaticHTMLFormRenderingSettings);
-
-        StaticHTMLFormRenderingSettings htmlSettings = (StaticHTMLFormRenderingSettings) settings;
-
-        assertNotEquals("FormContent must be equal",
-                        formContent,
-                        htmlSettings.getFormContent());
+        checkRenderingSettings(settings);
     }
 
     @Test
     public void testRenderTaskForm() {
+
+        formContent = FormContentReader.getTaskForms();
 
         when(uiServicesClient.getTaskRawForm(anyString(),
                                              anyLong())).thenReturn(formContent);
@@ -240,16 +306,7 @@ public class FormServiceEntryPointImplTest {
         verify(uiServicesClient).getTaskRawForm(anyString(),
                                                 anyLong());
 
-        assertNotNull("Settings cannot be null",
-                      settings);
-        assertTrue("Settings must be Static HTML",
-                   settings instanceof StaticHTMLFormRenderingSettings);
-
-        StaticHTMLFormRenderingSettings htmlSettings = (StaticHTMLFormRenderingSettings) settings;
-
-        assertEquals("FormContent must be equal",
-                     formContent,
-                     htmlSettings.getFormContent());
+        checkRenderingSettings(settings);
     }
 
     @Test
@@ -268,16 +325,7 @@ public class FormServiceEntryPointImplTest {
         verify(uiServicesClient).getTaskRawForm(anyString(),
                                                 anyLong());
 
-        assertNotNull("Settings cannot be null",
-                      settings);
-        assertTrue("Settings must be Static HTML",
-                   settings instanceof StaticHTMLFormRenderingSettings);
-
-        StaticHTMLFormRenderingSettings htmlSettings = (StaticHTMLFormRenderingSettings) settings;
-
-        assertNotEquals("FormContent must be equal",
-                        formContent,
-                        htmlSettings.getFormContent());
+        checkRenderingSettings(settings);
     }
 
     @Test
@@ -298,22 +346,53 @@ public class FormServiceEntryPointImplTest {
         verify(uiServicesClient).getTaskRawForm(anyString(),
                                                 anyLong());
 
+        checkRenderingSettings(settings);
+    }
+
+    @Test
+    public void testRenderTaskFormFromWrongFormContent() {
+
+        formContent = "this form content is wrong and a default form should be generated";
+
+        when(uiServicesClient.getTaskRawForm(anyString(),
+                                             anyLong())).thenReturn(formContent);
+
+        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayTask("template",
+                                                                              "domain",
+                                                                              12);
+
+        verify(userTaskServicesClient).getTaskInstance(anyString(),
+                                                       anyLong(),
+                                                       anyBoolean(),
+                                                       anyBoolean(),
+                                                       anyBoolean());
+        verify(kieServicesClient,
+               times(2)).getClassLoader();
+        verify(uiServicesClient).getTaskRawForm(anyString(),
+                                                anyLong());
+
+        checkRenderingSettings(settings);
+    }
+
+    protected void checkRenderingSettings(FormRenderingSettings settings) {
         assertNotNull("Settings cannot be null",
                       settings);
-        assertTrue("Settings must be Static HTML",
-                   settings instanceof StaticHTMLFormRenderingSettings);
+        assertTrue("Settings must be WB Forms",
+                   settings instanceof KieWorkbenchFormRenderingSettings);
 
-        StaticHTMLFormRenderingSettings htmlSettings = (StaticHTMLFormRenderingSettings) settings;
+        KieWorkbenchFormRenderingSettings wbSettings = (KieWorkbenchFormRenderingSettings) settings;
 
-        assertNotEquals("FormContent must be equal",
-                        formContent,
-                        htmlSettings.getFormContent());
+        assertNotNull("Rendering context shouldn't be empty",
+                      wbSettings.getRenderingContext());
+
+        assertNotNull("There should be a default FormDefinition",
+                      wbSettings.getRenderingContext().getRootForm());
     }
 
     protected String getFormContent() {
         try {
             return IOUtils.toString(this.getClass().getResourceAsStream(
-                    "/forms/form.ftl"));
+                    "/forms/invoices-taskform.frm"));
         } catch (IOException ex) {
             fail("Exception thrown getting form content");
         }
