@@ -21,7 +21,6 @@ import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.forms.display.FormDisplayerConfig;
-import org.jbpm.workbench.forms.display.view.FormContentResizeListener;
 import org.jbpm.workbench.forms.client.display.task.AbstractHumanTaskFormDisplayer;
 import org.jbpm.workbench.ht.model.TaskKey;
 import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
@@ -46,12 +45,10 @@ public class KieWorkbenchFormsHumanTaskDisplayer extends AbstractHumanTaskFormDi
     @Override
     public void init(FormDisplayerConfig<TaskKey, KieWorkbenchFormRenderingSettings> config,
                      Command onCloseCommand,
-                     Command onRefreshCommand,
-                     FormContentResizeListener resizeListener) {
+                     Command onRefreshCommand) {
         super.init(config,
                    onCloseCommand,
-                   onRefreshCommand,
-                   resizeListener);
+                   onRefreshCommand);
     }
 
     @Override

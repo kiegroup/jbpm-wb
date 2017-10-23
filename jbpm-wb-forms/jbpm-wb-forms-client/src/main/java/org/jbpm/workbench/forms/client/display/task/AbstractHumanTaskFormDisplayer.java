@@ -38,7 +38,6 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.forms.display.FormDisplayerConfig;
 import org.jbpm.workbench.forms.display.FormRenderingSettings;
-import org.jbpm.workbench.forms.display.view.FormContentResizeListener;
 import org.jbpm.workbench.forms.client.display.util.ActionRequest;
 import org.jbpm.workbench.forms.client.display.util.JSNIHelper;
 import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayer;
@@ -69,7 +68,6 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
     protected FormPanel container = GWT.create(FormPanel.class);
     protected ButtonGroup buttonsContainer = GWT.create(ButtonGroup.class);
     protected FlowPanel formContainer = GWT.create(FlowPanel.class);
-    protected FormContentResizeListener resizeListener;
     protected Constants constants = GWT.create(Constants.class);
 
     @Inject
@@ -115,8 +113,7 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
     @Override
     public void init(FormDisplayerConfig<TaskKey, S> config,
                      Command onCloseCommand,
-                     Command onRefreshCommand,
-                     FormContentResizeListener resizeListener) {
+                     Command onRefreshCommand) {
 
         if (this.renderingSettings != null) {
             clearRenderingSettings();
@@ -128,7 +125,6 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
         this.deploymentId = config.getKey().getDeploymentId();
         this.renderingSettings = config.getRenderingSettings();
         this.opener = config.getFormOpener();
-        this.resizeListener = resizeListener;
         this.onClose = onCloseCommand;
         this.onRefresh = onRefreshCommand;
 
@@ -384,7 +380,6 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
 
         onClose = null;
         onRefresh = null;
-        resizeListener = null;
     }
 
     protected void eventListener(String origin,

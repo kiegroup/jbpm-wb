@@ -97,8 +97,7 @@ public class HumanTaskFormDisplayProviderImpl implements HumanTaskFormDisplayPro
                                                    display(config,
                                                            view);
                                                }
-                                           },
-                                           view.getResizeListener());
+                                           });
                             view.display(displayer);
                         }
                     }
