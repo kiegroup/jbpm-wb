@@ -20,7 +20,6 @@ import java.util.Map;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.workbench.forms.display.FormRenderingSettings;
-import org.jbpm.workbench.forms.display.view.FormContentResizeListener;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.forms.client.display.GenericFormDisplayer;
 
@@ -32,5 +31,4 @@ public interface StartProcessFormDisplayer<S extends FormRenderingSettings> exte
 
     void startProcess(Map<String, Object> params);
 
-    void addResizeFormContent(FormContentResizeListener resizeListener);
 }

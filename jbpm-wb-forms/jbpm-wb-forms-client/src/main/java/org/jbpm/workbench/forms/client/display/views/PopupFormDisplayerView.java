@@ -24,8 +24,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenEvent;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenHandler;
 import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.ModalSize;
 import org.jbpm.workbench.forms.client.display.GenericFormDisplayer;
-import org.jbpm.workbench.forms.display.view.FormContentResizeListener;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.mvp.Command;
 
@@ -36,8 +36,6 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
 
     private Command childCloseCommand;
 
-    private FormContentResizeListener formContentResizeListener;
-
     private boolean initialized = false;
 
     private FlowPanel body = GWT.create(FlowPanel.class);
@@ -45,8 +43,6 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
     private ModalFooter footer = GWT.create(ModalFooter.class);
 
     private GenericFormDisplayer currentDisplayer;
-
-    private int initialWidth = -1;
 
     @PostConstruct
     protected void init() {
@@ -56,21 +52,7 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
                 closePopup();
             }
         };
-
-        formContentResizeListener = new FormContentResizeListener() {
-            @Override
-            public void resize(int width,
-                               int height) {
-                if (initialWidth == -1 && getWidget(0).getOffsetWidth() > 0) {
-                    initialWidth = getWidget(0).getOffsetWidth();
-                }
-                if (width > getWidget(0).getOffsetWidth()) {
-                    setWidth(width + 40 + "px");
-                } else if (initialWidth != -1) {
-                    setWidth(initialWidth + "px");
-                }
-            }
-        };
+        setSize(ModalSize.LARGE);
         setBody(body);
         add(footer);
         this.addHiddenHandler(new ModalHiddenHandler() {
@@ -113,16 +95,6 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
     @Override
     public void setOnCloseCommand(Command onCloseCommand) {
         this.childCloseCommand = onCloseCommand;
-    }
-
-    @Override
-    public FormContentResizeListener getResizeListener() {
-        return formContentResizeListener;
-    }
-
-    @Override
-    public void setResizeListener(FormContentResizeListener resizeListener) {
-        formContentResizeListener = resizeListener;
     }
 
     @Override

@@ -51,7 +51,6 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.forms.display.FormDisplayerConfig;
 import org.jbpm.workbench.forms.display.FormRenderingSettings;
-import org.jbpm.workbench.forms.display.view.FormContentResizeListener;
 import org.jbpm.workbench.forms.client.display.util.ActionRequest;
 import org.jbpm.workbench.forms.client.display.util.JSNIHelper;
 import org.jbpm.workbench.forms.client.display.api.StartProcessFormDisplayer;
@@ -80,7 +79,6 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
     protected String processDefId;
     protected String processName;
     protected String opener;
-    protected FormContentResizeListener resizeListener;
     protected Long parentProcessInstanceId;
 
     @Inject
@@ -111,8 +109,7 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
     @Override
     public void init(FormDisplayerConfig<ProcessDefinitionKey, S> config,
                      Command onClose,
-                     Command onRefreshCommand,
-                     FormContentResizeListener resizeContentListener) {
+                     Command onRefreshCommand) {
         this.config = config;
         this.serverTemplateId = config.getKey().getServerTemplateId();
         this.deploymentId = config.getKey().getDeploymentId();
@@ -121,7 +118,6 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
         this.opener = config.getFormOpener();
         this.onClose = onClose;
         this.onRefresh = onRefreshCommand;
-        this.resizeListener = resizeContentListener;
 
         container.clear();
         formContainer.clear();
@@ -208,17 +204,9 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
 
         formContainer.add(accordion);
 
-        doResize();
     }
 
     protected abstract void initDisplayer();
-
-    public void doResize() {
-        if (resizeListener != null) {
-            resizeListener.resize(formContainer.getOffsetWidth(),
-                                  formContainer.getOffsetHeight());
-        }
-    }
 
     protected ErrorCallback<Message> getUnexpectedErrorCallback() {
         return new ErrorCallback<Message>() {
@@ -293,11 +281,6 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
     }
 
     @Override
-    public void addResizeFormContent(FormContentResizeListener resizeListener) {
-        this.resizeListener = resizeListener;
-    }
-
-    @Override
     public void close() {
         if (this.onClose != null) {
             this.onClose.execute();
@@ -318,7 +301,6 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
 
         onClose = null;
         onRefresh = null;
-        resizeListener = null;
     }
 
     protected void eventListener(String origin,

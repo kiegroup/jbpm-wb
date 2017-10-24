@@ -100,8 +100,7 @@ public class StartProcessFormDisplayProviderImpl implements StartProcessFormDisp
                                                    display(config,
                                                            view);
                                                }
-                                           },
-                                           view.getResizeListener());
+                                           });
                             view.display(displayer);
                         }
                     }

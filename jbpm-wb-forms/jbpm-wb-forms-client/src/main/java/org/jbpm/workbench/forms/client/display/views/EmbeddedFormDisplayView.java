@@ -24,7 +24,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.jbpm.workbench.forms.client.resources.AppResources;
-import org.jbpm.workbench.forms.display.view.FormContentResizeListener;
 import org.jbpm.workbench.forms.client.display.GenericFormDisplayer;
 import org.uberfire.mvp.Command;
 
@@ -38,8 +37,6 @@ public class EmbeddedFormDisplayView extends Composite implements FormDisplayerV
     private GenericFormDisplayer currentDisplayer;
 
     private Command onCloseCommand;
-
-    private FormContentResizeListener resizeListener;
 
     @PostConstruct
     public void init() {
@@ -78,16 +75,6 @@ public class EmbeddedFormDisplayView extends Composite implements FormDisplayerV
     @Override
     public void setOnCloseCommand(Command onCloseCommand) {
         this.onCloseCommand = onCloseCommand;
-    }
-
-    @Override
-    public FormContentResizeListener getResizeListener() {
-        return resizeListener;
-    }
-
-    @Override
-    public void setResizeListener(FormContentResizeListener resizeListener) {
-        this.resizeListener = resizeListener;
     }
 
     @Override

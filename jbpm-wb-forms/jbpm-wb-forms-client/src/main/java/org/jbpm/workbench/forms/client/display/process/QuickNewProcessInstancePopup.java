@@ -34,6 +34,7 @@ import org.gwtbootstrap3.client.shared.event.ModalHiddenHandler;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.ModalSize;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
@@ -47,7 +48,6 @@ import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplay
 import org.jbpm.workbench.forms.client.display.views.FormDisplayerView;
 import org.jbpm.workbench.forms.client.i18n.Constants;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
-import org.jbpm.workbench.forms.display.view.FormContentResizeListener;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
@@ -93,25 +93,20 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
     @Inject
     User identity;
 
-    GenericModalFooter footer = new GenericModalFooter();
+    GenericModalFooter footer = GWT.create(GenericModalFooter.class);
 
     @Inject
     private Event<NotificationEvent> notification;
 
-    @Inject
     private Caller<ProcessRuntimeDataService> processRuntimeDataService;
 
     private Long parentProcessInstanceId = -1L;
 
     private Command onCloseCommand;
 
-    private FormContentResizeListener formContentResizeListener;
-
     private boolean initialized = false;
 
     private GenericFormDisplayer currentDisplayer;
-
-    private int initialWidth = -1;
 
     private String serverTemplateId;
 
@@ -123,6 +118,7 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
         super();
         setTitle(Constants.INSTANCE.Start_process_instance());
         setBody(uiBinder.createAndBindUi(this));
+        setSize(ModalSize.LARGE);
     }
 
     public void show(Long parentProcessInstanceId) {
@@ -156,17 +152,17 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
             Map<String, List<ProcessSummary>> defs = processSummaries.stream().filter(p -> p.isDynamic() == false).collect(groupingBy(ProcessSummary::getDeploymentId));
 
             defs.keySet().stream().sorted().forEach(deploymentId -> {
-                final OptGroup group = new OptGroup();
+                final OptGroup group = GWT.create(OptGroup.class);
                 group.setLabel(deploymentId);
-                processDefinitionsListBox.add(group);
 
                 defs.get(deploymentId).stream().sorted().forEach(p -> {
-
-                    final Option option = new Option();
+                    final Option option = GWT.create(Option.class);
                     option.setText(p.getProcessDefId());
                     option.setValue(p.getProcessDefId());
                     group.add(option);
                 });
+
+                processDefinitionsListBox.add(group);
             });
 
             Scheduler.get().scheduleDeferred(() -> processDefinitionsListBox.refresh());
@@ -177,7 +173,7 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
                         true);
     }
 
-    private boolean validateForm() {
+    protected boolean validateForm() {
         if (processDefinitionsListBox.getSelectedItem() == null) {
 
             errorMessages.setText(Constants.INSTANCE.Select_Process());
@@ -194,7 +190,7 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
         notification.fire(new NotificationEvent(text));
     }
 
-    private void createNewProcessInstance() {
+    protected void createNewProcessInstance() {
         final Option selectedItem = processDefinitionsListBox.getSelectedItem();
         deploymentId = ((OptGroup) selectedItem.getParent()).getLabel();
         processId = selectedItem.getValue();
@@ -234,21 +230,6 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
             @Override
             public void execute() {
                 closePopup();
-            }
-        };
-
-        formContentResizeListener = new FormContentResizeListener() {
-            @Override
-            public void resize(int width,
-                               int height) {
-                if (initialWidth == -1 && getWidget(0).getOffsetWidth() > 0) {
-                    initialWidth = getWidget(0).getOffsetWidth();
-                }
-                if (width > getWidget(0).getOffsetWidth()) {
-                    setWidth(width + 40 + "px");
-                } else if (initialWidth != -1) {
-                    setWidth(initialWidth + "px");
-                }
             }
         };
 
@@ -309,18 +290,13 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
     }
 
     @Override
-    public FormContentResizeListener getResizeListener() {
-        return formContentResizeListener;
-    }
-
-    @Override
-    public void setResizeListener(FormContentResizeListener resizeListener) {
-        formContentResizeListener = resizeListener;
-    }
-
-    @Override
     public GenericFormDisplayer getCurrentDisplayer() {
         return currentDisplayer;
+    }
+
+    @Inject
+    public void setProcessRuntimeDataService(Caller<ProcessRuntimeDataService> processRuntimeDataService) {
+        this.processRuntimeDataService = processRuntimeDataService;
     }
 
     interface Binder

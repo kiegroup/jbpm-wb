@@ -20,7 +20,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Panel;
 import org.jbpm.workbench.forms.display.FormDisplayerConfig;
 import org.jbpm.workbench.forms.display.FormRenderingSettings;
-import org.jbpm.workbench.forms.display.view.FormContentResizeListener;
 import org.jbpm.workbench.common.service.ItemKey;
 import org.uberfire.mvp.Command;
 
@@ -30,8 +29,7 @@ public interface GenericFormDisplayer<T extends ItemKey, S extends FormRendering
 
     void init(FormDisplayerConfig<T, S> config,
               Command onCloseCommand,
-              Command onRefreshCommand,
-              FormContentResizeListener formContentResizeListener);
+              Command onRefreshCommand);
 
     Panel getContainer();
 
