@@ -78,45 +78,31 @@ public abstract class AbstractTaskListPresenterTest {
 
     private static final Long TASK_ID = 1L;
     private static final String TASK_DEPLOYMENT_ID = "deploymentId";
-
     @Mock
     protected User identity;
-
     @Mock
     protected TaskService taskService;
-
     protected CallerMock<TaskService> callerMockRemoteTaskService;
-
     @Mock
     protected ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
-
     @Mock
     DataSetQueryHelper dataSetQueryHelper;
-
     @Mock
     DataSetQueryHelper dataSetQueryHelperDomainSpecific;
-
     @Mock
     private TaskListViewImpl viewMock;
-
     @Mock
     private ExtendedPagedTable<TaskSummary> extendedPagedTable;
-
     @Mock
     private DataSet dataSetMock;
-
     @Mock
     private DataSet dataSetTaskVarMock;
-
     @Mock
     private PlaceManager placeManager;
-
     @Spy
     private FilterSettings filterSettings;
-
     @Spy
     private DataSetLookup dataSetLookup;
-
     @Spy
     private Event<TaskSelectionEvent> taskSelected = new EventSourceMock<TaskSelectionEvent>();
 
@@ -195,9 +181,9 @@ public abstract class AbstractTaskListPresenterTest {
     @Test
     public void releaseTaskTest() {
         final TaskSummary task = TaskSummary.builder().id(TASK_ID).deploymentId(TASK_DEPLOYMENT_ID).build();
-
+        
         getPresenter().releaseTask(task);
-
+        
         verify(taskService).releaseTask("",
                                         TASK_DEPLOYMENT_ID,
                                         TASK_ID);
@@ -372,9 +358,9 @@ public abstract class AbstractTaskListPresenterTest {
         for (final String dataSet : dataSets) {
             when(dataSetMock.getUUID()).thenReturn(dataSet);
 
-            final TaskSummary summary = new TaskSummaryDataSetMapper().apply(dataSetMock,
+            final TaskSummary summary = new TaskSummaryDataSetMapper().apply(dataSetMock, 
                                                                              0);
-
+            
             assertNotNull(summary);
             assertEquals(HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet),
                          summary.isForAdmin());

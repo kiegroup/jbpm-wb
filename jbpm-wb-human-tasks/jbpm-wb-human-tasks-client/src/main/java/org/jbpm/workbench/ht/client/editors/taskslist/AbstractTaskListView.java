@@ -17,12 +17,14 @@ package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.*;
 
+
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.view.client.CellPreviewEvent;
+
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.resources.CommonResources;
@@ -41,16 +43,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         implements AbstractTaskListPresenter.TaskListView<P> {
 
     protected final Constants constants = Constants.INSTANCE;
-
-    @Override
-    public List<String> getInitColumns() {
-        return Arrays.asList(COLUMN_NAME,
-                             COLUMN_PROCESS_ID,
-                             COLUMN_STATUS,
-                             COLUMN_CREATED_ON,
-                             COL_ID_ACTIONS);
-    }
-
+    
     @Override
     public List<String> getBannedColumns() {
         return Arrays.asList(COLUMN_NAME,
@@ -87,7 +80,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     @Override
     public void initColumns(ExtendedPagedTable<TaskSummary> extendedPagedTable) {
         initCellPreview(extendedPagedTable);
-
+        
         Column actionsColumn = initActionsColumn();
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
 
@@ -161,11 +154,11 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                    task -> task.getProcessSessionId()),
                 constants.ProcessSessionId()
         ));
+        addNewColumn(extendedPagedTable, columnMetas);
         columnMetas.add(new ColumnMeta<>(actionsColumn,
                                          constants.Actions()));
 
         List<GridColumnPreference> columPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
-
         for (GridColumnPreference colPref : columPreferenceList) {
             if (!isColumnAdded(columnMetas,
                                colPref.getName())) {
@@ -175,13 +168,16 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                                             colPref.getName(),
                                                             true,
                                                             true));
+               
             }
         }
-
         extendedPagedTable.addColumns(columnMetas);
     }
+    
+    protected void addNewColumn(ExtendedPagedTable<TaskSummary> extendedPagedTable, 
+                                List<ColumnMeta<TaskSummary>> columnMetas) {}
 
-    private void initCellPreview(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+    protected void initCellPreview(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
         extendedPagedTable.addCellPreviewHandler(new CellPreviewEvent.Handler<TaskSummary>() {
 
             @Override
@@ -195,7 +191,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         });
     }
 
-    private void onMouseOverGrid(ExtendedPagedTable<TaskSummary> extendedPagedTable,
+    protected void onMouseOverGrid(ExtendedPagedTable<TaskSummary> extendedPagedTable,
                                  final CellPreviewEvent<TaskSummary> event) {
         TaskSummary task = event.getValue();
 
@@ -206,7 +202,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         }
     }
 
-    private Column<TaskSummary, ?> initActionsColumn() {
+    protected Column<TaskSummary, ?> initActionsColumn() {
         List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
 
         cells.add(new ConditionalButtonActionCell<TaskSummary>(constants.Claim(),
@@ -245,7 +241,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         return actionsColumn;
     }
     
-    private boolean isColumnAdded( List<ColumnMeta<TaskSummary>> columnMetas,
+    protected boolean isColumnAdded( List<ColumnMeta<TaskSummary>> columnMetas,
             String caption ) {
         if ( caption != null ) {
             for ( ColumnMeta<TaskSummary> colMet : columnMetas ) {
@@ -299,15 +295,14 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                                         true,
                                                         true));
         }
-
         extendedPagedTable.addColumns(columnMetas);
     }
 
-    private Column<TaskSummary, ?> initGenericColumn(final String key) {
+    protected Column<TaskSummary, ?> initGenericColumn(final String key) {
         return createTextColumn(key,
                                 task -> task.getDomainDataValue(key));
     }
-
+    
     @Override
     public void setSelectedTask(final TaskSummary selectedTask) {
         currentListGrid.getSelectionModel().setSelected(selectedTask,

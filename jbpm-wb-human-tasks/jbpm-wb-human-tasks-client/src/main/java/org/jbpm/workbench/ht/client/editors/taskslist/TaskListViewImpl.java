@@ -19,8 +19,10 @@ import javax.enterprise.context.Dependent;
 
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
+import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
-import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_USER_DATASET;
+import java.util.Arrays;
+import java.util.List;
 
 @Dependent
 public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
@@ -31,6 +33,15 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
     protected static final String TAB_PERSONAL = DATA_SET_TASK_LIST_PREFIX + "_1";
     protected static final String TAB_ACTIVE = DATA_SET_TASK_LIST_PREFIX + "_0";
     protected static final String TAB_ADMIN = DATA_SET_TASK_LIST_PREFIX + "_4";
+
+    @Override
+    public List<String> getInitColumns() {
+        return Arrays.asList(COLUMN_NAME,
+                             COLUMN_PROCESS_ID,
+                             COLUMN_STATUS,
+                             COLUMN_CREATED_ON,
+                             COL_ID_ACTIONS);
+    }
 
     @Override
     protected void loadTabsFromPreferences(final MultiGridPreferencesStore multiGridPreferencesStore,

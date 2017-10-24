@@ -17,6 +17,8 @@
 package org.jbpm.workbench.common.client.list;
 
 import java.util.Optional;
+import java.util.function.Predicate;
+
 import javax.inject.Inject;
 
 import org.dashbuilder.dataset.filter.ColumnFilter;
@@ -150,11 +152,17 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
                              parameterValue);
         placeManager.goTo(request);
     }
-
+    
     public boolean isUserAuthorizedForPerspective(final String perspectiveId) {
         final ResourceRef resourceRef = new ResourceRef(perspectiveId,
                                                         ActivityResourceType.PERSPECTIVE);
         return authorizationManager.authorize(resourceRef,
                                               identity);
+    }
+    
+    public void openErrorView(final String parameterId) {}
+    
+    public Predicate<T> getViewErrorsActionCondition(){
+        return null;
     }
 }
