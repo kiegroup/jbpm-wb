@@ -55,10 +55,10 @@ public class CaseProvisioningIT {
                 .workOffline()
                 .loadPomFromFile("pom.xml")
                 .resolve(
-                        "org.guvnor:guvnor-ala-wildfly-provider",
-                        "org.guvnor:guvnor-ala-spi",
-                        "org.guvnor:guvnor-ala-services-api",
-                        "org.guvnor:guvnor-ala-build-maven",
+                        "org.kie.workbench:kie-wb-common-ala-wildfly-provider",
+                        "org.kie.workbench:kie-wb-common-ala-spi",
+                        "org.kie.workbench:kie-wb-common-ala-services-api",
+                        "org.kie.workbench:kie-wb-common-ala-build-maven",
                         "org.uberfire:uberfire-io",
                         "com.google.inject.extensions:guice-servlet"
                 )

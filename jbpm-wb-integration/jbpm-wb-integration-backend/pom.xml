@@ -57,12 +57,12 @@
     </dependency>
 
     <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-services-api</artifactId>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-services-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-project-api</artifactId>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-project-api</artifactId>
     </dependency>
 
     <dependency>
@@ -134,24 +134,24 @@
 
     <!-- GUVNOR ALA Dependencies -->
     <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-ala-services-api</artifactId>
+      <groupId>org.kie.workbench</groupId>
+      <artifactId>kie-wb-common-ala-services-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-ala-spi</artifactId>
+      <groupId>org.kie.workbench</groupId>
+      <artifactId>kie-wb-common-ala-spi</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-ala-build-maven</artifactId>
+      <groupId>org.kie.workbench</groupId>
+      <artifactId>kie-wb-common-ala-build-maven</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-ala-wildfly-provider</artifactId>
+      <groupId>org.kie.workbench</groupId>
+      <artifactId>kie-wb-common-ala-wildfly-provider</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-ala-openshift-provider</artifactId>
+      <groupId>org.kie.workbench</groupId>
+      <artifactId>kie-wb-common-ala-openshift-provider</artifactId>
     </dependency>
 
     <dependency>
