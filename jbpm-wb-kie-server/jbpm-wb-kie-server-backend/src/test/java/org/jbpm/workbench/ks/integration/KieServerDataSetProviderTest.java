@@ -15,9 +15,20 @@
  */
 package org.jbpm.workbench.ks.integration;
 
+import static org.dashbuilder.dataset.filter.FilterFactory.OR;
+import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dashbuilder.dataset.DataColumn;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.filter.ColumnFilter;
@@ -25,6 +36,7 @@ import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.group.ColumnGroup;
 import org.dashbuilder.dataset.group.DataSetGroup;
+import org.dashbuilder.dataset.group.DateIntervalType;
 import org.dashbuilder.dataset.group.GroupStrategy;
 import org.dashbuilder.dataset.group.Interval;
 import org.dashbuilder.dataset.impl.DataSetImpl;
@@ -39,11 +51,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KieServerDataSetProviderTest {
@@ -174,5 +181,67 @@ public class KieServerDataSetProviderTest {
                      expr.get(0).toString());
         assertEquals("column2 like %value%, true",
                      expr.get(1).toString());
+    }
+    
+    @Test
+    public void testGroupWithInterval() {
+        
+        DataSetGroup dataSetGroup = new DataSetGroup();
+        dataSetGroup.setColumnGroup(new ColumnGroup(COLUMN_TEST,
+                                                    COLUMN_TEST,
+                                                    GroupStrategy.DYNAMIC,
+                                                    30,
+                                                    DateIntervalType.DAY.name()));
+      
+
+        List<QueryParam> filterParams = new ArrayList<>();
+        List<DataColumn> extraColumns = new ArrayList<>();
+        kieServerDataSetProvider.handleDataSetGroup(dataSetGroup, 
+                                                    filterParams, 
+                                                    extraColumns);
+
+        assertEquals(1,
+                     filterParams.size());
+        assertEquals(COLUMN_TEST,
+                     filterParams.get(0).getColumn());
+        assertEquals("group",
+                     filterParams.get(0).getOperator());
+        
+        assertEquals(3,
+                     filterParams.get(0).getValue().size());
+        assertEquals(COLUMN_TEST,
+                     filterParams.get(0).getValue().get(0));
+        assertEquals(DateIntervalType.DAY.name(),
+                     filterParams.get(0).getValue().get(1));
+        assertEquals(30,
+                     filterParams.get(0).getValue().get(2));
+    }
+    
+    @Test
+    public void testGroupWithNotSetInterval() {
+        
+        DataSetGroup dataSetGroup = new DataSetGroup();
+        dataSetGroup.setColumnGroup(new ColumnGroup(COLUMN_TEST,
+                                                    COLUMN_TEST,
+                                                    GroupStrategy.DYNAMIC));
+      
+
+        List<QueryParam> filterParams = new ArrayList<>();
+        List<DataColumn> extraColumns = new ArrayList<>();
+        kieServerDataSetProvider.handleDataSetGroup(dataSetGroup, 
+                                                    filterParams, 
+                                                    extraColumns);
+
+        assertEquals(1,
+                     filterParams.size());
+        assertEquals(COLUMN_TEST,
+                     filterParams.get(0).getColumn());
+        assertEquals("group",
+                     filterParams.get(0).getOperator());
+        
+        assertEquals(1,
+                     filterParams.get(0).getValue().size());
+        assertEquals(COLUMN_TEST,
+                     filterParams.get(0).getValue().get(0));
     }
 }
