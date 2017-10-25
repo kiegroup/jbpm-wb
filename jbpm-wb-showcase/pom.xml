@@ -32,7 +32,7 @@
 
   <properties>
     <!-- Add the absolute path for $JBOSS_HOME below to manage another instance -->
-    <errai.jboss.home>${project.build.directory}/wildfly-${version.org.jboss.errai.wildfly}</errai.jboss.home>
+    <jboss.home>${project.build.directory}/wildfly-${version.org.jboss.errai.wildfly}</jboss.home>
   </properties>
 
   <dependencies>
@@ -1536,6 +1536,16 @@
       <artifactId>uberfire-testing-utils</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.wildfly.arquillian</groupId>
+      <artifactId>wildfly-arquillian-container-managed</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.junit</groupId>
+      <artifactId>arquillian-junit-container</artifactId>
+      <scope>test</scope>
+    </dependency>
 
   </dependencies>
 
@@ -1549,7 +1559,7 @@
         <artifactId>gwt-maven-plugin</artifactId>
         <configuration>
           <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
-          <extraJvmArgs>-Xms1g -Xmx5g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.dynamic_validation.enabled=true -Dorg.kie.demo=false -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true -Dorg.uberfire.async.executor.safemode=true</extraJvmArgs>
+          <extraJvmArgs>-Xms1g -Xmx5g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${jboss.home} -Derrai.dynamic_validation.enabled=true -Dorg.kie.demo=false -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true -Dorg.uberfire.async.executor.safemode=true</extraJvmArgs>
           <module>org.jbpm.workbench.jBPMShowcase</module>
           <logLevel>INFO</logLevel>
           <noServer>false</noServer>
@@ -1837,7 +1847,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${errai.jboss.home}/standalone/configuration</outputDirectory>
+              <outputDirectory>${jboss.home}/standalone/configuration</outputDirectory>
               <overwrite>true</overwrite>
               <resources>
                 <resource>
@@ -1845,6 +1855,27 @@
                   <filtering>false</filtering>
                 </resource>
               </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <systemPropertyVariables>
+                <wildfly.war>${project.build.finalName}.war</wildfly.war>
+                <arquillian.launch>wildfly-managed</arquillian.launch>
+                <jboss.home>${jboss.home}</jboss.home>
+                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+              </systemPropertyVariables>
+              <redirectTestOutputToFile>false</redirectTestOutputToFile>
             </configuration>
           </execution>
         </executions>
