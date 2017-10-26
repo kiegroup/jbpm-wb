@@ -135,31 +135,7 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
         }
 
         DataSetGroup dataSetGroup = dataSetLookup.getLastGroupOp();
-        if (dataSetGroup != null) {
-            if (dataSetGroup.getColumnGroup() != null) {
-                // handle group
-                filterParams.add(new QueryParam(dataSetGroup.getColumnGroup().getSourceId(),
-                                                "group",
-                                                Arrays.asList(dataSetGroup.getColumnGroup().getColumnId())));
-            }
-
-            // handle additional columns
-            for (GroupFunction groupFunction : dataSetGroup.getGroupFunctions()) {
-                if (groupFunction.getFunction() != null) {
-                    filterParams.add(new QueryParam(groupFunction.getSourceId(),
-                                                    groupFunction.getFunction().toString(),
-                                                    Arrays.asList(groupFunction.getColumnId())));
-                    extraColumns.add(new DataColumnImpl(groupFunction.getSourceId(),
-                                                        ColumnType.NUMBER));
-                } else {
-                    filterParams.add(new QueryParam(groupFunction.getSourceId(),
-                                                    null,
-                                                    Arrays.asList(groupFunction.getColumnId())));
-                    extraColumns.add(new DataColumnImpl(groupFunction.getSourceId(),
-                                                        ColumnType.LABEL));
-                }
-            }
-        }
+        handleDataSetGroup(dataSetGroup, filterParams, extraColumns);
 
         if (!filterParams.isEmpty()) {
             filterSpec.setParameters(filterParams.toArray(new QueryParam[filterParams.size()]));
@@ -293,6 +269,42 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
             filterParams.add(new QueryParam(coreFunctionFilter.getColumnId(),
                                             coreFunctionFilter.getType().toString(),
                                             coreFunctionFilter.getParameters()));
+        }
+    }
+    
+    protected void handleDataSetGroup(DataSetGroup dataSetGroup, List<QueryParam> filterParams, List<DataColumn> extraColumns) {
+        if (dataSetGroup != null) {
+            if (dataSetGroup.getColumnGroup() != null) {
+                // handle group
+                if (dataSetGroup.getColumnGroup().getIntervalSize() != null) {
+                    filterParams.add(new QueryParam(dataSetGroup.getColumnGroup().getSourceId(),
+                                                    "group",
+                                                    Arrays.asList(dataSetGroup.getColumnGroup().getColumnId(), 
+                                                                  dataSetGroup.getColumnGroup().getIntervalSize(), 
+                                                                  dataSetGroup.getColumnGroup().getMaxIntervals())));
+                } else {
+                    filterParams.add(new QueryParam(dataSetGroup.getColumnGroup().getSourceId(),
+                                                    "group",
+                                                    Arrays.asList(dataSetGroup.getColumnGroup().getColumnId())));
+                }
+            }
+
+            // handle additional columns
+            for (GroupFunction groupFunction : dataSetGroup.getGroupFunctions()) {
+                if (groupFunction.getFunction() != null) {
+                    filterParams.add(new QueryParam(groupFunction.getSourceId(),
+                                                    groupFunction.getFunction().toString(),
+                                                    Arrays.asList(groupFunction.getColumnId())));
+                    extraColumns.add(new DataColumnImpl(groupFunction.getSourceId(),
+                                                        ColumnType.NUMBER));
+                } else {
+                    filterParams.add(new QueryParam(groupFunction.getSourceId(),
+                                                    null,
+                                                    Arrays.asList(groupFunction.getColumnId())));
+                    extraColumns.add(new DataColumnImpl(groupFunction.getSourceId(),
+                                                        ColumnType.LABEL));
+                }
+            }
         }
     }
 }
