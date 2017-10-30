@@ -139,6 +139,15 @@ public class CaseProjectServiceImplTest {
                      mappedStrategies.get(CaseProjectServiceImpl.CASE_FILE_MARSHALLER));
         assertEquals("mvel",
                      mappedStrategies.get(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
+        
+        List<ItemObjectModel> workItemHandlers = updatedDD.getWorkItemHandlers();
+        assertEquals(1,
+                     workItemHandlers.size());
+
+        ItemObjectModel startCaseHandler = workItemHandlers.get(0);
+        assertEquals("mvel", startCaseHandler.getResolver());
+        assertEquals(CaseProjectServiceImpl.START_CASE_WORK_ITEM, startCaseHandler.getName());
+        assertEquals(CaseProjectServiceImpl.START_CASE_HANDLER, startCaseHandler.getValue());
 
         verify(ioService,
                times(1)).write(any(),
@@ -247,6 +256,15 @@ public class CaseProjectServiceImplTest {
                      mappedStrategies.get(CaseProjectServiceImpl.CASE_FILE_MARSHALLER));
         assertEquals("mvel",
                      mappedStrategies.get(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
+        
+        List<ItemObjectModel> workItemHandlers = updatedDD.getWorkItemHandlers();
+        assertEquals(1,
+                     workItemHandlers.size());
+
+        ItemObjectModel startCaseHandler = workItemHandlers.get(0);
+        assertEquals("mvel", startCaseHandler.getResolver());
+        assertEquals(CaseProjectServiceImpl.START_CASE_WORK_ITEM, startCaseHandler.getName());
+        assertEquals(CaseProjectServiceImpl.START_CASE_HANDLER, startCaseHandler.getValue());
 
         verify(ioService,
                times(1)).write(any(),

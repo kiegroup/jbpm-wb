@@ -50,6 +50,8 @@ public class CaseProjectServiceImpl implements CaseProjectService {
 
     protected static final String CASE_FILE_MARSHALLER = "org.jbpm.casemgmt.impl.marshalling.CaseMarshallerFactory.builder().withDoc().get();";
     protected static final String DOCUMENT_MARSHALLER = "new org.jbpm.document.marshalling.DocumentMarshallingStrategy();";
+    protected static final String START_CASE_HANDLER = "new org.jbpm.casemgmt.impl.wih.StartCaseWorkItemHandler(ksession);";
+    protected static final String START_CASE_WORK_ITEM = "StartCaseInstance";
     private static final Logger logger = LoggerFactory.getLogger(CaseProjectServiceImpl.class);
     private static final String CASE_PROJECT_DOT_FILE = ".caseproject";
     private static final String DEPLOYMENT_DESCRIPTOR_FILE = "kie-deployment-descriptor.xml";
@@ -115,6 +117,16 @@ public class CaseProjectServiceImpl implements CaseProjectService {
                                           "mvel",
                                           new ArrayList<Parameter>()));
         descriptorModel.setMarshallingStrategies(modelList);
+        
+        List<ItemObjectModel> wiModelList = descriptorModel.getWorkItemHandlers();
+        if (wiModelList == null) {
+            wiModelList = new ArrayList<>();
+        }
+        wiModelList.add(new ItemObjectModel(START_CASE_WORK_ITEM,
+                                            START_CASE_HANDLER,
+                                            "mvel",
+                                            new ArrayList<Parameter>()));
+        descriptorModel.setWorkItemHandlers(wiModelList);
         logger.debug("Deployment descriptor model updated with case information {}",
                      descriptorModel);
         ddEditorService.save(convertedDDVFSPath,
