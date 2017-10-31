@@ -18,16 +18,22 @@ package org.jbpm.workbench.pr.backend.server;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.jbpm.workbench.ks.integration.KieServerIntegration;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
+import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.server.api.model.definition.ProcessDefinition;
+import org.kie.server.api.model.instance.NodeInstance;
+import org.kie.server.api.model.instance.ProcessInstance;
+import org.kie.server.api.model.instance.TaskSummary;
+import org.kie.server.api.model.instance.TaskSummaryList;
 import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.ProcessServicesClient;
 import org.kie.server.client.QueryServicesClient;
@@ -38,10 +44,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static java.lang.String.format;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mock;
 import static java.util.Collections.singletonList;
 import static org.jbpm.workbench.pr.backend.server.ProcessSummaryMapperTest.assertProcessSummary;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RemoteProcessRuntimeDataServiceImplTest {
@@ -68,6 +73,60 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         when(kieServerIntegration.getServerClient(anyString())).thenReturn(kieServicesClient);
         when(kieServicesClient.getServicesClient(QueryServicesClient.class)).thenReturn(queryServicesClient);
         when(kieServicesClient.getServicesClient(ProcessServicesClient.class)).thenReturn(processServicesClient);
+    }
+
+    @Test
+    public void getProcessInstanceDetailsTest() {
+        final Long processInstanceId = 1L;
+        final TaskSummary taskSummaryMock = mock(TaskSummary.class);
+        final TaskSummaryList taskSummaryListSpy = spy(new TaskSummaryList(singletonList(taskSummaryMock)));
+        final ProcessInstance processInstanceSpy = spy(ProcessInstance.builder()
+                                                                      .activeUserTasks(taskSummaryListSpy)
+                                                                      .build());
+        when(processServicesClient.getProcessInstance(containerId,
+                                                      processInstanceId)).thenReturn(processInstanceSpy);
+        service.getProcessInstance(serverTemplateId,
+                                   new ProcessInstanceKey(serverTemplateId,
+                                                          containerId,
+                                                          processInstanceId));
+        verify(processInstanceSpy).getProcessId();
+        verify(processInstanceSpy).getState();
+        verify(processInstanceSpy).getContainerId();
+        verify(processInstanceSpy).getProcessVersion();
+        verify(processInstanceSpy).getCorrelationKey();
+        verify(processInstanceSpy).getParentId();
+        verifyActiveUserTasks(taskSummaryListSpy,
+                              taskSummaryMock);
+        verifyCurrentActivities(processInstanceId);
+    }
+
+    public void verifyActiveUserTasks(TaskSummaryList taskSummaryList,
+                                      TaskSummary taskSummary){
+        verify(taskSummaryList).getItems();
+        verify(taskSummary).getName();
+        verify(taskSummary).getStatus();
+        verify(taskSummary).getActualOwner();
+    }
+
+    private void verifyCurrentActivities(Long processInstanceId) {
+        final NodeInstance nodeInstanceMock = mock(NodeInstance.class);
+        final List<NodeInstance> nodeInstanceList = singletonList(nodeInstanceMock);
+        when(processServicesClient.findActiveNodeInstances(containerId,
+                                                           processInstanceId,
+                                                           0,
+                                                           100)).thenReturn(nodeInstanceList);
+        when(nodeInstanceMock.getDate()).thenReturn(new Date());
+        service.getProcessInstanceActiveNodes(serverTemplateId,
+                                              containerId,
+                                              processInstanceId);
+        verify(processServicesClient).findActiveNodeInstances(containerId,
+                                                              processInstanceId,
+                                                              0,
+                                                              100);
+        verify(nodeInstanceMock).getDate();
+        verify(nodeInstanceMock).getId();
+        verify(nodeInstanceMock).getName();
+        verify(nodeInstanceMock).getNodeType();
     }
 
     @Test
