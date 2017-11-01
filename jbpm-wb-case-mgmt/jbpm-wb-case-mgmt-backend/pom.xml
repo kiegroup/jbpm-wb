@@ -29,6 +29,10 @@
 
   <name>jBPM Workbench - Case Management Backend</name>
 
+  <properties>
+    <java.module.name>org.jbpm.wb.casemgmt.backend</java.module.name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.jbpm</groupId>

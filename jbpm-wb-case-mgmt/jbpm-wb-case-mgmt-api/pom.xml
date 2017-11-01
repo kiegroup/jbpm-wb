@@ -29,6 +29,10 @@
 
   <name>jBPM Workbench - Case Management API</name>
 
+  <properties>
+    <java.module.name>org.jbpm.wb.casemgmt.api</java.module.name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.jboss.errai</groupId>

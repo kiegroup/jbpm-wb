@@ -29,6 +29,10 @@
 
   <name>jBPM Workbench - KIE Server Backend</name>
 
+  <properties>
+    <java.module.name>org.jbpm.wb.kie.server.backend</java.module.name>
+  </properties>
+
   <dependencies>
 
     <!-- dependencies added because of new illegal transitive dependency check -->

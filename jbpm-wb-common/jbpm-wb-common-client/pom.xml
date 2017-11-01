@@ -29,6 +29,10 @@
 
   <name>jBPM Workbench - Common Client</name>
 
+  <properties>
+    <java.module.name>org.jbpm.wb.common.client</java.module.name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.jbpm</groupId>

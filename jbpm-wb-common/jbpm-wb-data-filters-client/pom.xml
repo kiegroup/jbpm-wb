@@ -29,6 +29,9 @@
 
   <name>jBPM Workbench - Data Filters Client</name>
 
+  <properties>
+    <java.module.name>org.jbpm.wb.data.filters.client</java.module.name>
+  </properties>
 
   <dependencies>
 

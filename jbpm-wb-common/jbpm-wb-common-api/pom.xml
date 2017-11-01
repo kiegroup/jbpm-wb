@@ -29,6 +29,10 @@
 
   <name>jBPM Workbench - Common API</name>
 
+  <properties>
+    <java.module.name>org.jbpm.wb.common.api</java.module.name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.uberfire</groupId>

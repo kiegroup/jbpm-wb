@@ -29,6 +29,9 @@
 
   <name>jBPM Workbench - Forms Client</name>
 
+  <properties>
+    <java.module.name>org.jbpm.wb.forms.client</java.module.name>
+  </properties>
 
   <dependencies>
 
