@@ -29,6 +29,10 @@
 
   <name>jBPM Workbench - Integration API</name>
 
+  <properties>
+    <java.module.name>org.jbpm.wb.integration.api</java.module.name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.uberfire</groupId>

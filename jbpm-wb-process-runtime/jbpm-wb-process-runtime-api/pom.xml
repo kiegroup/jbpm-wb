@@ -29,6 +29,10 @@
 
   <name>jBPM Workbench - Process Runtime API</name>
 
+  <properties>
+    <java.module.name>org.jbpm.wb.process.runtime.api</java.module.name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.jboss.errai</groupId>

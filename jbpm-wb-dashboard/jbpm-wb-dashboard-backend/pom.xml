@@ -13,6 +13,10 @@
 
   <name>jBPM Workbench - Dashboard Backend</name>
 
+  <properties>
+    <java.module.name>org.jbpm.wb.dashboard.backend</java.module.name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>

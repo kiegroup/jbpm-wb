@@ -29,6 +29,10 @@
 
   <name>jBPM Workbench - Process Runtime Backend</name>
 
+  <properties>
+    <java.module.name>org.jbpm.wb.process.runtime.backend</java.module.name>
+  </properties>
+
   <dependencies>
 
     <!-- dependencies added because of new illegal transitive dependency check -->

@@ -25,6 +25,11 @@
   <artifactId>jbpm-wb-human-tasks-backend</artifactId>
   <packaging>jar</packaging>
   <name>jBPM Workbench - Human Tasks Backend</name>
+
+  <properties>
+    <java.module.name>org.jbpm.wb.task.backend</java.module.name>
+  </properties>
+
   <dependencies>
     <!-- Internal dependencies -->
     <dependency>

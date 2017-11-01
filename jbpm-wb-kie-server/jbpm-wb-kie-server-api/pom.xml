@@ -29,6 +29,10 @@
 
   <name>jBPM Workbench - KIE Server API</name>
 
+  <properties>
+    <java.module.name>org.jbpm.wb.kie.server.api</java.module.name>
+  </properties>
+
   <dependencies>
 
     <dependency>

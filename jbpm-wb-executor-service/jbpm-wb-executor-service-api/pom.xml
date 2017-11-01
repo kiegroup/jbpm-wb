@@ -28,6 +28,10 @@
 
   <name>jBPM Workbench - Executor Service API</name>
 
+  <properties>
+    <java.module.name>org.jbpm.wb.executor.service.api</java.module.name>
+  </properties>
+
   <dependencies>
      <dependency>
       <groupId>org.jbpm</groupId>

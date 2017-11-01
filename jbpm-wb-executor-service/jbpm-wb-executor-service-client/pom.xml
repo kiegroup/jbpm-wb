@@ -28,6 +28,10 @@
 
   <name>jBPM Workbench - Executor Service Client</name>
 
+  <properties>
+    <java.module.name>org.jbpm.wb.executor.service.client</java.module.name>
+  </properties>
+
   <dependencies>
 
     <!-- dependencies added because of new illegal transitive dependency check -->

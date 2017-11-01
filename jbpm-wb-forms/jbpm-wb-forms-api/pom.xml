@@ -29,6 +29,10 @@
 
   <name>jBPM Workbench - Forms API</name>
 
+  <properties>
+    <java.module.name>org.jbpm.wb.forms.api</java.module.name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.jbpm</groupId>

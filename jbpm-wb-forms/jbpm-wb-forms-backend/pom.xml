@@ -12,6 +12,10 @@
   <artifactId>jbpm-wb-forms-backend</artifactId>
   <name>jBPM Workbench - Forms Backend</name>
 
+  <properties>
+    <java.module.name>org.jbpm.wb.forms.backend</java.module.name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>

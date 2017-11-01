@@ -31,6 +31,7 @@
   <name>jBPM Workbench - Integration Backend</name>
 
   <properties>
+    <java.module.name>org.jbpm.wb.integration.backend</java.module.name>
     <jboss.home>${project.build.directory}/wildfly-${version.org.wildfly.gwt.sdm}</jboss.home>
   </properties>
 
