@@ -44,22 +44,29 @@ public class ProcessInstanceDetailsPresenter {
 
     private String currentProcessInstanceId;
 
-    private String currentProcessDefId;
-
     private String currentServerTemplateId;
 
-    @Inject
     private ProcessInstanceDetailsView view;
-
-    @Inject
-    private Event<ProcessInstanceStyleEvent> processInstanceStyleEvent;
-
-    @Inject
-    private Caller<ProcessRuntimeDataService> processRuntimeDataService;
 
     private Constants constants = Constants.INSTANCE;
 
     private ProcessInstanceSummary processSelected = null;
+
+    private Caller<ProcessRuntimeDataService> processRuntimeDataService;
+
+    @Inject
+    private Event<ProcessInstanceStyleEvent> processInstanceStyleEvent;
+
+
+    @Inject
+    public void setView(final ProcessInstanceDetailsView view) {
+        this.view = view;
+    }
+
+    @Inject
+    public void setProcessRuntimeDataService(final Caller<ProcessRuntimeDataService> processRuntimeDataService) {
+        this.processRuntimeDataService = processRuntimeDataService;
+    }
 
     public IsWidget getWidget() {
         return view;
@@ -78,18 +85,15 @@ public class ProcessInstanceDetailsPresenter {
     public void onProcessInstanceSelectionEvent(@Observes ProcessInstanceSelectionEvent event) {
         this.currentDeploymentId = event.getDeploymentId();
         this.currentProcessInstanceId = String.valueOf(event.getProcessInstanceId());
-        this.currentProcessDefId = event.getProcessDefId();
         this.currentServerTemplateId = event.getServerTemplateId();
 
         refreshProcessInstanceDataRemote(currentDeploymentId,
                                          currentProcessInstanceId,
-                                         currentProcessDefId,
                                          currentServerTemplateId);
     }
 
     public void refreshProcessInstanceDataRemote(final String deploymentId,
                                                  final String processId,
-                                                 final String processDefId,
                                                  final String serverTemplateId) {
         processSelected = null;
 
