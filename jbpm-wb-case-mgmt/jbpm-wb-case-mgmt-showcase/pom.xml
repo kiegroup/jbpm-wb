@@ -191,8 +191,8 @@
 
     <!-- Dashbuilder -->
     <dependency>
-      <groupId>org.dashbuilder</groupId>
-      <artifactId>dashbuilder-dataset-api</artifactId>
+      <groupId>org.kie.soup</groupId>
+      <artifactId>kie-soup-dataset-api</artifactId>
     </dependency>
     <!-- Kie -->
     <dependency>
@@ -526,8 +526,8 @@
               <compileSourcesArtifact>org.kie.server:kie-server-api</compileSourcesArtifact>
 
               <!-- Dashbuilder -->
-              <compileSourcesArtifact>org.dashbuilder:dashbuilder-json</compileSourcesArtifact>
-              <compileSourcesArtifact>org.dashbuilder:dashbuilder-dataset-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.soup:kie-soup-json</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.soup:kie-soup-dataset-api</compileSourcesArtifact>
 
               <!-- jBPM Case Management -->
               <compileSourcesArtifact>org.jbpm:jbpm-wb-case-mgmt-api</compileSourcesArtifact>
