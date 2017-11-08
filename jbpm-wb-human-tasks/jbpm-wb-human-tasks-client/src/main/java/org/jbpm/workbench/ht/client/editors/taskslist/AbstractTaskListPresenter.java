@@ -57,6 +57,7 @@ import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
+import org.jbpm.workbench.ht.client.editors.taskdetailsmulti.TaskDetailsMultiPresenter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.NewTaskEvent;
@@ -370,21 +371,21 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     public void selectTask(final TaskSummary summary,
                            final Boolean close) {
-        final DefaultPlaceRequest defaultPlaceRequest = new DefaultPlaceRequest("Task Details Multi");
-        final PlaceStatus status = placeManager.getStatus(defaultPlaceRequest);
+        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(TaskDetailsMultiPresenter.SCREEN_ID));
         boolean logOnly = false;
-        if (summary.getStatus().equals(TASK_STATUS_COMPLETED)) {
+        if (TASK_STATUS_COMPLETED.equals(summary.getStatus()) ||
+                TASK_STATUS_EXITED.equals(summary.getStatus())) {
             logOnly = true;
         }
         if (status == PlaceStatus.CLOSE) {
-            placeManager.goTo(defaultPlaceRequest);
+            placeManager.goTo(TaskDetailsMultiPresenter.SCREEN_ID);
             fireTaskSelectionEvent(summary,
                                    logOnly);
         } else if (status == PlaceStatus.OPEN && !close) {
             fireTaskSelectionEvent(summary,
                                    logOnly);
         } else if (status == PlaceStatus.OPEN && close) {
-            placeManager.closePlace("Task Details Multi");
+            placeManager.closePlace(TaskDetailsMultiPresenter.SCREEN_ID);
         }
     }
 
@@ -407,14 +408,14 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     public void refreshNewTask(@Observes NewTaskEvent newTask) {
         refreshGrid();
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Task Details Multi"));
+        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(TaskDetailsMultiPresenter.SCREEN_ID));
         if (status == PlaceStatus.OPEN) {
             taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
                                                      null,
                                                      newTask.getNewTaskId(),
                                                      newTask.getNewTaskName()));
         } else {
-            placeManager.goTo("Task Details Multi");
+            placeManager.goTo(TaskDetailsMultiPresenter.SCREEN_ID);
             taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
                                                      null,
                                                      newTask.getNewTaskId(),

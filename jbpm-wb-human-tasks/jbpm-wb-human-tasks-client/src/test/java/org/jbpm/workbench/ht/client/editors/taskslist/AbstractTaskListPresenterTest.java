@@ -44,6 +44,7 @@ import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
+import org.jbpm.workbench.ht.client.editors.taskdetailsmulti.TaskDetailsMultiPresenter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
@@ -55,8 +56,11 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
@@ -103,6 +107,9 @@ public abstract class AbstractTaskListPresenterTest {
 
     @Mock
     private DataSet dataSetTaskVarMock;
+
+    @Mock
+    private PlaceManager placeManager;
 
     @Spy
     private FilterSettings filterSettings;
@@ -565,4 +572,43 @@ public abstract class AbstractTaskListPresenterTest {
                 COLUMN_PROCESS_INSTANCE_DESCRIPTION
         );
     }
+
+    @Test
+    public void testExitedTaskSelection() {
+        TaskSummary taskSummary = TaskSummary.builder()
+                .id(TASK_ID)
+                .deploymentId(TASK_DEPLOYMENT_ID)
+                .status(TASK_STATUS_EXITED)
+                .build();
+        boolean closed = true;
+        when(placeManager.getStatus(any(DefaultPlaceRequest.class))).thenReturn(PlaceStatus.CLOSE);
+
+        getPresenter().selectTask(taskSummary,
+                                  closed);
+
+        verify(placeManager).goTo(TaskDetailsMultiPresenter.SCREEN_ID);
+        final ArgumentCaptor<TaskSelectionEvent> captor = ArgumentCaptor.forClass(TaskSelectionEvent.class);
+        verify(taskSelected).fire(captor.capture());
+        assertTrue(captor.getValue().isForLog());
+    }
+
+    @Test
+    public void testReadyTaskSelection() {
+        TaskSummary taskSummary = TaskSummary.builder()
+                .id(TASK_ID)
+                .deploymentId(TASK_DEPLOYMENT_ID)
+                .status(TASK_STATUS_READY)
+                .build();
+        boolean closed = true;
+        when(placeManager.getStatus(any(DefaultPlaceRequest.class))).thenReturn(PlaceStatus.CLOSE);
+
+        getPresenter().selectTask(taskSummary,
+                                  closed);
+
+        verify(placeManager).goTo(TaskDetailsMultiPresenter.SCREEN_ID);
+        final ArgumentCaptor<TaskSelectionEvent> captor = ArgumentCaptor.forClass(TaskSelectionEvent.class);
+        verify(taskSelected).fire(captor.capture());
+        assertFalse(captor.getValue().isForLog());
+    }
+
 }
