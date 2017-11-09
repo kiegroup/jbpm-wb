@@ -89,9 +89,6 @@ public class TaskDetailsPresenter {
                                   String actualOwner,
                                   Date expirationTime,
                                   String priority) {
-        if (TASK_STATUS_COMPLETED.equals(status)) {
-            setReadOnlyTaskDetail();
-        }
         view.setTaskDescription(description);
         final Long date = UTCDateBox.date2utc(expirationTime);
         if (date != null) {
@@ -115,6 +112,10 @@ public class TaskDetailsPresenter {
         this.currentTaskId = event.getTaskId();
         this.currentServerTemplateId = event.getServerTemplateId();
         this.currentContainerId = event.getContainerId();
+        if (event.isForLog()) {
+            setReadOnlyTaskDetail();
+        }
+
         setTaskDetails(event.getStatus(),
                        event.getDescription(),
                        event.getActualOwner(),

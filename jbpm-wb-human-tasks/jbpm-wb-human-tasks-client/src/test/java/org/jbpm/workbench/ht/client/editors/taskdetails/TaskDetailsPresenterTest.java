@@ -65,44 +65,52 @@ public class TaskDetailsPresenterTest {
     }
 
     @Test
-    public void testSetTaskDetails_statusComplete() {
+    public void testSetTaskDetails_isForLog() {
+        boolean isForLog = true;
         String status = "Completed";
         String description = "description";
         String actualOwner = "Owner";
         Date expirationTime = new Date();
-        String priority = "2";
+        int priority = 2;
 
-        presenter.setTaskDetails(status,
-                                 description,
-                                 actualOwner,
-                                 expirationTime,
-                                 priority);
+        TaskSelectionEvent event = createTestTaskSelectionEvent(isForLog,
+                                                                status,
+                                                                description,
+                                                                actualOwner,
+                                                                expirationTime,
+                                                                priority);
+        presenter.onTaskSelectionEvent(event);
+
         verify(viewMock).setDueDate(any());
         verify(viewMock).setDueDateTime(any());
         verifySetTaskDetails(actualOwner,
                              status,
-                             priority);
+                             String.valueOf(priority));
         verifyReadOnlyMode(1);
     }
 
     @Test
     public void testSetTaskDetails_statusReady() {
-        String status = "Ready";
+        boolean isForLog = false;
+        String status = "Completed";
         String description = "description";
         String actualOwner = "Owner";
         Date expirationTime = new Date();
-        String priority = "2";
+        int priority = 2;
 
-        presenter.setTaskDetails(status,
-                                 description,
-                                 actualOwner,
-                                 expirationTime,
-                                 priority);
+        TaskSelectionEvent event = createTestTaskSelectionEvent(isForLog,
+                                                                status,
+                                                                description,
+                                                                actualOwner,
+                                                                expirationTime,
+                                                                priority);
+        presenter.onTaskSelectionEvent(event);
+
         verify(viewMock).setDueDate(any());
         verify(viewMock).setDueDateTime(any());
         verifySetTaskDetails(actualOwner,
                              status,
-                             priority);
+                             String.valueOf(priority));
         verifyReadOnlyMode(0);
     }
 
@@ -166,5 +174,26 @@ public class TaskDetailsPresenterTest {
                times(i)).setTaskPriorityEnabled(false);
         verify(viewMock,
                times(i)).setUpdateTaskVisible(false);
+    }
+
+    private TaskSelectionEvent createTestTaskSelectionEvent(boolean isForLog,
+                                                            String status,
+                                                            String description,
+                                                            String actualOwner,
+                                                            Date expirationTime,
+                                                            int priority) {
+        return new TaskSelectionEvent("serverTemplateId",
+                                      "containerId",
+                                      1L,
+                                      "task",
+                                      true,
+                                      isForLog,
+                                      description,
+                                      expirationTime,
+                                      status,
+                                      actualOwner,
+                                      priority,
+                                      1L,
+                                      "processId");
     }
 }

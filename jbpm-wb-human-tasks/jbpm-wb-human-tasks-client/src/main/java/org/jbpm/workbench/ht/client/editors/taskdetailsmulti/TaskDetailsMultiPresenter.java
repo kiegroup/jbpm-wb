@@ -53,8 +53,10 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
-@WorkbenchScreen(identifier = "Task Details Multi", preferredWidth = 655)
+@WorkbenchScreen(identifier = TaskDetailsMultiPresenter.SCREEN_ID, preferredWidth = 655)
 public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
+
+    public static final String SCREEN_ID = "Task Details Multi";
 
     private Caller<TaskService> taskDataService;
 
