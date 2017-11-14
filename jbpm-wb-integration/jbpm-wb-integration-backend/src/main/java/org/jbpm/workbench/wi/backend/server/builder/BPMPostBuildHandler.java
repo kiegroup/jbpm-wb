@@ -46,29 +46,27 @@ public class BPMPostBuildHandler implements PostBuildHandler {
 
     @Override
     public void process(BuildResults buildResults) {
-
         String rootPathString = buildResults.getParameter("RootPath");
         if (rootPathString == null) {
             return;
         }
-        try {
-            Path path = Paths.convert(ioService.get(URI.create(rootPathString + "/src/main/resources/META-INF/kie-deployment-descriptor.xml")));
-            DeploymentDescriptorModel ddModel = deploymentDescriptorService.load(path);
 
+        org.uberfire.java.nio.file.Path ddPath = ioService.get(URI.create(rootPathString + "/src/main/resources/META-INF/kie-deployment-descriptor.xml"));
+        if (ioService.exists(ddPath)) {
+            Path deploymentDescriptorPath = Paths.convert(ddPath);
+            DeploymentDescriptorModel ddModel = deploymentDescriptorService.load(deploymentDescriptorPath);
             buildResults.addParameter("RuntimeStrategy", ddModel.getRuntimeStrategy());
-        } catch (Exception e) {
-            logger.debug("Deployment descriptor not found {}", e.getMessage());
+        } else {
+            logger.debug("Deployment descriptor not found {}", ddPath);
         }
-
     }
 
     // for test purpose only
     public void setDeploymentDescriptorService(DDEditorService deploymentDescriptorService) {
         this.deploymentDescriptorService = deploymentDescriptorService;
     }
-    
+
     public void setIoService(IOService ioService) {
         this.ioService = ioService;
     }
-
 }
