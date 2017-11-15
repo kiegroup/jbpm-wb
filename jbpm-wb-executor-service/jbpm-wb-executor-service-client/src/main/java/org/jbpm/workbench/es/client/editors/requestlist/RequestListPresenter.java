@@ -47,8 +47,10 @@ import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
-import org.jbpm.workbench.es.client.editors.jobdetails.JobDetailsPopup;
+import org.jbpm.workbench.es.client.editors.events.JobSelectedEvent;
+import org.jbpm.workbench.es.client.editors.jobdetails.JobDetailsPresenter;
 import org.jbpm.workbench.es.client.editors.quicknewjob.QuickNewJobPopup;
+
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.jbpm.workbench.es.model.events.RequestChangedEvent;
@@ -57,9 +59,12 @@ import org.jbpm.workbench.es.util.RequestStatus;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.mvp.Command;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -88,7 +93,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     private ErrorPopupPresenter errorPopup;
 
     @Inject
-    private JobDetailsPopup jobDetailsPopup;
+    private Event<JobSelectedEvent> jobSelectedEvent;
 
     public RequestListPresenter() {
         super();
@@ -97,12 +102,16 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     public RequestListPresenter(RequestListViewImpl view,
                                 Caller<ExecutorService> executorServices,
                                 DataSetQueryHelper dataSetQueryHelper,
-                                Event<RequestChangedEvent> requestChangedEvent
+                                Event<RequestChangedEvent> requestChangedEvent,
+                                Event<JobSelectedEvent> jobSelectedEvent,
+                                PlaceManager placeManager
     ) {
         this.view = view;
         this.executorServices = executorServices;
         this.dataSetQueryHelper = dataSetQueryHelper;
         this.requestChangedEvent = requestChangedEvent;
+        this.jobSelectedEvent = jobSelectedEvent;
+        this.placeManager = placeManager;
     }
 
     @WorkbenchPartTitle
@@ -196,12 +205,13 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                                      COLUMN_PROCESS_INSTANCE_DESCRIPTION,
                                      index),
                 getColumnStringValue(dataSet,
-                                    COLUMN_JOB_DEPLOYMENT_ID,
-                                    index)
+                                     COLUMN_JOB_DEPLOYMENT_ID,
+                                     index)
         );
     }
 
-    public void cancelRequest(final String deploymentId, final Long requestId) {
+    public void cancelRequest(final String deploymentId,
+                              final Long requestId) {
         executorServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
@@ -213,7 +223,8 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                          requestId);
     }
 
-    public void requeueRequest(final String deploymentId, final Long requestId) {
+    public void requeueRequest(final String deploymentId,
+                               final Long requestId) {
         executorServices.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void nothing) {
@@ -249,10 +260,24 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                 .build();
     }
 
-    public void showJobDetails(final RequestSummary job) {
-        jobDetailsPopup.show(getSelectedServerTemplate(),
-                             job.getDeploymentId(),
-                             String.valueOf(job.getJobId()));
+    public void selectJob(final RequestSummary job,
+                          final Boolean close) {
+
+        if (job.getStatus() != null) {
+            PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(JobDetailsPresenter.SCREEN_ID));
+            if (status == PlaceStatus.CLOSE) {
+                placeManager.goTo(JobDetailsPresenter.SCREEN_ID);
+                jobSelectedEvent.fire(new JobSelectedEvent(getSelectedServerTemplate(),
+                                                           job.getDeploymentId(),
+                                                           job.getJobId()));
+            } else if (status == PlaceStatus.OPEN && !close) {
+                jobSelectedEvent.fire(new JobSelectedEvent(getSelectedServerTemplate(),
+                                                           job.getDeploymentId(),
+                                                           job.getJobId()));
+            } else if (status == PlaceStatus.OPEN && close) {
+                placeManager.closePlace(JobDetailsPresenter.SCREEN_ID);
+            }
+        }
     }
 
     public void requestCreated(@Observes RequestChangedEvent event) {
@@ -481,10 +506,6 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
 
     public FilterSettings createCanceledTabSettings() {
         return createStatusSettings(RequestStatus.CANCELLED);
-    }
-
-    public Predicate<RequestSummary> getDetailsActionCondition() {
-        return getActionConditionFromStatusList(RequestStatus.values());
     }
 
     public Predicate<RequestSummary> getCancelActionCondition() {

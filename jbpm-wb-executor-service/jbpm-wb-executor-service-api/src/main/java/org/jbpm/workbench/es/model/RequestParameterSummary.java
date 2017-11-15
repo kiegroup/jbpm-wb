@@ -19,9 +19,12 @@ package org.jbpm.workbench.es.model;
 import java.io.Serializable;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jboss.errai.databinding.client.api.Bindable;
+import org.jbpm.workbench.common.model.GenericSummary;
 
 @Portable
-public class RequestParameterSummary implements Serializable {
+@Bindable
+public class RequestParameterSummary extends GenericSummary implements Serializable {
 
     private String key;
     private String value;

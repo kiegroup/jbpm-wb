@@ -1,0 +1,41 @@
+<div data-field="container" class="container-fluid">
+    <!-- tabs -->
+    <div>
+        <!-- navigation tabs -->
+        <ul class="nav nav-tabs nav-tabs-pf" id="navTabs">
+            <li class="active"><a href="#" data-i18n-key="Job_Details"></a></li>
+        </ul>
+    </div>
+
+    <!-- Page content -->
+    <div>
+        <div data-field="job-details"></div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-horizontal">
+                    <div class="form-group" data-field="errorControlGroup">
+                        <label class="control-label col-md-4" data-i18n-key="Exceptions_Occurred"></label>
+                        <div class="col-md-8">
+                            <textarea class="col-sm-12"
+                                      rows="10" readonly data-field="job-errors"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group hidden" data-field="params-form-group">
+                        <label class="control-label col-md-4" data-i18n-key="Execution_Parameters"></label>
+                        <div class="col-md-8">
+                            <table class="table table-striped table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th data-i18n-key="Key"></th>
+                                    <th data-i18n-key="Value"></th>
+                                </tr>
+                                </thead>
+                                <tbody data-field="job-params"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

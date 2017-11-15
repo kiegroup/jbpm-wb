@@ -19,10 +19,12 @@ package org.jbpm.workbench.es.model;
 import java.util.Date;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jboss.errai.databinding.client.api.Bindable;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.es.util.RequestStatus;
 
 @Portable
+@Bindable
 public class RequestSummary extends GenericSummary<Long> {
 
     private Long jobId;
@@ -123,7 +125,7 @@ public class RequestSummary extends GenericSummary<Long> {
         return retries;
     }
 
-    public void setRetries(int retries) {
+    public void setRetries(Integer retries) {
         this.retries = retries;
     }
 
@@ -158,7 +160,7 @@ public class RequestSummary extends GenericSummary<Long> {
     public void setProcessInstanceDescription(String processInstanceDescription) {
         this.processInstanceDescription = processInstanceDescription;
     }
-    
+
     public String getDeploymentId() {
         return deploymentId;
     }

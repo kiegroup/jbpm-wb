@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
@@ -31,6 +32,7 @@ import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.es.client.i18n.Constants;
+import org.jbpm.workbench.es.client.util.JobStatusConverter;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
@@ -49,6 +51,9 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     protected static final String TAB_QUEUED = REQUEST_LIST_PREFIX + "_1";
     protected static final String TAB_ALL = REQUEST_LIST_PREFIX + "_0";
     private final Constants constants = Constants.INSTANCE;
+
+    @Inject
+    private JobStatusConverter jobStatusConverter;
 
     @Override
     public List<String> getInitColumns() {
@@ -92,24 +97,8 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                                                           req -> req.getCommandName()),
                                          constants.Type()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_STATUS,
-                                                          req -> {
-                                                              switch (req.getStatus()) {
-                                                                  case QUEUED:
-                                                                      return constants.Queued();
-                                                                  case DONE:
-                                                                      return constants.Completed();
-                                                                  case CANCELLED:
-                                                                      return constants.Canceled();
-                                                                  case ERROR:
-                                                                      return constants.Error();
-                                                                  case RETRYING:
-                                                                      return constants.Retrying();
-                                                                  case RUNNING:
-                                                                      return constants.Running();
-                                                                  default:
-                                                                      return "";
-                                                              }
-                                                          }),
+                                                          req -> jobStatusConverter.toWidgetValue(req.getStatus())
+        ),
                                          constants.Status()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_TIMESTAMP,
                                                           req -> DateUtils.getDateTimeStr(req.getTime())),
@@ -132,15 +121,12 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     @Override
     public void initSelectionModel(ExtendedPagedTable<RequestSummary> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption(constants.No_Jobs_Found());
+        extendedPagedTable.setSelectionCallback((job, close) -> presenter.selectJob(job,
+                                                                                    close));
     }
 
     private Column<RequestSummary, RequestSummary> initActionsColumn() {
         List<HasCell<RequestSummary, ?>> cells = new LinkedList<HasCell<RequestSummary, ?>>();
-
-        cells.add(new ConditionalButtonActionCell<RequestSummary>(
-                constants.Details(),
-                job -> presenter.showJobDetails(job),
-                presenter.getDetailsActionCondition()));
 
         cells.add(new ConditionalButtonActionCell<RequestSummary>(
                 constants.Cancel(),
