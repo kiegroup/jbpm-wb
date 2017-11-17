@@ -239,6 +239,7 @@ public class ProcessInstanceListPresenterTest {
         verify(processService).abortProcessInstance(anyString(),
                                                     eq(containerId),
                                                     eq(processInstanceId));
+        verify(viewMock).displayNotification(Constants.INSTANCE.Aborting_Process_Instance(processInstanceId));
     }
 
     @Test
@@ -252,8 +253,8 @@ public class ProcessInstanceListPresenterTest {
         pIds.add(random.nextLong());
         pIds.add(random.nextLong());
 
-        presenter.abortProcessInstance(containers,
-                                       pIds);
+        presenter.abortProcessInstances(containers,
+                                        pIds);
 
         verify(processService).abortProcessInstances(anyString(),
                                                      eq(containers),
