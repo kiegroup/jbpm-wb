@@ -47,6 +47,7 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
+import static org.jbpm.workbench.es.client.editors.util.JobUtils.createRequestSummary;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -295,16 +296,7 @@ public class RequestListPresenterTest {
 
     @Test
     public void testJobSelectionWithDetailsClosed() {
-        Long jobId = 1L;
-        String deploymentId = "evaluation.1.0.1";
-        String processName = "testProcessName";
-        String processInstanceDescription = "testProcessInstDescription";
-        Long processInstanceId = 2L;
-        RequestSummary job = createTestRequestSummary(jobId,
-                                                      deploymentId,
-                                                      processName,
-                                                      processInstanceId,
-                                                      processInstanceDescription);
+        RequestSummary job = createRequestSummary();
         boolean closed = true;
         when(placeManager.getStatus(any(DefaultPlaceRequest.class))).thenReturn(PlaceStatus.CLOSE);
         presenter.selectJob(job,
@@ -314,22 +306,13 @@ public class RequestListPresenterTest {
         final ArgumentCaptor<JobSelectedEvent> captor = ArgumentCaptor.forClass(JobSelectedEvent.class);
         verify(jobSelectedEventMock).fire(captor.capture());
         assertJobSelectedEventContent(captor.getValue(),
-                                      deploymentId,
-                                      jobId);
+                                      job.getDeploymentId(),
+                                      job.getId());
     }
 
     @Test
     public void testJobSelectionWithDetailsOpen() {
-        Long jobId = 1L;
-        String deploymentId = "evaluation.1.0.1";
-        String processName = "testProcessName";
-        String processInstanceDescription = "testProcessInstDescription";
-        Long processInstanceId = 2L;
-        RequestSummary job = createTestRequestSummary(jobId,
-                                                      deploymentId,
-                                                      processName,
-                                                      processInstanceId,
-                                                      processInstanceDescription);
+        RequestSummary job = createRequestSummary();
         boolean closed = false;
         when(placeManager.getStatus(any(DefaultPlaceRequest.class))).thenReturn(PlaceStatus.OPEN);
         presenter.selectJob(job,
@@ -341,50 +324,23 @@ public class RequestListPresenterTest {
         final ArgumentCaptor<JobSelectedEvent> captor = ArgumentCaptor.forClass(JobSelectedEvent.class);
         verify(jobSelectedEventMock).fire(captor.capture());
         assertJobSelectedEventContent(captor.getValue(),
-                                      deploymentId,
-                                      jobId);
+                                      job.getDeploymentId(),
+                                      job.getId());
     }
 
     @Test
     public void testCloseDetails() {
-        Long jobId = 1L;
-        String deploymentId = "evaluation.1.0.1";
-        String processName = "testProcessName";
-        String processInstanceDescription = "testProcessInstDescription";
-        Long processInstanceId = 2L;
-        RequestSummary job = createTestRequestSummary(jobId,
-                                                      deploymentId,
-                                                      processName,
-                                                      processInstanceId,
-                                                      processInstanceDescription);
+        RequestSummary job = createRequestSummary();
         boolean closed = true;
         when(placeManager.getStatus(any(DefaultPlaceRequest.class))).thenReturn(PlaceStatus.OPEN);
         presenter.selectJob(job,
                             closed);
 
         verify(placeManager,
-               never()).goTo(any(PlaceRequest.class));
+               never()).goTo(anyString());
         verify(jobSelectedEventMock,
                never()).fire(any());
-    }
-
-    private RequestSummary createTestRequestSummary(Long jobId,
-                                                    String deploymentId,
-                                                    String processName,
-                                                    Long processInstanceId,
-                                                    String processInstanceDescription) {
-        return new RequestSummary(jobId,
-                                  new Date(),
-                                  RequestStatus.QUEUED,
-                                  "commandName",
-                                  "Message",
-                                  "key",
-                                  1,
-                                  0,
-                                  processName,
-                                  processInstanceId,
-                                  processInstanceDescription,
-                                  deploymentId);
+        verify(placeManager).closePlace(JobDetailsPresenter.SCREEN_ID);
     }
 
     private void assertJobSelectedEventContent(JobSelectedEvent event,

@@ -15,6 +15,7 @@
  */
 package org.jbpm.workbench.es.client.editors.jobdetails;
 
+import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -23,7 +24,9 @@ import javax.inject.Inject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.es.client.editors.events.JobSelectedEvent;
 import org.jbpm.workbench.es.client.i18n.Constants;
+import org.jbpm.workbench.es.model.ErrorSummary;
 import org.jbpm.workbench.es.model.RequestDetails;
+import org.jbpm.workbench.es.model.RequestParameterSummary;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.jbpm.workbench.es.service.ExecutorService;
 import org.uberfire.client.annotations.DefaultPosition;
@@ -104,9 +107,16 @@ public class JobDetailsPresenter implements RefreshMenuBuilder.SupportsRefresh {
                                             final Long jobId) {
         executorServices.call(
                 (RequestDetails requestDetails) -> {
-                    view.setValue(requestDetails);
-                    changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place,
-                                                                           getJobDetailTitle(requestDetails.getRequest())));
+                    if (requestDetails != null) {
+                        view.setBasicDetails(requestDetails.getRequest());
+                        view.setParameters(requestDetails.getParams());
+                        List<ErrorSummary> errors = requestDetails.getErrors();
+                        if (errors != null && errors.size() > 0) {
+                            view.setErrors(errors);
+                        }
+                        changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place,
+                                                                               getJobDetailTitle(requestDetails.getRequest())));
+                    }
                 })
                 .getRequestDetails(serverTemplateId,
                                    deploymentId,
@@ -135,6 +145,10 @@ public class JobDetailsPresenter implements RefreshMenuBuilder.SupportsRefresh {
 
     public interface JobDetailsView extends UberElement<JobDetailsPresenter> {
 
-        void setValue(RequestDetails requestDetails);
+        void setBasicDetails(RequestSummary requestSummary);
+
+        void setParameters(List<RequestParameterSummary> requestParameterSummaries);
+
+        void setErrors(List<ErrorSummary> errors);
     }
 }
