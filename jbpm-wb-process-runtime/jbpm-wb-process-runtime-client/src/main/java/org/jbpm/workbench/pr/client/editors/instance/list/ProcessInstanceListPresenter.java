@@ -324,6 +324,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     public void abortProcessInstance(String containerId,
                                      long processInstanceId) {
+        view.displayNotification(Constants.INSTANCE.Aborting_Process_Instance(processInstanceId));
         processService.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void v) {
@@ -334,8 +335,8 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                 processInstanceId);
     }
 
-    public void abortProcessInstance(List<String> containers,
-                                     List<Long> processInstanceIds) {
+    public void abortProcessInstances(List<String> containers,
+                                      List<Long> processInstanceIds) {
         processService.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void v) {
@@ -378,7 +379,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                       getSelectedServerTemplate());
 
         placeManager.goTo(placeRequestImpl);
-        view.displayNotification(Constants.INSTANCE.Signaling_Process_Instance());
     }
 
     public void bulkAbort(List<ProcessInstanceSummary> processInstances) {
@@ -397,8 +397,8 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
             view.displayNotification(Constants.INSTANCE.Aborting_Process_Instance(selected.getId()));
         }
         if (ids.size() > 0) {
-            abortProcessInstance(containers,
-                                 ids);
+            abortProcessInstances(containers,
+                                  ids);
         }
     }
 
@@ -428,10 +428,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                 .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()
                 .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
                 .build();
-    }
-
-    protected List<ProcessInstanceSummary> getDisplayedProcessInstances() {
-        return myProcessInstancesFromDataSet;
     }
 
     public void signalProcessInstance(final ProcessInstanceSummary processInstance) {

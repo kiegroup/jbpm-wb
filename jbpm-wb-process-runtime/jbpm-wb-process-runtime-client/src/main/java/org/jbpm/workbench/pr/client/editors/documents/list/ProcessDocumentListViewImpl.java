@@ -258,7 +258,7 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
                                    final SafeHtmlBuilder sb) {
                     SafeHtmlBuilder mysb = new SafeHtmlBuilder();
                     mysb.appendHtmlConstant(new SimplePanel(new AnchorButton(ButtonType.DEFAULT) {{
-                        setText(constants.download());
+                        setText(constants.Download());
                         getElement().setPropertyString("target",
                                                        "_blank");
                         setHref(value.getDocumentLink());

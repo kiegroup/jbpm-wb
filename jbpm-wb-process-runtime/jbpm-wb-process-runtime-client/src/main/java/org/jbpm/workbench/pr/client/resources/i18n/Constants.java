@@ -33,8 +33,6 @@ public interface Constants extends Messages {
 
     String No_Process_Definitions_Found();
 
-    String Reload_Repository();
-
     String Name();
 
     String Version();
@@ -44,10 +42,6 @@ public interface Constants extends Messages {
     String Actions();
 
     String Start();
-
-    String End();
-
-    String Status();
 
     String Signal();
 
@@ -79,8 +73,6 @@ public interface Constants extends Messages {
 
     String Initiator();
 
-    String Process_Instances_Refreshed();
-
     String No_Process_Instances_Found();
 
     String Aborting_Process_Instance_Not_Allowed(Object id);
@@ -95,12 +87,6 @@ public interface Constants extends Messages {
 
     String Bulk_Signal();
 
-    String Related_To_Me();
-
-    String Showing();
-
-    String Filter();
-
     String Process_Instances();
 
     String History();
@@ -114,8 +100,6 @@ public interface Constants extends Messages {
     String Type();
 
     String No_Variables_Available();
-
-    String Refresh();
 
     String View_Process_Instances();
 
@@ -139,10 +123,6 @@ public interface Constants extends Messages {
 
     String Process_Variables();
 
-    String Process_Definition_Details();
-
-    String Process_Definition_Details_Refreshed();
-
     String Previous_Value();
 
     String No_History_For_This_Variable();
@@ -151,19 +131,11 @@ public interface Constants extends Messages {
 
     String Process_Instance_Details();
 
-    String Process_Instance_ID();
-
-    String Process_Definition_Package();
-
     String Process_Definition_Version();
 
     String Process_Instance_State();
 
     String Current_Activities();
-
-    String Process_Instance_Log();
-
-    String Process_Instances_Details_Refreshed();
 
     String Clear();
 
@@ -173,9 +145,7 @@ public interface Constants extends Messages {
 
     String Variable_Value();
 
-    String Variables_History();
-
-    String Signalling_Process_Instance();
+    String Signalling_Process_Instance(Long processInstanceID);
 
     String Signal_Data();
 
@@ -183,15 +153,7 @@ public interface Constants extends Messages {
 
     String Process_Diagram();
 
-    String Please_Wait();
-
-    String Processes_Refreshed_From_The_Repo();
-
     String Bulk_Actions();
-
-    String Process_Variable_History();
-
-    String Process_Definitions_Refreshed();
 
     String Options();
 
@@ -201,12 +163,6 @@ public interface Constants extends Messages {
 
     String Bulk_Abort();
 
-    String Process_Model();
-
-    String Views();
-
-    String Process_Variables_Refreshed();
-
     String Services();
 
     String Id();
@@ -215,15 +171,11 @@ public interface Constants extends Messages {
 
     String Logs();
 
-    String Get_Instance_Data();
-
     String No_Documents_Available();
 
     String Documents();
 
-    String download();
-
-    String Last_Modified();
+    String Download();
 
     String Size();
 
@@ -235,11 +187,7 @@ public interface Constants extends Messages {
 
     String Asc_Log_Order();
 
-    String Process_Instance_Name();
-
     String Process_Instance_Description();
-
-    String Select();
 
     String Active_Tasks();
 
@@ -253,27 +201,13 @@ public interface Constants extends Messages {
 
     String Ok();
 
-    String FilterManagement();
-
-    String Close();
-
     String Correlation_Key();
 
     String Last_Modification_Date();
 
     String Last_Modification_Date_Placeholder();
 
-    String Process_DeploymentId();
-
-    String Basic();
-
-    String Advanced();
-
-    String Form();
-
     String Parent_Process_Instance();
-
-    String ParentProcessInstanceId();
 
     String No_Parent_Process_Instance();
 
@@ -287,17 +221,7 @@ public interface Constants extends Messages {
 
     String UnexpectedError(String message);
 
-    String ErrorRetrievingProcessDefinitions(String message);
-
     String ErrorRetrievingProcessVariables(String message);
-
-    String Outcome();
-
-    String Duration();
-
-    String Identity();
-
-    String ExternalId();
 
     String NoSubprocessesRequiredByThisProcess();
 
@@ -312,8 +236,6 @@ public interface Constants extends Messages {
     String ErrorRetrievingProcessDocuments(String message);
 
     String AccessDocument();
-
-    String ProcessInstanceNeedsToBeActiveInOrderToBeAborted();
 
     String SelectServerTemplate();
 
