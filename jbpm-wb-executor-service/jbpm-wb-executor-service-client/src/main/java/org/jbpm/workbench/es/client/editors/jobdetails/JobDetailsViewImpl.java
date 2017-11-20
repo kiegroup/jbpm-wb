@@ -31,8 +31,8 @@ import org.jboss.errai.ui.shared.api.annotations.Bundle;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.es.model.ErrorSummary;
-import org.jbpm.workbench.es.model.RequestDetails;
 import org.jbpm.workbench.es.model.RequestParameterSummary;
+import org.jbpm.workbench.es.model.RequestSummary;
 import org.uberfire.client.mvp.PlaceManager;
 
 import static org.jboss.errai.common.client.dom.DOMUtil.removeCSSClass;
@@ -81,31 +81,30 @@ public class JobDetailsViewImpl implements JobDetailsPresenter.JobDetailsView {
     }
 
     @Override
-    public void setValue(RequestDetails jobDetails) {
-        basicJobDetails.setValue(jobDetails.getRequest());
-
-        setJobParameters(jobDetails.getParams());
-        List<ErrorSummary> errors = jobDetails.getErrors();
-        if (jobDetails.getErrors() != null && errors.size() > 0) {
-            errorControlGroup.setHidden(false);
-            String textAreaContent = "";
-            for (ErrorSummary error : errors) {
-                textAreaContent += error.getMessage() + "\n" +
-                        error.getStacktrace() + "\n\n";
-            }
-            this.jobErrorTextArea.setText(textAreaContent);
-        } else {
-            errorControlGroup.setHidden(true);
-        }
+    public void setBasicDetails(RequestSummary requestSummary) {
+        basicJobDetails.setValue(requestSummary);
+        errorControlGroup.setHidden(true);
     }
 
-    public void setJobParameters(final List<RequestParameterSummary> requestParameterSummaries) {
+    @Override
+    public void setParameters(List<RequestParameterSummary> requestParameterSummaries) {
         if (requestParameterSummaries.size() > 0) {
             removeCSSClass(paramsFormGroup,
                            "hidden");
         }
 
         jobParameterList.setModel(requestParameterSummaries);
+    }
+
+    @Override
+    public void setErrors(List<ErrorSummary> errors) {
+        errorControlGroup.setHidden(false);
+        String textAreaContent = "";
+        for (ErrorSummary error : errors) {
+            textAreaContent += error.getMessage() + "\n" +
+                    error.getStacktrace() + "\n\n";
+        }
+        this.jobErrorTextArea.setText(textAreaContent);
     }
 
     @Override

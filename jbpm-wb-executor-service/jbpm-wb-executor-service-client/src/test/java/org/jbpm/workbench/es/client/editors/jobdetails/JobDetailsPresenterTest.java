@@ -15,12 +15,14 @@
  */
 package org.jbpm.workbench.es.client.editors.jobdetails;
 
-import java.util.Date;
+import java.util.List;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.es.client.editors.events.JobSelectedEvent;
 
+import org.jbpm.workbench.es.model.ErrorSummary;
 import org.jbpm.workbench.es.model.RequestDetails;
+import org.jbpm.workbench.es.model.RequestParameterSummary;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.jbpm.workbench.es.service.ExecutorService;
 import org.jbpm.workbench.es.util.RequestStatus;
@@ -30,25 +32,20 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static java.util.Collections.singletonList;
+import static org.jbpm.workbench.es.client.editors.util.JobUtils.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class JobDetailsPresenterTest {
 
     @Mock
-    public JobDetailsPresenter.JobDetailsView view;
-
-    @Mock
-    PlaceManager placeManager;
-    private CallerMock<ExecutorService> callerMockExecutorService;
+    private JobDetailsPresenter.JobDetailsView viewMock;
 
     @Mock
     private ExecutorService executorServiceMock;
@@ -61,52 +58,68 @@ public class JobDetailsPresenterTest {
 
     @Before
     public void setupMocks() {
-        callerMockExecutorService = new CallerMock<>(executorServiceMock);
+        CallerMock<ExecutorService> callerMockExecutorService = new CallerMock<>(executorServiceMock);
         presenter.setExecutorService(callerMockExecutorService);
     }
 
     @Test
-    public void testOnSelectionEvent() {
+    public void testStaleJobSelected() {
+
+        final String serverTemplate = "serverTemplate";
+        RequestSummary job = createRequestSummary(RequestStatus.DONE);
+
+        JobSelectedEvent event = new JobSelectedEvent(serverTemplate,
+                                                      job.getDeploymentId(),
+                                                      job.getJobId());
+
+        when(executorServiceMock.getRequestDetails(serverTemplate,
+                                                   job.getDeploymentId(),
+                                                   job.getJobId())).thenReturn(null);
+        presenter.onJobSelectedEvent(event);
+
+        verifyZeroInteractions(viewMock);
+        verifyZeroInteractions(changeTitleWidgetEventMock);
+    }
+
+    @Test
+    public void testJobSelected() {
+
         String selectedServerTemplate = "serverTemplate";
-        Long jobId = 1L;
-        String deploymentId = "evaluation.1.0.1";
-        String key = "key";
-        RequestSummary job = new RequestSummary(jobId,
-                                                new Date(),
-                                                RequestStatus.QUEUED,
-                                                "commandName",
-                                                "Message",
-                                                key,
-                                                1,
-                                                0,
-                                                "processName",
-                                                1L,
-                                                "processInstanceDescription",
-                                                deploymentId);
+        RequestSummary job = createRequestSummary();
+        List<ErrorSummary> jobErrors = singletonList(createErrorSummary());
+        List<RequestParameterSummary> jobParameters = singletonList(createRequestParameterSummary());
 
         RequestDetails requestDetails = new RequestDetails(job,
-                                                           null,
-                                                           null);
+                                                           jobErrors,
+                                                           jobParameters);
+
         JobSelectedEvent event = new JobSelectedEvent(selectedServerTemplate,
                                                       job.getDeploymentId(),
                                                       job.getJobId());
 
-        when(placeManager.getStatus(any(DefaultPlaceRequest.class))).thenReturn(PlaceStatus.CLOSE);
         when(executorServiceMock.getRequestDetails(selectedServerTemplate,
-                                                   deploymentId,
-                                                   jobId)).thenReturn(requestDetails);
+                                                   job.getDeploymentId(),
+                                                   job.getJobId())).thenReturn(requestDetails);
         presenter.onJobSelectedEvent(event);
 
-        verify(executorServiceMock).getRequestDetails(selectedServerTemplate,
-                                                      deploymentId,
-                                                      jobId);
-        verify(view).setValue(requestDetails);
+        ArgumentCaptor<RequestSummary> requestSummaryCaptor = ArgumentCaptor.forClass(RequestSummary.class);
+        verify(viewMock).setBasicDetails(requestSummaryCaptor.capture());
+        assertEquals(job,
+                     requestSummaryCaptor.getValue());
+
+        ArgumentCaptor<List> parameterListCaptor = ArgumentCaptor.forClass(List.class);
+        verify(viewMock).setParameters(parameterListCaptor.capture());
+        assertEquals(jobParameters,
+                     parameterListCaptor.getValue());
+
+        ArgumentCaptor<List> errorsListCaptor = ArgumentCaptor.forClass(List.class);
+        verify(viewMock).setErrors(errorsListCaptor.capture());
+        assertEquals(jobErrors,
+                     errorsListCaptor.getValue());
 
         ArgumentCaptor<ChangeTitleWidgetEvent> captor = ArgumentCaptor.forClass(ChangeTitleWidgetEvent.class);
         verify(changeTitleWidgetEventMock).fire(captor.capture());
         assertEquals(job.getId() + " - " + job.getKey(),
-                     captor.getValue().getTitle());
-        assertEquals(jobId + " - " + key,
                      captor.getValue().getTitle());
     }
 
@@ -114,13 +127,13 @@ public class JobDetailsPresenterTest {
     public void getJobDetailTitleTest() {
         Long jobId = 1L;
         String key = "key";
-        RequestSummary job = new RequestSummary();
-        job.setId(jobId);
+        RequestSummary job = createRequestSummary(jobId,
+                                                  key,
+                                                  RequestStatus.QUEUED);
 
-        job.setKey(key);
-        assertEquals(job.getId() + " - " + job.getKey() ,
+        assertEquals(job.getId() + " - " + job.getKey(),
                      presenter.getJobDetailTitle(job));
-        assertEquals(jobId + " - " + key ,
+        assertEquals(jobId + " - " + key,
                      presenter.getJobDetailTitle(job));
         assertEquals("1 - key",
                      presenter.getJobDetailTitle(job));
