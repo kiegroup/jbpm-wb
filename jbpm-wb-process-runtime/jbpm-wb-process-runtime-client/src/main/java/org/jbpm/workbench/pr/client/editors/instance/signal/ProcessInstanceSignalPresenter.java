@@ -95,7 +95,7 @@ public class ProcessInstanceSignalPresenter {
             return;
         }
         for (Long processInstanceId : processInstanceIds) {
-            view.displayNotification(constants.Signalling_Process_Instance(processInstanceId) + " " + constants.Signal() + " = "
+            view.displayNotification(constants.Signalling_Process_Instance() + " (" + constants.Id() + " = " + processInstanceId + ") " + constants.Signal() + " = "
                                              + view.getSignalRefText() + " - " + constants.Signal_Data() + " = " + view.getEventText());
         }
         processService.call((Void v) -> {
