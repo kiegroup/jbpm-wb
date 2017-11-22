@@ -105,10 +105,10 @@ public class ProcessInstanceSignalPresenterTest {
 
         verify(view,
                times(processInstanceIds.size())).displayNotification(anyString());
-        verify(view).displayNotification(Constants.INSTANCE.Signalling_Process_Instance() + " (" + Constants.INSTANCE.Id() + " = " + PI_ID + ") " +
+        verify(view).displayNotification(Constants.INSTANCE.Signaling_Process_Instance() + " (" + Constants.INSTANCE.Id() + " = " + PI_ID + ") " +
                                                  Constants.INSTANCE.Signal() + " = " + signalRef + " - " +
                                                  Constants.INSTANCE.Signal_Data() + " = " + eventText);
-        verify(view).displayNotification(Constants.INSTANCE.Signalling_Process_Instance() + " (" + Constants.INSTANCE.Id() + " = " + PI_ID2 + ") " +
+        verify(view).displayNotification(Constants.INSTANCE.Signaling_Process_Instance() + " (" + Constants.INSTANCE.Id() + " = " + PI_ID2 + ") " +
                                                  Constants.INSTANCE.Signal() + " = " + signalRef + " - " +
                                                  Constants.INSTANCE.Signal_Data() + " = " + eventText);
         verify(processService).signalProcessInstances(eq(SERVER_TEMPLATE_ID),

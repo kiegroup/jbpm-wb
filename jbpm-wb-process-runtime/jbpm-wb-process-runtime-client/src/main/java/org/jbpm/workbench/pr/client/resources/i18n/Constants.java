@@ -145,8 +145,6 @@ public interface Constants extends Messages {
 
     String Variable_Value();
 
-    String Signalling_Process_Instance();
-
     String Signal_Data();
 
     String Signal_Name();
