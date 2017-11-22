@@ -55,7 +55,6 @@ import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
-import org.jbpm.workbench.pr.events.ProcessInstancesWithDetailsRequestEvent;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.kie.api.runtime.process.ProcessInstance;
@@ -464,16 +463,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         } else if (status == PlaceStatus.OPEN && close) {
             placeManager.closePlace("Process Instance Details Multi");
         }
-    }
-
-    public void onProcessInstanceSelectionEvent(@Observes ProcessInstancesWithDetailsRequestEvent event) {
-        placeManager.goTo("Process Instance Details Multi");
-        processInstanceSelected.fire(new ProcessInstanceSelectionEvent(event.getDeploymentId(),
-                                                                       event.getProcessInstanceId(),
-                                                                       event.getProcessDefId(),
-                                                                       event.getProcessDefName(),
-                                                                       event.getProcessInstanceStatus(),
-                                                                       event.getServerTemplateId()));
     }
 
     public void formClosed(@Observes BeforeClosePlaceEvent closed) {

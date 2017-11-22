@@ -16,30 +16,17 @@
 
 package org.jbpm.workbench.pr.client.editors.definition.details;
 
-import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
-import org.jbpm.workbench.pr.events.ProcessDefStyleEvent;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public abstract class BaseProcessDefDetailsPresenter {
 
-    @Inject
-    private Event<ProcessDefStyleEvent> processDefStyleEvent;
-
     private String currentProcessDefId = "";
     private String currentDeploymentId = "";
     private String currentServerTemplateId = "";
-
-    protected void changeStyleRow(String processDefName,
-                                  String processDefVersion) {
-
-        processDefStyleEvent.fire(new ProcessDefStyleEvent(processDefName,
-                                                           processDefVersion));
-    }
 
     public void onProcessDefSelectionEvent(@Observes final ProcessDefSelectionEvent event) {
         this.currentProcessDefId = event.getProcessId();

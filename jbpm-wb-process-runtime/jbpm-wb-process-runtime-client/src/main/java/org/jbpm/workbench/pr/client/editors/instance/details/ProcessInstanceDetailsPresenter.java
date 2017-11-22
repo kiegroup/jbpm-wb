@@ -15,10 +15,8 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.details;
 
-import java.util.Date;
 import java.util.List;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
@@ -33,7 +31,6 @@ import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.UserTaskSummary;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
-import org.jbpm.workbench.pr.events.ProcessInstanceStyleEvent;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.kie.api.runtime.process.ProcessInstance;
 
@@ -50,13 +47,7 @@ public class ProcessInstanceDetailsPresenter {
 
     private Constants constants = Constants.INSTANCE;
 
-    private ProcessInstanceSummary processSelected = null;
-
     private Caller<ProcessRuntimeDataService> processRuntimeDataService;
-
-    @Inject
-    private Event<ProcessInstanceStyleEvent> processInstanceStyleEvent;
-
 
     @Inject
     public void setView(final ProcessInstanceDetailsView view) {
@@ -72,16 +63,6 @@ public class ProcessInstanceDetailsPresenter {
         return view;
     }
 
-    private void changeStyleRow(long processInstanceId,
-                                String processDefName,
-                                String processDefVersion,
-                                Date startTime) {
-        processInstanceStyleEvent.fire(new ProcessInstanceStyleEvent(processInstanceId,
-                                                                     processDefName,
-                                                                     processDefVersion,
-                                                                     startTime));
-    }
-
     public void onProcessInstanceSelectionEvent(@Observes ProcessInstanceSelectionEvent event) {
         this.currentDeploymentId = event.getDeploymentId();
         this.currentProcessInstanceId = String.valueOf(event.getProcessInstanceId());
@@ -95,8 +76,6 @@ public class ProcessInstanceDetailsPresenter {
     public void refreshProcessInstanceDataRemote(final String deploymentId,
                                                  final String processId,
                                                  final String serverTemplateId) {
-        processSelected = null;
-
         view.getProcessDefinitionIdText().setText("");
         view.getProcessVersionText().setText("");
         view.getProcessDeploymentText().setText("");
@@ -149,11 +128,6 @@ public class ProcessInstanceDetailsPresenter {
                     view.getActiveTasksListBox().setHTML(safeHtmlBuilder.toSafeHtml());
                 }
                 view.getStateText().setText(statusStr);
-                processSelected = process;
-                changeStyleRow(Long.parseLong(processId),
-                               processSelected.getProcessName(),
-                               processSelected.getProcessVersion(),
-                               processSelected.getStartTime());
             }
         }).getProcessInstance(serverTemplateId,
                               new ProcessInstanceKey(serverTemplateId,

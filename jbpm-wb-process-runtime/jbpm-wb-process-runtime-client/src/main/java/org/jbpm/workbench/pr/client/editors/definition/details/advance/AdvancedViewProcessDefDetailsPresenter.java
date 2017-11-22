@@ -78,10 +78,7 @@ public class AdvancedViewProcessDefDetailsPresenter extends
 
     private void refreshProcessItems(ProcessSummary process) {
         if (process != null) {
-
             view.getProcessNameText().setText(process.getName());
-            changeStyleRow(process.getName(),
-                           process.getVersion());
         } else {
             // set to empty to ensure it's clear state
             view.getProcessNameText().setText("");
