@@ -16,7 +16,6 @@
 package org.jbpm.workbench.pr.client.editors.instance.details.multi;
 
 import java.util.List;
-import javax.enterprise.event.Event;
 
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.HTML;
@@ -24,7 +23,6 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.pr.client.editors.instance.details.ProcessInstanceDetailsPresenter;
 import org.jbpm.workbench.pr.client.editors.instance.details.ProcessInstanceDetailsViewImpl;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
-import org.jbpm.workbench.pr.events.ProcessInstanceStyleEvent;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
@@ -36,10 +34,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.stubbing.Answer;
 import org.uberfire.mocks.CallerMock;
-import org.uberfire.mocks.EventSourceMock;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -61,8 +57,6 @@ public class ProcessInstanceDetailsPresenterTest {
     private ProcessInstanceSummary processInstanceSummary;
     private ProcessInstanceDetailsPresenter.ProcessInstanceDetailsView viewMock;
 
-    @Spy
-    private Event<ProcessInstanceStyleEvent> processInstanceStyleEvent = new EventSourceMock<>();
     @Mock
     private ProcessRuntimeDataService processRuntimeDataServiceMock;
     @InjectMocks
@@ -76,7 +70,6 @@ public class ProcessInstanceDetailsPresenterTest {
                         (Answer) invocationOnMock -> htmlMock);
         presenter.setView(viewMock);
         presenter.setProcessRuntimeDataService(new CallerMock<>(processRuntimeDataServiceMock));
-        doNothing().when(processInstanceStyleEvent).fire(any(ProcessInstanceStyleEvent.class));
         nodeInstanceSummary = getNodeInstanceSummary();
         when(processRuntimeDataServiceMock.getProcessInstanceActiveNodes(SERVER_TEMPLATE_ID,
                                                                          DEPLOYMENT_ID,

@@ -60,7 +60,6 @@ import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.ht.client.editors.taskdetailsmulti.TaskDetailsMultiPresenter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
-import org.jbpm.workbench.ht.model.events.NewTaskEvent;
 import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
@@ -404,25 +403,6 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                                                  summary.getPriority(),
                                                  summary.getProcessInstanceId(),
                                                  summary.getProcessId()));
-    }
-
-    public void refreshNewTask(@Observes NewTaskEvent newTask) {
-        refreshGrid();
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(TaskDetailsMultiPresenter.SCREEN_ID));
-        if (status == PlaceStatus.OPEN) {
-            taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
-                                                     null,
-                                                     newTask.getNewTaskId(),
-                                                     newTask.getNewTaskName()));
-        } else {
-            placeManager.goTo(TaskDetailsMultiPresenter.SCREEN_ID);
-            taskSelected.fire(new TaskSelectionEvent(getSelectedServerTemplate(),
-                                                     null,
-                                                     newTask.getNewTaskId(),
-                                                     newTask.getNewTaskName()));
-        }
-
-        view.setSelectedTask(TaskSummary.builder().id(newTask.getNewTaskId()).name(newTask.getNewTaskName()).build());
     }
 
     public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
