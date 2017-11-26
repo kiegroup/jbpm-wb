@@ -18,7 +18,7 @@ package org.jbpm.workbench.forms.display.backend.provider.task;
 
 import org.jbpm.workbench.forms.display.backend.provider.KieWorkbenchFormsProvider;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultTaskFormProvidingTest extends AbstractTaskFormProvidingTest<KieWorkbenchFormsProvider> {

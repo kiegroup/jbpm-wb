@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
@@ -155,9 +155,6 @@ public class TaskProcessContextPresenterTest {
                                        PROCESS_INSTANCE_ID,
                                        PROCESS_ID);
 
-        when(authorizationManager.authorize(any(ResourceRef.class),
-                                            eq(identity))).thenReturn(true,
-                                                                      false);
         presenter.onTaskSelectionEvent(testTaskSelectionEvent);
         presenter.goToProcessInstanceDetails();
 

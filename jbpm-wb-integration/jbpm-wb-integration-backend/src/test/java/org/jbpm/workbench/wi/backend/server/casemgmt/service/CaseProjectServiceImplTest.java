@@ -37,7 +37,7 @@ import org.kie.workbench.common.services.shared.project.KieProject;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.DirectoryStream;
 import org.uberfire.java.nio.file.FileSystem;
@@ -198,9 +198,7 @@ public class CaseProjectServiceImplTest {
 
     @Test
     public void testConfigureNewPackage() {
-
         Path packagePath = Mockito.mock(Path.class);
-        when(packagePath.toUri()).thenReturn(URI.create("default://p0/Evaluation/src/main/resources/org"));
         DirectoryStream directoryStream = Mockito.mock(DirectoryStream.class);
         when(ioService.newDirectoryStream(any(),
                                           any())).thenReturn((DirectoryStream<Path>) directoryStream);

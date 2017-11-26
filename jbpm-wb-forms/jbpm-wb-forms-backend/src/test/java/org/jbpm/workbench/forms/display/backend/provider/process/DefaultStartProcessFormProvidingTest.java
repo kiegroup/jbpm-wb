@@ -18,7 +18,7 @@ package org.jbpm.workbench.forms.display.backend.provider.process;
 
 import org.jbpm.workbench.forms.display.backend.provider.DefaultKieWorkbenchFormsProvider;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultStartProcessFormProvidingTest extends AbstractStartProcessFormTest<DefaultKieWorkbenchFormsProvider> {

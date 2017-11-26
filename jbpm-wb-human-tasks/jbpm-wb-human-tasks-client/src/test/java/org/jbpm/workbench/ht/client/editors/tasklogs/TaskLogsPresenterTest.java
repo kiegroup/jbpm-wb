@@ -70,8 +70,8 @@ public class TaskLogsPresenterTest {
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_ID));
 
         //Logs retrieved and text area refreshed
-        verify(taskService).getTaskEvents(anyString(),
-                                          anyString(),
+        verify(taskService).getTaskEvents(nullable(String.class),
+                                          nullable(String.class),
                                           anyLong());
         verify(taskLogsView,
                times(2)).setLogTextAreaText(emptyList());
@@ -87,8 +87,8 @@ public class TaskLogsPresenterTest {
 
         //Logs retrieved and text area refreshed
         verify(taskService,
-               times(2)).getTaskEvents(anyString(),
-                                       anyString(),
+               times(2)).getTaskEvents(nullable(String.class),
+                                       nullable(String.class),
                                        anyLong());
         verify(taskLogsView,
                times(4)).setLogTextAreaText(emptyList());
@@ -103,8 +103,8 @@ public class TaskLogsPresenterTest {
         presenter.onTaskRefreshedEvent(new TaskRefreshedEvent(TASK_ID + 1));
 
         //Logs retrieved and text area refreshed
-        verify(taskService).getTaskEvents(anyString(),
-                                          anyString(),
+        verify(taskService).getTaskEvents(nullable(String.class),
+                                          nullable(String.class),
                                           anyLong());
         verify(taskLogsView,
                times(2)).setLogTextAreaText(emptyList());
@@ -113,8 +113,8 @@ public class TaskLogsPresenterTest {
     @Test
     public void logEventsAreFormattedProperly() {
         List<TaskEventSummary> eventSummaries = createEventSummariesForTaks(TASK_ID);
-        when(taskService.getTaskEvents(anyString(),
-                                       anyString(),
+        when(taskService.getTaskEvents(nullable(String.class),
+                                       nullable(String.class),
                                        eq(TASK_ID)))
                 .thenReturn(eventSummaries);
 

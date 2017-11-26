@@ -61,10 +61,8 @@ public abstract class AbstractDashboardTest extends AbstractDisplayerTest {
                                  settings);
         }
         if (settings.getType().equals(DisplayerType.TABLE)) {
-            FilterLabel filterLabel = mock(FilterLabel.class);
             FilterLabelSet filterLabelSet = mock(FilterLabelSet.class);
             TableDisplayer.View tableView = mock(TableDisplayer.View.class);
-            doAnswer(invocationOnMock -> filterLabel).when(filterLabelSet).addLabel(anyString());
             return initDisplayer(new TableDisplayer(tableView,
                                                     filterLabelSet),
                                  settings);

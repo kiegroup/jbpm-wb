@@ -100,7 +100,7 @@ public class DeploymentDescriptorEditorPresenterTest {
         verify(view).setSourceTabReadOnly(true);
         verify(view).setup();
         verify(view,
-               times(RuntimeStrategy.values().length)).addRuntimeStrategy(anyString(),
+               times(RuntimeStrategy.values().length)).addRuntimeStrategy(nullable(String.class),
                                                                           anyString());
         verify(view,
                times(2)).addPersistenceMode(anyString(),
@@ -117,7 +117,7 @@ public class DeploymentDescriptorEditorPresenterTest {
 
         presenter.makeMenuBar();
 
-        verify(fileMenuBuilder).addSave(any(MenuItem.class));
+        verify(fileMenuBuilder).addSave(nullable(MenuItem.class));
     }
 
     @Test

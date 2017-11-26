@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.mocks.CallerMock;
 
 import static org.mockito.Mockito.*;
@@ -84,9 +84,6 @@ public class CaseStagesPresenterTest extends AbstractCaseInstancePresenterTest {
         cis = CaseInstanceSummary.builder().containerId(containerId).caseId(caseId).caseDefinitionId(caseDefId).build();
         final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().id(caseDefId).build();
 
-        when(caseManagementService.getCaseDefinition(serverTemplateId,
-                                                     cis.getContainerId(),
-                                                     cis.getCaseDefinitionId())).thenReturn(cds);
         when(caseManagementService.getCaseInstance(serverTemplateId,
                                                    containerId,
                                                    caseId)).thenReturn(cis);

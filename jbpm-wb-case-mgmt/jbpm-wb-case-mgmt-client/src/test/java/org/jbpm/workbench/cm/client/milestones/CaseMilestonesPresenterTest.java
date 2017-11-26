@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.mocks.CallerMock;
 
 import static java.util.Collections.*;
@@ -73,18 +73,11 @@ public class CaseMilestonesPresenterTest extends AbstractCaseInstancePresenterTe
     @Before
     public void init() {
         caseService = new CallerMock<>(caseManagementService);
-        when(caseManagementService.getCaseMilestones(anyString(),
-                                                     anyString(),
-                                                     any(CaseMilestoneSearchRequest.class))).thenReturn(caseMilestonesSummaryList);
         when(caseMilestoneListView.getCaseMilestoneSearchRequest()).thenReturn(new CaseMilestoneSearchRequest());
         presenter.setCaseService(caseService);
 
         cis = CaseInstanceSummary.builder().containerId(containerId).caseId(caseId).caseDefinitionId(caseDefId).build();
         final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().id(caseDefId).build();
-
-        when(caseManagementService.getCaseDefinition(serverTemplateId,
-                                                     cis.getContainerId(),
-                                                     cis.getCaseDefinitionId())).thenReturn(cds);
 
         List<CaseMilestoneSummary> milestones = singletonList(createCaseMilestone());
         when(caseManagementService.getCaseMilestones(anyString(),

@@ -49,7 +49,7 @@ import org.kie.server.client.UserTaskServicesClient;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Collections.emptyList;
@@ -107,10 +107,6 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void testGetCaseDefinitions_emptyList() {
-        when(clientMock.getCaseDefinitions(anyInt(),
-                                           anyInt()))
-                .thenReturn(emptyList());
-
         List<CaseDefinitionSummary> definitions = testedService.getCaseDefinitions();
         assertNotNull(definitions);
         assertTrue(definitions.isEmpty());
@@ -377,11 +373,6 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void testGetComments_emptyList() {
-        when(clientMock.getComments(containerId,
-                                    caseId,
-                                    0,
-                                    0)).thenReturn(emptyList());
-
         final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId,
                                                                             containerId,
                                                                             caseId,
