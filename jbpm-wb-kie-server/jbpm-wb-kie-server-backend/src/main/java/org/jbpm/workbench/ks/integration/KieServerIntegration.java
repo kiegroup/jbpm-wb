@@ -17,7 +17,6 @@
 package org.jbpm.workbench.ks.integration;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,15 +46,14 @@ import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
 import org.kie.server.controller.api.model.spec.Capability;
 import org.kie.server.controller.api.model.spec.ContainerSpec;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
+import org.kie.server.controller.api.model.spec.ServerTemplateList;
 import org.kie.server.controller.impl.client.KieServicesClientProvider;
 import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
 
-import static org.jbpm.workbench.ks.utils.KieServerUtils.createKieServicesClient;
-import static org.jbpm.workbench.ks.utils.KieServerUtils.getCredentialsProvider;
-import static org.jbpm.workbench.ks.utils.KieServerUtils.getAdminCredentialsProvider;
+import static org.jbpm.workbench.ks.utils.KieServerUtils.*;
 
 @Startup
 @ApplicationScoped
@@ -95,11 +93,13 @@ public class KieServerIntegration {
 
         kieServices = KieServices.Factory.get();
 
-        Collection<ServerTemplate> serverTemplates = specManagementService.listServerTemplates();
+        ServerTemplateList serverTemplates = specManagementService.listServerTemplates();
         logger.debug("Found {} server templates, creating clients for them...",
-                     serverTemplates.size());
+                     serverTemplates.getServerTemplates().length);
 
-        serverTemplates.forEach((serverTemplate) -> buildClientsForServer(serverTemplate));
+        for (ServerTemplate serverTemplate : serverTemplates.getServerTemplates()) {
+            buildClientsForServer(serverTemplate);
+        }
     }
 
     public KieServicesClient getServerClient(String serverTemplateId) {
