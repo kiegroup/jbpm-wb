@@ -657,6 +657,11 @@
     </dependency>
 
     <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis-ext</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.jboss.spec.javax.transaction</groupId>
       <artifactId>jboss-transaction-api_1.2_spec</artifactId>
       <scope>provided</scope>
