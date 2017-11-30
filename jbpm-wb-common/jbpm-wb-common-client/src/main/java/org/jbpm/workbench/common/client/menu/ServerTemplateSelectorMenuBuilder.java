@@ -16,7 +16,6 @@
 
 package org.jbpm.workbench.common.client.menu;
 
-import java.util.Collection;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -31,7 +30,7 @@ import org.jbpm.workbench.ks.events.KieServerDataSetRegistered;
 import org.jbpm.workbench.common.events.ServerTemplateSelected;
 import org.kie.server.controller.api.model.events.ServerTemplateDeleted;
 import org.kie.server.controller.api.model.events.ServerTemplateUpdated;
-import org.kie.server.controller.api.model.spec.ServerTemplate;
+import org.kie.server.controller.api.model.spec.ServerTemplateList;
 import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.workbench.model.menu.MenuFactory;
@@ -57,10 +56,10 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
     }
 
     protected void loadServerTemplates() {
-        specManagementService.call((Collection<ServerTemplate> serverTemplates) -> {
+        specManagementService.call((ServerTemplateList serverTemplates) -> {
             view.removeAllServerTemplates();
 
-            final Set<String> ids = FluentIterable.from(serverTemplates)
+            final Set<String> ids = FluentIterable.from(serverTemplates.getServerTemplates())
                     .filter(s -> s.getServerInstanceKeys() != null && !s.getServerInstanceKeys().isEmpty())
                     .transform(s -> s.getId())
                     .toSortedSet(String.CASE_INSENSITIVE_ORDER);
