@@ -150,7 +150,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                                                final String caseId) {
         return ofNullable(client.getCaseInstance(containerId,
                                                  caseId,
-                                                 true,
+                                                 false,
                                                  true,
                                                  true,
                                                  true))

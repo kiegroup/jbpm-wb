@@ -269,7 +269,7 @@ public class RemoteCaseManagementServiceImplTest {
         final CaseInstance ci = createTestInstance(caseId);
         when(clientMock.getCaseInstance(ci.getContainerId(),
                                         ci.getCaseId(),
-                                        true,
+                                        false,
                                         true,
                                         true,
                                         true))
@@ -286,7 +286,7 @@ public class RemoteCaseManagementServiceImplTest {
     public void getCaseInstance_whenClientReturnsNull() {
         when(clientMock.getCaseInstance(containerId,
                                         caseId,
-                                        true,
+                                        false,
                                         true,
                                         true,
                                         true))
@@ -597,7 +597,7 @@ public class RemoteCaseManagementServiceImplTest {
 
         when(clientMock.getCaseInstance(ci.getContainerId(),
                                         ci.getCaseId(),
-                                        true,
+                                        false,
                                         true,
                                         true,
                                         true))
@@ -764,7 +764,7 @@ public class RemoteCaseManagementServiceImplTest {
 
         when(clientMock.getCaseInstance(ci.getContainerId(),
                                         ci.getCaseId(),
-                                        true,
+                                        false,
                                         true,
                                         true,
                                         true))
