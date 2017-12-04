@@ -39,6 +39,8 @@ import org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningSettings;
 import org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.apache.commons.io.FilenameUtils;
 import org.uberfire.backend.server.cdi.SystemConfigProducer;
 import org.uberfire.java.nio.file.spi.FileSystemProvider;
@@ -49,43 +51,51 @@ import static org.jbpm.workbench.wi.backend.server.casemgmt.service.CaseProvisio
 @RunWith(Arquillian.class)
 public class CaseProvisioningIT {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CaseProvisioningIT.class);
+
     @Deployment(testable = false)
     public static WebArchive create() {
-        final File[] files = Maven.configureResolver()
-                .workOffline()
-                .loadPomFromFile("pom.xml")
-                .resolve(
-                        "org.kie.workbench:kie-wb-common-ala-wildfly-provider",
-                        "org.kie.workbench:kie-wb-common-ala-spi",
-                        "org.kie.workbench:kie-wb-common-ala-services-api",
-                        "org.kie.workbench:kie-wb-common-ala-build-maven",
-                        "org.uberfire:uberfire-io",
-                        "com.google.inject.extensions:guice-servlet"
-                )
-                .withTransitivity()
-                .asFile();
+        try {
+            final File[] files = Maven.configureResolver()
+                    .workOffline()
+                    .loadPomFromFile("pom.xml")
+                    .resolve(
+                            "org.kie.workbench:kie-wb-common-ala-wildfly-provider",
+                            "org.kie.workbench:kie-wb-common-ala-spi",
+                            "org.kie.workbench:kie-wb-common-ala-services-api",
+                            "org.kie.workbench:kie-wb-common-ala-build-maven",
+                            "org.uberfire:uberfire-io",
+                            "org.sonatype.sisu.inject:guice-servlet"
+                    )
+                    .withTransitivity()
+                    .asFile();
 
-        final WebArchive war = ShrinkWrap.create(WebArchive.class)
-                .addClass(CaseProvisioningSettings.class)
-                .addClass(CaseProvisioningStartedEvent.class)
-                .addClass(CaseProvisioningCompletedEvent.class)
-                .addClass(CaseProvisioningFailedEvent.class)
-                .addClass(CaseProvisioningService.class)
-                .addClass(CaseProvisioningStatus.class)
-                .addClass(CaseProvisioningServiceImpl.class)
-                .addClass(CaseProvisioningExecutor.class)
-                .addClass(CaseProvisioningSettingsImpl.class)
-                .addClass(SystemConfigProducer.class)
-                .addAsResource(CASEMGMT_PROPERTIES)
-                .addAsWebInfResource(EmptyAsset.INSTANCE,
-                                     "beans.xml")
-                .addAsLibraries(files)
-                .addAsServiceProvider(Extension.class,
-                                      SystemConfigProducer.class)
-                .addAsServiceProvider(FileSystemProvider.class,
-                                      SimpleFileSystemProvider.class);
+            final WebArchive war = ShrinkWrap.create(WebArchive.class)
+                    .addClass(CaseProvisioningSettings.class)
+                    .addClass(CaseProvisioningStartedEvent.class)
+                    .addClass(CaseProvisioningCompletedEvent.class)
+                    .addClass(CaseProvisioningFailedEvent.class)
+                    .addClass(CaseProvisioningService.class)
+                    .addClass(CaseProvisioningStatus.class)
+                    .addClass(CaseProvisioningServiceImpl.class)
+                    .addClass(CaseProvisioningExecutor.class)
+                    .addClass(CaseProvisioningSettingsImpl.class)
+                    .addClass(SystemConfigProducer.class)
+                    .addAsResource(CASEMGMT_PROPERTIES)
+                    .addAsWebInfResource(EmptyAsset.INSTANCE,
+                                         "beans.xml")
+                    .addAsLibraries(files)
+                    .addAsServiceProvider(Extension.class,
+                                          SystemConfigProducer.class)
+                    .addAsServiceProvider(FileSystemProvider.class,
+                                          SimpleFileSystemProvider.class);
 
-        return war;
+            return war;
+        } catch (Exception ex){
+            LOGGER.error(ex.getMessage(),
+                         ex);
+            throw new RuntimeException(ex);
+        }
     }
 
     @Test(timeout = 30000)
