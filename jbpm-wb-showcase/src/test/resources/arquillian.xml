@@ -9,6 +9,7 @@
   <container qualifier="wildfly-managed" default="true">
     <configuration>
       <property name="jbossHome">${jboss.home}</property>
+      <property name="javaVmArguments">-Xmx1024m -XX:MaxPermSize=128m -Dorg.jbpm.casemgmt.showcase.deploy=true</property>
     </configuration>
   </container>
 </arquillian>
