@@ -17,8 +17,10 @@
 package org.jbpm.workbench;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Properties;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -27,9 +29,13 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.importer.ZipImporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.jbpm.workbench.wi.backend.server.casemgmt.service.CaseProvisioningSettingsImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.uberfire.apache.commons.io.FilenameUtils;
 
+import static org.jbpm.workbench.wi.backend.server.casemgmt.service.CaseProvisioningSettingsImpl.CASEMGMT_PROPERTIES;
 import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
@@ -48,7 +54,7 @@ public class DeploymentIT {
 
     @Test
     @RunAsClient
-    public void testDeployment(@ArquillianResource URL baseURL) throws Exception {
+    public void testShowcaseDeployment(@ArquillianResource URL baseURL) throws Exception {
         HttpURLConnection c = null;
         try {
             c = (HttpURLConnection) baseURL.openConnection();
@@ -59,5 +65,43 @@ public class DeploymentIT {
                 c.disconnect();
             }
         }
+    }
+
+    @Test(timeout = 30000)
+    @RunAsClient
+    public void testCaseManagementDeployment(@ArquillianResource URL baseURL) throws Exception {
+        final URL cm = new URL(baseURL,
+                               getCaseAppContext());
+        while (true) {
+            HttpURLConnection c = null;
+            try {
+                c = (HttpURLConnection) cm.openConnection();
+                if (c.getResponseCode() == 200) {
+                    break;
+                } else {
+                    Thread.sleep(500);
+                }
+            } finally {
+                if (c != null) {
+                    c.disconnect();
+                }
+            }
+        }
+    }
+
+    private String getCaseAppContext() {
+        final String showcaseGAV = loadShowcaseGAV();
+        final File file = Maven.configureResolver().workOffline().resolve(showcaseGAV).withoutTransitivity().asSingleFile();
+        return "/" + FilenameUtils.getBaseName(file.getName());
+    }
+
+    private String loadShowcaseGAV() {
+        final Properties properties = new Properties();
+        try (final InputStream resource = Thread.currentThread().getContextClassLoader().getResourceAsStream(CASEMGMT_PROPERTIES)) {
+            properties.load(resource);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return properties.getProperty(CaseProvisioningSettingsImpl.SHOWCASE_GAV);
     }
 }
