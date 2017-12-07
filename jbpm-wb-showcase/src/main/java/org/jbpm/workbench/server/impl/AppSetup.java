@@ -23,7 +23,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
-import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.server.config.ConfigGroup;
 import org.guvnor.structure.server.config.ConfigType;
@@ -33,17 +32,12 @@ import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.kie.workbench.screens.workbench.backend.BaseAppSetup;
 import org.uberfire.commons.services.cdi.ApplicationStarted;
 import org.uberfire.commons.services.cdi.Startup;
+import org.uberfire.commons.services.cdi.StartupType;
 import org.uberfire.io.IOService;
 
 @ApplicationScoped
-@Startup
+@Startup(StartupType.BOOTSTRAP)
 public class AppSetup extends BaseAppSetup {
-
-    // default repository section - start
-    private static final String JBPM_WB_PLAYGROUND_ALIAS = "jbpm-playground";
-    private static final String JBPM_WB_PLAYGROUND_ORIGIN = "https://github.com/kiegroup/jbpm-playground.git";
-    private static final String OU_NAME = "demo";
-    private static final String OU_OWNER = "demo@demo.org";
 
     private Event<ApplicationStarted> applicationStartedEvent;
 
@@ -69,17 +63,6 @@ public class AppSetup extends BaseAppSetup {
 
     @PostConstruct
     public void onStartup() {
-        if (!"false".equalsIgnoreCase(System.getProperty("org.kie.demo"))) {
-            final Repository repository = createRepository(JBPM_WB_PLAYGROUND_ALIAS,
-                                                           GIT_SCHEME,
-                                                           JBPM_WB_PLAYGROUND_ORIGIN,
-                                                           "",
-                                                           "");
-            createOU(repository,
-                     OU_NAME,
-                     OU_OWNER);
-        }
-
         configurationService.addConfiguration(getGlobalConfiguration());
 
         // notify cluster service that bootstrap is completed to start synchronization
