@@ -41,6 +41,18 @@ public class CommaListValuesConverterTest {
                            2,
                            "test1",
                            "test2");
+        assertToModelValue(",test1, ,  ,test2  ,, ",
+                           2,
+                           "test1",
+                           "test2");
+        assertToModelValue("+;,test1,&, % ,test2",
+                           5,
+                           "+;",
+                           "%",
+                           "test1");
+        assertToModelValue("test1 test2",
+                           1,
+                           "test1 test2");
     }
 
     @Test

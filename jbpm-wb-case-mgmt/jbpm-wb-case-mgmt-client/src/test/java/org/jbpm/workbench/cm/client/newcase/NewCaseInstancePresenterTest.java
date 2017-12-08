@@ -17,9 +17,10 @@
 package org.jbpm.workbench.cm.client.newcase;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -43,6 +44,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 import static java.util.Collections.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NewCaseInstancePresenterTest {
@@ -130,5 +132,76 @@ public class NewCaseInstancePresenterTest {
         verify(view).hide();
         verify(notificationEvent).fire(any(NotificationEvent.class));
         verify(caseCreatedEvent).fire(any(CaseCreatedEvent.class));
+    }
+
+    @Test
+    public void testLoadCaseRoles_incompleteCaseId() {
+        final String caseDefinitionId = "itorders.orderhardware";
+        final String caseContainerId = "itorders_1.0.0-SNAPSHOT";
+        Map<String, Integer> rolesMap = new HashMap<>();
+        rolesMap.put("owner", 1);
+        rolesMap.put("manager", 1);
+        rolesMap.put("supplier", 2);
+
+        final CaseDefinitionSummary caseDefinition = CaseDefinitionSummary.builder()
+                                                                          .id(caseDefinitionId)
+                                                                          .containerId(caseContainerId)
+                                                                          .roles(rolesMap)
+                                                                          .build();
+        presenter.setCaseDefinitions(singletonList(caseDefinition));
+
+        presenter.loadCaseRoles(caseDefinitionId);
+        verify(view).clearRoles();
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void testLoadCaseRoles_singleRoleOwner() {
+        final String caseDefinitionId = "testProject.caseDef";
+        final String caseContainerId = "testProject_1.0";
+        final CaseDefinitionSummary caseDefinition = CaseDefinitionSummary.builder()
+                                                                          .id(caseDefinitionId)
+                                                                          .containerId(caseContainerId)
+                                                                          .roles(singletonMap("owner", 1))
+                                                                          .build();
+        presenter.setCaseDefinitions(singletonList(caseDefinition));
+        final String caseUniqueId = caseDefinitionId + "|" + caseContainerId;
+
+        presenter.loadCaseRoles(caseUniqueId);
+        verify(view).clearRoles();
+        verifyNoMoreInteractions(view);
+    }
+
+
+    @Test
+    public void testLoadCaseRoles_multipleRoles() {
+        final String caseDefinitionId = "itorders.orderhardware";
+        final String caseContainerId = "itorders_1.0.0-SNAPSHOT";
+        Map<String, Integer> rolesMap = new HashMap<>();
+        rolesMap.put("owner", 1);
+        rolesMap.put("manager", 1);
+        rolesMap.put("supplier", 2);
+
+        final CaseDefinitionSummary caseDefinition = CaseDefinitionSummary.builder()
+                                                                          .id(caseDefinitionId)
+                                                                          .containerId(caseContainerId)
+                                                                          .roles(rolesMap)
+                                                                          .build();
+        presenter.setCaseDefinitions(singletonList(caseDefinition));
+        final String caseUniqueId = caseDefinitionId + "|" + caseContainerId;
+
+        presenter.loadCaseRoles(caseUniqueId);
+        verify(view).clearRoles();
+
+        final ArgumentCaptor<List> listCaptor = ArgumentCaptor.forClass(List.class);
+        verify(view).setRoles(listCaptor.capture());
+        final List<CaseRoleAssignmentSummary> caseRoleAssignmentList = listCaptor.getValue();
+        assertThat(caseRoleAssignmentList).hasSize(2);
+
+        final List<String> caseRolesList = new ArrayList<>();
+        caseRolesList.add(caseRoleAssignmentList.get(0).getName());
+        caseRolesList.add(caseRoleAssignmentList.get(1).getName());
+        assertThat(caseRolesList).containsExactlyInAnyOrder("manager",
+                                                            "supplier");
     }
 }

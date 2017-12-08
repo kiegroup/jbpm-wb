@@ -60,10 +60,22 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
     @Inject
     private User identity;
 
+    void setCaseDefinitions(List<CaseDefinitionSummary> caseDefinitions) {
+        this.caseDefinitions = caseDefinitions;
+    }
+
     protected void loadCaseRoles(final String caseDefinitionId) {
         view.clearRoles();
         final Optional<CaseDefinitionSummary> cds = getCaseDefinitionSummary(caseDefinitionId);
-        cds.ifPresent(d -> view.setRoles(d.getRoles().keySet().stream().filter(r -> "owner".equals(r) == false).map(r -> CaseRoleAssignmentSummary.builder().name(r).build()).collect(toList())));
+        if (cds.isPresent()) {
+            List<CaseRoleAssignmentSummary> roles = cds.get().getRoles().keySet().stream()
+                                                                                 .filter(r -> !"owner".equals(r))
+                                                                                 .map(r -> CaseRoleAssignmentSummary.builder().name(r).build())
+                                                                                 .collect(toList());
+            if (!roles.isEmpty()) {
+                view.setRoles(roles);
+            }
+        }
     }
 
     private Optional<CaseDefinitionSummary> getCaseDefinitionSummary(final String caseDefinitionId) {
@@ -85,8 +97,7 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
                         return;
                     }
 
-                    caseDefinitions = definitions;
-
+                    setCaseDefinitions(definitions);
                     view.show();
                     view.setCaseDefinitions(caseDefinitions);
                     view.setOwner(identity.getIdentifier());

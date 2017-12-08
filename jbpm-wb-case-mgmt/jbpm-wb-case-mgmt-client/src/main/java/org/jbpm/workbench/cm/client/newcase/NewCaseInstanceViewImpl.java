@@ -147,13 +147,6 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
     }
 
     @Override
-    public void clearRoles() {
-        roleAssignmentList.setModel(emptyList());
-        addCSSClass(rolesFormGroup,
-                    "hidden");
-    }
-
-    @Override
     public void setCaseDefinitions(final List<CaseDefinitionSummary> definitions) {
         clearCaseDefinitions();
         caseTemplatesList.setValue("");
@@ -178,13 +171,17 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
     }
 
     @Override
-    public void setRoles(final List<CaseRoleAssignmentSummary> roles) {
-        if (roles.size() > 0) {
-            removeCSSClass(rolesFormGroup,
-                           "hidden");
-        }
+    public void clearRoles() {
+        roleAssignmentList.setModel(emptyList());
+        addCSSClass(rolesFormGroup,
+                    "hidden");
+    }
 
+    @Override
+    public void setRoles(final List<CaseRoleAssignmentSummary> roles) {
         roleAssignmentList.setModel(roles);
+        removeCSSClass(rolesFormGroup,
+                       "hidden");
     }
 
     public void cleanForm() {
