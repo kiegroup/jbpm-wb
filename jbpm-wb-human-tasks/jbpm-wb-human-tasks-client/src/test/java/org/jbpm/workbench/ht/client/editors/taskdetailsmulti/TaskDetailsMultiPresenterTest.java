@@ -86,9 +86,9 @@ public class TaskDetailsMultiPresenterTest {
     public void setupMocks() {
         taskService = new CallerMock<>(taskServiceMock);
         presenter.setTaskDataService(taskService);
-        when(taskServiceMock.getTask(anyString(),
-                                     anyString(),
-                                     anyLong())).thenReturn(mock(TaskSummary.class));
+        when(taskServiceMock.getTask(any(),
+                                     any(),
+                                     any())).thenReturn(mock(TaskSummary.class));
 
         when(taskFormPresenter.getTaskFormView()).thenReturn(taskFormViewMock);
         when(taskFormViewMock.getDisplayerView()).thenReturn(formDisplayerViewMock);

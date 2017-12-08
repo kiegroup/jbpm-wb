@@ -502,10 +502,6 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testTaskInstanceNoDetailsStatusExited() {
-        when(taskService.getTask(nullable(String.class),
-                                 nullable(String.class),
-                                 nullable(Long.class))).thenReturn(mock(TaskSummary.class));
-        when(placeManager.getStatus(TaskDashboard.TASK_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
         tableDisplayer.selectCell(COLUMN_TASK_ID,
                                   3);
@@ -525,10 +521,6 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testTaskInstanceNoDetailsStatusComplete() {
-        when(taskService.getTask(nullable(String.class),
-                                 nullable(String.class),
-                                 nullable(Long.class))).thenReturn(mock(TaskSummary.class));
-        when(placeManager.getStatus(TaskDashboard.TASK_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
         tableDisplayer.selectCell(COLUMN_TASK_ID,
                                   2);
@@ -548,16 +540,16 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testOpenInstanceDetails() {
-        when(taskService.getTask(nullable(String.class),
-                                 nullable(String.class),
-                                 nullable(Long.class))).thenReturn(mock(TaskSummary.class));
+        when(taskService.getTask(any(),
+                                 any(),
+                                 any())).thenReturn(mock(TaskSummary.class));
         when(placeManager.getStatus(TaskDashboard.TASK_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
         tableDisplayer.selectCell(COLUMN_TASK_ID,
                                   0);
 
-        verify(taskSelectionEvent).fire(nullable(TaskSelectionEvent.class));
-        verify(taskDashboardFocusEvent).fire(nullable(TaskDashboardFocusEvent.class));
+        verify(taskSelectionEvent).fire(any());
+        verify(taskDashboardFocusEvent).fire(any());
         verify(placeManager).goTo(TaskDashboard.TASK_DETAILS_SCREEN_ID);
     }
 
