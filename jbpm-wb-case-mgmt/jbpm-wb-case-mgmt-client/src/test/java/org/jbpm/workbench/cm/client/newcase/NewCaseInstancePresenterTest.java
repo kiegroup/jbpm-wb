@@ -45,6 +45,7 @@ import static java.util.Collections.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
+import static java.util.Arrays.asList;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NewCaseInstancePresenterTest {
@@ -203,5 +204,56 @@ public class NewCaseInstancePresenterTest {
         caseRolesList.add(caseRoleAssignmentList.get(1).getName());
         assertThat(caseRolesList).containsExactlyInAnyOrder("manager",
                                                             "supplier");
+    }
+
+    @Test
+    public void testValidateCaseOwnerAssignment_validAssignment() {
+        final String caseOwners = "caseOwner";
+        assertThat(presenter.validateCaseOwnerAssignment(caseOwners))
+                            .as("isAssignmentValid")
+                            .isTrue();
+        verifyZeroInteractions(view);
+    }
+
+    @Test
+    public void testValidateCaseOwnerAssignment_validAssignmentAfterFiltering() {
+        final String caseOwners = "caseOwner";
+        assertThat(presenter.validateCaseOwnerAssignment(" ,  ," + caseOwners + " ,,, "))
+                .as("isAssignmentValid")
+                .isTrue();
+        verify(view).setOwner(caseOwners);
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void testValidateCaseOwnerAssignment_emptyInput() {
+        List<String> emptyInputs = new ArrayList<>(asList(null,
+                                                          "    ",
+                                                          " , "));
+        emptyInputs.forEach(emptyInput -> assertThat(presenter.validateCaseOwnerAssignment(emptyInput))
+                                                              .as("isAssignmentValid")
+                                                              .isFalse());
+        verify(view,
+               times(3)).setOwner(anyString());
+        verify(view,
+               times(3)).showCaseOwnerError(anyString());
+        verify(translationService,
+                times(3)).format(eq("PleaseProvideCaseOwner"));
+    }
+
+    @Test
+    public void testValidateCaseOwnerAssignment_caseOwnerRoleCardinalityExceeded() {
+        final String caseOwnerRole = "owner";
+        final Integer ownerRoleCardinality = 1;
+        final String caseOwners = "testOwner1, testOwner2";
+        assertThat(presenter.validateCaseOwnerAssignment(caseOwners))
+                            .as("isAssignmentValid")
+                            .isFalse();
+        verify(view,
+               never()).setOwner(anyString());
+        verify(view).showCaseOwnerError(anyString());
+        verify(translationService).format(eq("InvalidRoleAssignment"),
+                                          eq(caseOwnerRole),
+                                          eq(ownerRoleCardinality));
     }
 }
