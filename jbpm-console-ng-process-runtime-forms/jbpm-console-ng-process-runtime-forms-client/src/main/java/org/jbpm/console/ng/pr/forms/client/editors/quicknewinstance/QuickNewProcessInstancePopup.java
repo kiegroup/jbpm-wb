@@ -24,7 +24,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -65,6 +64,8 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 public class QuickNewProcessInstancePopup extends BaseModal implements FormDisplayerView {
+
+    public static final String FIELD_ID_PROCESSNAME = "ProcessName";
 
     interface Binder
             extends
@@ -178,11 +179,12 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
         final Map<String, List<String>> dropDowns = new HashMap<String, List<String>>();
         processDefinitionsListBox.clear();
         processDeploymentIdListBox.clear();
-        currentFilter = new PortableQueryFilter( 0,
-                                                 10,
-                                                 false, "",
-                                                 "",
-                                                 true );
+        currentFilter = new PortableQueryFilter(0,
+                                                Integer.MAX_VALUE - 1,
+                                                false,
+                                                "",
+                                                FIELD_ID_PROCESSNAME,
+                                                true);
         processDefinitionService.call( new RemoteCallback<List<ProcessSummary>>() {
             @Override
             public void callback( List<ProcessSummary> processSummaries ) {
@@ -373,6 +375,11 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
     @Override
     public GenericFormDisplayer getCurrentDisplayer() {
         return currentDisplayer;
+    }
+
+    @Inject
+    public void setProcessRuntimeDataService(Caller<ProcessDefinitionService> processDefinitionService) {
+        this.processDefinitionService = processDefinitionService;
     }
 
 }
