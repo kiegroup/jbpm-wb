@@ -1815,6 +1815,7 @@
                 <include>src/main/webapp/WEB-INF/tlds/</include>
                 <include>.errai/</include>
                 <include>.niogit/**</include>
+                <include>.niogit-caseapp/**</include>
                 <include>.index/**</include>
                 <include>.security/**</include>
                 <include>.kie-wb-playground/**</include>
