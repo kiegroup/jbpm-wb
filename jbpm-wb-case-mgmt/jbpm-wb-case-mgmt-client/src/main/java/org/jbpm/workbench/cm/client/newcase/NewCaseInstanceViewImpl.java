@@ -197,28 +197,24 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
     private boolean validateForm() {
         clearErrorMessages();
 
-        boolean valid = true;
+        boolean validCase = true;
 
         if (isNullOrEmpty(caseTemplatesList.getValue())) {
             caseTemplatesList.getElement().focus();
             definitionNameHelp.setTextContent(translationService.format(Constants.PLEASE_SELECT_CASE));
             caseDefinitionNameGroup.setValidationState(ValidationState.ERROR);
-            valid = false;
+            validCase = false;
         }
 
-        if (isNullOrEmpty(ownerNameInput.getValue())) {
-            ownerNameInput.focus();
-            ownerNameHelp.setTextContent(translationService.format(Constants.PLEASE_PROVIDE_CASE_OWNER));
-            ownerNameGroup.setValidationState(ValidationState.ERROR);
-            valid = false;
-        }
+        boolean validOwner = presenter.validateCaseOwnerAssignment(ownerNameInput.getValue());
 
-        if (valid) {
+        boolean isFormValid = validCase && validOwner;
+        if (isFormValid) {
             caseDefinitionNameGroup.setValidationState(ValidationState.SUCCESS);
             ownerNameGroup.setValidationState(ValidationState.SUCCESS);
         }
 
-        return valid;
+        return isFormValid;
     }
 
     @Override
@@ -230,6 +226,13 @@ public class NewCaseInstanceViewImpl extends AbstractView<NewCaseInstancePresent
         notification.setMessage(messages);
         removeCSSClass(notification.getElement(),
                        "hidden");
+    }
+
+    @Override
+    public void showCaseOwnerError(String message) {
+        ownerNameInput.focus();
+        ownerNameHelp.setTextContent(message);
+        ownerNameGroup.setValidationState(ValidationState.ERROR);
     }
 
     @Override

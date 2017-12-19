@@ -22,6 +22,8 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -39,6 +41,7 @@ import org.uberfire.workbench.events.NotificationEvent;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
+import static java.util.Optional.ofNullable;
 
 @Dependent
 public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstancePresenter.NewCaseInstanceView> {
@@ -141,6 +144,33 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
         }
     }
 
+    protected boolean validateCaseOwnerAssignment(String ownerInput) {
+        final Integer ownerRoleCardinality = 1;
+        boolean isAssignmentValid = true;
+
+        final List<String> ownerInputList = Splitter.on(",")
+                                                    .trimResults()
+                                                    .omitEmptyStrings()
+                                                    .splitToList(ofNullable(ownerInput).orElse(""));
+        final String ownerInputFiltered = Joiner.on(", ").join(ownerInputList);
+
+        if (!ownerInputFiltered.equals(ownerInput)) {
+            view.setOwner(ownerInputFiltered);
+        }
+
+        if (ownerInputFiltered.isEmpty()) {
+            view.showCaseOwnerError(translationService.format(Constants.PLEASE_PROVIDE_CASE_OWNER));
+            isAssignmentValid = false;
+        } else if (ownerInputList.size() > ownerRoleCardinality) {
+            view.showCaseOwnerError(translationService.format(Constants.INVALID_ROLE_ASSIGNMENT,
+                                                              "owner",
+                                                              ownerRoleCardinality));
+            isAssignmentValid = false;
+        }
+
+        return isAssignmentValid;
+    }
+
     @Inject
     public void setNotification(final Event<NotificationEvent> notification) {
         this.notification = notification;
@@ -173,5 +203,7 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
         void setOwner(String owner);
 
         void showError(List<String> messages);
+
+        void showCaseOwnerError(String message);
     }
 }
