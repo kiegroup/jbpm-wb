@@ -61,6 +61,7 @@ import static java.util.stream.Collectors.groupingBy;
 @Dependent
 public class QuickNewProcessInstancePopup extends BaseModal implements FormDisplayerView {
 
+    public static final String FIELD_ID_PROCESSNAME = "ProcessName";
     private static Binder uiBinder = GWT.create(Binder.class);
 
     @UiField
@@ -168,8 +169,8 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
             Scheduler.get().scheduleDeferred(() -> processDefinitionsListBox.refresh());
         }).getProcesses(serverTemplateId,
                         0,
-                        1000,
-                        "",
+                        Integer.MAX_VALUE,
+                        FIELD_ID_PROCESSNAME,
                         true);
     }
 
