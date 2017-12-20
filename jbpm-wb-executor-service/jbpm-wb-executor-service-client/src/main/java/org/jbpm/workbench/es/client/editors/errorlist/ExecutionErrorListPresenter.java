@@ -36,7 +36,6 @@ import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
-import org.jbpm.workbench.es.client.editors.errordetails.ExecutionErrorDetailsPresenter;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
@@ -58,10 +57,8 @@ import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 
 @Dependent
-@WorkbenchScreen(identifier = ExecutionErrorListPresenter.SCREEN_ID)
+@WorkbenchScreen(identifier = PerspectiveIds.EXECUTION_ERROR_LIST_SCREEN)
 public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<ExecutionErrorSummary, ExecutionErrorListPresenter.ExecutionErrorListView> {
-
-    public static final String SCREEN_ID = "Execution Error List";
 
     private final Constants constants = Constants.INSTANCE;
     @Inject
@@ -246,9 +243,9 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
 
     public void selectExecutionError(final ExecutionErrorSummary summary,
                                      final Boolean close) {
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(ExecutionErrorDetailsPresenter.SCREEN_ID));
+        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN));
         if (status == PlaceStatus.CLOSE) {
-            placeManager.goTo(ExecutionErrorDetailsPresenter.SCREEN_ID);
+            placeManager.goTo(PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN);
             executionErrorSelectedEvent.fire(new ExecutionErrorSelectedEvent(getSelectedServerTemplate(),
                                                                              summary.getDeploymentId(),
                                                                              summary.getErrorId()));
@@ -257,7 +254,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                                                                              summary.getDeploymentId(),
                                                                              summary.getErrorId()));
         } else if (status == PlaceStatus.OPEN && close) {
-            placeManager.closePlace(ExecutionErrorDetailsPresenter.SCREEN_ID);
+            placeManager.closePlace(PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN);
         }
     }
 

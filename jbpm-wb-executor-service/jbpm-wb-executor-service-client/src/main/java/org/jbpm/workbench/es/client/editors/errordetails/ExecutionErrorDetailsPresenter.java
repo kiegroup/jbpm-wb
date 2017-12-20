@@ -21,11 +21,11 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
-import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -35,14 +35,10 @@ import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.workbench.model.CompassPosition;
-import org.uberfire.workbench.model.Position;
 
 @Dependent
-@WorkbenchScreen(identifier = ExecutionErrorDetailsPresenter.SCREEN_ID, preferredWidth = 655)
+@WorkbenchScreen(identifier = PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN)
 public class ExecutionErrorDetailsPresenter implements RefreshMenuBuilder.SupportsRefresh {
-
-    public static final String SCREEN_ID = "Execution Error Details";
 
     @Inject
     public ExecErrorDetailsView view;
@@ -64,11 +60,6 @@ public class ExecutionErrorDetailsPresenter implements RefreshMenuBuilder.Suppor
     @WorkbenchPartView
     public UberElement<ExecutionErrorDetailsPresenter> getView() {
         return view;
-    }
-
-    @DefaultPosition
-    public Position getPosition() {
-        return CompassPosition.EAST;
     }
 
     @WorkbenchPartTitle

@@ -19,7 +19,6 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
-import org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceListPresenter;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -30,7 +29,7 @@ public class ProcessInstanceListPerspective extends AbstractPerspective {
 
     @Override
     public PlaceRequest getPlaceRequest() {
-        return new DefaultPlaceRequest(ProcessInstanceListPresenter.SCREEN_ID);
+        return new DefaultPlaceRequest(PerspectiveIds.PROCESS_INSTANCE_LIST_SCREEN);
     }
 
     @Override

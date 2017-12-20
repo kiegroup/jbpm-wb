@@ -23,4 +23,18 @@ public interface PerspectiveIds extends org.kie.workbench.common.workbench.clien
     String SEARCH_PARAMETER_TASK_ID = "taskId";
     String SEARCH_PARAMETER_JOB_ID = "jobId";
     String SEARCH_PARAMETER_IS_ERROR_ACK = "isErrorAck";
+
+    String PROCESS_INSTANCE_DETAILS_SCREEN = "Process Instance Details Multi";
+    String PROCESS_INSTANCE_LIST_SCREEN = "DataSet Process Instance List With Variables";
+    String PROCESS_DEFINITION_DETAILS_SCREEN = "Advanced Process Details Multi";
+    String PROCESS_DEFINITION_LIST_SCREEN = "Process Definition List";
+    String DASHBOARD_SCREEN = "DashboardScreen";
+    String EXECUTION_ERROR_DETAILS_SCREEN = "Execution Error Details";
+    String EXECUTION_ERROR_LIST_SCREEN = "Execution Error List";
+    String JOB_LIST_SCREEN = "Job List";
+    String JOB_DETAILS_SCREEN = "Job Details";
+    String TASK_ADMIN_LIST_SCREEN = "Task Admin List";
+    String TASK_LIST_SCREEN = "Task List";
+    String TASK_DETAILS_SCREEN = "Task Details Multi";
+
 }

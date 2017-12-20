@@ -27,6 +27,7 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.list.AbstractScreenListPresenter;
 import org.jbpm.workbench.common.client.list.ListView;
 import org.jbpm.workbench.common.model.PortableQueryFilter;
@@ -53,10 +54,8 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
-@WorkbenchScreen(identifier = ProcessDefinitionListPresenter.SCREEN_ID)
+@WorkbenchScreen(identifier = PerspectiveIds.PROCESS_DEFINITION_LIST_SCREEN)
 public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<ProcessSummary> {
-
-    public static final String SCREEN_ID = "Process Definition List";
 
     @Inject
     PopupFormDisplayerView formDisplayPopUp;
@@ -188,13 +187,13 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
     protected void selectProcessDefinition(final ProcessSummary processSummary,
                                            final Boolean close) {
-        PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details Multi"));
+        PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN));
 
         if (instanceDetailsStatus == PlaceStatus.OPEN) {
-            placeManager.closePlace("Process Instance Details Multi");
+            placeManager.closePlace(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
         }
 
-        placeIdentifier = "Advanced Process Details Multi";
+        placeIdentifier = PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN;
         PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(placeIdentifier));
 
         if (status == PlaceStatus.CLOSE) {
@@ -216,13 +215,13 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     }
 
     public void refreshNewProcessInstance(@Observes NewProcessInstanceEvent newProcessInstance) {
-        placeIdentifier = "Advanced Process Details Multi";
+        placeIdentifier = PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN;
 
         PlaceStatus definitionDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest(placeIdentifier));
         if (definitionDetailsStatus == PlaceStatus.OPEN) {
             placeManager.closePlace(placeIdentifier);
         }
-        placeManager.goTo("Process Instance Details Multi");
+        placeManager.goTo(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
         processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getDeploymentId(),
                                                                        newProcessInstance.getNewProcessInstanceId(),
                                                                        newProcessInstance.getNewProcessDefId(),

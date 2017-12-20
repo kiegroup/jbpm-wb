@@ -47,12 +47,11 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
 
     @OnOpen
     public void onOpen() {
-        setSelectedServerTemplate(serverTemplateSelectorMenuBuilder.getSelectedServerTemplate());
     }
 
     @OnFocus
     public void onFocus() {
-        setSelectedServerTemplate(serverTemplateSelectorMenuBuilder.getSelectedServerTemplate());
+        setSelectedServerTemplate(serverTemplateSelectorMenuBuilder.getSelectedServerTemplate(), true);
     }
 
     @OnStartup
@@ -71,17 +70,20 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
     }
 
     public void onServerTemplateSelected(@Observes final ServerTemplateSelected serverTemplateSelected) {
-        setSelectedServerTemplate(serverTemplateSelected.getServerTemplateId());
+        setSelectedServerTemplate(serverTemplateSelected.getServerTemplateId(), false);
     }
 
     public String getSelectedServerTemplate() {
         return selectedServerTemplate;
     }
 
-    protected void setSelectedServerTemplate(final String selectedServerTemplate) {
+    protected void setSelectedServerTemplate(final String selectedServerTemplate, final Boolean forceRefresh) {
         final String newServerTemplate = Optional.ofNullable(selectedServerTemplate).orElse("").trim();
-        if (this.selectedServerTemplate.equals(newServerTemplate) == false) {
+        final boolean changedServerTemplate = this.selectedServerTemplate.equals(newServerTemplate) == false;
+        if (changedServerTemplate) {
             this.selectedServerTemplate = newServerTemplate;
+        }
+        if(forceRefresh || changedServerTemplate){
             refreshGrid();
         }
     }

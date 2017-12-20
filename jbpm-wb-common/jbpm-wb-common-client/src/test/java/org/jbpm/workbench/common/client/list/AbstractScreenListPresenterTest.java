@@ -34,28 +34,39 @@ public class AbstractScreenListPresenterTest {
     public void testServerTemplate() {
         doNothing().when(presenter).refreshGrid();
 
-        presenter.setSelectedServerTemplate("");
+        presenter.setSelectedServerTemplate("",
+                                            false);
 
         assertEquals("",
                      presenter.getSelectedServerTemplate());
 
-        presenter.setSelectedServerTemplate(" ");
+        presenter.setSelectedServerTemplate(" ",
+                                            false);
 
         assertEquals("",
                      presenter.getSelectedServerTemplate());
 
-        presenter.setSelectedServerTemplate("testId");
+        presenter.setSelectedServerTemplate("testId",
+                                            false);
 
         assertEquals("testId",
                      presenter.getSelectedServerTemplate());
+
         verify(presenter,
                times(1)).refreshGrid();
 
-        presenter.setSelectedServerTemplate("testId");
+        presenter.setSelectedServerTemplate("testId",
+                                            false);
 
         assertEquals("testId",
                      presenter.getSelectedServerTemplate());
+
+
+
+        presenter.setSelectedServerTemplate("testId",
+                                            true);
+
         verify(presenter,
-               times(1)).refreshGrid();
+               times(2)).refreshGrid();
     }
 }

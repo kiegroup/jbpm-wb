@@ -20,32 +20,25 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.pr.client.editors.definition.details.advance.AdvancedViewProcessDefDetailsPresenter;
 import org.jbpm.workbench.pr.client.editors.definition.details.multi.BaseProcessDefDetailsMultiPresenter;
-import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.workbench.model.CompassPosition;
-import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @Dependent
-@WorkbenchScreen(identifier = "Advanced Process Details Multi", preferredWidth = 500)
+@WorkbenchScreen(identifier = PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN)
 public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetailsMultiPresenter<AdvancedProcessDefDetailsMultiPresenter.AdvancedProcessDefDetailsMultiView> {
 
     @Inject
     private AdvancedViewProcessDefDetailsPresenter detailPresenter;
-
-    @DefaultPosition
-    public Position getPosition() {
-        return CompassPosition.EAST;
-    }
 
     @WorkbenchPartView
     public UberView<AdvancedProcessDefDetailsMultiPresenter> getView() {
