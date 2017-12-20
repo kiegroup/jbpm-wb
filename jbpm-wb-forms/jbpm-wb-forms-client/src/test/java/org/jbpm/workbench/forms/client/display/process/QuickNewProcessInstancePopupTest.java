@@ -40,6 +40,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.uberfire.mocks.CallerMock;
 
+import static org.jbpm.workbench.forms.client.display.process.QuickNewProcessInstancePopup.FIELD_ID_PROCESSNAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -90,8 +91,8 @@ public class QuickNewProcessInstancePopupTest {
 
         when(processRuntimeDataServiceMock.getProcesses(serverTemplateId,
                                                         0,
-                                                        1000,
-                                                        "",
+                                                        Integer.MAX_VALUE,
+                                                        FIELD_ID_PROCESSNAME,
                                                         true)).thenReturn(Arrays.asList(processSummary));
 
         quickNewProcessInstancePopup.loadFormValues(serverTemplateId);
@@ -99,8 +100,8 @@ public class QuickNewProcessInstancePopupTest {
         verify(processDefinitionsListBox).clear();
         verify(processRuntimeDataServiceMock).getProcesses(eq(serverTemplateId),
                                                            eq(0),
-                                                           eq(1000),
-                                                           eq(""),
+                                                           eq(Integer.MAX_VALUE),
+                                                           eq(FIELD_ID_PROCESSNAME),
                                                            eq(true));
 
         final ArgumentCaptor<OptGroup> captor = ArgumentCaptor.forClass(OptGroup.class);
@@ -112,6 +113,7 @@ public class QuickNewProcessInstancePopupTest {
 
         verify(captorOption.getValue()).setValue(processDefinitionId);
         verify(captorOption.getValue()).setText(processDefinitionId);
+
     }
 
     @Test
