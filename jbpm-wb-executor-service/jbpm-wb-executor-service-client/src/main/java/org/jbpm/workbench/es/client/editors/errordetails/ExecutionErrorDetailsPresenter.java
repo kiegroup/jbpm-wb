@@ -21,6 +21,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
@@ -39,10 +40,8 @@ import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 
 @Dependent
-@WorkbenchScreen(identifier = ExecutionErrorDetailsPresenter.SCREEN_ID, preferredWidth = 655)
+@WorkbenchScreen(identifier = PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN, preferredWidth = 655)
 public class ExecutionErrorDetailsPresenter implements RefreshMenuBuilder.SupportsRefresh {
-
-    public static final String SCREEN_ID = "Execution Error Details";
 
     @Inject
     public ExecErrorDetailsView view;

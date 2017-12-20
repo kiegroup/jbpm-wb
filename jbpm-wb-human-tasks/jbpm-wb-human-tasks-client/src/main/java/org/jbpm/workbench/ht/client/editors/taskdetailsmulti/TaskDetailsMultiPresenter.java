@@ -22,6 +22,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
@@ -53,10 +54,8 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
-@WorkbenchScreen(identifier = TaskDetailsMultiPresenter.SCREEN_ID, preferredWidth = 655)
+@WorkbenchScreen(identifier = PerspectiveIds.TASK_DETAILS_SCREEN, preferredWidth = 655)
 public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
-
-    public static final String SCREEN_ID = "Task Details Multi";
 
     private Caller<TaskService> taskDataService;
 

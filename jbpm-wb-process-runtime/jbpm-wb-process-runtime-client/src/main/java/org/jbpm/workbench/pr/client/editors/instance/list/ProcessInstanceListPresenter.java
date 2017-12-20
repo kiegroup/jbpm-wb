@@ -78,10 +78,8 @@ import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
 
 @Dependent
-@WorkbenchScreen(identifier = ProcessInstanceListPresenter.SCREEN_ID)
+@WorkbenchScreen(identifier = PROCESS_INSTANCE_LIST_SCREEN)
 public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<ProcessInstanceSummary, ProcessInstanceListPresenter.ProcessInstanceListView> {
-
-    public static final String SCREEN_ID = "DataSet Process Instance List With Variables";
 
     protected final List<ProcessInstanceSummary> myProcessInstancesFromDataSet = new ArrayList<ProcessInstanceSummary>();
 
@@ -443,10 +441,10 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     public void selectProcessInstance(final ProcessInstanceSummary summary,
                                       final Boolean close) {
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest("Process Instance Details Multi"));
+        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(PROCESS_INSTANCE_DETAILS_SCREEN));
 
         if (status == PlaceStatus.CLOSE) {
-            placeManager.goTo("Process Instance Details Multi");
+            placeManager.goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
             processInstanceSelected.fire(new ProcessInstanceSelectionEvent(summary.getDeploymentId(),
                                                                            summary.getProcessInstanceId(),
                                                                            summary.getProcessId(),
@@ -461,7 +459,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                                                            summary.getState(),
                                                                            getSelectedServerTemplate()));
         } else if (status == PlaceStatus.OPEN && close) {
-            placeManager.closePlace("Process Instance Details Multi");
+            placeManager.closePlace(PROCESS_INSTANCE_DETAILS_SCREEN);
         }
     }
 

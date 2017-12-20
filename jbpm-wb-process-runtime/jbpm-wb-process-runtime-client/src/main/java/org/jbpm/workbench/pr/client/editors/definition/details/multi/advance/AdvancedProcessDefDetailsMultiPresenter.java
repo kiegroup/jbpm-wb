@@ -20,6 +20,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.pr.client.editors.definition.details.advance.AdvancedViewProcessDefDetailsPresenter;
 import org.jbpm.workbench.pr.client.editors.definition.details.multi.BaseProcessDefDetailsMultiPresenter;
@@ -36,7 +37,7 @@ import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @Dependent
-@WorkbenchScreen(identifier = "Advanced Process Details Multi", preferredWidth = 500)
+@WorkbenchScreen(identifier = PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN, preferredWidth = 500)
 public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetailsMultiPresenter<AdvancedProcessDefDetailsMultiPresenter.AdvancedProcessDefDetailsMultiView> {
 
     @Inject

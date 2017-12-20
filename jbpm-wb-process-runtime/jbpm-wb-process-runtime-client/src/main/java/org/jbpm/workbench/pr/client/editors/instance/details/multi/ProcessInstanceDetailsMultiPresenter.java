@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.workbench.pr.client.editors.documents.list.ProcessDocumentListPresenter;
 import org.jbpm.workbench.pr.client.editors.instance.details.ProcessInstanceDetailsPresenter;
@@ -53,7 +54,7 @@ import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @Dependent
-@WorkbenchScreen(identifier = "Process Instance Details Multi", preferredWidth = 500)
+@WorkbenchScreen(identifier = PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN, preferredWidth = 500)
 public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
 
     @Inject

@@ -23,11 +23,11 @@ import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.es.client.editors.events.JobSelectedEvent;
-import org.jbpm.workbench.es.client.editors.jobdetails.JobDetailsPresenter;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.jbpm.workbench.es.model.events.RequestChangedEvent;
@@ -302,7 +302,7 @@ public class RequestListPresenterTest {
         presenter.selectJob(job,
                             closed);
 
-        verify(placeManager).goTo(JobDetailsPresenter.SCREEN_ID);
+        verify(placeManager).goTo(PerspectiveIds.JOB_DETAILS_SCREEN);
         final ArgumentCaptor<JobSelectedEvent> captor = ArgumentCaptor.forClass(JobSelectedEvent.class);
         verify(jobSelectedEventMock).fire(captor.capture());
         assertJobSelectedEventContent(captor.getValue(),
@@ -340,7 +340,7 @@ public class RequestListPresenterTest {
                never()).goTo(anyString());
         verify(jobSelectedEventMock,
                never()).fire(any());
-        verify(placeManager).closePlace(JobDetailsPresenter.SCREEN_ID);
+        verify(placeManager).closePlace(PerspectiveIds.JOB_DETAILS_SCREEN);
     }
 
     private void assertJobSelectedEventContent(JobSelectedEvent event,

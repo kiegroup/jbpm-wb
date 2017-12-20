@@ -19,7 +19,6 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
-import org.jbpm.workbench.es.client.editors.errorlist.ExecutionErrorListPresenter;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -33,7 +32,7 @@ public class ErrorManagementPerspective extends AbstractPerspective {
 
     @Override
     public PlaceRequest getPlaceRequest() {
-        return new DefaultPlaceRequest(ExecutionErrorListPresenter.SCREEN_ID);
+        return new DefaultPlaceRequest(PerspectiveIds.EXECUTION_ERROR_LIST_SCREEN);
     }
 
     @Override

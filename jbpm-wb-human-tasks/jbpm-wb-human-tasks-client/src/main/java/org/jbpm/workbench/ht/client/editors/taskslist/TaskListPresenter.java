@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import javax.enterprise.context.Dependent;
 
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
@@ -34,10 +35,8 @@ import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Dependent
-@WorkbenchScreen(identifier = TaskListPresenter.SCREEN_ID)
+@WorkbenchScreen(identifier = PerspectiveIds.TASK_LIST_SCREEN)
 public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImpl> {
-
-    public static final String SCREEN_ID = "Tasks List";
 
     @WorkbenchPartTitle
     public String getTitle() {

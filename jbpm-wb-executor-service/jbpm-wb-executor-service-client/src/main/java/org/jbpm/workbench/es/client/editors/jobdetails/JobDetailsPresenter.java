@@ -22,6 +22,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.es.client.editors.events.JobSelectedEvent;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.ErrorSummary;
@@ -43,10 +44,8 @@ import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 
 @Dependent
-@WorkbenchScreen(identifier = JobDetailsPresenter.SCREEN_ID, preferredWidth = 655)
+@WorkbenchScreen(identifier = PerspectiveIds.JOB_DETAILS_SCREEN, preferredWidth = 655)
 public class JobDetailsPresenter implements RefreshMenuBuilder.SupportsRefresh {
-
-    public static final String SCREEN_ID = "Job Details";
 
     @Inject
     public JobDetailsView view;

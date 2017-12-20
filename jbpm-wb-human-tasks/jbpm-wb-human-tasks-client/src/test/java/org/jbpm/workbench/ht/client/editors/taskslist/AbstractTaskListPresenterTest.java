@@ -39,12 +39,12 @@ import org.dashbuilder.dataset.filter.LogicalExprType;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.security.shared.api.Group;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
-import org.jbpm.workbench.ht.client.editors.taskdetailsmulti.TaskDetailsMultiPresenter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
@@ -586,7 +586,7 @@ public abstract class AbstractTaskListPresenterTest {
         getPresenter().selectTask(taskSummary,
                                   closed);
 
-        verify(placeManager).goTo(TaskDetailsMultiPresenter.SCREEN_ID);
+        verify(placeManager).goTo(PerspectiveIds.TASK_DETAILS_SCREEN);
         final ArgumentCaptor<TaskSelectionEvent> captor = ArgumentCaptor.forClass(TaskSelectionEvent.class);
         verify(taskSelected).fire(captor.capture());
         assertTrue(captor.getValue().isForLog());
@@ -605,7 +605,7 @@ public abstract class AbstractTaskListPresenterTest {
         getPresenter().selectTask(taskSummary,
                                   closed);
 
-        verify(placeManager).goTo(TaskDetailsMultiPresenter.SCREEN_ID);
+        verify(placeManager).goTo(PerspectiveIds.TASK_DETAILS_SCREEN);
         final ArgumentCaptor<TaskSelectionEvent> captor = ArgumentCaptor.forClass(TaskSelectionEvent.class);
         verify(taskSelected).fire(captor.capture());
         assertFalse(captor.getValue().isForLog());

@@ -19,7 +19,6 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
-import org.jbpm.workbench.ht.client.editors.taskslist.TaskAdminListPresenter;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -33,7 +32,7 @@ public class TaskAdminListPerspective extends AbstractPerspective {
 
     @Override
     public PlaceRequest getPlaceRequest() {
-        return new DefaultPlaceRequest(TaskAdminListPresenter.SCREEN_ID);
+        return new DefaultPlaceRequest(PerspectiveIds.TASK_ADMIN_LIST_SCREEN);
     }
 
     @Override
