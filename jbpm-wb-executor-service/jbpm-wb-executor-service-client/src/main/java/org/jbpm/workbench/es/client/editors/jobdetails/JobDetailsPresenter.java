@@ -22,6 +22,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.es.client.editors.events.JobSelectedEvent;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.ErrorSummary;
@@ -29,7 +30,6 @@ import org.jbpm.workbench.es.model.RequestDetails;
 import org.jbpm.workbench.es.model.RequestParameterSummary;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.jbpm.workbench.es.service.ExecutorService;
-import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -39,14 +39,10 @@ import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.workbench.model.CompassPosition;
-import org.uberfire.workbench.model.Position;
 
 @Dependent
-@WorkbenchScreen(identifier = JobDetailsPresenter.SCREEN_ID, preferredWidth = 655)
+@WorkbenchScreen(identifier = PerspectiveIds.JOB_DETAILS_SCREEN)
 public class JobDetailsPresenter implements RefreshMenuBuilder.SupportsRefresh {
-
-    public static final String SCREEN_ID = "Job Details";
 
     @Inject
     public JobDetailsView view;
@@ -68,11 +64,6 @@ public class JobDetailsPresenter implements RefreshMenuBuilder.SupportsRefresh {
     @WorkbenchPartView
     public UberElement<JobDetailsPresenter> getView() {
         return view;
-    }
-
-    @DefaultPosition
-    public Position getPosition() {
-        return CompassPosition.EAST;
     }
 
     @WorkbenchPartTitle

@@ -48,7 +48,6 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.es.client.editors.events.JobSelectedEvent;
-import org.jbpm.workbench.es.client.editors.jobdetails.JobDetailsPresenter;
 import org.jbpm.workbench.es.client.editors.quicknewjob.QuickNewJobPopup;
 
 import org.jbpm.workbench.es.client.i18n.Constants;
@@ -73,10 +72,8 @@ import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 
 @Dependent
-@WorkbenchScreen(identifier = RequestListPresenter.SCREEN_ID)
+@WorkbenchScreen(identifier = PerspectiveIds.JOB_LIST_SCREEN)
 public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSummary, RequestListPresenter.RequestListView> {
-
-    public static final String SCREEN_ID = "Job List";
 
     private Constants constants = Constants.INSTANCE;
 
@@ -264,9 +261,9 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                           final Boolean close) {
 
         if (job.getStatus() != null) {
-            PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(JobDetailsPresenter.SCREEN_ID));
+            PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(PerspectiveIds.JOB_DETAILS_SCREEN));
             if (status == PlaceStatus.CLOSE) {
-                placeManager.goTo(JobDetailsPresenter.SCREEN_ID);
+                placeManager.goTo(PerspectiveIds.JOB_DETAILS_SCREEN);
                 jobSelectedEvent.fire(new JobSelectedEvent(getSelectedServerTemplate(),
                                                            job.getDeploymentId(),
                                                            job.getJobId()));
@@ -275,7 +272,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                                                            job.getDeploymentId(),
                                                            job.getJobId()));
             } else if (status == PlaceStatus.OPEN && close) {
-                placeManager.closePlace(JobDetailsPresenter.SCREEN_ID);
+                placeManager.closePlace(PerspectiveIds.JOB_DETAILS_SCREEN);
             }
         }
     }

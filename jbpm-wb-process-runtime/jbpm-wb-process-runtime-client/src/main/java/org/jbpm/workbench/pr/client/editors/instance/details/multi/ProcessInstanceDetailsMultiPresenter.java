@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.workbench.pr.client.editors.documents.list.ProcessDocumentListPresenter;
 import org.jbpm.workbench.pr.client.editors.instance.details.ProcessInstanceDetailsPresenter;
@@ -32,7 +33,6 @@ import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
 import org.jbpm.workbench.pr.service.ProcessService;
-import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -45,15 +45,13 @@ import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.CompassPosition;
-import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @Dependent
-@WorkbenchScreen(identifier = "Process Instance Details Multi", preferredWidth = 500)
+@WorkbenchScreen(identifier = PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN)
 public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
 
     @Inject
@@ -116,11 +114,6 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
     @WorkbenchPartView
     public UberView<ProcessInstanceDetailsMultiPresenter> getView() {
         return view;
-    }
-
-    @DefaultPosition
-    public Position getPosition() {
-        return CompassPosition.EAST;
     }
 
     @WorkbenchPartTitle

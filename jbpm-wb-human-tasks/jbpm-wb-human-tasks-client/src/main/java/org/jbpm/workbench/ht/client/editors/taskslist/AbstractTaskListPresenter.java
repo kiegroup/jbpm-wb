@@ -57,7 +57,6 @@ import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
-import org.jbpm.workbench.ht.client.editors.taskdetailsmulti.TaskDetailsMultiPresenter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
@@ -370,21 +369,21 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     public void selectTask(final TaskSummary summary,
                            final Boolean close) {
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(TaskDetailsMultiPresenter.SCREEN_ID));
+        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(PerspectiveIds.TASK_DETAILS_SCREEN));
         boolean logOnly = false;
         if (TASK_STATUS_COMPLETED.equals(summary.getStatus()) ||
                 TASK_STATUS_EXITED.equals(summary.getStatus())) {
             logOnly = true;
         }
         if (status == PlaceStatus.CLOSE) {
-            placeManager.goTo(TaskDetailsMultiPresenter.SCREEN_ID);
+            placeManager.goTo(PerspectiveIds.TASK_DETAILS_SCREEN);
             fireTaskSelectionEvent(summary,
                                    logOnly);
         } else if (status == PlaceStatus.OPEN && !close) {
             fireTaskSelectionEvent(summary,
                                    logOnly);
         } else if (status == PlaceStatus.OPEN && close) {
-            placeManager.closePlace(TaskDetailsMultiPresenter.SCREEN_ID);
+            placeManager.closePlace(PerspectiveIds.TASK_DETAILS_SCREEN);
         }
     }
 
