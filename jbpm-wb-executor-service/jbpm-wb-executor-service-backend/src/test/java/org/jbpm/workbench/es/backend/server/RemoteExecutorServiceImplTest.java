@@ -23,7 +23,7 @@ import static org.jbpm.workbench.es.backend.server.RequestSummaryMapperTest.newR
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,7 +41,7 @@ import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.admin.ProcessAdminServicesClient;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RemoteExecutorServiceImplTest {
@@ -63,7 +63,7 @@ public class RemoteExecutorServiceImplTest {
         final KieServicesClient servicesClient = mock(KieServicesClient.class);
         when(servicesClient.getServicesClient(JobServicesClient.class)).thenReturn(jobServicesClient);
         when(servicesClient.getServicesClient(ProcessAdminServicesClient.class)).thenReturn(processAdminServicesClient);
-        when(kieServerIntegration.getServerClient(anyString())).thenReturn(servicesClient);
+        when(kieServerIntegration.getServerClient(nullable(String.class))).thenReturn(servicesClient);
     }
 
     @Test

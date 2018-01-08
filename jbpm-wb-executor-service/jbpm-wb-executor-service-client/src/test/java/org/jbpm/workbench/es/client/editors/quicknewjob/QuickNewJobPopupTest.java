@@ -105,16 +105,16 @@ public class QuickNewJobPopupTest {
         doAnswer(new Answer() {
             @Override
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
-                final HashMap<String, String> ctxValues = (HashMap) invocationOnMock.getArguments()[2];
+                final HashMap<String, String> ctxValues = (HashMap) invocationOnMock.getArgument(2);
                 assertTrue(ctxValues.get(RequestDataSetConstants.COLUMN_BUSINESSKEY).equals(JOB_NAME));
                 assertTrue(ctxValues.get(RequestDataSetConstants.COLUMN_RETRIES).equals(String.valueOf(JOB_RETRIES)));
                 assertTrue(invocationOnMock.getArguments()[2].equals(JOB_TYPE));
                 return null;
             }
-        }).when(executorServicesMock).scheduleRequest(anyString(),
-                                                      anyString(),
-                                                      any(Date.class),
-                                                      any(Map.class));
+        }).when(executorServicesMock).scheduleRequest(nullable(String.class),
+                                                      nullable(String.class),
+                                                      nullable(Date.class),
+                                                      nullable(Map.class));
 
         quickNewJobPopup.createJob(JOB_NAME,
                                    new Date(),
@@ -122,10 +122,10 @@ public class QuickNewJobPopupTest {
                                    JOB_RETRIES,
                                    new ArrayList<RequestParameterSummary>());
 
-        verify(executorServicesMock).scheduleRequest(anyString(),
-                                                     anyString(),
-                                                     any(Date.class),
-                                                     any(HashMap.class));
+        verify(executorServicesMock).scheduleRequest(nullable(String.class),
+                                                     nullable(String.class),
+                                                     nullable(Date.class),
+                                                     nullable(HashMap.class));
     }
 
     @Test
@@ -180,10 +180,10 @@ public class QuickNewJobPopupTest {
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
                 throw (new Exception("Invalid command type"));
             }
-        }).when(executorServicesMock).scheduleRequest(anyString(),
-                                                      anyString(),
-                                                      any(Date.class),
-                                                      any(Map.class));
+        }).when(executorServicesMock).scheduleRequest(nullable(String.class),
+                                                      nullable(String.class),
+                                                      nullable(Date.class),
+                                                      nullable(Map.class));
 
         quickNewJobPopup.createJob(JOB_NAME,
                                    new Date(),

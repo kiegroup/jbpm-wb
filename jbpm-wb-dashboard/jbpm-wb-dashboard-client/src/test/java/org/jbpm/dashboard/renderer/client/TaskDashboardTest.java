@@ -31,10 +31,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.dashboard.renderer.client.panel.DashboardKpis;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.service.TaskService;
-import org.jbpm.workbench.pr.model.ProcessInstanceKey;
-import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
-import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.jbpm.dashboard.renderer.client.panel.AbstractDashboard;
 import org.jbpm.dashboard.renderer.client.panel.TaskDashboard;
 import org.jbpm.dashboard.renderer.client.panel.events.TaskDashboardFocusEvent;
@@ -43,7 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -505,10 +502,6 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testTaskInstanceNoDetailsStatusExited() {
-        when(taskService.getTask(anyString(),
-                                 anyString(),
-                                 anyLong())).thenReturn(mock(TaskSummary.class));
-        when(placeManager.getStatus(TaskDashboard.TASK_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
         tableDisplayer.selectCell(COLUMN_TASK_ID,
                                   3);
@@ -528,10 +521,6 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testTaskInstanceNoDetailsStatusComplete() {
-        when(taskService.getTask(anyString(),
-                                 anyString(),
-                                 anyLong())).thenReturn(mock(TaskSummary.class));
-        when(placeManager.getStatus(TaskDashboard.TASK_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
         tableDisplayer.selectCell(COLUMN_TASK_ID,
                                   2);
@@ -551,16 +540,16 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testOpenInstanceDetails() {
-        when(taskService.getTask(anyString(),
-                                 anyString(),
-                                 anyLong())).thenReturn(mock(TaskSummary.class));
+        when(taskService.getTask(any(),
+                                 any(),
+                                 any())).thenReturn(mock(TaskSummary.class));
         when(placeManager.getStatus(TaskDashboard.TASK_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
         tableDisplayer.selectCell(COLUMN_TASK_ID,
                                   0);
 
-        verify(taskSelectionEvent).fire(any(TaskSelectionEvent.class));
-        verify(taskDashboardFocusEvent).fire(any(TaskDashboardFocusEvent.class));
+        verify(taskSelectionEvent).fire(any());
+        verify(taskDashboardFocusEvent).fire(any());
         verify(placeManager).goTo(TaskDashboard.TASK_DETAILS_SCREEN_ID);
     }
 

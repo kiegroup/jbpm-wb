@@ -125,8 +125,8 @@ public class TaskCommentsPresenterTest {
 
         // Comment added
         verify(commentsServiceMock)
-                .addTaskComment(anyString(),
-                                anyString(),
+                .addTaskComment(nullable(String.class),
+                                nullable(String.class),
                                 anyLong(),
                                 eq(comment),
                                 any(Date.class));
@@ -140,14 +140,14 @@ public class TaskCommentsPresenterTest {
 
         // Comment removed
         verify(commentsServiceMock)
-                .deleteTaskComment(anyString(),
-                                   anyString(),
+                .deleteTaskComment(nullable(String.class),
+                                   nullable(String.class),
                                    anyLong(),
                                    eq(COMMENT_ID));
         // Input cleared
         verify(viewMock).clearCommentInput();
-        verify(commentsServiceMock).getTaskComments(anyString(),
-                                                    anyString(),
+        verify(commentsServiceMock).getTaskComments(nullable(String.class),
+                                                    nullable(String.class),
                                                     anyLong());
         verify(viewMock).redrawDataGrid();
     }

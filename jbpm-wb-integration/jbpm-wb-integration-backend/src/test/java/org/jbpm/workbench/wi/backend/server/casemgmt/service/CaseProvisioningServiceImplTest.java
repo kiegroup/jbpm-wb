@@ -16,9 +16,6 @@
 
 package org.jbpm.workbench.wi.backend.server.casemgmt.service;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.guvnor.ala.pipeline.Input;
 import org.guvnor.ala.pipeline.Pipeline;
 import org.guvnor.ala.pipeline.execution.PipelineExecutor;
@@ -26,14 +23,12 @@ import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningCompletedEvent;
 import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningFailedEvent;
 import org.jbpm.workbench.wi.casemgmt.events.CaseProvisioningStartedEvent;
 import org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningSettings;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.uberfire.commons.async.DescriptiveThreadFactory;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningStatus.COMPLETED;
 import static org.jbpm.workbench.wi.casemgmt.service.CaseProvisioningStatus.DISABLED;
@@ -51,21 +46,8 @@ public class CaseProvisioningServiceImplTest {
     @Mock
     private CaseProvisioningSettings settings;
 
-    @Mock
-    private ExecutorService executorService;
-
     @InjectMocks
     private CaseProvisioningServiceImpl service;
-
-    @Before()
-    public void setUp() {
-        ExecutorService executorService = Executors.newCachedThreadPool(new DescriptiveThreadFactory());
-        doAnswer(invocationOnMock -> {
-            executorService.execute(invocationOnMock.getArgumentAt(0,
-                                                                   Runnable.class));
-            return null;
-        }).when(this.executorService).execute(any(Runnable.class));
-    }
 
     @Test
     public void testProvisioningDisabled() {

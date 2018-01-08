@@ -35,7 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.client.mvp.PlaceStatus;
 
 import static org.dashbuilder.dataset.Assertions.*;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 import static org.jbpm.dashboard.renderer.model.DashboardData.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class ProcessDashboardTest extends AbstractDashboardTest {
 
     @Mock

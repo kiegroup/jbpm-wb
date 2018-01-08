@@ -33,7 +33,6 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import static org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenter.PARAMETER_CASE_ID;
 import static org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenter.PARAMETER_CONTAINER_ID;
 import static org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenter.PARAMETER_SERVER_TEMPLATE_ID;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 public abstract class AbstractCaseInstancePresenterTest {
@@ -63,7 +62,6 @@ public abstract class AbstractCaseInstancePresenterTest {
     public void init() {
         caseService = new CallerMock<>(caseManagementService);
         getPresenter().setCaseService(caseService);
-        doAnswer(im -> im.getArguments()[0]).when(translationService).format(anyString());
     }
 
     protected CaseInstanceSummary setupCaseInstance(final String serverTemplateId) {

@@ -29,7 +29,7 @@ import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
 import org.uberfire.rpc.SessionInfo;
@@ -82,7 +82,7 @@ public class DDConfigUpdaterTest {
         KieProject project = Mockito.mock(KieProject.class);
         when(project.getRootPath()).thenReturn(rootPath);
 
-        when(ioService.exists(any(org.uberfire.java.nio.file.Path.class))).thenReturn(true);
+        when(ioService.exists(any())).thenReturn(true);
         when(configUpdaterHelper.isPersistenceFile(any(Path.class))).thenReturn(true);
         when(configUpdaterHelper.buildJPAMarshallingStrategyValue(any(KieProject.class))).thenReturn(JPA_MARSHALLING_STRATEGY);
         when(projectService.resolveProject(any(Path.class))).thenReturn(project);

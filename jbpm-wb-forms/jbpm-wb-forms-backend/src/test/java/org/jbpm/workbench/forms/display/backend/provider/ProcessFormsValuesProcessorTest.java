@@ -32,7 +32,7 @@ import org.kie.workbench.common.forms.serialization.impl.FieldSerializer;
 import org.kie.workbench.common.forms.serialization.impl.FormDefinitionSerializerImpl;
 import org.kie.workbench.common.forms.serialization.impl.FormModelSerializer;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.*;
 

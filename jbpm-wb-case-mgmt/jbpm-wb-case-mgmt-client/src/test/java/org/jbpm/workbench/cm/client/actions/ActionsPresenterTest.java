@@ -24,7 +24,6 @@ import org.jboss.errai.security.shared.api.identity.User;
 
 import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenterTest;
 import org.jbpm.workbench.cm.model.CaseActionSummary;
-import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
 import org.jbpm.workbench.cm.util.Actions;
@@ -35,11 +34,10 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.mocks.CallerMock;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
@@ -63,11 +61,16 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
     CaseActionsPresenter presenter;
 
     List<CaseActionSummary> caseActionSummaryList = Lists.newArrayList(createCaseActionSummary());
+
     CaseInstanceSummary cis;
-    String containerId = "containerId",
-            caseDefId = "caseDefinitionId",
-            caseId = "caseId",
-            serverTemplateId = "serverTemplateId";
+
+    String containerId = "containerId";
+
+    String caseDefId = "caseDefinitionId";
+
+    String caseId = "caseId";
+
+    String serverTemplateId = "serverTemplateId";
 
     private static CaseActionSummary createCaseActionSummary() {
         return CaseActionSummary.builder()
@@ -88,15 +91,11 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         presenter.setCaseService(caseService);
 
         cis = CaseInstanceSummary.builder().containerId(containerId).caseId(caseId).caseDefinitionId(caseDefId).build();
-        final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().id(caseDefId).build();
 
-        when(caseManagementService.getCaseDefinition(serverTemplateId,
-                                                     cis.getContainerId(),
-                                                     cis.getCaseDefinitionId())).thenReturn(cds);
-        when(caseManagementService.getCaseActions(anyString(),
-                                                  anyString(),
-                                                  anyString(),
-                                                  anyString())).thenReturn(actions);
+        when(caseManagementService.getCaseActions(any(),
+                                                  any(),
+                                                  any(),
+                                                  any())).thenReturn(actions);
 
         when(actions.getAvailableActions()).thenReturn(caseActionSummaryList);
         when(actions.getInProgressAction()).thenReturn(caseActionSummaryList);

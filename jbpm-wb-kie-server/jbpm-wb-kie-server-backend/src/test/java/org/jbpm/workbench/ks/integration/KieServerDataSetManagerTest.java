@@ -35,7 +35,7 @@ import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.QueryServicesClient;
 import org.kie.server.common.rest.KieServerHttpRequestException;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.commons.async.DescriptiveThreadFactory;
 import org.uberfire.mocks.EventSourceMock;
 

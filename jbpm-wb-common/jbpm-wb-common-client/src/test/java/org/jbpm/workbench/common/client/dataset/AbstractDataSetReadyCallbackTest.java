@@ -78,7 +78,7 @@ public class AbstractDataSetReadyCallbackTest {
         verify(view).hideBusyIndicator();
         verify(errorPopup,
                never()).showMessage(anyString());
-        verify(errorCallback).error(any(Message.class),
-                                    any(Throwable.class));
+        verify(errorCallback).error(nullable(Message.class),
+                                    nullable(Throwable.class));
     }
 }
