@@ -36,7 +36,6 @@ import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.model.Parameter;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
-import org.jbpm.workbench.wi.dd.type.DDResourceTypeDefinition;
 import org.jbpm.workbench.wi.dd.validation.DeploymentDescriptorValidationMessage;
 import org.kie.internal.runtime.conf.AuditMode;
 import org.kie.internal.runtime.conf.DeploymentDescriptor;
@@ -76,9 +75,6 @@ public class DDEditorServiceImpl
 
     @Inject
     private CommentedOptionFactory commentedOptionFactory;
-
-    @Inject
-    private DDResourceTypeDefinition resourceTypeDefinition;
 
     @Override
     public DeploymentDescriptorModel load(Path path) {
@@ -498,7 +494,7 @@ public class DDEditorServiceImpl
 
     @Override
     public boolean accepts(Path path) {
-        return this.resourceTypeDefinition.accept(path);
+        return path.getFileName().equals("kie-deployment-descriptor.xml");
     }
 
     @Override
