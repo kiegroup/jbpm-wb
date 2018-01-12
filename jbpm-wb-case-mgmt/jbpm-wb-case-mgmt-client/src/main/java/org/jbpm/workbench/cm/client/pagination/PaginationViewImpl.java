@@ -44,12 +44,11 @@ public class PaginationViewImpl implements IsElement {
 
     @Inject
     @DataField("prevPage")
-
     Anchor prevPage;
 
     List allElementsList = new ArrayList();
 
-    int currentPage = 0;
+    int currentPage;
 
     int pageSize;
 
@@ -65,29 +64,19 @@ public class PaginationViewImpl implements IsElement {
         this.allElementsList = allElementsList;
         this.pageList = pageList;
         this.pageSize = pageSize;
-        setVisibleItemsList(currentPage);
+        setVisibleItemsList(0);
     }
 
-    protected void setVisibleItemsList(int currentPage) {
+    public void setPagination(boolean showPagination) {
+        pagination.setHidden(!showPagination);
+    }
+
+    private void setVisibleItemsList(int currentPage) {
         this.currentPage = currentPage;
-        int allItemsSize = allElementsList.size();
         List visibleItems;
+
         boolean hasPrevPage = false;
         boolean hasNextPage = false;
-
-        if (currentPage != 0) {
-            hasPrevPage = true;
-        }
-
-        if (pageSize * (currentPage + 1) < allItemsSize) {
-            hasNextPage = true;
-            visibleItems = allElementsList.subList(pageSize * currentPage,
-                                                   pageSize * (currentPage + 1));
-        } else {
-            visibleItems = allElementsList.subList(pageSize * currentPage,
-                                                   allItemsSize);
-        }
-
         boolean showPagination = false;
         removeCSSClass(pageList.getScrollBox(),
                        "kie-end-scroll");
@@ -96,22 +85,8 @@ public class PaginationViewImpl implements IsElement {
         removeCSSClass(pageList.getScrollBox(),
                        "kie-both-scroll");
 
-        if (hasNextPage) {
-            showPagination = true;
-            removeCSSClass(nextPage,
-                           "disabled");
-            if (hasPrevPage) {
-                addCSSClass(pageList.getScrollBox(),
-                            "kie-both-scroll");
-            } else {
-                addCSSClass(pageList.getScrollBox(),
-                            "kie-end-scroll");
-            }
-        } else {
-            addCSSClass(nextPage,
-                        "disabled");
-        }
-        if (hasPrevPage) {
+        if (currentPage != 0) {
+            hasPrevPage = true;
             showPagination = true;
             removeCSSClass(prevPage,
                            "disabled");
@@ -121,7 +96,31 @@ public class PaginationViewImpl implements IsElement {
             addCSSClass(prevPage,
                         "disabled");
         }
-        pagination.setHidden(!showPagination);
+
+        if (pageSize * (currentPage + 1) < allElementsList.size()) {
+            hasNextPage = true;
+            showPagination = true;
+            visibleItems = allElementsList.subList(pageSize * currentPage,
+                                                   pageSize * (currentPage + 1));
+            removeCSSClass(nextPage,
+                           "disabled");
+        } else {
+            visibleItems = allElementsList.subList(pageSize * currentPage,
+                                                   allElementsList.size());
+            addCSSClass(nextPage,
+                        "disabled");
+        }
+
+        if (hasNextPage && hasPrevPage) {
+            addCSSClass(pageList.getScrollBox(),
+                        "kie-both-scroll");
+        } else if (hasNextPage) {
+            addCSSClass(pageList.getScrollBox(),
+                        "kie-end-scroll");
+        }
+
+        setPagination(showPagination);
+
         if (visibleItems.size() == 1) {
             addCSSClass(pageList.getScrollBox(),
                         "kie-scrollbox-show-overflow");
@@ -129,6 +128,7 @@ public class PaginationViewImpl implements IsElement {
             removeCSSClass(pageList.getScrollBox(),
                            "kie-scrollbox-show-overflow");
         }
+
         pageList.setVisibleItems(visibleItems);
     }
 
@@ -152,10 +152,6 @@ public class PaginationViewImpl implements IsElement {
 
     public HTMLElement getElement() {
         return pagination;
-    }
-
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
     }
 
     public interface PageList<T> {

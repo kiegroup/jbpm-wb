@@ -16,7 +16,6 @@
 
 package org.jbpm.workbench.cm.client.roles;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.Dependent;
@@ -104,6 +103,9 @@ public class CaseRoleItemView extends AbstractView<CaseRolesPresenter> implement
     ConfirmPopup confirmPopup;
 
     @Inject
+    private CaseRolesPresenter.EditRoleAssignmentView editRoleAssignmentDialog;
+
+    @Inject
     @AutoBound
     private DataBinder<CaseRoleAssignmentSummary> caseRoleAssignmentSummary;
 
@@ -119,130 +121,10 @@ public class CaseRoleItemView extends AbstractView<CaseRolesPresenter> implement
 
     @Override
     public void setValue(final CaseRoleAssignmentSummary model) {
-        this.caseRoleAssignmentSummary.setModel(model);
-        removeCSSClass(actions,
-                       "dropup");
-        if (CaseRolesPresenter.CASE_OWNER_ROLE.equals(model.getName())) {
-            setOwnerAssignment();
-        } else {
-            boolean hasAssignment = model.hasAssignment();
-            addAction(new CaseRolesPresenter.CaseRoleAction() {
-                @Override
-                public String label() {
-                    if (hasAssignment) {
-                        return translationService.format(EDIT);
-                    }
-                    return translationService.format(ASSIGN);
-                }
-
-                @Override
-                public boolean isEnabled() {
-                    return true;
-                }
-
-                @Override
-                public void execute() {
-                    presenter.editAction(model);
-                }
-            });
-            addAction(new CaseRolesPresenter.CaseRoleAction() {
-                @Override
-                public String label() {
-                    return translationService.format(REMOVE_ALL_ASSIGNMENTS);
-                }
-
-                @Override
-                public boolean isEnabled() {
-                    return hasAssignment;
-                }
-
-                @Override
-                public void execute() {
-                    confirmPopup.show(translationService.format(REMOVE_ASSIGNMENT),
-                                      translationService.format(REMOVE),
-                                      translationService.format(REMOVE_ALL_USERS_GROUPS_FROM_ROLE,
-                                                                model.getName()),
-                                      () -> presenter.storeRoleAssignments(model,
-                                                                           Collections.emptyList(),
-                                                                           Collections.emptyList()));
-                }
-            });
-        }
+        caseRoleAssignmentSummary.setModel(model);
     }
 
-    public void setCaseRoleAssignments(int maxWidth) {
-        if (!CaseRolesPresenter.CASE_OWNER_ROLE.equals(caseRoleAssignmentSummary.getModel().getName())) {
-            if (!caseRoleAssignmentSummary.getModel().hasAssignment()) {
-                displayUnassigned();
-            } else {
-                if (caseRoleAssignmentSummary.getModel().getUsers().size() == 0) {
-                    setSingleLineAssignment(groupsDiv,
-                                            usersDiv);
-                } else {
-                    List<CaseRolesPresenter.CaseAssignmentItem> itemsList = new ArrayList<>();
-                    caseRoleAssignmentSummary.getModel()
-                            .getUsers()
-                            .forEach(user -> itemsList.add(
-                                    new CaseRolesPresenter.CaseAssignmentItem() {
-                                        @Override
-                                        public String label() {
-                                            return user;
-                                        }
-
-                                        @Override
-                                        public void execute() {
-                                            confirmPopup.show(translationService.format(REMOVE_ASSIGNMENT),
-                                                              translationService.format(REMOVE),
-                                                              translationService.format(REMOVE_USER_ASSIGNMENT_FROM_ROLE,
-                                                                                        user,
-                                                                                        caseRoleAssignmentSummary.getModel().getName()),
-                                                              () -> presenter.removeUserFromRole(user,
-                                                                                                 caseRoleAssignmentSummary.getModel()));
-                                        }
-                                    }));
-                    usersItemsLine.initWithItemsLine(maxWidth,
-                                                     name.getTextContent() + USERS_LINE_ID,
-                                                     itemsList);
-                }
-                if (caseRoleAssignmentSummary.getModel().getGroups().size() == 0) {
-                    setSingleLineAssignment(usersDiv,
-                                            groupsDiv);
-                } else {
-                    List<CaseRolesPresenter.CaseAssignmentItem> itemsList = new ArrayList<>();
-                    caseRoleAssignmentSummary.getModel()
-                            .getGroups()
-                            .forEach(group -> itemsList.add(
-                                    new CaseRolesPresenter.CaseAssignmentItem() {
-                                        @Override
-                                        public String label() {
-                                            return group;
-                                        }
-
-                                        @Override
-                                        public void execute() {
-                                            confirmPopup.show(translationService.format(REMOVE_ASSIGNMENT),
-                                                              translationService.format(REMOVE),
-                                                              translationService.format(REMOVE_GROUP_ASSIGNMENT_FROM_ROLE,
-                                                                                        group,
-                                                                                        caseRoleAssignmentSummary.getModel().getName()),
-                                                              () -> presenter.removeGroupFromRole(group,
-                                                                                                  caseRoleAssignmentSummary.getModel()));
-                                        }
-                                    }));
-                    groupsItemsLine.initWithItemsLine(maxWidth,
-                                                      name.getTextContent() + GROUP_LINE_ID,
-                                                      itemsList);
-                }
-            }
-        }
-    }
-
-    public void setOwnerAssignment() {
-        usersItemsLine.initWithSingleItem(name.getTextContent(),
-                                          caseRoleAssignmentSummary.getModel().getUsers().get(0));
-
-        setSingleLineAssignment(usersDiv,
-                                groupsDiv);
+    public void displayOwnerActions() {
         removeCSSClass(actions,
                        "hidden");
         addCSSClass(actionsItems,
@@ -251,11 +133,53 @@ public class CaseRoleItemView extends AbstractView<CaseRolesPresenter> implement
                     "disabled");
     }
 
-    private void setSingleLineAssignment(Div divToExpand,
-                                         Div divTohide) {
+    public void displayEnabledAction(final CaseRolesPresenter.CaseRoleAction action) {
+        removeCSSClass(actions,
+                       "hidden");
+        final HTMLElement li = getDocument().createElement("li");
+        final HTMLElement a = getDocument().createElement("a");
+        a.setTextContent(action.label());
+        addCSSClass(a,
+                    "kie-more-info-link");
+        a.setOnclick(e -> action.execute());
+        li.appendChild(a);
+        actionsItems.appendChild(li);
+    }
+
+    public void displayDisabledAction(final CaseRolesPresenter.CaseRoleAction action) {
+        removeCSSClass(actions,
+                       "hidden");
+        final HTMLElement li = getDocument().createElement("li");
+        final HTMLElement a = getDocument().createElement("a");
+        a.setTextContent(action.label());
+        addCSSClass(li,
+                    "disabled");
+        li.appendChild(a);
+        actionsItems.appendChild(li);
+    }
+
+    public void displayOwnerAssignment() {
+        hideGroupAssignments();
+        final String owner = getValue().getUsers().get(0);
+        usersItemsLine.initWithSingleItem(CaseRolesPresenter.CASE_OWNER_ROLE,
+                                          owner);
+    }
+
+    public void hideGroupAssignments() {
+        displaySingleAssignment(usersDiv,
+                                groupsDiv);
+    }
+
+    public void hideUserAssignments() {
+        displaySingleAssignment(groupsDiv,
+                                usersDiv);
+    }
+
+    private void displaySingleAssignment(Div divToExpand,
+                                         Div divToHide) {
         addCSSClass(divToExpand,
                     "kie-single-role-assignment-height");
-        addCSSClass(divTohide,
+        addCSSClass(divToHide,
                     "hidden");
     }
 
@@ -268,25 +192,76 @@ public class CaseRoleItemView extends AbstractView<CaseRolesPresenter> implement
                        "hidden");
     }
 
-    public void addAction(final CaseRolesPresenter.CaseRoleAction action) {
-        removeCSSClass(actions,
-                       "hidden");
-
-        final HTMLElement li = getDocument().createElement("li");
-        final HTMLElement a = getDocument().createElement("a");
-        a.setTextContent(action.label());
-        if (!action.isEnabled()) {
-            addCSSClass(li,
-                        "disabled");
-        } else {
-            addCSSClass(a,
-                        "kie-more-info-link");
-            a.setOnclick(e -> action.execute());
-            li.appendChild(a);
+    public void displayAssignmentsList(final String listId,
+                                       final int listWidth,
+                                       final List<CaseRolesPresenter.CaseAssignmentItem> assignmentsList) {
+        if (USERS_LINE_ID.equals(listId)) {
+            usersItemsLine.initWithItemsLine(listWidth,
+                                             name.getTextContent() + USERS_LINE_ID,
+                                             assignmentsList);
+        } else if (GROUP_LINE_ID.equals(listId)) {
+            groupsItemsLine.initWithItemsLine(listWidth,
+                                              name.getTextContent() + GROUP_LINE_ID,
+                                              assignmentsList);
         }
+    }
 
-        li.appendChild(a);
-        actionsItems.appendChild(li);
+    public void showEditRoleAssignmentDialog() {
+        final String roleName = getValue().getName();
+        final CaseRoleAssignmentSummary currentRoleAssignments = CaseRoleAssignmentSummary.builder()
+                                                                                          .name(roleName)
+                                                                                          .users(getValue().getUsers())
+                                                                                          .groups(getValue().getGroups())
+                                                                                          .build();
+        editRoleAssignmentDialog.setValue(currentRoleAssignments);
+        editRoleAssignmentDialog.show(() -> presenter.assignToRole(this,
+                                                                   getNewRoleAssignments()));
+    }
+
+    private CaseRoleAssignmentSummary getNewRoleAssignments() {
+        return editRoleAssignmentDialog.getValue();
+    }
+
+    public void showErrorState() {
+        editRoleAssignmentDialog.setErrorState();
+    }
+
+    public void showAssignmentErrors(List<String> caseRoleAssignmentErrors) {
+        editRoleAssignmentDialog.showValidationError(caseRoleAssignmentErrors);
+    }
+
+    public void hideEditRoleAssignmentDialog() {
+        editRoleAssignmentDialog.hide();
+    }
+
+    public void showRemoveAllAssignmentsPopup() {
+        confirmPopup.show(translationService.format(REMOVE_ASSIGNMENT),
+                          translationService.format(REMOVE),
+                          translationService.format(REMOVE_ALL_USERS_GROUPS_FROM_ROLE,
+                                                    getValue().getName()),
+                          () -> presenter.storeRoleAssignments(getValue(),
+                                                               Collections.emptyList(),
+                                                               Collections.emptyList()));
+    }
+
+    public void showRemoveUserAssignmentPopup(final String user) {
+        confirmPopup.show(translationService.format(REMOVE_ASSIGNMENT),
+                          translationService.format(REMOVE),
+                          translationService.format(REMOVE_USER_ASSIGNMENT_FROM_ROLE,
+                                                    user,
+                                                    getValue().getName()),
+                          () -> presenter.removeUserFromRole(user,
+                                                             getValue()));
+    }
+
+    public void showRemoveGroupAssignmentPopup(final String group) {
+        confirmPopup.show(translationService.format(REMOVE_ASSIGNMENT),
+                          translationService.format(REMOVE),
+                          translationService.format(REMOVE_GROUP_ASSIGNMENT_FROM_ROLE,
+                                                    group,
+                                                    getValue().getName()),
+                          () -> presenter.removeGroupFromRole(group,
+                                                              getValue()));
     }
 
     public void setLastElementStyle() {
@@ -294,7 +269,7 @@ public class CaseRoleItemView extends AbstractView<CaseRolesPresenter> implement
                     "dropup");
     }
 
-    public void onCaseRoleAssignmentLineOpenEvent(@Observes CaseRoleAssignmentListOpenEvent event) {
+    public void onCaseRoleAssignmentListOpenEvent(@Observes CaseRoleAssignmentListOpenEvent event) {
         String lineId = event.getAssignmentLineId();
         if (lineId.equals(name.getTextContent() + USERS_LINE_ID)) {
             groupsItemsLine.hideAllItems();
@@ -306,7 +281,19 @@ public class CaseRoleItemView extends AbstractView<CaseRolesPresenter> implement
         }
     }
 
-    public void onCaseRoleAssignmentLineLoadEvent(@Observes CaseRoleAssignmentListLoadEvent event) {
-        setCaseRoleAssignments(event.getMaxWidth());
+    public void onCaseRoleAssignmentListLoadEvent(@Observes CaseRoleAssignmentListLoadEvent event) {
+        displayCaseRoleActions();
+        displayCaseRoleAssignments(event.getMaxWidth());
+    }
+
+    private void displayCaseRoleActions() {
+        removeCSSClass(actions,
+                       "dropup");
+        presenter.setCaseRoleActions(this);
+    }
+
+    private void displayCaseRoleAssignments(int maxWidth) {
+        presenter.setCaseRoleAssignments(this,
+                                         maxWidth);
     }
 }

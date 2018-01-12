@@ -18,12 +18,9 @@ package org.jbpm.workbench.cm.client.roles;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenterTest;
-import org.jbpm.workbench.cm.client.util.CaseRolesAssignmentFilterBy;
 import org.jbpm.workbench.cm.client.util.CaseRolesValidations;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
@@ -34,14 +31,15 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.uberfire.mvp.Command;
 
 import static java.util.Collections.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
@@ -64,10 +62,14 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
     @Mock
     CaseRolesPresenter.EditRoleAssignmentView editRoleAssignmentView;
 
+    @Spy
     @InjectMocks
     CaseRolesPresenter presenter;
 
     CaseDefinitionSummary caseDefinition;
+
+    private CaseRoleItemView caseRole;
+
 
     @Override
     public CaseRolesPresenter getPresenter() {
@@ -76,18 +78,78 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
 
     @Before
     public void setUp() {
-        when(view.getFilterValue()).thenReturn(CaseRolesAssignmentFilterBy.ALL.getLabel());
+        caseRole = mock(CaseRoleItemView.class);
     }
 
     @Test
     public void testClearCaseInstance() {
+        List<CaseRoleAssignmentSummary> caseRoleAssignmentSummaryList = new ArrayList<>();
+        caseRoleAssignmentSummaryList.add(CaseRoleAssignmentSummary.builder().name(CASE_ROLE).build());
+        presenter.setCaseRolesAssignments(caseRoleAssignmentSummaryList);
+        assertEquals(1,
+                     presenter.getCaseRolesAssignments().size());
+
         presenter.clearCaseInstance();
 
-        verifyClearCaseInstance();
+        assertEquals(0,
+                     presenter.getCaseRolesAssignments().size());
+        verify(view).removeAllRoles();
+        verify(view).setBadge(0);
+
     }
 
-    private void verifyClearCaseInstance() {
-        verify(view).removeAllRoles();
+    @Test
+    public void testLoadCaseInstance_nonExistentCaseInstance() {
+        presenter.loadCaseInstance(null);
+
+        assertEquals(0,
+                     presenter.getCaseRolesAssignments().size());
+        verifyZeroInteractions(view);
+        verifyZeroInteractions(caseManagementService);
+    }
+
+    @Test
+    public void testLoadCaseInstance_caseInstanceWithoutAssignments() {
+        presenter.loadCaseInstance(caseInstance);
+
+        assertEquals(0,
+                     presenter.getCaseRolesAssignments().size());
+        verifyZeroInteractions(view);
+        verifyZeroInteractions(caseManagementService);
+    }
+
+    @Test
+    public void testLoadCaseInstance_caseInstanceWithoutCaseDefinitionId() {
+        caseInstance.setCaseDefinitionId(null);
+        caseInstance.setRoleAssignments(singletonList(CaseRoleAssignmentSummary.builder()
+                                                                               .name(CASE_ROLE)
+                                                                               .groups(singletonList(GROUP))
+                                                                               .users(singletonList(USER))
+                                                                               .build()));
+        presenter.loadCaseInstance(caseInstance);
+
+        assertEquals(0,
+                     presenter.getCaseRolesAssignments().size());
+        verifyZeroInteractions(view);
+        verifyZeroInteractions(caseManagementService);
+    }
+
+    @Test
+    public void testLoadCaseInstance_nonExistentCaseDefinition() {
+        caseInstance.setRoleAssignments(singletonList(CaseRoleAssignmentSummary.builder()
+                                                                               .name(CASE_ROLE)
+                                                                               .groups(singletonList(GROUP))
+                                                                               .users(singletonList(USER))
+                                                                               .build()));
+        when(caseManagementService.getCaseDefinition(anyString(),
+                                                     anyString(),
+                                                     anyString())).thenReturn(null);
+        presenter.loadCaseInstance(caseInstance);
+
+        assertEquals(0,
+                     presenter.getCaseRolesAssignments().size());
+        verifyZeroInteractions(view);
+
     }
 
     @Test
@@ -103,69 +165,78 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
                             caseInstance);
         when(caseManagementService.getCaseDefinition(serverTemplateId,
                                                      caseInstance.getContainerId(),
-                                                     caseInstance.getCaseDefinitionId()))
-                .thenReturn(caseDefinition);
+                                                     caseInstance.getCaseDefinitionId())).thenReturn(caseDefinition);
+        when(view.getFilterValue()).thenReturn("All");
 
         setupCaseInstance(caseInstance,
                           serverTemplateId);
 
-        verifyClearCaseInstance();
+        verify(view).removeAllRoles();
+        verify(view).setBadge(0);
 
-        final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List> allRoleAssignments = ArgumentCaptor.forClass(List.class);
+        verify(presenter).setCaseRolesAssignments(allRoleAssignments.capture());
+        verify(view).setBadge(caseInstance.getRoleAssignments().size());
+        verify(presenter).filterCaseRoles();
 
-        verify(view).setRolesAssignmentList(captor.capture());
+        ArgumentCaptor<List> displayedRoleAssignments = ArgumentCaptor.forClass(List.class);
+        verify(view).displayCaseRolesList(displayedRoleAssignments.capture());
 
-        assertEquals(1,
-                     captor.getValue().size());
+        assertEquals(caseInstance.getRoleAssignments().size(),
+                     allRoleAssignments.getValue().size());
+        assertEquals(allRoleAssignments.getValue().size(),
+                     displayedRoleAssignments.getValue().size());
         assertEquals(CASE_ROLE,
-                     ((CaseRoleAssignmentSummary) captor.getValue().get(0)).getName());
+                     ((CaseRoleAssignmentSummary) displayedRoleAssignments.getValue().get(0)).getName());
         assertEquals(USER,
-                     ((CaseRoleAssignmentSummary) captor.getValue().get(0)).getUsers().get(0));
+                     ((CaseRoleAssignmentSummary) displayedRoleAssignments.getValue().get(0)).getUsers().get(0));
         assertEquals(GROUP,
-                     ((CaseRoleAssignmentSummary) captor.getValue().get(0)).getGroups().get(0));
+                     ((CaseRoleAssignmentSummary) displayedRoleAssignments.getValue().get(0)).getGroups().get(0));
+    }
+
+    private void setCaseDefinitionID(String caseDefinitionID,
+                                     CaseDefinitionSummary caseDefinition,
+                                     CaseInstanceSummary caseInstance) {
+        caseDefinition.setId(caseDefinitionID);
+        caseInstance.setCaseDefinitionId(caseDefinitionID);
     }
 
     @Test
-    public void testFiltering() {
+    public void testFilterCaseRoles_withoutResult() {
+        caseInstance.setRoleAssignments(singletonList(CaseRoleAssignmentSummary.builder().name(CASE_ROLE).build()));
+        presenter.setCaseRolesAssignments(caseInstance.getRoleAssignments());
+        when(view.getFilterValue()).thenReturn("Assigned");
+
+        presenter.filterCaseRoles();
+
+        verify(view).displayEmptyList();
+    }
+
+    @Test
+    public void testFilterCaseRoles_withResult() {
         final String caseRole_1 = "Role_1";
         final String caseRole_2 = "Role_2";
         final String caseRole_3 = "Role_3";
-        final Map<String, Integer> roles = new HashMap<>();
-        roles.put(caseRole_1,
-                  -1);
-        roles.put(caseRole_2,
-                  2);
-        roles.put(caseRole_3,
-                  1);
-        final CaseDefinitionSummary caseDefinition = CaseDefinitionSummary.builder().
-                roles(roles).
-                build();
-        final CaseInstanceSummary caseInstance = newCaseInstanceSummary();
+
         caseInstance.setRoleAssignments(
                 Arrays.asList(
                         createTestCaseRoleAssignmentSummary(caseRole_1,
-                                                            Arrays.asList(USER),
-                                                            Arrays.asList(GROUP)),
+                                                            singletonList(USER),
+                                                            singletonList(GROUP)),
                         createTestCaseRoleAssignmentSummary(caseRole_2,
                                                             EMPTY_LIST,
                                                             EMPTY_LIST),
                         createTestCaseRoleAssignmentSummary(caseRole_3,
                                                             EMPTY_LIST,
-                                                            Arrays.asList(GROUP))
+                                                            singletonList(GROUP))
                 ));
+        presenter.setCaseRolesAssignments(caseInstance.getRoleAssignments());
+        when(view.getFilterValue()).thenReturn("All");
 
-        setCaseDefinitionID(CASE_DEFINITION_ID,
-                            caseDefinition,
-                            caseInstance);
-        when(caseManagementService.getCaseDefinition(serverTemplateId,
-                                                     caseInstance.getContainerId(),
-                                                     caseInstance.getCaseDefinitionId()))
-                .thenReturn(caseDefinition);
-        setupCaseInstance(caseInstance,
-                          serverTemplateId);
+        presenter.filterCaseRoles();
 
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
-        verify(view).setRolesAssignmentList(captor.capture());
+        verify(view).displayCaseRolesList(captor.capture());
         assertEquals(3,
                      captor.getValue().size());
         assertEquals(caseRole_1,
@@ -181,12 +252,13 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
         assertEquals(GROUP,
                      ((CaseRoleAssignmentSummary) captor.getValue().get(2)).getGroups().get(0));
 
-        when(view.getFilterValue()).thenReturn(CaseRolesAssignmentFilterBy.ASSIGNED.getLabel());
-        presenter.filterElements();
+        when(view.getFilterValue()).thenReturn("Assigned");
+
+        presenter.filterCaseRoles();
 
         final ArgumentCaptor<List> captor2 = ArgumentCaptor.forClass(List.class);
         verify(view,
-               times(2)).setRolesAssignmentList(captor2.capture());
+               times(2)).displayCaseRolesList(captor2.capture());
         assertEquals(2,
                      captor2.getValue().size());
         assertEquals(caseRole_1,
@@ -200,122 +272,272 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
         assertEquals(GROUP,
                      ((CaseRoleAssignmentSummary) captor2.getValue().get(1)).getGroups().get(0));
 
-        when(view.getFilterValue()).thenReturn(CaseRolesAssignmentFilterBy.UNASSIGNED.getLabel());
-        presenter.filterElements();
+        when(view.getFilterValue()).thenReturn("Unassigned");
+
+        presenter.filterCaseRoles();
 
         final ArgumentCaptor<List> captor3 = ArgumentCaptor.forClass(List.class);
         verify(view,
-               times(3)).setRolesAssignmentList(captor3.capture());
+               times(3)).displayCaseRolesList(captor3.capture());
         assertEquals(1,
                      captor3.getValue().size());
         assertEquals(caseRole_2,
                      ((CaseRoleAssignmentSummary) captor3.getValue().get(0)).getName());
     }
 
-    @Test
-    public void testEditAction() {
-        String newUser = "userTest";
-        String newGroup = "groupTest";
-        loadTestCase();
-        CaseRoleAssignmentSummary caseRoleAssignmentSummary =
-                createTestCaseRoleAssignmentSummary(CASE_ROLE,
-                                                    new ArrayList<>(Arrays.asList(USER,
-                                                                                  newUser)),
-                                                    new ArrayList<>(Arrays.asList(GROUP,
-                                                                                  newGroup)));
-
-        CaseRoleAssignmentSummary previous =
-                createTestCaseRoleAssignmentSummary(CASE_ROLE,
-                                                    singletonList(USER),
-                                                    singletonList(GROUP));
-
-        when(editRoleAssignmentView.getValue()).thenReturn(caseRoleAssignmentSummary);
-
-        presenter.editAction(previous);
-
-        final ArgumentCaptor<CaseRoleAssignmentSummary> captor = ArgumentCaptor.forClass(CaseRoleAssignmentSummary.class);
-        verify(editRoleAssignmentView).setValue(captor.capture());
-        assertTrue(captor.getValue() != caseRoleAssignmentSummary);
-        assertEquals(captor.getValue().getName(),
-                     caseRoleAssignmentSummary.getName());
-
-        final ArgumentCaptor<Command> commandArgumentCaptor = ArgumentCaptor.forClass(Command.class);
-        verify(editRoleAssignmentView).show(commandArgumentCaptor.capture());
-        Command cmd = commandArgumentCaptor.getValue();
-        cmd.execute();
-        verify(editRoleAssignmentView).hide();
-        verify(caseManagementService).assignUserToRole(eq(serverTemplateId),
-                                                       eq(caseInstance.getContainerId()),
-                                                       eq(caseInstance.getCaseId()),
-                                                       eq(CASE_ROLE),
-                                                       eq(newUser));
-        verify(caseManagementService).assignGroupToRole(eq(serverTemplateId),
-                                                        eq(caseInstance.getContainerId()),
-                                                        eq(caseInstance.getCaseId()),
-                                                        eq(CASE_ROLE),
-                                                        eq(newGroup));
+    private CaseRoleAssignmentSummary createTestCaseRoleAssignmentSummary(String roleName,
+                                                                          List<String> users,
+                                                                          List<String> groups) {
+        return CaseRoleAssignmentSummary.builder()
+                .name(roleName)
+                .users(users)
+                .groups(groups).build();
     }
 
     @Test
-    public void testSetupNewRoleAssignments_rolesNotDefined() {
-        final CaseDefinitionSummary caseDefinition = CaseDefinitionSummary.builder().build();
-        final CaseInstanceSummary caseInstance = newCaseInstanceSummary();
-        setCaseDefinitionID(CASE_DEFINITION_ID,
-                            caseDefinition,
-                            caseInstance);
-        when(caseManagementService.getCaseDefinition(anyString(),
-                                                     anyString(),
-                                                     eq(CASE_DEFINITION_ID))).thenReturn(caseDefinition);
-
-        presenter.setupExistingAssignments(caseInstance);
-
-        verify(view,
-               never()).setRolesAssignmentList(anyList());
+    public void testSetCaseRoleActions_ownerRole() {
+        when(caseRole.getValue()).thenReturn(CaseRoleAssignmentSummary.builder()
+                                                                      .name(CaseRolesPresenter.CASE_OWNER_ROLE)
+                                                                      .users(singletonList(USER))
+                                                                      .build());
+        presenter.setCaseRoleActions(caseRole);
+        verify(caseRole).displayOwnerActions();
     }
 
     @Test
-    public void testAssignToRole_rolesAvailableForAssignment() {
-        CaseRoleAssignmentSummary previous = createTestCaseRoleAssignmentSummary(CASE_ROLE,
-                                                                                 EMPTY_LIST,
-                                                                                 EMPTY_LIST);
+    public void testSetCaseRoleActions_roleWithExistingAssignments() {
+        when(caseRole.getValue()).thenReturn(CaseRoleAssignmentSummary.builder()
+                                                                      .name(CASE_ROLE)
+                                                                      .users(singletonList(USER))
+                                                                      .build());
+        presenter.setCaseRoleActions(caseRole);
 
-        CaseRoleAssignmentSummary editedRoleAssignmentSummary =
-                createTestCaseRoleAssignmentSummary(CASE_ROLE,
-                                                    new ArrayList<>(Arrays.asList("user1",
-                                                                                  "user2",
-                                                                                  "user3")),
-                                                    EMPTY_LIST);
-        when(editRoleAssignmentView.getValue()).thenReturn(editedRoleAssignmentSummary);
-        when(caseRolesValidations.validateRolesAssignments(any(CaseDefinitionSummary.class),
-                                                           anyList())).thenReturn(Arrays.asList("error"));
+        final ArgumentCaptor<CaseRolesPresenter.CaseRoleAction> caseRoleAction = ArgumentCaptor.forClass(CaseRolesPresenter.CaseRoleAction.class);
+        verify(presenter,
+               times(2)).addCaseRoleAction(eq(caseRole),
+                                           caseRoleAction.capture());
+        CaseRolesPresenter.CaseRoleAction editAction = caseRoleAction.getAllValues().get(0);
+        assertEquals(EDIT,
+                     editAction.label());
+        assertTrue(editAction.isEnabled());
+        editAction.execute();
+        verify(caseRole).showEditRoleAssignmentDialog();
 
-        presenter.setupExistingAssignments(caseInstance);
-        presenter.assignToRole(previous);
+        CaseRolesPresenter.CaseRoleAction removeAllAssignmentsAction = caseRoleAction.getAllValues().get(1);
+        assertEquals(REMOVE_ALL_ASSIGNMENTS,
+                     removeAllAssignmentsAction.label());
+        assertTrue(removeAllAssignmentsAction.isEnabled());
+        removeAllAssignmentsAction.execute();
+        verify(caseRole).showRemoveAllAssignmentsPopup();
 
-        verify(editRoleAssignmentView).showValidationError(anyList());
-        verify(caseManagementService,
-               never()).assignUserToRole(anyString(),
-                                         anyString(),
-                                         anyString(),
-                                         anyString(),
-                                         anyString());
+        verify(caseRole,
+               never()).displayOwnerActions();
+        verify(caseRole,
+               times(2)).displayEnabledAction(any(CaseRolesPresenter.CaseRoleAction.class));
+    }
 
-        when(caseRolesValidations.validateRolesAssignments(any(CaseDefinitionSummary.class),
-                                                           anyList())).thenReturn(EMPTY_LIST);
-        CaseRoleAssignmentSummary editedRoleAssignmentSummary2 =
-                createTestCaseRoleAssignmentSummary(CASE_ROLE,
-                                                    new ArrayList<>(Arrays.asList("user1",
-                                                                                  "user2")),
-                                                    EMPTY_LIST);
-        when(editRoleAssignmentView.getValue()).thenReturn(editedRoleAssignmentSummary2);
-        presenter.assignToRole(previous);
+    @Test
+    public void testSetCaseRoleActions_roleWithoutAssignments() {
+        when(caseRole.getValue()).thenReturn(CaseRoleAssignmentSummary.builder()
+                                                                      .name(CASE_ROLE)
+                                                                      .build());
+        presenter.setCaseRoleActions(caseRole);
 
-        verify(caseManagementService,
-               times(2)).assignUserToRole(anyString(),
-                                          anyString(),
-                                          anyString(),
-                                          anyString(),
-                                          anyString());
+        final ArgumentCaptor<CaseRolesPresenter.CaseRoleAction> caseRoleAction = ArgumentCaptor.forClass(CaseRolesPresenter.CaseRoleAction.class);
+        verify(presenter,
+               times(2)).addCaseRoleAction(eq(caseRole),
+                                           caseRoleAction.capture());
+        CaseRolesPresenter.CaseRoleAction assignAction = caseRoleAction.getAllValues().get(0);
+        assertEquals(ASSIGN,
+                     assignAction.label());
+        assertTrue(assignAction.isEnabled());
+        assignAction.execute();
+        verify(caseRole).showEditRoleAssignmentDialog();
+
+        CaseRolesPresenter.CaseRoleAction removeAllAssignmentsAction = caseRoleAction.getAllValues().get(1);
+        assertEquals(REMOVE_ALL_ASSIGNMENTS,
+                     removeAllAssignmentsAction.label());
+        assertFalse(removeAllAssignmentsAction.isEnabled());
+        removeAllAssignmentsAction.execute();
+        verify(caseRole).showRemoveAllAssignmentsPopup();
+
+        verify(caseRole,
+                never()).displayOwnerActions();
+        verify(caseRole).displayEnabledAction(any(CaseRolesPresenter.CaseRoleAction.class));
+        verify(caseRole).displayDisabledAction(any(CaseRolesPresenter.CaseRoleAction.class));
+    }
+
+    @Test
+    public void testSetCaseRoleAssignments_ownerRole() {
+        final int assignmentsListMaxWidth = 70;
+        when(caseRole.getValue()).thenReturn(CaseRoleAssignmentSummary.builder()
+                                                                      .name(CaseRolesPresenter.CASE_OWNER_ROLE)
+                                                                      .users(singletonList(USER))
+                                                                      .build());
+        presenter.setCaseRoleAssignments(caseRole,
+                                         assignmentsListMaxWidth);
+        verify(caseRole).displayOwnerAssignment();
+    }
+
+    @Test
+    public void testSetCaseRoleAssignments_roleWithoutAssignments() {
+        final int assignmentsListMaxWidth = 70;
+        when(caseRole.getValue()).thenReturn(CaseRoleAssignmentSummary.builder()
+                                                                      .name(CASE_ROLE)
+                                                                      .build());
+        presenter.setCaseRoleAssignments(caseRole,
+                                         assignmentsListMaxWidth);
+
+        verify(caseRole).displayUnassigned();
+    }
+
+
+    @Test
+    public void testSetCaseRoleAssignments_roleWithUserAssignmentsOnly() {
+        final int assignmentsListMaxWidth = 70;
+        final CaseRoleAssignmentSummary caseRoleAssignmentSummary = CaseRoleAssignmentSummary.builder()
+                                                                                             .name(CASE_ROLE)
+                                                                                             .users(singletonList(USER))
+                                                                                             .build();
+        when(caseRole.getValue()).thenReturn(caseRoleAssignmentSummary);
+
+        presenter.setCaseRoleAssignments(caseRole,
+                                         assignmentsListMaxWidth);
+
+        verify(caseRole,
+               never()).hideUserAssignments();
+        verify(caseRole).hideGroupAssignments();
+
+        final ArgumentCaptor<List> itemsList = ArgumentCaptor.forClass(List.class);
+        verify(caseRole).displayAssignmentsList(eq(CaseRoleItemView.USERS_LINE_ID),
+                                                eq(assignmentsListMaxWidth),
+                                                itemsList.capture());
+        assertEquals(caseRoleAssignmentSummary.getUsers().size(),
+                     itemsList.getValue().size());
+        CaseRolesPresenter.CaseAssignmentItem assignmentItem = (CaseRolesPresenter.CaseAssignmentItem)itemsList.getValue().get(0);
+        final String assignedUser = caseRoleAssignmentSummary.getUsers().get(0);
+        assertEquals(assignedUser,
+                     assignmentItem.label());
+        assignmentItem.execute();
+        verify(caseRole).showRemoveUserAssignmentPopup(assignedUser);
+    }
+
+    @Test
+    public void testSetCaseRoleAssignments_roleWithGroupAssignmentsOnly() {
+        final int assignmentsListMaxWidth = 70;
+        final CaseRoleAssignmentSummary caseRoleAssignmentSummary = CaseRoleAssignmentSummary.builder()
+                                                                                             .name(CASE_ROLE)
+                                                                                             .groups(singletonList(GROUP))
+                                                                                             .build();
+        when(caseRole.getValue()).thenReturn(caseRoleAssignmentSummary);
+
+        presenter.setCaseRoleAssignments(caseRole,
+                                         assignmentsListMaxWidth);
+
+        verify(caseRole).hideUserAssignments();
+        verify(caseRole,
+               never()).hideGroupAssignments();
+
+        final ArgumentCaptor<List> itemsList = ArgumentCaptor.forClass(List.class);
+        verify(caseRole).displayAssignmentsList(eq(CaseRoleItemView.GROUP_LINE_ID),
+                                                eq(assignmentsListMaxWidth),
+                                                itemsList.capture());
+        assertEquals(caseRoleAssignmentSummary.getGroups().size(),
+                     itemsList.getValue().size());
+        CaseRolesPresenter.CaseAssignmentItem assignmentItem = (CaseRolesPresenter.CaseAssignmentItem)itemsList.getValue().get(0);
+        final String assignedGroup = caseRoleAssignmentSummary.getGroups().get(0);
+        assertEquals(assignedGroup,
+                     assignmentItem.label());
+        assignmentItem.execute();
+        verify(caseRole).showRemoveGroupAssignmentPopup(assignedGroup);
+    }
+
+    @Test
+    public void testSetCaseRoleAssignments_roleWithUserAndGroupAssignments() {
+        final int assignmentsListMaxWidth = 70;
+        final CaseRoleAssignmentSummary caseRoleAssignmentSummary = CaseRoleAssignmentSummary.builder()
+                                                                                             .name(CASE_ROLE)
+                                                                                             .users(singletonList(USER))
+                                                                                             .groups(singletonList(GROUP))
+                                                                                             .build();
+        when(caseRole.getValue()).thenReturn(caseRoleAssignmentSummary);
+
+        presenter.setCaseRoleAssignments(caseRole,
+                                         assignmentsListMaxWidth);
+
+        verify(caseRole,
+               never()).hideUserAssignments();
+        verify(caseRole,
+                never()).hideGroupAssignments();
+        verify(caseRole,
+               times(2)).displayAssignmentsList(anyString(),
+                                                eq(assignmentsListMaxWidth),
+                                                anyListOf(CaseRolesPresenter.CaseAssignmentItem.class));
+    }
+
+    @Test
+    public void testAssignToRole_noAssignmentsProvided() {
+        final CaseRoleAssignmentSummary newRoleAssignments = CaseRoleAssignmentSummary.builder()
+                                                                                      .name(CASE_ROLE)
+                                                                                      .build();
+        presenter.assignToRole(caseRole,
+                               newRoleAssignments);
+
+        verify(caseRole).showErrorState();
+        final ArgumentCaptor<List> errorList = ArgumentCaptor.forClass(List.class);
+        verify(caseRole).showAssignmentErrors(errorList.capture());
+        final int errorsNumber = 1;
+        assertEquals(errorsNumber,
+                     errorList.getValue().size());
+        assertEquals(PLEASE_INTRO_USER_OR_GROUP_TO_CREATE_ASSIGNMENT,
+                     errorList.getValue().get(0));
+    }
+
+    @Test
+    public void testAssignToRole_providedAssignmentsInvalid() {
+        final CaseRoleAssignmentSummary newRoleAssignments = CaseRoleAssignmentSummary.builder()
+                                                                                      .name(CASE_ROLE)
+                                                                                      .users(singletonList(USER))
+                                                                                      .build();
+        final String error = "testError";
+        when(caseRolesValidations.validateRolesAssignments(caseDefinition,
+                                                           singletonList(newRoleAssignments))).thenReturn(singletonList(error));
+
+        presenter.assignToRole(caseRole,
+                               newRoleAssignments);
+
+        final ArgumentCaptor<List> caseRoleAssignmentErrors = ArgumentCaptor.forClass(List.class);
+        verify(caseRole).showAssignmentErrors(caseRoleAssignmentErrors.capture());
+        final int errorsNumber = 1;
+        assertEquals(errorsNumber,
+                     caseRoleAssignmentErrors.getValue().size());
+        assertEquals(error,
+                     caseRoleAssignmentErrors.getValue().get(0));
+        verify(caseRole,
+               never()).hideEditRoleAssignmentDialog();
+    }
+
+    @Test
+    public void testAssignToRole_providedAssignmentsCorrect() {
+        final CaseRoleAssignmentSummary currentRoleAssignments = CaseRoleAssignmentSummary.builder()
+                                                                                          .name(CASE_ROLE)
+                                                                                          .build();
+        final CaseRoleAssignmentSummary newRoleAssignments = CaseRoleAssignmentSummary.builder()
+                                                                                      .name(CASE_ROLE)
+                                                                                      .users(singletonList(USER))
+                                                                                      .build();
+        when(caseRolesValidations.validateRolesAssignments(caseDefinition,
+                                                           singletonList(newRoleAssignments))).thenReturn(emptyList());
+        when(caseRole.getValue()).thenReturn(currentRoleAssignments);
+        when(view.getFilterValue()).thenReturn("All");
+
+        presenter.assignToRole(caseRole,
+                               newRoleAssignments);
+
+        verify(caseRole).hideEditRoleAssignmentDialog();
+        verify(presenter).storeRoleAssignments(any(CaseRoleAssignmentSummary.class),
+                                               anyListOf(String.class),
+                                               anyListOf(String.class));
     }
 
     @Test
@@ -325,6 +547,7 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
                         .name(CASE_ROLE)
                         .users(singletonList(USER))
                         .groups(singletonList(GROUP)).build();
+        when(view.getFilterValue()).thenReturn("All");
 
         presenter.storeRoleAssignments(cras,
                                        new ArrayList<>(Arrays.asList(USER)),
@@ -345,6 +568,7 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
                                              "test_user"))
                         .groups(Arrays.asList(GROUP,
                                               "test_group")).build();
+        when(view.getFilterValue()).thenReturn("All");
 
         presenter.storeRoleAssignments(cras,
                                        new ArrayList<>(Arrays.asList(USER)),
@@ -372,6 +596,7 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
                 createTestCaseRoleAssignmentSummary(CASE_ROLE,
                                                     singletonList("test_user"),
                                                     singletonList("test_group"));
+        when(view.getFilterValue()).thenReturn("All");
 
         presenter.storeRoleAssignments(cras,
                                        new ArrayList<>(Arrays.asList(USER)),
@@ -434,36 +659,47 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
                                                             anyString());
     }
 
-    private void setCaseDefinitionID(String caseDefinitionID,
-                                     CaseDefinitionSummary caseDefinition,
-                                     CaseInstanceSummary caseInstance) {
-        caseDefinition.setId(caseDefinitionID);
-        caseInstance.setCaseDefinitionId(caseDefinitionID);
+    @Test
+    public void testRemoveUserFromRole() {
+        List<String> assignedUsersList = new ArrayList<>();
+        assignedUsersList.add(USER);
+        final CaseRoleAssignmentSummary roleAssignments = CaseRoleAssignmentSummary.builder()
+                                                                                      .name(CASE_ROLE)
+                                                                                      .users(assignedUsersList)
+                                                                                      .build();
+        when(view.getFilterValue()).thenReturn("All");
+
+        presenter.removeUserFromRole(USER,
+                                     roleAssignments);
+
+        verify(caseManagementService).removeUserFromRole(anyString(),
+                                                         anyString(),
+                                                         anyString(),
+                                                         eq(CASE_ROLE),
+                                                         eq(USER));
+        assertTrue(roleAssignments.getUsers().isEmpty());
+        verify(presenter).filterCaseRoles();
     }
 
-    private CaseRoleAssignmentSummary createTestCaseRoleAssignmentSummary(String roleName,
-                                                                          List<String> users,
-                                                                          List<String> groups) {
-        return CaseRoleAssignmentSummary.builder()
-                .name(roleName)
-                .users(users)
-                .groups(groups).build();
-    }
+    @Test
+    public void testRemoveGroupFromRole() {
+        List<String> assignedGroupsList = new ArrayList<>();
+        assignedGroupsList.add(GROUP);
+        final CaseRoleAssignmentSummary roleAssignments = CaseRoleAssignmentSummary.builder()
+                                                                                   .name(CASE_ROLE)
+                                                                                   .groups(assignedGroupsList)
+                                                                                   .build();
+        when(view.getFilterValue()).thenReturn("All");
 
-    private void loadTestCase() {
-        caseDefinition = CaseDefinitionSummary.builder()
-                .roles(singletonMap(CASE_ROLE,
-                                    3))
-                .build();
-        setCaseDefinitionID(CASE_DEFINITION_ID,
-                            caseDefinition,
-                            caseInstance);
-        when(caseManagementService.getCaseDefinition(serverTemplateId,
-                                                     caseInstance.getContainerId(),
-                                                     caseInstance.getCaseDefinitionId()))
-                .thenReturn(caseDefinition);
+        presenter.removeGroupFromRole(GROUP,
+                                      roleAssignments);
 
-        setupCaseInstance(caseInstance,
-                          serverTemplateId);
+        verify(caseManagementService).removeGroupFromRole(anyString(),
+                                                          anyString(),
+                                                          anyString(),
+                                                          eq(CASE_ROLE),
+                                                          eq(GROUP));
+        assertTrue(roleAssignments.getGroups().isEmpty());
+        verify(presenter).filterCaseRoles();
     }
 }
