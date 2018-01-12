@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2017 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ import org.kie.workbench.common.screens.library.client.settings.SettingsPresente
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.KieEnumSelectElement;
 import org.kie.workbench.common.screens.library.client.settings.util.ListPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.doublev.AddDoubleValueModal;
+import org.kie.workbench.common.screens.library.client.settings.util.modal.doublevalue.AddDoubleValueModal;
 import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.kie.workbench.common.screens.projecteditor.model.ProjectScreenModel;
 import org.uberfire.backend.vfs.ObservablePath;
