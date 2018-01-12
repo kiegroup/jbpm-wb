@@ -146,6 +146,7 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
     }
 
     private Promise<Void> setup() {
+
         view.init(this);
 
         final String deploymentsXmlUri = projectContext.getActiveProject()
@@ -162,69 +163,102 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
 
             this.model = model;
 
-            addMarshallingStrategyModal.setup(LibraryConstants.AddMarshallingStrategy, LibraryConstants.Id);
-            addEventListenerModal.setup(LibraryConstants.AddEventListener, LibraryConstants.Id);
-            addGlobalModal.setup(LibraryConstants.AddGlobal, LibraryConstants.Name, LibraryConstants.Value);
-            addRequiredRoleModal.setup(LibraryConstants.AddRequiredRole, LibraryConstants.Role);
-
-            runtimeStrategiesSelect.setup(view.getRuntimeStrategiesContainer(), RuntimeStrategy.values());
-            runtimeStrategiesSelect.setValue(RuntimeStrategy.valueOf(model.getRuntimeStrategy()));
-            runtimeStrategiesSelect.onChange(runtimeStrategy -> {
-                model.setRuntimeStrategy(runtimeStrategy.name());
-                fireChangeEvent();
-            });
-
-            persistenceModesSelect.setup(view.getPersistenceModesContainer(), PersistenceMode.values());
-            persistenceModesSelect.setValue(PersistenceMode.valueOf(model.getPersistenceMode()));
-            persistenceModesSelect.onChange(persistenceMode -> {
-                model.setPersistenceMode(persistenceMode.name());
-                fireChangeEvent();
-            });
-
-            auditModesSelect.setup(view.getAuditModesContainer(), AuditMode.values());
-            auditModesSelect.setValue(AuditMode.valueOf(model.getAuditMode()));
-            auditModesSelect.onChange(auditMode -> {
-                model.setAuditMode(auditMode.name());
-                fireChangeEvent();
-            });
-
+            setupRuntimeStrategiesSelect(model);
             view.setPersistenceUnitName(model.getPersistenceUnitName());
+            setupPersistenceModesSelect(model);
             view.setAuditPersistenceUnitName(model.getAuditPersistenceUnitName());
+            setupAuditModeSelect(model);
 
-            if (model.getMarshallingStrategies() == null) {
-                model.setMarshallingStrategies(new ArrayList<>());
-            }
-            marshallingStrategyPresenters.setup(
-                    view.getMarshallingStrategiesTable(),
-                    model.getMarshallingStrategies(),
-                    (marshallingStrategy, presenter) -> presenter.setup(marshallingStrategy, this));
-
-            if (model.getEventListeners() == null) {
-                model.setEventListeners(new ArrayList<>());
-            }
-            eventListenerPresenters.setup(
-                    view.getEventListenersTable(),
-                    model.getEventListeners(),
-                    (eventListener, presenter) -> presenter.setup(eventListener, this));
-
-            if (model.getGlobals() == null) {
-                model.setGlobals(new ArrayList<>());
-            }
-            globalPresenters.setup(
-                    view.getGlobalsTable(),
-                    model.getGlobals(),
-                    (global, presenter) -> presenter.setup(global, this));
-
-            if (model.getRequiredRoles() == null) {
-                model.setRequiredRoles(new ArrayList<>());
-            }
-            requiredRolePresenters.setup(
-                    view.getRequiredRolesTable(),
-                    model.getRequiredRoles(),
-                    (requiredRole, presenter) -> presenter.setup(requiredRole, this));
+            setupMarshallingStrategiesTable(model);
+            setupEventListenersTable(model);
+            setupGlobalsTable(model);
+            setupRequiredRolesTable(model);
 
             return resolve();
         }));
+    }
+
+    private void setupAuditModeSelect(final DeploymentDescriptorModel model) {
+        auditModesSelect.setup(view.getAuditModesContainer(), AuditMode.values());
+        auditModesSelect.setValue(AuditMode.valueOf(model.getAuditMode()));
+        auditModesSelect.onChange(auditMode -> {
+            model.setAuditMode(auditMode.name());
+            fireChangeEvent();
+        });
+    }
+
+    private void setupPersistenceModesSelect(final DeploymentDescriptorModel model) {
+        persistenceModesSelect.setup(view.getPersistenceModesContainer(), PersistenceMode.values());
+        persistenceModesSelect.setValue(PersistenceMode.valueOf(model.getPersistenceMode()));
+        persistenceModesSelect.onChange(persistenceMode -> {
+            model.setPersistenceMode(persistenceMode.name());
+            fireChangeEvent();
+        });
+    }
+
+    private void setupRuntimeStrategiesSelect(final DeploymentDescriptorModel model) {
+        runtimeStrategiesSelect.setup(view.getRuntimeStrategiesContainer(), RuntimeStrategy.values());
+        runtimeStrategiesSelect.setValue(RuntimeStrategy.valueOf(model.getRuntimeStrategy()));
+        runtimeStrategiesSelect.onChange(runtimeStrategy -> {
+            model.setRuntimeStrategy(runtimeStrategy.name());
+            fireChangeEvent();
+        });
+    }
+
+    private void setupMarshallingStrategiesTable(final DeploymentDescriptorModel model) {
+
+        addMarshallingStrategyModal.setup(LibraryConstants.AddMarshallingStrategy, LibraryConstants.Id);
+
+        if (model.getMarshallingStrategies() == null) {
+            model.setMarshallingStrategies(new ArrayList<>());
+        }
+
+        marshallingStrategyPresenters.setup(
+                view.getMarshallingStrategiesTable(),
+                model.getMarshallingStrategies(),
+                (marshallingStrategy, presenter) -> presenter.setup(marshallingStrategy, this));
+    }
+
+    private void setupEventListenersTable(final DeploymentDescriptorModel model) {
+
+        addEventListenerModal.setup(LibraryConstants.AddEventListener, LibraryConstants.Id);
+
+        if (model.getEventListeners() == null) {
+            model.setEventListeners(new ArrayList<>());
+        }
+
+        eventListenerPresenters.setup(
+                view.getEventListenersTable(),
+                model.getEventListeners(),
+                (eventListener, presenter) -> presenter.setup(eventListener, this));
+    }
+
+    private void setupGlobalsTable(final DeploymentDescriptorModel model) {
+
+        addGlobalModal.setup(LibraryConstants.AddGlobal, LibraryConstants.Name, LibraryConstants.Value);
+
+        if (model.getGlobals() == null) {
+            model.setGlobals(new ArrayList<>());
+        }
+
+        globalPresenters.setup(
+                view.getGlobalsTable(),
+                model.getGlobals(),
+                (global, presenter) -> presenter.setup(global, this));
+    }
+
+    private void setupRequiredRolesTable(final DeploymentDescriptorModel model) {
+
+        addRequiredRoleModal.setup(LibraryConstants.AddRequiredRole, LibraryConstants.Role);
+
+        if (model.getRequiredRoles() == null) {
+            model.setRequiredRoles(new ArrayList<>());
+        }
+
+        requiredRolePresenters.setup(
+                view.getRequiredRolesTable(),
+                model.getRequiredRoles(),
+                (requiredRole, presenter) -> presenter.setup(requiredRole, this));
     }
 
     private Promise<DeploymentDescriptorModel> loadDeploymentDescriptor() {
