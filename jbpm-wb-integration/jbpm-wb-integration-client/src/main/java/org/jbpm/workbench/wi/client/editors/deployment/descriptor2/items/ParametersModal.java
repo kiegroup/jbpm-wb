@@ -55,7 +55,7 @@ public class ParametersModal extends Elemental2Modal<ParametersModalView> {
     }
 
     public void add() {
-        final Parameter parameter = new Parameter("", "");
+        final Parameter parameter = new Parameter(String.class.getCanonicalName(), "");
         parametersListPresenter.add(parameter);
         parentPresenter.signalParameterAddedOrRemoved();
     }

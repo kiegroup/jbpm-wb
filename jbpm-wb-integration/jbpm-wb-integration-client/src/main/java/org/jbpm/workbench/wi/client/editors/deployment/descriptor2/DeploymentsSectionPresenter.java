@@ -158,7 +158,7 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
         pathToDeploymentsXml.onConcurrentUpdate(info -> concurrentDeploymentsXmlUpdateInfo = info);
         concurrentDeploymentsXmlUpdateInfo = null;
 
-        return createIfNotExists().then(i -> loadDeploymentDescriptor().then(model -> {
+        return createIfNotExists().then(ignore -> loadDeploymentDescriptor().then(model -> {
 
             this.model = model;
 
