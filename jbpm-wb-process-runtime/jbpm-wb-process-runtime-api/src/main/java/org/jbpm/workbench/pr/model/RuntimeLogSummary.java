@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2017 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package org.jbpm.workbench.pr.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
@@ -23,21 +24,24 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 public class RuntimeLogSummary implements Serializable {
 
     private long id;
-    private String time;
-    private String logLine;
-    private String type;
+    private Date date;
+    private String nodeName;
+    private String nodeType;
+    private boolean completed;
 
     public RuntimeLogSummary() {
     }
 
     public RuntimeLogSummary(long id,
-                             String time,
-                             String logLine,
-                             String type) {
+                             Date date,
+                             String nodeName,
+                             String nodeType,
+                             boolean completed) {
         this.id = id;
-        this.time = time;
-        this.logLine = logLine;
-        this.type = type;
+        this.date = date;
+        this.nodeName = nodeName;
+        this.nodeType = nodeType;
+        this.completed = completed;
     }
 
     public long getId() {
@@ -48,27 +52,36 @@ public class RuntimeLogSummary implements Serializable {
         this.id = id;
     }
 
-    public String getTime() {
-        return time;
+    public Date getDate() {
+        return date;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
-    public String getLogLine() {
-        return logLine;
+    public String getNodeName() {
+        return nodeName;
     }
 
-    public void setLogLine(String logLine) {
-        this.logLine = logLine;
+    public void setNodeName(String nodeName) {
+        this.nodeName = nodeName;
     }
 
-    public String getType() {
-        return type;
+    public String getNodeType() {
+        return nodeType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setNodeType(String nodeType) {
+        this.nodeType = nodeType;
     }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
+
 }

@@ -17,6 +17,7 @@
 package org.jbpm.workbench.pr.backend.server;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.jbpm.workbench.ks.integration.KieServerIntegration;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessSummary;
+import org.jbpm.workbench.pr.model.RuntimeLogSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,8 +83,8 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         final TaskSummary taskSummaryMock = mock(TaskSummary.class);
         final TaskSummaryList taskSummaryListSpy = spy(new TaskSummaryList(singletonList(taskSummaryMock)));
         final ProcessInstance processInstanceSpy = spy(ProcessInstance.builder()
-                                                                      .activeUserTasks(taskSummaryListSpy)
-                                                                      .build());
+                                                               .activeUserTasks(taskSummaryListSpy)
+                                                               .build());
         when(processServicesClient.getProcessInstance(containerId,
                                                       processInstanceId)).thenReturn(processInstanceSpy);
         service.getProcessInstance(serverTemplateId,
@@ -101,7 +103,7 @@ public class RemoteProcessRuntimeDataServiceImplTest {
     }
 
     public void verifyActiveUserTasks(TaskSummaryList taskSummaryList,
-                                      TaskSummary taskSummary){
+                                      TaskSummary taskSummary) {
         verify(taskSummaryList).getItems();
         verify(taskSummary).getName();
         verify(taskSummary).getStatus();
@@ -114,7 +116,7 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         when(processServicesClient.findActiveNodeInstances(containerId,
                                                            processInstanceId,
                                                            0,
-                                                           100)).thenReturn(nodeInstanceList);
+                                                           Integer.MAX_VALUE)).thenReturn(nodeInstanceList);
         when(nodeInstanceMock.getDate()).thenReturn(new Date());
         service.getProcessInstanceActiveNodes(serverTemplateId,
                                               containerId,
@@ -122,7 +124,7 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         verify(processServicesClient).findActiveNodeInstances(containerId,
                                                               processInstanceId,
                                                               0,
-                                                              100);
+                                                              Integer.MAX_VALUE);
         verify(nodeInstanceMock).getDate();
         verify(nodeInstanceMock).getId();
         verify(nodeInstanceMock).getName();
@@ -231,5 +233,58 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         assertNotNull(summary);
         assertProcessSummary(def,
                              summary);
+    }
+
+    @Test
+    public void getProcessInstanceLogsTest() {
+
+        final Long processInstanceId = 1L;
+        NodeInstance nodeInstance1 = NodeInstance.builder()
+                .processInstanceId(processInstanceId)
+                .date(new Date())
+                .id(2L)
+                .name("Test_task")
+                .nodeType("HumanTaskNode")
+                .completed(false)
+                .build();
+
+        NodeInstance nodeInstance2 = NodeInstance.builder()
+                .processInstanceId(processInstanceId)
+                .id(3L)
+                .date(new Date())
+                .name("")
+                .nodeType("StartNode")
+                .completed(false)
+                .build();
+
+        when(processServicesClient.findNodeInstances(containerId,
+                                                     processInstanceId,
+                                                     0,
+                                                     Integer.MAX_VALUE))
+                .thenReturn(Arrays.asList(nodeInstance1,
+                                          nodeInstance2));
+
+        List<RuntimeLogSummary> logs = service.getProcessInstanceLogs(serverTemplateId,
+                                                                      containerId,
+                                                                      processInstanceId);
+
+        assertEquals(2,
+                     logs.size());
+        assertRuntimeLogNodeInstance(nodeInstance1,
+                                     logs.get(0));
+        assertRuntimeLogNodeInstance(nodeInstance2,
+                                     logs.get(1));
+    }
+
+    private void assertRuntimeLogNodeInstance(NodeInstance node,
+                                              RuntimeLogSummary log) {
+        assertEquals(Long.valueOf(node.getId()),
+                     Long.valueOf(log.getId()));
+        assertEquals(node.getNodeType(),
+                     log.getNodeType());
+        assertEquals(node.getName(),
+                     log.getNodeName());
+        assertEquals(node.getCompleted(),
+                     log.isCompleted());
     }
 }

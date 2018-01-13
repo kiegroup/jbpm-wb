@@ -35,11 +35,9 @@ import org.kie.server.api.model.definition.ProcessDefinition;
 import org.kie.server.api.model.definition.UserTaskDefinitionList;
 import org.kie.server.api.model.instance.NodeInstance;
 import org.kie.server.api.model.instance.ProcessInstance;
-import org.kie.server.api.model.instance.TaskEventInstance;
 import org.kie.server.api.model.instance.TaskSummary;
 import org.kie.server.client.ProcessServicesClient;
 import org.kie.server.client.QueryServicesClient;
-import org.ocpsoft.prettytime.PrettyTime;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -79,7 +77,7 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
         List<NodeInstance> nodeInstances = processServicesClient.findActiveNodeInstances(deploymentId,
                                                                                          processInstanceId,
                                                                                          0,
-                                                                                         100);
+                                                                                         Integer.MAX_VALUE);
 
         for (NodeInstance instance : nodeInstances) {
             NodeInstanceSummary summary = new NodeInstanceSummary(instance.getId(),
@@ -98,52 +96,22 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
     }
 
     @Override
-    public List<RuntimeLogSummary> getBusinessLogs(String serverTemplateId,
-                                                   String deploymentId,
-                                                   String processName,
-                                                   Long processInstanceId) {
+    public List<RuntimeLogSummary> getProcessInstanceLogs(String serverTemplateId,
+                                                          String deploymentId,
+                                                          Long processInstanceId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return emptyList();
         }
 
-        List<NodeInstance> processInstanceHistory = getProcessInstanceHistory(serverTemplateId,
-                                                                              deploymentId,
-                                                                              processInstanceId);
-        List<TaskEventInstance> allTaskEventsByProcessInstanceId = new ArrayList<TaskEventInstance>();//taskAuditService.getAllTaskEventsByProcessInstanceId(processInstanceId, "");
-        List<RuntimeLogSummary> logs = new ArrayList<RuntimeLogSummary>(processInstanceHistory.size() + allTaskEventsByProcessInstanceId.size());
-        PrettyTime prettyDateFormatter = new PrettyTime();
+        ProcessServicesClient processServicesClient = getClient(serverTemplateId,
+                                                                ProcessServicesClient.class);
 
-        for (int i = processInstanceHistory.size() - 1; i >= 0; i--) {
-            NodeInstance nis = processInstanceHistory.get(i);
+        List<NodeInstance> processInstanceHistory = processServicesClient.findNodeInstances(deploymentId,
+                                                                                            processInstanceId,
+                                                                                            0,
+                                                                                            Integer.MAX_VALUE);
 
-            if (nis.getNodeType().equals("HumanTaskNode")) {
-                logs.add(new RuntimeLogSummary(nis.getId(),
-                                               prettyDateFormatter.format(nis.getDate()),
-                                               "Task '" + nis.getName() + "' was created",
-                                               "System"));
-                for (TaskEventInstance te : allTaskEventsByProcessInstanceId) {
-                    if (te.getWorkItemId() != null && te.getWorkItemId().equals(nis.getId()) &&
-                            (te.getType().equals("CLAIMED") || te.getType().equals("RELEASED") || te.getType().equals("COMPLETED"))) {
-                        logs.add(new RuntimeLogSummary(nis.getId(),
-                                                       "- " + prettyDateFormatter.format(te.getLogTime()),
-                                                       "Task '" + nis.getName() +
-                                                               "' was " + te.getType().toLowerCase() + " by user " + te.getUserId(),
-                                                       "Human"));
-                    }
-                }
-            } else if (nis.getNodeType().equals("StartNode")) {
-                logs.add(new RuntimeLogSummary(nis.getId(),
-                                               prettyDateFormatter.format(nis.getDate()),
-                                               "Process '" + processName + "' was created",
-                                               "Human"));
-            } else if (nis.getNodeType().equals("EndNode")) {
-                logs.add(new RuntimeLogSummary(nis.getId(),
-                                               prettyDateFormatter.format(nis.getDate()),
-                                               "Process '" + processName + "' was completed",
-                                               "System"));
-            }
-        }
-        return logs;
+        return processInstanceHistory.stream().map(new RuntimeLogSummaryMapper()).collect(toList());
     }
 
     @Override
@@ -221,75 +189,6 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
                                                                                                            processId);
 
         return userTaskDefinitionList.getItems().stream().map(t -> new TaskDefSummary(t.getName())).collect(toList());
-    }
-
-    @Override
-    public List<RuntimeLogSummary> getRuntimeLogs(final String serverTemplateId,
-                                                  String deploymentId,
-                                                  final Long processInstanceId) {
-        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
-            return emptyList();
-        }
-
-        List<NodeInstance> processInstanceHistory = getProcessInstanceHistory(serverTemplateId,
-                                                                              deploymentId,
-                                                                              processInstanceId);
-        List<TaskEventInstance> allTaskEventsByProcessInstanceId = new ArrayList<TaskEventInstance>();//taskAuditService.getAllTaskEventsByProcessInstanceId(processInstanceId, "");
-        List<RuntimeLogSummary> logs = new ArrayList<RuntimeLogSummary>(processInstanceHistory.size() + allTaskEventsByProcessInstanceId.size());
-        PrettyTime prettyDateFormatter = new PrettyTime();
-
-        for (int i = processInstanceHistory.size() - 1; i >= 0; i--) {
-            NodeInstance nis = processInstanceHistory.get(i);
-
-            if (nis.getNodeType().equals("HumanTaskNode")) {
-                logs.add(new RuntimeLogSummary(nis.getId(),
-                                               prettyDateFormatter.format(nis.getDate()),
-                                               nis.getName() + "(" + nis.getNodeType() + ")",
-                                               "System"));
-                for (TaskEventInstance te : allTaskEventsByProcessInstanceId) {
-                    if (te.getWorkItemId() != null && te.getWorkItemId().equals(nis.getId())) {
-                        if (te.getType().equals("ADDED")) {
-                            logs.add(new RuntimeLogSummary(nis.getId(),
-                                                           "- " + prettyDateFormatter.format(te.getLogTime()),
-                                                           te.getUserId() + "->" + te.getType(),
-                                                           "System"));
-                        } else {
-                            logs.add(new RuntimeLogSummary(nis.getId(),
-                                                           "- " + prettyDateFormatter.format(te.getLogTime()),
-                                                           te.getUserId() + "->" + te.getType(),
-                                                           "Human"));
-                        }
-                    }
-                }
-            } else if (nis.getNodeType().equals("StartNode")) {
-                logs.add(new RuntimeLogSummary(nis.getId(),
-                                               prettyDateFormatter.format(nis.getDate()),
-                                               nis.getName() + "(" + nis.getNodeType() + ")",
-                                               "Human"));
-            } else {
-                logs.add(new RuntimeLogSummary(nis.getId(),
-                                               prettyDateFormatter.format(nis.getDate()),
-                                               nis.getName() + "(" + nis.getNodeType() + ")",
-                                               "System"));
-            }
-        }
-        return logs;
-    }
-
-    protected List<NodeInstance> getProcessInstanceHistory(final String serverTemplateId,
-                                                           String deploymentId,
-                                                           final Long processInstanceId) {
-        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
-            return emptyList();
-        }
-
-        ProcessServicesClient processServicesClient = getClient(serverTemplateId,
-                                                                ProcessServicesClient.class);
-
-        return processServicesClient.findNodeInstances(deploymentId,
-                                                       processInstanceId,
-                                                       0,
-                                                       100);
     }
 
     protected ProcessInstanceSummary build(ProcessInstance processInstance) {
