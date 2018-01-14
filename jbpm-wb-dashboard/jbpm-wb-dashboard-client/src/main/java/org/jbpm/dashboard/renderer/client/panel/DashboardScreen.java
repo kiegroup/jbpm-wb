@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.dashboard.renderer.client.panel.events.ProcessDashboardFocusEvent;
 import org.jbpm.dashboard.renderer.client.panel.events.TaskDashboardFocusEvent;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.events.ServerTemplateSelected;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
@@ -37,10 +38,8 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
-@WorkbenchScreen(identifier = DashboardScreen.SCREEN_ID)
+@WorkbenchScreen(identifier = PerspectiveIds.DASHBOARD_SCREEN)
 public class DashboardScreen {
-
-    protected static final String SCREEN_ID = "DashboardScreen";
 
     DashboardView view;
     ProcessDashboard processDashboard;
@@ -108,8 +107,8 @@ public class DashboardScreen {
 
     public void onServerTemplateSelected(@Observes final ServerTemplateSelected serverTemplateSelected) {
         //Refresh view
-        placeManager.closePlace(SCREEN_ID);
-        placeManager.goTo(SCREEN_ID);
+        placeManager.closePlace(PerspectiveIds.DASHBOARD_SCREEN);
+        placeManager.goTo(PerspectiveIds.DASHBOARD_SCREEN);
     }
 
     public interface View extends UberView<DashboardScreen> {
