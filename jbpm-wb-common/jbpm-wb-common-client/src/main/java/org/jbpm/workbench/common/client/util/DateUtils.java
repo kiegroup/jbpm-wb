@@ -21,6 +21,8 @@ import java.util.Date;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
 
+import static org.uberfire.client.views.pfly.widgets.Moment.Builder.moment;
+
 /**
  * Provides utility methods for manipulating with {@link Date}s.
  */
@@ -88,6 +90,13 @@ public class DateUtils {
         if (date != null) {
             DateTimeFormat format = DateTimeFormat.getFormat(getDateTimeFormatMask());
             return format.format(date);
+        }
+        return "";
+    }
+
+    public static String getPrettyTime(Date date) {
+        if (date != null) {
+            return moment(date.getTime()).fromNow();
         }
         return "";
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2017 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,14 +37,9 @@ public interface ProcessRuntimeDataService {
                                                             String deploymentId,
                                                             Long processInstanceId);
 
-    List<RuntimeLogSummary> getRuntimeLogs(String serverTemplateId,
-                                           String deploymentId,
-                                           Long processInstanceId);
-
-    List<RuntimeLogSummary> getBusinessLogs(String serverTemplateId,
-                                            String deploymentId,
-                                            String processName,
-                                            Long processInstanceId);
+    List<RuntimeLogSummary> getProcessInstanceLogs(String serverTemplateId,
+                                                   String deploymentId,
+                                                   Long processInstanceId);
 
     List<ProcessSummary> getProcesses(String serverTemplateId,
                                       Integer page,

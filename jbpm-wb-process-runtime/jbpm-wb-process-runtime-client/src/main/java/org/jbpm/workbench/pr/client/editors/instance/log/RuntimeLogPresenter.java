@@ -15,30 +15,44 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.log;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.client.SafeHtmlTemplates;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
+
+import org.jbpm.workbench.common.client.util.DateUtils;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.RuntimeLogSummary;
 import org.jbpm.workbench.pr.client.util.LogUtils.LogOrder;
 import org.jbpm.workbench.pr.client.util.LogUtils.LogType;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 
+import static java.util.stream.Collectors.toList;
+
 @Dependent
 public class RuntimeLogPresenter {
 
-    private Long currentProcessInstanceId;
-    private String currentProcessName;
-    private String currentServerTemplateId;
-    private String currentDeploymentId;
+    public static final LogTemplates LOG_TEMPLATES = GWT.create(LogTemplates.class);
+    public static String NODE_HUMAN_TASK = "HumanTaskNode";
+    public static String NODE_START = "StartNode";
+    public static String NODE_END = "EndNode";
+
+    private Constants constants = Constants.INSTANCE;
+    private Long processInstanceId;
+    private String processName;
+    private String serverTemplateId;
+    private String deploymentId;
     @Inject
     private RuntimeLogView view;
     @Inject
@@ -53,64 +67,126 @@ public class RuntimeLogPresenter {
         return view;
     }
 
+    public void setProcessInstanceId(Long processInstanceId) {
+        this.processInstanceId = processInstanceId;
+    }
+
+    public String getProcessName() {
+        return processName;
+    }
+
+    public void setProcessName(String processName) {
+        this.processName = processName;
+    }
+
+    public void setServerTemplateId(String serverTemplateId) {
+        this.serverTemplateId = serverTemplateId;
+    }
+
+    public void setDeploymentId(String deploymentId) {
+        this.deploymentId = deploymentId;
+    }
+
     public void refreshProcessInstanceData(final LogOrder logOrder,
                                            final LogType logType) {
+        processRuntimeDataService.call((List<RuntimeLogSummary> logs) -> {
+            if (logOrder == LogOrder.ASC) {
+                Collections.reverse(logs);
+            }
 
+            List<String> logsLine = logs.stream()
+                    .map(rls -> getLogLine(rls,
+                                           logType))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(toList());
+
+            view.setLogs(logsLine);
+        }).getProcessInstanceLogs(serverTemplateId,
+                                  deploymentId,
+                                  processInstanceId);
+    }
+
+    protected Optional<String> getLogLine(RuntimeLogSummary logSummary,
+                                          LogType logType) {
         if (LogType.TECHNICAL.equals(logType)) {
-            processRuntimeDataService.call(new RemoteCallback<List<RuntimeLogSummary>>() {
-                @Override
-                public void callback(List<RuntimeLogSummary> logs) {
-                    final List<String> logsLine = new ArrayList<String>();
+            String agent = constants.System();
+            if ((NODE_HUMAN_TASK.equals(logSummary.getNodeType()) && logSummary.isCompleted()) ||
+                    (NODE_START.equals(logSummary.getNodeType()) && !logSummary.isCompleted())) {
+                agent = constants.Human();
+            }
 
-                    if (logOrder == LogOrder.DESC) {
-                        Collections.reverse(logs);
-                    }
-
-                    for (RuntimeLogSummary rls : logs) {
-                        logsLine.add(rls.getTime() + ": " + rls.getLogLine() + " - " + rls.getType());
-                    }
-
-                    view.setLogs(logsLine);
-                }
-            }).getRuntimeLogs(currentServerTemplateId,
-                              currentDeploymentId,
-                              currentProcessInstanceId);
+            return Optional.of(LOG_TEMPLATES.getTechLog(DateUtils.getDateTimeStr(logSummary.getDate()),
+                                                        logSummary.getNodeType(),
+                                                        SafeHtmlUtils.fromString(logSummary.getNodeName()),
+                                                        (logSummary.isCompleted() ? " " + constants.Completed() : ""),
+                                                        agent).asString());
         } else {
-            processRuntimeDataService.call(new RemoteCallback<List<RuntimeLogSummary>>() {
-                @Override
-                public void callback(List<RuntimeLogSummary> logs) {
-                    final List<String> logsLine = new ArrayList<String>();
-                    if (logOrder == LogOrder.DESC) {
-                        Collections.reverse(logs);
-                    }
+            String prettyTime = DateUtils.getPrettyTime(logSummary.getDate());
 
-                    for (RuntimeLogSummary rls : logs) {
-                        logsLine.add(rls.getTime() + ": " + rls.getLogLine());
-                    }
-
-                    view.setLogs(logsLine);
-                }
-            }).getBusinessLogs(currentServerTemplateId,
-                               currentDeploymentId,
-                               currentProcessName,
-                               currentProcessInstanceId);
+            if (NODE_HUMAN_TASK.equals(logSummary.getNodeType())) {
+                return Optional.of(LOG_TEMPLATES.getBusinessLog(prettyTime,
+                                                                constants.Task(),
+                                                                SafeHtmlUtils.fromString(logSummary.getNodeName()),
+                                                                (logSummary.isCompleted() ? constants.WasCompleted() : constants.WasCreated())).asString());
+            } else if (NODE_START.equals(logSummary.getNodeType()) && !logSummary.isCompleted()) {
+                return Optional.of(LOG_TEMPLATES.getBusinessLog(
+                        prettyTime,
+                        constants.Process(),
+                        SafeHtmlUtils.fromString(getProcessName()),
+                        constants.WasCreated()).asString());
+            } else if (NODE_END.equals(logSummary.getNodeType()) && logSummary.isCompleted()) {
+                return Optional.of(LOG_TEMPLATES.getBusinessLog(
+                        prettyTime,
+                        constants.Process(),
+                        SafeHtmlUtils.fromString(getProcessName()),
+                        constants.WasCompleted()).asString());
+            }
         }
+        return Optional.empty();
     }
 
     public void onProcessInstanceSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
-        this.currentProcessInstanceId = event.getProcessInstanceId();
-        this.currentProcessName = event.getProcessDefName();
-        this.currentServerTemplateId = event.getServerTemplateId();
-        this.currentDeploymentId = event.getDeploymentId();
+        setProcessInstanceId(event.getProcessInstanceId());
+        setProcessName(event.getProcessDefName());
+        setServerTemplateId(event.getServerTemplateId());
+        setDeploymentId(event.getDeploymentId());
 
+        view.setActiveLogOrderButton(LogOrder.ASC);
+        view.setActiveLogTypeButton(LogType.BUSINESS);
         refreshProcessInstanceData(LogOrder.ASC,
                                    LogType.BUSINESS);
+    }
+
+    @Inject
+    public void setProcessRuntimeDataService(final Caller<ProcessRuntimeDataService> processRuntimeDataService) {
+        this.processRuntimeDataService = processRuntimeDataService;
     }
 
     public interface RuntimeLogView extends IsWidget {
 
         void init(final RuntimeLogPresenter presenter);
 
+        void setActiveLogTypeButton(LogType logType);
+
+        void setActiveLogOrderButton(LogOrder logOrder);
+
         void setLogs(List<String> logs);
+    }
+
+    public interface LogTemplates extends SafeHtmlTemplates {
+
+        @SafeHtmlTemplates.Template("{0}: {1} '{2}' {3}")
+        SafeHtml getBusinessLog(String time,
+                                String logType,
+                                SafeHtml logName,
+                                String completed);
+
+        @SafeHtmlTemplates.Template("{0}: {1} ({2}){3} - {4}")
+        SafeHtml getTechLog(String time,
+                            String logType,
+                            SafeHtml logName,
+                            String completed,
+                            String agent);
     }
 }

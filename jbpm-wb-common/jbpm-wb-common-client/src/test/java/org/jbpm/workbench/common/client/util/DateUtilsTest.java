@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.jbpm.workbench.common.client.util.DateUtils.createDate;
+import static org.jbpm.workbench.common.client.util.DateUtils.getPrettyTime;
 import static org.junit.Assert.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -81,5 +82,11 @@ public class DateUtilsTest {
     public void testCreateMalformedDateWithDefaultFormat() {
         // malformed date string
         createDate("2013-kk-05");
+    }
+
+    @Test
+    public void testGetPrettyTimeNull() {
+        assertEquals("",
+                     getPrettyTime(null));
     }
 }
