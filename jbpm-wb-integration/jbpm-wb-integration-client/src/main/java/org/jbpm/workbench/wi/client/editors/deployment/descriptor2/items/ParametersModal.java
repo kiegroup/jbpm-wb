@@ -31,7 +31,7 @@ import org.kie.workbench.common.screens.library.client.settings.util.modal.Eleme
 public class ParametersModal extends Elemental2Modal<ParametersModalView> {
 
     private final ParametersListPresenter parametersListPresenter;
-    private ObjectPresenter parentPresenter;
+    ObjectPresenter parentPresenter;
 
     @Inject
     public ParametersModal(final ParametersModalView view,
