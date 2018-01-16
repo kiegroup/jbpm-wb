@@ -39,7 +39,6 @@ import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
 import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
-import org.kie.workbench.common.screens.library.client.settings.Promises;
 import org.kie.workbench.common.screens.library.client.settings.SettingsPresenter;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.KieEnumSelectElement;
@@ -49,9 +48,9 @@ import org.kie.workbench.common.screens.library.client.settings.util.modal.singl
 import org.kie.workbench.common.screens.projecteditor.model.ProjectScreenModel;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.backend.vfs.PathFactory;
+import org.uberfire.client.promise.Promises;
 import org.uberfire.workbench.events.NotificationEvent;
 
-import static org.kie.workbench.common.screens.library.client.settings.Promises.resolve;
 import static org.uberfire.workbench.events.NotificationEvent.NotificationType.WARNING;
 
 @Dependent
@@ -76,8 +75,8 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
     private final Event<NotificationEvent> notificationEvent;
 
     private ObservablePath pathToDeploymentsXml;
-    private ObservablePath.OnConcurrentUpdateEvent concurrentDeploymentsXmlUpdateInfo;
-    private DeploymentDescriptorModel model;
+    ObservablePath.OnConcurrentUpdateEvent concurrentDeploymentsXmlUpdateInfo;
+    DeploymentDescriptorModel model;
 
     public interface View extends SettingsPresenter.View.Section<DeploymentsSectionPresenter> {
 
@@ -104,6 +103,7 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
 
     @Inject
     public DeploymentsSectionPresenter(final View view,
+                                       final Promises promises,
                                        final SettingsPresenter.MenuItem menuItem,
                                        final AddSingleValueModal addMarshallingStrategyModal,
                                        final AddSingleValueModal addEventListenerModal,
@@ -121,7 +121,7 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
                                        final GlobalsListPresenter globalPresenters,
                                        final RequiredRolesListPresenter requiredRolePresenters, Event<NotificationEvent> notificationEvent) {
 
-        super(settingsSectionChangeEvent, menuItem);
+        super(settingsSectionChangeEvent, menuItem, promises);
         this.view = view;
         this.addMarshallingStrategyModal = addMarshallingStrategyModal;
         this.addEventListenerModal = addEventListenerModal;
@@ -145,7 +145,7 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
         return setup();
     }
 
-    private Promise<Void> setup() {
+    Promise<Void> setup() {
 
         view.init(this);
 
@@ -156,10 +156,10 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
                 "kie-deployment-descriptor.xml",
                 deploymentsXmlUri));
 
-        pathToDeploymentsXml.onConcurrentUpdate(info -> concurrentDeploymentsXmlUpdateInfo = info);
         concurrentDeploymentsXmlUpdateInfo = null;
+        pathToDeploymentsXml.onConcurrentUpdate(info -> concurrentDeploymentsXmlUpdateInfo = info);
 
-        return createIfNotExists().then(ignore -> loadDeploymentDescriptor().then(model -> {
+        return createIfNotExists().then(ignore -> loadDeploymentDescriptor()).then(model -> {
 
             this.model = model;
 
@@ -174,38 +174,44 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
             setupGlobalsTable(model);
             setupRequiredRolesTable(model);
 
-            return resolve();
-        }));
-    }
-
-    private void setupAuditModeSelect(final DeploymentDescriptorModel model) {
-        auditModesSelect.setup(view.getAuditModesContainer(), AuditMode.values());
-        auditModesSelect.setValue(AuditMode.valueOf(model.getAuditMode()));
-        auditModesSelect.onChange(auditMode -> {
-            model.setAuditMode(auditMode.name());
-            fireChangeEvent();
+            return promises.resolve();
         });
     }
 
-    private void setupPersistenceModesSelect(final DeploymentDescriptorModel model) {
-        persistenceModesSelect.setup(view.getPersistenceModesContainer(), PersistenceMode.values());
-        persistenceModesSelect.setValue(PersistenceMode.valueOf(model.getPersistenceMode()));
-        persistenceModesSelect.onChange(persistenceMode -> {
-            model.setPersistenceMode(persistenceMode.name());
-            fireChangeEvent();
-        });
+    void setupAuditModeSelect(final DeploymentDescriptorModel model) {
+        auditModesSelect.setup(
+                view.getAuditModesContainer(),
+                AuditMode.values(),
+                AuditMode.valueOf(model.getAuditMode()),
+                auditMode -> {
+                    model.setAuditMode(auditMode.name());
+                    fireChangeEvent();
+                });
     }
 
-    private void setupRuntimeStrategiesSelect(final DeploymentDescriptorModel model) {
-        runtimeStrategiesSelect.setup(view.getRuntimeStrategiesContainer(), RuntimeStrategy.values());
-        runtimeStrategiesSelect.setValue(RuntimeStrategy.valueOf(model.getRuntimeStrategy()));
-        runtimeStrategiesSelect.onChange(runtimeStrategy -> {
-            model.setRuntimeStrategy(runtimeStrategy.name());
-            fireChangeEvent();
-        });
+    void setupPersistenceModesSelect(final DeploymentDescriptorModel model) {
+        persistenceModesSelect.setup(
+                view.getPersistenceModesContainer(),
+                PersistenceMode.values(),
+                PersistenceMode.valueOf(model.getPersistenceMode()),
+                persistenceMode -> {
+                    model.setPersistenceMode(persistenceMode.name());
+                    fireChangeEvent();
+                });
     }
 
-    private void setupMarshallingStrategiesTable(final DeploymentDescriptorModel model) {
+    void setupRuntimeStrategiesSelect(final DeploymentDescriptorModel model) {
+        runtimeStrategiesSelect.setup(
+                view.getRuntimeStrategiesContainer(),
+                RuntimeStrategy.values(),
+                RuntimeStrategy.valueOf(model.getRuntimeStrategy()),
+                runtimeStrategy -> {
+                    model.setRuntimeStrategy(runtimeStrategy.name());
+                    fireChangeEvent();
+                });
+    }
+
+    void setupMarshallingStrategiesTable(final DeploymentDescriptorModel model) {
 
         addMarshallingStrategyModal.setup(LibraryConstants.AddMarshallingStrategy, LibraryConstants.Id);
 
@@ -219,7 +225,7 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
                 (marshallingStrategy, presenter) -> presenter.setup(marshallingStrategy, this));
     }
 
-    private void setupEventListenersTable(final DeploymentDescriptorModel model) {
+    void setupEventListenersTable(final DeploymentDescriptorModel model) {
 
         addEventListenerModal.setup(LibraryConstants.AddEventListener, LibraryConstants.Id);
 
@@ -233,7 +239,7 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
                 (eventListener, presenter) -> presenter.setup(eventListener, this));
     }
 
-    private void setupGlobalsTable(final DeploymentDescriptorModel model) {
+    void setupGlobalsTable(final DeploymentDescriptorModel model) {
 
         addGlobalModal.setup(LibraryConstants.AddGlobal, LibraryConstants.Name, LibraryConstants.Value);
 
@@ -247,7 +253,7 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
                 (global, presenter) -> presenter.setup(global, this));
     }
 
-    private void setupRequiredRolesTable(final DeploymentDescriptorModel model) {
+    void setupRequiredRolesTable(final DeploymentDescriptorModel model) {
 
         addRequiredRoleModal.setup(LibraryConstants.AddRequiredRole, LibraryConstants.Role);
 
@@ -261,43 +267,52 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
                 (requiredRole, presenter) -> presenter.setup(requiredRole, this));
     }
 
-    private Promise<DeploymentDescriptorModel> loadDeploymentDescriptor() {
-        return Promises.promisify(ddEditorService, s -> s.load(pathToDeploymentsXml));
+    Promise<DeploymentDescriptorModel> loadDeploymentDescriptor() {
+        return promises.promisify(ddEditorService, s -> {
+            s.load(pathToDeploymentsXml);
+        });
     }
 
-    private Promise<Object> createIfNotExists() {
-        return Promises.promisify(ddEditorService, s -> s.createIfNotExists(pathToDeploymentsXml), this::noOp);
-    }
-
-    private void noOp(final Void ignore, final Throwable throwable) {
+    Promise<Void> createIfNotExists() {
+        return promises.promisify(ddEditorService, s -> {
+            s.createIfNotExists(pathToDeploymentsXml);
+        });
     }
 
     public void openNewMarshallingStrategyModal() {
-        addMarshallingStrategyModal.show(iname -> {
-            marshallingStrategyPresenters.add(newObjectModelItem(iname));
-            fireChangeEvent();
-        });
+        addMarshallingStrategyModal.show(this::addMarshallingStrategy);
     }
 
     public void openNewEventListenerModal() {
-        addEventListenerModal.show(name -> {
-            eventListenerPresenters.add(newObjectModelItem(name));
-            fireChangeEvent();
-        });
+        addEventListenerModal.show(this::addEventListener);
     }
 
     public void openNewGlobalModal() {
-        addGlobalModal.show((name, value) -> {
-            globalPresenters.add(newNamedObjectModelItem(name, value));
-            fireChangeEvent();
-        });
+        addGlobalModal.show(this::addGlobal);
     }
 
     public void openNewRequiredRoleModal() {
-        addRequiredRoleModal.show(role -> {
-            requiredRolePresenters.add(role);
-            fireChangeEvent();
-        });
+        addRequiredRoleModal.show(this::addRequiredRole);
+    }
+
+    void addMarshallingStrategy(final String name) {
+        marshallingStrategyPresenters.add(newObjectModelItem(name));
+        fireChangeEvent();
+    }
+
+    void addEventListener(final String name) {
+        eventListenerPresenters.add(newObjectModelItem(name));
+        fireChangeEvent();
+    }
+
+    void addGlobal(final String name, final String value) {
+        globalPresenters.add(newNamedObjectModelItem(name, value));
+        fireChangeEvent();
+    }
+
+    void addRequiredRole(final String role) {
+        requiredRolePresenters.add(role);
+        fireChangeEvent();
     }
 
     @Override
@@ -312,15 +327,13 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
         }
     }
 
-    private Promise<Void> save(String comment) {
-        return Promises.promisify(
-                ddEditorService,
-                s -> s.save(pathToDeploymentsXml,
-                            model,
-                            model.getOverview().getMetadata(), comment)).then(i -> resolve());
+    Promise<Void> save(final String comment) {
+        return promises.promisify(ddEditorService, s -> {
+            s.save(pathToDeploymentsXml, model, model.getOverview().getMetadata(), comment);
+        });
     }
 
-    private ItemObjectModel newObjectModelItem(final String name) {
+    ItemObjectModel newObjectModelItem(final String name) {
         final ItemObjectModel model = new ItemObjectModel();
         model.setValue(name);
         model.setResolver(Resolver.MVEL.name().toLowerCase());
@@ -328,8 +341,8 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
         return model;
     }
 
-    private ItemObjectModel newNamedObjectModelItem(final String name,
-                                                    final String value) {
+    ItemObjectModel newNamedObjectModelItem(final String name,
+                                            final String value) {
 
         final ItemObjectModel model = new ItemObjectModel();
         model.setName(name);

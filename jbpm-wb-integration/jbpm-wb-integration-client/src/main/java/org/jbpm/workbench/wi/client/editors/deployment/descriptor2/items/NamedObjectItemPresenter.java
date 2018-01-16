@@ -23,7 +23,6 @@ import javax.inject.Inject;
 
 import elemental2.dom.Element;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor2.DeploymentsSectionPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor2.items.ParametersModal;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor2.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.kie.workbench.common.screens.library.client.settings.util.KieEnumSelectElement;
@@ -36,8 +35,8 @@ public class NamedObjectItemPresenter extends ListItemPresenter<ItemObjectModel,
     private final ParametersModal parametersModal;
     private final KieEnumSelectElement<Resolver> resolversSelect;
 
-    private ItemObjectModel model;
-    private DeploymentsSectionPresenter parentPresenter;
+    ItemObjectModel model;
+    DeploymentsSectionPresenter parentPresenter;
 
     @Inject
     public NamedObjectItemPresenter(final View view,
@@ -60,12 +59,14 @@ public class NamedObjectItemPresenter extends ListItemPresenter<ItemObjectModel,
 
         parametersModal.setup(model.getParameters(), this);
 
-        resolversSelect.setup(view.getResolversContainer(), Resolver.values());
-        resolversSelect.setValue(Resolver.valueOf(model.getResolver().toUpperCase()));
-        resolversSelect.onChange(resolver -> {
-            model.setResolver(resolver.name().toLowerCase());
-            parentPresenter.fireChangeEvent();
-        });
+        resolversSelect.setup(
+                view.getResolversContainer(),
+                Resolver.values(),
+                Resolver.valueOf(model.getResolver().toUpperCase()),
+                resolver -> {
+                    model.setResolver(resolver.name().toLowerCase());
+                    parentPresenter.fireChangeEvent();
+                });
 
         view.init(this);
 

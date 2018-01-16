@@ -35,8 +35,8 @@ public class ObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Depl
     private final ParametersModal parametersModal;
     private final KieEnumSelectElement<Resolver> resolversSelect;
 
-    private ItemObjectModel model;
-    private DeploymentsSectionPresenter parentPresenter;
+    ItemObjectModel model;
+    DeploymentsSectionPresenter parentPresenter;
 
     @Inject
     public ObjectItemPresenter(final View view,
@@ -59,12 +59,14 @@ public class ObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Depl
 
         parametersModal.setup(model.getParameters(), this);
 
-        resolversSelect.setup(view.getResolversContainer(), Resolver.values());
-        resolversSelect.setValue(Resolver.valueOf(model.getResolver().toUpperCase()));
-        resolversSelect.onChange(resolver -> {
-            model.setResolver(resolver.name().toLowerCase());
-            parentPresenter.fireChangeEvent();
-        });
+        resolversSelect.setup(
+                view.getResolversContainer(),
+                Resolver.values(),
+                Resolver.valueOf(model.getResolver().toUpperCase()),
+                resolver -> {
+                    model.setResolver(resolver.name().toLowerCase());
+                    parentPresenter.fireChangeEvent();
+                });
 
         view.init(this);
 

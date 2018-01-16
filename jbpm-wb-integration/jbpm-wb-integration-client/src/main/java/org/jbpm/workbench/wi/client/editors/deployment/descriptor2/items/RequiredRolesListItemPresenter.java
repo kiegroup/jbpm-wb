@@ -28,7 +28,7 @@ import org.kie.workbench.common.screens.library.client.settings.util.UberElement
 public class RequiredRolesListItemPresenter extends ListItemPresenter<String, DeploymentsSectionPresenter, RequiredRolesListItemPresenter.View> {
 
     private String role;
-    private DeploymentsSectionPresenter parentPresenter;
+    DeploymentsSectionPresenter parentPresenter;
 
     @Inject
     public RequiredRolesListItemPresenter(final View view) {
