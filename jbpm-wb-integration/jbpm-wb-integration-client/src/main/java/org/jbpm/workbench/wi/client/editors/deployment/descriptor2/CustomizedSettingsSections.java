@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.client.producers;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptor2;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +33,7 @@ import org.kie.workbench.common.screens.library.client.settings.persistence.Pers
 import org.kie.workbench.common.screens.library.client.settings.validation.ValidationPresenter;
 
 @Dependent
-public class JbpmWbShowcaseSettingsSections implements SettingsSections {
+public class CustomizedSettingsSections implements SettingsSections {
 
     private final GeneralSettingsPresenter generalSettingsSection;
     private final DependenciesPresenter dependenciesSettingsSection;
@@ -44,13 +44,13 @@ public class JbpmWbShowcaseSettingsSections implements SettingsSections {
     private final PersistencePresenter persistenceSettingsSection;
 
     @Inject
-    public JbpmWbShowcaseSettingsSections(final GeneralSettingsPresenter generalSettingsSection,
-                                          final DependenciesPresenter dependenciesSettingsSection,
-                                          final KnowledgeBasesPresenter knowledgeBasesSettingsSection,
-                                          final ExternalDataObjectsPresenter externalDataObjectsSettingsSection,
-                                          final ValidationPresenter validationSettingsSection,
-                                          final DeploymentsSectionPresenter deploymentsSettingsSection,
-                                          final PersistencePresenter persistenceSettingsSection) {
+    public CustomizedSettingsSections(final GeneralSettingsPresenter generalSettingsSection,
+                                      final DependenciesPresenter dependenciesSettingsSection,
+                                      final KnowledgeBasesPresenter knowledgeBasesSettingsSection,
+                                      final ExternalDataObjectsPresenter externalDataObjectsSettingsSection,
+                                      final ValidationPresenter validationSettingsSection,
+                                      final DeploymentsSectionPresenter deploymentsSettingsSection,
+                                      final PersistencePresenter persistenceSettingsSection) {
 
         this.generalSettingsSection = generalSettingsSection;
         this.dependenciesSettingsSection = dependenciesSettingsSection;
