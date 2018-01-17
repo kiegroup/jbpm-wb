@@ -55,6 +55,7 @@ public abstract class AbstractCaseInstancePresenterTest {
                 .owner("admin")
                 .completedAt(new Date())
                 .startedAt(new Date())
+                .caseDefinitionId("caseDefinitionId")
                 .roleAssignments(Collections.emptyList())
                 .build();
     }

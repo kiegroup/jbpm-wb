@@ -114,49 +114,45 @@ public class CaseRolesViewImpl extends AbstractView<CaseRolesPresenter> implemen
                                 translationService.format(TOTAL_NUMBER_OF_ROLES));
     }
 
-    public void setRolesAssignmentList(final List<CaseRoleAssignmentSummary> caseRoleAssignmentSummaryList) {
-        if (caseRoleAssignmentSummaryList.isEmpty()) {
-            removeCSSClass(emptyContainer,
-                           "hidden");
-        } else {
-            addCSSClass(emptyContainer,
-                        "hidden");
-        }
-        pagination.init(caseRoleAssignmentSummaryList,
+    @Override
+    public void displayCaseRolesList(final List<CaseRoleAssignmentSummary> caseRolesList) {
+        pagination.init(caseRolesList,
                         this,
                         PAGE_SIZE);
+        addCSSClass(emptyContainer,
+                    "hidden");
+    }
+
+    @Override
+    public void displayEmptyList() {
+        removeAllRoles();
+        removeCSSClass(emptyContainer,
+                       "hidden");
     }
 
     @Override
     public void removeAllRoles() {
         roleAssignments.deselectAll();
         caseRolesList.setModel(Collections.emptyList());
+        pagination.setPagination(false);
     }
 
+    @Override
     public String getFilterValue() {
         return filterSelect.getValue();
     }
 
     @Override
-    public void resetPagination() {
-        pagination.setCurrentPage(0);
-    }
-
-    @Override
-    public void setBadge(String badgeContent) {
-        rolesBadge.setTextContent(badgeContent);
+    public void setBadge(int caseRolesNumber) {
+        rolesBadge.setTextContent(Integer.toString(caseRolesNumber));
     }
 
     @Override
     public void setVisibleItems(List<CaseRoleAssignmentSummary> visibleItems) {
-        removeAllRoles();
-        this.caseRolesList.setModel(visibleItems);
+        caseRolesList.setModel(visibleItems);
         int maxWidth = scrollbox.getBoundingClientRect().getWidth().intValue() - 70;
         roleAssignmentListLoadEvent.fire(new CaseRoleAssignmentListLoadEvent(maxWidth));
-        int rolesListSize = visibleItems.size();
-        if (rolesListSize > 0) {
-            roleAssignments.getComponent(rolesListSize - 1).setLastElementStyle();
-        }
+        roleAssignments.getComponent(visibleItems.size() - 1).setLastElementStyle();
     }
 
     @Override
@@ -166,8 +162,7 @@ public class CaseRolesViewImpl extends AbstractView<CaseRolesPresenter> implemen
 
     @EventHandler("filter-select")
     public void onRolesAssignmentFilterChange(@ForEvent("change") Event e) {
-        resetPagination();
-        presenter.filterElements();
+        presenter.filterCaseRoles();
     }
 
     @Override

@@ -16,8 +16,8 @@
 
 package org.jbpm.workbench.cm.client.roles;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -141,9 +141,6 @@ public class EditRoleAssignmentViewImpl extends AbstractView<CaseRolesPresenter>
 
     @Override
     public void showValidationError(final List<String> messages) {
-        if (messages.isEmpty()) {
-            return;
-        }
         notification.setMessage(messages);
         removeCSSClass(notification.getElement(),
                        "hidden");
@@ -161,25 +158,11 @@ public class EditRoleAssignmentViewImpl extends AbstractView<CaseRolesPresenter>
         modal.hide();
     }
 
-    private boolean validateForm() {
-        boolean validForm = true;
-        clearErrorMessages();
-        CaseRoleAssignmentSummary model = getValue();
-
-        if (!model.hasAssignment()) {
-            users.focus();
-            userNameGroup.setValidationState(ValidationState.ERROR);
-            groupNameGroup.setValidationState(ValidationState.ERROR);
-            showValidationError(Arrays.asList(translationService.format(PLEASE_INTRO_USER_OR_GROUP_TO_CREATE_ASSIGNMENT)));
-            validForm = false;
-        }
-
-        if (validForm) {
-            roleNameGroup.setValidationState(ValidationState.SUCCESS);
-            userNameGroup.setValidationState(ValidationState.SUCCESS);
-            groupNameGroup.setValidationState(ValidationState.SUCCESS);
-        }
-        return validForm;
+    @Override
+    public void setErrorState() {
+        users.focus();
+        userNameGroup.setValidationState(ValidationState.ERROR);
+        groupNameGroup.setValidationState(ValidationState.ERROR);
     }
 
     private void clearErrorMessages() {
@@ -200,13 +183,8 @@ public class EditRoleAssignmentViewImpl extends AbstractView<CaseRolesPresenter>
 
     @EventHandler("assign")
     public void onAssignClick(final @ForEvent("click") MouseEvent event) {
-        if (validateForm() == false) {
-            return;
-        }
-
-        if (okCommand != null) {
-            okCommand.execute();
-        }
+        clearErrorMessages();
+        Optional.ofNullable(okCommand).ifPresent(Command::execute);
     }
 
     @EventHandler("cancel")
