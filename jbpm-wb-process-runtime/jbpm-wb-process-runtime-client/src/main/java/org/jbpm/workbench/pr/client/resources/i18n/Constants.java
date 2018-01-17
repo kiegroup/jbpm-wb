@@ -267,7 +267,7 @@ public interface Constants extends Messages {
 
     String System();
 
-    String WasCreated();
+    String WasStarted();
 
     String WasCompleted();
 
