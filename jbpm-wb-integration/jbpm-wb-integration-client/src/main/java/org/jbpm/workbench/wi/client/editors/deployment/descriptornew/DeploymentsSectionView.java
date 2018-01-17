@@ -69,6 +69,7 @@ public class DeploymentsSectionView implements DeploymentsSectionPresenter.View 
 
     @Inject
     @DataField("add-marshalling-strategy-button")
+    @SuppressWarnings("PMD.UnusedPrivateField")
     private HTMLButtonElement addMarshallingStrategyButton;
 
     @Inject
@@ -78,6 +79,7 @@ public class DeploymentsSectionView implements DeploymentsSectionPresenter.View 
 
     @Inject
     @DataField("add-event-listener-button")
+    @SuppressWarnings("PMD.UnusedPrivateField")
     private HTMLButtonElement addEventListenerButton;
 
     @Inject
@@ -87,6 +89,7 @@ public class DeploymentsSectionView implements DeploymentsSectionPresenter.View 
 
     @Inject
     @DataField("add-global-button")
+    @SuppressWarnings("PMD.UnusedPrivateField")
     private HTMLButtonElement addGlobalButton;
 
     @Inject
@@ -96,6 +99,7 @@ public class DeploymentsSectionView implements DeploymentsSectionPresenter.View 
 
     @Inject
     @DataField("add-required-role-button")
+    @SuppressWarnings("PMD.UnusedPrivateField")
     private HTMLButtonElement addRequiredRoleButton;
 
     @Inject

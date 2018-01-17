@@ -56,10 +56,12 @@ public class ParametersModalView implements Elemental2Modal.View<ParametersModal
 
     @Inject
     @DataField("add-parameter-button")
+    @SuppressWarnings("PMD.UnusedPrivateField")
     private HTMLButtonElement addParameterButton;
 
     @Inject
     @DataField("done-button")
+    @SuppressWarnings("PMD.UnusedPrivateField")
     private HTMLButtonElement doneButton;
 
     private ParametersModal presenter;
@@ -112,6 +114,7 @@ public class ParametersModalView implements Elemental2Modal.View<ParametersModal
 
         @Inject
         @DataField("remove-button")
+        @SuppressWarnings("PMD.UnusedPrivateField")
         private HTMLAnchorElement removeButton;
 
         private ParametersModal.ParameterItemPresenter presenter;

@@ -49,6 +49,7 @@ public class NamedObjectItemView implements NamedObjectItemPresenter.View,
 
     @Inject
     @DataField("parameters-link")
+    @SuppressWarnings("PMD.UnusedPrivateField")
     private HTMLAnchorElement parametersLink;
 
     @Inject
@@ -58,6 +59,7 @@ public class NamedObjectItemView implements NamedObjectItemPresenter.View,
 
     @Inject
     @DataField("remove-button")
+    @SuppressWarnings("PMD.UnusedPrivateField")
     private HTMLAnchorElement removeButton;
 
     private NamedObjectItemPresenter presenter;
@@ -68,12 +70,12 @@ public class NamedObjectItemView implements NamedObjectItemPresenter.View,
     }
 
     @EventHandler("remove-button")
-    private void onRemoveButtonClicked(final ClickEvent ignore) {
+    public void onRemoveButtonClicked(final ClickEvent ignore) {
         presenter.remove();
     }
 
     @EventHandler("parameters-link")
-    private void onParametersLinkClicked(final ClickEvent ignore) {
+    public void onParametersLinkClicked(final ClickEvent ignore) {
         presenter.showParametersModal();
     }
 
