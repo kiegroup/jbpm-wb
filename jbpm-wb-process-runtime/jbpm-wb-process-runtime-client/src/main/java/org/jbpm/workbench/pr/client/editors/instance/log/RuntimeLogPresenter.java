@@ -128,13 +128,13 @@ public class RuntimeLogPresenter {
                 return Optional.of(LOG_TEMPLATES.getBusinessLog(prettyTime,
                                                                 constants.Task(),
                                                                 SafeHtmlUtils.fromString(logSummary.getNodeName()),
-                                                                (logSummary.isCompleted() ? constants.WasCompleted() : constants.WasCreated())).asString());
+                                                                (logSummary.isCompleted() ? constants.WasCompleted() : constants.WasStarted())).asString());
             } else if (NODE_START.equals(logSummary.getNodeType()) && !logSummary.isCompleted()) {
                 return Optional.of(LOG_TEMPLATES.getBusinessLog(
                         prettyTime,
                         constants.Process(),
                         SafeHtmlUtils.fromString(getProcessName()),
-                        constants.WasCreated()).asString());
+                        constants.WasStarted()).asString());
             } else if (NODE_END.equals(logSummary.getNodeType()) && logSummary.isCompleted()) {
                 return Optional.of(LOG_TEMPLATES.getBusinessLog(
                         prettyTime,

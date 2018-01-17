@@ -231,7 +231,7 @@ public class RuntimeLogPresenterTest {
         assertEquals(getBusinessLogCall(prettyTime,
                                         Constants.INSTANCE.Process(),
                                         processName,
-                                        Constants.INSTANCE.WasCreated()),
+                                        Constants.INSTANCE.WasStarted()),
                      logLine.get());
 
         logLine = presenter.getLogLine(new RuntimeLogSummary(1L,
@@ -252,7 +252,7 @@ public class RuntimeLogPresenterTest {
         assertEquals(getBusinessLogCall(prettyTime,
                                         Constants.INSTANCE.Task(),
                                         testTask,
-                                        Constants.INSTANCE.WasCreated()),
+                                        Constants.INSTANCE.WasStarted()),
                      logLine.get());
         logLine = presenter.getLogLine(new RuntimeLogSummary(1L,
                                                              logDate,
@@ -403,13 +403,13 @@ public class RuntimeLogPresenterTest {
         assertEquals(getBusinessLogCall(prettyTime,
                                         Constants.INSTANCE.Process(),
                                         processName,
-                                        Constants.INSTANCE.WasCreated()),
+                                        Constants.INSTANCE.WasStarted()),
                      argumentDESC.getValue().get(0));
 
         assertEquals(getBusinessLogCall(prettyTime,
                                         Constants.INSTANCE.Task(),
                                         testTask,
-                                        Constants.INSTANCE.WasCreated()),
+                                        Constants.INSTANCE.WasStarted()),
                      argumentDESC.getValue().get(1));
         assertEquals(getBusinessLogCall(prettyTime,
                                         Constants.INSTANCE.Process(),
@@ -439,12 +439,12 @@ public class RuntimeLogPresenterTest {
         assertEquals(getBusinessLogCall(prettyTime,
                                         Constants.INSTANCE.Task(),
                                         testTask,
-                                        Constants.INSTANCE.WasCreated()),
+                                        Constants.INSTANCE.WasStarted()),
                      argumentDESC.getValue().get(1));
         assertEquals(getBusinessLogCall(prettyTime,
                                         Constants.INSTANCE.Process(),
                                         processName,
-                                        Constants.INSTANCE.WasCreated()),
+                                        Constants.INSTANCE.WasStarted()),
                      argumentDESC.getValue().get(2));
     }
 
