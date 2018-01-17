@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptor2.items;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptornew.items;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,13 +30,8 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 @Templated("#root")
-public class NamedObjectItemView implements NamedObjectItemPresenter.View,
-                                            IsElement {
-
-    @Inject
-    @Named("span")
-    @DataField("name")
-    private HTMLElement name;
+public class ObjectItemView implements ObjectItemPresenter.View,
+                                       IsElement {
 
     @Inject
     @Named("span")
@@ -60,10 +55,10 @@ public class NamedObjectItemView implements NamedObjectItemPresenter.View,
     @DataField("remove-button")
     private HTMLAnchorElement removeButton;
 
-    private NamedObjectItemPresenter presenter;
+    private ObjectItemPresenter presenter;
 
     @Override
-    public void init(final NamedObjectItemPresenter presenter) {
+    public void init(final ObjectItemPresenter presenter) {
         this.presenter = presenter;
     }
 
@@ -75,11 +70,6 @@ public class NamedObjectItemView implements NamedObjectItemPresenter.View,
     @EventHandler("parameters-link")
     private void onParametersLinkClicked(final ClickEvent ignore) {
         presenter.showParametersModal();
-    }
-
-    @Override
-    public void setName(final String name) {
-        this.name.textContent = name;
     }
 
     @Override

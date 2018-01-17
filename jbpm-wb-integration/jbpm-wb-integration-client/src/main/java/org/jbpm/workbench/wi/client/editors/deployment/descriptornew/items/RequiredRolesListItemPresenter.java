@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptor2.items;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptornew.items;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor2.DeploymentsSectionPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.DeploymentsSectionPresenter;
 import org.kie.workbench.common.screens.library.client.settings.util.ListItemPresenter;
 import org.kie.workbench.common.screens.library.client.settings.util.UberElementalListItem;
 

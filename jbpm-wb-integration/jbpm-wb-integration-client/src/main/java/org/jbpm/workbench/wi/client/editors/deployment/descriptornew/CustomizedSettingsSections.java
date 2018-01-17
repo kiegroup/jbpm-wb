@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptor2;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptornew;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +22,6 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor2.DeploymentsSectionPresenter;
 import org.kie.workbench.common.screens.library.client.settings.SettingsPresenter;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSections;
 import org.kie.workbench.common.screens.library.client.settings.dependencies.DependenciesPresenter;

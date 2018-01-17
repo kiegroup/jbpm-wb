@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptor2.items;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptornew.items;
 
 import java.util.ArrayList;
 
@@ -22,15 +22,15 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import elemental2.dom.Element;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor2.DeploymentsSectionPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor2.model.Resolver;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.DeploymentsSectionPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.kie.workbench.common.screens.library.client.settings.util.KieEnumSelectElement;
 import org.kie.workbench.common.screens.library.client.settings.util.ListItemPresenter;
 import org.kie.workbench.common.screens.library.client.settings.util.UberElementalListItem;
 
 @Dependent
-public class NamedObjectItemPresenter extends ListItemPresenter<ItemObjectModel, DeploymentsSectionPresenter, NamedObjectItemPresenter.View> implements ObjectPresenter {
+public class ObjectItemPresenter extends ListItemPresenter<ItemObjectModel, DeploymentsSectionPresenter, ObjectItemPresenter.View> implements ObjectPresenter {
 
     private final ParametersModal parametersModal;
     private final KieEnumSelectElement<Resolver> resolversSelect;
@@ -39,17 +39,17 @@ public class NamedObjectItemPresenter extends ListItemPresenter<ItemObjectModel,
     DeploymentsSectionPresenter parentPresenter;
 
     @Inject
-    public NamedObjectItemPresenter(final View view,
-                                    final ParametersModal parametersModal,
-                                    final KieEnumSelectElement<Resolver> resolversSelect) {
+    public ObjectItemPresenter(final View view,
+                               final ParametersModal parametersModal,
+                               final KieEnumSelectElement<Resolver> resolversSelect) {
         super(view);
         this.parametersModal = parametersModal;
         this.resolversSelect = resolversSelect;
     }
 
     @Override
-    public NamedObjectItemPresenter setup(final ItemObjectModel model,
-                                          final DeploymentsSectionPresenter parentPresenter) {
+    public ObjectItemPresenter setup(final ItemObjectModel model,
+                                     final DeploymentsSectionPresenter parentPresenter) {
         this.model = model;
         this.parentPresenter = parentPresenter;
 
@@ -70,7 +70,6 @@ public class NamedObjectItemPresenter extends ListItemPresenter<ItemObjectModel,
 
         view.init(this);
 
-        view.setName(model.getName());
         view.setValue(model.getValue());
         view.setParametersCount(model.getParameters().size());
 
@@ -103,11 +102,9 @@ public class NamedObjectItemPresenter extends ListItemPresenter<ItemObjectModel,
         fireChangeEvent();
     }
 
-    public interface View extends UberElementalListItem<NamedObjectItemPresenter> {
+    public interface View extends UberElementalListItem<ObjectItemPresenter> {
 
         Element getResolversContainer();
-
-        void setName(final String name);
 
         void setValue(final String value);
 

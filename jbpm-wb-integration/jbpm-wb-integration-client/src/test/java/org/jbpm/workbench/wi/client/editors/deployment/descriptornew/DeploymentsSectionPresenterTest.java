@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptor2;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptornew;
 
 import javax.enterprise.event.Event;
 
@@ -22,9 +22,9 @@ import org.guvnor.common.services.project.context.ProjectContext;
 import org.guvnor.common.services.project.model.Project;
 import org.guvnor.common.services.shared.metadata.model.Overview;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor2.model.AuditMode;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor2.model.PersistenceMode;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor2.model.RuntimeStrategy;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.model.AuditMode;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.model.PersistenceMode;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.model.RuntimeStrategy;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;

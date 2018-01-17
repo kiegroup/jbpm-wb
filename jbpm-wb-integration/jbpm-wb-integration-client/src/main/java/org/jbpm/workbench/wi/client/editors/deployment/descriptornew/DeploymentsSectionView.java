@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptor2;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptornew;
 
 import javax.inject.Inject;
 import javax.inject.Named;

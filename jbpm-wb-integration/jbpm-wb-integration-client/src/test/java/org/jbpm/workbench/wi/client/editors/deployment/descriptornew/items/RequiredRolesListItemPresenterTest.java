@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptor2.items;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptornew.items;
 
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor2.DeploymentsSectionPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor2.DeploymentsSectionPresenter.RequiredRolesListPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.DeploymentsSectionPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.DeploymentsSectionPresenter.RequiredRolesListPresenter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

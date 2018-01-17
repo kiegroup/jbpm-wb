@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptor2.items;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptornew.items;
 
 import com.google.common.collect.ImmutableList;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor2.DeploymentsSectionPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor2.DeploymentsSectionPresenter.MarshallingStrategiesListPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor2.model.Resolver;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.DeploymentsSectionPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.DeploymentsSectionPresenter.MarshallingStrategiesListPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.model.Parameter;
 import org.junit.Before;
@@ -30,7 +30,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;

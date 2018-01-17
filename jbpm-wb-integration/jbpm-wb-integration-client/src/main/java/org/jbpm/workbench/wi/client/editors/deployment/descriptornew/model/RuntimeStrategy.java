@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptor2.model;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptornew.model;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public enum AuditMode {
-    JPA,
-    JMS,
-    NONE;
+public enum RuntimeStrategy {
+    SINGLETON,
+    PER_REQUEST,
+    PER_PROCESS_INSTANCE
 }
+
