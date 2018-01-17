@@ -24,12 +24,12 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.jbpm.designer.notification.DesignerWorkitemInstalledEvent;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
-import org.jbpm.designer.notification.DesignerWorkitemInstalledEvent;
-import org.kie.workbench.common.services.shared.project.KieProject;
-import org.kie.workbench.common.services.shared.project.KieProjectService;
+import org.kie.workbench.common.services.shared.project.KieModule;
+import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
@@ -45,7 +45,7 @@ public class DDConfigUpdater {
     private static final String REFLECTION_PREFIX = "reflection:";
     private static final String DEFAULT_RESOLVER = "reflection";
 
-    private KieProjectService projectService;
+    private KieModuleService moduleService;
 
     private IOService ioService;
 
@@ -58,11 +58,11 @@ public class DDConfigUpdater {
 
     @Inject
     public DDConfigUpdater(DDEditorService ddEditorService,
-                           KieProjectService projectService,
+                           KieModuleService moduleService,
                            @Named("ioStrategy") IOService ioService,
                            DDConfigUpdaterHelper configUpdaterHelper) {
         this.ddEditorService = ddEditorService;
-        this.projectService = projectService;
+        this.moduleService = moduleService;
         this.ioService = ioService;
         this.configUpdaterHelper = configUpdaterHelper;
     }
@@ -70,25 +70,25 @@ public class DDConfigUpdater {
     public void processResourceAdd(@Observes final ResourceAddedEvent resourceAddedEvent) {
         if (configUpdaterHelper.isPersistenceFile(resourceAddedEvent.getPath())) {
             //persistence.xml has been added to current project.
-            updateConfig(projectService.resolveProject(resourceAddedEvent.getPath()));
+            updateConfig(moduleService.resolveModule(resourceAddedEvent.getPath()));
         }
     }
 
     public void processResourceUpdate(@Observes final ResourceUpdatedEvent resourceUpdatedEvent) {
         if (configUpdaterHelper.isPersistenceFile(resourceUpdatedEvent.getPath())) {
             //persistence.xml has been updated in current project.
-            updateConfig(projectService.resolveProject(resourceUpdatedEvent.getPath()));
+            updateConfig(moduleService.resolveModule(resourceUpdatedEvent.getPath()));
         }
     }
 
     public void processWorkitemInstall(@Observes final DesignerWorkitemInstalledEvent workitemInstalledEvent) {
-        addWorkItemToConfig(projectService.resolveProject(workitemInstalledEvent.getPath()),
+        addWorkItemToConfig(moduleService.resolveModule(workitemInstalledEvent.getPath()),
                             workitemInstalledEvent);
     }
 
-    private void addWorkItemToConfig(final KieProject kieProject,
+    private void addWorkItemToConfig(final KieModule kieModule,
                                      final DesignerWorkitemInstalledEvent workitemInstalledEvent) {
-        Path deploymentDescriptorPath = getDeploymentDescriptorPath(kieProject);
+        Path deploymentDescriptorPath = getDeploymentDescriptorPath(kieModule);
         if (ioService.exists(Paths.convert(deploymentDescriptorPath))) {
             DeploymentDescriptorModel descriptorModel = ddEditorService.load(deploymentDescriptorPath);
 
@@ -169,29 +169,29 @@ public class DDConfigUpdater {
         return false;
     }
 
-    private void updateConfig(final KieProject kieProject) {
+    private void updateConfig(final KieModule kieModule) {
 
-        Path deploymentDescriptorPath = getDeploymentDescriptorPath(kieProject);
+        Path deploymentDescriptorPath = getDeploymentDescriptorPath(kieModule);
 
         if (ioService.exists(Paths.convert(deploymentDescriptorPath))) {
             //if deployment descriptor exists created, then update it.
             DeploymentDescriptorModel descriptorModel = ddEditorService.load(deploymentDescriptorPath);
             updateMarshallingConfig(descriptorModel,
                                     deploymentDescriptorPath,
-                                    kieProject);
+                                    kieModule);
         }
     }
 
-    private Path getDeploymentDescriptorPath(final KieProject kieProject) {
+    private Path getDeploymentDescriptorPath(final KieModule kieModule) {
         return PathFactory.newPath("kie-deployment-descriptor.xml",
-                                   kieProject.getRootPath().toURI() + "/src/main/resources/META-INF/kie-deployment-descriptor.xml");
+                                   kieModule.getRootPath().toURI() + "/src/main/resources/META-INF/kie-deployment-descriptor.xml");
     }
 
     private void updateMarshallingConfig(final DeploymentDescriptorModel descriptorModel,
                                          final Path path,
-                                         final KieProject kieProject) {
+                                         final KieModule kieModule) {
 
-        String marshallingValue = configUpdaterHelper.buildJPAMarshallingStrategyValue(kieProject);
+        String marshallingValue = configUpdaterHelper.buildJPAMarshallingStrategyValue(kieModule);
         if (marshallingValue != null && descriptorModel != null) {
             ItemObjectModel oldMarshallingStrategy = null;
             if (descriptorModel.getMarshallingStrategies() != null) {
