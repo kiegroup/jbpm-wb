@@ -1240,6 +1240,18 @@
     </dependency>
 
     <dependency>
+      <groupId>org.kie.server</groupId>
+      <artifactId>kie-server-controller-websocket</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.server</groupId>
+      <artifactId>kie-server-controller-websocket-common</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.kie.workbench.screens</groupId>
       <artifactId>kie-wb-common-server-ui-api</artifactId>
     </dependency>
