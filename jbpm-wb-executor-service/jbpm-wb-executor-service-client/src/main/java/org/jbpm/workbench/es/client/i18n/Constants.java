@@ -81,6 +81,10 @@ public interface Constants extends Messages {
 
     String Due_On();
 
+    String Run_Now();
+
+    String Run_Later();
+
     String Due_On_Placeholder();
 
     String Process_Name();

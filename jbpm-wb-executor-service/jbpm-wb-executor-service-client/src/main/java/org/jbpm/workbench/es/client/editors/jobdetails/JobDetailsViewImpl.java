@@ -19,9 +19,9 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.gwtbootstrap3.client.ui.TextArea;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.TextArea;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
@@ -104,7 +104,7 @@ public class JobDetailsViewImpl implements JobDetailsPresenter.JobDetailsView {
             textAreaContent += error.getMessage() + "\n" +
                     error.getStacktrace() + "\n\n";
         }
-        this.jobErrorTextArea.setText(textAreaContent);
+        this.jobErrorTextArea.setValue(textAreaContent);
     }
 
     @Override
