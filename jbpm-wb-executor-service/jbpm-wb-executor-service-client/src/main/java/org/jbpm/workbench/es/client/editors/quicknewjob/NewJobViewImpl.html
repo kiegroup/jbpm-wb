@@ -1,0 +1,100 @@
+<div class="modal fade" data-field="modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-field="close" data-dismiss="modal" aria-hidden="true">
+                    <span class="pficon pficon-close"></span>
+                </button>
+                <h4 class="modal-title"><span data-i18n-key="New_Job"></span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <div class="hidden" data-field="alert"></div>
+                    <div class="tabbable uf-tabbar-panel">
+                        <ul class="nav nav-tabs uf-tabbar-panel-nav-tabs nav-tabs-pf">
+                            <li class="active" data-field="basic-tab">
+                                <a href="javascript:;" data-toggle="tab" data-target="#basic-pane" data-field="basic-tab-link" data-i18n-key="Basic"></a>
+                            </li>
+
+                            <li data-field="advanced-tab">
+                                <a href="javascript:;" data-toggle="tab" data-target="#advanced-pane" data-field="advanced-tab-link" data-i18n-key="Advanced"></a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+
+                            <div class="tab-pane active" id="basic-pane">
+                                <div class="row" style="margin-top: 0;padding-top: 15px;">
+                                    <div class="col-md-12" data-field="basic-content">
+                                        <div>
+                                            <form class="form-horizontal">
+                                                <fieldset>
+                                                    <div class="form-group" data-field="job-name-group">
+                                                        <div class="col-md-3">
+                                                            <label class="control-label" data-field="job-name-label" data-i18n-key="BusinessKey"></label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="text" data-field="job-name-input" class="form-control"/>
+                                                            <span data-field="job-name-help" class="help-block"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="col-md-3">
+                                                            <label class="control-label" data-i18n-key="Due_On"></label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <div class="col-md-10">
+                                                                <label class="radio-inline radio-inline-option"><input type="radio" name="run" data-field="run-now"><span data-i18n-key="Run_Now">Run now</span></label>
+                                                            </div>
+                                                            <div>
+                                                                <div class="col-md-3">
+                                                                    <label class="radio-inline radio-inline-option"><input type="radio" name="run" data-field="run-later"><span data-i18n-key="Run_Later">Run later</span></label>
+                                                                </div>
+                                                                <div class="col-md-8" data-field="date-filters-input"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" data-field="job-type-group">
+                                                        <div class="col-md-3">
+                                                            <label class="control-label" data-field="job-type-label" data-i18n-key="Type"></label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="text" data-field="job-type-input" class="form-control"/>
+                                                            <span data-field="job-type-help" class="help-block"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" data-field="job-retries-group">
+                                                        <div class="col-md-3">
+                                                            <label class="control-label" data-field="job-retries-label" data-i18n-key="Retries"></label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="text" data-field="job-retries-input" class="form-control"/>
+                                                            <span data-field="job-retries-help" class="help-block"></span>
+                                                        </div>
+                                                    </div>
+                                                </fieldset>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane" id="advanced-pane" style="margin-top: 15px;">
+                                <div class="row">
+                                    <div class="col-md-12" data-field="advanced-content"></div>
+                                </div>
+                                <div class="col-md-12">
+                                    <button type="button" class="btn btn-default" data-field="new-job-parameter" data-i18n-key="Add_Parameter"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-field="cancel" data-i18n-key="Cancel" data-dismiss="modal"></button>
+                <button type="button" class="btn btn-primary" data-field="start" data-i18n-key="Create"></button>
+            </div>
+        </div>
+    </div>
+</div>
+

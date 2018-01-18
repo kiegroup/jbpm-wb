@@ -48,7 +48,7 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.es.client.editors.events.JobSelectedEvent;
-import org.jbpm.workbench.es.client.editors.quicknewjob.QuickNewJobPopup;
+import org.jbpm.workbench.es.client.editors.quicknewjob.NewJobPresenter;
 
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
@@ -84,7 +84,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     private Event<RequestChangedEvent> requestChangedEvent;
 
     @Inject
-    private QuickNewJobPopup quickNewJobPopup;
+    private NewJobPresenter newJobPresenter;
 
     @Inject
     private ErrorPopupPresenter errorPopup;
@@ -244,7 +244,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                         if (selectedServerTemplate == null || selectedServerTemplate.trim().isEmpty()) {
                             view.displayNotification(constants.SelectServerTemplate());
                         } else {
-                            quickNewJobPopup.show(selectedServerTemplate);
+                            newJobPresenter.openNewJobDialog(selectedServerTemplate);
                         }
                     }
                 })

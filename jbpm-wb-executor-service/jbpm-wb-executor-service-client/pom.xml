@@ -49,6 +49,10 @@
     </dependency>
     <dependency>
       <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-ioc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
       <artifactId>errai-common</artifactId>
     </dependency>
     <dependency>
@@ -210,6 +214,12 @@
     <dependency><!-- to get CallerMock in unit test-->
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-testing-utils</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
 
