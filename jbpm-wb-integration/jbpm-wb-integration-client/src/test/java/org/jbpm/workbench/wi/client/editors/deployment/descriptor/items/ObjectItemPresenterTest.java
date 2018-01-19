@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptornew.items;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptor.items;
 
 import com.google.common.collect.ImmutableList;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.DeploymentsSectionPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.model.Resolver;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter.MarshallingStrategiesListPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.model.Parameter;
 import org.junit.Before;
@@ -36,10 +37,10 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NamedObjectItemPresenterTest {
+public class ObjectItemPresenterTest {
 
     @Mock
-    private NamedObjectItemPresenter.View view;
+    private ObjectItemPresenter.View view;
 
     @Mock
     private ParametersModal parametersModal;
@@ -47,51 +48,50 @@ public class NamedObjectItemPresenterTest {
     @Mock
     private KieEnumSelectElement<Resolver> resolversSelect;
 
-    private NamedObjectItemPresenter namedObjectItemPresenter;
+    private ObjectItemPresenter objectItemPresenter;
 
     @Before
     public void before() {
-        namedObjectItemPresenter = spy(new NamedObjectItemPresenter(view,
-                                                                    parametersModal,
-                                                                    resolversSelect));
+        objectItemPresenter = spy(new ObjectItemPresenter(view,
+                                                          parametersModal,
+                                                          resolversSelect));
     }
 
     @Test
     public void testSetup() {
-        final ItemObjectModel model = spy(new ItemObjectModel("Name", "Value", "mvel", ImmutableList.of(new Parameter("Foo", "Bar"))));
+        final ItemObjectModel model = spy(new ItemObjectModel(null, "Value", "reflection", ImmutableList.of(new Parameter("Foo", "Bar"))));
 
-        namedObjectItemPresenter.setup(model, mock(DeploymentsSectionPresenter.class));
+        objectItemPresenter.setup(model, mock(DeploymentsSectionPresenter.class));
 
         verify(model, never()).setParameters(any());
-        verify(view).init(eq(namedObjectItemPresenter));
+        verify(view).init(eq(objectItemPresenter));
         verify(view).setValue(eq("Value"));
-        verify(view).setName(eq("Name"));
         verify(view).setParametersCount(eq(1));
         verify(parametersModal).setup(any(), any());
-        verify(resolversSelect).setup(any(), any(), eq(Resolver.MVEL), any());
+        verify(resolversSelect).setup(any(), any(), eq(Resolver.REFLECTION), any());
     }
 
     @Test
     public void testRemove() {
         final DeploymentsSectionPresenter parentPresenter = mock(DeploymentsSectionPresenter.class);
-        final DeploymentsSectionPresenter.MarshallingStrategiesListPresenter listPresenter = mock(DeploymentsSectionPresenter.MarshallingStrategiesListPresenter.class);
+        final MarshallingStrategiesListPresenter listPresenter = mock(MarshallingStrategiesListPresenter.class);
 
-        namedObjectItemPresenter.parentPresenter = parentPresenter;
-        namedObjectItemPresenter.setListPresenter(listPresenter);
+        objectItemPresenter.parentPresenter = parentPresenter;
+        objectItemPresenter.setListPresenter(listPresenter);
 
-        namedObjectItemPresenter.remove();
+        objectItemPresenter.remove();
 
-        verify(listPresenter).remove(eq(namedObjectItemPresenter));
+        verify(listPresenter).remove(eq(objectItemPresenter));
         verify(parentPresenter).fireChangeEvent();
     }
 
     @Test
     public void testSignalParameterAddedOrRemoved() {
         final DeploymentsSectionPresenter parentPresenter = mock(DeploymentsSectionPresenter.class);
-        namedObjectItemPresenter.parentPresenter = parentPresenter;
-        namedObjectItemPresenter.model = new ItemObjectModel("Name", "Value", "mvel", ImmutableList.of(new Parameter("Foo", "Bar")));
+        objectItemPresenter.parentPresenter = parentPresenter;
+        objectItemPresenter.model = new ItemObjectModel(null, "Value", "reflection", ImmutableList.of(new Parameter("Foo", "Bar")));
 
-        namedObjectItemPresenter.signalParameterAddedOrRemoved();
+        objectItemPresenter.signalParameterAddedOrRemoved();
 
         verify(view).setParametersCount(eq(1));
         verify(parentPresenter).fireChangeEvent();

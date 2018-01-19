@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptornew;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptor;
 
 import java.util.Arrays;
 import java.util.List;

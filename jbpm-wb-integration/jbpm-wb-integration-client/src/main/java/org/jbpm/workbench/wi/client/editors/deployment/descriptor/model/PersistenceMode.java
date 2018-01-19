@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptornew.items;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptor.model;
 
-public interface ObjectPresenter {
+import org.jboss.errai.common.client.api.annotations.Portable;
 
-    void fireChangeEvent();
-
-    void signalParameterAddedOrRemoved();
+@Portable
+public enum PersistenceMode {
+    JPA,
+    NONE;
 }

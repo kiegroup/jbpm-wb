@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptornew;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptor;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
@@ -28,13 +28,13 @@ import elemental2.promise.Promise;
 import org.guvnor.common.services.project.context.ProjectContext;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.items.NamedObjectItemPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.items.ObjectItemPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.items.RequiredRolesListItemPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.model.AuditMode;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.model.PersistenceMode;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.model.Resolver;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptornew.model.RuntimeStrategy;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.AuditMode;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.RuntimeStrategy;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.NamedObjectItemPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ObjectItemPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.RequiredRolesListItemPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.PersistenceMode;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;

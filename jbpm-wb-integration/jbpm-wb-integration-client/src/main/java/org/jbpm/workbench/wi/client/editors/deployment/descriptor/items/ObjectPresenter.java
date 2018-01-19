@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptornew.model;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptor.items;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
+public interface ObjectPresenter {
 
-@Portable
-public enum RuntimeStrategy {
-    SINGLETON,
-    PER_CASE,
-    PER_REQUEST,
-    PER_PROCESS_INSTANCE
+    void fireChangeEvent();
+
+    void signalParameterAddedOrRemoved();
 }
-

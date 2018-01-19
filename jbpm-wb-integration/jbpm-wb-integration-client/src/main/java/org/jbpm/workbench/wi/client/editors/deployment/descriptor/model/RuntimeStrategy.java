@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptornew.model;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptor.model;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public enum Resolver {
-    MVEL,
-    REFLECTION,
-    SPRING;
+public enum RuntimeStrategy {
+    SINGLETON,
+    PER_CASE,
+    PER_REQUEST,
+    PER_PROCESS_INSTANCE
 }
+
