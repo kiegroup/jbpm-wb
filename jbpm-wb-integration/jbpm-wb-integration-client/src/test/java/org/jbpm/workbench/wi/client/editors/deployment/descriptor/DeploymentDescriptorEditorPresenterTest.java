@@ -15,6 +15,8 @@
  */
 package org.jbpm.workbench.wi.client.editors.deployment.descriptor;
 
+import java.util.Optional;
+
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
 import org.guvnor.common.services.project.client.security.ProjectController;
@@ -71,6 +73,12 @@ public class DeploymentDescriptorEditorPresenterTest {
 
     @Before
     public void setUp() throws Exception {
+        when(workbenchContext.getActiveOrganizationalUnit()).thenReturn(Optional.empty());
+        when(workbenchContext.getActiveWorkspaceProject()).thenReturn(Optional.empty());
+        when(workbenchContext.getActiveModule()).thenReturn(Optional.empty());
+        when(workbenchContext.getActiveRepositoryRoot()).thenReturn(Optional.empty());
+        when(workbenchContext.getActivePackage()).thenReturn(Optional.empty());
+
         callerMockDDEditorService = new CallerMock<DDEditorService>(ddEditorServiceMock);
         presenter = new DeploymentDescriptorEditorPresenter(view,
                                                             callerMockDDEditorService,
@@ -112,7 +120,7 @@ public class DeploymentDescriptorEditorPresenterTest {
 
     @Test
     public void testMakeMenuBar() {
-        doReturn(mock(WorkspaceProject.class)).when(workbenchContext).getActiveWorkspaceProject();
+        doReturn(Optional.of(mock(WorkspaceProject.class))).when(workbenchContext).getActiveWorkspaceProject();
         doReturn(true).when(projectController).canUpdateProject(any());
 
         presenter.makeMenuBar();
@@ -122,7 +130,7 @@ public class DeploymentDescriptorEditorPresenterTest {
 
     @Test
     public void testMakeMenuBarWithoutUpdateProjectPermission() {
-        doReturn(mock(WorkspaceProject.class)).when(workbenchContext).getActiveWorkspaceProject();
+        doReturn(Optional.of(mock(WorkspaceProject.class))).when(workbenchContext).getActiveWorkspaceProject();
         doReturn(false).when(projectController).canUpdateProject(any());
 
         presenter.makeMenuBar();

@@ -183,7 +183,7 @@ public class NewCaseProjectHandler
             @Override
             public void execute() {
 
-                if (context.getActiveOrganizationalUnit() == null) {
+                if (!context.getActiveOrganizationalUnit().isPresent()) {
                     ouService.call(new RemoteCallback<OrganizationalUnit>() {
                         @Override
                         public void callback(OrganizationalUnit organizationalUnit) {
@@ -202,7 +202,10 @@ public class NewCaseProjectHandler
 
     private void init() {
         wizard.initialise(new POMBuilder().setModuleName("")
-                                  .setGroupId(context.getActiveOrganizationalUnit().getDefaultGroupId()).build());
+                                  .setGroupId(context.getActiveOrganizationalUnit()
+                                                     .orElseThrow(() -> new IllegalStateException("Cannot initialize new case project without an active organizational unit."))
+                                                     .getDefaultGroupId())
+                                  .build());
         wizard.start(creationSuccessCallback,
                      openEditorOnCreation);
     }
