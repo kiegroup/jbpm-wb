@@ -73,8 +73,11 @@ public class NewJobPresenter {
             Map<String, String> jobCtxMap = new HashMap<String, String>();
             if (parameters != null) {
                 for (RequestParameterSummary param : parameters) {
-                    jobCtxMap.put(param.getKey(),
-                                  param.getValue());
+                    if (!(constants.ClickToEdit().equals(param.getKey()) ||
+                            constants.ClickToEdit().equals(param.getValue()))) {
+                        jobCtxMap.put(param.getKey(),
+                                      param.getValue());
+                    }
                 }
             }
             jobCtxMap.put(RequestDataSetConstants.COLUMN_RETRIES,
@@ -106,11 +109,12 @@ public class NewJobPresenter {
         }
     }
 
-    protected boolean validateForm(String jobName,
-                                   String jobType,
-                                   String jobRetries) {
+    private boolean validateForm(String jobName,
+                                 String jobType,
+                                 String jobRetries) {
         boolean valid = true;
         view.cleanErrorMessages();
+
         if (jobName.isEmpty()) {
             view.showEmptyNameErrorMessage();
             valid = false;
@@ -133,7 +137,8 @@ public class NewJobPresenter {
         String message = "";
         if (throwable.getMessage() != null) {
             message = throwable.getMessage();
-        } else if (throwable.getCause() != null && throwable.getCause().getMessage() != null) {
+        } else if (throwable.getCause() != null &&
+                     throwable.getCause().getMessage() != null) {
             message = throwable.getCause().getMessage();
         }
         return message.contains("Invalid command type");

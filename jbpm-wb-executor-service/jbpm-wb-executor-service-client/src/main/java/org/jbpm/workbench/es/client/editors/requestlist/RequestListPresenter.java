@@ -77,6 +77,10 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
 
     private Constants constants = Constants.INSTANCE;
 
+    private NewJobPresenter newJobPresenter;
+
+    private Command newJobCommand;
+
     @Inject
     private Caller<ExecutorService> executorServices;
 
@@ -84,13 +88,15 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     private Event<RequestChangedEvent> requestChangedEvent;
 
     @Inject
-    private NewJobPresenter newJobPresenter;
-
-    @Inject
     private ErrorPopupPresenter errorPopup;
 
     @Inject
     private Event<JobSelectedEvent> jobSelectedEvent;
+
+    @Inject
+    protected void setNewJobPresenter(NewJobPresenter newJobPresenter) {
+        this.newJobPresenter = newJobPresenter;
+    }
 
     public RequestListPresenter() {
         super();
@@ -114,6 +120,10 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.Jobs();
+    }
+
+    public Command getNewJobCommand() {
+        return newJobCommand;
     }
 
     @Override
@@ -235,19 +245,20 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
 
     @WorkbenchMenu
     public Menus getMenus() {
+        newJobCommand = new Command() {
+                            @Override
+                            public void execute() {
+                                final String selectedServerTemplate = getSelectedServerTemplate();
+                                if (selectedServerTemplate == null || selectedServerTemplate.trim().isEmpty()) {
+                                    view.displayNotification(constants.SelectServerTemplate());
+                                } else {
+                                    newJobPresenter.openNewJobDialog(selectedServerTemplate);
+                                }
+                            }
+        };
         return MenuFactory
                 .newTopLevelMenu(constants.New_Job())
-                .respondsWith(new Command() {
-                    @Override
-                    public void execute() {
-                        final String selectedServerTemplate = getSelectedServerTemplate();
-                        if (selectedServerTemplate == null || selectedServerTemplate.trim().isEmpty()) {
-                            view.displayNotification(constants.SelectServerTemplate());
-                        } else {
-                            newJobPresenter.openNewJobDialog(selectedServerTemplate);
-                        }
-                    }
-                })
+                .respondsWith(newJobCommand)
                 .endMenu()
                 .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder)
                 .endMenu()

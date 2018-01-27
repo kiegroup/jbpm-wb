@@ -25,9 +25,11 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.es.client.editors.events.JobSelectedEvent;
+import org.jbpm.workbench.es.client.editors.quicknewjob.NewJobPresenter;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.jbpm.workbench.es.model.events.RequestChangedEvent;
@@ -45,6 +47,8 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.menu.MenuItem;
+import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
 import static org.jbpm.workbench.es.client.editors.util.JobUtils.createRequestSummary;
@@ -83,6 +87,9 @@ public class RequestListPresenterTest {
     @Mock
     private PlaceManager placeManager;
 
+    @Mock
+    private NewJobPresenter newJobPresenterMock;
+
     @Spy
     private FilterSettings filterSettings;
 
@@ -107,6 +114,9 @@ public class RequestListPresenterTest {
                                              requestChangedEvent,
                                              jobSelectedEventMock,
                                              placeManager);
+
+        presenter.setNewJobPresenter(newJobPresenterMock);
+        presenter.setServerTemplateSelectorMenuBuilder(new ServerTemplateSelectorMenuBuilder());
     }
 
     @Test
@@ -341,6 +351,58 @@ public class RequestListPresenterTest {
         verify(jobSelectedEventMock,
                never()).fire(any());
         verify(placeManager).closePlace(PerspectiveIds.JOB_DETAILS_SCREEN);
+    }
+
+    @Test
+    public void testOpenNewJobDialog_serverTemplateNull() {
+        presenter.setSelectedServerTemplate(null);
+
+        presenter.getMenus();
+
+        assertNotNull(presenter.getNewJobCommand());
+
+        presenter.getNewJobCommand().execute();
+
+        verify(viewMock).displayNotification("SelectServerTemplate");
+        verify(newJobPresenterMock,
+               never()).openNewJobDialog(anyString());
+    }
+
+    @Test
+    public void testOpenNewJobDialog_serverTemplateEmpty() {
+        assertTrue(presenter.getSelectedServerTemplate().isEmpty());
+
+        presenter.getMenus();
+
+        assertNotNull(presenter.getNewJobCommand());
+
+        presenter.getNewJobCommand().execute();
+
+        verify(viewMock).displayNotification("SelectServerTemplate");
+        verify(newJobPresenterMock,
+               never()).openNewJobDialog(anyString());
+    }
+
+    @Test
+    public void testOpenNewJobDialog_serverTemplateSet() {
+        final String serverTemplateTest = "serverTemplateTest";
+        presenter.setSelectedServerTemplate(serverTemplateTest);
+
+        Menus menus = presenter.getMenus();
+
+        MenuItem newJobItem = menus.getItems().get(0);
+        assertEquals("New_Job",
+                     newJobItem.getCaption());
+        assertTrue(newJobItem.isEnabled());
+
+        assertNotNull(presenter.getNewJobCommand());
+
+        presenter.getNewJobCommand().execute();
+        assertTrue(serverTemplateTest.equals(presenter.getSelectedServerTemplate()));
+        verify(newJobPresenterMock).openNewJobDialog(serverTemplateTest);
+        verify(viewMock,
+               times(3)).getListGrid();
+        verifyNoMoreInteractions(viewMock);
     }
 
     private void assertJobSelectedEventContent(JobSelectedEvent event,

@@ -45,6 +45,7 @@ import org.jboss.errai.common.client.dom.NumberInput;
 import org.jboss.errai.common.client.dom.RadioInput;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.common.client.dom.TextInput;
+import org.jboss.errai.common.client.dom.ListItem;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -78,8 +79,16 @@ public class NewJobViewImpl implements NewJobPresenter.NewJobView,
     private final Constants constants = Constants.INSTANCE;
 
     @Inject
+    @DataField("basic-tab")
+    ListItem basicTab;
+
+    @Inject
     @DataField("basic-pane")
     private Div basicPane;
+
+    @Inject
+    @DataField("advanced-tab")
+    ListItem advancedTab;
 
     @Inject
     @DataField("advanced-pane")
@@ -269,7 +278,16 @@ public class NewJobViewImpl implements NewJobPresenter.NewJobView,
 
     @Override
     public void showBasicPane() {
+        addCSSClass(basicTab, 
+                    "active");
+        addCSSClass(basicPane,
+                    "active");
         basicPane.setHidden(false);
+
+        removeCSSClass(advancedTab,
+                       "active");
+        removeCSSClass(advancedPane,
+                       "active");
         advancedPane.setHidden(true);
     }
 
@@ -348,8 +366,7 @@ public class NewJobViewImpl implements NewJobPresenter.NewJobView,
                                                                                 myParametersGrid,
                                                                                 paramKeyColumn));
 
-        Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>(
-                new EditTextCell()) {
+        Column<RequestParameterSummary, String> paramValueColumn = new Column<RequestParameterSummary, String>(new EditTextCell()) {
             @Override
             public String getValue(RequestParameterSummary rowObject) {
                 return rowObject.getValue();
@@ -427,10 +444,10 @@ public class NewJobViewImpl implements NewJobPresenter.NewJobView,
     @EventHandler("start")
     public void onCreateClick(final @ForEvent("click") MouseEvent event) {
         presenter.createJob(jobNameInput.getValue(),
-                                selectedDate,
-                                jobTypeInput.getValue(),
-                                jobRetriesInput.getValue(),
-                                dataProvider.getList());
+                            selectedDate,
+                            jobTypeInput.getValue(),
+                            jobRetriesInput.getValue(),
+                            dataProvider.getList());
     }
 
     @EventHandler("cancel")
