@@ -78,7 +78,7 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
         return selectedServerTemplate;
     }
 
-    protected void setSelectedServerTemplate(final String selectedServerTemplate) {
+    public void setSelectedServerTemplate(final String selectedServerTemplate) {
         final String newServerTemplate = Optional.ofNullable(selectedServerTemplate).orElse("").trim();
         if (this.selectedServerTemplate.equals(newServerTemplate) == false) {
             this.selectedServerTemplate = newServerTemplate;
