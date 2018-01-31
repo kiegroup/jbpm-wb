@@ -587,6 +587,7 @@
                 <include>repositories/</include>
                 <include>.errai/</include>
                 <include>.niogit/**</include>
+                <include>.niogit-caseapp/**</include>
                 <include>.index/**</include>
               </includes>
             </fileset>
