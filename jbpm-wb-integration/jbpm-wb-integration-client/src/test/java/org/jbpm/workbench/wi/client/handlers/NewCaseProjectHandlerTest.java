@@ -17,7 +17,7 @@
 package org.jbpm.workbench.wi.client.handlers;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.guvnor.common.services.project.model.Project;
+import org.guvnor.common.services.project.model.WorkspaceProject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.wi.casemgmt.service.CaseProjectService;
 import org.junit.Before;
@@ -55,8 +55,8 @@ public class NewCaseProjectHandlerTest {
 
     @Test
     public void configureCaseProjectCallbackTest() {
-        final Project project = mock(Project.class);
-        final Callback<Project> creationSuccessCallback = mock(Callback.class);
+        final WorkspaceProject project = mock(WorkspaceProject.class);
+        final Callback<WorkspaceProject> creationSuccessCallback = mock(Callback.class);
 
         newCaseProjectHandler.setCreationSuccessCallback(creationSuccessCallback);
         newCaseProjectHandler.configureCaseProjectCallback.callback(project);

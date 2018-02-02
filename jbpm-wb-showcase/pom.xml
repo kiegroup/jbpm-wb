@@ -695,20 +695,6 @@
 
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-asset-mgmt-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-asset-mgmt-client</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-asset-mgmt-backend</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.uberfire</groupId>
       <artifactId>uberfire-services-api</artifactId>
     </dependency>
     <dependency>
@@ -1593,8 +1579,6 @@
             <compileSourcesArtifact>org.kie.server:kie-server-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.server:kie-server-controller-api</compileSourcesArtifact>
             <!-- Guvnor -->
-            <compileSourcesArtifact>org.uberfire:uberfire-asset-mgmt-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.uberfire:uberfire-asset-mgmt-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-structure-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-structure-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-m2repo-editor-api</compileSourcesArtifact>
@@ -1673,7 +1657,7 @@
             <compileSourcesArtifact>org.kie.soup:kie-soup-commons</compileSourcesArtifact>
 
             <!-- UberFire -->
-            <compileSourcesArtifact>org.kie.soup:kie-soup-maven-support</compileSourcesArtifact>            
+            <compileSourcesArtifact>org.kie.soup:kie-soup-maven-support</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-nio2-model</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-api</compileSourcesArtifact>
