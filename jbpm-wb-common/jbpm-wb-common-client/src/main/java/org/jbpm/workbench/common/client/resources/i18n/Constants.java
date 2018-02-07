@@ -96,4 +96,6 @@ public interface Constants extends Messages {
     String LastDays(Integer days);
 
     String Custom();
+
+    String Home();
 }

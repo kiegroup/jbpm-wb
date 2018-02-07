@@ -61,12 +61,29 @@ import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<ExecutionErrorSummary, ExecutionErrorListPresenter.ExecutionErrorListView> {
 
     private final Constants constants = Constants.INSTANCE;
+
     @Inject
     private ErrorPopupPresenter errorPopup;
+
     @Inject
     private Caller<ExecutorService> executorService;
+
     @Inject
     private Event<ExecutionErrorSelectedEvent> executionErrorSelectedEvent;
+
+    public void createListBreadcrumb() {
+        setupListBreadcrumb(placeManager,
+                            PerspectiveIds.EXECUTION_ERRORS,
+                            Constants.INSTANCE.ExecutionErrors());
+    }
+
+    public void setupDetailBreadcrumb(String detailLabel) {
+        setupDetailBreadcrumb(placeManager,
+                              PerspectiveIds.EXECUTION_ERRORS,
+                              Constants.INSTANCE.ExecutionErrors(),
+                              detailLabel,
+                              PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN);
+    }
 
     @Override
     public void getData(final Range visibleRange) {
@@ -148,8 +165,8 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                                      COLUMN_ERROR_MSG,
                                      index),
                 getColumnIntValue(dataSet,
-                                      COLUMN_ERROR_ACK,
-                                      index).shortValue(),
+                                  COLUMN_ERROR_ACK,
+                                  index).shortValue(),
                 getColumnStringValue(dataSet,
                                      COLUMN_ERROR_ACK_BY,
                                      index),
@@ -161,7 +178,6 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                                    index)
         );
     }
-
 
     public void acknowledgeExecutionError(final String executionErrorId,
                                           final String deploymentId) {
@@ -194,7 +210,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     public Predicate<ExecutionErrorSummary> getViewTaskActionCondition() {
         return pis -> ((isUserAuthorizedForPerspective(PerspectiveIds.TASKS_ADMIN) ||
                 isUserAuthorizedForPerspective(PerspectiveIds.TASKS)) &&
-                pis.getActivityId() != null  && ExecutionErrorType.TASK.getType().equals(pis.getType().getType()));
+                pis.getActivityId() != null && ExecutionErrorType.TASK.getType().equals(pis.getType().getType()));
     }
 
     public void goToProcessInstance(final ExecutionErrorSummary errorSummary) {
@@ -246,10 +262,12 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN));
         if (status == PlaceStatus.CLOSE) {
             placeManager.goTo(PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN);
+            setupDetailBreadcrumb(Constants.INSTANCE.ExecutionError(summary.getErrorId()));
             executionErrorSelectedEvent.fire(new ExecutionErrorSelectedEvent(getSelectedServerTemplate(),
                                                                              summary.getDeploymentId(),
                                                                              summary.getErrorId()));
         } else if (status == PlaceStatus.OPEN && !close) {
+            setupDetailBreadcrumb(Constants.INSTANCE.ExecutionError(summary.getErrorId()));
             executionErrorSelectedEvent.fire(new ExecutionErrorSelectedEvent(getSelectedServerTemplate(),
                                                                              summary.getDeploymentId(),
                                                                              summary.getErrorId()));
@@ -284,9 +302,9 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         view.addTextFilter(constants.Id(),
                            constants.FilterByErrorId(),
                            v -> addAdvancedSearchFilter(likeTo(COLUMN_ERROR_ID,
-                                                                 v)),
+                                                               v)),
                            v -> removeAdvancedSearchFilter(likeTo(COLUMN_ERROR_ID,
-                                                                    v))
+                                                                  v))
         );
 
         final Map<String, String> states = new HashMap<>();
@@ -337,7 +355,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     @Override
     public void setupActiveSearchFilters() {
         boolean isDefaultFilters = true;
-        
+
         final Optional<String> processInstanceSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
         if (processInstanceSearch.isPresent()) {
             final String processInstanceId = processInstanceSearch.get();
@@ -352,15 +370,15 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                                              processInstanceId));
             isDefaultFilters = false;
         }
-        
+
         final Optional<String> isErrorAckSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_IS_ERROR_ACK);
         if (isErrorAckSearch.isPresent()) {
             final boolean isErrorAck = isErrorAckSearch.get().equalsIgnoreCase(Boolean.toString(true));
             String errorAckValue = (isErrorAck ? "1" : "0");
             String valueLabel = (isErrorAck ?
-                        org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Yes()
+                    org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Yes()
                     :
-                        org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No());
+                    org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No());
 
             view.addActiveFilter(
                     constants.Acknowledged(),
@@ -486,7 +504,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
 
     }
 
-    public void setExecutionErrorSelectedEvent(Event<ExecutionErrorSelectedEvent> executionErrorSelectedEvent){
+    public void setExecutionErrorSelectedEvent(Event<ExecutionErrorSelectedEvent> executionErrorSelectedEvent) {
         this.executionErrorSelectedEvent = executionErrorSelectedEvent;
     }
 }

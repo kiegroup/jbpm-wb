@@ -40,6 +40,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.PlaceRequest;
@@ -52,6 +53,9 @@ public class ProcessDefinitionListPresenterTest {
 
     @Mock
     protected PlaceManager placeManager;
+
+    @Mock
+    private UberfireBreadcrumbs breadcrumbs;
 
     @Mock
     protected EventSourceMock<ProcessDefSelectionEvent> processDefSelectionEvent;

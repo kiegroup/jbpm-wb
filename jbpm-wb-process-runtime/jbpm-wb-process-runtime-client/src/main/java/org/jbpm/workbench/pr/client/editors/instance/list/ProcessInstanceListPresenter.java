@@ -103,6 +103,21 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
 
     @Override
+    public void createListBreadcrumb() {
+        setupListBreadcrumb(placeManager,
+                            PROCESS_INSTANCES,
+                            Constants.INSTANCE.Process_Instances());
+    }
+
+    public void setupDetailBreadcrumb(String detailLabel) {
+        setupDetailBreadcrumb(placeManager,
+                              PROCESS_INSTANCES,
+                              Constants.INSTANCE.Process_Instances(),
+                              detailLabel,
+                              PROCESS_INSTANCE_DETAILS_SCREEN);
+    }
+
+    @Override
     public void getData(final Range visibleRange) {
         try {
             if (!isAddingDefaultFilters()) {
@@ -445,6 +460,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
         if (status == PlaceStatus.CLOSE) {
             placeManager.goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
+            setupDetailBreadcrumb(Constants.INSTANCE.Process_Instance(summary.getProcessInstanceId()));
             processInstanceSelected.fire(new ProcessInstanceSelectionEvent(summary.getDeploymentId(),
                                                                            summary.getProcessInstanceId(),
                                                                            summary.getProcessId(),
@@ -452,6 +468,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                                                            summary.getState(),
                                                                            getSelectedServerTemplate()));
         } else if (status == PlaceStatus.OPEN && !close) {
+            setupDetailBreadcrumb(Constants.INSTANCE.Process_Instance(summary.getProcessInstanceId()));
             processInstanceSelected.fire(new ProcessInstanceSelectionEvent(summary.getDeploymentId(),
                                                                            summary.getProcessInstanceId(),
                                                                            summary.getProcessId(),

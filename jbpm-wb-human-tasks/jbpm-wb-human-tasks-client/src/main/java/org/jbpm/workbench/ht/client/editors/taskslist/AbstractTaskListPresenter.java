@@ -86,6 +86,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     @Inject
     private Event<TaskSelectionEvent> taskSelected;
 
+    public abstract void setupDetailBreadcrumb(String detailLabel);
+
     @Override
     public void getData(final Range visibleRange) {
         try {
@@ -377,9 +379,11 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         }
         if (status == PlaceStatus.CLOSE) {
             placeManager.goTo(PerspectiveIds.TASK_DETAILS_SCREEN);
+            setupDetailBreadcrumb(constants.Task_(summary.getId()));
             fireTaskSelectionEvent(summary,
                                    logOnly);
         } else if (status == PlaceStatus.OPEN && !close) {
+            setupDetailBreadcrumb(constants.Task_(summary.getId()));
             fireTaskSelectionEvent(summary,
                                    logOnly);
         } else if (status == PlaceStatus.OPEN && close) {

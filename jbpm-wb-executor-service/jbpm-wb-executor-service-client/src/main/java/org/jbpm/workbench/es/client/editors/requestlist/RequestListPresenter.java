@@ -122,6 +122,21 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         return constants.Jobs();
     }
 
+    @Override
+    public void createListBreadcrumb() {
+        setupListBreadcrumb(placeManager,
+                            PerspectiveIds.JOBS,
+                            Constants.INSTANCE.Jobs());
+    }
+
+    public void setupDetailBreadcrumb(String detailLabel) {
+        setupDetailBreadcrumb(placeManager,
+                              PerspectiveIds.JOBS,
+                              Constants.INSTANCE.Jobs(),
+                              detailLabel,
+                              PerspectiveIds.JOB_DETAILS_SCREEN);
+    }
+
     public Command getNewJobCommand() {
         return newJobCommand;
     }
@@ -246,15 +261,15 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     @WorkbenchMenu
     public Menus getMenus() {
         newJobCommand = new Command() {
-                            @Override
-                            public void execute() {
-                                final String selectedServerTemplate = getSelectedServerTemplate();
-                                if (selectedServerTemplate == null || selectedServerTemplate.trim().isEmpty()) {
-                                    view.displayNotification(constants.SelectServerTemplate());
-                                } else {
-                                    newJobPresenter.openNewJobDialog(selectedServerTemplate);
-                                }
-                            }
+            @Override
+            public void execute() {
+                final String selectedServerTemplate = getSelectedServerTemplate();
+                if (selectedServerTemplate == null || selectedServerTemplate.trim().isEmpty()) {
+                    view.displayNotification(constants.SelectServerTemplate());
+                } else {
+                    newJobPresenter.openNewJobDialog(selectedServerTemplate);
+                }
+            }
         };
         return MenuFactory
                 .newTopLevelMenu(constants.New_Job())
@@ -275,10 +290,12 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
             PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(PerspectiveIds.JOB_DETAILS_SCREEN));
             if (status == PlaceStatus.CLOSE) {
                 placeManager.goTo(PerspectiveIds.JOB_DETAILS_SCREEN);
+                setupDetailBreadcrumb(Constants.INSTANCE.Job_(job.getId()));
                 jobSelectedEvent.fire(new JobSelectedEvent(getSelectedServerTemplate(),
                                                            job.getDeploymentId(),
                                                            job.getJobId()));
             } else if (status == PlaceStatus.OPEN && !close) {
+                setupDetailBreadcrumb(Constants.INSTANCE.Job_(job.getId()));
                 jobSelectedEvent.fire(new JobSelectedEvent(getSelectedServerTemplate(),
                                                            job.getDeploymentId(),
                                                            job.getJobId()));

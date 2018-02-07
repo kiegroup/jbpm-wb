@@ -18,12 +18,17 @@ package org.jbpm.workbench.common.client.list;
 import java.util.Optional;
 
 import org.jboss.errai.security.shared.api.identity.User;
+import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.events.ServerTemplateSelected;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.events.ClosePlaceEvent;
+import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.lifecycle.OnFocus;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
+import org.uberfire.mvp.Commands;
 import org.uberfire.mvp.PlaceRequest;
 
 import javax.enterprise.event.Observes;
@@ -36,8 +41,13 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
 
     protected User identity;
 
+    private String detailScreenId;
+
     @Inject
     protected PlaceManager placeManager;
+
+    @Inject
+    UberfireBreadcrumbs breadcrumbs;
 
     protected PlaceRequest place;
 
@@ -47,7 +57,14 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
 
     @OnOpen
     public void onOpen() {
+        createListBreadcrumb();
         setSelectedServerTemplate(serverTemplateSelectorMenuBuilder.getSelectedServerTemplate());
+    }
+
+    public void onDetailScreenClosed(@Observes ClosePlaceEvent closed) {
+        if (detailScreenId.equals(closed.getPlace().getIdentifier())) {
+            createListBreadcrumb();
+        }
     }
 
     @OnFocus
@@ -84,5 +101,47 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
             this.selectedServerTemplate = newServerTemplate;
             refreshGrid();
         }
+    }
+
+    public abstract void createListBreadcrumb();
+
+    public void setupListBreadcrumb(PlaceManager placeManager,
+                                    String perspectiveId,
+                                    String listLabel) {
+        breadcrumbs.clearBreadcrumbs(perspectiveId);
+
+        breadcrumbs.addBreadCrumb(perspectiveId,
+                                  Constants.INSTANCE.Home(),
+                                  () -> placeManager.goTo(PerspectiveIds.HOME));
+        breadcrumbs.addBreadCrumb(perspectiveId,
+                                  listLabel,
+                                  Commands.DO_NOTHING);
+    }
+
+    public void setupDetailBreadcrumb(PlaceManager placeManager,
+                                      String perspectiveId,
+                                      String listLabel,
+                                      String detailLabel,
+                                      String detailScreenId) {
+        breadcrumbs.clearBreadcrumbs(perspectiveId);
+        breadcrumbs.addBreadCrumb(perspectiveId,
+                                  Constants.INSTANCE.Home(),
+                                  () -> placeManager.goTo(PerspectiveIds.HOME));
+        breadcrumbs.addBreadCrumb(perspectiveId,
+                                  listLabel,
+                                  () -> closeDetails(detailScreenId));
+        breadcrumbs.addBreadCrumb(perspectiveId,
+                                  detailLabel,
+                                  Commands.DO_NOTHING);
+        this.detailScreenId = detailScreenId;
+    }
+
+    private void closeDetails(String detailScreenId) {
+        placeManager.closePlace(detailScreenId);
+        createListBreadcrumb();
+    }
+
+    public void setUberfireBreadcrumbs(UberfireBreadcrumbs breadcrumbs) {
+        this.breadcrumbs = breadcrumbs;
     }
 }

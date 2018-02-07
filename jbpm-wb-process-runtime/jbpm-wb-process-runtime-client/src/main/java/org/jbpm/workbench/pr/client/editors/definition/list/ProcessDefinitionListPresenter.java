@@ -93,6 +93,21 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
         return view;
     }
 
+    @Override
+    public void createListBreadcrumb() {
+        setupListBreadcrumb(placeManager,
+                            PerspectiveIds.PROCESS_DEFINITIONS,
+                            Constants.INSTANCE.Process_Definitions());
+    }
+
+    public void setupDetailBreadcrumb(String detailLabel) {
+        setupDetailBreadcrumb(placeManager,
+                              PerspectiveIds.PROCESS_DEFINITIONS,
+                              Constants.INSTANCE.Process_Definitions(),
+                              detailLabel,
+                              PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN);
+    }
+
     public void openGenericForm(final String processDefId,
                                 final String deploymentId,
                                 final String processDefName) {
@@ -198,8 +213,10 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
         if (status == PlaceStatus.CLOSE) {
             placeManager.goTo(placeIdentifier);
+            setupDetailBreadcrumb(Constants.INSTANCE.Process_Definition(processSummary.getDeploymentId()));
             fireProcessDefSelectionEvent(processSummary);
         } else if (status == PlaceStatus.OPEN && !close) {
+            setupDetailBreadcrumb(Constants.INSTANCE.Process_Definition(processSummary.getDeploymentId()));
             fireProcessDefSelectionEvent(processSummary);
         } else if (status == PlaceStatus.OPEN && close) {
             placeManager.closePlace(placeIdentifier);
@@ -222,6 +239,11 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
             placeManager.closePlace(placeIdentifier);
         }
         placeManager.goTo(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
+        setupDetailBreadcrumb(placeManager,
+                              PerspectiveIds.PROCESS_DEFINITIONS,
+                              Constants.INSTANCE.Process_Definitions(),
+                              Constants.INSTANCE.Process_Instance(newProcessInstance.getNewProcessInstanceId()),
+                              PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
         processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getDeploymentId(),
                                                                        newProcessInstance.getNewProcessInstanceId(),
                                                                        newProcessInstance.getNewProcessDefId(),

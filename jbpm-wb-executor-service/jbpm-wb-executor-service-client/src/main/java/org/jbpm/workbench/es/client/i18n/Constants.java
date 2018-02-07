@@ -181,6 +181,8 @@ public interface Constants extends Messages {
 
     String ExecutionErrors();
 
+    String ExecutionError(String errorId);
+
     String New_ErrorList();
 
     String Ack();
@@ -226,6 +228,8 @@ public interface Constants extends Messages {
     String DB();
 
     String Job();
+
+    String Job_(Long id);
 
     String Unknown();
 

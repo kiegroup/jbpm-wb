@@ -58,6 +58,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -110,6 +111,9 @@ public abstract class AbstractTaskListPresenterTest {
 
     @Mock
     private PlaceManager placeManager;
+
+    @Mock
+    private UberfireBreadcrumbs breadcrumbs;
 
     @Spy
     private FilterSettings filterSettings;

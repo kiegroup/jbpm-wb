@@ -89,6 +89,8 @@ public interface Constants extends Messages {
 
     String Process_Instances();
 
+    String Process_Instance(Long processInstanceId);
+
     String History();
 
     String Edit();
@@ -128,6 +130,8 @@ public interface Constants extends Messages {
     String No_History_For_This_Variable();
 
     String Process_Definitions();
+
+    String Process_Definition(String title);
 
     String Process_Instance_Details();
 

@@ -45,6 +45,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.PlaceRequest;
@@ -84,6 +85,9 @@ public class ExecutionErrorListPresenterTest {
 
     @Mock
     private PlaceManager placeManager;
+
+    @Mock
+    private UberfireBreadcrumbs breadcrumbs;
 
     @Mock
     private AuthorizationManager authorizationManager;
