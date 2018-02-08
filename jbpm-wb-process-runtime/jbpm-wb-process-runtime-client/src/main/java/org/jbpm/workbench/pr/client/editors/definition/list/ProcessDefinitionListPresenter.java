@@ -213,10 +213,10 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
         if (status == PlaceStatus.CLOSE) {
             placeManager.goTo(placeIdentifier);
-            setupDetailBreadcrumb(Constants.INSTANCE.ProcessDefinitionBreadcrumb(processSummary.getDeploymentId()));
+            setupDetailBreadcrumb(Constants.INSTANCE.ProcessDefinitionBreadcrumb(processSummary.getName()));
             fireProcessDefSelectionEvent(processSummary);
         } else if (status == PlaceStatus.OPEN && !close) {
-            setupDetailBreadcrumb(Constants.INSTANCE.ProcessDefinitionBreadcrumb(processSummary.getDeploymentId()));
+            setupDetailBreadcrumb(Constants.INSTANCE.ProcessDefinitionBreadcrumb(processSummary.getName()));
             fireProcessDefSelectionEvent(processSummary);
         } else if (status == PlaceStatus.OPEN && close) {
             placeManager.closePlace(placeIdentifier);
