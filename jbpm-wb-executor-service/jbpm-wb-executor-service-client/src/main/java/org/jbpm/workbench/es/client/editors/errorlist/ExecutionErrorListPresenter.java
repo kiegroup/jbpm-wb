@@ -262,12 +262,12 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN));
         if (status == PlaceStatus.CLOSE) {
             placeManager.goTo(PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN);
-            setupDetailBreadcrumb(Constants.INSTANCE.ExecutionError(summary.getErrorId()));
+            setupDetailBreadcrumb(Constants.INSTANCE.ExecutionErrorBreadcrumb(summary.getErrorId()));
             executionErrorSelectedEvent.fire(new ExecutionErrorSelectedEvent(getSelectedServerTemplate(),
                                                                              summary.getDeploymentId(),
                                                                              summary.getErrorId()));
         } else if (status == PlaceStatus.OPEN && !close) {
-            setupDetailBreadcrumb(Constants.INSTANCE.ExecutionError(summary.getErrorId()));
+            setupDetailBreadcrumb(Constants.INSTANCE.ExecutionErrorBreadcrumb(summary.getErrorId()));
             executionErrorSelectedEvent.fire(new ExecutionErrorSelectedEvent(getSelectedServerTemplate(),
                                                                              summary.getDeploymentId(),
                                                                              summary.getErrorId()));

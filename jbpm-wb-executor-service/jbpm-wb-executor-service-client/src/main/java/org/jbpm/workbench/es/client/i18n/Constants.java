@@ -181,7 +181,7 @@ public interface Constants extends Messages {
 
     String ExecutionErrors();
 
-    String ExecutionError(String errorId);
+    String ExecutionErrorBreadcrumb(String errorId);
 
     String New_ErrorList();
 
@@ -229,7 +229,7 @@ public interface Constants extends Messages {
 
     String Job();
 
-    String Job_(Long id);
+    String JobBreadcrumb(Long id);
 
     String Unknown();
 

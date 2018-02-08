@@ -290,12 +290,12 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
             PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(PerspectiveIds.JOB_DETAILS_SCREEN));
             if (status == PlaceStatus.CLOSE) {
                 placeManager.goTo(PerspectiveIds.JOB_DETAILS_SCREEN);
-                setupDetailBreadcrumb(Constants.INSTANCE.Job_(job.getId()));
+                setupDetailBreadcrumb(Constants.INSTANCE.JobBreadcrumb(job.getId()));
                 jobSelectedEvent.fire(new JobSelectedEvent(getSelectedServerTemplate(),
                                                            job.getDeploymentId(),
                                                            job.getJobId()));
             } else if (status == PlaceStatus.OPEN && !close) {
-                setupDetailBreadcrumb(Constants.INSTANCE.Job_(job.getId()));
+                setupDetailBreadcrumb(Constants.INSTANCE.JobBreadcrumb(job.getId()));
                 jobSelectedEvent.fire(new JobSelectedEvent(getSelectedServerTemplate(),
                                                            job.getDeploymentId(),
                                                            job.getJobId()));

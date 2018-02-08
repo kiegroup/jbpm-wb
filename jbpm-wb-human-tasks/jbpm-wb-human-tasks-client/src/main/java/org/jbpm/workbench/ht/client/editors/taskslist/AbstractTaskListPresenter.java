@@ -379,11 +379,11 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         }
         if (status == PlaceStatus.CLOSE) {
             placeManager.goTo(PerspectiveIds.TASK_DETAILS_SCREEN);
-            setupDetailBreadcrumb(constants.Task_(summary.getId()));
+            setupDetailBreadcrumb(constants.TaskBreadcrumb(summary.getId()));
             fireTaskSelectionEvent(summary,
                                    logOnly);
         } else if (status == PlaceStatus.OPEN && !close) {
-            setupDetailBreadcrumb(constants.Task_(summary.getId()));
+            setupDetailBreadcrumb(constants.TaskBreadcrumb(summary.getId()));
             fireTaskSelectionEvent(summary,
                                    logOnly);
         } else if (status == PlaceStatus.OPEN && close) {
