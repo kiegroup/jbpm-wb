@@ -213,10 +213,10 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
         if (status == PlaceStatus.CLOSE) {
             placeManager.goTo(placeIdentifier);
-            setupDetailBreadcrumb(Constants.INSTANCE.Process_Definition(processSummary.getDeploymentId()));
+            setupDetailBreadcrumb(Constants.INSTANCE.ProcessDefinitionBreadcrumb(processSummary.getDeploymentId()));
             fireProcessDefSelectionEvent(processSummary);
         } else if (status == PlaceStatus.OPEN && !close) {
-            setupDetailBreadcrumb(Constants.INSTANCE.Process_Definition(processSummary.getDeploymentId()));
+            setupDetailBreadcrumb(Constants.INSTANCE.ProcessDefinitionBreadcrumb(processSummary.getDeploymentId()));
             fireProcessDefSelectionEvent(processSummary);
         } else if (status == PlaceStatus.OPEN && close) {
             placeManager.closePlace(placeIdentifier);
@@ -242,7 +242,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
         setupDetailBreadcrumb(placeManager,
                               PerspectiveIds.PROCESS_DEFINITIONS,
                               Constants.INSTANCE.Process_Definitions(),
-                              Constants.INSTANCE.Process_Instance(newProcessInstance.getNewProcessInstanceId()),
+                              Constants.INSTANCE.ProcessInstanceBreadcrumb(newProcessInstance.getNewProcessInstanceId()),
                               PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
         processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getDeploymentId(),
                                                                        newProcessInstance.getNewProcessInstanceId(),

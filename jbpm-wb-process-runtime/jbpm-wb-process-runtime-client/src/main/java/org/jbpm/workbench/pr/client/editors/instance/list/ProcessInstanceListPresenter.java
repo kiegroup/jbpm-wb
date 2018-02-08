@@ -460,7 +460,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
         if (status == PlaceStatus.CLOSE) {
             placeManager.goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
-            setupDetailBreadcrumb(Constants.INSTANCE.Process_Instance(summary.getProcessInstanceId()));
+            setupDetailBreadcrumb(Constants.INSTANCE.ProcessInstanceBreadcrumb(summary.getProcessInstanceId()));
             processInstanceSelected.fire(new ProcessInstanceSelectionEvent(summary.getDeploymentId(),
                                                                            summary.getProcessInstanceId(),
                                                                            summary.getProcessId(),
@@ -468,7 +468,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                                                            summary.getState(),
                                                                            getSelectedServerTemplate()));
         } else if (status == PlaceStatus.OPEN && !close) {
-            setupDetailBreadcrumb(Constants.INSTANCE.Process_Instance(summary.getProcessInstanceId()));
+            setupDetailBreadcrumb(Constants.INSTANCE.ProcessInstanceBreadcrumb(summary.getProcessInstanceId()));
             processInstanceSelected.fire(new ProcessInstanceSelectionEvent(summary.getDeploymentId(),
                                                                            summary.getProcessInstanceId(),
                                                                            summary.getProcessId(),
