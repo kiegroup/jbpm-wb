@@ -37,4 +37,6 @@ public interface PerspectiveIds extends org.kie.workbench.common.workbench.clien
     String TASK_LIST_SCREEN = "TaskListScreen";
     String TASK_DETAILS_SCREEN = "TaskDetailsScreen";
 
+    int DETAILS_SCREEN_PREFERRED_WIDTH = 655;
+
 }

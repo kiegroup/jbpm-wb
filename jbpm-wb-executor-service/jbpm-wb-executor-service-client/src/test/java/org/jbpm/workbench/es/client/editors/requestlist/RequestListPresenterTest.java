@@ -48,8 +48,6 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.menu.MenuItem;
-import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
 import static org.jbpm.workbench.es.client.editors.util.JobUtils.createRequestSummary;
@@ -366,8 +364,6 @@ public class RequestListPresenterTest {
     public void testOpenNewJobDialog_serverTemplateNull() {
         presenter.setSelectedServerTemplate(null);
 
-        presenter.getMenus();
-
         assertNotNull(presenter.getNewJobCommand());
 
         presenter.getNewJobCommand().execute();
@@ -380,8 +376,6 @@ public class RequestListPresenterTest {
     @Test
     public void testOpenNewJobDialog_serverTemplateEmpty() {
         assertTrue(presenter.getSelectedServerTemplate().isEmpty());
-
-        presenter.getMenus();
 
         assertNotNull(presenter.getNewJobCommand());
 
@@ -396,13 +390,6 @@ public class RequestListPresenterTest {
     public void testOpenNewJobDialog_serverTemplateSet() {
         final String serverTemplateTest = "serverTemplateTest";
         presenter.setSelectedServerTemplate(serverTemplateTest);
-
-        Menus menus = presenter.getMenus();
-
-        MenuItem newJobItem = menus.getItems().get(0);
-        assertEquals("New_Job",
-                     newJobItem.getCaption());
-        assertTrue(newJobItem.isEnabled());
 
         assertNotNull(presenter.getNewJobCommand());
 

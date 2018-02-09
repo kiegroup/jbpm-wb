@@ -51,6 +51,10 @@
       <artifactId>gwtbootstrap3-extras</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.google.elemental2</groupId>
+      <artifactId>elemental2-dom</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>

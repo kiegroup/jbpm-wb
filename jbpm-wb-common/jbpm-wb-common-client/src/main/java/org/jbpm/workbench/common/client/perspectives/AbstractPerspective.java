@@ -19,7 +19,7 @@ package org.jbpm.workbench.common.client.perspectives;
 import javax.annotation.PostConstruct;
 
 import org.uberfire.client.annotations.Perspective;
-import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
+import org.uberfire.client.workbench.panels.impl.MultiScreenWorkbenchPanelPresenter;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.PerspectiveDefinition;
@@ -37,7 +37,7 @@ public abstract class AbstractPerspective {
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(MultiListWorkbenchPanelPresenter.class.getName());
+        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(MultiScreenWorkbenchPanelPresenter.class.getName());
         p.setName(getPerspectiveId());
         p.getRoot().addPart(new PartDefinitionImpl(placeRequest));
         return p;

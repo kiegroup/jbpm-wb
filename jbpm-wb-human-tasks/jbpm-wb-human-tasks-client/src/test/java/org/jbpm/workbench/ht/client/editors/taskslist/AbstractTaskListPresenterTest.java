@@ -61,7 +61,6 @@ import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
@@ -443,13 +442,6 @@ public abstract class AbstractTaskListPresenterTest {
         ColumnFilter userOwnerFilter = columnFilters.get(1);
         assertEquals(userOwnerFilter.getColumnId(),
                      COLUMN_ACTUAL_OWNER);
-    }
-
-    @Test
-    public void testMenus() {
-        final Menus menus = getPresenter().getMenus();
-        assertEquals(3,
-                     menus.getItems().size());
     }
 
     @Test

@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -60,34 +59,6 @@ public class AbstractListPresenterTest {
                                                           1));
         testListPresenter.initDataProvider();
         testListPresenter.getDataProvider().addDataDisplay(next);
-    }
-
-    @Test
-    public void autoRefreshDisabledByDefaultTest() {
-        testListPresenter.setRefreshTimer(null);
-        testListPresenter.updateRefreshTimer();
-
-        assertNotNull(testListPresenter.getRefreshTimer());
-        assertFalse(testListPresenter.isAutoRefreshEnabled());
-
-        testListPresenter.setRefreshTimer(timer);
-        testListPresenter.setAutoRefreshSeconds(60);
-        testListPresenter.updateRefreshTimer();
-
-        assertFalse(testListPresenter.isAutoRefreshEnabled());
-        verify(timer).cancel();
-    }
-
-    @Test
-    public void autoRefreshEnabledScheduleTimerTest() {
-        testListPresenter.setAutoRefreshEnabled(true);
-        testListPresenter.setAutoRefreshSeconds(60);
-        testListPresenter.setRefreshTimer(timer);
-        testListPresenter.updateRefreshTimer();
-
-        assertNotNull(testListPresenter.getRefreshTimer());
-        verify(timer).cancel();
-        verify(timer).schedule(60000);
     }
 
     @Test

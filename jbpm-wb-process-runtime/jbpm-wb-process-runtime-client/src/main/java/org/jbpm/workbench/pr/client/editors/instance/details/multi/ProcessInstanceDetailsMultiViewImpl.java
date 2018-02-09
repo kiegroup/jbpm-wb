@@ -18,26 +18,16 @@ package org.jbpm.workbench.pr.client.editors.instance.details.multi;
 import javax.enterprise.context.Dependent;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.shared.event.TabShowEvent;
 import org.gwtbootstrap3.client.shared.event.TabShowHandler;
-import org.gwtbootstrap3.client.ui.AnchorListItem;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.ButtonGroup;
-import org.gwtbootstrap3.client.ui.DropDownMenu;
 import org.gwtbootstrap3.client.ui.NavTabs;
 import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.gwtbootstrap3.client.ui.TabPane;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.Styles;
-import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 
 @Dependent
@@ -144,43 +134,6 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
             tabContent.add(logsPane);
             navTabs.add(logsTab);
         }
-    }
-
-    @Override
-    public IsWidget getOptionsButton() {
-        return new ButtonGroup() {{
-            add(new Button(constants.Options()) {{
-                setSize(ButtonSize.SMALL);
-                setDataToggle(Toggle.DROPDOWN);
-            }});
-            add(new DropDownMenu() {{
-                addStyleName(Styles.DROPDOWN_MENU + "-right");
-                add(new AnchorListItem(constants.Signal()) {{
-                    addClickHandler(new ClickHandler() {
-                        @Override
-                        public void onClick(final ClickEvent clickEvent) {
-                            presenter.signalProcessInstance();
-                        }
-                    });
-                }});
-                add(new AnchorListItem(constants.Abort()) {{
-                    addClickHandler(new ClickHandler() {
-                        @Override
-                        public void onClick(final ClickEvent clickEvent) {
-                            presenter.abortProcessInstance();
-                        }
-                    });
-                }});
-                add(new AnchorListItem(constants.View_Process_Model()) {{
-                    addClickHandler(new ClickHandler() {
-                        @Override
-                        public void onClick(final ClickEvent clickEvent) {
-                            presenter.goToProcessInstanceModelPopup();
-                        }
-                    });
-                }});
-            }});
-        }};
     }
 
     @Override
