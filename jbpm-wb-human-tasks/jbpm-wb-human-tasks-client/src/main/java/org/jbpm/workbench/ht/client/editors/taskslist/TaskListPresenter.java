@@ -55,16 +55,19 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
     }
 
     @Override
+    public String getPerspectiveId() {
+        return PerspectiveIds.TASKS;
+    }
+
+    @Override
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            PerspectiveIds.TASKS,
                             constants.Tasks_List());
     }
 
     @Override
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              PerspectiveIds.TASKS,
                               constants.Tasks_List(),
                               detailLabel,
                               PerspectiveIds.TASK_DETAILS_SCREEN);

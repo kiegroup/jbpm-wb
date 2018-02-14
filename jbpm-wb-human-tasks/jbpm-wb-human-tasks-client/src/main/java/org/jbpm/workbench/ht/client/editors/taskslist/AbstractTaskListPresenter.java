@@ -362,7 +362,6 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     public Menus getMenus() { //To be used by subclass methods annotated with @WorkbenchMenu
         return MenuFactory
-                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder).endMenu()
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
                 .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()
                 .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()

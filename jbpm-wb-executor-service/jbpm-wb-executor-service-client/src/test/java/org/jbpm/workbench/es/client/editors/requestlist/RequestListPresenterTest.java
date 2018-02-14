@@ -92,6 +92,9 @@ public class RequestListPresenterTest {
     private UberfireBreadcrumbs breadcrumbs;
 
     @Mock
+    ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
+
+    @Mock
     private NewJobPresenter newJobPresenterMock;
 
     @Spy
@@ -111,6 +114,8 @@ public class RequestListPresenterTest {
         when(extendedPagedTable.getColumnSortList()).thenReturn(null);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
         when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
+        when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
+
 
         presenter = new RequestListPresenter(viewMock,
                                              callerMockExecutorService,
@@ -119,9 +124,8 @@ public class RequestListPresenterTest {
                                              jobSelectedEventMock,
                                              placeManager);
         presenter.setUberfireBreadcrumbs(breadcrumbs);
-
+        presenter.setServerTemplateSelectorMenuBuilder(serverTemplateSelectorMenuBuilder);
         presenter.setNewJobPresenter(newJobPresenterMock);
-        presenter.setServerTemplateSelectorMenuBuilder(new ServerTemplateSelectorMenuBuilder());
     }
 
     @Test

@@ -52,16 +52,19 @@ public class TaskAdminListPresenter extends AbstractTaskListPresenter<TaskAdminL
     }
 
     @Override
+    public String getPerspectiveId() {
+        return PerspectiveIds.TASKS_ADMIN;
+    }
+
+    @Override
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            PerspectiveIds.TASKS_ADMIN,
                             constants.Tasks_Admin());
     }
 
     @Override
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              PerspectiveIds.TASKS_ADMIN,
                               constants.Tasks_Admin(),
                               detailLabel,
                               PerspectiveIds.TASK_DETAILS_SCREEN);

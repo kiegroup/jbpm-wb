@@ -33,6 +33,7 @@ import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsJSONMarshaller;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
@@ -51,6 +52,7 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.ResourceRef;
@@ -112,6 +114,12 @@ public class ProcessInstanceListPresenterTest {
     @Mock
     private User identity;
 
+    @Mock
+    ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
+
+    @Mock
+    UberfireBreadcrumbs breadcrumbs;
+
     private ArrayList<ProcessInstanceSummary> processInstanceSummaries;
 
     @InjectMocks
@@ -170,6 +178,7 @@ public class ProcessInstanceListPresenterTest {
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
         when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
         when(filterSettings.getKey()).thenReturn("key");
+        when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
 
         doAnswer(new Answer() {
 

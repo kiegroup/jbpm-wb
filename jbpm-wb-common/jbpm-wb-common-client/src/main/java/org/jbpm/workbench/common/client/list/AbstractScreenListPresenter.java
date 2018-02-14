@@ -19,9 +19,9 @@ import java.util.Optional;
 
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.events.ServerTemplateSelected;
-import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.events.ClosePlaceEvent;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
@@ -62,7 +62,9 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
     }
 
     public void onDetailScreenClosed(@Observes ClosePlaceEvent closed) {
-        if (detailScreenId.equals(closed.getPlace().getIdentifier())) {
+        if (closed.getPlace() != null
+                && detailScreenId != null
+                && detailScreenId.equals(closed.getPlace().getIdentifier())) {
             createListBreadcrumb();
         }
     }
@@ -75,7 +77,11 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
     @OnStartup
     public void onStartup(final PlaceRequest place) {
         this.place = place;
+        breadcrumbs.addToolbar(getPerspectiveId(),
+                               serverTemplateSelectorMenuBuilder.getView().getElement());
     }
+
+    public abstract String getPerspectiveId();
 
     @Inject
     public void setIdentity(final User identity) {
@@ -97,7 +103,7 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
 
     public void setSelectedServerTemplate(final String selectedServerTemplate) {
         final String newServerTemplate = Optional.ofNullable(selectedServerTemplate).orElse("").trim();
-        if (this.selectedServerTemplate.equals(newServerTemplate) == false) {
+        if (!this.selectedServerTemplate.equals(newServerTemplate)) {
             this.selectedServerTemplate = newServerTemplate;
             refreshGrid();
         }
@@ -106,31 +112,29 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
     public abstract void createListBreadcrumb();
 
     public void setupListBreadcrumb(PlaceManager placeManager,
-                                    String perspectiveId,
                                     String listLabel) {
-        breadcrumbs.clearBreadcrumbs(perspectiveId);
+        breadcrumbs.clearBreadcrumbs(getPerspectiveId());
 
-        breadcrumbs.addBreadCrumb(perspectiveId,
+        breadcrumbs.addBreadCrumb(getPerspectiveId(),
                                   Constants.INSTANCE.Home(),
                                   () -> placeManager.goTo(PerspectiveIds.HOME));
-        breadcrumbs.addBreadCrumb(perspectiveId,
+        breadcrumbs.addBreadCrumb(getPerspectiveId(),
                                   listLabel,
                                   Commands.DO_NOTHING);
     }
 
     public void setupDetailBreadcrumb(PlaceManager placeManager,
-                                      String perspectiveId,
                                       String listLabel,
                                       String detailLabel,
                                       String detailScreenId) {
-        breadcrumbs.clearBreadcrumbs(perspectiveId);
-        breadcrumbs.addBreadCrumb(perspectiveId,
+        breadcrumbs.clearBreadcrumbs(getPerspectiveId());
+        breadcrumbs.addBreadCrumb(getPerspectiveId(),
                                   Constants.INSTANCE.Home(),
                                   () -> placeManager.goTo(PerspectiveIds.HOME));
-        breadcrumbs.addBreadCrumb(perspectiveId,
+        breadcrumbs.addBreadCrumb(getPerspectiveId(),
                                   listLabel,
                                   () -> closeDetails(detailScreenId));
-        breadcrumbs.addBreadCrumb(perspectiveId,
+        breadcrumbs.addBreadCrumb(getPerspectiveId(),
                                   detailLabel,
                                   Commands.DO_NOTHING);
         this.detailScreenId = detailScreenId;

@@ -71,15 +71,18 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     @Inject
     private Event<ExecutionErrorSelectedEvent> executionErrorSelectedEvent;
 
+    @Override
+    public String getPerspectiveId() {
+        return PerspectiveIds.EXECUTION_ERRORS;
+    }
+
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            PerspectiveIds.EXECUTION_ERRORS,
                             Constants.INSTANCE.ExecutionErrors());
     }
 
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              PerspectiveIds.EXECUTION_ERRORS,
                               Constants.INSTANCE.ExecutionErrors(),
                               detailLabel,
                               PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN);
@@ -250,7 +253,6 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     @WorkbenchMenu
     public Menus getMenus() {
         return MenuFactory
-                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder).endMenu()
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
                 .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()
                 .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()

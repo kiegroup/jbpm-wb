@@ -123,15 +123,18 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     }
 
     @Override
+    public String getPerspectiveId() {
+        return PerspectiveIds.JOBS;
+    }
+
+    @Override
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            PerspectiveIds.JOBS,
                             Constants.INSTANCE.Jobs());
     }
 
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              PerspectiveIds.JOBS,
                               Constants.INSTANCE.Jobs(),
                               detailLabel,
                               PerspectiveIds.JOB_DETAILS_SCREEN);
@@ -274,8 +277,6 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         return MenuFactory
                 .newTopLevelMenu(constants.New_Job())
                 .respondsWith(newJobCommand)
-                .endMenu()
-                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder)
                 .endMenu()
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
                 .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()

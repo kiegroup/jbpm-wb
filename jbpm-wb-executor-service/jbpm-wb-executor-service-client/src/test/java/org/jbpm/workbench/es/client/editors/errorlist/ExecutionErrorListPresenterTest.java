@@ -27,6 +27,7 @@ import org.dashbuilder.dataset.DataSetLookup;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.es.client.i18n.Constants;
@@ -90,6 +91,9 @@ public class ExecutionErrorListPresenterTest {
     private UberfireBreadcrumbs breadcrumbs;
 
     @Mock
+    ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
+
+    @Mock
     private AuthorizationManager authorizationManager;
 
     @Mock
@@ -114,6 +118,7 @@ public class ExecutionErrorListPresenterTest {
         when(extendedPagedTable.getColumnSortList()).thenReturn(null);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
         when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
+        when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
 
         presenter.setExecutorService(callerMockExecutorService);
     }

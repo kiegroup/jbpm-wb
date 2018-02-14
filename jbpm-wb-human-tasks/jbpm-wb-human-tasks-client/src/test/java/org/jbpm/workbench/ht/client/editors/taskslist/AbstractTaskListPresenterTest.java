@@ -41,7 +41,6 @@ import org.jboss.errai.security.shared.api.Group;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
@@ -87,9 +86,6 @@ public abstract class AbstractTaskListPresenterTest {
     protected TaskService taskService;
 
     protected CallerMock<TaskService> callerMockRemoteTaskService;
-
-    @Mock
-    protected ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
 
     @Mock
     DataSetQueryHelper dataSetQueryHelper;
@@ -452,7 +448,7 @@ public abstract class AbstractTaskListPresenterTest {
     @Test
     public void testMenus() {
         final Menus menus = getPresenter().getMenus();
-        assertEquals(4,
+        assertEquals(3,
                      menus.getItems().size());
     }
 
