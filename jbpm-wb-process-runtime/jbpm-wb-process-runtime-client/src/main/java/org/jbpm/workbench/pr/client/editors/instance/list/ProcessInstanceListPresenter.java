@@ -103,15 +103,18 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
 
     @Override
+    public String getPerspectiveId() {
+        return PROCESS_INSTANCES;
+    }
+
+    @Override
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            PROCESS_INSTANCES,
                             Constants.INSTANCE.Process_Instances());
     }
 
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              PROCESS_INSTANCES,
                               Constants.INSTANCE.Process_Instances(),
                               detailLabel,
                               PROCESS_INSTANCE_DETAILS_SCREEN);
@@ -435,7 +438,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                     }
                 })
                 .endMenu()
-                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder).endMenu()
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
                 .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()
                 .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()

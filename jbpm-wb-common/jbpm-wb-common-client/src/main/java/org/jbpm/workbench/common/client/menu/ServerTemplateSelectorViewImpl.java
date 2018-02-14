@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,89 +16,117 @@
 
 package org.jbpm.workbench.common.client.menu;
 
-import java.util.Iterator;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.AnchorListItem;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.ButtonGroup;
-import org.gwtbootstrap3.client.ui.DropDownMenu;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.client.ui.constants.Styles;
-import org.gwtbootstrap3.client.ui.constants.Toggle;
+import org.jboss.errai.common.client.dom.Div;
+import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.NodeList;
+import org.jboss.errai.common.client.dom.Span;
+import org.jboss.errai.common.client.dom.UnorderedList;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.uberfire.mvp.ParameterizedCommand;
 
+import static org.jboss.errai.common.client.dom.DOMUtil.addCSSClass;
+import static org.jboss.errai.common.client.dom.DOMUtil.removeCSSClass;
+import static org.jboss.errai.common.client.dom.DOMUtil.removeAllChildren;
+import static org.jboss.errai.common.client.dom.Window.getDocument;
+
 @Dependent
-public class ServerTemplateSelectorViewImpl extends Composite implements ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorView {
+@Templated
+public class ServerTemplateSelectorViewImpl implements ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView {
 
     private Constants constants = Constants.INSTANCE;
 
-    private DropDownMenu dropDownServerTemplates;
+    @Inject
+    @DataField
+    private Div container;
 
-    private Button serverTemplateButton;
+    @Inject
+    @DataField("selected-serverTemplate-text")
+    Span selectedServerTemplateText;
 
-    private ButtonGroup serverTemplates;
+    @Inject
+    @DataField("server-templates-list")
+    UnorderedList serverTemplatesList;
 
     private ParameterizedCommand<String> changeCommand;
 
-    @PostConstruct
-    public void init() {
-        serverTemplateButton = GWT.create(Button.class);
-        serverTemplateButton.setText(constants.ServerTemplates());
-        serverTemplateButton.setDataToggle(Toggle.DROPDOWN);
-        serverTemplateButton.setSize(ButtonSize.SMALL);
-
-        dropDownServerTemplates = GWT.create(DropDownMenu.class);
-        dropDownServerTemplates.addStyleName(Styles.DROPDOWN_MENU + "-right");
-
-        serverTemplates = GWT.create(ButtonGroup.class);
-        serverTemplates.add(serverTemplateButton);
-        serverTemplates.add(dropDownServerTemplates);
-
-        initWidget(serverTemplates);
+    @Override
+    public void init(final ServerTemplateSelectorMenuBuilder presenter) {
     }
 
     @Override
-    public void selectServerTemplate(final String serverTemplateId) {
-        for (Widget widget : dropDownServerTemplates) {
-            if (widget instanceof AnchorListItem && ((AnchorListItem) widget).getText().equals(serverTemplateId)) {
-                selectServerTemplate((AnchorListItem) widget);
+    public void selectServerTemplate(String serverTemplateId) {
+        NodeList childList = serverTemplatesList.getChildNodes();
+        for (int i = 0; i < childList.getLength(); i++) {
+            if (childList.item(i).getLastChild().getTextContent().equals(serverTemplateId)) {
+                selectServerTemplate((HTMLElement) childList.item(i),
+                                     serverTemplateId,
+                                     false);
                 break;
             }
         }
     }
 
     @Override
-    public void addServerTemplate(final String serverTemplateId) {
-        final AnchorListItem serverTemplateNavLink = GWT.create(AnchorListItem.class);
-        serverTemplateNavLink.setText(serverTemplateId);
-        serverTemplateNavLink.setIcon(IconType.SERVER);
-        serverTemplateNavLink.setIconFixedWidth(true);
-        serverTemplateNavLink.addClickHandler(e -> selectServerTemplate(serverTemplateNavLink));
-        dropDownServerTemplates.add(serverTemplateNavLink);
+    public void updateSelectedValue(String serverTemplateId) {
+        NodeList childList = serverTemplatesList.getChildNodes();
+        for (int i = 0; i < childList.getLength(); i++) {
+            if (childList.item(i).getLastChild().getTextContent().equals(serverTemplateId)) {
+                selectServerTemplate((HTMLElement) childList.item(i),
+                                     serverTemplateId,
+                                     true);
+                break;
+            }
+        }
     }
 
-    protected void selectServerTemplate(final AnchorListItem serverTemplateNavLink) {
-        final boolean serverChanged = serverTemplateNavLink.getText().equals(serverTemplateButton.getText()) == false;
-        unselectAllServerTemplateNavLinks();
-        serverTemplateNavLink.setActive(true);
+    @Override
+    public void setVisible(boolean visible) {
+        if (visible) {
+            removeCSSClass(container,
+                           "hidden");
+        } else {
+            addCSSClass(container,
+                        "hidden");
+        }
+    }
+
+    @Override
+    public void addServerTemplate(String serverTemplateId) {
+        final HTMLElement li = getDocument().createElement("li");
+        final HTMLElement a = getDocument().createElement("a");
+        final HTMLElement textSpan = getDocument().createElement("span");
+        textSpan.setTextContent(serverTemplateId);
+        a.setOnclick(e -> selectServerTemplate(li,
+                                               serverTemplateId,
+                                               false));
+        a.appendChild(textSpan);
+        li.appendChild(a);
+        serverTemplatesList.appendChild(li);
+    }
+
+    protected void selectServerTemplate(final HTMLElement liOption,
+                                        String serverTemplateId,
+                                        boolean updating) {
+        final boolean serverChanged = serverTemplateId.equals(selectedServerTemplateText.getTextContent()) == false;
+        unSelectAllServerTemplateNavLinks();
+        addCSSClass(liOption,
+                    "active");
         if (serverChanged) {
-            serverTemplateButton.setText(serverTemplateNavLink.getText());
-            if (changeCommand != null) {
-                changeCommand.execute(serverTemplateNavLink.getText());
+            selectedServerTemplateText.setTextContent(serverTemplateId);
+            if (changeCommand != null && !updating) {
+                changeCommand.execute(serverTemplateId);
             }
         }
     }
 
     @Override
     public void clearSelectedServerTemplate() {
-        serverTemplateButton.setText(constants.ServerTemplates());
+        selectedServerTemplateText.setTextContent(constants.ServerTemplates());
         if (changeCommand != null) {
             changeCommand.execute(null);
         }
@@ -106,29 +134,30 @@ public class ServerTemplateSelectorViewImpl extends Composite implements ServerT
 
     @Override
     public String getSelectedServerTemplate() {
-        final String serverTemplate = serverTemplateButton.getText();
+        final String serverTemplate = selectedServerTemplateText.getTextContent();
         return serverTemplate.equals(constants.ServerTemplates()) ? null : serverTemplate;
     }
 
     @Override
     public void removeAllServerTemplates() {
-        final Iterator<Widget> iterator = dropDownServerTemplates.iterator();
-        while (iterator.hasNext()) {
-            iterator.next();
-            iterator.remove();
+        removeAllChildren(serverTemplatesList);
+    }
+
+    @Override
+    public void setServerTemplateChangeHandler(ParameterizedCommand<String> command) {
+        this.changeCommand = command;
+    }
+
+    private void unSelectAllServerTemplateNavLinks() {
+        NodeList childList = serverTemplatesList.getChildNodes();
+        for (int i = 0; i < childList.getLength(); i++) {
+            removeCSSClass((HTMLElement) childList.item(i),
+                           "active");
         }
     }
 
     @Override
-    public void setServerTemplateChangeHandler(final ParameterizedCommand<String> command) {
-        changeCommand = command;
-    }
-
-    private void unselectAllServerTemplateNavLinks() {
-        for (Widget widget : dropDownServerTemplates) {
-            if (widget instanceof AnchorListItem) {
-                ((AnchorListItem) widget).setActive(false);
-            }
-        }
+    public HTMLElement getElement() {
+        return container;
     }
 }

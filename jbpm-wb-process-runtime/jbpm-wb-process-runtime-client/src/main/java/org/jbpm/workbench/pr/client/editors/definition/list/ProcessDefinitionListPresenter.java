@@ -94,15 +94,18 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     }
 
     @Override
+    public String getPerspectiveId() {
+        return PerspectiveIds.PROCESS_DEFINITIONS;
+    }
+
+    @Override
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            PerspectiveIds.PROCESS_DEFINITIONS,
                             Constants.INSTANCE.Process_Definitions());
     }
 
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              PerspectiveIds.PROCESS_DEFINITIONS,
                               Constants.INSTANCE.Process_Definitions(),
                               detailLabel,
                               PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN);
@@ -193,8 +196,6 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     @WorkbenchMenu
     public Menus buildMenu() {
         return MenuFactory
-                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder)
-                .endMenu()
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this))
                 .endMenu()
                 .build();
@@ -240,7 +241,6 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
         }
         placeManager.goTo(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
         setupDetailBreadcrumb(placeManager,
-                              PerspectiveIds.PROCESS_DEFINITIONS,
                               Constants.INSTANCE.Process_Definitions(),
                               Constants.INSTANCE.ProcessInstanceBreadcrumb(newProcessInstance.getNewProcessInstanceId()),
                               PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
