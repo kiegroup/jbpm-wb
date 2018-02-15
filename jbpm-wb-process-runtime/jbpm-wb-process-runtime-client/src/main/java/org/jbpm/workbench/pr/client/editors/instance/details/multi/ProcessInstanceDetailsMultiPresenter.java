@@ -33,7 +33,6 @@ import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
 import org.jbpm.workbench.pr.service.ProcessService;
-import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -45,16 +44,13 @@ import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.CompassPosition;
-import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.jbpm.workbench.common.client.PerspectiveIds.DETAILS_SCREEN_PREFERRED_WIDTH;
 import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN;
 
 @Dependent
-@WorkbenchScreen(identifier = PROCESS_INSTANCE_DETAILS_SCREEN, preferredWidth = DETAILS_SCREEN_PREFERRED_WIDTH)
+@WorkbenchScreen(identifier = PROCESS_INSTANCE_DETAILS_SCREEN)
 public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
 
     @Inject
@@ -117,11 +113,6 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
     @WorkbenchPartView
     public UberView<ProcessInstanceDetailsMultiPresenter> getView() {
         return view;
-    }
-
-    @DefaultPosition
-    public Position getPosition() {
-        return CompassPosition.EAST;
     }
 
     @WorkbenchPartTitle
