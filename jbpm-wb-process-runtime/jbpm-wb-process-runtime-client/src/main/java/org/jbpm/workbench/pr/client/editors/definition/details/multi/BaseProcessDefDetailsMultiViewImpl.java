@@ -18,41 +18,12 @@ package org.jbpm.workbench.pr.client.editors.definition.details.multi;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.IsWidget;
-import elemental2.dom.DomGlobal;
-import elemental2.dom.HTMLElement;
-import org.jbpm.workbench.pr.client.resources.i18n.Constants;
-import org.uberfire.client.views.pfly.widgets.Button;
 
 public abstract class BaseProcessDefDetailsMultiViewImpl extends Composite
         implements BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView {
-
-    private Button newInstanceButton;
-
-    public BaseProcessDefDetailsMultiViewImpl() {
-        newInstanceButton = (Button) DomGlobal.document.createElement("button");
-        newInstanceButton.setType(Button.ButtonType.BUTTON);
-        newInstanceButton.setButtonStyleType(Button.ButtonStyleType.PRIMARY);
-        newInstanceButton.setText(Constants.INSTANCE.New_Instance());
-        newInstanceButton.setClickHandler(() -> createNewProcessInstance());
-    }
-
-    @Override
-    public HTMLElement getNewInstanceButton() {
-        return newInstanceButton;
-    }
 
     protected abstract IsWidget getTabView();
 
     protected abstract void closeDetails();
 
-    protected abstract void createNewProcessInstance();
-
-    @Override
-    public void setNewInstanceButtonVisible(boolean visible) {
-        if(visible){
-            newInstanceButton.show();
-        } else {
-            newInstanceButton.hide();
-        }
-    }
 }

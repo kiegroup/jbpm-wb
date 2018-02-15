@@ -22,7 +22,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import elemental2.dom.HTMLElement;
+import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
@@ -37,12 +37,9 @@ import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.menu.MenuFactory;
-import org.uberfire.workbench.model.menu.MenuItem;
-import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
-import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
 import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCES;
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
 
 public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView> implements RefreshMenuBuilder.SupportsRefresh {
 
@@ -55,7 +52,7 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
     @Inject
     protected StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
 
-    protected MenuFactory.CustomMenuBuilder newInstanceMenu;
+    protected PrimaryActionMenuBuilder primaryActionMenuBuilder;
 
     private Constants constants = GWT.create(Constants.class);
 
@@ -82,22 +79,12 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
 
     @PostConstruct
     public void init() {
-        newInstanceMenu = new MenuFactory.CustomMenuBuilder() {
+        setPrimaryActionMenuBuilder(new PrimaryActionMenuBuilder(Constants.INSTANCE.New_Instance(),
+                                                                 () -> createNewProcessInstance()));
+    }
 
-            @Override
-            public void push(MenuFactory.CustomMenuBuilder element) {
-            }
-
-            @Override
-            public MenuItem build() {
-                return new BaseMenuCustom<HTMLElement>() {
-                    @Override
-                    public HTMLElement build() {
-                        return view.getNewInstanceButton();
-                    }
-                };
-            }
-        };
+    protected void setPrimaryActionMenuBuilder(final PrimaryActionMenuBuilder primaryActionMenuBuilder){
+        this.primaryActionMenuBuilder = primaryActionMenuBuilder;
     }
 
     @WorkbenchPartTitle
@@ -117,7 +104,7 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
         serverTemplateId = event.getServerTemplateId();
         dynamic = event.isDynamic();
 
-        view.setNewInstanceButtonVisible(dynamic == false);
+        primaryActionMenuBuilder.setVisible(dynamic == false);
 
         changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place,
                                                                String.valueOf(deploymentId) + " - " + processDefName));
@@ -165,8 +152,5 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
 
     public interface BaseProcessDefDetailsMultiView {
 
-        HTMLElement getNewInstanceButton();
-
-        void setNewInstanceButtonVisible(boolean visible);
     }
 }

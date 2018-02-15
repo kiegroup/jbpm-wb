@@ -58,7 +58,7 @@ public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetai
     public Menus buildMenu() {
         return MenuFactory
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
-                .newTopLevelCustomMenu(newInstanceMenu).endMenu()
+                .newTopLevelCustomMenu(primaryActionMenuBuilder).endMenu()
                 .newTopLevelMenu(Constants.INSTANCE.Options())
                     .menus()
                         .menu(Constants.INSTANCE.View_Process_Instances())

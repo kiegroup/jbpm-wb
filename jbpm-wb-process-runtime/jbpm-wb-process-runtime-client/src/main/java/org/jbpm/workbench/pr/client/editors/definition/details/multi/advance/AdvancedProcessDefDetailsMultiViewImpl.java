@@ -80,11 +80,6 @@ public class AdvancedProcessDefDetailsMultiViewImpl extends BaseProcessDefDetail
         presenter.closeDetails();
     }
 
-    @Override
-    protected void createNewProcessInstance() {
-        presenter.createNewProcessInstance();
-    }
-
     interface Binder extends
                      UiBinder<Widget, AdvancedProcessDefDetailsMultiViewImpl> {
 
