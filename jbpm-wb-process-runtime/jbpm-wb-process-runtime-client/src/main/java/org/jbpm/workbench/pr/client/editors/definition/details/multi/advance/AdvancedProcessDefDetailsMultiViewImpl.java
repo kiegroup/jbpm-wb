@@ -19,23 +19,14 @@ package org.jbpm.workbench.pr.client.editors.definition.details.multi.advance;
 import javax.enterprise.context.Dependent;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.AnchorListItem;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.ButtonGroup;
-import org.gwtbootstrap3.client.ui.DropDownMenu;
 import org.gwtbootstrap3.client.ui.NavTabs;
 import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.gwtbootstrap3.client.ui.TabPane;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.Styles;
-import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jbpm.workbench.pr.client.editors.definition.details.multi.BaseProcessDefDetailsMultiViewImpl;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 
@@ -77,35 +68,6 @@ public class AdvancedProcessDefDetailsMultiViewImpl extends BaseProcessDefDetail
 
         navTabs.add(definitionDetailsTab);
         tabContent.add(definitionDetailsPane);
-    }
-
-    @Override
-    public IsWidget getOptionsButton() {
-        return new ButtonGroup() {{
-            add(new Button(Constants.INSTANCE.Options()) {{
-                setSize(ButtonSize.SMALL);
-                setDataToggle(Toggle.DROPDOWN);
-            }});
-            add(new DropDownMenu() {{
-                addStyleName(Styles.DROPDOWN_MENU + "-right");
-                add(new AnchorListItem(Constants.INSTANCE.View_Process_Instances()) {{
-                    addClickHandler(new ClickHandler() {
-                        @Override
-                        public void onClick(final ClickEvent clickEvent) {
-                            presenter.viewProcessInstances();
-                        }
-                    });
-                }});
-                add(new AnchorListItem(Constants.INSTANCE.View_Process_Model()) {{
-                    addClickHandler(new ClickHandler() {
-                        @Override
-                        public void onClick(final ClickEvent clickEvent) {
-                            presenter.goToProcessDefModelPopup();
-                        }
-                    });
-                }});
-            }});
-        }};
     }
 
     @Override

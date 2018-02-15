@@ -23,7 +23,7 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.workbench.pr.client.editors.documents.list.ProcessDocumentListPresenter;
 import org.jbpm.workbench.pr.client.editors.instance.details.ProcessInstanceDetailsPresenter;
@@ -42,19 +42,19 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
-import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
-import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
-import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
+
+import static org.jbpm.workbench.common.client.PerspectiveIds.DETAILS_SCREEN_PREFERRED_WIDTH;
+import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN;
 
 @Dependent
-@WorkbenchScreen(identifier = PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN, preferredWidth = 500)
+@WorkbenchScreen(identifier = PROCESS_INSTANCE_DETAILS_SCREEN, preferredWidth = DETAILS_SCREEN_PREFERRED_WIDTH)
 public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
 
     @Inject
@@ -211,27 +211,21 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
     @WorkbenchMenu
     public Menus buildMenu() {
         return MenuFactory
-                .newTopLevelCustomMenu(new MenuFactory.CustomMenuBuilder() {
-                    @Override
-                    public void push(MenuFactory.CustomMenuBuilder element) {
-                    }
-
-                    @Override
-                    public MenuItem build() {
-                        return new BaseMenuCustom<IsWidget>() {
-                            @Override
-                            public IsWidget build() {
-                                return view.getOptionsButton();
-                            }
-                        };
-                    }
-                }).endMenu()
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
+                .newTopLevelMenu(constants.Options())
+                    .menus()
+                        .menu(constants.Signal())
+                            .respondsWith(() -> signalProcessInstance())
+                        .endMenu()
+                        .menu(constants.Abort())
+                            .respondsWith(() -> abortProcessInstance())
+                        .endMenu()
+                        .menu(constants.View_Process_Model())
+                            .respondsWith(() -> goToProcessInstanceModelPopup())
+                        .endMenu()
+                    .endMenus()
+                .endMenu()
                 .build();
-    }
-
-    public void closeDetails() {
-        placeManager.closePlace(place);
     }
 
     public void variableListRefreshGrid() {
@@ -260,8 +254,6 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
 
     public interface ProcessInstanceDetailsMultiView
             extends UberView<ProcessInstanceDetailsMultiPresenter> {
-
-        IsWidget getOptionsButton();
 
         void selectInstanceDetailsTab();
 

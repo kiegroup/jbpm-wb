@@ -22,10 +22,9 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.service.TaskService;
-import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.ht.client.editors.taskadmin.TaskAdminPresenter;
 import org.jbpm.workbench.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
 import org.jbpm.workbench.ht.client.editors.taskcomments.TaskCommentsPresenter;
@@ -53,8 +52,11 @@ import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
+import static org.jbpm.workbench.common.client.PerspectiveIds.DETAILS_SCREEN_PREFERRED_WIDTH;
+import static org.jbpm.workbench.common.client.PerspectiveIds.TASK_DETAILS_SCREEN;
+
 @Dependent
-@WorkbenchScreen(identifier = PerspectiveIds.TASK_DETAILS_SCREEN, preferredWidth = 655)
+@WorkbenchScreen(identifier = TASK_DETAILS_SCREEN, preferredWidth = DETAILS_SCREEN_PREFERRED_WIDTH)
 public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
 
     private Caller<TaskService> taskDataService;

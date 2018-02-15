@@ -22,7 +22,8 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.IsWidget;
+import elemental2.dom.HTMLElement;
+import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
@@ -33,7 +34,6 @@ import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
-import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -90,9 +90,9 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
 
             @Override
             public MenuItem build() {
-                return new BaseMenuCustom<IsWidget>() {
+                return new BaseMenuCustom<HTMLElement>() {
                     @Override
-                    public IsWidget build() {
+                    public HTMLElement build() {
                         return view.getNewInstanceButton();
                     }
                 };
@@ -165,7 +165,7 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
 
     public interface BaseProcessDefDetailsMultiView {
 
-        IsWidget getNewInstanceButton();
+        HTMLElement getNewInstanceButton();
 
         void setNewInstanceButtonVisible(boolean visible);
     }

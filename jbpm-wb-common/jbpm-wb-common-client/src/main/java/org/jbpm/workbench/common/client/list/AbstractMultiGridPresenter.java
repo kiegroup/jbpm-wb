@@ -25,7 +25,6 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -33,11 +32,9 @@ import org.uberfire.security.ResourceRef;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.workbench.model.ActivityResourceType;
 
-public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V extends MultiGridView> extends AbstractScreenListPresenter<T> implements RefreshSelectorMenuBuilder.SupportsRefreshInterval {
+public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V extends MultiGridView> extends AbstractScreenListPresenter<T> {
 
     protected DataSetQueryHelper dataSetQueryHelper;
-
-    protected RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder(this);
 
     protected V view;
 
@@ -59,16 +56,7 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
     }
 
     @Override
-    public void onUpdateRefreshInterval(boolean enableAutoRefresh,
-                                        int newInterval) {
-        super.onUpdateRefreshInterval(enableAutoRefresh,
-                                      newInterval);
-        view.saveRefreshValue(newInterval);
-    }
-
-    @Override
     public void onGridPreferencesStoreLoaded() {
-        refreshSelectorMenuBuilder.loadOptions(view.getRefreshValue());
         clearActiveSearchFilters();
         setupActiveSearchFilters();
         view.selectFirstTabAndEnableQueries();

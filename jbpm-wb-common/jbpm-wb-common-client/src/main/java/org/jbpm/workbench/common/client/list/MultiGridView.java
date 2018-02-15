@@ -22,10 +22,6 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 public interface MultiGridView<T extends GenericSummary, V> extends ListView<T, V>,
                                                                     AdvancedSearchFiltersView {
 
-    int getRefreshValue();
-
-    void saveRefreshValue(int newValue);
-
     void applyFilterOnPresenter(String key);
 
     FilterSettings getAdvancedSearchFilterSettings();

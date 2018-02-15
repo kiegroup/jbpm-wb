@@ -16,24 +16,30 @@
 
 package org.jbpm.workbench.common.client.menu;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.IsWidget;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.IconType;
+import elemental2.dom.DomGlobal;
+import elemental2.dom.HTMLDocument;
+import elemental2.dom.HTMLElement;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
+import org.uberfire.client.views.pfly.widgets.Button;
+import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 public class RestoreDefaultFiltersMenuBuilder implements MenuFactory.CustomMenuBuilder {
 
-    protected Button menuResetTabsButton = GWT.create(Button.class);
+    protected Button menuResetTabsButton;
     private SupportsRestoreDefaultFilters supportsRestoreDefaultFilters;
+    private HTMLDocument document;
 
     public RestoreDefaultFiltersMenuBuilder(final SupportsRestoreDefaultFilters supportsRestoreDefaultFilters) {
+        this(DomGlobal.document,
+             supportsRestoreDefaultFilters);
+    }
+
+    public RestoreDefaultFiltersMenuBuilder(final HTMLDocument document,
+                                            final SupportsRestoreDefaultFilters supportsRestoreDefaultFilters) {
+        this.document = document;
         this.supportsRestoreDefaultFilters = supportsRestoreDefaultFilters;
         setupMenuButton();
     }
@@ -44,9 +50,9 @@ public class RestoreDefaultFiltersMenuBuilder implements MenuFactory.CustomMenuB
 
     @Override
     public MenuItem build() {
-        return new BaseMenuCustom<IsWidget>() {
+        return new BaseMenuCustom<HTMLElement>() {
             @Override
-            public IsWidget build() {
+            public HTMLElement build() {
                 return menuResetTabsButton;
             }
 
@@ -63,15 +69,17 @@ public class RestoreDefaultFiltersMenuBuilder implements MenuFactory.CustomMenuB
     }
 
     protected void setupMenuButton() {
-        menuResetTabsButton.setIcon(IconType.FILTER);
-        menuResetTabsButton.setSize(ButtonSize.SMALL);
-        menuResetTabsButton.setTitle(Constants.INSTANCE.RestoreDefaultFilters());
-        menuResetTabsButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent clickEvent) {
-                supportsRestoreDefaultFilters.onRestoreDefaultFilters();
-            }
-        });
+        menuResetTabsButton = (Button) document.createElement("button");
+        menuResetTabsButton.setType(Button.ButtonType.BUTTON);
+        menuResetTabsButton.setButtonStyleType(Button.ButtonStyleType.LINK);
+        menuResetTabsButton.addIcon("fa",
+                                    "fa-filter");
+        menuResetTabsButton.title = Constants.INSTANCE.RestoreDefaultFilters();
+        menuResetTabsButton.setClickHandler(getClickHandler());
+    }
+
+    protected Command getClickHandler() {
+        return () -> supportsRestoreDefaultFilters.onRestoreDefaultFilters();
     }
 
     public interface SupportsRestoreDefaultFilters {

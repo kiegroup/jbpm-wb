@@ -42,6 +42,7 @@ import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.MultiGridView;
+import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
@@ -49,7 +50,6 @@ import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.es.client.editors.events.JobSelectedEvent;
 import org.jbpm.workbench.es.client.editors.quicknewjob.NewJobPresenter;
-
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.jbpm.workbench.es.model.events.RequestChangedEvent;
@@ -61,7 +61,6 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
-import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
@@ -138,10 +137,6 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                               Constants.INSTANCE.Jobs(),
                               detailLabel,
                               PerspectiveIds.JOB_DETAILS_SCREEN);
-    }
-
-    public Command getNewJobCommand() {
-        return newJobCommand;
     }
 
     @Override
@@ -261,26 +256,28 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                           requestId);
     }
 
-    @WorkbenchMenu
-    public Menus getMenus() {
-        newJobCommand = new Command() {
-            @Override
-            public void execute() {
+    protected Command getNewJobCommand() {
+        if (newJobCommand == null) {
+            newJobCommand = () -> {
                 final String selectedServerTemplate = getSelectedServerTemplate();
                 if (selectedServerTemplate == null || selectedServerTemplate.trim().isEmpty()) {
                     view.displayNotification(constants.SelectServerTemplate());
                 } else {
                     newJobPresenter.openNewJobDialog(selectedServerTemplate);
                 }
-            }
-        };
+            };
+        }
+        return newJobCommand;
+    }
+
+    @WorkbenchMenu
+    public Menus getMenus() {
         return MenuFactory
-                .newTopLevelMenu(constants.New_Job())
-                .respondsWith(newJobCommand)
-                .endMenu()
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
-                .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()
                 .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
+                .newTopLevelMenu(constants.New_Job())
+                    .respondsWith(getNewJobCommand())
+                .endMenu()
                 .build();
     }
 

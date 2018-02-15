@@ -16,28 +16,28 @@
 
 package org.jbpm.workbench.pr.client.editors.definition.details.multi;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.IsWidget;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.IconType;
+import elemental2.dom.DomGlobal;
+import elemental2.dom.HTMLElement;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
+import org.uberfire.client.views.pfly.widgets.Button;
 
 public abstract class BaseProcessDefDetailsMultiViewImpl extends Composite
         implements BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView {
 
-    private Button newInstanceButton = GWT.create(Button.class);
+    private Button newInstanceButton;
 
     public BaseProcessDefDetailsMultiViewImpl() {
-        newInstanceButton.setSize(ButtonSize.SMALL);
-        newInstanceButton.setIcon(IconType.PLAY);
+        newInstanceButton = (Button) DomGlobal.document.createElement("button");
+        newInstanceButton.setType(Button.ButtonType.BUTTON);
+        newInstanceButton.setButtonStyleType(Button.ButtonStyleType.PRIMARY);
         newInstanceButton.setText(Constants.INSTANCE.New_Instance());
-        newInstanceButton.addClickHandler(event -> createNewProcessInstance());
+        newInstanceButton.setClickHandler(() -> createNewProcessInstance());
     }
 
     @Override
-    public IsWidget getNewInstanceButton() {
+    public HTMLElement getNewInstanceButton() {
         return newInstanceButton;
     }
 
@@ -49,6 +49,10 @@ public abstract class BaseProcessDefDetailsMultiViewImpl extends Composite
 
     @Override
     public void setNewInstanceButtonVisible(boolean visible) {
-        newInstanceButton.setVisible(visible);
+        if(visible){
+            newInstanceButton.show();
+        } else {
+            newInstanceButton.hide();
+        }
     }
 }
