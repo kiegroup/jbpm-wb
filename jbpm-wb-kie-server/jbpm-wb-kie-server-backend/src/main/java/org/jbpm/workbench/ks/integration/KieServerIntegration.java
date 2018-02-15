@@ -53,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
 
+import static java.util.Collections.emptyMap;
 import static org.jbpm.workbench.ks.utils.KieServerUtils.*;
 
 @Startup
@@ -61,9 +62,11 @@ public class KieServerIntegration {
 
     private static final Logger logger = LoggerFactory.getLogger(KieServerIntegration.class);
 
+    protected static final String SERVER_TEMPLATE_KEY = "_SERVER_TEMPLATE_MAIN_CLIENT_";
+
     private KieServices kieServices;
 
-    private ConcurrentMap<String, KieServicesClient> serverTemplatesClients = new ConcurrentHashMap<String, KieServicesClient>();
+    private ConcurrentMap<String, Map<String, KieServicesClient>> serverTemplatesClients = new ConcurrentHashMap<String, Map<String, KieServicesClient>>();
     private ConcurrentMap<String, KieServicesClient> adminClients = new ConcurrentHashMap<String, KieServicesClient>();
     private ConcurrentMap<String, ServerInstanceKey> serverInstancesById = new ConcurrentHashMap<String, ServerInstanceKey>();
 
@@ -85,9 +88,7 @@ public class KieServerIntegration {
             if (!provider.supports("http")) {
                 clientProviders.add(provider);
             }
-
         });
-
 
         clientProviders.sort((KieServicesClientProvider one, KieServicesClientProvider two) -> one.getPriority().compareTo(two.getPriority()));
 
@@ -102,16 +103,23 @@ public class KieServerIntegration {
         }
     }
 
+    protected void setKieServices(final KieServices kieServices) {
+        this.kieServices = kieServices;
+    }
+
     public KieServicesClient getServerClient(String serverTemplateId) {
-        return serverTemplatesClients.get(serverTemplateId);
+        return serverTemplatesClients.getOrDefault(serverTemplateId,
+                                                   emptyMap()).get(SERVER_TEMPLATE_KEY);
     }
 
     public KieServicesClient getServerClient(String serverTemplateId,
                                              String containerId) {
-        return serverTemplatesClients.get(serverTemplateId + "|" + containerId);
+        return serverTemplatesClients.getOrDefault(serverTemplateId,
+                                                   emptyMap()).get(containerId);
     }
 
-    public KieServicesClient getAdminServerClient(String serverTemplateId, String serverInstanceId) {
+    public KieServicesClient getAdminServerClient(String serverTemplateId,
+                                                  String serverInstanceId) {
         try {
             ServerInstanceKey instance = specManagementService.getServerTemplate(serverTemplateId).getServerInstanceKeys()
                     .stream()
@@ -125,10 +133,10 @@ public class KieServerIntegration {
                     .findFirst()
                     .get()
                     .get(url);
-            logger.debug("Using client {}", client);
+            logger.debug("Using client {}",
+                         client);
             return client;
         } catch (Exception e) {
-
             return adminClients.get(serverTemplateId);
         }
     }
@@ -143,10 +151,8 @@ public class KieServerIntegration {
     }
 
     protected void indexServerInstances(ServerTemplate serverTemplate) {
-        for (ServerInstanceKey serverInstanceKey : serverTemplate.getServerInstanceKeys()) {
-            serverInstancesById.put(serverInstanceKey.getServerInstanceId(),
-                                    serverInstanceKey);
-        }
+        serverTemplate.getServerInstanceKeys().forEach(serverInstanceKey -> serverInstancesById.put(serverInstanceKey.getServerInstanceId(),
+                                                                                                    serverInstanceKey));
     }
 
     protected void removeServerInstancesFromIndex(String serverTemplateId) {
@@ -165,18 +171,12 @@ public class KieServerIntegration {
 
     public void onServerTemplateDeleted(@Observes ServerTemplateDeleted serverTemplateDeleted) {
         // remove all clients for this server template and its containers
-        Iterator<Map.Entry<String, KieServicesClient>> iterator = serverTemplatesClients.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, KieServicesClient> entry = iterator.next();
-            if (entry.getKey().startsWith(serverTemplateDeleted.getServerTemplateId())) {
-                //KieServicesClient client = entry.getValue();
-                //client.close();
-                logger.debug("KieServerClient removed and closed for server template {}",
-                             entry.getKey());
-
-                iterator.remove();
-            }
+        final Map<String, KieServicesClient> clients = serverTemplatesClients.remove(serverTemplateDeleted.getServerTemplateId());
+        if (clients != null) {
+            logger.debug("KieServerClient removed and closed for server template {}",
+                         serverTemplateDeleted.getServerTemplateId());
         }
+
         // remove admin client
         adminClients.remove(serverTemplateDeleted.getServerTemplateId());
 
@@ -187,24 +187,21 @@ public class KieServerIntegration {
         ServerInstanceKey serverInstanceKey = serverInstancesById.get(serverInstanceDisconnected.getServerInstanceId());
 
         if (serverInstanceKey != null) {
-            Iterator<Map.Entry<String, KieServicesClient>> iterator = serverTemplatesClients.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, KieServicesClient> entry = iterator.next();
-                if (entry.getKey().startsWith(serverInstanceKey.getServerTemplateId())) {
-                    KieServicesClient client = entry.getValue();
-                    if (client != null) {
-                        LoadBalancer loadBalancer = ((AbstractKieServicesClientImpl) client).getLoadBalancer();
-                        loadBalancer.markAsFailed(serverInstanceKey.getUrl());
+            serverTemplatesClients.computeIfPresent(serverInstanceKey.getServerTemplateId(),
+                                                    (serverTemplateId, clients) -> {
+                                                        clients.forEach((key, client) -> {
+                                                            LoadBalancer loadBalancer = ((AbstractKieServicesClientImpl) client).getLoadBalancer();
+                                                            loadBalancer.markAsFailed(serverInstanceKey.getUrl());
 
-                        logger.debug("Server instance {} for server template {} removed from client thus won't be used for operations",
-                                     serverInstanceKey.getUrl(),
-                                     serverInstanceKey.getServerTemplateId());
-                    }
+                                                            logger.debug("Server instance '{}' for server template {} removed from client thus won't be used for operations",
+                                                                         serverInstanceKey.getUrl(),
+                                                                         serverInstanceKey.getServerTemplateId());
 
-                    logger.debug("KieServerClient load balancer updated for server template {}",
-                                 entry.getKey());
-                }
-            }
+                                                            logger.debug("KieServerClient load balancer updated for server template {}",
+                                                                         serverTemplateId.equals(SERVER_TEMPLATE_KEY) ? serverInstanceKey.getServerTemplateId() : serverTemplateId);
+                                                        });
+                                                        return clients;
+                                                    });
 
             serverInstancesById.remove(serverInstanceKey.getServerInstanceId());
 
@@ -222,22 +219,23 @@ public class KieServerIntegration {
     }
 
     public void onServerInstanceConnected(@Observes ServerInstanceConnected serverInstanceConnected) {
-
         ServerInstance serverInstance = serverInstanceConnected.getServerInstance();
 
-        Iterator<Map.Entry<String, KieServicesClient>> iterator = serverTemplatesClients.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, KieServicesClient> entry = iterator.next();
-            if (entry.getKey().startsWith(serverInstance.getServerTemplateId())) {
-                KieServicesClient client = entry.getValue();
-                // update regular clients
-                updateOrBuildClient(client,
-                                    serverInstance);
+        serverTemplatesClients.computeIfPresent(serverInstance.getServerTemplateId(),
+                                                (serverTemplateId, clients) -> {
+                                                    clients.forEach((key, client) -> {
+                                                        // update regular clients
+                                                        updateOrBuildClient(client,
+                                                                            serverInstance);
 
-                logger.debug("KieServerClient load balancer updated for server template {}",
-                             entry.getKey());
-            }
-        }
+                                                        logger.debug("KieServerClient load balancer updated for server template {}",
+                                                                     serverTemplateId.equals(SERVER_TEMPLATE_KEY) ? serverInstance.getServerTemplateId() : serverTemplateId);
+                                                    });
+                                                    return clients;
+                                                });
+
+        serverInstancesById.put(serverInstance.getServerInstanceId(),
+                                serverInstance);
 
         KieServicesClient adminClient = adminClients.get(serverInstance.getServerTemplateId());
         // update admin clients
@@ -271,17 +269,18 @@ public class KieServerIntegration {
                                                                       null,
                                                                       getCredentialsProvider());
         if (kieServicesClient != null) {
-            serverTemplatesClients.put(serverTemplate.getId(),
-                                       kieServicesClient);
+            serverTemplatesClients.computeIfAbsent(serverTemplate.getId(),
+                                                   (k) -> new ConcurrentHashMap<String, KieServicesClient>());
+            serverTemplatesClients.get(serverTemplate.getId()).put(SERVER_TEMPLATE_KEY,
+                                                                   kieServicesClient);
         }
 
         if (serverTemplate.getContainersSpec() != null) {
             for (ContainerSpec containerSpec : serverTemplate.getContainersSpec()) {
                 try {
-                    String key = serverTemplate.getId() + "|" + containerSpec.getId();
-                    if (serverTemplatesClients.containsKey(key)) {
+                    if (serverTemplatesClients.get(serverTemplate.getId()).containsKey(containerSpec.getId())) {
                         logger.debug("KieServerClient for {} is already created",
-                                     key);
+                                     containerSpec.getId());
                         continue;
                     }
 
@@ -291,8 +290,8 @@ public class KieServerIntegration {
                                                                                               kieContainer.getClassLoader(),
                                                                                               getCredentialsProvider());
                     if (kieServicesClient != null) {
-                        serverTemplatesClients.put(key,
-                                                   kieServicesClientForContainer);
+                        serverTemplatesClients.get(serverTemplate.getId()).put(containerSpec.getId(),
+                                                                               kieServicesClientForContainer);
                     }
                 } catch (Exception e) {
                     logger.warn("Failed ot create kie server client for container {} due to {}",
@@ -346,7 +345,7 @@ public class KieServerIntegration {
                                                                                 mappedCapabilities.toArray(new String[mappedCapabilities.size()]));
 
             logger.debug("KieServerClient created successfully for server template {}",
-                         serverTemplate);
+                         serverTemplate.getId());
 
             indexServerInstances(serverTemplate);
 
@@ -358,5 +357,13 @@ public class KieServerIntegration {
                          e);
             return null;
         }
+    }
+
+    protected Map<String, Map<String, KieServicesClient>> getServerTemplatesClients() {
+        return serverTemplatesClients;
+    }
+
+    protected Map<String, ServerInstanceKey> getServerInstancesById() {
+        return serverInstancesById;
     }
 }
