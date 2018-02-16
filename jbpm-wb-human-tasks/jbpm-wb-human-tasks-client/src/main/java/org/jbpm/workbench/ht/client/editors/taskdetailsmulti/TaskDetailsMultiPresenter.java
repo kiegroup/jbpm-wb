@@ -37,7 +37,6 @@ import org.jbpm.workbench.forms.display.api.HumanTaskDisplayerConfig;
 import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayProvider;
 import org.jbpm.workbench.ht.model.TaskKey;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
-import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -47,16 +46,13 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.workbench.model.CompassPosition;
-import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.jbpm.workbench.common.client.PerspectiveIds.DETAILS_SCREEN_PREFERRED_WIDTH;
 import static org.jbpm.workbench.common.client.PerspectiveIds.TASK_DETAILS_SCREEN;
 
 @Dependent
-@WorkbenchScreen(identifier = TASK_DETAILS_SCREEN, preferredWidth = DETAILS_SCREEN_PREFERRED_WIDTH)
+@WorkbenchScreen(identifier = TASK_DETAILS_SCREEN)
 public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
 
     private Caller<TaskService> taskDataService;
@@ -114,11 +110,6 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
     @WorkbenchPartView
     public UberView<TaskDetailsMultiPresenter> getView() {
         return view;
-    }
-
-    @DefaultPosition
-    public Position getPosition() {
-        return CompassPosition.EAST;
     }
 
     @WorkbenchPartTitle
