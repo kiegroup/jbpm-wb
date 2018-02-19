@@ -44,6 +44,7 @@ import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.MultiGridView;
+import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
@@ -66,7 +67,6 @@ import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
-import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
@@ -74,8 +74,8 @@ import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.common.client.PerspectiveIds.*;
-import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
 @WorkbenchScreen(identifier = PROCESS_INSTANCE_LIST_SCREEN)
@@ -427,18 +427,16 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         return MenuFactory
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
                 .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
-                .newTopLevelMenu(Constants.INSTANCE.New_Process_Instance())
-                .respondsWith(new Command() {
-                    @Override
-                    public void execute() {
-                        final String selectedServerTemplate = getSelectedServerTemplate();
-                        if (selectedServerTemplate != null && !selectedServerTemplate.isEmpty()) {
-                            newProcessInstancePopup.show(selectedServerTemplate);
-                        } else {
-                            view.displayNotification(Constants.INSTANCE.SelectServerTemplate());
-                        }
-                    }
-                })
+                .newTopLevelCustomMenu(new PrimaryActionMenuBuilder(Constants.INSTANCE.New_Process_Instance(),
+                                                                    () -> {
+                                                                        final String selectedServerTemplate = getSelectedServerTemplate();
+                                                                        if (selectedServerTemplate != null && !selectedServerTemplate.isEmpty()) {
+                                                                            newProcessInstancePopup.show(selectedServerTemplate);
+                                                                        } else {
+                                                                            view.displayNotification(Constants.INSTANCE.SelectServerTemplate());
+                                                                        }
+                                                                    }
+                ))
                 .endMenu()
                 .build();
     }

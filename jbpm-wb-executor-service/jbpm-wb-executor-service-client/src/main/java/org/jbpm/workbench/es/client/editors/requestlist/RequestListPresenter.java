@@ -42,6 +42,7 @@ import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.MultiGridView;
+import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.common.client.util.DateUtils;
@@ -275,9 +276,8 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         return MenuFactory
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
                 .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
-                .newTopLevelMenu(constants.New_Job())
-                    .respondsWith(getNewJobCommand())
-                .endMenu()
+                .newTopLevelCustomMenu(new PrimaryActionMenuBuilder(constants.New_Job(),
+                                                                    getNewJobCommand())).endMenu()
                 .build();
     }
 

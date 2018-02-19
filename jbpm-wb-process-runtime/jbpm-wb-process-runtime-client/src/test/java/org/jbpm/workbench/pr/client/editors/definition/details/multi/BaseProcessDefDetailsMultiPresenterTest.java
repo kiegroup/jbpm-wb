@@ -18,6 +18,7 @@ package org.jbpm.workbench.pr.client.editors.definition.details.multi;
 
 import javax.enterprise.event.Event;
 
+import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +42,9 @@ public abstract class BaseProcessDefDetailsMultiPresenterTest<T extends BaseProc
 
     @Mock
     PlaceManager placeManager;
+
+    @Mock
+    PrimaryActionMenuBuilder primaryActionMenuBuilder;
 
     @Mock
     T view;
