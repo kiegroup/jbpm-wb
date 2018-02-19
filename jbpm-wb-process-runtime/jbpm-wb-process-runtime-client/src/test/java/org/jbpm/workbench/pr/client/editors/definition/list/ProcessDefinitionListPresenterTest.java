@@ -39,11 +39,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
-import org.uberfire.mvp.PlaceRequest;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -111,9 +109,7 @@ public class ProcessDefinitionListPresenterTest {
         processSummary.setProcessDefName("testProcessDefName");
         processSummary.setDynamic(false);
 
-        when(placeManager.getStatus(any(PlaceRequest.class))).thenReturn(PlaceStatus.CLOSE);
-        presenter.selectProcessDefinition(processSummary,
-                                          true);
+        presenter.selectProcessDefinition(processSummary);
 
         verify(processDefSelectionEvent).fire(any(ProcessDefSelectionEvent.class));
         ArgumentCaptor<ProcessDefSelectionEvent> argument = ArgumentCaptor.forClass(ProcessDefSelectionEvent.class);

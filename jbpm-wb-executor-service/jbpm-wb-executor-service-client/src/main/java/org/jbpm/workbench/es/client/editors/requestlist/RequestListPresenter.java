@@ -60,10 +60,8 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mvp.Command;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -281,25 +279,14 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                 .build();
     }
 
-    public void selectJob(final RequestSummary job,
-                          final Boolean close) {
+    public void selectJob(final RequestSummary job) {
 
         if (job.getStatus() != null) {
-            PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(PerspectiveIds.JOB_DETAILS_SCREEN));
-            if (status == PlaceStatus.CLOSE) {
-                placeManager.goTo(PerspectiveIds.JOB_DETAILS_SCREEN);
-                setupDetailBreadcrumb(Constants.INSTANCE.JobBreadcrumb(job.getId()));
-                jobSelectedEvent.fire(new JobSelectedEvent(getSelectedServerTemplate(),
-                                                           job.getDeploymentId(),
-                                                           job.getJobId()));
-            } else if (status == PlaceStatus.OPEN && !close) {
-                setupDetailBreadcrumb(Constants.INSTANCE.JobBreadcrumb(job.getId()));
-                jobSelectedEvent.fire(new JobSelectedEvent(getSelectedServerTemplate(),
-                                                           job.getDeploymentId(),
-                                                           job.getJobId()));
-            } else if (status == PlaceStatus.OPEN && close) {
-                placeManager.closePlace(PerspectiveIds.JOB_DETAILS_SCREEN);
-            }
+            setupDetailBreadcrumb(Constants.INSTANCE.JobBreadcrumb(job.getId()));
+            placeManager.goTo(PerspectiveIds.JOB_DETAILS_SCREEN);
+            jobSelectedEvent.fire(new JobSelectedEvent(getSelectedServerTemplate(),
+                                                       job.getDeploymentId(),
+                                                       job.getJobId()));
         }
     }
 

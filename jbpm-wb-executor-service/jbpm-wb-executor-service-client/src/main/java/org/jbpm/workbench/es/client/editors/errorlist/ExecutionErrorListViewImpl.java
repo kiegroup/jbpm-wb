@@ -104,8 +104,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
     @Override
     public void initSelectionModel(final ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption(constants.No_Execution_Errors_Found());
-        extendedPagedTable.setSelectionCallback((error, close) -> presenter.selectExecutionError(error,
-                                                                                                 close));
+        extendedPagedTable.setSelectionCallback((error) -> presenter.selectExecutionError(error));
         initBulkActions(extendedPagedTable);
     }
 

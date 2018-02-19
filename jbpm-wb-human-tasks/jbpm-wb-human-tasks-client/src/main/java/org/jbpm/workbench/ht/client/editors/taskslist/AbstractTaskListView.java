@@ -25,7 +25,6 @@ import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.view.client.CellPreviewEvent;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.resources.CommonResources;
 import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
@@ -69,9 +68,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
             @Override
             public String getStyleNames(TaskSummary row,
                                         int rowIndex) {
-                if (rowIndex == extendedPagedTable.getSelectedRow()) {
-                    return CommonResources.INSTANCE.css().selected();
-                } else if (row.getStatus().equals(TASK_STATUS_COMPLETED)) {
+                if (row.getStatus().equals(TASK_STATUS_COMPLETED)) {
                     return HumanTaskResources.INSTANCE.css().taskCompleted();
                 }
                 return null;
@@ -79,8 +76,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         };
 
         extendedPagedTable.setEmptyTableCaption(constants.No_Tasks_Found());
-        extendedPagedTable.setSelectionCallback((task, close) -> presenter.selectTask(task,
-                                                                                      close));
+        extendedPagedTable.setSelectionCallback((task) -> presenter.selectTask(task));
         extendedPagedTable.setRowStyles(selectedStyles);
     }
 
@@ -230,8 +226,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                                                presenter.getProcessInstanceCondition()));
 
         cells.add(new ConditionalButtonActionCell<TaskSummary>(constants.Open(),
-                                                               task -> presenter.selectTask(task,
-                                                                                            false),
+                                                               task -> presenter.selectTask(task),
                                                                presenter.getCompleteActionCondition()));
 
         CompositeCell<TaskSummary> cell = new CompositeCell<TaskSummary>(cells);

@@ -45,9 +45,7 @@ import org.jbpm.workbench.es.util.ExecutionErrorType;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -258,23 +256,12 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                 .build();
     }
 
-    public void selectExecutionError(final ExecutionErrorSummary summary,
-                                     final Boolean close) {
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN));
-        if (status == PlaceStatus.CLOSE) {
-            placeManager.goTo(PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN);
-            setupDetailBreadcrumb(Constants.INSTANCE.ExecutionErrorBreadcrumb(summary.getErrorId()));
-            executionErrorSelectedEvent.fire(new ExecutionErrorSelectedEvent(getSelectedServerTemplate(),
-                                                                             summary.getDeploymentId(),
-                                                                             summary.getErrorId()));
-        } else if (status == PlaceStatus.OPEN && !close) {
-            setupDetailBreadcrumb(Constants.INSTANCE.ExecutionErrorBreadcrumb(summary.getErrorId()));
-            executionErrorSelectedEvent.fire(new ExecutionErrorSelectedEvent(getSelectedServerTemplate(),
-                                                                             summary.getDeploymentId(),
-                                                                             summary.getErrorId()));
-        } else if (status == PlaceStatus.OPEN && close) {
-            placeManager.closePlace(PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN);
-        }
+    public void selectExecutionError(final ExecutionErrorSummary summary) {
+        setupDetailBreadcrumb(Constants.INSTANCE.ExecutionErrorBreadcrumb(summary.getErrorId()));
+        placeManager.goTo(PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN);
+        executionErrorSelectedEvent.fire(new ExecutionErrorSelectedEvent(getSelectedServerTemplate(),
+                                                                         summary.getDeploymentId(),
+                                                                         summary.getErrorId()));
     }
 
     @Inject

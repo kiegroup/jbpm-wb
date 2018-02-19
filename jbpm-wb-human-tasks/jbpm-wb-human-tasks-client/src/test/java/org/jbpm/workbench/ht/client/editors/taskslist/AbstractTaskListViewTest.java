@@ -128,7 +128,6 @@ public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest
         final ArgumentCaptor<RowStyles> rowStylesApplied = ArgumentCaptor.forClass(RowStyles.class);
 
         verify(currentListGrid).setRowStyles(rowStylesApplied.capture());
-        when(currentListGrid.getSelectedRow()).thenReturn(0);
 
         assertNull(rowStylesApplied.getValue().getStyleNames(TaskSummary.builder()
                                                                      .status(TaskUtils.TASK_STATUS_READY)

@@ -64,10 +64,8 @@ import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
-import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -367,26 +365,16 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                 .build();
     }
 
-    public void selectTask(final TaskSummary summary,
-                           final Boolean close) {
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(PerspectiveIds.TASK_DETAILS_SCREEN));
+    public void selectTask(final TaskSummary summary) {
         boolean logOnly = false;
         if (TASK_STATUS_COMPLETED.equals(summary.getStatus()) ||
                 TASK_STATUS_EXITED.equals(summary.getStatus())) {
             logOnly = true;
         }
-        if (status == PlaceStatus.CLOSE) {
-            placeManager.goTo(PerspectiveIds.TASK_DETAILS_SCREEN);
-            setupDetailBreadcrumb(constants.TaskBreadcrumb(summary.getId()));
-            fireTaskSelectionEvent(summary,
-                                   logOnly);
-        } else if (status == PlaceStatus.OPEN && !close) {
-            setupDetailBreadcrumb(constants.TaskBreadcrumb(summary.getId()));
-            fireTaskSelectionEvent(summary,
-                                   logOnly);
-        } else if (status == PlaceStatus.OPEN && close) {
-            placeManager.closePlace(PerspectiveIds.TASK_DETAILS_SCREEN);
-        }
+        setupDetailBreadcrumb(constants.TaskBreadcrumb(summary.getId()));
+        placeManager.goTo(PerspectiveIds.TASK_DETAILS_SCREEN);
+        fireTaskSelectionEvent(summary,
+                               logOnly);
     }
 
     private void fireTaskSelectionEvent(TaskSummary summary,

@@ -87,17 +87,6 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             @Override
             public void onSelectionChange(SelectionChangeEvent event) {
-
-                if (selectedRow == -1) {
-                    listGrid.setRowStyles(selectedStyles);
-                    selectedRow = listGrid.getKeyboardSelectedRow();
-                    listGrid.redraw();
-                } else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
-                    listGrid.setRowStyles(selectedStyles);
-                    selectedRow = listGrid.getKeyboardSelectedRow();
-                    listGrid.redraw();
-                }
-
                 selectedItem = selectionModel.getLastSelectedObject();
             }
         });
@@ -124,7 +113,6 @@ public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummar
 
         listGrid.setSelectionModel(selectionModel,
                                    noActionColumnManager);
-        listGrid.setRowStyles(selectedStyles);
     }
 
     @Override

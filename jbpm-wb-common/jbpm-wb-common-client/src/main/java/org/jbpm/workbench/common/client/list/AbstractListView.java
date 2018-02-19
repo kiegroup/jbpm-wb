@@ -15,7 +15,6 @@
  */
 package org.jbpm.workbench.common.client.list;
 
-import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
@@ -23,7 +22,6 @@ import com.google.gwt.view.client.NoSelectionModel;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.workbench.common.client.resources.CommonResources;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
@@ -59,20 +57,6 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
     protected NoSelectionModel<T> selectionModel;
 
     protected T selectedItem;
-
-    protected int selectedRow = -1;
-
-    protected RowStyles<T> selectedStyles = new RowStyles<T>() {
-
-        @Override
-        public String getStyleNames(T row,
-                                    int rowIndex) {
-            if (rowIndex == selectedRow) {
-                return CommonResources.INSTANCE.css().selected();
-            }
-            return null;
-        }
-    };
 
     protected DefaultSelectionEventManager<T> noActionColumnManager;
 

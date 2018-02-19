@@ -46,10 +46,8 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -76,8 +74,6 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     private Event<ProcessDefSelectionEvent> processDefSelected;
 
     private Constants constants = Constants.INSTANCE;
-
-    private String placeIdentifier;
 
     public ProcessDefinitionListPresenter() {
         super();
@@ -201,27 +197,10 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                 .build();
     }
 
-    protected void selectProcessDefinition(final ProcessSummary processSummary,
-                                           final Boolean close) {
-        PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN));
-
-        if (instanceDetailsStatus == PlaceStatus.OPEN) {
-            placeManager.closePlace(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
-        }
-
-        placeIdentifier = PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN;
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(placeIdentifier));
-
-        if (status == PlaceStatus.CLOSE) {
-            placeManager.goTo(placeIdentifier);
-            setupDetailBreadcrumb(Constants.INSTANCE.ProcessDefinitionBreadcrumb(processSummary.getName()));
-            fireProcessDefSelectionEvent(processSummary);
-        } else if (status == PlaceStatus.OPEN && !close) {
-            setupDetailBreadcrumb(Constants.INSTANCE.ProcessDefinitionBreadcrumb(processSummary.getName()));
-            fireProcessDefSelectionEvent(processSummary);
-        } else if (status == PlaceStatus.OPEN && close) {
-            placeManager.closePlace(placeIdentifier);
-        }
+    protected void selectProcessDefinition(final ProcessSummary processSummary) {
+        setupDetailBreadcrumb(Constants.INSTANCE.ProcessDefinitionBreadcrumb(processSummary.getName()));
+        placeManager.goTo(PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN);
+        fireProcessDefSelectionEvent(processSummary);
     }
 
     private void fireProcessDefSelectionEvent(final ProcessSummary processSummary) {
@@ -233,17 +212,11 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     }
 
     public void refreshNewProcessInstance(@Observes NewProcessInstanceEvent newProcessInstance) {
-        placeIdentifier = PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN;
-
-        PlaceStatus definitionDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest(placeIdentifier));
-        if (definitionDetailsStatus == PlaceStatus.OPEN) {
-            placeManager.closePlace(placeIdentifier);
-        }
-        placeManager.goTo(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
         setupDetailBreadcrumb(placeManager,
                               Constants.INSTANCE.Process_Definitions(),
                               Constants.INSTANCE.ProcessInstanceBreadcrumb(newProcessInstance.getNewProcessInstanceId()),
                               PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
+        placeManager.goTo(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
         processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getDeploymentId(),
                                                                        newProcessInstance.getNewProcessInstanceId(),
                                                                        newProcessInstance.getNewProcessDefId(),

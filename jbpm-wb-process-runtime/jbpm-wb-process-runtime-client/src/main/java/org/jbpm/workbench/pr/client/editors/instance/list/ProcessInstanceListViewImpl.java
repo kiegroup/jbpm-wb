@@ -98,8 +98,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     @Override
     public void initSelectionModel(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption(constants.No_Process_Instances_Found());
-        extendedPagedTable.setSelectionCallback((pis, close) -> presenter.selectProcessInstance(pis,
-                                                                                                close));
+        extendedPagedTable.setSelectionCallback((pis) -> presenter.selectProcessInstance(pis));
         initBulkActions(extendedPagedTable);
     }
 

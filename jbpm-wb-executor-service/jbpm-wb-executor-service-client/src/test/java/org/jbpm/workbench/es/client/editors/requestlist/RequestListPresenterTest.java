@@ -42,12 +42,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
 import static org.jbpm.workbench.es.client.editors.util.JobUtils.createRequestSummary;
@@ -314,10 +312,7 @@ public class RequestListPresenterTest {
     @Test
     public void testJobSelectionWithDetailsClosed() {
         RequestSummary job = createRequestSummary();
-        boolean closed = true;
-        when(placeManager.getStatus(any(DefaultPlaceRequest.class))).thenReturn(PlaceStatus.CLOSE);
-        presenter.selectJob(job,
-                            closed);
+        presenter.selectJob(job);
 
         verify(placeManager).goTo(PerspectiveIds.JOB_DETAILS_SCREEN);
         final ArgumentCaptor<JobSelectedEvent> captor = ArgumentCaptor.forClass(JobSelectedEvent.class);
@@ -330,10 +325,7 @@ public class RequestListPresenterTest {
     @Test
     public void testJobSelectionWithDetailsOpen() {
         RequestSummary job = createRequestSummary();
-        boolean closed = false;
-        when(placeManager.getStatus(any(DefaultPlaceRequest.class))).thenReturn(PlaceStatus.OPEN);
-        presenter.selectJob(job,
-                            closed);
+        presenter.selectJob(job);
 
         verify(placeManager,
                never()).goTo(any(PlaceRequest.class));
@@ -343,21 +335,6 @@ public class RequestListPresenterTest {
         assertJobSelectedEventContent(captor.getValue(),
                                       job.getDeploymentId(),
                                       job.getId());
-    }
-
-    @Test
-    public void testCloseDetails() {
-        RequestSummary job = createRequestSummary();
-        boolean closed = true;
-        when(placeManager.getStatus(any(DefaultPlaceRequest.class))).thenReturn(PlaceStatus.OPEN);
-        presenter.selectJob(job,
-                            closed);
-
-        verify(placeManager,
-               never()).goTo(anyString());
-        verify(jobSelectedEventMock,
-               never()).fire(any());
-        verify(placeManager).closePlace(PerspectiveIds.JOB_DETAILS_SCREEN);
     }
 
     @Test

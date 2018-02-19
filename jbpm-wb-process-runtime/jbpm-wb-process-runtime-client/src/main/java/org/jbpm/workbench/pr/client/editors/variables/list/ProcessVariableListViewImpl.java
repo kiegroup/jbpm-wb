@@ -95,17 +95,6 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             @Override
             public void onSelectionChange(SelectionChangeEvent event) {
-
-                if (selectedRow == -1) {
-                    listGrid.setRowStyles(selectedStyles);
-                    selectedRow = listGrid.getKeyboardSelectedRow();
-                    listGrid.redraw();
-                } else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
-                    listGrid.setRowStyles(selectedStyles);
-                    selectedRow = listGrid.getKeyboardSelectedRow();
-                    listGrid.redraw();
-                }
-
                 selectedItem = selectionModel.getLastSelectedObject();
             }
         });
@@ -132,7 +121,6 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
 
         listGrid.setSelectionModel(selectionModel,
                                    noActionColumnManager);
-        listGrid.setRowStyles(selectedStyles);
     }
 
     @Override

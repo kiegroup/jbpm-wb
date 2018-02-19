@@ -18,7 +18,7 @@ package org.jbpm.workbench.common.client.list;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 import com.google.gwt.dom.client.BrowserEvents;
@@ -30,8 +30,6 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
-import org.jbpm.workbench.common.client.resources.CommonResources;
-import org.jbpm.workbench.common.client.resources.css.CommonCSS;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.tables.PagedTable;
@@ -39,15 +37,11 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> {
 
-    private final CommonCSS commonCSS = CommonResources.INSTANCE.css();
-
     private List<Column<T, ?>> ignoreSelectionColumns = new ArrayList<Column<T, ?>>();
-
-    private int selectedRow = -1;
 
     private List<T> selectedItems;
 
-    private BiConsumer<T, Boolean> selectionCallback = null;
+    private Consumer<T> selectionCallback = null;
 
     public ExtendedPagedTable(final GridGlobalPreferences gridPreferences) {
         super(DEFAULT_PAGE_SIZE,
@@ -59,13 +53,6 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
         dataGrid.addColumnSortHandler(new AsyncHandler(dataGrid));
         setSelectionModel(createSelectionModel(),
                           createNoActionColumnManager());
-        setRowStyles((T row,
-                      int rowIndex) -> {
-            if (rowIndex == selectedRow) {
-                return commonCSS.selected();
-            }
-            return null;
-        });
     }
 
     public void setTooltip(int row,
@@ -145,19 +132,9 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
 
     protected NoSelectionModel<T> createSelectionModel() {
         final NoSelectionModel<T> selectionModel = new NoSelectionModel<T>();
-        final ExtendedPagedTable<T> extendedPagedTable = this;
         selectionModel.addSelectionChangeHandler(event -> {
-            boolean close = false;
-            if (selectedRow == -1 || extendedPagedTable.getKeyboardSelectedRow() != selectedRow) {
-                selectedRow = extendedPagedTable.getKeyboardSelectedRow();
-                extendedPagedTable.redraw();
-            } else {
-                close = true;
-            }
-
             if (selectionCallback != null) {
-                selectionCallback.accept(selectionModel.getLastSelectedObject(),
-                                         close);
+                selectionCallback.accept(selectionModel.getLastSelectedObject());
             }
         });
         return selectionModel;
@@ -212,12 +189,8 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
         });
     }
 
-    public void setSelectionCallback(final BiConsumer<T, Boolean> selectionCallback) {
+    public void setSelectionCallback(final Consumer<T> selectionCallback) {
         this.selectionCallback = selectionCallback;
-    }
-
-    public int getSelectedRow() {
-        return selectedRow;
     }
 
     public void setItemSelection(T item,

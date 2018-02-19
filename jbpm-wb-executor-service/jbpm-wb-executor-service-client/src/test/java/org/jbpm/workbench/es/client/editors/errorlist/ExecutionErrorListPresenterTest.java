@@ -45,16 +45,13 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.ResourceRef;
 import org.uberfire.security.authz.AuthorizationManager;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
@@ -435,10 +432,8 @@ public class ExecutionErrorListPresenterTest {
                         .processId(processId)
                         .processInstanceId(processInstanceId)
                         .build();
-        when(placeManager.getStatus(any(DefaultPlaceRequest.class))).thenReturn(PlaceStatus.CLOSE);
         presenter.setExecutionErrorSelectedEvent(executionErrorSelectedEventMock);
-        presenter.selectExecutionError(errorSummary,
-                                       true);
+        presenter.selectExecutionError(errorSummary);
         final ArgumentCaptor<ExecutionErrorSelectedEvent> captor = ArgumentCaptor.forClass(ExecutionErrorSelectedEvent.class);
         verify(executionErrorSelectedEventMock).fire(captor.capture());
         assertEquals(deploymentId,

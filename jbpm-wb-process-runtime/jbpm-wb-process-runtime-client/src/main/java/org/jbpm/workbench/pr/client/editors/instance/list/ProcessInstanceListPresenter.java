@@ -63,7 +63,6 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
@@ -453,30 +452,15 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         placeManager.goTo(placeRequestImpl);
     }
 
-    public void selectProcessInstance(final ProcessInstanceSummary summary,
-                                      final Boolean close) {
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(PROCESS_INSTANCE_DETAILS_SCREEN));
-
-        if (status == PlaceStatus.CLOSE) {
-            placeManager.goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
-            setupDetailBreadcrumb(Constants.INSTANCE.ProcessInstanceBreadcrumb(summary.getProcessInstanceId()));
-            processInstanceSelected.fire(new ProcessInstanceSelectionEvent(summary.getDeploymentId(),
-                                                                           summary.getProcessInstanceId(),
-                                                                           summary.getProcessId(),
-                                                                           summary.getProcessName(),
-                                                                           summary.getState(),
-                                                                           getSelectedServerTemplate()));
-        } else if (status == PlaceStatus.OPEN && !close) {
-            setupDetailBreadcrumb(Constants.INSTANCE.ProcessInstanceBreadcrumb(summary.getProcessInstanceId()));
-            processInstanceSelected.fire(new ProcessInstanceSelectionEvent(summary.getDeploymentId(),
-                                                                           summary.getProcessInstanceId(),
-                                                                           summary.getProcessId(),
-                                                                           summary.getProcessName(),
-                                                                           summary.getState(),
-                                                                           getSelectedServerTemplate()));
-        } else if (status == PlaceStatus.OPEN && close) {
-            placeManager.closePlace(PROCESS_INSTANCE_DETAILS_SCREEN);
-        }
+    public void selectProcessInstance(final ProcessInstanceSummary summary) {
+        setupDetailBreadcrumb(Constants.INSTANCE.ProcessInstanceBreadcrumb(summary.getProcessInstanceId()));
+        placeManager.goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
+        processInstanceSelected.fire(new ProcessInstanceSelectionEvent(summary.getDeploymentId(),
+                                                                       summary.getProcessInstanceId(),
+                                                                       summary.getProcessId(),
+                                                                       summary.getProcessName(),
+                                                                       summary.getState(),
+                                                                       getSelectedServerTemplate()));
     }
 
     public void formClosed(@Observes BeforeClosePlaceEvent closed) {

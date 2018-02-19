@@ -73,24 +73,9 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             @Override
             public void onSelectionChange(SelectionChangeEvent event) {
-
-                boolean close = false;
-                if (selectedRow == -1) {
-                    listGrid.setRowStyles(selectedStyles);
-                    selectedRow = listGrid.getKeyboardSelectedRow();
-                    listGrid.redraw();
-                } else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
-                    listGrid.setRowStyles(selectedStyles);
-                    selectedRow = listGrid.getKeyboardSelectedRow();
-                    listGrid.redraw();
-                } else {
-                    close = true;
-                }
-
                 selectedItem = selectionModel.getLastSelectedObject();
 
-                presenter.selectProcessDefinition(selectedItem,
-                                                  close);
+                presenter.selectProcessDefinition(selectedItem);
             }
         });
         final ExtendedPagedTable<ProcessSummary> extendedPagedTable = getListGrid();
@@ -118,7 +103,6 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         listGrid.setSelectionModel(selectionModel,
                                    noActionColumnManager);
         listGrid.setEmptyTableCaption(constants.No_Process_Definitions_Found());
-        listGrid.setRowStyles(selectedStyles);
 
         listGrid.getElement().getStyle().setPaddingRight(20,
                                                          Style.Unit.PX);

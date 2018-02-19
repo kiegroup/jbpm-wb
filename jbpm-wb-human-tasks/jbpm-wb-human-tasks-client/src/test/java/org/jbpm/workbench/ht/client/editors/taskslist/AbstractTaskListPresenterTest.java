@@ -56,11 +56,9 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
@@ -572,11 +570,8 @@ public abstract class AbstractTaskListPresenterTest {
                 .deploymentId(TASK_DEPLOYMENT_ID)
                 .status(TASK_STATUS_EXITED)
                 .build();
-        boolean closed = true;
-        when(placeManager.getStatus(any(DefaultPlaceRequest.class))).thenReturn(PlaceStatus.CLOSE);
 
-        getPresenter().selectTask(taskSummary,
-                                  closed);
+        getPresenter().selectTask(taskSummary);
 
         verify(placeManager).goTo(PerspectiveIds.TASK_DETAILS_SCREEN);
         final ArgumentCaptor<TaskSelectionEvent> captor = ArgumentCaptor.forClass(TaskSelectionEvent.class);
@@ -591,11 +586,8 @@ public abstract class AbstractTaskListPresenterTest {
                 .deploymentId(TASK_DEPLOYMENT_ID)
                 .status(TASK_STATUS_READY)
                 .build();
-        boolean closed = true;
-        when(placeManager.getStatus(any(DefaultPlaceRequest.class))).thenReturn(PlaceStatus.CLOSE);
 
-        getPresenter().selectTask(taskSummary,
-                                  closed);
+        getPresenter().selectTask(taskSummary);
 
         verify(placeManager).goTo(PerspectiveIds.TASK_DETAILS_SCREEN);
         final ArgumentCaptor<TaskSelectionEvent> captor = ArgumentCaptor.forClass(TaskSelectionEvent.class);
