@@ -42,6 +42,7 @@ import static org.dashbuilder.dataset.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 import static org.jbpm.dashboard.renderer.model.DashboardData.*;
+import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProcessDashboardTest extends AbstractDashboardTest {
@@ -469,12 +470,12 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testOpenInstanceDetails() {
-        when(placeManager.getStatus(ProcessDashboard.PROCESS_DETAILS_SCREEN_ID)).thenReturn(PlaceStatus.CLOSE);
+        when(placeManager.getStatus(PROCESS_INSTANCE_DETAILS_SCREEN)).thenReturn(PlaceStatus.CLOSE);
         presenter.tableCellSelected(COLUMN_PROCESS_INSTANCE_ID,
                                     3);
         verify(instanceSelectionEvent).fire(any(ProcessInstanceSelectionEvent.class));
         verify(processDashboardFocusEvent).fire(any(ProcessDashboardFocusEvent.class));
-        verify(placeManager).goTo(ProcessDashboard.PROCESS_DETAILS_SCREEN_ID);
+        verify(placeManager).goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
     }
 
     @Test
