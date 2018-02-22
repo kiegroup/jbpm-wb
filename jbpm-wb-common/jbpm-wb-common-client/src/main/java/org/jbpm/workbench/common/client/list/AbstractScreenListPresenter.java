@@ -17,11 +17,16 @@ package org.jbpm.workbench.common.client.list;
 
 import java.util.Optional;
 
+import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.menu.ManageSelector;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.events.ServerTemplateSelected;
+import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchPartTitleDecoration;
+import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.events.ClosePlaceEvent;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
@@ -47,13 +52,29 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
     protected PlaceManager placeManager;
 
     @Inject
+    private PerspectiveManager perspectiveManager;
+
+    @Inject
     UberfireBreadcrumbs breadcrumbs;
 
     protected PlaceRequest place;
 
     protected ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
 
+    @Inject
+    protected ManageSelector manageSelector;
+
     private String selectedServerTemplate = "";
+
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return Constants.INSTANCE.Manage();
+    }
+
+    @WorkbenchPartTitleDecoration
+    public IsWidget getTitleDecorator() {
+        return manageSelector.getManageSelectorWidget();
+    }
 
     @OnOpen
     public void onOpen() {
@@ -81,7 +102,9 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
                                serverTemplateSelectorMenuBuilder.getView().getElement());
     }
 
-    public abstract String getPerspectiveId();
+    public String getPerspectiveId() {
+        return perspectiveManager.getCurrentPerspective().getIdentifier();
+    }
 
     @Inject
     public void setIdentity(final User identity) {
@@ -147,5 +170,9 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
 
     public void setUberfireBreadcrumbs(UberfireBreadcrumbs breadcrumbs) {
         this.breadcrumbs = breadcrumbs;
+    }
+
+    public void setPerspectiveManager(PerspectiveManager perspectiveManager) {
+        this.perspectiveManager = perspectiveManager;
     }
 }

@@ -44,6 +44,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.uberfire.client.mvp.PerspectiveActivity;
+import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
@@ -88,6 +90,12 @@ public class ExecutionErrorListPresenterTest {
     private UberfireBreadcrumbs breadcrumbs;
 
     @Mock
+    private PerspectiveManager perspectiveManager;
+
+    @Mock
+    private PerspectiveActivity perspectiveActivity;
+
+    @Mock
     ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
 
     @Mock
@@ -116,6 +124,7 @@ public class ExecutionErrorListPresenterTest {
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
         when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
         when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
+        when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
 
         presenter.setExecutorService(callerMockExecutorService);
     }

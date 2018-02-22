@@ -43,7 +43,6 @@ import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.uberfire.client.annotations.WorkbenchMenu;
-import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
@@ -75,13 +74,10 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
     private Constants constants = Constants.INSTANCE;
 
+    private final org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
+
     public ProcessDefinitionListPresenter() {
         super();
-    }
-
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.Process_Definitions();
     }
 
     @WorkbenchPartView
@@ -90,19 +86,14 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     }
 
     @Override
-    public String getPerspectiveId() {
-        return PerspectiveIds.PROCESS_DEFINITIONS;
-    }
-
-    @Override
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            Constants.INSTANCE.Process_Definitions());
+                            commonConstants.Process_Definitions());
     }
 
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              Constants.INSTANCE.Process_Definitions(),
+                              commonConstants.Process_Definitions(),
                               detailLabel,
                               PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN);
     }
@@ -180,7 +171,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     boolean onRuntimeDataServiceError() {
         view.hideBusyIndicator();
 
-        showErrorPopup(Constants.INSTANCE.ResourceCouldNotBeLoaded(Constants.INSTANCE.Process_Definitions()));
+        showErrorPopup(constants.ResourceCouldNotBeLoaded(commonConstants.Process_Definitions()));
 
         return false;
     }
@@ -198,7 +189,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     }
 
     protected void selectProcessDefinition(final ProcessSummary processSummary) {
-        setupDetailBreadcrumb(Constants.INSTANCE.ProcessDefinitionBreadcrumb(processSummary.getName()));
+        setupDetailBreadcrumb(constants.ProcessDefinitionBreadcrumb(processSummary.getName()));
         placeManager.goTo(PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN);
         fireProcessDefSelectionEvent(processSummary);
     }
@@ -213,8 +204,8 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
     public void refreshNewProcessInstance(@Observes NewProcessInstanceEvent newProcessInstance) {
         setupDetailBreadcrumb(placeManager,
-                              Constants.INSTANCE.Process_Definitions(),
-                              Constants.INSTANCE.ProcessInstanceBreadcrumb(newProcessInstance.getNewProcessInstanceId()),
+                              commonConstants.Process_Definitions(),
+                              constants.ProcessInstanceBreadcrumb(newProcessInstance.getNewProcessInstanceId()),
                               PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
         placeManager.goTo(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
         processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getDeploymentId(),

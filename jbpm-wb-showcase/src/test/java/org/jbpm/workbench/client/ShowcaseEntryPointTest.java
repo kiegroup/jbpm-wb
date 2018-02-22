@@ -137,15 +137,15 @@ public class ShowcaseEntryPointTest {
 
         assertEquals(5,
                      processManagementMenuItems.size());
-        assertEquals(showcaseEntryPoint.constants.Process_Definitions(),
+        assertEquals(showcaseEntryPoint.commonConstants.Process_Definitions(),
                      processManagementMenuItems.get(0).getCaption());
-        assertEquals(showcaseEntryPoint.constants.Process_Instances(),
+        assertEquals(showcaseEntryPoint.commonConstants.Process_Instances(),
                      processManagementMenuItems.get(1).getCaption());
         assertEquals(showcaseEntryPoint.constants.Process_Instances_Admin(),
                      processManagementMenuItems.get(2).getCaption());
-        assertEquals(showcaseEntryPoint.constants.Tasks_Admin(),
+        assertEquals(showcaseEntryPoint.commonConstants.Tasks_Admin(),
                      processManagementMenuItems.get(3).getCaption());
-        assertEquals(showcaseEntryPoint.constants.ExecutionErrors(),
+        assertEquals(showcaseEntryPoint.commonConstants.ExecutionErrors(),
                      processManagementMenuItems.get(4).getCaption());
     }
 
@@ -157,7 +157,7 @@ public class ShowcaseEntryPointTest {
                      deploymentMenuItems.size());
         assertEquals(showcaseEntryPoint.constants.Execution_Servers(),
                      deploymentMenuItems.get(0).getCaption());
-        assertEquals(showcaseEntryPoint.constants.Jobs(),
+        assertEquals(showcaseEntryPoint.commonConstants.Jobs(),
                      deploymentMenuItems.get(1).getCaption());
     }
 
@@ -167,7 +167,7 @@ public class ShowcaseEntryPointTest {
 
         assertEquals(3,
                      workMenuItems.size());
-        assertEquals(showcaseEntryPoint.constants.Tasks_List(),
+        assertEquals(showcaseEntryPoint.commonConstants.Task_List(),
                      workMenuItems.get(0).getCaption());
         assertEquals(showcaseEntryPoint.constants.Tasks_List_Admin(),
                      workMenuItems.get(1).getCaption());

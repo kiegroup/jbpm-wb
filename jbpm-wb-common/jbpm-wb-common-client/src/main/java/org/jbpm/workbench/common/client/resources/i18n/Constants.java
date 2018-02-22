@@ -108,4 +108,18 @@ public interface Constants extends Messages {
     String Apply();
 
     String AdvancedFilters();
+
+    String Process_Definitions();
+
+    String Process_Instances();
+
+    String Tasks_Admin();
+
+    String Task_List();
+
+    String ExecutionErrors();
+
+    String Jobs();
+
+    String Manage();
 }

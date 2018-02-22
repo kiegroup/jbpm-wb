@@ -41,6 +41,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.uberfire.client.mvp.PerspectiveActivity;
+import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
@@ -88,6 +90,12 @@ public class RequestListPresenterTest {
     private UberfireBreadcrumbs breadcrumbs;
 
     @Mock
+    private PerspectiveManager perspectiveManager;
+
+    @Mock
+    private PerspectiveActivity perspectiveActivity;
+
+    @Mock
     ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
 
     @Mock
@@ -111,6 +119,7 @@ public class RequestListPresenterTest {
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
         when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
         when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
+        when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
 
 
         presenter = new RequestListPresenter(viewMock,
@@ -120,6 +129,7 @@ public class RequestListPresenterTest {
                                              jobSelectedEventMock,
                                              placeManager);
         presenter.setUberfireBreadcrumbs(breadcrumbs);
+        presenter.setPerspectiveManager(perspectiveManager);
         presenter.setServerTemplateSelectorMenuBuilder(serverTemplateSelectorMenuBuilder);
         presenter.setNewJobPresenter(newJobPresenterMock);
     }

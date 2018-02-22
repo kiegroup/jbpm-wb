@@ -87,8 +87,6 @@ public interface Constants extends Messages {
 
     String Bulk_Signal();
 
-    String Process_Instances();
-
     String ProcessInstanceBreadcrumb(Long processInstanceId);
 
     String History();
@@ -128,8 +126,6 @@ public interface Constants extends Messages {
     String Previous_Value();
 
     String No_History_For_This_Variable();
-
-    String Process_Definitions();
 
     String ProcessDefinitionBreadcrumb(String title);
 

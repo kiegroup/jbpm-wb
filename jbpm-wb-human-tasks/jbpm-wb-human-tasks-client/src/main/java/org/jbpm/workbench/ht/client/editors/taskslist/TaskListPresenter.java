@@ -26,7 +26,6 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.uberfire.client.annotations.WorkbenchMenu;
-import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -37,11 +36,6 @@ import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 @Dependent
 @WorkbenchScreen(identifier = PerspectiveIds.TASK_LIST_SCREEN)
 public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImpl> {
-
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.Tasks_List();
-    }
 
     @WorkbenchMenu
     public Menus getMenus() { //It's necessary to annotate with @WorkbenchMenu in subclass
@@ -55,20 +49,15 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
     }
 
     @Override
-    public String getPerspectiveId() {
-        return PerspectiveIds.TASKS;
-    }
-
-    @Override
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            constants.Tasks_List());
+                            org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Task_List());
     }
 
     @Override
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              constants.Tasks_List(),
+                              org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Task_List(),
                               detailLabel,
                               PerspectiveIds.TASK_DETAILS_SCREEN);
     }

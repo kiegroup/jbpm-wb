@@ -51,6 +51,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.uberfire.client.mvp.PerspectiveActivity;
+import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
@@ -120,6 +122,12 @@ public class ProcessInstanceListPresenterTest {
     @Mock
     UberfireBreadcrumbs breadcrumbs;
 
+    @Mock
+    private PerspectiveManager perspectiveManager;
+
+    @Mock
+    private PerspectiveActivity perspectiveActivity;
+
     private ArrayList<ProcessInstanceSummary> processInstanceSummaries;
 
     @InjectMocks
@@ -179,6 +187,7 @@ public class ProcessInstanceListPresenterTest {
         when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
         when(filterSettings.getKey()).thenReturn("key");
         when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
+        when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
 
         doAnswer(new Answer() {
 
@@ -710,7 +719,7 @@ public class ProcessInstanceListPresenterTest {
         doNothing().when(spy).showErrorPopup(any());
         assertFalse(callback.onError(error));
         verify(viewMock).hideBusyIndicator();
-        verify(spy).showErrorPopup(Constants.INSTANCE.ResourceCouldNotBeLoaded(Constants.INSTANCE.Process_Instances()));
+        verify(spy).showErrorPopup(Constants.INSTANCE.ResourceCouldNotBeLoaded(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Process_Instances()));
     }
 
     protected class PerspectiveAnswer implements Answer<Boolean> {

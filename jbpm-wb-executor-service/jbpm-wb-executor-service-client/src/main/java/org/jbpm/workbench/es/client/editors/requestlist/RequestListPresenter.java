@@ -57,7 +57,6 @@ import org.jbpm.workbench.es.model.events.RequestChangedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
 import org.jbpm.workbench.es.util.RequestStatus;
 import org.uberfire.client.annotations.WorkbenchMenu;
-import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
@@ -74,6 +73,8 @@ import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSummary, RequestListPresenter.RequestListView> {
 
     private Constants constants = Constants.INSTANCE;
+
+    private final org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
 
     private NewJobPresenter newJobPresenter;
 
@@ -115,25 +116,15 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
         this.placeManager = placeManager;
     }
 
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.Jobs();
-    }
-
-    @Override
-    public String getPerspectiveId() {
-        return PerspectiveIds.JOBS;
-    }
-
     @Override
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            Constants.INSTANCE.Jobs());
+                            commonConstants.Jobs());
     }
 
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              Constants.INSTANCE.Jobs(),
+                              commonConstants.Jobs(),
                               detailLabel,
                               PerspectiveIds.JOB_DETAILS_SCREEN);
     }
@@ -282,7 +273,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     public void selectJob(final RequestSummary job) {
 
         if (job.getStatus() != null) {
-            setupDetailBreadcrumb(Constants.INSTANCE.JobBreadcrumb(job.getId()));
+            setupDetailBreadcrumb(constants.JobBreadcrumb(job.getId()));
             placeManager.goTo(PerspectiveIds.JOB_DETAILS_SCREEN);
             jobSelectedEvent.fire(new JobSelectedEvent(getSelectedServerTemplate(),
                                                        job.getDeploymentId(),

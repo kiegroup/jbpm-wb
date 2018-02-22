@@ -31,10 +31,6 @@ public interface Constants extends Messages {
 
     Constants INSTANCE = GWT.create(Constants.class);
 
-    String Tasks_List();
-
-    String Tasks_Admin();
-
     String Grid();
 
     String New_Task();

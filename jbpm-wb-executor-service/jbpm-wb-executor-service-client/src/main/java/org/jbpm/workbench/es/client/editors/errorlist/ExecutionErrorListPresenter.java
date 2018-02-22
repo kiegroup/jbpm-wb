@@ -43,7 +43,6 @@ import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
 import org.jbpm.workbench.es.util.ExecutionErrorType;
 import org.uberfire.client.annotations.WorkbenchMenu;
-import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.workbench.model.menu.MenuFactory;
@@ -60,6 +59,8 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
 
     private final Constants constants = Constants.INSTANCE;
 
+    private final org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
+
     @Inject
     private ErrorPopupPresenter errorPopup;
 
@@ -69,19 +70,14 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     @Inject
     private Event<ExecutionErrorSelectedEvent> executionErrorSelectedEvent;
 
-    @Override
-    public String getPerspectiveId() {
-        return PerspectiveIds.EXECUTION_ERRORS;
-    }
-
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            Constants.INSTANCE.ExecutionErrors());
+                            commonConstants.ExecutionErrors());
     }
 
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              Constants.INSTANCE.ExecutionErrors(),
+                              commonConstants.ExecutionErrors(),
                               detailLabel,
                               PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN);
     }
@@ -130,7 +126,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                 view.hideBusyIndicator();
             }
         } catch (Exception e) {
-            errorPopup.showMessage(Constants.INSTANCE.Error() + " " + e.getMessage());
+            errorPopup.showMessage(constants.Error() + " " + e.getMessage());
             view.hideBusyIndicator();
         }
     }
@@ -183,7 +179,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     public void acknowledgeExecutionError(final String executionErrorId,
                                           final String deploymentId) {
         executorService.call((Void nothing) -> {
-            view.displayNotification(Constants.INSTANCE.ExecutionErrorAcknowledged(executionErrorId));
+            view.displayNotification(constants.ExecutionErrorAcknowledged(executionErrorId));
             refreshGrid();
         }).acknowledgeError(getSelectedServerTemplate(),
                             deploymentId,
@@ -243,11 +239,6 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         }
     }
 
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return Constants.INSTANCE.ExecutionErrors();
-    }
-
     @WorkbenchMenu
     public Menus getMenus() {
         return MenuFactory
@@ -257,7 +248,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     }
 
     public void selectExecutionError(final ExecutionErrorSummary summary) {
-        setupDetailBreadcrumb(Constants.INSTANCE.ExecutionErrorBreadcrumb(summary.getErrorId()));
+        setupDetailBreadcrumb(constants.ExecutionErrorBreadcrumb(summary.getErrorId()));
         placeManager.goTo(PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN);
         executionErrorSelectedEvent.fire(new ExecutionErrorSelectedEvent(getSelectedServerTemplate(),
                                                                          summary.getDeploymentId(),
@@ -314,12 +305,11 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         );
 
         final Map<String, String> acks = new HashMap<>();
-        final org.jbpm.workbench.common.client.resources.i18n.Constants constants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
         acks.put("1",
-                 constants.Yes());
+                 commonConstants.Yes());
         acks.put("0",
-                 constants.No());
-        view.addSelectFilter(this.constants.Acknowledged(),
+                 commonConstants.No());
+        view.addSelectFilter(constants.Acknowledged(),
                              acks,
                              false,
                              v -> addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
@@ -328,8 +318,8 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                                                                       v))
         );
 
-        view.addDateRangeFilter(this.constants.ErrorDate(),
-                                this.constants.ErrorDatePlaceholder(),
+        view.addDateRangeFilter(constants.ErrorDate(),
+                                constants.ErrorDatePlaceholder(),
                                 true,
                                 v -> addAdvancedSearchFilter(between(COLUMN_ERROR_DATE,
                                                                      v.getStartDate(),
@@ -364,9 +354,9 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
             final boolean isErrorAck = isErrorAckSearch.get().equalsIgnoreCase(Boolean.toString(true));
             String errorAckValue = (isErrorAck ? "1" : "0");
             String valueLabel = (isErrorAck ?
-                    org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Yes()
+                    commonConstants.Yes()
                     :
-                    org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No());
+                    commonConstants.No());
 
             view.addActiveFilter(
                     constants.Acknowledged(),
@@ -390,7 +380,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     public void setupDefaultActiveSearchFilters() {
         view.addActiveFilter(
                 constants.Acknowledged(),
-                org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No(),
+                commonConstants.No(),
                 "0",
                 v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
                                                          v))

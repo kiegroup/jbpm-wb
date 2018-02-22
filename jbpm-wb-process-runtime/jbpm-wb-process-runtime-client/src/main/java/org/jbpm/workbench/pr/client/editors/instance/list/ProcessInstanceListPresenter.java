@@ -61,7 +61,6 @@ import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.WorkbenchMenu;
-import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
@@ -84,6 +83,8 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     private final Constants constants = Constants.INSTANCE;
 
+    private final org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
+
     @Inject
     private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
 
@@ -102,19 +103,14 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
 
     @Override
-    public String getPerspectiveId() {
-        return PROCESS_INSTANCES;
-    }
-
-    @Override
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            Constants.INSTANCE.Process_Instances());
+                            commonConstants.Process_Instances());
     }
 
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              Constants.INSTANCE.Process_Instances(),
+                              commonConstants.Process_Instances(),
                               detailLabel,
                               PROCESS_INSTANCE_DETAILS_SCREEN);
     }
@@ -142,7 +138,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                                                                       currentTableSettings));
             }
         } catch (Exception e) {
-            errorPopup.showMessage(Constants.INSTANCE.UnexpectedError(e.getMessage()));
+            errorPopup.showMessage(constants.UnexpectedError(e.getMessage()));
             view.hideBusyIndicator();
         }
     }
@@ -227,7 +223,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
             public boolean onError(final ClientRuntimeError error) {
                 view.hideBusyIndicator();
 
-                showErrorPopup(Constants.INSTANCE.ResourceCouldNotBeLoaded(Constants.INSTANCE.Process_Instances()));
+                showErrorPopup(constants.ResourceCouldNotBeLoaded(commonConstants.Process_Instances()));
 
                 return false;
             }
@@ -338,7 +334,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     public void abortProcessInstance(String containerId,
                                      long processInstanceId) {
-        view.displayNotification(Constants.INSTANCE.Aborting_Process_Instance(processInstanceId));
+        view.displayNotification(constants.Aborting_Process_Instance(processInstanceId));
         processService.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void v) {
@@ -370,7 +366,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         final StringBuilder deploymentIdsParam = new StringBuilder();
         for (ProcessInstanceSummary selected : processInstances) {
             if (selected.getState() != ProcessInstance.STATE_ACTIVE) {
-                view.displayNotification(Constants.INSTANCE.Signaling_Process_Instance_Not_Allowed(selected.getId()));
+                view.displayNotification(constants.Signaling_Process_Instance_Not_Allowed(selected.getId()));
                 continue;
             }
             processIdsParam.append(selected.getId() + ",");
@@ -403,12 +399,12 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         final List<String> containers = new ArrayList<String>();
         for (ProcessInstanceSummary selected : processInstances) {
             if (selected.getState() != ProcessInstance.STATE_ACTIVE) {
-                view.displayNotification(Constants.INSTANCE.Aborting_Process_Instance_Not_Allowed(selected.getId()));
+                view.displayNotification(constants.Aborting_Process_Instance_Not_Allowed(selected.getId()));
                 continue;
             }
             ids.add(selected.getProcessInstanceId());
             containers.add(selected.getDeploymentId());
-            view.displayNotification(Constants.INSTANCE.Aborting_Process_Instance(selected.getId()));
+            view.displayNotification(constants.Aborting_Process_Instance(selected.getId()));
         }
         if (ids.size() > 0) {
             abortProcessInstances(containers,
@@ -416,23 +412,18 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         }
     }
 
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return Constants.INSTANCE.Process_Instances();
-    }
-
     @WorkbenchMenu
     public Menus getMenus() {
         return MenuFactory
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
                 .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
-                .newTopLevelCustomMenu(new PrimaryActionMenuBuilder(Constants.INSTANCE.New_Process_Instance(),
+                .newTopLevelCustomMenu(new PrimaryActionMenuBuilder(constants.New_Process_Instance(),
                                                                     () -> {
                                                                         final String selectedServerTemplate = getSelectedServerTemplate();
                                                                         if (selectedServerTemplate != null && !selectedServerTemplate.isEmpty()) {
                                                                             newProcessInstancePopup.show(selectedServerTemplate);
                                                                         } else {
-                                                                            view.displayNotification(Constants.INSTANCE.SelectServerTemplate());
+                                                                            view.displayNotification(constants.SelectServerTemplate());
                                                                         }
                                                                     }
                 ))
@@ -453,7 +444,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     }
 
     public void selectProcessInstance(final ProcessInstanceSummary summary) {
-        setupDetailBreadcrumb(Constants.INSTANCE.ProcessInstanceBreadcrumb(summary.getProcessInstanceId()));
+        setupDetailBreadcrumb(constants.ProcessInstanceBreadcrumb(summary.getProcessInstanceId()));
         placeManager.goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
         processInstanceSelected.fire(new ProcessInstanceSelectionEvent(summary.getDeploymentId(),
                                                                        summary.getProcessInstanceId(),

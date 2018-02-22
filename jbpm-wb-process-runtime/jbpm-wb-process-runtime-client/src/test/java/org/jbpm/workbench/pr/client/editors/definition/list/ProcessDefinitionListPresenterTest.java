@@ -38,6 +38,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.uberfire.client.mvp.PerspectiveActivity;
+import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
@@ -54,6 +56,12 @@ public class ProcessDefinitionListPresenterTest {
 
     @Mock
     private UberfireBreadcrumbs breadcrumbs;
+
+    @Mock
+    private PerspectiveManager perspectiveManager;
+
+    @Mock
+    private PerspectiveActivity perspectiveActivity;
 
     @Mock
     protected EventSourceMock<ProcessDefSelectionEvent> processDefSelectionEvent;
@@ -95,7 +103,7 @@ public class ProcessDefinitionListPresenterTest {
         presenter.setProcessRuntimeDataService(processRuntimeDataServiceCaller);
         when(view.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getColumnSortList()).thenReturn(new ColumnSortList());
-
+        when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
         when(next.getVisibleRange()).thenReturn(new Range(1,
                                                           1));
         presenter.getDataProvider().addDataDisplay(next);
@@ -173,7 +181,7 @@ public class ProcessDefinitionListPresenterTest {
     @Test
     public void testOnRuntimeDataServiceError() {
         final ProcessDefinitionListPresenter presenter = spy(this.presenter);
-        final String errorMessage = Constants.INSTANCE.ResourceCouldNotBeLoaded(Constants.INSTANCE.Process_Definitions());
+        final String errorMessage = Constants.INSTANCE.ResourceCouldNotBeLoaded(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Process_Definitions());
 
         doNothing().when(presenter).showErrorPopup(any());
 
