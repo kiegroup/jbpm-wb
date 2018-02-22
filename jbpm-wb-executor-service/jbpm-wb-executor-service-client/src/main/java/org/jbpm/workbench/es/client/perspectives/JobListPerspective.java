@@ -39,4 +39,9 @@ public class JobListPerspective extends AbstractPerspective {
     public String getPerspectiveId() {
         return PerspectiveIds.JOBS;
     }
+
+    @Override
+    public String getBasicFiltersScreenId() {
+        return PerspectiveIds.JOB_LIST_BASIC_FILTERS_SCREEN;
+    }
 }

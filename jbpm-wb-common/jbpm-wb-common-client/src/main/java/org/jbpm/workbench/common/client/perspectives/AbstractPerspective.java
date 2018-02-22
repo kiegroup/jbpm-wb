@@ -17,22 +17,32 @@
 package org.jbpm.workbench.common.client.perspectives;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
+import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.uberfire.client.annotations.Perspective;
+import org.uberfire.client.workbench.docks.UberfireDock;
+import org.uberfire.client.workbench.docks.UberfireDockPosition;
+import org.uberfire.client.workbench.docks.UberfireDocks;
 import org.uberfire.client.workbench.panels.impl.MultiScreenWorkbenchPanelPresenter;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 public abstract class AbstractPerspective {
 
+    @Inject
+    protected UberfireDocks uberfireDocks;
+
     private PlaceRequest placeRequest;
 
     @PostConstruct
     protected void init() {
         placeRequest = getPlaceRequest();
+        setupDocks();
     }
 
     @Perspective
@@ -53,7 +63,20 @@ public abstract class AbstractPerspective {
         }
     }
 
+    protected void setupDocks() {
+        final String basicFiltersScreenId = getBasicFiltersScreenId();
+        if (basicFiltersScreenId != null) {
+            UberfireDock basicFiltersDock = new UberfireDock(UberfireDockPosition.WEST,
+                                                             "fa-filter",
+                                                             new DefaultPlaceRequest(basicFiltersScreenId),
+                                                             getPerspectiveId()).withSize(400).withLabel(Constants.INSTANCE.Filters());
+            uberfireDocks.add(basicFiltersDock);
+        }
+    }
+
     public abstract String getPerspectiveId();
+
+    public abstract String getBasicFiltersScreenId();
 
     public abstract PlaceRequest getPlaceRequest();
 }

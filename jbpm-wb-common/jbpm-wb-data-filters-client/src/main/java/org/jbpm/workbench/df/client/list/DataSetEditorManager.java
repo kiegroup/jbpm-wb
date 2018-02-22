@@ -25,6 +25,7 @@ import org.uberfire.mvp.Command;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.HashMap;
+import java.util.function.BiConsumer;
 
 @Dependent
 public class DataSetEditorManager {
@@ -60,6 +61,29 @@ public class DataSetEditorManager {
                                            filterPagedTable.saveNewTabSettings(modifiedSettings.getKey(),
                                                                                tabSettingsValues);
                                            drawCommand.execute();
+                                       });
+    }
+
+    public void showTableSettingsEditor(final String popupTitle,
+                                        final FilterSettings tableSettings,
+                                        final BiConsumer<FilterSettings, HashMap<String, Object>> callback) {
+        FilterSettings clone = tableSettings.cloneInstance();
+        clone.setKey(tableSettings.getKey());
+        clone.setDataSet(tableSettings.getDataSet());
+        tableDisplayerEditorPopup.setTitle(popupTitle);
+        tableDisplayerEditorPopup.show(clone,
+                                       (FilterEditorPopup editor) -> {
+                                           FilterSettings modifiedSettings = editor.getTableDisplayerSettings();
+                                           HashMap<String, Object> tabSettingsValues = new HashMap<String, Object>();
+
+                                           tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM,
+                                                                 modifiedSettings.getTableName());
+                                           tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM,
+                                                                 modifiedSettings.getTableDescription());
+                                           tabSettingsValues.put(FILTER_TABLE_SETTINGS,
+                                                                 getTableSettingsToStr(modifiedSettings));
+
+                                           callback.accept(modifiedSettings, tabSettingsValues);
                                        });
     }
 

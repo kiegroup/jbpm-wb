@@ -39,4 +39,9 @@ public class ProcessDefinitionsPerspective extends AbstractPerspective {
     public String getPerspectiveId() {
         return PerspectiveIds.PROCESS_DEFINITIONS;
     }
+
+    @Override
+    public String getBasicFiltersScreenId() {
+        return null;
+    }
 }

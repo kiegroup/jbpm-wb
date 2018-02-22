@@ -39,4 +39,9 @@ public class TaskListPerspective extends AbstractPerspective {
     public String getPerspectiveId() {
         return PerspectiveIds.TASKS;
     }
+
+    @Override
+    public String getBasicFiltersScreenId() {
+        return PerspectiveIds.TASK_LIST_BASIC_FILTERS_SCREEN;
+    }
 }

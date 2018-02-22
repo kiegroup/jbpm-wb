@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.common.client.dataset;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -51,6 +52,11 @@ public class DataSetAwareSelect {
     private String textColumnId;
     private DataSetLookup dataSetLookup;
     private String tableKey;
+
+    @PostConstruct
+    public void init(){
+        select.disable();
+    }
 
     public void setDataSetLookup(DataSetLookup dataSetLookup) {
         this.dataSetLookup = dataSetLookup;

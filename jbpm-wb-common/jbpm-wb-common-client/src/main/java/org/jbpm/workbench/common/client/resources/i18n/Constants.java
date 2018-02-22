@@ -98,4 +98,14 @@ public interface Constants extends Messages {
     String Custom();
 
     String Home();
+
+    String Filters();
+
+    String Select();
+
+    String Refine();
+
+    String Apply();
+
+    String AdvancedFilters();
 }
