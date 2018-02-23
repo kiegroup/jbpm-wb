@@ -71,8 +71,6 @@ public class ManageSelectorImpl implements ManageSelector {
                          Constants.INSTANCE.Process_Instances());
         perspectives.put(PerspectiveIds.TASKS_ADMIN,
                          Constants.INSTANCE.Tasks_Admin());
-        perspectives.put(PerspectiveIds.TASKS,
-                         Constants.INSTANCE.Task_List());
         perspectives.put(PerspectiveIds.EXECUTION_ERRORS,
                          Constants.INSTANCE.ExecutionErrors());
         perspectives.put(PerspectiveIds.JOBS,

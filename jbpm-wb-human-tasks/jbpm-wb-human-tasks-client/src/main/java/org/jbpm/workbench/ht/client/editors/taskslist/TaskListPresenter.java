@@ -20,12 +20,16 @@ import java.util.List;
 import java.util.function.Predicate;
 import javax.enterprise.context.Dependent;
 
+import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.uberfire.client.annotations.WorkbenchMenu;
+import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchPartTitleDecoration;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -36,6 +40,16 @@ import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 @Dependent
 @WorkbenchScreen(identifier = PerspectiveIds.TASK_LIST_SCREEN)
 public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImpl> {
+
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return Constants.INSTANCE.Task_List();
+    }
+
+    @WorkbenchPartTitleDecoration
+    public IsWidget getTitleDecorator() {
+        return null;
+    }
 
     @WorkbenchMenu
     public Menus getMenus() { //It's necessary to annotate with @WorkbenchMenu in subclass
