@@ -62,13 +62,6 @@ public class AbstractListPresenterTest {
     }
 
     @Test
-    public void restoreTabsTest() {
-        testListPresenter.onRestoreDefaultFilters();
-
-        verify(viewMock).showRestoreDefaultFilterConfirmationPopup();
-    }
-
-    @Test
     public void testUpDateDataOnCallBackFirstPage() {
         List instanceSummaries = new ArrayList<>();
         instanceSummaries.add("item1");

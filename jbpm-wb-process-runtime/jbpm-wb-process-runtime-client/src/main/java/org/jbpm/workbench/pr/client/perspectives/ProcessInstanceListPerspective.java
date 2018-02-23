@@ -41,4 +41,9 @@ public class ProcessInstanceListPerspective extends AbstractPerspective {
     public String getBasicFiltersScreenId() {
         return PerspectiveIds.PROCESS_INSTANCE_LIST_BASIC_FILTERS_SCREEN;
     }
+
+    @Override
+    public String getSavedFiltersScreenId() {
+        return PerspectiveIds.PROCESS_INSTANCE_LIST_SAVED_FILTERS_SCREEN;
+    }
 }

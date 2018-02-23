@@ -57,7 +57,6 @@ import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
-import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
@@ -192,19 +191,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
-    }
-
-    public void showRestoreDefaultFilterConfirmationPopup() {
-        YesNoCancelPopup yesNoCancelPopup = YesNoCancelPopup.newYesNoCancelPopup(constants.RestoreDefaultFilters(),
-                                                                                 constants.AreYouSureRestoreDefaultFilters(),
-                                                                                 () -> {
-                                                                                     showBusyIndicator(constants.Loading());
-                                                                                     presenter.onRestoreTabs();
-                                                                                 },
-                                                                                 null,
-                                                                                 () -> {
-                                                                                 });
-        yesNoCancelPopup.show();
     }
 
     public void restoreTabs() {

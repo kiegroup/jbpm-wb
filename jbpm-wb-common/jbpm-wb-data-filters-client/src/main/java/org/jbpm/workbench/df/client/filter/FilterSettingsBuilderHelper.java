@@ -37,6 +37,10 @@ public final class FilterSettingsBuilderHelper {
         builder.dataset(dataSetId);
     }
 
+    public void uuid(String uuid) {
+        builder.uuid(uuid);
+    }
+
     public void filter(ColumnFilter... filter) {
         builder.filter(filter);
     }

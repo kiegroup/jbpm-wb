@@ -16,16 +16,19 @@
 
 package org.jbpm.workbench.common.client.menu;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import elemental2.dom.DOMTokenList;
-import elemental2.dom.HTMLDocument;
-import elemental2.dom.HTMLElement;
+import org.gwtbootstrap3.client.ui.Button;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.uberfire.client.views.pfly.widgets.Button;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -36,27 +39,26 @@ public class RestoreDefaultFiltersMenuBuilderTest {
 
     RestoreDefaultFiltersMenuBuilder restoreDefaultFiltersMenuBuilder;
 
-    @Mock
-    Button button;
+    @GwtMock
+    Button menuResetTabsButton;
 
-    @Mock
-    HTMLDocument document;
+    ClickHandler clickHandler;
 
     @Before
     public void setup() {
-        button.ownerDocument = document;
-        button.classList = mock(DOMTokenList.class);
-        when(document.createElement("button")).thenReturn(button);
-        final HTMLElement htmlElement = mock(HTMLElement.class);
-        htmlElement.classList = mock(DOMTokenList.class);
-        when(document.createElement("span")).thenReturn(htmlElement);
-        restoreDefaultFiltersMenuBuilder = new RestoreDefaultFiltersMenuBuilder(document,
-                                                                                supportsRestoreDefaultFilters);
+        when(menuResetTabsButton.addClickHandler(any(ClickHandler.class))).thenAnswer(new Answer() {
+            public Object answer(InvocationOnMock aInvocation) throws Throwable {
+                clickHandler = (ClickHandler) aInvocation.getArguments()[0];
+                return null;
+            }
+        });
+        restoreDefaultFiltersMenuBuilder = new RestoreDefaultFiltersMenuBuilder(supportsRestoreDefaultFilters);
     }
 
     @Test
     public void testRestoreDefaultFilters() {
-        restoreDefaultFiltersMenuBuilder.getClickHandler().execute();
+        clickHandler.onClick(new ClickEvent() {
+        });
 
         verify(supportsRestoreDefaultFilters).onRestoreDefaultFilters();
     }

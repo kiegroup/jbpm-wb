@@ -46,7 +46,6 @@ import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
-import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.filter.FilterSettingsJSONMarshaller;
@@ -416,7 +415,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     public Menus getMenus() {
         return MenuFactory
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
-                .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
                 .newTopLevelCustomMenu(new PrimaryActionMenuBuilder(constants.New_Process_Instance(),
                                                                     () -> {
                                                                         final String selectedServerTemplate = getSelectedServerTemplate();

@@ -44,4 +44,9 @@ public class ErrorManagementPerspective extends AbstractPerspective {
     public String getBasicFiltersScreenId() {
         return PerspectiveIds.EXECUTION_ERROR_LIST_BASIC_FILTERS_SCREEN;
     }
+
+    @Override
+    public String getSavedFiltersScreenId() {
+        return PerspectiveIds.EXECUTION_ERROR_LIST_SAVED_FILTERS_SCREEN;
+    }
 }

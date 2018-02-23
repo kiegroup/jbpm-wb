@@ -22,7 +22,6 @@ import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
-import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.model.QueryFilter;
 import org.uberfire.paging.PageResponse;
@@ -30,8 +29,7 @@ import org.uberfire.paging.PageResponse;
 /**
  * @param <T> data type for the AsyncDataProvider
  */
-public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.SupportsRefresh,
-                                                          RestoreDefaultFiltersMenuBuilder.SupportsRestoreDefaultFilters {
+public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.SupportsRefresh {
 
     protected AsyncDataProvider<T> dataProvider;
 
@@ -114,11 +112,6 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
             getListView().getListGrid().setVisibleRangeAndClearData(getListView().getListGrid().getVisibleRange(),
                                                                     true);
         }
-    }
-
-    @Override
-    public void onRestoreDefaultFilters() {
-        getListView().showRestoreDefaultFilterConfirmationPopup();
     }
 
 }

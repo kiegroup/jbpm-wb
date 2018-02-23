@@ -44,4 +44,9 @@ public class ProcessDefinitionsPerspective extends AbstractPerspective {
     public String getBasicFiltersScreenId() {
         return null;
     }
+
+    @Override
+    public String getSavedFiltersScreenId() {
+        return null;
+    }
 }

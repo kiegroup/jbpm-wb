@@ -53,7 +53,6 @@ import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
-import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
@@ -361,7 +360,6 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     public Menus getMenus() { //To be used by subclass methods annotated with @WorkbenchMenu
         return MenuFactory
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
-                .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
                 .build();
     }
 

@@ -122,4 +122,12 @@ public interface Constants extends Messages {
     String Manage();
 
     String FilterBy();
+
+    String SavedFilters();
+
+    String RemoveSavedFilterTitle();
+
+    String RemoveSavedFilterMessage(String filterName);
+
+    String Remove();
 }

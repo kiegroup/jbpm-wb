@@ -34,7 +34,6 @@ import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
-import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.es.client.i18n.Constants;
@@ -243,7 +242,6 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     public Menus getMenus() {
         return MenuFactory
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
-                .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
                 .build();
     }
 
