@@ -47,11 +47,12 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
 
 import static org.jbpm.dashboard.renderer.model.DashboardData.*;
+import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN;
+
 
 @Dependent
 public class ProcessDashboard extends AbstractDashboard implements IsWidget {
 
-    public static final String PROCESS_DETAILS_SCREEN_ID = "Process Instance Details Multi";
     protected View view;
     protected Event<ProcessInstanceSelectionEvent> instanceSelectionEvent;
     protected Event<ProcessDashboardFocusEvent> processDashboardFocusEvent;
@@ -327,16 +328,16 @@ public class ProcessDashboard extends AbstractDashboard implements IsWidget {
 
     public void openProcessDetailsScreen() {
         processDashboardFocusEvent.fire(new ProcessDashboardFocusEvent());
-        PlaceStatus status = placeManager.getStatus(PROCESS_DETAILS_SCREEN_ID);
+        PlaceStatus status = placeManager.getStatus(PROCESS_INSTANCE_DETAILS_SCREEN);
         if (status == PlaceStatus.CLOSE) {
-            placeManager.goTo(PROCESS_DETAILS_SCREEN_ID);
+            placeManager.goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
         }
     }
 
     public void closeProcessDetailsScreen() {
-        PlaceStatus status = placeManager.getStatus(PROCESS_DETAILS_SCREEN_ID);
+        PlaceStatus status = placeManager.getStatus(PROCESS_INSTANCE_DETAILS_SCREEN);
         if (status == PlaceStatus.OPEN) {
-            placeManager.closePlace(PROCESS_DETAILS_SCREEN_ID);
+            placeManager.closePlace(PROCESS_INSTANCE_DETAILS_SCREEN);
         }
     }
 
