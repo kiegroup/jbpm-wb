@@ -107,7 +107,7 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
 
     @PostConstruct
     public void init() {
-        refine.setTextContent(constants.Refine());
+        refine.setTextContent(constants.FilterBy());
 
         filtersInputHelp.setAttribute("data-content",
                                       getInputStringHelpHtml());

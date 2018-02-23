@@ -103,8 +103,6 @@ public interface Constants extends Messages {
 
     String Select();
 
-    String Refine();
-
     String Apply();
 
     String AdvancedFilters();
@@ -122,4 +120,6 @@ public interface Constants extends Messages {
     String Jobs();
 
     String Manage();
+
+    String FilterBy();
 }
