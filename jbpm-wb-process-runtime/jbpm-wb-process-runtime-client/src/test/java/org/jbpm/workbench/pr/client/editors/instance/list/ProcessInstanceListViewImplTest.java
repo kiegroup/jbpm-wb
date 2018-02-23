@@ -23,6 +23,7 @@ import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridViewTest;
+import org.jbpm.workbench.common.client.util.GenericErrorSummaryCountCell;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -41,10 +42,10 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
     private ProcessInstanceListPresenter presenter;
 
     @Spy
-    private ProcessInstanceSummaryErrorCountCell cellMock;
+    private GenericErrorSummaryCountCell cellMock;
 
     @Mock
-    private ManagedInstance<ProcessInstanceSummaryErrorCountCell> cellInstance;
+    private ManagedInstance<GenericErrorSummaryCountCell> cellInstance;
 
     @InjectMocks
     @Spy

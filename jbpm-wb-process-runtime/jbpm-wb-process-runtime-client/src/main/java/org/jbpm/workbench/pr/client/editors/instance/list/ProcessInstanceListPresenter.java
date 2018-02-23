@@ -129,7 +129,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
             view.hideBusyIndicator();
         }
     }
-
+    
     protected DataSetReadyCallback createDataSetDomainSpecificCallback(final int startRange,
                                                                        final FilterSettings tableSettings,
                                                                        boolean lastPage) {
@@ -654,7 +654,8 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                               SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
                               pid);
     }
-
+    
+    @Override
     public void openErrorView(final String pid) {
         final PlaceRequest request = new DefaultPlaceRequest(EXECUTION_ERRORS);
         request.addParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
@@ -680,6 +681,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         return pis -> isUserAuthorizedForPerspective(TASKS_ADMIN) || isUserAuthorizedForPerspective(TASKS);
     }
 
+    @Override
     public Predicate<ProcessInstanceSummary> getViewErrorsActionCondition() {
         return pis -> isUserAuthorizedForPerspective(EXECUTION_ERRORS) && pis.getErrorCount() != null && pis.getErrorCount() > 0;
     }

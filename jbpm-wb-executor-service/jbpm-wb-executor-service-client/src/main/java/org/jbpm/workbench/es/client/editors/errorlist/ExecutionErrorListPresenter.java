@@ -162,7 +162,6 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         );
     }
 
-
     public void acknowledgeExecutionError(final String executionErrorId,
                                           final String deploymentId) {
         executorService.call((Void nothing) -> {
@@ -350,6 +349,36 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
 
             addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INST_ID,
                                              processInstanceId));
+            isDefaultFilters = false;
+        }
+        
+        final Optional<String> taskIdSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_TASK_ID);
+        if (taskIdSearch.isPresent()) {
+            final String taskId = taskIdSearch.get();
+            view.addActiveFilter(constants.Task(),
+                                 taskId,
+                                 taskId,
+                                 v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ACTIVITY_ID,
+                                                                          v))
+            );
+
+            addAdvancedSearchFilter(equalsTo(COLUMN_ACTIVITY_ID,
+                                             taskId));
+            isDefaultFilters = false;
+        }
+        
+        final Optional<String> errorTypeSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_ERROR_TYPE);
+        if (errorTypeSearch.isPresent()) {
+            final String errorType = errorTypeSearch.get();
+            view.addActiveFilter(constants.Type(),
+                                 errorType,
+                                 errorType,
+                                 v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_TYPE,
+                                                                          v))
+            );
+
+            addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_TYPE,
+                                             errorType));
             isDefaultFilters = false;
         }
         

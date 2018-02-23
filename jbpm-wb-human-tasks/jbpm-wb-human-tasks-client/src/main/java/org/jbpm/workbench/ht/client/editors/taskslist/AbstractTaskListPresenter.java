@@ -67,6 +67,7 @@ import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
@@ -110,6 +111,23 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         } catch (Exception e) {
             errorPopup.showMessage(constants.UnexpectedError(e.getMessage()));
         }
+    }
+    
+    @Override
+    public void openErrorView(final String tId) {
+        final PlaceRequest request = new DefaultPlaceRequest(PerspectiveIds.EXECUTION_ERRORS);
+        request.addParameter(PerspectiveIds.SEARCH_PARAMETER_IS_ERROR_ACK,
+                             Boolean.toString(false));
+        request.addParameter(PerspectiveIds.SEARCH_PARAMETER_TASK_ID,
+                             tId);
+        request.addParameter(PerspectiveIds.SEARCH_PARAMETER_ERROR_TYPE,
+                             constants.Task());
+        placeManager.goTo(request);
+    }
+    
+    @Override
+    public Predicate<TaskSummary> getViewErrorsActionCondition() {
+        return tId -> isUserAuthorizedForPerspective(PerspectiveIds.EXECUTION_ERRORS) && tId.getErrorCount() != null && tId.getErrorCount() > 0;
     }
 
     /**
@@ -625,7 +643,6 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                           constants.Process_Instance_Correlation_Key());
         builder.setColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
                           constants.Process_Instance_Description());
-
         builder.filterOn(true,
                          true,
                          true);

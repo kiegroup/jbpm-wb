@@ -118,7 +118,16 @@ public class DataSetDefsBootstrap {
                 .name("FILTERED_BA_TASK-Human tasks and admins")
                 .dataSource(JBPM_DATA_SOURCE)
                 .dbSQL("select " +
-                               SQL_SELECT_COMMON_COLS +
+                               SQL_SELECT_COMMON_COLS + "," +
+                               " (select COUNT(errInfo.id) " +
+                                "from " +
+                                    "ExecutionErrorInfo errInfo " +
+                                "where " +
+                                    "errInfo.activity_id=t.taskId and " +
+                                    "errInfo.process_inst_id=pil.processInstanceId and " +
+                                    "errInfo.error_ack=0 and " +
+                                    "errInfo.error_type=\'Task\'" +
+                               ") as " + COLUMN_ERROR_COUNT + " " +
                                "from " +
                                "AuditTaskImpl t  " +
                                "left join " +
@@ -129,6 +138,7 @@ public class DataSetDefsBootstrap {
                        false);
 
         builder = addBuilderCommonColumns(builder);
+        builder.number(COLUMN_ERROR_COUNT);
         DataSetDef humanTaskWithAdminDef = builder.buildDef();
 
         DataSetDef humanTasksWithUserDomainDef = DataSetDefFactory.newSQLDataSetDef()       //Add to this dataset TaskName? to apply with the specified filter

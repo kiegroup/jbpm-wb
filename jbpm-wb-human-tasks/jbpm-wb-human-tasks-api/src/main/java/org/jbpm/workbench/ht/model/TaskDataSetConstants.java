@@ -49,6 +49,7 @@ public final class TaskDataSetConstants {
     public static final String COLUMN_TASK_VARIABLE_NAME = "name";
     public static final String COLUMN_TASK_VARIABLE_VALUE = "value";
 
-    private TaskDataSetConstants() {
-    }
+    public static final String COLUMN_ERROR_COUNT = "errorCount";
+
+    private TaskDataSetConstants() {}
 }

@@ -29,21 +29,22 @@ public class TaskSummaryMapper implements Function<TaskInstance, TaskSummary> {
             return null;
         } else {
             return TaskSummary.builder()
-                    .id(taskInstance.getId())
-                    .name(taskInstance.getName())
-                    .description(taskInstance.getDescription())
-                    .status(taskInstance.getStatus())
-                    .priority(taskInstance.getPriority())
-                    .actualOwner(taskInstance.getActualOwner())
-                    .createdBy(taskInstance.getCreatedBy())
-                    .createdOn(taskInstance.getCreatedOn())
-                    .activationTime(taskInstance.getActivationTime())
-                    .expirationTime(taskInstance.getExpirationDate())
-                    .processId(taskInstance.getProcessId())
-                    .processInstanceId(taskInstance.getProcessInstanceId())
-                    .deploymentId(taskInstance.getContainerId())
-                    .parentId(taskInstance.getParentId())
-                    .build();
+                              .id(taskInstance.getId())
+                              .name(taskInstance.getName())
+                              .description(taskInstance.getDescription())
+                              .status(taskInstance.getStatus())
+                              .priority(taskInstance.getPriority())
+                              .actualOwner(taskInstance.getActualOwner())
+                              .createdBy(taskInstance.getCreatedBy())
+                              .createdOn(taskInstance.getCreatedOn())
+                              .activationTime(taskInstance.getActivationTime())
+                              .expirationTime(taskInstance.getExpirationDate())
+                              .processId(taskInstance.getProcessId())
+                              .processInstanceId(taskInstance.getProcessInstanceId())
+                              .deploymentId(taskInstance.getContainerId())
+                              .parentId(taskInstance.getParentId())
+                              .errorCount(0)
+                              .build();
         }
     }
 }
