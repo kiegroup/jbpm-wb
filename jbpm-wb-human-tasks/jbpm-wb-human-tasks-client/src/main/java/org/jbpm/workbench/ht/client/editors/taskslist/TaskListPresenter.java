@@ -40,7 +40,7 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.Tasks_List();
+        return constants.Task_Inbox();
     }
 
     @WorkbenchMenu
