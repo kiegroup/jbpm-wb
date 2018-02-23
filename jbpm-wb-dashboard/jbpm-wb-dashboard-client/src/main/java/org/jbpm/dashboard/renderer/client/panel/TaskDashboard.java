@@ -52,11 +52,11 @@ import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import static org.jbpm.dashboard.renderer.model.DashboardData.*;
+import static org.jbpm.workbench.common.client.PerspectiveIds.TASK_DETAILS_SCREEN;
 
 @Dependent
 public class TaskDashboard extends AbstractDashboard implements IsWidget {
 
-    public static final String TASK_DETAILS_SCREEN_ID = "Task Details Multi";
     protected View view;
     protected Event<TaskSelectionEvent> taskSelectionEvent;
     protected Event<TaskDashboardFocusEvent> taskDashboardFocusEvent;
@@ -406,16 +406,16 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
 
     public void openTaskDetailsScreen() {
         taskDashboardFocusEvent.fire(new TaskDashboardFocusEvent());
-        PlaceStatus status = placeManager.getStatus(TASK_DETAILS_SCREEN_ID);
+        PlaceStatus status = placeManager.getStatus(TASK_DETAILS_SCREEN);
         if (status == PlaceStatus.CLOSE) {
-            placeManager.goTo(TASK_DETAILS_SCREEN_ID);
+            placeManager.goTo(TASK_DETAILS_SCREEN);
         }
     }
 
     public void closeTaskDetailsScreen() {
-        PlaceStatus status = placeManager.getStatus(TASK_DETAILS_SCREEN_ID);
+        PlaceStatus status = placeManager.getStatus(TASK_DETAILS_SCREEN);
         if (status == PlaceStatus.OPEN) {
-            placeManager.closePlace(TASK_DETAILS_SCREEN_ID);
+            placeManager.closePlace(TASK_DETAILS_SCREEN);
         }
     }
 
