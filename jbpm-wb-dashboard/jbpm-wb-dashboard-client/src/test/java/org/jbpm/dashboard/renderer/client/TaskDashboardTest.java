@@ -34,7 +34,6 @@ import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.dashboard.renderer.client.panel.AbstractDashboard;
 import org.jbpm.dashboard.renderer.client.panel.TaskDashboard;
-import org.jbpm.dashboard.renderer.client.panel.events.TaskDashboardFocusEvent;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,9 +61,6 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Mock
     Event<TaskSelectionEvent> taskSelectionEvent;
-
-    @Mock
-    Event<TaskDashboardFocusEvent> taskDashboardFocusEvent;
 
     @Mock
     TaskService taskService;
@@ -119,10 +115,11 @@ public class TaskDashboardTest extends AbstractDashboardTest {
                                       displayerCoordinator,
                                       placeManager,
                                       taskSelectionEvent,
-                                      taskDashboardFocusEvent,
                                       serverTemplateSelectorMenuBuilder,
                                       taskServiceCaller,
                                       notificationEvent);
+
+        presenter.init();
     }
 
     @Test
@@ -192,7 +189,6 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         reset(displayerListener);
         presenter.showTasksTable();
         verify(view).showInstances();
-        verify(taskDashboardFocusEvent).fire(any(TaskDashboardFocusEvent.class));
         verify(displayerListener).onRedraw(presenter.getTasksTable());
     }
 
@@ -201,7 +197,6 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         reset(displayerListener);
         presenter.showDashboard();
         verify(view).showDashboard();
-        verify(taskDashboardFocusEvent).fire(any(TaskDashboardFocusEvent.class));
         verify(displayerListener,
                never()).onRedraw(presenter.getTasksTable());
     }
@@ -518,8 +513,6 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         verify(notificationEvent).fire(any(NotificationEvent.class));
         verify(taskSelectionEvent,
                never()).fire(any(TaskSelectionEvent.class));
-        verify(taskDashboardFocusEvent,
-               never()).fire(any(TaskDashboardFocusEvent.class));
         verify(placeManager,
                never()).goTo(TASK_DETAILS_SCREEN);
     }
@@ -541,8 +534,6 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         verify(notificationEvent).fire(any(NotificationEvent.class));
         verify(taskSelectionEvent,
                never()).fire(any(TaskSelectionEvent.class));
-        verify(taskDashboardFocusEvent,
-               never()).fire(any(TaskDashboardFocusEvent.class));
         verify(placeManager,
                never()).goTo(TASK_DETAILS_SCREEN);
     }
@@ -558,7 +549,6 @@ public class TaskDashboardTest extends AbstractDashboardTest {
                                   0);
 
         verify(taskSelectionEvent).fire(any(TaskSelectionEvent.class));
-        verify(taskDashboardFocusEvent).fire(any(TaskDashboardFocusEvent.class));
         verify(placeManager).goTo(TASK_DETAILS_SCREEN);
     }
 
