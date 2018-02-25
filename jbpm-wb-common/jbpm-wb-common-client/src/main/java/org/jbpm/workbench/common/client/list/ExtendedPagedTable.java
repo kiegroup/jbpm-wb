@@ -53,7 +53,10 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
         super(DEFAULT_PAGE_SIZE,
               (T item) -> (item == null) ? null : item.getId(),
               gridPreferences,
-              true);
+              true,
+              false,
+              false,
+              false);
 
         selectedItems = new ArrayList<T>();
         dataGrid.addColumnSortHandler(new AsyncHandler(dataGrid));
