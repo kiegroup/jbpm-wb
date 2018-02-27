@@ -30,7 +30,7 @@ import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 @Templated
 public class ProcessDiagramWidgetView
         extends Composite
-        implements ProcessDiagramPopUpPresenter.View,
+        implements ProcessDiagramPresenter.View,
                    RequiresResize {
 
     @DataField("processDiagramDiv")
@@ -44,7 +44,7 @@ public class ProcessDiagramWidgetView
         if (svgContent != null && !svgContent.isEmpty()) {
             processDiagramDiv.setInnerHTML(svgContent);
             processDiagramDiv.getFirstChildElement().setAttribute("overflow",
-                                                                  "scroll");
+                                                                  "auto");
         } else {
             processDiagramDiv.setInnerHTML("<h3>No process diagram found</h3>");
         }

@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.pr.client.editors.definition.details.advance.AdvancedViewProcessDefDetailsPresenter;
 import org.jbpm.workbench.pr.client.editors.definition.details.multi.BaseProcessDefDetailsMultiPresenter;
+import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramPresenter;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -40,6 +41,9 @@ public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetai
     @Inject
     private AdvancedViewProcessDefDetailsPresenter detailPresenter;
 
+    @Inject
+    private ProcessDiagramPresenter processDiagramPresenter;
+
     @WorkbenchPartView
     public UberView<AdvancedProcessDefDetailsMultiPresenter> getView() {
         return view;
@@ -55,9 +59,6 @@ public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetai
                         .menu(Constants.INSTANCE.View_Process_Instances())
                             .respondsWith(() -> viewProcessInstances())
                         .endMenu()
-                        .menu(Constants.INSTANCE.View_Process_Model())
-                            .respondsWith(() -> goToProcessDefModelPopup())
-                        .endMenu()
                     .endMenus()
                 .endMenu()
                 .build();
@@ -65,6 +66,10 @@ public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetai
 
     public IsWidget getTabView() {
         return detailPresenter.getWidget();
+    }
+
+    public IsWidget getProcessDiagramView() {
+        return processDiagramPresenter.getView();
     }
 
     public interface AdvancedProcessDefDetailsMultiView extends

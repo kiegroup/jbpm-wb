@@ -48,6 +48,10 @@ public class AdvancedProcessDefDetailsMultiViewImpl extends BaseProcessDefDetail
 
     private TabListItem definitionDetailsTab;
 
+    private TabListItem diagramTab;
+
+    private TabPane diagramPane;
+
     @Override
     public void init(final AdvancedProcessDefDetailsMultiPresenter presenter) {
         this.presenter = presenter;
@@ -65,9 +69,21 @@ public class AdvancedProcessDefDetailsMultiViewImpl extends BaseProcessDefDetail
             addStyleName("uf-dropdown-tab-list-item");
             setActive(true);
         }};
-
         navTabs.add(definitionDetailsTab);
         tabContent.add(definitionDetailsPane);
+
+        {
+            diagramPane = GWT.create(TabPane.class);
+            diagramPane.add(presenter.getProcessDiagramView());
+
+            diagramTab = GWT.create(TabListItem.class);
+            diagramTab.setText(Constants.INSTANCE.Diagram());
+            diagramTab.setDataTargetWidget(diagramPane);
+            diagramTab.addStyleName("uf-dropdown-tab-list-item");
+
+            tabContent.add(diagramPane);
+            navTabs.add(diagramTab);
+        }
     }
 
     @Override

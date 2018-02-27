@@ -149,7 +149,7 @@ public interface Constants extends Messages {
 
     String Signal_Name();
 
-    String Process_Diagram();
+    String Diagram();
 
     String Bulk_Actions();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.jbpm.workbench.pr.client.editors.diagram;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
@@ -28,19 +29,15 @@ import com.google.gwt.user.client.ui.RequiresResize;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
+import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
+import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.service.ProcessImageService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
-import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.ext.widgets.common.client.common.HasBusyIndicator;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.PathPlaceRequest;
 
 @Dependent
-@WorkbenchPopup(identifier = "jBPM Process Diagram", size = WorkbenchPopup.WorkbenchPopupSize.LARGE)
-public class ProcessDiagramPopUpPresenter extends Composite implements RequiresResize {
+public class ProcessDiagramPresenter extends Composite implements RequiresResize {
 
     @Inject
     private ProcessDiagramWidgetView designerWidget;
@@ -58,51 +55,40 @@ public class ProcessDiagramPopUpPresenter extends Composite implements RequiresR
         container.add(designerWidget);
     }
 
-    @OnOpen
-    public void onOpen() {
+    public void onProcessInstanceSelectionEvent(@Observes ProcessInstanceSelectionEvent event) {
+        String containerId = event.getDeploymentId();
+        String processInstanceId = String.valueOf(event.getProcessInstanceId());
+        String serverTemplateId = event.getServerTemplateId();
 
+        if (processInstanceId != null && !processInstanceId.isEmpty()) {
+            processImageService.call(new RemoteCallback<String>() {
+                @Override
+                public void callback(final String svgContent) {
+                    designerWidget.displayImage(svgContent);
+                }
+            }).getProcessInstanceDiagram(serverTemplateId,
+                                         containerId,
+                                         Long.parseLong(processInstanceId));
+        }
     }
 
-    @OnStartup
-    public void onStartup(final PlaceRequest place) {
-
-        if (place instanceof PathPlaceRequest) {
-
-            String serverTemplateId = place.getParameter("serverTemplateId",
-                                                         null);
-            String containerId = place.getParameter("containerId",
-                                                    null);
-            String processId = place.getParameter("processId",
-                                                  null);
-
-            String processInstanceId = place.getParameter("processInstanceId",
-                                                          null);
-
-            if (processInstanceId != null && !processInstanceId.isEmpty()) {
-                processImageService.call(new RemoteCallback<String>() {
-                    @Override
-                    public void callback(final String svgContent) {
-                        designerWidget.displayImage(svgContent);
-                    }
-                }).getProcessInstanceDiagram(serverTemplateId,
-                                             containerId,
-                                             Long.parseLong(processInstanceId));
-            } else {
-                processImageService.call(new RemoteCallback<String>() {
-                    @Override
-                    public void callback(final String svgContent) {
-                        designerWidget.displayImage(svgContent);
-                    }
-                }).getProcessDiagram(serverTemplateId,
-                                     containerId,
-                                     processId);
+    public void onProcessSelectionEvent(@Observes final ProcessDefSelectionEvent event) {
+        String containerId = event.getDeploymentId();
+        String serverTemplateId = event.getServerTemplateId();
+        String processId = event.getProcessId();
+        processImageService.call(new RemoteCallback<String>() {
+            @Override
+            public void callback(final String svgContent) {
+                designerWidget.displayImage(svgContent);
             }
-        }
+        }).getProcessDiagram(serverTemplateId,
+                             containerId,
+                             processId);
     }
 
     @WorkbenchPartTitle
     public String getName() {
-        return constants.Process_Diagram();
+        return constants.Diagram();
     }
 
     @WorkbenchPartView

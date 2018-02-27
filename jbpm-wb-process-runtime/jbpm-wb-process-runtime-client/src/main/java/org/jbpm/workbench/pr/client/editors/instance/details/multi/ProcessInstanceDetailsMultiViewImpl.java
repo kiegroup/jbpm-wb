@@ -60,6 +60,10 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
 
     private TabPane logsPane;
 
+    private TabListItem diagramTab;
+
+    private TabPane diagramPane;
+
     private ProcessInstanceDetailsMultiPresenter presenter;
 
     @Override
@@ -134,6 +138,18 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
             tabContent.add(logsPane);
             navTabs.add(logsTab);
         }
+        {
+            diagramPane = GWT.create(TabPane.class);
+            diagramPane.add(presenter.getProcessDiagramView());
+
+            diagramTab = GWT.create(TabListItem.class);
+            diagramTab.setText(constants.Diagram());
+            diagramTab.setDataTargetWidget(diagramPane);
+            diagramTab.addStyleName("uf-dropdown-tab-list-item");
+
+            tabContent.add(diagramPane);
+            navTabs.add(diagramTab);
+        }
     }
 
     @Override
@@ -165,6 +181,9 @@ public class ProcessInstanceDetailsMultiViewImpl extends Composite
 
         logsPane.setVisible(true);
         logsTab.setVisible(true);
+
+        diagramPane.setVisible(true);
+        diagramTab.setVisible(true);
         instanceDetailsTab.showTab();
     }
 

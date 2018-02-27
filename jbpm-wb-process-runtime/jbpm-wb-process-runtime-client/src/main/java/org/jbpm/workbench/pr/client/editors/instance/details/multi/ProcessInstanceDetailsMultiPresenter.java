@@ -24,7 +24,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
-import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramUtil;
+import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramPresenter;
 import org.jbpm.workbench.pr.client.editors.documents.list.ProcessDocumentListPresenter;
 import org.jbpm.workbench.pr.client.editors.instance.details.ProcessInstanceDetailsPresenter;
 import org.jbpm.workbench.pr.client.editors.instance.log.RuntimeLogPresenter;
@@ -77,6 +77,9 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
 
     @Inject
     private ProcessInstanceDetailsPresenter detailsPresenter;
+
+    @Inject
+    private ProcessDiagramPresenter processDiagramPresenter;
 
     @Inject
     private ProcessVariableListPresenter variableListPresenter;
@@ -191,14 +194,6 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
                                                         processInstanceId));
     }
 
-    public void goToProcessInstanceModelPopup() {
-        if (place != null && !deploymentId.equals("")) {
-            placeManager.goTo(ProcessDiagramUtil.buildPlaceRequest(serverTemplateId,
-                                                                   deploymentId,
-                                                                   processInstanceId));
-        }
-    }
-
     @WorkbenchMenu
     public Menus buildMenu() {
         return MenuFactory
@@ -208,13 +203,6 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
                 .endMenu()
                 .newTopLevelMenu(constants.Abort())
                 .respondsWith(() -> abortProcessInstance())
-                .endMenu()
-                .newTopLevelMenu(constants.Options())
-                    .menus()
-                        .menu(constants.View_Process_Model())
-                            .respondsWith(() -> goToProcessInstanceModelPopup())
-                        .endMenu()
-                    .endMenus()
                 .endMenu()
                 .build();
     }
@@ -241,6 +229,10 @@ public class ProcessInstanceDetailsMultiPresenter implements RefreshMenuBuilder.
 
     public IsWidget getLogsView() {
         return runtimeLogPresenter.getWidget();
+    }
+
+    public IsWidget getProcessDiagramView() {
+        return processDiagramPresenter.getView();
     }
 
     public interface ProcessInstanceDetailsMultiView

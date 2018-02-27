@@ -27,7 +27,6 @@ import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
-import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramUtil;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
@@ -120,14 +119,6 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
         formDisplayPopUp.setTitle(processDefName);
         startProcessDisplayProvider.setup(config,
                                           formDisplayPopUp);
-    }
-
-    public void goToProcessDefModelPopup() {
-        if (place != null && !deploymentId.equals("")) {
-            placeManager.goTo(ProcessDiagramUtil.buildPlaceRequest(serverTemplateId,
-                                                                   deploymentId,
-                                                                   processId));
-        }
     }
 
     public void viewProcessInstances() {
