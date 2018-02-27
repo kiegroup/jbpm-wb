@@ -22,7 +22,6 @@ import javax.enterprise.context.Dependent;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
@@ -43,7 +42,7 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return Constants.INSTANCE.Task_List();
+        return org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Task_Inbox();
     }
 
     @WorkbenchPartTitleDecoration
@@ -65,13 +64,13 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
     @Override
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Task_List());
+                            org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Task_Inbox());
     }
 
     @Override
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Task_List(),
+                              org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Task_Inbox(),
                               detailLabel,
                               PerspectiveIds.TASK_DETAILS_SCREEN);
     }

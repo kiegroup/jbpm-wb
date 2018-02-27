@@ -130,7 +130,7 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
 
     protected List<? extends MenuItem> getWorkViews() {
         return Arrays.asList(
-                MenuFactory.newSimpleItem(commonConstants.Task_List()).perspective(TASKS).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(commonConstants.Task_Inbox()).perspective(TASKS).endMenu().build().getItems().get(0),
                 MenuFactory.newSimpleItem(constants.Tasks_List_Admin()).perspective(TaskAdminSettingsPerspective.PERSPECTIVE_ID).endMenu().build().getItems().get(0),
                 MenuFactory.newSimpleItem(constants.Data_Sets()).perspective(DATASET_AUTHORING).endMenu().build().getItems().get(0)
         );

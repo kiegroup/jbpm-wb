@@ -113,7 +113,7 @@ public interface Constants extends Messages {
 
     String Tasks_Admin();
 
-    String Task_List();
+    String Task_Inbox();
 
     String ExecutionErrors();
 

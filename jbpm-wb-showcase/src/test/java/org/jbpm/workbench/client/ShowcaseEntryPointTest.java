@@ -167,7 +167,7 @@ public class ShowcaseEntryPointTest {
 
         assertEquals(3,
                      workMenuItems.size());
-        assertEquals(showcaseEntryPoint.commonConstants.Task_List(),
+        assertEquals(showcaseEntryPoint.commonConstants.Task_Inbox(),
                      workMenuItems.get(0).getCaption());
         assertEquals(showcaseEntryPoint.constants.Tasks_List_Admin(),
                      workMenuItems.get(1).getCaption());
