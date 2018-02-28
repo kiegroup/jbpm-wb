@@ -42,6 +42,8 @@ public class ProcessInstanceSummary extends GenericErrorSummary<Long> {
     private Map<String, String> domainData = new HashMap<String, String>();
     private List<UserTaskSummary> activeTasks;
     private Date lastModificationDate;
+    private Integer slaCompliance;
+    private Date slaDueDate;
 
     public ProcessInstanceSummary(Long processInstanceId,
                                   String processId,
@@ -56,6 +58,8 @@ public class ProcessInstanceSummary extends GenericErrorSummary<Long> {
                                   String correlationKey,
                                   Long parentId,
                                   Date lastModificationDate,
+                                  Integer slaCompliance,
+                                  Date slaDueDate,
                                   Integer errorCount) {
         super(errorCount, processInstanceId, processName);
         this.id = processInstanceId;
@@ -73,6 +77,8 @@ public class ProcessInstanceSummary extends GenericErrorSummary<Long> {
         this.correlationKey = correlationKey;
         this.parentId = parentId;
         this.lastModificationDate = lastModificationDate;
+        this.slaCompliance = slaCompliance;
+        this.slaDueDate = slaDueDate;
     }
 
     public ProcessInstanceSummary() {
@@ -202,6 +208,22 @@ public class ProcessInstanceSummary extends GenericErrorSummary<Long> {
 
     public void setLastModificationDate(Date lastModificationDate) {
         this.lastModificationDate = lastModificationDate;
+    }
+    
+    public Integer getSlaCompliance() {
+        return slaCompliance;
+    }
+    
+    public void setSlaCompliance(Integer slaCompliance) {
+        this.slaCompliance = slaCompliance;
+    }
+    
+    public Date getSlaDueDate() {
+        return slaDueDate;
+    }
+    
+    public void setSlaDueDate(Date slaDueDate) {
+        this.slaDueDate = slaDueDate;
     }
 
     @Override

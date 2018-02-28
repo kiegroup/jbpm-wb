@@ -269,4 +269,19 @@ public interface Constants extends Messages {
 
     String WasCompleted();
 
+    String Process_SLA_Compliance();
+    
+    String SlaNA();
+    
+    String SlaPending();
+    
+    String SlaMet();
+    
+    String SlaAborted();
+    
+    String SlaViolated();
+    
+    String SlaCompliance();
+    
+    String SlaDueDate();
 }

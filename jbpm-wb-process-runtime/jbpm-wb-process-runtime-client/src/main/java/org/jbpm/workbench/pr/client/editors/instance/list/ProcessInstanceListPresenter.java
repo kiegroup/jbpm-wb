@@ -306,6 +306,12 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                    COLUMN_LAST_MODIFICATION_DATE,
                                    i),
                 getColumnIntValue(dataSet,
+                                  COLUMN_SLA_COMPLIANCE,
+                                  i),
+                getColumnDateValue(dataSet,
+                                   COLUMN_SLA_DUE_DATE,
+                                   i),
+                getColumnIntValue(dataSet,
                                   COLUMN_ERROR_COUNT,
                                   i)
         );

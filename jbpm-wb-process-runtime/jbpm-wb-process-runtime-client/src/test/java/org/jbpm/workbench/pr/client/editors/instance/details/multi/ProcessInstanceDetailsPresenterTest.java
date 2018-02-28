@@ -45,6 +45,7 @@ import static java.util.Collections.singletonList;
 public class ProcessInstanceDetailsPresenterTest {
 
     private static final int ACTIVE_STATE = 1;
+    private static final int SLA_MET = 2;
     private static final String PROCESS_VERSION = "1.0";
     private static final String PROCESS_ID = "evaluation";
     private static final String PROCESS_INSTANCE_ID = "3";
@@ -91,6 +92,7 @@ public class ProcessInstanceDetailsPresenterTest {
         verify(htmlMock).setText(processInstanceSummary.getProcessVersion());
         verify(htmlMock).setText(processInstanceSummary.getCorrelationKey());
         verify(htmlMock).setText(Constants.INSTANCE.No_Parent_Process_Instance());
+        verify(viewMock).setSlaComplianceText(Constants.INSTANCE.SlaMet());
 
         ArgumentCaptor<SafeHtml> argumentCaptor = ArgumentCaptor.forClass(SafeHtml.class);
         verify(htmlMock,
@@ -128,6 +130,7 @@ public class ProcessInstanceDetailsPresenterTest {
         processInstanceSummary.setCorrelationKey(PROCESS_INSTANCE_ID);
         processInstanceSummary.setParentId(0L);
         processInstanceSummary.setActiveTasks(singletonList(getUserTaskSummary()));
+        processInstanceSummary.setSlaCompliance(SLA_MET);
         return processInstanceSummary;
     }
 

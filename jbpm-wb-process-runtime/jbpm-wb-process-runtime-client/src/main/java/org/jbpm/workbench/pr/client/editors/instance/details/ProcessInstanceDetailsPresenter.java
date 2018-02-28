@@ -118,6 +118,10 @@ public class ProcessInstanceDetailsPresenter {
                     default:
                         break;
                 }
+                view.getStateText().setText(statusStr);
+                
+                String slaComplianceStr = mapSlaCompliance(process);
+                view.setSlaComplianceText(slaComplianceStr);
 
                 if (process.getActiveTasks() != null && !process.getActiveTasks().isEmpty()) {
                     SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
@@ -127,7 +131,7 @@ public class ProcessInstanceDetailsPresenter {
                     }
                     view.getActiveTasksListBox().setHTML(safeHtmlBuilder.toSafeHtml());
                 }
-                view.getStateText().setText(statusStr);
+                
             }
         }).getProcessInstance(serverTemplateId,
                               new ProcessInstanceKey(serverTemplateId,
@@ -149,6 +153,30 @@ public class ProcessInstanceDetailsPresenter {
                                          Long.parseLong(processId));
     }
 
+    protected String mapSlaCompliance(ProcessInstanceSummary process) {
+        String slaComplianceStr = constants.Unknown();
+        switch (process.getSlaCompliance()) {
+            case ProcessInstance.SLA_NA:
+                slaComplianceStr = constants.SlaNA();
+                break;
+            case ProcessInstance.SLA_PENDING:
+                slaComplianceStr = constants.SlaPending();
+                break;
+            case ProcessInstance.SLA_MET:
+                slaComplianceStr = constants.SlaMet();
+                break;
+            case ProcessInstance.SLA_ABORTED:
+                slaComplianceStr = constants.SlaAborted();
+                break;
+            case ProcessInstance.SLA_VIOLATED:
+                slaComplianceStr = constants.SlaViolated();
+                break;
+            default:
+                break;
+        }
+        return slaComplianceStr;
+    }
+
     public interface ProcessInstanceDetailsView extends IsWidget {
 
         //      TODO Review interface to not expose GWT components
@@ -167,5 +195,7 @@ public class ProcessInstanceDetailsPresenter {
         HTML getCorrelationKeyText();
 
         HTML getParentProcessInstanceIdText();
+        
+        void setSlaComplianceText(String value);
     }
 }

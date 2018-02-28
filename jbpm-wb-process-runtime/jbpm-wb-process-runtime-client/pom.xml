@@ -186,6 +186,10 @@
       <artifactId>gwt-user</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.google.elemental2</groupId>
+      <artifactId>elemental2-dom</artifactId>
+    </dependency>
 
     <!-- hack to disable sisu annotation processing (that scans client side types) -->
     <dependency>

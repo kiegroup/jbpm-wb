@@ -137,6 +137,8 @@ public class ProcessInstanceListPresenterTest {
                                           "cKey",
                                           Long.valueOf(0),
                                           new Date(),
+                                          0,
+                                          null,
                                           0);
     }
 

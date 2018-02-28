@@ -22,6 +22,9 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
+
+import elemental2.dom.HTMLParagraphElement;
+
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -43,6 +46,10 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     @Inject
     @DataField
     public HTML processVersionText;
+    
+    @Inject
+    @DataField
+    public HTMLParagraphElement slaComplianceText;
 
     @Inject
     @DataField
@@ -75,6 +82,10 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     @Inject
     @DataField
     public FormLabel processVersionLabel;
+    
+    @Inject
+    @DataField
+    public FormLabel slaComplianceLabel;
 
     @Inject
     @DataField
@@ -103,6 +114,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
         processDefinitionIdLabel.setText(constants.Process_Definition_Id());
         processDeploymentLabel.setText(constants.Deployment_Name());
         processVersionLabel.setText(constants.Process_Definition_Version());
+        slaComplianceLabel.setText(constants.Process_SLA_Compliance());
         correlationKeyLabel.setText(constants.Correlation_Key());
         stateLabel.setText(constants.Process_Instance_State());
         activeTasksListLabel.setText(constants.Active_Tasks());
@@ -148,5 +160,10 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements
     @Override
     public HTML getProcessVersionText() {
         return processVersionText;
+    }
+    
+    @Override
+    public void setSlaComplianceText(String value) {
+        slaComplianceText.textContent = value;
     }
 }

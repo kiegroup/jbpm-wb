@@ -206,6 +206,8 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
                 processInstance.getCorrelationKey(),
                 processInstance.getParentId(),
                 null,
+                processInstance.getSlaCompliance(),
+                processInstance.getSlaDueDate(),                
                 0
         );
 
