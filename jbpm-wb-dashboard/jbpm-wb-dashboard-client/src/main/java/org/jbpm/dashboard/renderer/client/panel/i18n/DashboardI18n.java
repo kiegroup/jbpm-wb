@@ -19,6 +19,8 @@ public interface DashboardI18n {
 
     String processDashboardName();
 
+    String taskDashboardName();
+
     String processScreenTitle();
 
     String taskScreenTitle();

@@ -179,10 +179,12 @@ public class ShowcaseEntryPointTest {
     public void getDashboardsViewsTest() {
         List<? extends MenuItem> dashboardsMenuItems = showcaseEntryPoint.getDashboardsViews();
 
-        assertEquals(1,
+        assertEquals(2,
                      dashboardsMenuItems.size());
-        assertEquals(showcaseEntryPoint.constants.Process_Dashboard(),
+        assertEquals(showcaseEntryPoint.constants.Process_Reports(),
                      dashboardsMenuItems.get(0).getCaption());
+        assertEquals(showcaseEntryPoint.constants.Task_Reports(),
+                     dashboardsMenuItems.get(1).getCaption());
     }
 
     private void mockMenuHelper() {

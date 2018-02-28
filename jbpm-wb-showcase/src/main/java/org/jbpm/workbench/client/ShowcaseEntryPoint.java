@@ -136,7 +136,8 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
 
     protected List<? extends MenuItem> getDashboardsViews() {
         return Arrays.asList(
-                MenuFactory.newSimpleItem(constants.Process_Dashboard()).perspective(PROCESS_DASHBOARD).endMenu().build().getItems().get(0)
+                MenuFactory.newSimpleItem(constants.Process_Reports()).perspective(PROCESS_DASHBOARD).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(constants.Task_Reports()).perspective(TASK_DASHBOARD).endMenu().build().getItems().get(0)
         );
     }
 
