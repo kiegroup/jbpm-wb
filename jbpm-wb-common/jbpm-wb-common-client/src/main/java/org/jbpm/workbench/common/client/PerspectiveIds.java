@@ -28,7 +28,8 @@ public interface PerspectiveIds extends org.kie.workbench.common.workbench.clien
     String PROCESS_INSTANCE_LIST_SCREEN = "ProcessInstanceListScreen";
     String PROCESS_DEFINITION_DETAILS_SCREEN = "ProcessDefinitionDetailsScreen";
     String PROCESS_DEFINITION_LIST_SCREEN = "ProcessDefinitionListScreen";
-    String DASHBOARD_SCREEN = "DashboardScreen";
+    String PROCESS_DASHBOARD_SCREEN = "ProcessDashboardScreen";
+    String TASK_DASHBOARD_SCREEN = "TaskDashboardScreen";
     String EXECUTION_ERROR_DETAILS_SCREEN = "ExecutionErrorDetailsScreen";
     String EXECUTION_ERROR_LIST_SCREEN = "ExecutionErrorListScreen";
     String JOB_LIST_SCREEN = "JobListScreen";

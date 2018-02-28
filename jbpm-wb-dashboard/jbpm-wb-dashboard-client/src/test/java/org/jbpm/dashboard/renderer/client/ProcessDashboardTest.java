@@ -29,7 +29,6 @@ import org.jbpm.dashboard.renderer.client.panel.DashboardKpis;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.dashboard.renderer.client.panel.AbstractDashboard;
 import org.jbpm.dashboard.renderer.client.panel.ProcessDashboard;
-import org.jbpm.dashboard.renderer.client.panel.events.ProcessDashboardFocusEvent;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,9 +54,6 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
 
     @Mock
     Event<ProcessInstanceSelectionEvent> instanceSelectionEvent;
-
-    @Mock
-    Event<ProcessDashboardFocusEvent> processDashboardFocusEvent;
 
     @Mock
     DisplayerListener totalMetricListener;
@@ -102,8 +98,8 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
                                          displayerCoordinator,
                                          placeManager,
                                          instanceSelectionEvent,
-                                         processDashboardFocusEvent,
                                          serverTemplateSelectorMenuBuilder);
+        presenter.init();
     }
 
     @Test
@@ -163,7 +159,6 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         reset(displayerListener);
         presenter.showProcessesTable();
         verify(view).showInstances();
-        verify(processDashboardFocusEvent).fire(any(ProcessDashboardFocusEvent.class));
         verify(displayerListener).onRedraw(presenter.getProcessesTable());
     }
 
@@ -172,7 +167,6 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         reset(displayerListener);
         presenter.showDashboard();
         verify(view).showDashboard();
-        verify(processDashboardFocusEvent).fire(any(ProcessDashboardFocusEvent.class));
         verify(displayerListener,
                never()).onRedraw(presenter.getProcessesTable());
     }
@@ -474,7 +468,6 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
         presenter.tableCellSelected(COLUMN_PROCESS_INSTANCE_ID,
                                     3);
         verify(instanceSelectionEvent).fire(any(ProcessInstanceSelectionEvent.class));
-        verify(processDashboardFocusEvent).fire(any(ProcessDashboardFocusEvent.class));
         verify(placeManager).goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
     }
 

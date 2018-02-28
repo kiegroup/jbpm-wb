@@ -35,9 +35,9 @@ public interface Constants extends Messages {
 
     String Dashboards();
 
-    String Process_Dashboard();
+    String Process_Reports();
 
-    String Business_Dashboard();
+    String Task_Reports();
 
     String Project_Authoring();
 

@@ -17,12 +17,12 @@ package org.jbpm.dashboard.renderer.client.panel;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.IsWidget;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetClientServices;
 import org.dashbuilder.dataset.filter.DataSetFilter;
@@ -39,27 +39,34 @@ import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
 
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.dashboard.renderer.client.panel.events.ProcessDashboardFocusEvent;
-import org.jbpm.dashboard.renderer.client.panel.events.TaskDashboardFocusEvent;
 import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
+import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
+import org.jbpm.workbench.common.events.ServerTemplateSelected;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
+import org.uberfire.client.annotations.WorkbenchMenu;
+import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchPartView;
+import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.workbench.events.NotificationEvent;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.Menus;
 
 import static org.jbpm.dashboard.renderer.model.DashboardData.*;
 import static org.jbpm.workbench.common.client.PerspectiveIds.TASK_DETAILS_SCREEN;
 
 @Dependent
-public class TaskDashboard extends AbstractDashboard implements IsWidget {
+@WorkbenchScreen(identifier = PerspectiveIds.TASK_DASHBOARD_SCREEN)
+public class TaskDashboard extends AbstractDashboard {
 
     protected View view;
     protected Event<TaskSelectionEvent> taskSelectionEvent;
-    protected Event<TaskDashboardFocusEvent> taskDashboardFocusEvent;
 
     protected MetricDisplayer totalMetric;
     protected MetricDisplayer createdMetric;
@@ -144,7 +151,6 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
                          final DisplayerCoordinator displayerCoordinator,
                          final PlaceManager placeManager,
                          final Event<TaskSelectionEvent> taskSelectionEvent,
-                         final Event<TaskDashboardFocusEvent> taskDashboardFocusEvent,
                          final ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder,
                          final Caller<TaskService> taskDataService,
                          final Event<NotificationEvent> notificationEvent) {
@@ -158,14 +164,31 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
 
         this.view = view;
         this.taskSelectionEvent = taskSelectionEvent;
-        this.taskDashboardFocusEvent = taskDashboardFocusEvent;
         this.taskDataService = taskDataService;
         this.notificationEvent = notificationEvent;
-
-        this.init();
     }
 
-    protected void init() {
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return DashboardConstants.INSTANCE.taskDashboardName();
+    }
+
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return MenuFactory
+                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder)
+                .endMenu()
+                .build();
+    }
+
+    public void onServerTemplateSelected(@Observes final ServerTemplateSelected serverTemplateSelected) {
+        //Refresh view
+        placeManager.closePlace(PerspectiveIds.TASK_DASHBOARD_SCREEN);
+        placeManager.goTo(PerspectiveIds.TASK_DASHBOARD_SCREEN);
+    }
+
+    @PostConstruct
+    public void init() {
 
         processBreadCrumb.setOnRootSelectedCommand(this::resetProcessBreadcrumb);
 
@@ -302,6 +325,7 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
     }
 
     @Override
+    @WorkbenchPartView
     public AbstractDashboard.View getView() {
         return view;
     }
@@ -394,18 +418,15 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
 
     public void showDashboard() {
         view.showDashboard();
-        taskDashboardFocusEvent.fire(new TaskDashboardFocusEvent());
         closeTaskDetailsScreen();
     }
 
     public void showTasksTable() {
         view.showInstances();
-        taskDashboardFocusEvent.fire(new TaskDashboardFocusEvent());
         tasksTable.redraw();
     }
 
     public void openTaskDetailsScreen() {
-        taskDashboardFocusEvent.fire(new TaskDashboardFocusEvent());
         PlaceStatus status = placeManager.getStatus(TASK_DETAILS_SCREEN);
         if (status == PlaceStatus.CLOSE) {
             placeManager.goTo(TASK_DETAILS_SCREEN);
@@ -417,10 +438,6 @@ public class TaskDashboard extends AbstractDashboard implements IsWidget {
         if (status == PlaceStatus.OPEN) {
             placeManager.closePlace(TASK_DETAILS_SCREEN);
         }
-    }
-
-    public void onManagingTasks(@Observes ProcessDashboardFocusEvent event) {
-        closeTaskDetailsScreen();
     }
 
     public interface View extends AbstractDashboard.View {
