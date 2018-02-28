@@ -31,7 +31,6 @@ import org.jbpm.workbench.ht.client.editors.taskcomments.TaskCommentsPresenter;
 import org.jbpm.workbench.ht.client.editors.taskdetails.TaskDetailsPresenter;
 import org.jbpm.workbench.ht.client.editors.taskform.TaskFormPresenter;
 import org.jbpm.workbench.ht.client.editors.tasklogs.TaskLogsPresenter;
-import org.jbpm.workbench.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.forms.display.api.HumanTaskDisplayerConfig;
 import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayProvider;
@@ -83,9 +82,6 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
 
     @Inject
     private TaskAdminPresenter taskAdminPresenter;
-
-    @Inject
-    private TaskProcessContextPresenter taskProcessContextPresenter;
 
     @Inject
     private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
@@ -210,10 +206,6 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
 
     public IsWidget getTaskDetailsView() {
         return taskDetailsPresenter.getView();
-    }
-
-    public IsWidget getProcessContextView() {
-        return taskProcessContextPresenter.getView();
     }
 
     public IsWidget getTaskAssignmentsView() {

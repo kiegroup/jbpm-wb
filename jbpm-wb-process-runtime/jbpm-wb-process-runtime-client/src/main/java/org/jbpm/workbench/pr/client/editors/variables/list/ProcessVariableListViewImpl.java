@@ -82,6 +82,8 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
         List<String> initColumns = new ArrayList<String>();
         initColumns.add(COL_ID_VARID);
         initColumns.add(COL_ID_VARVALUE);
+        initColumns.add(COL_ID_VARTYPE);
+        initColumns.add(COL_ID_LASTMOD);
         initColumns.add(COL_ID_ACTIONS);
 
         super.init(presenter,

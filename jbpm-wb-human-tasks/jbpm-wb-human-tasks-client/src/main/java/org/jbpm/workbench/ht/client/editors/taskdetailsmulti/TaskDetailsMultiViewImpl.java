@@ -112,20 +112,6 @@ public class TaskDetailsMultiViewImpl extends Composite
         }
 
         {
-            processContextPane = GWT.create(TabPane.class);
-            processContextPane.add(presenter.getProcessContextView());
-
-            processContextTab = GWT.create(TabListItem.class);
-            processContextTab.setText(constants.Process_Context());
-            processContextTab.setDataTargetWidget(processContextPane);
-            processContextTab.addStyleName("uf-dropdown-tab-list-item");
-
-            navTabs.add(processContextTab);
-            tabContent.add(processContextPane);
-
-        }
-
-        {
             taskAssignmentsPane = GWT.create(TabPane.class);
             taskAssignmentsPane.add(presenter.getTaskAssignmentsView());
 
