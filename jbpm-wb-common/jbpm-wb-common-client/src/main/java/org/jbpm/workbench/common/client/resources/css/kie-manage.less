@@ -166,4 +166,52 @@
     color: @link-color;
   }
 
+  // Styles for KIE-specific datatables.net components
+
+  .content-view-pf-pagination,
+  .table-view-pf-toolbar.toolbar-pf {
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  .kie-datatable > thead > tr > th,
+  .kie-datatable > tbody > tr > th,
+  .kie-datatable > tfoot > tr > th,
+  .kie-datatable > thead > tr > td,
+  .kie-datatable > tbody > tr > td,
+  .kie-datatable  tfoot > tr > td {
+    padding: @pf-spacer-sm @pf-spacer-md;
+    border-left-color: transparent;
+    border-right-color: transparent;
+  }
+
+  .kie-datatable > thead {
+    background-color: transparent;
+    background-image: none;
+  }
+
+  .table-view-pf-actions {
+    background-color: transparent;
+  }
+
+  table.kie-datatable tbody > tr:hover > td.table-view-pf-actions {
+    background-color: transparent;
+  }
+
+  table.dataTable thead .sorting_asc:before,
+  table.dataTable thead .sorting_desc:before {
+    background: transparent;
+  }
+
+  ///// This styles the GWT-generated version of the table (in addition to inline styles where they already existed)
+  .kie-table--pagination .btn {
+    padding-left: @pf-spacer-xxs;
+    padding-right: @pf-spacer-xxs;
+  }
+
+  .kie-table__cell--separated {
+    padding-left: @pf-spacer-xxs;
+    padding-right: @pf-spacer-xxs;
+  }
+
 }

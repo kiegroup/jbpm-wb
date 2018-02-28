@@ -33,6 +33,7 @@ import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsJSONMarshaller;
@@ -99,7 +100,7 @@ public class ProcessInstanceListPresenterTest {
     private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
 
     @Mock
-    private ExtendedPagedTable extendedPagedTable;
+    private ListTable extendedPagedTable;
 
     @Spy
     private FilterSettings filterSettings;

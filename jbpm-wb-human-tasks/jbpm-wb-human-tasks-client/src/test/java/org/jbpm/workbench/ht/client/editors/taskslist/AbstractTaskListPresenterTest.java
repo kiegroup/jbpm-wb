@@ -41,6 +41,7 @@ import org.jboss.errai.security.shared.api.Group;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
@@ -96,7 +97,7 @@ public abstract class AbstractTaskListPresenterTest {
     private TaskListViewImpl viewMock;
 
     @Mock
-    private ExtendedPagedTable<TaskSummary> extendedPagedTable;
+    private ListTable<TaskSummary> extendedPagedTable;
 
     @Mock
     private DataSet dataSetMock;

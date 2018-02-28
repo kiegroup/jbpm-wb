@@ -24,6 +24,7 @@ import java.util.Set;
 import com.google.gwt.user.cellview.client.RowStyles;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridViewTest;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
 import org.jbpm.workbench.ht.model.TaskSummary;
@@ -68,7 +69,7 @@ public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest
 
     @Test
     public void initColumnsWithTaskVarColumnsTest() {
-        final ExtendedPagedTable<TaskSummary> currentListGrid = spy(new ExtendedPagedTable<>(new GridGlobalPreferences()));
+        final ListTable<TaskSummary> currentListGrid = spy(new ListTable<>(new GridGlobalPreferences()));
         doAnswer(new Answer() {
             @Override
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
@@ -122,7 +123,7 @@ public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest
 
     @Test
     public void testStylesNotAppliedDependingOnPriority() {
-        final ExtendedPagedTable<TaskSummary> currentListGrid = spy(new ExtendedPagedTable<>(new GridGlobalPreferences()));
+        final ListTable<TaskSummary> currentListGrid = spy(new ListTable<>(new GridGlobalPreferences()));
         getView().initSelectionModel(currentListGrid);
 
         final ArgumentCaptor<RowStyles> rowStylesApplied = ArgumentCaptor.forClass(RowStyles.class);

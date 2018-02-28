@@ -17,9 +17,12 @@ package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import javax.enterprise.context.Dependent;
 
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_ADMIN_DATASET;
 
 @Dependent
+@Templated(value = "/org/jbpm/workbench/common/client/list/AbstractMultiGridView.html", stylesheet = "/org/jbpm/workbench/common/client/resources/css/kie-manage.less")
 public class TaskAdminListViewImpl extends AbstractTaskListView<TaskAdminListPresenter> {
 
     private static final String DATA_SET_TASK_LIST_PREFIX = "DataSetTaskAdminGrid";

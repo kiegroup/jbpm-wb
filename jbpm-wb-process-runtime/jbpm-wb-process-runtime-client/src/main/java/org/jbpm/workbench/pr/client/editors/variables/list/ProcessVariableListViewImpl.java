@@ -37,6 +37,7 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.AbstractListView;
 import org.jbpm.workbench.common.client.util.ButtonActionCell;
@@ -53,6 +54,7 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.ParameterizedCommand;
 
 @Dependent
+@Templated(value = "/org/jbpm/workbench/common/client/list/AbstractListView.html")
 public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariableSummary, ProcessVariableListPresenter>
         implements ProcessVariableListPresenter.ProcessVariableListView {
 

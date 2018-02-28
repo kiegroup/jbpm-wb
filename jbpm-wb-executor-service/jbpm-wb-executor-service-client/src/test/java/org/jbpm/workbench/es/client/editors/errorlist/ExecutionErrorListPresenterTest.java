@@ -26,7 +26,7 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
@@ -78,7 +78,7 @@ public class ExecutionErrorListPresenterTest {
     private DataSetQueryHelper dataSetQueryHelper;
 
     @Mock
-    private ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable;
+    private ListTable<ExecutionErrorSummary> extendedPagedTable;
 
     @Mock
     private EventSourceMock<ExecutionErrorSelectedEvent> executionErrorSelectedEventMock;

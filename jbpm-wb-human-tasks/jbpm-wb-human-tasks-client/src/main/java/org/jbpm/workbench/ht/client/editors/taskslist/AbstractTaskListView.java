@@ -25,6 +25,7 @@ import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.view.client.CellPreviewEvent;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
@@ -62,7 +63,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     }
 
     @Override
-    public void initSelectionModel(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+    public void initSelectionModel(final ListTable<TaskSummary> extendedPagedTable) {
         final RowStyles selectedStyles = new RowStyles<TaskSummary>() {
 
             @Override
@@ -81,7 +82,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     }
 
     @Override
-    public void initColumns(ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+    public void initColumns(ListTable<TaskSummary> extendedPagedTable) {
         initCellPreview(extendedPagedTable);
 
         Column actionsColumn = initActionsColumn();

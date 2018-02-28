@@ -43,6 +43,7 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import org.gwtbootstrap3.client.ui.AnchorButton;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.AbstractListView;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
@@ -52,6 +53,7 @@ import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 @Dependent
+@Templated(value = "/org/jbpm/workbench/common/client/list/AbstractListView.html")
 public class ProcessDocumentListViewImpl extends AbstractListView<DocumentSummary, ProcessDocumentListPresenter>
         implements ProcessDocumentListPresenter.ProcessDocumentListView {
 

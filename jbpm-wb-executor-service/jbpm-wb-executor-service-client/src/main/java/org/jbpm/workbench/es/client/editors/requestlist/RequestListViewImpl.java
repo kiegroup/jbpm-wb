@@ -27,8 +27,9 @@ import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.es.client.i18n.Constants;
@@ -39,6 +40,7 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 
 @Dependent
+@Templated(value = "/org/jbpm/workbench/common/client/list/AbstractMultiGridView.html", stylesheet = "/org/jbpm/workbench/common/client/resources/css/kie-manage.less")
 public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, RequestListPresenter>
         implements RequestListPresenter.RequestListView {
 
@@ -81,7 +83,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     }
 
     @Override
-    public void initColumns(ExtendedPagedTable extendedPagedTable) {
+    public void initColumns(final ListTable extendedPagedTable) {
         Column actionsColumn = initActionsColumn();
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
 
@@ -119,7 +121,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     }
 
     @Override
-    public void initSelectionModel(ExtendedPagedTable<RequestSummary> extendedPagedTable) {
+    public void initSelectionModel(ListTable<RequestSummary> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption(constants.No_Jobs_Found());
         extendedPagedTable.setSelectionCallback((job) -> presenter.selectJob(job));
     }

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
@@ -32,19 +33,21 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
+import elemental2.dom.HTMLDivElement;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.client.util.DateRange;
 import org.jbpm.workbench.common.model.GenericSummary;
@@ -57,6 +60,7 @@ import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
+import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
 import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
@@ -71,7 +75,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public static final String USER_DEFINED = "ud_";
     public static final String COL_ID_SELECT = "Select";
     public static final String COL_ID_ACTIONS = "Actions";
-    private static Binder uiBinder = GWT.create(Binder.class);
 
     private final Constants constants = Constants.INSTANCE;
 
@@ -95,16 +98,17 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     protected FilterPagedTable<T> filterPagedTable = GWT.create(FilterPagedTable.class);
 
-    protected ExtendedPagedTable<T> currentListGrid;
+    protected ListTable<T> currentListGrid;
 
-    @UiField
-    protected org.gwtbootstrap3.client.ui.Column column;
+    @Inject
+    @DataField("column")
+    protected HTMLDivElement column;
 
     private Caller<UserPreferencesService> userPreferencesService;
 
-    public AbstractMultiGridView() {
-        initWidget(uiBinder.createAndBindUi(this));
-        column.add(filterPagedTable.makeWidget());
+    @PostConstruct
+    public void init(){
+        new Elemental2DomUtil().appendWidgetToElement(column, filterPagedTable.makeWidget());
         createTabButton.setIcon(IconType.PLUS);
         createTabButton.setSize(ButtonSize.SMALL);
     }
@@ -129,7 +133,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
         final Command addNewGrid = () -> {
 
-            final ExtendedPagedTable<T> extendedPagedTable = createGridInstance(key);
+            final ListTable<T> extendedPagedTable = createGridInstance(key);
 
             extendedPagedTable.setDataProvider(presenter.getDataProvider());
 
@@ -167,7 +171,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                 initSearchFilter();
             }
             existingGrids.forEach(key -> {
-                final ExtendedPagedTable<T> extendedPagedTable = loadGridInstance(key);
+                final ListTable<T> extendedPagedTable = loadGridInstance(key);
                 extendedPagedTable.setDataProvider(presenter.getDataProvider());
                 filterPagedTable.addTab(extendedPagedTable,
                                         key,
@@ -193,6 +197,19 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         notification.fire(new NotificationEvent(text));
     }
 
+    public void showRestoreDefaultFilterConfirmationPopup() {
+        YesNoCancelPopup yesNoCancelPopup = YesNoCancelPopup.newYesNoCancelPopup(constants.RestoreDefaultFilters(),
+                                                                                 constants.AreYouSureRestoreDefaultFilters(),
+                                                                                 () -> {
+                                                                                     showBusyIndicator(constants.Loading());
+                                                                                     presenter.onRestoreTabs();
+                                                                                 },
+                                                                                 null,
+                                                                                 () -> {
+                                                                                 });
+        yesNoCancelPopup.show();
+    }
+
     public void restoreTabs() {
         presenter.setAddingDefaultFilters(true);
         final List<String> grids = new ArrayList<>(getMultiGridPreferencesStore().getGridsId());
@@ -202,7 +219,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         filterPagedTable.addAddTableButton(createTabButton);
     }
 
-    protected void controlBulkOperations(final ExtendedPagedTable<T> extendedPagedTable) {
+    protected void controlBulkOperations(final ListTable<T> extendedPagedTable) {
         Scheduler.get().scheduleDeferred(() -> enableWidgets(Iterables.getFirst(extendedPagedTable.getRightActionsToolbar(),
                                                                                 null),
                                                              extendedPagedTable.hasSelectedItems()));
@@ -228,8 +245,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         return filterPagedTable.getValidKeyForAdditionalListGrid(baseName + USER_DEFINED);
     }
 
-    public ExtendedPagedTable<T> createGridInstance(final String key) {
-        final ExtendedPagedTable<T> newListGrid = createExtendedPagedTable(key);
+    public ListTable<T> createGridInstance(final String key) {
+        final ListTable<T> newListGrid = createExtendedPagedTable(key);
         newListGrid.setShowLastPagerButton(false);
         newListGrid.setShowFastFordwardPagerButton(false);
         newListGrid.setPreferencesService(userPreferencesService);
@@ -243,9 +260,9 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         return newListGrid;
     }
 
-    protected ExtendedPagedTable<T> createExtendedPagedTable(final String key) {
+    protected ListTable<T> createExtendedPagedTable(final String key) {
         GridGlobalPreferences pref;
-        ExtendedPagedTable<T> table;
+        ListTable<T> table;
         if (TAB_SEARCH.equals(key)) {
             pref = new GridGlobalPreferences(getGridGlobalPreferencesKey() + key,
                                              getInitColumns(),
@@ -255,22 +272,22 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
             pref = new GridGlobalPreferences(key,
                                              getInitColumns(),
                                              getBannedColumns());
-            table = new ExtendedPagedTable<T>(pref);
+            table = new ListTable<T>(pref);
         }
         table.setGridPreferencesStore(new GridPreferencesStore(pref));
         return table;
     }
 
-    protected ExtendedPagedTable<T> createAdvancedSearchTable(final GridGlobalPreferences preferences) {
-        final ExtendedPagedTable advancedSearchTable = new ExtendedPagedTable<T>(preferences);
+    protected ListTable<T> createAdvancedSearchTable(final GridGlobalPreferences preferences) {
+        final ListTable advancedSearchTable = new ListTable<T>(preferences);
         advancedSearchTable.getElement().getStyle().setPaddingTop(0,
                                                                   Style.Unit.PX);
         advancedSearchTable.getTopToolbar().add(advancedSearchFiltersView);
         return advancedSearchTable;
     }
 
-    public ExtendedPagedTable<T> loadGridInstance(final String key) {
-        final ExtendedPagedTable<T> newListGrid = createExtendedPagedTable(key);
+    public ListTable<T> loadGridInstance(final String key) {
+        final ListTable<T> newListGrid = createExtendedPagedTable(key);
         newListGrid.setShowLastPagerButton(false);
         newListGrid.setShowFastFordwardPagerButton(false);
         newListGrid.dataGrid.addRedrawHandler(() -> controlBulkOperations(newListGrid));
@@ -299,7 +316,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         BusyPopup.close();
     }
 
-    public ExtendedPagedTable<T> getListGrid() {
+    public ListTable<T> getListGrid() {
         return currentListGrid;
     }
 
@@ -307,9 +324,9 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
      * For each specific implementation define the
      *  DataGrid columns and how they must be initialized
      */
-    public abstract void initColumns(ExtendedPagedTable<T> extendedPagedTable);
+    public abstract void initColumns(ListTable<T> extendedPagedTable);
 
-    public abstract void initSelectionModel(ExtendedPagedTable<T> extendedPagedTable);
+    public abstract void initSelectionModel(ListTable<T> extendedPagedTable);
 
     public abstract List<String> getInitColumns();
 
@@ -366,7 +383,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         filterPagedTable.saveNewTabSettings(tableSettings.getKey(),
                                             tabSettingsValues);
 
-        final ExtendedPagedTable<T> extendedPagedTable = createGridInstance(tableSettings.getKey());
+        final ListTable<T> extendedPagedTable = createGridInstance(tableSettings.getKey());
         currentListGrid = extendedPagedTable;
         extendedPagedTable.setDataProvider(presenter.getDataProvider());
 
@@ -473,7 +490,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         return column;
     }
 
-    protected ColumnMeta<T> initChecksColumn(final ExtendedPagedTable<T> extendedPagedTable) {
+    protected ColumnMeta<T> initChecksColumn(final ListTable<T> extendedPagedTable) {
         CheckboxCell checkboxCell = new CheckboxCell(true,
                                                      false);
         Column<T, Boolean> checkColumn = new Column<T, Boolean>(checkboxCell) {

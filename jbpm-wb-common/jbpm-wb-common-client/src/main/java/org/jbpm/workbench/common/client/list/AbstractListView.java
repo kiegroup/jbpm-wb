@@ -19,9 +19,12 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
+import elemental2.dom.HTMLDivElement;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
@@ -61,16 +64,20 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
     protected DefaultSelectionEventManager<T> noActionColumnManager;
 
     @Inject
+    @DataField("column")
+    protected HTMLDivElement column;
+
+    @Inject
     private Caller<UserPreferencesService> preferencesService;
 
     public void init(final V presenter,
                      final GridGlobalPreferences preferences) {
         this.presenter = presenter;
 
-        listGrid = new ExtendedPagedTable<T>(preferences);
+        listGrid = createListGrid(preferences);
         listGrid.setShowLastPagerButton(true);
         listGrid.setShowFastFordwardPagerButton(true);
-        initWidget(listGrid);
+        new Elemental2DomUtil().appendWidgetToElement(column, listGrid);
         presenter.addDataDisplay(listGrid);
         preferencesService.call(new RemoteCallback<GridPreferencesStore>() {
 
@@ -88,6 +95,10 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
             }
         }).loadUserPreferences(preferences.getKey(),
                                UserPreferencesType.GRIDPREFERENCES);
+    }
+
+    protected ExtendedPagedTable<T> createListGrid(final GridGlobalPreferences preferences) {
+        return new ExtendedPagedTable<T>(preferences);
     }
 
     @Override

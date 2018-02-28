@@ -36,8 +36,10 @@ import org.gwtbootstrap3.client.ui.DropDownMenu;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.BooleanConverter;
 import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateTimeConverter;
@@ -50,6 +52,7 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 
 @Dependent
+@Templated(value = "/org/jbpm/workbench/common/client/list/AbstractMultiGridView.html", stylesheet = "/org/jbpm/workbench/common/client/resources/css/kie-manage.less")
 public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionErrorSummary, ExecutionErrorListPresenter>
         implements ExecutionErrorListPresenter.ExecutionErrorListView {
 
@@ -102,7 +105,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
     }
 
     @Override
-    public void initSelectionModel(final ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable) {
+    public void initSelectionModel(final ListTable<ExecutionErrorSummary> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption(constants.No_Execution_Errors_Found());
         extendedPagedTable.setSelectionCallback((error) -> presenter.selectExecutionError(error));
         initBulkActions(extendedPagedTable);
@@ -144,7 +147,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
     }
 
     @Override
-    public void initColumns(final ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable) {
+    public void initColumns(final ListTable<ExecutionErrorSummary> extendedPagedTable) {
         final ColumnMeta<ExecutionErrorSummary> checkColumnMeta = initChecksColumn(extendedPagedTable);
 
         final List<ColumnMeta<ExecutionErrorSummary>> columnMetas = new ArrayList<ColumnMeta<ExecutionErrorSummary>>();

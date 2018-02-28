@@ -35,8 +35,10 @@ import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
@@ -49,6 +51,7 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
+@Templated(value = "/org/jbpm/workbench/common/client/list/AbstractMultiGridView.html", stylesheet = "/org/jbpm/workbench/common/client/resources/css/kie-manage.less")
 public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessInstanceSummary, ProcessInstanceListPresenter>
         implements ProcessInstanceListPresenter.ProcessInstanceListView {
 
@@ -96,14 +99,14 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     }
 
     @Override
-    public void initSelectionModel(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
+    public void initSelectionModel(final ListTable<ProcessInstanceSummary> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption(constants.No_Process_Instances_Found());
         extendedPagedTable.setSelectionCallback((pis) -> presenter.selectProcessInstance(pis));
         initBulkActions(extendedPagedTable);
     }
 
     @Override
-    public void initColumns(ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
+    public void initColumns(final ListTable<ProcessInstanceSummary> extendedPagedTable) {
         final ColumnMeta checkColumnMeta = initChecksColumn(extendedPagedTable);
 
         Column<ProcessInstanceSummary, ?> actionsColumn = initActionsColumn();

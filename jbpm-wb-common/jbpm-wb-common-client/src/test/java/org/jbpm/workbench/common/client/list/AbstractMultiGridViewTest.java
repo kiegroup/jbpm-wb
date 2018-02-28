@@ -294,7 +294,7 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
 
     @Test
     public void testDataStoreNameIsSet() {
-        final ExtendedPagedTable<T> currentListGrid = spy(new ExtendedPagedTable<T>(new GridGlobalPreferences()));
+        final ListTable<T> currentListGrid = spy(new ListTable<T>(new GridGlobalPreferences()));
         doAnswer(new Answer() {
             @Override
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
@@ -313,7 +313,7 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
 
     @Test
     public void testInitColumns() {
-        final ExtendedPagedTable<T> currentListGrid = spy(new ExtendedPagedTable<T>(new GridGlobalPreferences()));
+        final ListTable<T> currentListGrid = spy(new ListTable<T>(new GridGlobalPreferences()));
         doAnswer(new Answer() {
             @Override
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {

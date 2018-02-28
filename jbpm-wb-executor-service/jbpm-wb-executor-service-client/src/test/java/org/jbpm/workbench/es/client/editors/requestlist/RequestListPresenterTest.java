@@ -24,7 +24,7 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
@@ -75,7 +75,7 @@ public class RequestListPresenterTest {
     private DataSetLookup dataSetLookup;
 
     @Mock
-    private ExtendedPagedTable<RequestSummary> extendedPagedTable;
+    private ListTable<RequestSummary> extendedPagedTable;
 
     @Mock
     private EventSourceMock<RequestChangedEvent> requestChangedEvent;

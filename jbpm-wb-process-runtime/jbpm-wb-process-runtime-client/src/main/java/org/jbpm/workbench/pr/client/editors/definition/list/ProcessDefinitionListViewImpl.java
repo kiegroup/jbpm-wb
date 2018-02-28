@@ -34,8 +34,10 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.AbstractListView;
+import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.ButtonActionCell;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessSummary;
@@ -43,6 +45,7 @@ import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 @Dependent
+@Templated(value = "/org/jbpm/workbench/common/client/list/AbstractListView.html", stylesheet = "/org/jbpm/workbench/common/client/resources/css/kie-manage.less")
 public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSummary, ProcessDefinitionListPresenter>
         implements ProcessDefinitionListPresenter.ProcessDefinitionListView {
 
@@ -54,8 +57,12 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     private Constants constants = Constants.INSTANCE;
 
     @Override
-    public void init(final ProcessDefinitionListPresenter presenter) {
+    protected ExtendedPagedTable<ProcessSummary> createListGrid(final GridGlobalPreferences preferences) {
+        return new ListTable<ProcessSummary>(preferences);
+    }
 
+    @Override
+    public void init(final ProcessDefinitionListPresenter presenter) {
         List<String> bannedColumns = new ArrayList<String>();
         bannedColumns.add(COL_ID_PROCESSNAME);
         bannedColumns.add(COL_ID_ACTIONS);
