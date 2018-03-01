@@ -179,14 +179,14 @@
   .kie-datatable > tfoot > tr > th,
   .kie-datatable > thead > tr > td,
   .kie-datatable > tbody > tr > td,
-  .kie-datatable  tfoot > tr > td {
+  .kie-datatable tfoot > tr > td {
     padding: @pf-spacer-sm @pf-spacer-md;
     border-left-color: transparent;
     border-right-color: transparent;
   }
 
   .kie-datatable > thead {
-    background-color: transparent;
+    background-color: @color-pf-black-150;
     background-image: none;
   }
 
@@ -212,6 +212,10 @@
   .kie-table__cell--separated {
     padding-left: @pf-spacer-xxs;
     padding-right: @pf-spacer-xxs;
+  }
+
+  .kie-datatable-select {
+    text-align: center;
   }
 
 }

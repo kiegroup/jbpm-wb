@@ -513,9 +513,11 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                                                                                value));
             getListGrid().redraw();
         });
+        selectPageHeader.setHeaderStyleNames("kie-datatable-select");
 
         checkColumn.setSortable(false);
         checkColumn.setDataStoreName(COL_ID_SELECT);
+        checkColumn.setCellStyleNames("kie-datatable-select");
         ColumnMeta<T> checkColMeta = new ColumnMeta<T>(checkColumn,
                                                        "");
         checkColMeta.setHeader(selectPageHeader);

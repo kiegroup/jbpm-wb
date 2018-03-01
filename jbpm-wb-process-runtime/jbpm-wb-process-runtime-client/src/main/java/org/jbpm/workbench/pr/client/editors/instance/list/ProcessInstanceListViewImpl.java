@@ -179,7 +179,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         }
         extendedPagedTable.addColumns(columnMetas);
         extendedPagedTable.setColumnWidth(checkColumnMeta.getColumn(),
-                                          38,
+                                          42,
                                           Style.Unit.PX);
         extendedPagedTable.setColumnWidth(errorCountColumn,
                                           65,

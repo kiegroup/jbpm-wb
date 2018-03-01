@@ -20,8 +20,18 @@ import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 
 public class ListTable<T extends GenericSummary> extends ExtendedPagedTable<T> {
 
+    public static final int ROW_HEIGHT_PX = 44;
+
     public ListTable(GridGlobalPreferences gridPreferences) {
         super(gridPreferences);
         this.addDataGridStyles("kie-datatable", "kie-datatable");
+        this.dataGrid.setStriped(false);
+    }
+
+    @Override
+    protected void setTableHeight() {
+        int base = dataGrid.getRowCount() - dataGrid.getVisibleRange().getStart();
+        int height = ((base <= 0 ? 1 : base) * ROW_HEIGHT_PX) + HEIGHT_OFFSET_PX;
+        this.dataGrid.setHeight(height + "px");
     }
 }
