@@ -121,6 +121,16 @@ public interface Constants extends Messages {
 
     String Manage();
 
+    String Manage_Process_Definitions();
+
+    String Manage_Process_Instances();
+
+    String Manage_Tasks();
+
+    String Manage_ExecutionErrors();
+
+    String Manage_Jobs();
+
     String FilterBy();
 
     String SavedFilters();

@@ -88,12 +88,12 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     @Override
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            commonConstants.Process_Definitions());
+                            commonConstants.Manage_Process_Definitions());
     }
 
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              commonConstants.Process_Definitions(),
+                              commonConstants.Manage_Process_Definitions(),
                               detailLabel,
                               PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN);
     }

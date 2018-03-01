@@ -118,12 +118,12 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     @Override
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            commonConstants.Jobs());
+                            commonConstants.Manage_Jobs());
     }
 
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              commonConstants.Jobs(),
+                              commonConstants.Manage_Jobs(),
                               detailLabel,
                               PerspectiveIds.JOB_DETAILS_SCREEN);
     }

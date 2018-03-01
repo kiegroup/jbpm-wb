@@ -104,12 +104,12 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     @Override
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            commonConstants.Process_Instances());
+                            commonConstants.Manage_Process_Instances());
     }
 
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              commonConstants.Process_Instances(),
+                              commonConstants.Manage_Process_Instances(),
                               detailLabel,
                               PROCESS_INSTANCE_DETAILS_SCREEN);
     }

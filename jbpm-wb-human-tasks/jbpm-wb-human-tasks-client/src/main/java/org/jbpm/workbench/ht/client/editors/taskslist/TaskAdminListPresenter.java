@@ -48,13 +48,13 @@ public class TaskAdminListPresenter extends AbstractTaskListPresenter<TaskAdminL
     @Override
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Tasks_Admin());
+                            org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Manage_Tasks());
     }
 
     @Override
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Tasks_Admin(),
+                              org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Manage_Tasks(),
                               detailLabel,
                               PerspectiveIds.TASK_DETAILS_SCREEN);
     }

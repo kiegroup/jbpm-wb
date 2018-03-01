@@ -71,12 +71,12 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
 
     public void createListBreadcrumb() {
         setupListBreadcrumb(placeManager,
-                            commonConstants.ExecutionErrors());
+                            commonConstants.Manage_ExecutionErrors());
     }
 
     public void setupDetailBreadcrumb(String detailLabel) {
         setupDetailBreadcrumb(placeManager,
-                              commonConstants.ExecutionErrors(),
+                              commonConstants.Manage_ExecutionErrors(),
                               detailLabel,
                               PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN);
     }
