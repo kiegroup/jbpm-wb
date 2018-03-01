@@ -36,6 +36,7 @@ import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
+import org.jbpm.workbench.es.client.editors.errordetails.ExecutionErrorDetailsPresenter;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
@@ -246,7 +247,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     }
 
     public void selectExecutionError(final ExecutionErrorSummary summary) {
-        setupDetailBreadcrumb(constants.ExecutionErrorBreadcrumb(summary.getErrorId()));
+        setupDetailBreadcrumb(constants.ExecutionErrorBreadcrumb(ExecutionErrorDetailsPresenter.getErrorDetailTitle(summary)));
         placeManager.goTo(PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN);
         executionErrorSelectedEvent.fire(new ExecutionErrorSelectedEvent(getSelectedServerTemplate(),
                                                                          summary.getDeploymentId(),

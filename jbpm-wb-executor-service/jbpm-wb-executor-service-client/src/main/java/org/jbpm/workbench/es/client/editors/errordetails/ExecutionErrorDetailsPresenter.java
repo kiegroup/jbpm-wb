@@ -73,6 +73,10 @@ public class ExecutionErrorDetailsPresenter implements RefreshMenuBuilder.Suppor
         this.place = place;
     }
 
+    public static String getErrorDetailTitle(final ExecutionErrorSummary summary) {
+        return summary.getProcessId() + " - " + summary.getProcessInstanceId() + " (" + summary.getDeploymentId() + ")";
+    }
+
     public void onExecutionErrorSelectedEvent(@Observes ExecutionErrorSelectedEvent event) {
         this.serverTemplateId = event.getServerTemplateId();
         this.deploymentId = event.getDeploymentId();
@@ -102,10 +106,6 @@ public class ExecutionErrorDetailsPresenter implements RefreshMenuBuilder.Suppor
                 .getError(serverTemplateId,
                           deploymentId,
                           errorId);
-    }
-
-    private String getErrorDetailTitle(ExecutionErrorSummary summary) {
-        return summary.getProcessId() + " - " + summary.getProcessInstanceId() + " (" + summary.getDeploymentId() + ")";
     }
 
     @Inject
