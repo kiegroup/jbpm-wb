@@ -33,7 +33,7 @@ public interface Constants extends Messages {
 
     String Task_Inbox();
 
-    String Tasks_Admin();
+    String Tasks();
 
     String Grid();
 
