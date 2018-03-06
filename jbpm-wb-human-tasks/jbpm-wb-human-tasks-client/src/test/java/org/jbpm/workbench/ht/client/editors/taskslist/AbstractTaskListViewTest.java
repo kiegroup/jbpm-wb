@@ -15,7 +15,6 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -23,21 +22,17 @@ import java.util.Set;
 
 import com.google.gwt.user.cellview.client.RowStyles;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridViewTest;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.COL_ID_ACTIONS;
-import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
+import static org.jbpm.workbench.ht.model.TaskDataSetConstants.COLUMN_NAME;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -46,15 +41,6 @@ public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest
     public abstract AbstractTaskListView getView();
 
     public abstract AbstractTaskListPresenter getPresenter();
-
-    @Override
-    public List<String> getExpectedInitialColumns() {
-        return Arrays.asList(COLUMN_NAME,
-                             COLUMN_PROCESS_ID,
-                             COLUMN_STATUS,
-                             COLUMN_CREATED_ON,
-                             COL_ID_ACTIONS);
-    }
 
     @Override
     public List<String> getExpectedBannedColumns() {
@@ -68,43 +54,12 @@ public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest
     }
 
     @Test
-    public void initColumnsWithTaskVarColumnsTest() {
-        final ListTable<TaskSummary> currentListGrid = spy(new ListTable<>(new GridGlobalPreferences()));
-        doAnswer(new Answer() {
-            @Override
-            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
-                final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[0];
-                assertTrue(columns.size() == 18);
-                return null;
-            }
-        }).when(currentListGrid).addColumns(anyList());
-
-        ArrayList<GridColumnPreference> columnPreferences = new ArrayList<GridColumnPreference>();
-        columnPreferences.add(new GridColumnPreference("var1",
-                                                       0,
-                                                       "40"));
-        columnPreferences.add(new GridColumnPreference("var2",
-                                                       1,
-                                                       "40"));
-        columnPreferences.add(new GridColumnPreference("var3",
-                                                       1,
-                                                       "40"));
-        when(currentListGrid.getGridPreferencesStore()).thenReturn(gridPreferencesStore);
-        when(gridPreferencesStore.getColumnPreferences()).thenReturn(columnPreferences);
-
-        getView().initColumns(currentListGrid);
-
-        verify(currentListGrid).addColumns(anyList());
-    }
-
-    @Test
     public void addDomainSpecifColumnsTest() {
-        final ExtendedPagedTable<TaskSummary> currentListGrid = spy(new ExtendedPagedTable<>(new GridGlobalPreferences()));
+        final ListTable<TaskSummary> currentListGrid = spy(new ListTable<>(new GridGlobalPreferences()));
         final Set<String> domainColumns = new HashSet<String>();
         domainColumns.add("var1");
         domainColumns.add("var2");
         domainColumns.add("var3");
-
         getView().addDomainSpecifColumns(currentListGrid,
                                          domainColumns);
 
@@ -152,4 +107,6 @@ public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest
                                                                        .build(),
                                                                1));
     }
+
+    public abstract List<String> getExpectedInitialColumns();
 }

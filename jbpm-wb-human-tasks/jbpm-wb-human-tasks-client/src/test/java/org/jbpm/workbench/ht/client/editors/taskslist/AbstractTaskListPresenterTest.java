@@ -40,7 +40,6 @@ import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.security.shared.api.Group;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
@@ -328,7 +327,7 @@ public abstract class AbstractTaskListPresenterTest {
                                          5));
 
         ArgumentCaptor<Set> argument = ArgumentCaptor.forClass(Set.class);
-        verify(viewMock).addDomainSpecifColumns(any(ExtendedPagedTable.class),
+        verify(viewMock).addDomainSpecifColumns(any(ListTable.class),
                                                 argument.capture());
 
         assertEquals(expectedColumns,
@@ -355,7 +354,7 @@ public abstract class AbstractTaskListPresenterTest {
 
         argument = ArgumentCaptor.forClass(Set.class);
         verify(viewMock,
-               times(2)).addDomainSpecifColumns(any(ExtendedPagedTable.class),
+               times(2)).addDomainSpecifColumns(any(ListTable.class),
                                                 argument.capture());
 
         assertEquals(expectedColumns,
@@ -381,7 +380,6 @@ public abstract class AbstractTaskListPresenterTest {
 
             final TaskSummary summary = new TaskSummaryDataSetMapper().apply(dataSetMock,
                                                                              0);
-
             assertNotNull(summary);
             assertEquals(HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet),
                          summary.isForAdmin());
@@ -541,11 +539,13 @@ public abstract class AbstractTaskListPresenterTest {
     }
 
     @Test
-    public void testStatusSettingsColumns(){
+    public void testStatusSettingsColumns() {
         final String dataSetId = "dataSetId";
-        FilterSettings settings = getPresenter().createStatusSettings(dataSetId, null);
+        FilterSettings settings = getPresenter().createStatusSettings(dataSetId,
+                                                                      null);
 
-        assertEquals(dataSetId, settings.getDataSetLookup().getDataSetUUID());
+        assertEquals(dataSetId,
+                     settings.getDataSetLookup().getDataSetUUID());
         getDataSetExpectedColumns().forEach(c -> assertNotNull(settings.getColumnSettings(c)));
     }
 
@@ -604,5 +604,4 @@ public abstract class AbstractTaskListPresenterTest {
         verify(taskSelected).fire(captor.capture());
         assertFalse(captor.getValue().isForLog());
     }
-
 }

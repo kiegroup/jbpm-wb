@@ -1,0 +1,12 @@
+.data-error-count {
+    margin-left: 0px;
+    cursor: initial !important;
+}
+
+.data-error-count.error-present {
+    background-color: #c00;
+}
+
+.data-error-count.link-available {
+    cursor: pointer !important;
+}

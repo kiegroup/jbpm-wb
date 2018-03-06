@@ -100,6 +100,8 @@ public interface Constants extends Messages {
     String Process_Instance_Correlation_Key();
 
     String Process_Instance_Description();
+    
+    String Error_Count();
 
     String Last_Modification_Date();
 
@@ -242,4 +244,6 @@ public interface Constants extends Messages {
     String ViewProcess();
 
     String TaskListCouldNotBeLoaded();
+    
+    String Errors();
 }

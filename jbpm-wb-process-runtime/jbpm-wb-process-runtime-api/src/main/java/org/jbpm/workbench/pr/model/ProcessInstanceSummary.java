@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jbpm.workbench.common.model.GenericSummary;
+import org.jbpm.workbench.common.model.GenericErrorSummary;
 
 @Portable
-public class ProcessInstanceSummary extends GenericSummary<Long> {
+public class ProcessInstanceSummary extends GenericErrorSummary<Long> {
 
     private Long processInstanceId;
     private String processId;
@@ -42,7 +42,6 @@ public class ProcessInstanceSummary extends GenericSummary<Long> {
     private Map<String, String> domainData = new HashMap<String, String>();
     private List<UserTaskSummary> activeTasks;
     private Date lastModificationDate;
-    private Integer errorCount;
 
     public ProcessInstanceSummary(Long processInstanceId,
                                   String processId,
@@ -58,7 +57,7 @@ public class ProcessInstanceSummary extends GenericSummary<Long> {
                                   Long parentId,
                                   Date lastModificationDate,
                                   Integer errorCount) {
-        super();
+        super(errorCount, processInstanceId, processName);
         this.id = processInstanceId;
         this.name = processName;
         this.processInstanceId = processInstanceId;
@@ -74,7 +73,6 @@ public class ProcessInstanceSummary extends GenericSummary<Long> {
         this.correlationKey = correlationKey;
         this.parentId = parentId;
         this.lastModificationDate = lastModificationDate;
-        this.errorCount = errorCount;
     }
 
     public ProcessInstanceSummary() {
@@ -206,14 +204,6 @@ public class ProcessInstanceSummary extends GenericSummary<Long> {
         this.lastModificationDate = lastModificationDate;
     }
 
-    public Integer getErrorCount() {
-        return this.errorCount;
-    }
-
-    public void setErrorCount(Integer errorCount) {
-        this.errorCount = errorCount;
-    }
-
     @Override
     public String toString() {
         return "ProcessInstanceSummary{" +
@@ -232,7 +222,6 @@ public class ProcessInstanceSummary extends GenericSummary<Long> {
                 ", domainData=" + domainData +
                 ", activeTasks=" + activeTasks +
                 ", lastModificationDate=" + lastModificationDate +
-                ", errorCount=" + errorCount +
                 "} " + super.toString();
     }
 }

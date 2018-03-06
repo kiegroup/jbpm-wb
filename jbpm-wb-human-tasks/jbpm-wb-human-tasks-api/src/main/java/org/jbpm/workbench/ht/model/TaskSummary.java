@@ -21,10 +21,10 @@ import java.util.Map;
 
 import org.jboss.errai.common.client.api.annotations.NonPortable;
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jbpm.workbench.common.model.GenericSummary;
+import org.jbpm.workbench.common.model.GenericErrorSummary;
 
 @Portable
-public class TaskSummary extends GenericSummary<Long> {
+public class TaskSummary extends GenericErrorSummary<Long> {
 
     private String description;
     private String status;
@@ -215,25 +215,25 @@ public class TaskSummary extends GenericSummary<Long> {
     @Override
     public String toString() {
         return "TaskSummary{" +
-                "description='" + description + '\'' +
-                ", status='" + status + '\'' +
-                ", priority=" + priority +
-                ", actualOwner='" + actualOwner + '\'' +
-                ", createdBy='" + createdBy + '\'' +
-                ", createdOn=" + createdOn +
-                ", activationTime=" + activationTime +
-                ", expirationTime=" + expirationTime +
-                ", lastModificationDate=" + lastModificationDate +
-                ", processInstanceId=" + processInstanceId +
-                ", processInstanceCorrelationKey='" + processInstanceCorrelationKey + '\'' +
-                ", processInstanceDescription='" + processInstanceDescription + '\'' +
-                ", processId='" + processId + '\'' +
-                ", deploymentId='" + deploymentId + '\'' +
-                ", isForAdmin=" + isForAdmin +
-                ", isLogOnly=" + isLogOnly +
-                ", parentId=" + parentId +
-                ", domainData=" + domainData +
-                "} " + super.toString();
+               "description='" + description + '\'' +
+               ", status='" + status + '\'' +
+               ", priority=" + priority +
+               ", actualOwner='" + actualOwner + '\'' +
+               ", createdBy='" + createdBy + '\'' +
+               ", createdOn=" + createdOn +
+               ", activationTime=" + activationTime +
+               ", expirationTime=" + expirationTime +
+               ", lastModificationDate=" + lastModificationDate +
+               ", processInstanceId=" + processInstanceId +
+               ", processInstanceCorrelationKey='" + processInstanceCorrelationKey + '\'' +
+               ", processInstanceDescription='" + processInstanceDescription + '\'' +
+               ", processId='" + processId + '\'' +
+               ", deploymentId='" + deploymentId + '\'' +
+               ", isForAdmin=" + isForAdmin +
+               ", isLogOnly=" + isLogOnly +
+               ", parentId=" + parentId +
+               ", domainData=" + domainData +
+               "} " + super.toString();
     }
 
     @NonPortable
@@ -241,8 +241,7 @@ public class TaskSummary extends GenericSummary<Long> {
 
         private TaskSummary taskSummary = new TaskSummary();
 
-        private Builder() {
-        }
+        private Builder() {}
 
         public TaskSummary build() {
             return taskSummary;
@@ -350,6 +349,11 @@ public class TaskSummary extends GenericSummary<Long> {
 
         public Builder processSessionId(Long processSessionId) {
             this.taskSummary.setProcessSessionId(processSessionId);
+            return this;
+        }
+
+        public Builder errorCount(Integer errorCount) {
+            this.taskSummary.setErrorCount(errorCount);
             return this;
         }
     }

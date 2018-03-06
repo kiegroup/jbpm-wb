@@ -41,6 +41,7 @@ import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
+import org.jbpm.workbench.common.client.util.GenericErrorSummaryCountCell;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.kie.api.runtime.process.ProcessInstance;
@@ -65,7 +66,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     ConfirmPopup confirmPopup;
 
     @Inject
-    private ManagedInstance<ProcessInstanceSummaryErrorCountCell> popoverCellInstance;
+    private ManagedInstance<GenericErrorSummaryCountCell> popoverCellInstance;
 
     @Override
     public List<String> getInitColumns() {

@@ -15,7 +15,12 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import com.google.gwt.cell.client.CompositeCell;
 import com.google.gwt.cell.client.HasCell;
@@ -24,7 +29,6 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.view.client.CellPreviewEvent;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
@@ -34,22 +38,13 @@ import org.jbpm.workbench.ht.model.TaskSummary;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
-import static org.jbpm.workbench.common.client.util.TaskUtils.*;
+import static org.jbpm.workbench.common.client.util.TaskUtils.TASK_STATUS_COMPLETED;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> extends AbstractMultiGridView<TaskSummary, P>
         implements AbstractTaskListPresenter.TaskListView<P> {
 
     protected final Constants constants = Constants.INSTANCE;
-
-    @Override
-    public List<String> getInitColumns() {
-        return Arrays.asList(COLUMN_NAME,
-                             COLUMN_PROCESS_ID,
-                             COLUMN_STATUS,
-                             COLUMN_CREATED_ON,
-                             COL_ID_ACTIONS);
-    }
 
     @Override
     public List<String> getBannedColumns() {
@@ -158,11 +153,12 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                    task -> task.getProcessSessionId()),
                 constants.ProcessSessionId()
         ));
+        addNewColumn(extendedPagedTable,
+                     columnMetas);
         columnMetas.add(new ColumnMeta<>(actionsColumn,
                                          constants.Actions()));
 
         List<GridColumnPreference> columPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
-
         for (GridColumnPreference colPref : columPreferenceList) {
             if (!isColumnAdded(columnMetas,
                                colPref.getName())) {
@@ -174,11 +170,14 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                                             true));
             }
         }
-
         extendedPagedTable.addColumns(columnMetas);
     }
 
-    private void initCellPreview(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+    protected void addNewColumn(ListTable<TaskSummary> extendedPagedTable,
+                                List<ColumnMeta<TaskSummary>> columnMetas) {
+    }
+
+    protected void initCellPreview(final ListTable<TaskSummary> extendedPagedTable) {
         extendedPagedTable.addCellPreviewHandler(new CellPreviewEvent.Handler<TaskSummary>() {
 
             @Override
@@ -192,8 +191,8 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         });
     }
 
-    private void onMouseOverGrid(ExtendedPagedTable<TaskSummary> extendedPagedTable,
-                                 final CellPreviewEvent<TaskSummary> event) {
+    protected void onMouseOverGrid(final ListTable<TaskSummary> extendedPagedTable,
+                                   final CellPreviewEvent<TaskSummary> event) {
         TaskSummary task = event.getValue();
 
         if (task.getDescription() != null) {
@@ -203,7 +202,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         }
     }
 
-    private Column<TaskSummary, ?> initActionsColumn() {
+    protected Column<TaskSummary, ?> initActionsColumn() {
         List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
 
         cells.add(new ConditionalButtonActionCell<TaskSummary>(constants.Claim(),
@@ -240,12 +239,12 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
     }
-    
-    private boolean isColumnAdded( List<ColumnMeta<TaskSummary>> columnMetas,
-            String caption ) {
-        if ( caption != null ) {
-            for ( ColumnMeta<TaskSummary> colMet : columnMetas ) {
-                if ( caption.equals( colMet.getColumn().getDataStoreName() ) ) {
+
+    protected boolean isColumnAdded(List<ColumnMeta<TaskSummary>> columnMetas,
+                                    String caption) {
+        if (caption != null) {
+            for (ColumnMeta<TaskSummary> colMet : columnMetas) {
+                if (caption.equals(colMet.getColumn().getDataStoreName())) {
                     return true;
                 }
             }
@@ -253,7 +252,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         return false;
     }
 
-    public void addDomainSpecifColumns(ExtendedPagedTable<TaskSummary> extendedPagedTable,
+    public void addDomainSpecifColumns(ListTable<TaskSummary> extendedPagedTable,
                                        Set<String> columns) {
 
         extendedPagedTable.storeColumnToPreferences();
@@ -295,11 +294,10 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                                         true,
                                                         true));
         }
-
         extendedPagedTable.addColumns(columnMetas);
     }
 
-    private Column<TaskSummary, ?> initGenericColumn(final String key) {
+    protected Column<TaskSummary, ?> initGenericColumn(final String key) {
         return createTextColumn(key,
                                 task -> task.getDomainDataValue(key));
     }

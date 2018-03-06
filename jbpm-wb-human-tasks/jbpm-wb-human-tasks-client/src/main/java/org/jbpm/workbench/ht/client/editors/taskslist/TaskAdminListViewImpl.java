@@ -15,11 +15,21 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
+import java.util.Arrays;
+import java.util.List;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.cellview.client.Column;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.workbench.common.client.list.ListTable;
+import org.jbpm.workbench.common.client.util.GenericErrorSummaryCountCell;
+import org.jbpm.workbench.ht.model.TaskSummary;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
-import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_ADMIN_DATASET;
+import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Dependent
 @Templated(value = "/org/jbpm/workbench/common/client/list/AbstractMultiGridView.html", stylesheet = "/org/jbpm/workbench/common/client/resources/css/kie-manage.less")
@@ -28,16 +38,27 @@ public class TaskAdminListViewImpl extends AbstractTaskListView<TaskAdminListPre
     private static final String DATA_SET_TASK_LIST_PREFIX = "DataSetTaskAdminGrid";
     protected static final String TAB_ADMIN = DATA_SET_TASK_LIST_PREFIX + "_0";
 
+    @Inject
+    private ManagedInstance<GenericErrorSummaryCountCell> popoverCellInstance;
+
+    @Override
+    public List<String> getInitColumns() {
+        return Arrays.asList(COLUMN_NAME,
+                             COLUMN_PROCESS_ID,
+                             COLUMN_STATUS,
+                             COLUMN_CREATED_ON,
+                             COLUMN_ERROR_COUNT,
+                             COL_ID_ACTIONS);
+    }
+
     @Override
     public void initDefaultFilters() {
         super.initDefaultFilters();
-
         initTabFilter(presenter.createAdminTabSettings(),
                       TAB_ADMIN,
                       constants.Task_Admin(),
                       constants.FilterTaskAdmin(),
                       HUMAN_TASKS_WITH_ADMIN_DATASET);
-
     }
 
     @Override
@@ -45,4 +66,29 @@ public class TaskAdminListViewImpl extends AbstractTaskListView<TaskAdminListPre
         return DATA_SET_TASK_LIST_PREFIX;
     }
 
+    @Override
+    protected void addNewColumn(ListTable<TaskSummary> extendedPagedTable,
+                                List<ColumnMeta<TaskSummary>> columnMetas) {
+        Column<TaskSummary, ?> errorCountColumn = initErrorCountColumn();
+        extendedPagedTable.addSelectionIgnoreColumn(errorCountColumn);
+        columnMetas.add(new ColumnMeta<>(errorCountColumn,
+                                         constants.Errors()));
+        extendedPagedTable.setColumnWidth(errorCountColumn,
+                                          65,
+                                          Style.Unit.PX);
+    }
+
+    private Column<TaskSummary, TaskSummary> initErrorCountColumn() {
+        Column<TaskSummary, TaskSummary> column = new Column<TaskSummary, TaskSummary>(
+                popoverCellInstance.get().init(presenter)) {
+            @Override
+            public TaskSummary getValue(TaskSummary task) {
+                return task;
+            }
+        };
+
+        column.setSortable(true);
+        column.setDataStoreName(COLUMN_ERROR_COUNT);
+        return column;
+    }
 }
