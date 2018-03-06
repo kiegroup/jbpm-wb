@@ -40,7 +40,7 @@ public class TaskAdminListPresenter extends AbstractTaskListPresenter<TaskAdminL
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.Tasks_Admin();
+        return constants.Tasks();
     }
 
     @WorkbenchMenu

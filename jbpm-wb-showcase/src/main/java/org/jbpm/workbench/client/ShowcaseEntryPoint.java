@@ -42,7 +42,7 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.jbpm.workbench.common.client.PerspectiveIds.*;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.*;
 
 @EntryPoint
 @Bundle("i18n/HomeConstants.properties")
@@ -114,7 +114,7 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
                 MenuFactory.newSimpleItem(constants.Process_Definitions()).perspective(PROCESS_DEFINITIONS).endMenu().build().getItems().get(0),
                 MenuFactory.newSimpleItem(constants.Process_Instances()).perspective(PROCESS_INSTANCES).endMenu().build().getItems().get(0),
                 MenuFactory.newSimpleItem(constants.Process_Instances_Admin()).perspective(ProcessAdminSettingsPerspective.PERSPECTIVE_ID).endMenu().build().getItems().get(0),
-                MenuFactory.newSimpleItem(constants.Tasks_Admin()).perspective(TASKS_ADMIN).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(constants.Tasks()).perspective(TASKS_ADMIN).endMenu().build().getItems().get(0),
                 MenuFactory.newSimpleItem(constants.ExecutionErrors()).perspective(EXECUTION_ERRORS).endMenu().build().getItems().get(0)
         );
     }
