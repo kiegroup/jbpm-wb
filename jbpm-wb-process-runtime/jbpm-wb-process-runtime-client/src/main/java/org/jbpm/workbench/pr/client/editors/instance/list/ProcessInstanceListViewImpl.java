@@ -40,6 +40,7 @@ import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.common.client.util.GenericErrorSummaryCountCell;
+import org.jbpm.workbench.common.client.util.SLAComplianceCell;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.kie.api.runtime.process.ProcessInstance;
@@ -64,7 +65,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
     @Inject
     private ManagedInstance<GenericErrorSummaryCountCell> popoverCellInstance;
-
+       
     @Override
     public List<String> getInitColumns() {
         return Arrays.asList(COL_ID_SELECT,
@@ -110,6 +111,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
         Column<ProcessInstanceSummary, ?> actionsColumn = initActionsColumn();
         Column<ProcessInstanceSummary, ?> errorCountColumn = initErrorCountColumn();
+        Column<ProcessInstanceSummary, ?> slaComplianceColumn = initSlaComplianceColumn();
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
         extendedPagedTable.addSelectionIgnoreColumn(errorCountColumn);
 
@@ -155,6 +157,12 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_LAST_MODIFICATION_DATE,
                                                           process -> DateUtils.getDateTimeStr(process.getLastModificationDate())),
                                          constants.Last_Modification_Date()));
+        
+        columnMetas.add(new ColumnMeta<>(slaComplianceColumn,
+                                         constants.SlaCompliance()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_SLA_DUE_DATE,
+                                                          process -> DateUtils.getDateTimeStr(process.getSlaDueDate())),
+                                        constants.SlaDueDate()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_CORRELATION_KEY,
                                                           process -> process.getCorrelationKey()),
                                          constants.Correlation_Key()));
@@ -326,6 +334,30 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
         column.setSortable(true);
         column.setDataStoreName(COLUMN_ERROR_COUNT);
+        return column;
+    }
+    
+    private Column<ProcessInstanceSummary, Integer> initSlaComplianceColumn() {
+        
+        final List<String> slaDescriptions = new ArrayList<>();
+        slaDescriptions.add(constants.Unknown());
+        slaDescriptions.add(constants.SlaNA());
+        slaDescriptions.add(constants.SlaPending());
+        slaDescriptions.add(constants.SlaMet());
+        slaDescriptions.add(constants.SlaAborted());
+        slaDescriptions.add(constants.SlaViolated());
+        
+        Column<ProcessInstanceSummary, Integer> column = new Column<ProcessInstanceSummary, Integer>(
+                new SLAComplianceCell(slaDescriptions)) {
+
+            @Override
+            public Integer getValue(ProcessInstanceSummary process) {
+                return process.getSlaCompliance();
+            }
+        };
+
+        column.setSortable(true);
+        column.setDataStoreName(COLUMN_SLA_COMPLIANCE);
         return column;
     }
 

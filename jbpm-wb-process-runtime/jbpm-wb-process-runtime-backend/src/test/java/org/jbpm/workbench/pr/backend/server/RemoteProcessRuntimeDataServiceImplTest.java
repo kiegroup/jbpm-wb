@@ -97,6 +97,8 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         verify(processInstanceSpy).getProcessVersion();
         verify(processInstanceSpy).getCorrelationKey();
         verify(processInstanceSpy).getParentId();
+        verify(processInstanceSpy).getSlaCompliance();
+        verify(processInstanceSpy).getSlaDueDate();
         verifyActiveUserTasks(taskSummaryListSpy,
                               taskSummaryMock);
         verifyCurrentActivities(processInstanceId);
