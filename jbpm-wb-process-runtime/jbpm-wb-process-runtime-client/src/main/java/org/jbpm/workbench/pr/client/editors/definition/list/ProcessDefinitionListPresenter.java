@@ -202,7 +202,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
     public void refreshNewProcessInstance(@Observes NewProcessInstanceEvent newProcessInstance) {
         setupDetailBreadcrumb(placeManager,
-                              commonConstants.Process_Definitions(),
+                              commonConstants.Manage_Process_Definitions(),
                               constants.ProcessInstanceBreadcrumb(newProcessInstance.getNewProcessInstanceId()),
                               PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
         placeManager.goTo(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
