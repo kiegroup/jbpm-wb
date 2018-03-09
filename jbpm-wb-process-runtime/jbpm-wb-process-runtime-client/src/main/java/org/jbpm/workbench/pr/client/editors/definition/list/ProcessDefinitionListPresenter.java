@@ -127,8 +127,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                                                     visibleRange.getLength(),
                                                     false,
                                                     "",
-                                                    columnSortList.size() > 0 ? columnSortList.get(0)
-                                                            .getColumn().getDataStoreName() : "",
+                                                    columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "",
                                                     columnSortList.size() == 0 || columnSortList.get(0).isAscending());
         }
         // If we are refreshing after a search action, we need to go back to offset 0
@@ -141,8 +140,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
             currentFilter.setCount(view.getListGrid().getPageSize());
         }
 
-        currentFilter.setOrderBy(columnSortList.size() > 0 ? columnSortList.get(0)
-                .getColumn().getDataStoreName() : "");
+        currentFilter.setOrderBy(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "");
         currentFilter.setIsAscending(columnSortList.size() == 0 || columnSortList.get(0).isAscending());
 
         processRuntimeDataService.call(new RemoteCallback<List<ProcessSummary>>() {

@@ -15,20 +15,19 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.view.client.Range;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
-import org.dashbuilder.dataset.DataSetLookup;
-import org.dashbuilder.dataset.DataSetLookupFactory;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
@@ -41,14 +40,11 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
-import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
-import org.jbpm.workbench.df.client.filter.FilterSettingsJSONMarshaller;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.forms.client.display.process.QuickNewProcessInstancePopup;
 import org.jbpm.workbench.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
@@ -69,7 +65,7 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.jbpm.workbench.common.client.PerspectiveIds.*;
 import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
@@ -86,9 +82,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     @Inject
     private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
-
-    @Inject
-    private FilterSettingsJSONMarshaller tableSettingsJSONMarshaller;
 
     @Inject
     private ErrorPopupPresenter errorPopup;
@@ -112,34 +105,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                               commonConstants.Manage_Process_Instances(),
                               detailLabel,
                               PROCESS_INSTANCE_DETAILS_SCREEN);
-    }
-
-    @Override
-    public void getData(final Range visibleRange) {
-        try {
-            if (!isAddingDefaultFilters()) {
-                final FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
-                currentTableSettings.setServerTemplateId(getSelectedServerTemplate());
-                currentTableSettings.setTablePageSize(view.getListGrid().getPageSize());
-                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                if (columnSortList != null && columnSortList.size() > 0) {
-                    dataSetQueryHelper.setLastOrderedColumn(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "");
-                    dataSetQueryHelper.setLastSortOrder(columnSortList.size() > 0 && columnSortList.get(0).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
-                } else {
-                    dataSetQueryHelper.setLastOrderedColumn(COLUMN_START);
-                    dataSetQueryHelper.setLastSortOrder(SortOrder.ASCENDING);
-                }
-
-                dataSetQueryHelper.setCurrentTableSettings(currentTableSettings);
-                dataSetQueryHelper.setDataSetHandler(currentTableSettings);
-                dataSetQueryHelper.lookupDataSet(visibleRange.getStart(),
-                                                 createDataSetProcessInstanceCallback(visibleRange.getStart(),
-                                                                                      currentTableSettings));
-            }
-        } catch (Exception e) {
-            errorPopup.showMessage(constants.UnexpectedError(e.getMessage()));
-            view.hideBusyIndicator();
-        }
     }
 
     protected DataSetReadyCallback createDataSetDomainSpecificCallback(final int startRange,
@@ -181,15 +146,15 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         };
     }
 
-    protected DataSetReadyCallback createDataSetProcessInstanceCallback(final int startRange,
-                                                                        final FilterSettings tableSettings) {
+    @Override
+    protected DataSetReadyCallback getDataSetReadyCallback(final Integer startRange,
+                                                           final FilterSettings tableSettings) {
         return new AbstractDataSetReadyCallback(errorPopup,
                                                 view,
                                                 tableSettings.getUUID()) {
 
             @Override
             public void callback(DataSet dataSet) {
-
                 if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(tableSettings.getKey())) {
 
                     myProcessInstancesFromDataSet.clear();
@@ -204,7 +169,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                     }
 
                     final String filterValue = isFilteredByProcessId(tableSettings.getDataSetLookup().getOperationList());
-                    if (AbstractMultiGridView.TAB_SEARCH.equals(tableSettings.getKey()) == false && filterValue != null) {
+                    if (filterValue != null) {
                         getDomainSpecifDataForProcessInstances(startRange,
                                                                filterValue,
                                                                lastPage);
@@ -261,7 +226,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     public void getDomainSpecifDataForProcessInstances(final int startRange,
                                                        String filterValue,
                                                        boolean lastPage) {
-        FilterSettings variablesTableSettings = getVariablesTableSettings(filterValue);
+        FilterSettings variablesTableSettings = filterSettingsManager.getVariablesFilterSettings(filterValue);
         variablesTableSettings.setServerTemplateId(getSelectedServerTemplate());
         variablesTableSettings.setTablePageSize(-1);
 
@@ -459,127 +424,13 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     }
 
     @Inject
-    public void setProcessService(final Caller<ProcessService> processService) {
-        this.processService = processService;
+    public void setFilterSettingsManager(final ProcessInstanceListFilterSettingsManager filterSettingsManager) {
+        super.setFilterSettingsManager(filterSettingsManager);
     }
 
-    @Override
-    public void setupAdvancedSearchView() {
-        view.addNumericFilter(constants.Id(),
-                              constants.FilterByProcessInstanceId(),
-                              v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
-                                                                    v)),
-                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
-                                                                       v))
-        );
-
-        view.addTextFilter(constants.Initiator(),
-                           constants.FilterByInitiator(),
-                           v -> addAdvancedSearchFilter(likeTo(COLUMN_IDENTITY,
-                                                               v,
-                                                               false)),
-                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_IDENTITY,
-                                                                  v,
-                                                                  false))
-        );
-
-        view.addTextFilter(constants.Correlation_Key(),
-                           constants.FilterByCorrelationKey(),
-                           v -> addAdvancedSearchFilter(likeTo(COLUMN_CORRELATION_KEY,
-                                                               v,
-                                                               false)),
-                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_CORRELATION_KEY,
-                                                                  v,
-                                                                  false))
-        );
-
-        view.addTextFilter(constants.Process_Instance_Description(),
-                           constants.FilterByDescription(),
-                           v -> addAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                                               v,
-                                                               false)),
-                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                                                  v,
-                                                                  false))
-        );
-
-        final Map<String, String> states = new HashMap<>();
-        states.put(String.valueOf(ProcessInstance.STATE_ACTIVE),
-                   constants.Active());
-        states.put(String.valueOf(ProcessInstance.STATE_ABORTED),
-                   constants.Aborted());
-        states.put(String.valueOf(ProcessInstance.STATE_COMPLETED),
-                   constants.Completed());
-        states.put(String.valueOf(ProcessInstance.STATE_PENDING),
-                   constants.Pending());
-        states.put(String.valueOf(ProcessInstance.STATE_SUSPENDED),
-                   constants.Suspended());
-        view.addSelectFilter(constants.State(),
-                             states,
-                             false,
-                             v -> addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
-                                                                   v)),
-                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
-                                                                      v))
-        );
-
-        final Map<String, String> errorOptions = new HashMap<>();
-        errorOptions.put(String.valueOf(true),
-                         constants.HasAtLeastOneError());
-        errorOptions.put(String.valueOf(false),
-                         constants.HasNoErrors());
-        final Function<String, ColumnFilter> errorFilterGenerator = new Function<String, ColumnFilter>() {
-            @Override
-            public ColumnFilter apply(String hasErrors) {
-                return (Boolean.valueOf(hasErrors) ? greaterThan(COLUMN_ERROR_COUNT,
-                                                                 0) : lowerOrEqualsTo(COLUMN_ERROR_COUNT,
-                                                                                      0));
-            }
-        };
-        view.addSelectFilter(constants.Errors(),
-                             errorOptions,
-                             false,
-                             v -> addAdvancedSearchFilter(errorFilterGenerator.apply(v)),
-                             v -> removeAdvancedSearchFilter(errorFilterGenerator.apply(v)));
-
-        final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
-                .dataset(PROCESS_INSTANCE_DATASET)
-                .group(COLUMN_PROCESS_NAME)
-                .column(COLUMN_PROCESS_NAME)
-                .sort(COLUMN_PROCESS_NAME,
-                      SortOrder.ASCENDING)
-                .buildLookup();
-        view.addDataSetSelectFilter(constants.Name(),
-                                    AbstractMultiGridView.TAB_SEARCH,
-                                    dataSetLookup,
-                                    COLUMN_PROCESS_NAME,
-                                    COLUMN_PROCESS_NAME,
-                                    v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_NAME,
-                                                                          v)),
-                                    v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_NAME,
-                                                                             v)));
-
-        view.addDateRangeFilter(constants.Start_Date(),
-                                constants.Start_Date_Placeholder(),
-                                true,
-                                v -> addAdvancedSearchFilter(between(COLUMN_START,
-                                                                     v.getStartDate(),
-                                                                     v.getEndDate())),
-                                v -> removeAdvancedSearchFilter(between(COLUMN_START,
-                                                                        v.getStartDate(),
-                                                                        v.getEndDate()))
-        );
-
-        view.addDateRangeFilter(constants.Last_Modification_Date(),
-                                constants.Last_Modification_Date_Placeholder(),
-                                true,
-                                v -> addAdvancedSearchFilter(between(COLUMN_LAST_MODIFICATION_DATE,
-                                                                     v.getStartDate(),
-                                                                     v.getEndDate())),
-                                v -> removeAdvancedSearchFilter(between(COLUMN_LAST_MODIFICATION_DATE,
-                                                                        v.getStartDate(),
-                                                                        v.getEndDate()))
-        );
+    @Inject
+    public void setProcessService(final Caller<ProcessService> processService) {
+        this.processService = processService;
     }
 
     @Override
@@ -589,28 +440,28 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         final Optional<String> processDefinitionSearch = getSearchParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID);
         if (processDefinitionSearch.isPresent()) {
             final String processDefinitionId = processDefinitionSearch.get();
-            view.addActiveFilter(constants.Process_Definition_Id(),
-                                 processDefinitionId,
-                                 processDefinitionId,
-                                 v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_ID,
-                                                                          v))
+            addActiveFilter(equalsTo(COLUMN_PROCESS_ID,
+                                     processDefinitionId),
+                            constants.Process_Definition_Id(),
+                            processDefinitionId,
+                            processDefinitionId,
+                            v -> removeActiveFilter(equalsTo(COLUMN_PROCESS_ID,
+                                                             v))
             );
-            addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_ID,
-                                             processDefinitionId));
             hasSearchParam = true;
         }
 
         final Optional<String> processInstanceSearch = getSearchParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
         if (processInstanceSearch.isPresent()) {
             final String processInstanceId = processInstanceSearch.get();
-            view.addActiveFilter(constants.Id(),
-                                 processInstanceId,
-                                 processInstanceId,
-                                 v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
-                                                                          v))
+            addActiveFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                                     processInstanceId),
+                            constants.Id(),
+                            processInstanceId,
+                            processInstanceId,
+                            v -> removeActiveFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                                                             v))
             );
-            addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
-                                             processInstanceId));
             hasSearchParam = true;
         }
 
@@ -621,15 +472,14 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     @Override
     public void setupDefaultActiveSearchFilters() {
-        view.addActiveFilter(constants.State(),
-                             constants.Active(),
-                             String.valueOf(ProcessInstance.STATE_ACTIVE),
-                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
-                                                                      v))
+        addActiveFilter(equalsTo(COLUMN_STATUS,
+                                 String.valueOf(ProcessInstance.STATE_ACTIVE)),
+                        constants.State(),
+                        constants.Active(),
+                        String.valueOf(ProcessInstance.STATE_ACTIVE),
+                        v -> removeActiveFilter(equalsTo(COLUMN_STATUS,
+                                                         v))
         );
-
-        addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
-                                         String.valueOf(ProcessInstance.STATE_ACTIVE)));
     }
 
     public void openJobsView(final String pid) {
@@ -643,7 +493,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                               SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
                               pid);
     }
-    
+
     @Override
     public void openErrorView(final String pid) {
         final PlaceRequest request = new DefaultPlaceRequest(EXECUTION_ERRORS);
@@ -673,145 +523,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     @Override
     public Predicate<ProcessInstanceSummary> getViewErrorsActionCondition() {
         return pis -> isUserAuthorizedForPerspective(EXECUTION_ERRORS) && pis.getErrorCount() != null && pis.getErrorCount() > 0;
-    }
-
-    /*-------------------------------------------------*/
-    /*---              DashBuilder                   --*/
-    /*-------------------------------------------------*/
-    @Override
-    public FilterSettings createTableSettingsPrototype() {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(PROCESS_INSTANCE_DATASET);
-        builder.filterOn(true,
-                         true,
-                         true);
-        builder.tableOrderEnabled(true);
-        builder.tableOrderDefault(COLUMN_START,
-                                  SortOrder.DESCENDING);
-        builder.tableWidth(1000);
-
-        final FilterSettings filterSettings = builder.buildSettings();
-        filterSettings.setUUID(PROCESS_INSTANCE_DATASET);
-        return filterSettings;
-    }
-
-    private FilterSettings createStatusSettings(final Integer state) {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(PROCESS_INSTANCE_DATASET);
-
-        builder.filter(equalsTo(COLUMN_STATUS,
-                                state));
-
-        builder.filterOn(true,
-                         true,
-                         true);
-        builder.tableOrderEnabled(true);
-        builder.tableOrderDefault(COLUMN_START,
-                                  SortOrder.DESCENDING);
-
-        return builder.buildSettings();
-    }
-
-    @Override
-    public FilterSettings createSearchTabSettings() {
-        return createTableSettingsPrototype();
-    }
-
-    public FilterSettings createActiveTabSettings() {
-        return createStatusSettings(ProcessInstance.STATE_ACTIVE);
-    }
-
-    public FilterSettings createCompletedTabSettings() {
-        return createStatusSettings(ProcessInstance.STATE_COMPLETED);
-    }
-
-    public FilterSettings createAbortedTabSettings() {
-        return createStatusSettings(ProcessInstance.STATE_ABORTED);
-    }
-
-    public FilterSettings getVariablesTableSettings(String processName) {
-        String tableSettingsJSON = "{\n"
-                + "    \"type\": \"TABLE\",\n"
-                + "    \"filter\": {\n"
-                + "        \"enabled\": \"true\",\n"
-                + "        \"selfapply\": \"true\",\n"
-                + "        \"notification\": \"true\",\n"
-                + "        \"listening\": \"true\"\n"
-                + "    },\n"
-                + "    \"table\": {\n"
-                + "        \"sort\": {\n"
-                + "            \"enabled\": \"true\",\n"
-                + "            \"columnId\": \"" + PROCESS_INSTANCE_ID + "\",\n"
-                + "            \"order\": \"ASCENDING\"\n"
-                + "        }\n"
-                + "    },\n"
-                + "    \"dataSetLookup\": {\n"
-                + "        \"dataSetUuid\": \"jbpmProcessInstancesWithVariables\",\n"
-                + "        \"rowCount\": \"-1\",\n"
-                + "        \"rowOffset\": \"0\",\n";
-        if (processName != null) {
-            tableSettingsJSON += "        \"filterOps\":[{\"columnId\":\"" + PROCESS_NAME + "\", \"functionType\":\"EQUALS_TO\", \"terms\":[\"" + processName + "\"]}],";
-        }
-        tableSettingsJSON += "        \"groupOps\": [\n"
-                + "            {\n"
-                + "                \"groupFunctions\": [\n"
-                + "                    {\n"
-                + "                        \"sourceId\": \"" + PROCESS_INSTANCE_ID + "\",\n"
-                + "                        \"columnId\": \"" + PROCESS_INSTANCE_ID + "\"\n"
-                + "                    },\n"
-                + "                    {\n"
-                + "                        \"sourceId\": \"" + PROCESS_NAME + "\",\n"
-                + "                        \"columnId\": \"" + PROCESS_NAME + "\"\n"
-                + "                    },\n"
-                + "                    {\n"
-                + "                        \"sourceId\": \"" + VARIABLE_ID + "\",\n"
-                + "                        \"columnId\": \"" + VARIABLE_ID + "\"\n"
-                + "                    },\n"
-                + "                    {\n"
-                + "                        \"sourceId\": \"" + VARIABLE_NAME + "\",\n"
-                + "                        \"columnId\": \"" + VARIABLE_NAME + "\"\n"
-                + "                    },\n"
-                + "                    {\n"
-                + "                        \"sourceId\": \"" + VARIABLE_VALUE + "\",\n"
-                + "                        \"columnId\": \"" + VARIABLE_VALUE + "\"\n"
-                + "                    }\n"
-                + "                ],\n"
-                + "                \"join\": \"false\"\n"
-                + "            }\n"
-                + "        ]\n"
-                + "    },\n"
-                + "    \"columns\": [\n"
-                + "        {\n"
-                + "            \"id\": \"" + PROCESS_INSTANCE_ID + "\",\n"
-                + "            \"name\": \"processInstanceId\"\n"
-                + "        },\n"
-                + "        {\n"
-                + "            \"id\": \"" + PROCESS_NAME + "\",\n"
-                + "            \"name\": \"processName\"\n"
-                + "        },\n"
-                + "        {\n"
-                + "            \"id\": \"" + VARIABLE_ID + "\",\n"
-                + "            \"name\": \"variableID\"\n"
-                + "        },\n"
-                + "        {\n"
-                + "            \"id\": \"" + VARIABLE_NAME + "\",\n"
-                + "            \"name\": \"variableName\"\n"
-                + "        },\n"
-                + "        {\n"
-                + "            \"id\": \"" + VARIABLE_VALUE + "\",\n"
-                + "            \"name\": \"variableValue\"\n"
-                + "        }\n"
-                + "    ],\n"
-                + "    \"tableName\": \"Filtered\",\n"
-                + "    \"tableDescription\": \"Filtered Desc\",\n"
-                + "    \"tableEditEnabled\": \"false\"\n"
-                + "}";
-
-        return tableSettingsJSONMarshaller.fromJsonString(tableSettingsJSON);
     }
 
     public interface ProcessInstanceListView extends MultiGridView<ProcessInstanceSummary, ProcessInstanceListPresenter> {

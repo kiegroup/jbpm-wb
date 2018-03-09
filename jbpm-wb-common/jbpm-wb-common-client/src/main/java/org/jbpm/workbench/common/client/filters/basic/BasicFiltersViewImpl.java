@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.common.client.list;
+package org.jbpm.workbench.common.client.filters.basic;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.user.client.ui.Composite;
 import org.dashbuilder.dataset.DataSetLookup;
+import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.*;
-import org.jboss.errai.databinding.client.api.DataBinder;
-import org.jboss.errai.databinding.client.components.ListComponent;
-import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
-import org.jboss.errai.ui.shared.api.annotations.*;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.ForEvent;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.dataset.DataSetAwareSelect;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
+import org.jbpm.workbench.common.client.list.DatePickerRange;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.client.util.DateRange;
 import org.uberfire.client.views.pfly.widgets.DateRangePicker;
@@ -44,6 +44,7 @@ import org.uberfire.client.views.pfly.widgets.JQueryProducer;
 import org.uberfire.client.views.pfly.widgets.Moment;
 import org.uberfire.client.views.pfly.widgets.Popover;
 import org.uberfire.client.views.pfly.widgets.Select;
+import org.uberfire.mvp.Command;
 
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
 import static org.jboss.errai.common.client.dom.Window.getDocument;
@@ -51,22 +52,28 @@ import static org.jbpm.workbench.common.client.list.DatePickerRange.getDatePicke
 import static org.uberfire.client.views.pfly.widgets.Moment.Builder.moment;
 
 @Dependent
-@Templated
-public class AdvancedSearchFiltersViewImpl extends Composite implements AdvancedSearchFiltersView {
+@Templated(stylesheet = "/org/jbpm/workbench/common/client/resources/css/kie-manage.less")
+public class BasicFiltersViewImpl implements BasicFiltersView,
+                                             IsElement {
 
     private final Constants constants = Constants.INSTANCE;
 
     @Inject
-    @DataField("dropdown-filter-text")
-    Span filterText;
+    @DataField("content")
+    Div content;
 
     @Inject
-    @DataField("date-dropdown-filter-text")
-    Span dateFilterText;
+    @DataField("filter-list")
+    Div filterList;
 
     @Inject
-    @DataField("active-filters-text")
-    Span activeFiltersText;
+    @DataField("refine")
+    @Named("h5")
+    Heading refine;
+
+    @Inject
+    @DataField("refine-options")
+    Select refineSelect;
 
     @Inject
     @DataField("filters-input")
@@ -74,77 +81,51 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
 
     @Inject
     @DataField("filters-input-help")
-    Anchor filtersInputHelp;
+    Button filtersInputHelp;
 
     @Inject
-    @DataField("date-filters-input")
-    Div dateFiltersInput;
+    @DataField("refine-apply")
+    Button refineApply;
 
     @Inject
-    @DataField("remove-all-filters")
-    Anchor removeAll;
+    @DataField("advanced-filters")
+    Button advancedFilters;
+
+    private Command advancedFiltersCallback;
 
     @Inject
-    @DataField("filters")
-    UnorderedList filters;
-
-    @Inject
-    @DataField("date-filters")
-    UnorderedList dateFilters;
-
-    @Inject
-    @DataField("active-filters")
-    @ListContainer("ul")
-    @Bound
-    private ListComponent<ActiveFilterItem, ActiveFilterItemView> activeFilters;
-
-    @Inject
-    @AutoBound
-    private DataBinder<List<ActiveFilterItem>> activeFiltersList;
-
-    @Inject
-    @DataField("select-filters")
-    private Div selectFilters;
-
-    @Inject
-    @DataField("date-caret")
-    private Span dateCaret;
-
-    @Inject
-    @DataField("date-button")
-    private Button dateButton;
+    private JQueryProducer.JQuery<Popover> jQueryPopover;
 
     @Inject
     private ManagedInstance<Select> selectProvider;
 
     @Inject
-    private ManagedInstance<DateRangePicker> dateRangePickerProvider;
-
-    @Inject
     private ManagedInstance<DataSetAwareSelect> dataSetSelectProvider;
 
     @Inject
-    private JQueryProducer.JQuery<Popover> jQueryPopover;
+    private ManagedInstance<DateRangePicker> dateRangePickerProvider;
 
     @PostConstruct
     public void init() {
-        removeAll.setTextContent(constants.ClearAll());
-        activeFiltersText.setTextContent(constants.ActiveFilters());
-        activeFiltersList.setModel(new ArrayList<>());
-        activeFilters.addComponentCreationHandler(v -> removeCSSClass(removeAll,
-                                                                      "hidden"));
-        activeFilters.addComponentDestructionHandler(v -> {
-            if (activeFiltersList.getModel().isEmpty()) {
-                addCSSClass(removeAll,
-                            "hidden");
-            }
-            v.getValue().getCallback().accept(v.getValue().getValue());
-        });
+        refine.setTextContent(constants.FilterBy());
 
         filtersInputHelp.setAttribute("data-content",
                                       getInputStringHelpHtml());
 
         jQueryPopover.wrap(filtersInputHelp).popover();
+
+        refineSelect.getElement().addEventListener("change",
+                                                   e -> setInputCurrentFilter(refineSelect.getValue()),
+                                                   false);
+
+        refineApply.setTextContent(constants.Apply());
+
+        advancedFilters.setTextContent(constants.AdvancedFilters());
+    }
+
+    @Override
+    public void setAdvancedFiltersCallback(final Command callback) {
+        this.advancedFiltersCallback = callback;
     }
 
     private String getInputStringHelpHtml() {
@@ -156,33 +137,34 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
     }
 
     @Override
+    public HTMLElement getElement() {
+        return content;
+    }
+
+    @Override
     public void addTextFilter(final String label,
                               final String placeholder,
-                              final Consumer<String> addCallback,
-                              final Consumer<String> removeCallback) {
+                              final Consumer<ActiveFilterItem<String>> callback) {
 
-        removeCSSClass(filtersInputHelp,
-                       "hidden");
-        createFilterOption(label,
-                           filters,
-                           e -> setInputCurrentFilter(label));
+        createFilterOption(label);
+
         createInput(label,
                     placeholder,
+                    refineSelect.getOptions().getLength() > 1,
                     input -> input.setType("text"),
-                    addCallback,
-                    removeCallback);
+                    callback);
     }
 
     @Override
     public void addNumericFilter(final String label,
                                  final String placeholder,
-                                 final Consumer<String> addCallback,
-                                 final Consumer<String> removeCallback) {
-        createFilterOption(label,
-                           filters,
-                           e -> setInputCurrentFilter(label));
+                                 final Consumer<ActiveFilterItem<String>> callback) {
+
+        createFilterOption(label);
+
         createInput(label,
                     placeholder,
+                    refineSelect.getOptions().getLength() > 1,
                     input -> {
                         input.setType("number");
                         input.setAttribute("min",
@@ -191,8 +173,7 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                                getNumericInputListener(),
                                                false);
                     },
-                    addCallback,
-                    removeCallback);
+                    callback);
     }
 
     protected EventListener<KeyboardEvent> getNumericInputListener() {
@@ -211,35 +192,33 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
 
     @Override
     public void addDataSetSelectFilter(final String label,
-                                       final String tableKey,
                                        final DataSetLookup lookup,
                                        final String textColumnId,
                                        final String valueColumnId,
-                                       final Consumer<String> addCallback,
-                                       final Consumer<String> removeCallback) {
+                                       final Consumer<ActiveFilterItem<String>> callback) {
         final DataSetAwareSelect select = dataSetSelectProvider.get();
         select.setDataSetLookup(lookup);
         select.setTextColumnId(textColumnId);
         select.setValueColumnId(valueColumnId);
-        select.setTableKey(tableKey);
         setupSelect(label,
                     false,
                     select.getSelect(),
-                    addCallback,
-                    removeCallback);
+                    callback);
     }
 
     @Override
     public void addDateRangeFilter(final String label,
                                    final String placeholder,
                                    final Boolean useMaxDate,
-                                   final Consumer<DateRange> addCallback,
-                                   final Consumer<DateRange> removeCallback) {
+                                   final Consumer<ActiveFilterItem<DateRange>> callback) {
         final DateRangePicker dateRangePicker = dateRangePickerProvider.get();
         dateRangePicker.getElement().setReadOnly(true);
         dateRangePicker.getElement().setAttribute("placeholder",
                                                   placeholder);
-        dateRangePicker.getElement().getClassList().add("form-control");
+        addCSSClass(dateRangePicker.getElement(),
+                    "form-control");
+        addCSSClass(dateRangePicker.getElement(),
+                    "bootstrap-datepicker");
         final DateRangePickerOptions options = getDateRangePickerOptions(useMaxDate);
 
         dateRangePicker.setup(options,
@@ -251,29 +230,33 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                    datePickerRange.isPresent() ? datePickerRange.get().getLabel() : constants.Custom(),
                                    datePickerRange.isPresent() ? datePickerRange.get().getStartDate() : p.getStartDate(),
                                    datePickerRange.isPresent() ? datePickerRange.get().getEndDate() : p.getEndDate(),
-                                   addCallback,
-                                   removeCallback);
+                                   callback);
         });
 
-        final Div div = (Div) getDocument().createElement("div");
-        div.setAttribute("data-filter",
-                         label);
-        div.getClassList().add("input-group");
-        div.getClassList().add("filter-control");
-        div.getClassList().add("hidden");
+        appendHorizontalRule();
+        appendSectionTitle(label);
+
+        Div div = (Div) getDocument().createElement("div");
+        addCSSClass(div,
+                    "input-group");
+        addCSSClass(div,
+                    "date");
+
+        Span spanGroup = (Span) getDocument().createElement("span");
+        addCSSClass(spanGroup,
+                    "input-group-addon");
+
+        Span spanIcon = (Span) getDocument().createElement("span");
+        addCSSClass(spanIcon,
+                    "fa");
+        addCSSClass(spanIcon,
+                    "fa-calendar");
+        spanGroup.appendChild(spanIcon);
+
         div.appendChild(dateRangePicker.getElement());
-        dateFiltersInput.appendChild(div);
-        createFilterOption(label,
-                           dateFilters,
-                           e -> setDateCurrentFilter(label));
-        if (dateFilterText.getTextContent().isEmpty()) {
-            setDateCurrentFilter(label);
-        } else {
-            removeCSSClass(dateCaret,
-                           "hidden");
-            dateButton.setAttribute("data-toggle",
-                                    "dropdown");
-        }
+        div.appendChild(spanGroup);
+
+        appendFormGroup(div);
     }
 
     protected DateRangePickerOptions getDateRangePickerOptions(final Boolean useMaxDate) {
@@ -281,8 +264,9 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
         options.setAutoUpdateInput(false);
         options.setAutoApply(true);
         options.setTimePicker(true);
+        options.setDrops("up");
         options.setTimePickerIncrement(30);
-        if(useMaxDate) {
+        if (useMaxDate) {
             options.setMaxDate(moment().endOf("day"));
         }
         for (DatePickerRange range : DatePickerRange.values()) {
@@ -297,8 +281,7 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                           final String selectedLabel,
                                           final Moment fromDate,
                                           final Moment toDate,
-                                          final Consumer<DateRange> addCallback,
-                                          final Consumer<DateRange> removeCallback) {
+                                          final Consumer<ActiveFilterItem<DateRange>> callback) {
 
         final DateRange dateRange = new DateRange(fromDate.milliseconds(0).asDate(),
                                                   toDate.milliseconds(0).asDate());
@@ -308,39 +291,37 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                         selectedLabel,
                         hint,
                         dateRange,
-                        removeCallback);
-        addCallback.accept(dateRange);
+                        callback);
     }
 
     @Override
     public void addSelectFilter(final String label,
                                 final Map<String, String> options,
                                 final Boolean liveSearch,
-                                final Consumer<String> addCallback,
-                                final Consumer<String> removeCallback) {
+                                final Consumer<ActiveFilterItem<String>> callback) {
         final Select select = selectProvider.get();
         options.forEach((k, v) -> select.addOption(v,
                                                    k));
         setupSelect(label,
                     liveSearch,
                     select,
-                    addCallback,
-                    removeCallback);
+                    callback);
     }
 
     private void setupSelect(final String label,
                              final Boolean liveSearch,
                              final Select select,
-                             final Consumer<String> addCallback,
-                             final Consumer<String> removeCallback) {
-        select.setTitle(label);
+                             final Consumer<ActiveFilterItem<String>> callback) {
+        appendHorizontalRule();
+        appendSectionTitle(label);
+        select.setTitle(constants.Select());
         select.setLiveSearch(liveSearch);
-        select.setWidth("auto");
-        select.getElement().getClassList().add("selectpicker");
-        select.getElement().getClassList().add("form-control");
+        select.setWidth("100%");
+        addCSSClass(select.getElement(),
+                    "selectpicker");
+        addCSSClass(select.getElement(),
+                    "form-control");
 
-        selectFilters.appendChild(select.getElement());
-        select.refresh();
         select.getElement().addEventListener("change",
                                              event -> {
                                                  if (select.getValue().isEmpty() == false) {
@@ -350,9 +331,9 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                                          if (item.getSelected()) {
                                                              addActiveFilter(label,
                                                                              item.getText(),
+                                                                             null,
                                                                              select.getValue(),
-                                                                             removeCallback);
-                                                             addCallback.accept(select.getValue());
+                                                                             callback);
                                                              select.setValue("");
                                                              break;
                                                          }
@@ -360,131 +341,119 @@ public class AdvancedSearchFiltersViewImpl extends Composite implements Advanced
                                                  }
                                              },
                                              false);
+
+        appendFormGroup(select.getElement());
+        select.refresh();
+    }
+
+    private void appendFormGroup(final HTMLElement element) {
+        Div div = (Div) getDocument().createElement("div");
+        addCSSClass(div,
+                    "form-group");
+        div.appendChild(element);
+        filterList.appendChild(div);
+    }
+
+    private void appendHorizontalRule() {
+        final HTMLElement hr = getDocument().createElement("hr");
+        addCSSClass(hr,
+                    "kie-dock__divider");
+
+        filterList.appendChild(hr);
+    }
+
+    private void appendSectionTitle(final String title) {
+        final Heading heading = (Heading) getDocument().createElement("h5");
+        heading.setTextContent(title);
+        addCSSClass(heading,
+                    "kie-dock__heading--section");
+        filterList.appendChild(heading);
     }
 
     private void createInput(final String label,
                              final String placeholder,
+                             final Boolean hidden,
                              final Consumer<Input> customizeCallback,
-                             final Consumer<String> addCallback,
-                             final Consumer<String> removeCallback) {
+                             final Consumer<ActiveFilterItem<String>> callback) {
         final Input input = (Input) getDocument().createElement("input");
         customizeCallback.accept(input);
         input.setAttribute("placeholder",
                            placeholder);
         input.setAttribute("data-filter",
                            label);
-        input.getClassList().add("form-control");
-        input.getClassList().add("filter-control");
-        input.getClassList().add("hidden");
-        input.addEventListener("keypress",
-                               (KeyboardEvent e) -> {
-                                   if (e.getKeyCode() == KeyCodes.KEY_ENTER && input.getValue().isEmpty() == false) {
-                                       addActiveFilter(label,
-                                                       input.getValue(),
-                                                       input.getValue(),
-                                                       removeCallback);
-                                       addCallback.accept(input.getValue());
-                                       input.setValue("");
-                                   }
-                               },
-                               false);
-        filtersInput.appendChild(input);
-        if (filterText.getTextContent().isEmpty()) {
-            setInputCurrentFilter(label);
+        addCSSClass(input,
+                    "form-control");
+        addCSSClass(input,
+                    "filter-control");
+        if (hidden) {
+            addCSSClass(input,
+                        "hidden");
         }
-    }
-
-    private void createFilterOption(final String label,
-                                    final HTMLElement element,
-                                    final EventListener listener) {
-        final Anchor a = (Anchor) getDocument().createElement("a");
-        a.setTextContent(label);
-        a.addEventListener("click",
-                           listener,
-                           false);
-        final ListItem li = (ListItem) getDocument().createElement("li");
-        li.setAttribute("data-filter",
-                        label);
-        li.appendChild(a);
-        element.appendChild(li);
-    }
-
-    public void setInputCurrentFilter(final String label) {
-        setCurrentFilter(label,
-                         filterText,
-                         filters,
-                         filtersInput);
-    }
-
-    public void setDateCurrentFilter(final String label) {
-        setCurrentFilter(label,
-                         dateFilterText,
-                         dateFilters,
-                         dateFiltersInput);
-    }
-
-    private void setCurrentFilter(final String label,
-                                  final HTMLElement text,
-                                  final HTMLElement optionsText,
-                                  final HTMLElement options) {
-        text.setTextContent(label);
-        for (Element child : elementIterable(optionsText.getChildNodes())) {
-            if (label.equals(child.getAttribute("data-filter"))) {
-                addCSSClass((HTMLElement) child,
-                            "hidden");
-            } else {
-                removeCSSClass((HTMLElement) child,
-                               "hidden");
+        input.setOnkeypress((KeyboardEvent e) -> {
+            if ((e == null || e.getKeyCode() == KeyCodes.KEY_ENTER) && input.getValue().isEmpty() == false) {
+                addActiveFilter(label,
+                                input.getValue(),
+                                null,
+                                input.getValue(),
+                                callback);
+                input.setValue("");
             }
-        }
-        for (Element child : elementIterable(options.getChildNodes())) {
-            if (label.equals(child.getAttribute("data-filter"))) {
-                removeCSSClass((HTMLElement) child,
-                               "hidden");
-            } else {
-                addCSSClass((HTMLElement) child,
-                            "hidden");
+        });
+        filtersInput.insertBefore(input,
+                                  filtersInput.getFirstChild());
+    }
+
+    private void createFilterOption(final String label) {
+
+        refineSelect.addOption(label);
+        refineSelect.refresh();
+    }
+
+    private void setInputCurrentFilter(final String label) {
+        for (Element child : elementIterable(filtersInput.getChildNodes())) {
+            if (child.getTagName().equals("INPUT")) {
+                if (label.equals(child.getAttribute("data-filter"))) {
+                    removeCSSClass((HTMLElement) child,
+                                   "hidden");
+                } else {
+                    addCSSClass((HTMLElement) child,
+                                "hidden");
+                }
             }
         }
     }
 
-    @Override
-    public <T extends Object> void addActiveFilter(final String labelKey,
-                                                   final String labelValue,
-                                                   final T value,
-                                                   final Consumer<T> removeCallback) {
-        addActiveFilter(labelKey,
-                        labelValue,
-                        null,
-                        value,
-                        removeCallback);
+    @EventHandler("refine-apply")
+    public void onApplyClick(@ForEvent("click") Event e) {
+        for (Element child : elementIterable(filtersInput.getChildNodes())) {
+            if (child.getTagName().equals("INPUT")) {
+                Input input = (Input) child;
+                if (input.getClassList().contains("hidden") == false) {
+                    input.getOnkeypress().call(null);
+                    break;
+                }
+            }
+        }
+    }
+
+    @EventHandler("advanced-filters")
+    public void onAdvancedFiltersClick(@ForEvent("click") Event e) {
+        if (advancedFiltersCallback != null) {
+            advancedFiltersCallback.execute();
+        }
     }
 
     protected <T extends Object> void addActiveFilter(final String labelKey,
                                                       final String labelValue,
                                                       final String hint,
                                                       final T value,
-                                                      final Consumer<T> removeCallback) {
-        activeFiltersList.getModel().removeIf(f -> f.getLabelKey().equals(labelKey));
-        activeFiltersList.getModel().add(new ActiveFilterItem(labelKey,
-                                                              labelValue,
-                                                              hint,
-                                                              value,
-                                                              removeCallback));
+                                                      final Consumer<ActiveFilterItem<T>> callback) {
+        if (callback != null) {
+            callback.accept(new ActiveFilterItem(labelKey,
+                                                 labelKey + ": " + labelValue,
+                                                 hint,
+                                                 value,
+                                                 null));
+        }
     }
-
-    public void onRemoveActiveFilter(@Observes final ActiveFilterItemRemoved event) {
-        activeFiltersList.getModel().remove(event.getActiveFilterItem());
-    }
-
-    @EventHandler("remove-all-filters")
-    public void onRemoveAll(@ForEvent("click") Event e) {
-        removeAllActiveFilters();
-    }
-
-    @Override
-    public void removeAllActiveFilters() {
-        activeFiltersList.getModel().clear();
-    }
-
 }

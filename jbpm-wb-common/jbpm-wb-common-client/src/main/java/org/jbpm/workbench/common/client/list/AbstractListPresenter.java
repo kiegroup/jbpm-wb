@@ -35,8 +35,6 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
 
     protected QueryFilter currentFilter;
 
-    protected boolean addingDefaultFilters = false;
-
     private Constants constants = GWT.create(Constants.class);
 
     public AbstractListPresenter() {
@@ -45,18 +43,7 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
 
     protected abstract ListView getListView();
 
-    public boolean isAddingDefaultFilters() {
-        return addingDefaultFilters;
-    }
-
-    public void setAddingDefaultFilters(boolean addingDefaultFilters) {
-        this.addingDefaultFilters = addingDefaultFilters;
-    }
-
     public abstract void getData(Range visibleRange);
-
-    public void onGridPreferencesStoreLoaded() {
-    }
 
     protected void initDataProvider() {
         dataProvider = new AsyncDataProvider<T>() {
@@ -91,6 +78,9 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
     }
 
     public void addDataDisplay(final HasData<T> display) {
+        if(dataProvider.getDataDisplays().size() == 1){
+            dataProvider.removeDataDisplay(dataProvider.getDataDisplays().iterator().next());
+        }
         dataProvider.addDataDisplay(display);
     }
 
@@ -113,5 +103,4 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
                                                                     true);
         }
     }
-
 }

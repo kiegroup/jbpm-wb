@@ -77,8 +77,6 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
         listGrid = createListGrid(preferences);
         listGrid.setShowLastPagerButton(true);
         listGrid.setShowFastFordwardPagerButton(true);
-        new Elemental2DomUtil().appendWidgetToElement(column, listGrid);
-        presenter.addDataDisplay(listGrid);
         preferencesService.call(new RemoteCallback<GridPreferencesStore>() {
 
             @Override
@@ -89,9 +87,10 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
                 } else {
                     listGrid.setGridPreferencesStore(preferencesStore);
                 }
-                presenter.onGridPreferencesStoreLoaded();
                 initColumns(listGrid);
                 listGrid.loadPageSizePreferences();
+                new Elemental2DomUtil().appendWidgetToElement(column, listGrid);
+                presenter.addDataDisplay(listGrid);
             }
         }).loadUserPreferences(preferences.getKey(),
                                UserPreferencesType.GRIDPREFERENCES);
@@ -108,9 +107,6 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
-    }
-
-    public void showRestoreDefaultFilterConfirmationPopup() {
     }
 
     public ExtendedPagedTable<T> getListGrid() {

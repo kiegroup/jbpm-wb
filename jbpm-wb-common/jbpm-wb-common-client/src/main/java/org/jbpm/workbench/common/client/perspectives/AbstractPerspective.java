@@ -17,14 +17,18 @@
 package org.jbpm.workbench.common.client.perspectives;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.Scheduler;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.workbench.docks.UberfireDock;
 import org.uberfire.client.workbench.docks.UberfireDockPosition;
 import org.uberfire.client.workbench.docks.UberfireDocks;
+import org.uberfire.client.workbench.events.ClosePlaceEvent;
+import org.uberfire.client.workbench.events.SelectPlaceEvent;
 import org.uberfire.client.workbench.panels.impl.MultiScreenWorkbenchPanelPresenter;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
@@ -72,7 +76,25 @@ public abstract class AbstractPerspective {
     @OnOpen
     public void onOpen() {
         if (basicFiltersDock != null) {
-            uberfireDocks.open(basicFiltersDock);
+            Scheduler.get().scheduleDeferred(() -> {
+                uberfireDocks.show(UberfireDockPosition.WEST,
+                                   getPerspectiveId());
+                uberfireDocks.open(basicFiltersDock);
+            });
+        }
+    }
+
+    public void onDetailsOpen(@Observes SelectPlaceEvent event) {
+        if(event.getPlace().getIdentifier().equals(getDetailsScreenId())){
+            uberfireDocks.hide(UberfireDockPosition.WEST,
+                               getPerspectiveId());
+        }
+    }
+
+    public void onDetailsClose(@Observes ClosePlaceEvent event) {
+        if(event.getPlace().getIdentifier().equals(getDetailsScreenId())){
+            uberfireDocks.show(UberfireDockPosition.WEST,
+                               getPerspectiveId());
         }
     }
 
@@ -100,6 +122,8 @@ public abstract class AbstractPerspective {
     public abstract String getBasicFiltersScreenId();
 
     public abstract String getSavedFiltersScreenId();
+
+    public abstract String getDetailsScreenId();
 
     public abstract PlaceRequest getPlaceRequest();
 }

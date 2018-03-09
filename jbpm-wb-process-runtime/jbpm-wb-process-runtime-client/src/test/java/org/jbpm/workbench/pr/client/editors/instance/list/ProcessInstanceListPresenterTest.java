@@ -15,8 +15,12 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import com.google.common.collect.Lists;
@@ -32,6 +36,8 @@ import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.jbpm.workbench.df.client.filter.FilterSettingsManager;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
@@ -67,7 +73,6 @@ import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
-import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.kie.workbench.common.workbench.client.PerspectiveIds.*;
@@ -131,6 +136,9 @@ public class ProcessInstanceListPresenterTest {
 
     private ArrayList<ProcessInstanceSummary> processInstanceSummaries;
 
+    @Mock
+    private FilterSettingsManager filterSettingsManager;
+
     @InjectMocks
     private ProcessInstanceListPresenter presenter;
 
@@ -180,13 +188,14 @@ public class ProcessInstanceListPresenterTest {
 
         processInstanceSummaries = createProcessInstanceSummaryList(5);
 
-        when(filterSettings.getDataSetLookup()).thenReturn(dataSetLookup);
+        filterSettings.setKey("key");
+        filterSettings.setDataSetLookup(dataSetLookup);
+
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(filterSettingsJSONMarshaller.fromJsonString(anyString())).thenReturn(filterSettings);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
-        when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
-        when(filterSettings.getKey()).thenReturn("key");
+        when(filterSettingsManager.getVariablesFilterSettings(any())).thenReturn(filterSettings);
         when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
         when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
 
@@ -215,11 +224,14 @@ public class ProcessInstanceListPresenterTest {
 
     @Test
     public void getDataTest() {
-        presenter.setAddingDefaultFilters(false);
         presenter.getData(new Range(0,
                                     5));
 
-        verify(dataSetQueryHelper).setLastSortOrder(SortOrder.ASCENDING);
+        verify(dataSetQueryHelper).lookupDataSet(anyInt(),
+                                                 any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelperDomainSpecific,
+               never()).lookupDataSet(anyInt(),
+                                      any(DataSetReadyCallback.class));
         verify(viewMock,
                times(2)).hideBusyIndicator();
     }
@@ -353,30 +365,7 @@ public class ProcessInstanceListPresenterTest {
     }
 
     @Test
-    public void testSkipDomainSpecificColumnsForSearchTab() {
-        presenter.setAddingDefaultFilters(false);
-        final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_PROCESS_ID,
-                                        "testProc"));
-        filterSettings.getDataSetLookup().addOperation(filter);
-        filterSettings.setKey(TAB_SEARCH);
-        when(filterSettings.getKey()).thenReturn(TAB_SEARCH);
-
-        when(dataSet.getRowCount()).thenReturn(1);//1 process instance
-        when(dataSet.getValueAt(0,
-                                COLUMN_PROCESS_INSTANCE_ID)).thenReturn(Long.valueOf(1));
-
-        presenter.getData(new Range(0,
-                                    5));
-
-        verifyZeroInteractions(dataSetQueryHelperDomainSpecific);
-        verify(viewMock,
-               times(2)).hideBusyIndicator();
-    }
-
-    @Test
     public void getDomainSpecifDataForProcessInstancesTest() {
-        presenter.setAddingDefaultFilters(false);
         final DataSetFilter filter = new DataSetFilter();
         filter.addFilterColumn(equalsTo(COLUMN_PROCESS_ID,
                                         "testProc"));
@@ -544,10 +533,17 @@ public class ProcessInstanceListPresenterTest {
     public void testDefaultActiveSearchFilters() {
         presenter.setupDefaultActiveSearchFilters();
 
-        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.State()),
-                                         eq(Constants.INSTANCE.Active()),
-                                         eq(String.valueOf(ProcessInstance.STATE_ACTIVE)),
-                                         any(Consumer.class));
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(Constants.INSTANCE.State(),
+                     captor.getValue().getKey());
+        assertEquals(Constants.INSTANCE.State() + ": " + Constants.INSTANCE.Active(),
+                     captor.getValue().getLabelValue());
+        assertEquals(String.valueOf(ProcessInstance.STATE_ACTIVE),
+                     (captor.getValue().getValue()));
     }
 
     @Test
@@ -559,10 +555,17 @@ public class ProcessInstanceListPresenterTest {
 
         presenter.setupActiveSearchFilters();
 
-        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.State()),
-                                         eq(Constants.INSTANCE.Active()),
-                                         eq(String.valueOf(ProcessInstance.STATE_ACTIVE)),
-                                         any(Consumer.class));
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(Constants.INSTANCE.State(),
+                     captor.getValue().getKey());
+        assertEquals(Constants.INSTANCE.State() + ": " + Constants.INSTANCE.Active(),
+                     captor.getValue().getLabelValue());
+        assertEquals(String.valueOf(ProcessInstance.STATE_ACTIVE),
+                     (captor.getValue().getValue()));
     }
 
     @Test
@@ -575,10 +578,17 @@ public class ProcessInstanceListPresenterTest {
 
         presenter.setupActiveSearchFilters();
 
-        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Process_Definition_Id()),
-                                         eq(processDefinitionId),
-                                         eq(processDefinitionId),
-                                         any(Consumer.class));
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(Constants.INSTANCE.Process_Definition_Id(),
+                     captor.getValue().getKey());
+        assertEquals(Constants.INSTANCE.Process_Definition_Id() + ": " + processDefinitionId,
+                     captor.getValue().getLabelValue());
+        assertEquals(processDefinitionId,
+                     (captor.getValue().getValue()));
     }
 
     @Test
@@ -593,10 +603,17 @@ public class ProcessInstanceListPresenterTest {
 
         presenter.setupActiveSearchFilters();
 
-        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Id()),
-                                         eq(processInstanceId),
-                                         eq(processInstanceId),
-                                         any(Consumer.class));
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(Constants.INSTANCE.Id(),
+                     captor.getValue().getKey());
+        assertEquals(Constants.INSTANCE.Id() + ": " + processInstanceId,
+                     captor.getValue().getLabelValue());
+        assertEquals(processInstanceId,
+                     (captor.getValue().getValue()));
     }
 
     @Test
@@ -715,8 +732,8 @@ public class ProcessInstanceListPresenterTest {
         final ProcessInstanceListPresenter spy = spy(presenter);
         final ClientRuntimeError error = new ClientRuntimeError("");
         final FilterSettings filterSettings = mock(FilterSettings.class);
-        final DataSetReadyCallback callback = spy.createDataSetProcessInstanceCallback(0,
-                                                                                       filterSettings);
+        final DataSetReadyCallback callback = spy.getDataSetReadyCallback(0,
+                                                                          filterSettings);
         doNothing().when(spy).showErrorPopup(any());
         assertFalse(callback.onError(error));
         verify(viewMock).hideBusyIndicator();

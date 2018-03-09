@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.common.client.filters;
+package org.jbpm.workbench.common.client.filters.saved;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +32,7 @@ import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.workbench.df.client.filter.SavedFilter;
 
 @Dependent
 @Templated
@@ -70,7 +71,7 @@ public class SavedFiltersViewImpl implements IsElement {
         savedFilterDataBinder.getModel().remove(savedFilter);
     }
 
-    public List<SavedFilter> getSavedFilters() {
-        return new ArrayList<>(savedFilterDataBinder.getModel());
+    public void removeAllSavedFilters() {
+        savedFilterDataBinder.getModel().clear();
     }
 }

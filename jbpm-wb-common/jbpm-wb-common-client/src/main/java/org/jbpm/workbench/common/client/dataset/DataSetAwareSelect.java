@@ -51,7 +51,6 @@ public class DataSetAwareSelect {
     private String valueColumnId;
     private String textColumnId;
     private DataSetLookup dataSetLookup;
-    private String tableKey;
 
     @PostConstruct
     public void init(){
@@ -70,15 +69,8 @@ public class DataSetAwareSelect {
         this.valueColumnId = valueColumnId;
     }
 
-    public void setTableKey(String tableKey) {
-        this.tableKey = tableKey;
-    }
-
     public void onDataSetReady(@Observes DataSetReadyEvent event) {
         final FilterSettings filterSettings = event.getFilterSettings();
-        if (this.tableKey.equals(filterSettings.getKey()) == false) {
-            return;
-        }
 
         if (filterSettings.getServerTemplateId() == null || filterSettings.getServerTemplateId().isEmpty()) {
             removeOptions();

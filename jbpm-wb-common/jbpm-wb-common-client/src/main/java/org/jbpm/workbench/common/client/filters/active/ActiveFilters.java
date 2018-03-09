@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.common.client.filters;
+package org.jbpm.workbench.common.client.filters.active;
 
-public class RemoveSavedFilterEvent {
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
-    private SavedFilter savedFilter;
+import org.jboss.errai.common.client.api.elemental2.IsElement;
 
-    public RemoveSavedFilterEvent(final SavedFilter savedFilter) {
-        this.savedFilter = savedFilter;
-    }
+public interface ActiveFilters extends IsElement {
 
-    public SavedFilter getSavedFilter() {
-        return savedFilter;
-    }
+    <T extends Object> void addActiveFilter(ActiveFilterItem<T> filter);
+
+    void removeAllActiveFilters();
+
+    void setSaveFilterCallback(BiConsumer<String, Consumer<String>> filterNameCallback);
 }

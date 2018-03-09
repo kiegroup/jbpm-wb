@@ -15,23 +15,17 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Predicate;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.jbpm.workbench.common.client.util.TaskUtils;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
-import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Dependent
 @WorkbenchScreen(identifier = PerspectiveIds.TASK_ADMIN_LIST_SCREEN)
@@ -40,12 +34,6 @@ public class TaskAdminListPresenter extends AbstractTaskListPresenter<TaskAdminL
     @WorkbenchMenu
     public Menus getMenus() { //It's necessary to annotate with @WorkbenchMenu in subclass
         return super.getMenus();
-    }
-
-    @Override
-    public void setupAdvancedSearchView() {
-        super.setupAdvancedSearchView();
-        addProcessNameFilter(HUMAN_TASKS_WITH_ADMIN_DATASET);
     }
 
     @Override
@@ -62,34 +50,9 @@ public class TaskAdminListPresenter extends AbstractTaskListPresenter<TaskAdminL
                               PerspectiveIds.TASK_DETAILS_SCREEN);
     }
 
-    @Override
-    public FilterSettings createTableSettingsPrototype() {
-        return createStatusSettings(HUMAN_TASKS_WITH_ADMIN_DATASET,
-                                    null);
-    }
-
-    public FilterSettings createAdminTabSettings() {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(HUMAN_TASKS_WITH_ADMIN_DATASET);
-        List<Comparable> status = new ArrayList<>(getStatusByType(TaskUtils.TaskType.ADMIN));
-        if (status != null) {
-            builder.filter(COLUMN_STATUS,
-                           equalsTo(COLUMN_STATUS,
-                                    status));
-        }
-        builder.group(COLUMN_TASK_ID);
-
-        addCommonColumnSettings(builder);
-        return builder.buildSettings();
-    }
-    
-    @Override
-    protected void addCommonColumnSettings(FilterSettingsBuilderHelper builder) {
-        builder.setColumn(COLUMN_ERROR_COUNT,
-                          constants.Error_Count());
-        super.addCommonColumnSettings(builder);
+    @Inject
+    public void setFilterSettingsManager(final TaskAdminListFilterSettingsManager filterSettingsManager) {
+        super.setFilterSettingsManager(filterSettingsManager);
     }
 
     @Override

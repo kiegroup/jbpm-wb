@@ -17,27 +17,28 @@ package org.jbpm.workbench.pr.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
+import static org.jbpm.workbench.common.client.PerspectiveIds.*;
+
 /**
  * A Perspective to show Process Definitions
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = PerspectiveIds.PROCESS_DEFINITIONS)
+@WorkbenchPerspective(identifier = PROCESS_DEFINITIONS)
 public class ProcessDefinitionsPerspective extends AbstractPerspective {
 
     @Override
     public PlaceRequest getPlaceRequest() {
-        return new DefaultPlaceRequest(PerspectiveIds.PROCESS_DEFINITION_LIST_SCREEN);
+        return new DefaultPlaceRequest(PROCESS_DEFINITION_LIST_SCREEN);
     }
 
     @Override
     public String getPerspectiveId() {
-        return PerspectiveIds.PROCESS_DEFINITIONS;
+        return PROCESS_DEFINITIONS;
     }
 
     @Override
@@ -47,6 +48,11 @@ public class ProcessDefinitionsPerspective extends AbstractPerspective {
 
     @Override
     public String getSavedFiltersScreenId() {
+        return null;
+    }
+
+    @Override
+    public String getDetailsScreenId() {
         return null;
     }
 }

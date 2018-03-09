@@ -15,7 +15,12 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -56,14 +61,10 @@ import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessInstanceSummary, ProcessInstanceListPresenter>
         implements ProcessInstanceListPresenter.ProcessInstanceListView {
 
-    protected static final String TAB_ACTIVE = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0";
-    protected static final String TAB_COMPLETED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1";
-    protected static final String TAB_ABORTED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2";
-
     private final Constants constants = Constants.INSTANCE;
 
     @Inject
-    ConfirmPopup confirmPopup;
+    private ConfirmPopup confirmPopup;
 
     @Inject
     private ManagedInstance<GenericErrorSummaryCountCell> popoverCellInstance;
@@ -87,16 +88,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                              COLUMN_PROCESS_NAME,
                              COLUMN_PROCESS_INSTANCE_DESCRIPTION,
                              COL_ID_ACTIONS);
-    }
-
-    @Override
-    public String getGridGlobalPreferencesKey() {
-        return PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX;
-    }
-
-    @Override
-    public String getNewFilterPopupTitle() {
-        return constants.New_Process_InstanceList();
     }
 
     @Override
@@ -151,8 +142,10 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                                               }
                                                           }),
                                          constants.State()));
-        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_START,
-                                                          process -> DateUtils.getDateTimeStr(process.getStartTime())),
+        final Column<ProcessInstanceSummary, String> startColumn = createTextColumn(COLUMN_START,
+                                                                                   process -> DateUtils.getDateTimeStr(process.getStartTime()));
+        startColumn.setDefaultSortAscending(false);
+        columnMetas.add(new ColumnMeta<>(startColumn,
                                          constants.Start_Date()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_LAST_MODIFICATION_DATE,
                                                           process -> DateUtils.getDateTimeStr(process.getLastModificationDate())),
@@ -165,17 +158,17 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         columnMetas.add(new ColumnMeta<>(actionsColumn,
                                          constants.Actions()));
 
-        List<GridColumnPreference> columPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
+        List<GridColumnPreference> columnPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
 
-        for (GridColumnPreference colPref : columPreferenceList) {
+        for (GridColumnPreference colPref : columnPreferenceList) {
             if (!isColumnAdded(columnMetas,
                                colPref.getName())) {
                 Column genericColumn = initGenericColumn(colPref.getName());
                 genericColumn.setSortable(false);
-                columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(genericColumn,
-                                                                       colPref.getName(),
-                                                                       true,
-                                                                       true));
+                columnMetas.add(new ColumnMeta<>(genericColumn,
+                                                 colPref.getName(),
+                                                 true,
+                                                 true));
             }
         }
         extendedPagedTable.addColumns(columnMetas);
@@ -185,8 +178,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         extendedPagedTable.setColumnWidth(errorCountColumn,
                                           65,
                                           Style.Unit.PX);
-
-        extendedPagedTable.storeColumnToPreferences();
+        extendedPagedTable.getColumnSortList().push(startColumn);
     }
 
     private boolean isColumnAdded(List<ColumnMeta<ProcessInstanceSummary>> columnMetas,
@@ -381,31 +373,4 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
         return actionsColumn;
     }
-
-    @Override
-    public void initDefaultFilters() {
-        super.initDefaultFilters();
-
-        //Filter status Active
-        initTabFilter(presenter.createActiveTabSettings(),
-                      TAB_ACTIVE,
-                      constants.Active(),
-                      constants.FilterActive(),
-                      PROCESS_INSTANCE_DATASET);
-
-        //Filter status completed
-        initTabFilter(presenter.createCompletedTabSettings(),
-                      TAB_COMPLETED,
-                      constants.Completed(),
-                      constants.FilterCompleted(),
-                      PROCESS_INSTANCE_DATASET);
-
-        //Filter status aborted
-        initTabFilter(presenter.createAbortedTabSettings(),
-                      TAB_ABORTED,
-                      constants.Aborted(),
-                      constants.FilterAborted(),
-                      PROCESS_INSTANCE_DATASET);
-    }
-
 }

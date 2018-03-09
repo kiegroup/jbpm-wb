@@ -37,8 +37,6 @@ import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.COL_ID_ACTIONS;
-import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
-import static org.jbpm.workbench.ht.client.editors.taskslist.TaskAdminListViewImpl.TAB_ADMIN;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyList;
@@ -71,12 +69,6 @@ public class TaskAdminListViewImplTest extends AbstractTaskListViewTest {
     }
 
     @Override
-    public List<String> getExpectedTabs() {
-        return Arrays.asList(TAB_SEARCH,
-                             TAB_ADMIN);
-    }
-
-    @Override
     public List<String> getExpectedInitialColumns() {
         return Arrays.asList(COLUMN_NAME,
                              COLUMN_PROCESS_ID,
@@ -95,7 +87,6 @@ public class TaskAdminListViewImplTest extends AbstractTaskListViewTest {
     @Override
     public void setupMocks() {
         super.setupMocks();
-        when(presenter.createAdminTabSettings()).thenReturn(filterSettings);
         when(cellInstance.get()).thenReturn(cellMock);
     }
 

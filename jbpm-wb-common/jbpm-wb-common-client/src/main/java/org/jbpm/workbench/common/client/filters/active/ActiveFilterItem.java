@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.common.client.list;
+package org.jbpm.workbench.common.client.filters.active;
 
 import java.util.function.Consumer;
 
@@ -23,7 +23,7 @@ import org.jboss.errai.databinding.client.api.Bindable;
 @Bindable
 public class ActiveFilterItem<T extends Object> {
 
-    private String labelKey;
+    private String key;
 
     private String labelValue;
 
@@ -36,24 +36,24 @@ public class ActiveFilterItem<T extends Object> {
     public ActiveFilterItem() {
     }
 
-    public ActiveFilterItem(final String labelKey,
+    public ActiveFilterItem(final String key,
                             final String labelValue,
                             final String hint,
                             final T value,
                             final Consumer<T> callback) {
-        this.labelKey = labelKey;
+        this.key = key;
         this.labelValue = labelValue;
         this.hint = hint;
         this.value = value;
         this.callback = callback;
     }
 
-    public String getLabelKey() {
-        return labelKey;
+    public String getKey() {
+        return key;
     }
 
-    public void setLabelKey(String labelKey) {
-        this.labelKey = labelKey;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getLabelValue() {
@@ -99,7 +99,7 @@ public class ActiveFilterItem<T extends Object> {
 
         ActiveFilterItem that = (ActiveFilterItem) o;
 
-        if (!getLabelKey().equals(that.getLabelKey())) {
+        if (!getKey().equals(that.getKey())) {
             return false;
         }
         if (!getLabelValue().equals(that.getLabelValue())) {
@@ -111,12 +111,23 @@ public class ActiveFilterItem<T extends Object> {
     @Override
     @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
-        int result = getLabelKey().hashCode();
+        int result = getKey().hashCode();
         result = ~~result;
         result = 31 * result + getLabelValue().hashCode();
         result = ~~result;
         result = 31 * result + getValue().hashCode();
         result = ~~result;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "ActiveFilterItem{" +
+                "key='" + key + '\'' +
+                ", labelValue='" + labelValue + '\'' +
+                ", hint='" + hint + '\'' +
+                ", value=" + value +
+                ", callback=" + callback +
+                '}';
     }
 }

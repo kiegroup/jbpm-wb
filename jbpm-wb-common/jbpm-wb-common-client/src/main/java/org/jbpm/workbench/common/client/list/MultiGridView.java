@@ -16,19 +16,20 @@
 
 package org.jbpm.workbench.common.client.list;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.model.GenericSummary;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
 
-public interface MultiGridView<T extends GenericSummary, V> extends ListView<T, V>,
-                                                                    AdvancedSearchFiltersView {
+public interface MultiGridView<T extends GenericSummary, V> extends ListView<T, V> {
 
-    void applyFilterOnPresenter(String key);
+    <T extends Object> void addActiveFilter(ActiveFilterItem<T> filter);
 
-    FilterSettings getAdvancedSearchFilterSettings();
+    void removeAllActiveFilters();
 
-    void saveAdvancedSearchFilterSettings(final FilterSettings settings);
+    void loadListTable(String key,
+                       Consumer<ListTable<T>> callback);
 
-    void selectFirstTabAndEnableQueries();
-
-    void restoreTabs();
+    void setSaveFilterCallback(BiConsumer<String, Consumer<String>> filterNameCallback);
 }

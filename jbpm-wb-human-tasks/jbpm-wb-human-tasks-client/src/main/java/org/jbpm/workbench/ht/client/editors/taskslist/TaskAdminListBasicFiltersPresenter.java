@@ -17,6 +17,7 @@
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import org.uberfire.client.annotations.WorkbenchScreen;
 
@@ -30,5 +31,10 @@ public class TaskAdminListBasicFiltersPresenter extends AbstractTaskListBasicFil
     @Override
     public String getDataSetId() {
         return HUMAN_TASKS_WITH_ADMIN_DATASET;
+    }
+
+    @Inject
+    public void setFilterSettingsManager(final TaskAdminListFilterSettingsManager filterSettingsManager) {
+        super.setFilterSettingsManager(filterSettingsManager);
     }
 }

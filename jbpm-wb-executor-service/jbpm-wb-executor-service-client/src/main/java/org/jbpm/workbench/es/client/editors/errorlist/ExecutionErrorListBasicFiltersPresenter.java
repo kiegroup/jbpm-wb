@@ -19,8 +19,9 @@ package org.jbpm.workbench.es.client.editors.errorlist;
 import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
-import org.jbpm.workbench.common.client.filters.BasicFiltersPresenter;
+import org.jbpm.workbench.common.client.filters.basic.BasicFiltersPresenter;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.util.ExecutionErrorType;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -40,30 +41,32 @@ public class ExecutionErrorListBasicFiltersPresenter extends BasicFiltersPresent
         return constants.New_ErrorList();
     }
 
+    @Inject
+    public void setFilterSettingsManager(final ExecutionErrorListFilterSettingsManager filterSettingsManager) {
+        super.setFilterSettingsManager(filterSettingsManager);
+    }
+
     @Override
     public void loadFilters() {
         view.addNumericFilter(constants.Process_Instance_Id(),
                               constants.FilterByProcessInstanceId(),
-                              v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INST_ID,
-                                                                    v)),
-                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INST_ID,
-                                                                       v))
+                              f -> addSearchFilter(f,
+                                                   equalsTo(COLUMN_PROCESS_INST_ID,
+                                                            f.getValue()))
         );
 
         view.addNumericFilter(constants.JobId(),
                               constants.FilterByJobId(),
-                              v -> addAdvancedSearchFilter(equalsTo(COLUMN_JOB_ID,
-                                                                    v)),
-                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_JOB_ID,
-                                                                       v))
+                              f -> addSearchFilter(f,
+                                                   equalsTo(COLUMN_JOB_ID,
+                                                            f.getValue()))
         );
 
         view.addTextFilter(constants.Id(),
                            constants.FilterByErrorId(),
-                           v -> addAdvancedSearchFilter(likeTo(COLUMN_ERROR_ID,
-                                                               v)),
-                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_ERROR_ID,
-                                                                  v))
+                           f -> addSearchFilter(f,
+                                                likeTo(COLUMN_ERROR_ID,
+                                                       f.getValue()))
         );
 
         final Map<String, String> states = new HashMap<>();
@@ -78,10 +81,9 @@ public class ExecutionErrorListBasicFiltersPresenter extends BasicFiltersPresent
         view.addSelectFilter(constants.Type(),
                              states,
                              false,
-                             v -> addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_TYPE,
-                                                                   v)),
-                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_TYPE,
-                                                                      v))
+                             f -> addSearchFilter(f,
+                                                  equalsTo(COLUMN_ERROR_TYPE,
+                                                           f.getValue()))
         );
 
         final Map<String, String> acks = new HashMap<>();
@@ -93,21 +95,18 @@ public class ExecutionErrorListBasicFiltersPresenter extends BasicFiltersPresent
         view.addSelectFilter(this.constants.Acknowledged(),
                              acks,
                              false,
-                             v -> addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
-                                                                   v)),
-                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
-                                                                      v))
+                             f -> addSearchFilter(f,
+                                                  equalsTo(COLUMN_ERROR_ACK,
+                                                           f.getValue()))
         );
 
         view.addDateRangeFilter(this.constants.ErrorDate(),
                                 this.constants.ErrorDatePlaceholder(),
                                 true,
-                                v -> addAdvancedSearchFilter(between(COLUMN_ERROR_DATE,
-                                                                     v.getStartDate(),
-                                                                     v.getEndDate())),
-                                v -> removeAdvancedSearchFilter(between(COLUMN_ERROR_DATE,
-                                                                        v.getStartDate(),
-                                                                        v.getEndDate()))
+                                f -> addSearchFilter(f,
+                                                     between(COLUMN_ERROR_DATE,
+                                                             f.getValue().getStartDate(),
+                                                             f.getValue().getEndDate()))
         );
     }
 }

@@ -53,11 +53,6 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     }
 
     @Override
-    public String getNewFilterPopupTitle() {
-        return Constants.INSTANCE.New_FilteredList();
-    }
-
-    @Override
     public void initSelectionModel(final ListTable<TaskSummary> extendedPagedTable) {
         final RowStyles selectedStyles = new RowStyles<TaskSummary>() {
 
@@ -119,9 +114,11 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                  task -> task.getStatus()),
                 constants.Status()
         ));
+        final Column<TaskSummary, String> createdOnColumn = createTextColumn(COLUMN_CREATED_ON,
+                                                                             task -> DateUtils.getDateTimeStr(task.getCreatedOn()));
+        createdOnColumn.setDefaultSortAscending(false);
         columnMetas.add(new ColumnMeta<>(
-                createTextColumn(COLUMN_CREATED_ON,
-                                 task -> DateUtils.getDateTimeStr(task.getCreatedOn())),
+                createdOnColumn,
                 constants.Created_On()
         ));
         columnMetas.add(new ColumnMeta<>(
@@ -171,6 +168,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
             }
         }
         extendedPagedTable.addColumns(columnMetas);
+        extendedPagedTable.getColumnSortList().push(createdOnColumn);
     }
 
     protected void addNewColumn(ListTable<TaskSummary> extendedPagedTable,
@@ -300,11 +298,5 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     protected Column<TaskSummary, ?> initGenericColumn(final String key) {
         return createTextColumn(key,
                                 task -> task.getDomainDataValue(key));
-    }
-
-    @Override
-    public void setSelectedTask(final TaskSummary selectedTask) {
-        currentListGrid.getSelectionModel().setSelected(selectedTask,
-                                                        true);
     }
 }

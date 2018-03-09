@@ -16,18 +16,15 @@
 package org.jbpm.workbench.es.client.editors.errorlist;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
@@ -35,11 +32,10 @@ import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.es.client.editors.errordetails.ExecutionErrorDetailsPresenter;
+import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
-import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
 import org.jbpm.workbench.es.util.ExecutionErrorType;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -48,8 +44,7 @@ import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.dashbuilder.dataset.sort.SortOrder.*;
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 
@@ -83,52 +78,31 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     }
 
     @Override
-    public void getData(final Range visibleRange) {
-        try {
-            if (!isAddingDefaultFilters()) {
-                FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
-                currentTableSettings.setServerTemplateId(getSelectedServerTemplate());
-                currentTableSettings.setTablePageSize(view.getListGrid().getPageSize());
-                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                if (columnSortList != null && columnSortList.size() > 0) {
-                    dataSetQueryHelper.setLastOrderedColumn(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "");
-                    dataSetQueryHelper.setLastSortOrder(columnSortList.size() > 0 && columnSortList.get(0).isAscending() ? ASCENDING : DESCENDING);
-                } else {
-                    dataSetQueryHelper.setLastOrderedColumn(COLUMN_ERROR_DATE);
-                    dataSetQueryHelper.setLastSortOrder(ASCENDING);
+    protected DataSetReadyCallback getDataSetReadyCallback(final Integer startRange,
+                                                           final FilterSettings tableSettings) {
+        return new AbstractDataSetReadyCallback(errorPopup,
+                                                view,
+                                                tableSettings.getUUID()) {
+            @Override
+            public void callback(DataSet dataSet) {
+                if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(tableSettings.getKey())) {
+                    List<ExecutionErrorSummary> visibleExecutionErrors = new ArrayList<ExecutionErrorSummary>();
+                    for (int i = 0; i < dataSet.getRowCount(); i++) {
+                        visibleExecutionErrors.add(createExecutionErrorSummaryFromDataSet(dataSet,
+                                                                                          i));
+                    }
+
+                    boolean lastPageExactCount = false;
+                    if (dataSet.getRowCount() < view.getListGrid().getPageSize()) {
+                        lastPageExactCount = true;
+                    }
+                    updateDataOnCallback(visibleExecutionErrors,
+                                         startRange,
+                                         startRange + visibleExecutionErrors.size(),
+                                         lastPageExactCount);
                 }
-
-                dataSetQueryHelper.setDataSetHandler(currentTableSettings);
-                dataSetQueryHelper.lookupDataSet(visibleRange.getStart(),
-                                                 new AbstractDataSetReadyCallback(errorPopup,
-                                                                                  view,
-                                                                                  currentTableSettings.getUUID()) {
-                                                     @Override
-                                                     public void callback(DataSet dataSet) {
-                                                         if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(currentTableSettings.getKey())) {
-                                                             List<ExecutionErrorSummary> visibleExecutionErrors = new ArrayList<ExecutionErrorSummary>();
-                                                             for (int i = 0; i < dataSet.getRowCount(); i++) {
-                                                                 visibleExecutionErrors.add(createExecutionErrorSummaryFromDataSet(dataSet,
-                                                                                                                                   i));
-                                                             }
-
-                                                             boolean lastPageExactCount = false;
-                                                             if (dataSet.getRowCount() < view.getListGrid().getPageSize()) {
-                                                                 lastPageExactCount = true;
-                                                             }
-                                                             updateDataOnCallback(visibleExecutionErrors,
-                                                                                  visibleRange.getStart(),
-                                                                                  visibleRange.getStart() + visibleExecutionErrors.size(),
-                                                                                  lastPageExactCount);
-                                                         }
-                                                     }
-                                                 });
-                view.hideBusyIndicator();
             }
-        } catch (Exception e) {
-            errorPopup.showMessage(constants.Error() + " " + e.getMessage());
-            view.hideBusyIndicator();
-        }
+        };
     }
 
     protected ExecutionErrorSummary createExecutionErrorSummaryFromDataSet(final DataSet dataSet,
@@ -230,6 +204,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         }
         for (ExecutionErrorSummary selected : execErrorsSelected) {
             if (selected.isAcknowledged()) {
+                //TODO i18n
                 view.displayNotification("Error " + selected.getErrorId() + "is already acknowledge");
                 continue;
             } else {
@@ -255,78 +230,13 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     }
 
     @Inject
-    public void setExecutorService(final Caller<ExecutorService> executorService) {
-        this.executorService = executorService;
+    public void setFilterSettingsManager(final ExecutionErrorListFilterSettingsManager filterSettingsManager) {
+        super.setFilterSettingsManager(filterSettingsManager);
     }
 
-    @Override
-    public void setupAdvancedSearchView() {
-        view.addNumericFilter(constants.Process_Instance_Id(),
-                              constants.FilterByProcessInstanceId(),
-                              v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INST_ID,
-                                                                    v)),
-                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INST_ID,
-                                                                       v))
-        );
-
-        view.addNumericFilter(constants.JobId(),
-                              constants.FilterByJobId(),
-                              v -> addAdvancedSearchFilter(equalsTo(COLUMN_JOB_ID,
-                                                                    v)),
-                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_JOB_ID,
-                                                                       v))
-        );
-
-        view.addTextFilter(constants.Id(),
-                           constants.FilterByErrorId(),
-                           v -> addAdvancedSearchFilter(likeTo(COLUMN_ERROR_ID,
-                                                               v)),
-                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_ERROR_ID,
-                                                                  v))
-        );
-
-        final Map<String, String> states = new HashMap<>();
-        states.put(ExecutionErrorType.DB.getType(),
-                   constants.DB());
-        states.put(ExecutionErrorType.TASK.getType(),
-                   constants.Task());
-        states.put(ExecutionErrorType.PROCESS.getType(),
-                   constants.Process());
-        states.put(ExecutionErrorType.JOB.getType(),
-                   constants.Job());
-        view.addSelectFilter(constants.Type(),
-                             states,
-                             false,
-                             v -> addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_TYPE,
-                                                                   v)),
-                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_TYPE,
-                                                                      v))
-        );
-
-        final Map<String, String> acks = new HashMap<>();
-        acks.put("1",
-                 commonConstants.Yes());
-        acks.put("0",
-                 commonConstants.No());
-        view.addSelectFilter(constants.Acknowledged(),
-                             acks,
-                             false,
-                             v -> addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
-                                                                   v)),
-                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
-                                                                      v))
-        );
-
-        view.addDateRangeFilter(constants.ErrorDate(),
-                                constants.ErrorDatePlaceholder(),
-                                true,
-                                v -> addAdvancedSearchFilter(between(COLUMN_ERROR_DATE,
-                                                                     v.getStartDate(),
-                                                                     v.getEndDate())),
-                                v -> removeAdvancedSearchFilter(between(COLUMN_ERROR_DATE,
-                                                                        v.getStartDate(),
-                                                                        v.getEndDate()))
-        );
+    @Inject
+    public void setExecutorService(final Caller<ExecutorService> executorService) {
+        this.executorService = executorService;
     }
 
     @Override
@@ -336,45 +246,44 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         final Optional<String> processInstanceSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
         if (processInstanceSearch.isPresent()) {
             final String processInstanceId = processInstanceSearch.get();
-            view.addActiveFilter(constants.Process_Instance_Id(),
-                                 processInstanceId,
-                                 processInstanceId,
-                                 v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INST_ID,
-                                                                          v))
+            addActiveFilter(equalsTo(COLUMN_PROCESS_INST_ID,
+                                     processInstanceId),
+                            constants.Process_Instance_Id(),
+                            processInstanceId,
+                            processInstanceId,
+                            v -> removeActiveFilter(equalsTo(COLUMN_PROCESS_INST_ID,
+                                                             v))
             );
-
-            addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INST_ID,
-                                             processInstanceId));
             isDefaultFilters = false;
         }
 
         final Optional<String> taskIdSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_TASK_ID);
         if (taskIdSearch.isPresent()) {
             final String taskId = taskIdSearch.get();
-            view.addActiveFilter(constants.Task(),
-                                 taskId,
-                                 taskId,
-                                 v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ACTIVITY_ID,
-                                                                          v))
+            addActiveFilter(equalsTo(COLUMN_ACTIVITY_ID,
+                                     taskId),
+                            constants.Task(),
+                            taskId,
+                            taskId,
+                            v -> removeActiveFilter(equalsTo(COLUMN_ACTIVITY_ID,
+                                                             v))
             );
 
-            addAdvancedSearchFilter(equalsTo(COLUMN_ACTIVITY_ID,
-                                             taskId));
             isDefaultFilters = false;
         }
 
         final Optional<String> errorTypeSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_ERROR_TYPE);
         if (errorTypeSearch.isPresent()) {
             final String errorType = errorTypeSearch.get();
-            view.addActiveFilter(constants.Type(),
-                                 errorType,
-                                 errorType,
-                                 v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_TYPE,
-                                                                          v))
+            addActiveFilter(equalsTo(COLUMN_ERROR_TYPE,
+                                     errorType),
+                            constants.Type(),
+                            errorType,
+                            errorType,
+                            v -> removeActiveFilter(equalsTo(COLUMN_ERROR_TYPE,
+                                                             v))
             );
 
-            addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_TYPE,
-                                             errorType));
             isDefaultFilters = false;
         }
 
@@ -387,16 +296,16 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                     :
                     commonConstants.No());
 
-            view.addActiveFilter(
+            addActiveFilter(
+                    equalsTo(COLUMN_ERROR_ACK,
+                             errorAckValue),
                     constants.Acknowledged(),
                     valueLabel,
                     errorAckValue,
-                    v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
-                                                             v))
+                    v -> removeActiveFilter(equalsTo(COLUMN_ERROR_ACK,
+                                                     v))
             );
 
-            addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
-                                             errorAckValue));
             isDefaultFilters = false;
         }
 
@@ -407,111 +316,22 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
 
     @Override
     public void setupDefaultActiveSearchFilters() {
-        view.addActiveFilter(
+        addActiveFilter(
+                equalsTo(COLUMN_ERROR_ACK,
+                         "0"),
                 constants.Acknowledged(),
                 commonConstants.No(),
                 "0",
-                v -> removeAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
-                                                         v))
+                v -> removeActiveFilter(equalsTo(COLUMN_ERROR_ACK,
+                                                 v))
         );
-
-        addAdvancedSearchFilter(equalsTo(COLUMN_ERROR_ACK,
-                                         "0"));
-    }
-
-    /*-------------------------------------------------*/
-    /*---              DashBuilder                   --*/
-    /*-------------------------------------------------*/
-    @Override
-    public FilterSettings createTableSettingsPrototype() {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-        builder.dataset(EXECUTION_ERROR_LIST_DATASET);
-
-        builder.filterOn(true,
-                         true,
-                         true);
-        builder.tableOrderEnabled(true);
-        builder.tableOrderDefault(COLUMN_ERROR_DATE,
-                                  DESCENDING);
-        builder.tableWidth(1000);
-
-        return builder.buildSettings();
-    }
-
-    private FilterSettings createFilterTabSettings(final Boolean acknowledged) {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(EXECUTION_ERROR_LIST_DATASET);
-
-        if (acknowledged != null) {
-            builder.filter(equalsTo(COLUMN_ERROR_ACK,
-                                    acknowledged ? "1" : "0"));
-        }
-
-        builder.filterOn(true,
-                         true,
-                         true);
-        builder.tableOrderEnabled(true);
-        builder.tableOrderDefault(COLUMN_ERROR_DATE,
-                                  DESCENDING);
-        addCommonColumnSettings(builder);
-
-        return builder.buildSettings();
-    }
-
-    public FilterSettings createAllTabSettings() {
-        return createFilterTabSettings(null);
-    }
-
-    public FilterSettings createAcknowledgedTabSettings() {
-        return createFilterTabSettings(Boolean.TRUE);
-    }
-
-    public FilterSettings createNewTabSettings() {
-        return createFilterTabSettings(Boolean.FALSE);
-    }
-
-    @Override
-    public FilterSettings createSearchTabSettings() {
-        return createTableSettingsPrototype();
-    }
-
-    protected void addCommonColumnSettings(FilterSettingsBuilderHelper builder) {
-        builder.setColumn(COLUMN_ERROR_ACK,
-                          constants.Ack());
-        builder.setColumn(COLUMN_ERROR_ACK_AT,
-                          constants.AckAt());
-        builder.setColumn(COLUMN_ERROR_ACK_BY,
-                          constants.AckBy());
-        builder.setColumn(COLUMN_ACTIVITY_ID,
-                          constants.ActivityId());
-        builder.setColumn(COLUMN_ACTIVITY_NAME,
-                          constants.ActivityName());
-        builder.setColumn(COLUMN_DEPLOYMENT_ID,
-                          constants.DeploymentId());
-        builder.setColumn(COLUMN_ERROR_DATE,
-                          constants.Date());
-        builder.setColumn(COLUMN_ERROR_ID,
-                          constants.Id());
-        builder.setColumn(COLUMN_ERROR_MSG,
-                          constants.Message());
-        builder.setColumn(COLUMN_JOB_ID,
-                          constants.JobId());
-        builder.setColumn(COLUMN_PROCESS_ID,
-                          constants.ProcessId());
-        builder.setColumn(COLUMN_PROCESS_INST_ID,
-                          constants.Process_Instance_Id());
-        builder.setColumn(COLUMN_ERROR_TYPE,
-                          constants.Type());
-    }
-
-    public interface ExecutionErrorListView extends MultiGridView<ExecutionErrorSummary, ExecutionErrorListPresenter> {
-
     }
 
     public void setExecutionErrorSelectedEvent(Event<ExecutionErrorSelectedEvent> executionErrorSelectedEvent) {
         this.executionErrorSelectedEvent = executionErrorSelectedEvent;
+    }
+
+    public interface ExecutionErrorListView extends MultiGridView<ExecutionErrorSummary, ExecutionErrorListPresenter> {
+
     }
 }

@@ -15,26 +15,17 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
+import java.util.Arrays;
+import java.util.List;
 import javax.enterprise.context.Dependent;
 
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.workbench.ht.client.resources.i18n.Constants;
-import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
-import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
-import java.util.Arrays;
-import java.util.List;
+import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Dependent
 @Templated(value = "/org/jbpm/workbench/common/client/list/AbstractMultiGridView.html", stylesheet = "/org/jbpm/workbench/common/client/resources/css/kie-manage.less")
 public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
-
-    private static final String DATA_SET_TASK_LIST_PREFIX = "DataSetTaskListGrid";
-    protected static final String TAB_ALL = DATA_SET_TASK_LIST_PREFIX + "_3";
-    protected static final String TAB_GROUP = DATA_SET_TASK_LIST_PREFIX + "_2";
-    protected static final String TAB_PERSONAL = DATA_SET_TASK_LIST_PREFIX + "_1";
-    protected static final String TAB_ACTIVE = DATA_SET_TASK_LIST_PREFIX + "_0";
-    protected static final String TAB_ADMIN = DATA_SET_TASK_LIST_PREFIX + "_4";
 
     @Override
     public List<String> getInitColumns() {
@@ -43,54 +34,5 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
                              COLUMN_STATUS,
                              COLUMN_CREATED_ON,
                              COL_ID_ACTIONS);
-    }
-
-    @Override
-    protected void loadTabsFromPreferences(final MultiGridPreferencesStore multiGridPreferencesStore,
-                                           final TaskListPresenter presenter) {
-        //Remove old Admin tab in case still in the user preferences
-        multiGridPreferencesStore.getGridsId().remove(TAB_ADMIN);
-
-        super.loadTabsFromPreferences(multiGridPreferencesStore,
-                                      presenter);
-    }
-
-    @Override
-    public void initDefaultFilters() {
-        super.initDefaultFilters();
-
-        //Filter status Active
-        initTabFilter(presenter.createActiveTabSettings(),
-                      TAB_ACTIVE,
-                      Constants.INSTANCE.Active(),
-                      Constants.INSTANCE.FilterActive(),
-                      HUMAN_TASKS_WITH_USER_DATASET);
-
-        //Filter status Personal
-        initTabFilter(presenter.createPersonalTabSettings(),
-                      TAB_PERSONAL,
-                      Constants.INSTANCE.Personal(),
-                      Constants.INSTANCE.FilterPersonal(),
-                      HUMAN_TASKS_WITH_USER_DATASET);
-
-        //Filter status Group
-        initTabFilter(presenter.createGroupTabSettings(),
-                      TAB_GROUP,
-                      Constants.INSTANCE.Group(),
-                      Constants.INSTANCE.FilterGroup(),
-                      HUMAN_TASKS_WITH_USER_DATASET);
-
-        //Filter status All
-        initTabFilter(presenter.createAllTabSettings(),
-                      TAB_ALL,
-                      Constants.INSTANCE.All(),
-                      Constants.INSTANCE.FilterAll(),
-                      HUMAN_TASKS_WITH_USER_DATASET);
-
-    }
-
-    @Override
-    public String getGridGlobalPreferencesKey() {
-        return DATA_SET_TASK_LIST_PREFIX;
     }
 }

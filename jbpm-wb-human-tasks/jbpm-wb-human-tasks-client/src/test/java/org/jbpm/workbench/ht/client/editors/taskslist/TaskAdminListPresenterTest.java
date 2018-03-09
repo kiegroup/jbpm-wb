@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 
 import org.jbpm.workbench.ht.model.TaskSummary;
+import org.mockito.Spy;
 
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_ADMIN_DATASET;
@@ -29,6 +30,9 @@ import static org.junit.Assert.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskAdminListPresenterTest extends AbstractTaskListPresenterTest {
+
+    @Spy
+    protected TaskAdminListFilterSettingsManager manager;
 
     @InjectMocks
     protected TaskAdminListPresenter presenter;
@@ -39,8 +43,8 @@ public class TaskAdminListPresenterTest extends AbstractTaskListPresenterTest {
     }
 
     @Override
-    public String getDataSetId() {
-        return HUMAN_TASKS_WITH_ADMIN_DATASET;
+    protected AbstractTaskListFilterSettingsManager getFilterSettingsManager() {
+        return manager;
     }
 
     @Test

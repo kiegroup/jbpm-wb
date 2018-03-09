@@ -143,4 +143,9 @@ public interface Constants extends Messages {
     String Remove();
 
     String ErrorCountNumberView(@PluralCount int errCount);
+
+    String UnexpectedError(String message);
+
+    String FilterWithSameNameAlreadyExists();
+
 }

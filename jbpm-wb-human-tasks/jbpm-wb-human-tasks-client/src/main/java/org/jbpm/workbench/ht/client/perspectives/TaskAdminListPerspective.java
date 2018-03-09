@@ -17,36 +17,42 @@ package org.jbpm.workbench.ht.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
+import static org.jbpm.workbench.common.client.PerspectiveIds.*;
+
 /**
  * Administration view of the task list
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = PerspectiveIds.TASKS_ADMIN)
+@WorkbenchPerspective(identifier = TASKS_ADMIN)
 public class TaskAdminListPerspective extends AbstractPerspective {
 
     @Override
     public PlaceRequest getPlaceRequest() {
-        return new DefaultPlaceRequest(PerspectiveIds.TASK_ADMIN_LIST_SCREEN);
+        return new DefaultPlaceRequest(TASK_ADMIN_LIST_SCREEN);
     }
 
     @Override
     public String getPerspectiveId() {
-        return PerspectiveIds.TASKS_ADMIN;
+        return TASKS_ADMIN;
     }
 
     @Override
     public String getBasicFiltersScreenId() {
-        return PerspectiveIds.TASK_ADMIN_LIST_BASIC_FILTERS_SCREEN;
+        return TASK_ADMIN_LIST_BASIC_FILTERS_SCREEN;
     }
 
     @Override
     public String getSavedFiltersScreenId() {
-        return PerspectiveIds.TASK_ADMIN_LIST_SAVED_FILTERS_SCREEN;
+        return TASK_ADMIN_LIST_SAVED_FILTERS_SCREEN;
+    }
+
+    @Override
+    public String getDetailsScreenId() {
+        return TASK_DETAILS_SCREEN;
     }
 }

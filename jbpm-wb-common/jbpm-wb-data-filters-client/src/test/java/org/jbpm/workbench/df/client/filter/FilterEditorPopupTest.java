@@ -15,10 +15,11 @@
  */
 package org.jbpm.workbench.df.client.filter;
 
+import java.util.function.Consumer;
+
 import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.gwtmockito.WithClassesToStub;
-
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.displayer.client.widgets.filter.DataSetFilterEditor;
@@ -27,7 +28,6 @@ import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.gwtbootstrap3.client.ui.html.Text;
-
 import org.jbpm.workbench.df.client.i18n.FiltersConstants;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -52,7 +53,7 @@ public class FilterEditorPopupTest {
     DataSetFilterEditor filterEditor;
 
     @Mock
-    FilterEditorPopup.Listener editorListener;
+    Consumer<FilterSettings> editorListener;
 
     @GwtMock
     private TextBox tableNameText;
@@ -68,7 +69,7 @@ public class FilterEditorPopupTest {
 
     @Before
     public void setupMocks() {
-        filterEditorPopup.setTableDisplayerSettings(tableDisplayerSettings);
+        filterEditorPopup.setFilterSettings(tableDisplayerSettings);
     }
 
     @Test
@@ -89,6 +90,7 @@ public class FilterEditorPopupTest {
         String filterName = "filterName";
 
         DataSetFilter filter = new DataSetFilter();
+        filter.addFilterColumn(equalsTo("test"));
 
         when(tableNameText.getValue()).thenReturn(filterName);
         when(tableDisplayerSettings.getDataSetLookup()).thenReturn(previousLookup);
@@ -97,10 +99,11 @@ public class FilterEditorPopupTest {
         filterEditorPopup.setEditorListener(editorListener);
         filterEditorPopup.ok();
 
-        verify(filterEditor).getFilter();
+        verify(filterEditor,
+               times(3)).getFilter();
         verify(tableDisplayerSettings).setTableName(filterName);
         verify(previousLookup).addOperation(0,
                                             filter);
-        verify(editorListener).onSave(filterEditorPopup);
+        verify(editorListener).accept(tableDisplayerSettings);
     }
 }

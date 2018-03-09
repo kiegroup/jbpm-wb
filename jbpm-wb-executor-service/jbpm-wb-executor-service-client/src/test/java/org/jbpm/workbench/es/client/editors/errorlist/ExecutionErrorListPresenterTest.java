@@ -18,21 +18,22 @@ package org.jbpm.workbench.es.client.editors.errorlist;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.function.Consumer;
 
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
+import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
+import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
-import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
 import org.jbpm.workbench.es.util.ExecutionErrorType;
 import org.junit.Before;
@@ -54,13 +55,10 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.ResourceRef;
 import org.uberfire.security.authz.AuthorizationManager;
 
-import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 import static org.junit.Assert.*;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.JOBS;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.PROCESS_INSTANCES;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.TASKS_ADMIN;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -96,7 +94,7 @@ public class ExecutionErrorListPresenterTest {
     private PerspectiveActivity perspectiveActivity;
 
     @Mock
-    ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
+    private ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
 
     @Mock
     private AuthorizationManager authorizationManager;
@@ -110,32 +108,42 @@ public class ExecutionErrorListPresenterTest {
     @Spy
     private DataSetLookup dataSetLookup;
 
+    @Mock
+    private DataSet dataSet;
+
     @InjectMocks
     private ExecutionErrorListPresenter presenter;
 
     @Before
     public void setupMocks() {
         callerMockExecutorService = new CallerMock<>(executorServiceMock);
+
         filterSettings.setDataSetLookup(dataSetLookup);
+        filterSettings.setKey("key");
 
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(extendedPagedTable.getColumnSortList()).thenReturn(null);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
-        when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
         when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
         when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
+
+        doAnswer((InvocationOnMock invocation) -> {
+            ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSet);
+            return null;
+        }).when(dataSetQueryHelper).lookupDataSet(anyInt(),
+                                                  any(DataSetReadyCallback.class));
 
         presenter.setExecutorService(callerMockExecutorService);
     }
 
     @Test
     public void getDataTest() {
-        presenter.setAddingDefaultFilters(false);
         presenter.getData(new Range(0,
                                     5));
 
-        verify(dataSetQueryHelper).setLastSortOrder(ASCENDING);
+        verify(dataSetQueryHelper).lookupDataSet(anyInt(),
+                                                 any(DataSetReadyCallback.class));
         verify(viewMock).hideBusyIndicator();
     }
 
@@ -259,10 +267,17 @@ public class ExecutionErrorListPresenterTest {
     public void testDefaultActiveSearchFilters() {
         presenter.setupDefaultActiveSearchFilters();
 
-        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Acknowledged()),
-                                         eq(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No()),
-                                         eq("0"),
-                                         any(Consumer.class));
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        final ActiveFilterItem filterItem = captor.getValue();
+        assertNotNull(filterItem);
+        assertEquals(Constants.INSTANCE.Acknowledged(),
+                     filterItem.getKey());
+        assertEquals("0",
+                     filterItem.getValue());
+        assertEquals(Constants.INSTANCE.Acknowledged() + ": " + org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No(),
+                     filterItem.getLabelValue());
     }
 
     @Test
@@ -274,10 +289,17 @@ public class ExecutionErrorListPresenterTest {
 
         presenter.setupActiveSearchFilters();
 
-        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Acknowledged()),
-                                         eq(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No()),
-                                         eq("0"),
-                                         any(Consumer.class));
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        final ActiveFilterItem filterItem = captor.getValue();
+        assertNotNull(filterItem);
+        assertEquals(Constants.INSTANCE.Acknowledged(),
+                     filterItem.getKey());
+        assertEquals("0",
+                     filterItem.getValue());
+        assertEquals(Constants.INSTANCE.Acknowledged() + ": " + org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No(),
+                     filterItem.getLabelValue());
     }
 
     @Test
@@ -290,10 +312,17 @@ public class ExecutionErrorListPresenterTest {
 
         presenter.setupActiveSearchFilters();
 
-        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Process_Instance_Id()),
-                                         eq(processInstanceId),
-                                         eq(processInstanceId),
-                                         any(Consumer.class));
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        final ActiveFilterItem filterItem = captor.getValue();
+        assertNotNull(filterItem);
+        assertEquals(Constants.INSTANCE.Process_Instance_Id(),
+                     filterItem.getKey());
+        assertEquals(processInstanceId,
+                     filterItem.getValue());
+        assertEquals(Constants.INSTANCE.Process_Instance_Id() + ": " + processInstanceId,
+                     filterItem.getLabelValue());
     }
 
     @Test
@@ -384,7 +413,7 @@ public class ExecutionErrorListPresenterTest {
     @Test
     public void testViewTaskActionCondition() {
         doAnswer(new PerspectiveAnswer(TASKS_ADMIN)).when(authorizationManager).authorize(any(ResourceRef.class),
-                                                                                                eq(identity));
+                                                                                          eq(identity));
 
         assertTrue(presenter.getViewTaskActionCondition().test(ExecutionErrorSummary.builder()
                                                                        .type(ExecutionErrorType.TASK)
@@ -400,32 +429,8 @@ public class ExecutionErrorListPresenterTest {
                                             eq(identity))).thenReturn(false);
 
         assertFalse(presenter.getViewTaskActionCondition().test(ExecutionErrorSummary.builder()
-                                                                       .type(ExecutionErrorType.TASK)
-                                                                       .activityId(Long.valueOf(1)).build()));
-
-
-    }
-
-    @Test
-    public void testDefaultAdvancedSearchFilterTypes() {
-        presenter.setupAdvancedSearchView();
-        verify(viewMock).addTextFilter(eq(Constants.INSTANCE.Id()),
-                                       eq(Constants.INSTANCE.FilterByErrorId()),
-                                       any(Consumer.class),
-                                       any(Consumer.class));
-        verify(viewMock).addNumericFilter(eq(Constants.INSTANCE.Process_Instance_Id()),
-                                          eq(Constants.INSTANCE.FilterByProcessInstanceId()),
-                                          any(Consumer.class),
-                                          any(Consumer.class));
-        verify(viewMock).addNumericFilter(eq(Constants.INSTANCE.JobId()),
-                                          eq(Constants.INSTANCE.FilterByJobId()),
-                                          any(Consumer.class),
-                                          any(Consumer.class));
-        verify(viewMock).addSelectFilter(eq(Constants.INSTANCE.Type()),
-                                         anyMap(),
-                                         eq(false),
-                                         any(Consumer.class),
-                                         any(Consumer.class));
+                                                                        .type(ExecutionErrorType.TASK)
+                                                                        .activityId(Long.valueOf(1)).build()));
     }
 
     @Test

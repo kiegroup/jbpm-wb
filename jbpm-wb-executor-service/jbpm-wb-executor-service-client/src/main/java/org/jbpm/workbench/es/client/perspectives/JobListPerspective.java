@@ -17,36 +17,41 @@ package org.jbpm.workbench.es.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
+import static org.jbpm.workbench.common.client.PerspectiveIds.*;
 /**
  * A Perspective to show File Explorer
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = PerspectiveIds.JOBS)
+@WorkbenchPerspective(identifier = JOBS)
 public class JobListPerspective extends AbstractPerspective {
 
     @Override
     public PlaceRequest getPlaceRequest() {
-        return new DefaultPlaceRequest(PerspectiveIds.JOB_LIST_SCREEN);
+        return new DefaultPlaceRequest(JOB_LIST_SCREEN);
     }
 
     @Override
     public String getPerspectiveId() {
-        return PerspectiveIds.JOBS;
+        return JOBS;
     }
 
     @Override
     public String getBasicFiltersScreenId() {
-        return PerspectiveIds.JOB_LIST_BASIC_FILTERS_SCREEN;
+        return JOB_LIST_BASIC_FILTERS_SCREEN;
     }
 
     @Override
     public String getSavedFiltersScreenId() {
-        return PerspectiveIds.JOB_LIST_SAVED_FILTERS_SCREEN;
+        return JOB_LIST_SAVED_FILTERS_SCREEN;
+    }
+
+    @Override
+    public String getDetailsScreenId() {
+        return JOB_DETAILS_SCREEN;
     }
 }

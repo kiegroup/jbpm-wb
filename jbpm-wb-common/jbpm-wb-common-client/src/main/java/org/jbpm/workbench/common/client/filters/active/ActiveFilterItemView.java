@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.common.client.list;
+package org.jbpm.workbench.common.client.filters.active;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.google.gwt.user.client.TakesValue;
 import org.jboss.errai.common.client.api.IsElement;
-import org.jboss.errai.common.client.dom.Event;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.ListItem;
-import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.*;
 import org.uberfire.client.views.pfly.widgets.JQueryProducer;
@@ -39,13 +39,9 @@ public class ActiveFilterItemView implements TakesValue<ActiveFilterItem>,
 
     @Inject
     @DataField
+    @Named("span")
     @Bound
-    Span labelKey;
-
-    @Inject
-    @DataField
-    @Bound
-    Span labelValue;
+    elemental2.dom.HTMLElement labelValue;
 
     @Inject
     @DataField
@@ -59,7 +55,7 @@ public class ActiveFilterItemView implements TakesValue<ActiveFilterItem>,
     private DataBinder<ActiveFilterItem> dataBinder;
 
     @Inject
-    private javax.enterprise.event.Event<ActiveFilterItemRemoved> event;
+    private Event<ActiveFilterItemRemovedEvent> event;
 
     @Override
     public ActiveFilterItem getValue() {
@@ -86,8 +82,8 @@ public class ActiveFilterItemView implements TakesValue<ActiveFilterItem>,
     }
 
     @EventHandler("remove")
-    public void onRemove(@ForEvent("click") Event e) {
-        event.fire(new ActiveFilterItemRemoved(getValue()));
+    public void onRemove(@ForEvent("click") elemental2.dom.Event e) {
+        event.fire(new ActiveFilterItemRemovedEvent(getValue()));
     }
 
     @PreDestroy

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,54 +14,40 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.common.client.list;
+package org.jbpm.workbench.common.client.filters.basic;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.function.Consumer;
 
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.dom.KeyboardEvent;
-import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.util.DateRange;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.uberfire.client.views.pfly.widgets.Moment;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class AdvancedSearchFiltersViewImplTest {
-
-    @Mock
-    DataBinder<List<ActiveFilterItem>> dataBinder;
-
-    @Spy
-    List<ActiveFilterItem> modelList = new ArrayList<>();
+public class BasicFiltersViewImplTest {
 
     @Mock
     TranslationService translationService;
 
     @InjectMocks
-    AdvancedSearchFiltersViewImpl view;
-
-    @Before
-    public void setup() {
-        when(dataBinder.getModel()).thenReturn(modelList);
-    }
+    BasicFiltersViewImpl view;
 
     @Test
     public void testDateRangeChange() {
-        final Consumer addCallback = mock(Consumer.class);
+        final Consumer<ActiveFilterItem<DateRange>> callback = mock(Consumer.class);
         final String label = "label";
         final String selectedLabel = "selectedLabel";
         final Moment startMoment = mock(Moment.class);
@@ -77,22 +63,21 @@ public class AdvancedSearchFiltersViewImplTest {
                                     selectedLabel,
                                     startMoment,
                                     endMoment,
-                                    addCallback,
-                                    null);
+                                    callback);
 
         ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
-        verify(modelList).add(captor.capture());
+        verify(callback).accept(captor.capture());
+
         assertEquals(1,
                      captor.getAllValues().size());
         assertEquals(label,
-                     captor.getValue().getLabelKey());
-        assertEquals(selectedLabel,
+                     captor.getValue().getKey());
+        assertEquals(label + ": " + selectedLabel,
                      captor.getValue().getLabelValue());
         assertEquals(startDate,
                      ((DateRange) captor.getValue().getValue()).getStartDate());
         assertEquals(endDate,
                      ((DateRange) captor.getValue().getValue()).getEndDate());
-        verify(addCallback).accept(any(DateRange.class));
     }
 
     @Test
@@ -129,21 +114,31 @@ public class AdvancedSearchFiltersViewImplTest {
 
     @Test
     public void testAddActiveFilter() {
+        final Consumer<ActiveFilterItem<Integer>> callback = mock(Consumer.class);
+        final String labelKey = "key1";
+        final String labelValue = "someValue";
+        final String hint = "hint";
+        final Integer value = 1;
 
-        view.addActiveFilter("key1",
-                             "someValue",
-                             "someValue",
-                             null);
+        view.addActiveFilter(labelKey,
+                             labelValue,
+                             hint,
+                             value,
+                             callback);
+
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(callback).accept(captor.capture());
 
         assertEquals(1,
-                     modelList.size());
-
-        view.addActiveFilter("key1",
-                             "anotherValue",
-                             "anotherValue",
-                             null);
-
-        assertEquals(1,
-                     modelList.size());
+                     captor.getAllValues().size());
+        final ActiveFilterItem filterItem = captor.getValue();
+        assertEquals(labelKey,
+                     filterItem.getKey());
+        assertEquals(labelKey + ": " + labelValue,
+                     filterItem.getLabelValue());
+        assertEquals(hint,
+                     filterItem.getHint());
+        assertEquals(value,
+                     filterItem.getValue());
     }
 }

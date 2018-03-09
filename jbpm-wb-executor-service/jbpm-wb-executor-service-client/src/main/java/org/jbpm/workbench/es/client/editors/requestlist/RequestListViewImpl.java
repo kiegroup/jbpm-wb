@@ -44,14 +44,6 @@ import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, RequestListPresenter>
         implements RequestListPresenter.RequestListView {
 
-    private static final String REQUEST_LIST_PREFIX = "DS_RequestListGrid";
-    protected static final String TAB_CANCELED = REQUEST_LIST_PREFIX + "_6";
-    protected static final String TAB_COMPLETED = REQUEST_LIST_PREFIX + "_5";
-    protected static final String TAB_ERROR = REQUEST_LIST_PREFIX + "_4";
-    protected static final String TAB_RETRYING = REQUEST_LIST_PREFIX + "_3";
-    protected static final String TAB_RUNNING = REQUEST_LIST_PREFIX + "_2";
-    protected static final String TAB_QUEUED = REQUEST_LIST_PREFIX + "_1";
-    protected static final String TAB_ALL = REQUEST_LIST_PREFIX + "_0";
     private final Constants constants = Constants.INSTANCE;
 
     @Inject
@@ -70,16 +62,6 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         return Arrays.asList(COLUMN_ID,
                              COLUMN_COMMANDNAME,
                              COL_ID_ACTIONS);
-    }
-
-    @Override
-    public String getGridGlobalPreferencesKey() {
-        return REQUEST_LIST_PREFIX;
-    }
-
-    @Override
-    public String getNewFilterPopupTitle() {
-        return constants.New_JobList();
     }
 
     @Override
@@ -102,8 +84,10 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                                                           req -> jobStatusConverter.toWidgetValue(req.getStatus())
         ),
                                          constants.Status()));
-        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_TIMESTAMP,
-                                                          req -> DateUtils.getDateTimeStr(req.getTime())),
+        final Column<RequestSummary, String> timestampColumn = createTextColumn(COLUMN_TIMESTAMP,
+                                                                           req -> DateUtils.getDateTimeStr(req.getTime()));
+        timestampColumn.setDefaultSortAscending(false);
+        columnMetas.add(new ColumnMeta<>(timestampColumn,
                                          constants.Due_On()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_PROCESS_NAME,
                                                           req -> req.getProcessName()),
@@ -118,6 +102,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                                          constants.Actions()));
 
         extendedPagedTable.addColumns(columnMetas);
+        extendedPagedTable.getColumnSortList().push(timestampColumn);
     }
 
     @Override
@@ -133,7 +118,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                 constants.Cancel(),
                 job -> {
                     if (Window.confirm(constants.CancelJob())) {
-                        presenter.cancelRequest(job.getDeploymentId(), 
+                        presenter.cancelRequest(job.getDeploymentId(),
                                                 job.getJobId());
                     }
                 },
@@ -143,7 +128,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                 constants.Requeue(),
                 job -> {
                     if (Window.confirm(constants.RequeueJob())) {
-                        presenter.requeueRequest(job.getDeploymentId(), 
+                        presenter.requeueRequest(job.getDeploymentId(),
                                                  job.getJobId());
                     }
                 },
@@ -165,46 +150,5 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         };
         actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
-    }
-
-    @Override
-    public void initDefaultFilters() {
-        super.initDefaultFilters();
-
-        initTabFilter(presenter.createAllTabSettings(),
-                      TAB_ALL,
-                      constants.All(),
-                      constants.FilterAll(),
-                      REQUEST_LIST_DATASET);
-        initTabFilter(presenter.createQueuedTabSettings(),
-                      TAB_QUEUED,
-                      constants.Queued(),
-                      constants.FilterQueued(),
-                      REQUEST_LIST_DATASET);
-        initTabFilter(presenter.createRunningTabSettings(),
-                      TAB_RUNNING,
-                      constants.Running(),
-                      constants.FilterRunning(),
-                      REQUEST_LIST_DATASET);
-        initTabFilter(presenter.createRetryingTabSettings(),
-                      TAB_RETRYING,
-                      constants.Retrying(),
-                      constants.FilterRetrying(),
-                      REQUEST_LIST_DATASET);
-        initTabFilter(presenter.createErrorTabSettings(),
-                      TAB_ERROR,
-                      constants.Error(),
-                      constants.FilterError(),
-                      REQUEST_LIST_DATASET);
-        initTabFilter(presenter.createCompletedTabSettings(),
-                      TAB_COMPLETED,
-                      constants.Completed(),
-                      constants.FilterCompleted(),
-                      REQUEST_LIST_DATASET);
-        initTabFilter(presenter.createCanceledTabSettings(),
-                      TAB_CANCELED,
-                      constants.Canceled(),
-                      constants.FilterCanceled(),
-                      REQUEST_LIST_DATASET);
     }
 }

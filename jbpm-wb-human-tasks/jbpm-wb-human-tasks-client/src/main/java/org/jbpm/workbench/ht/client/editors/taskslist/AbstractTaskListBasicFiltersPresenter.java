@@ -23,8 +23,7 @@ import java.util.stream.Collectors;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetLookupFactory;
 import org.dashbuilder.dataset.sort.SortOrder;
-import org.jbpm.workbench.common.client.filters.BasicFiltersPresenter;
-import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
+import org.jbpm.workbench.common.client.filters.basic.BasicFiltersPresenter;
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 
@@ -45,20 +44,17 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
     public void loadFilters() {
         view.addNumericFilter(constants.Id(),
                               constants.FilterByTaskId(),
-                              v -> addAdvancedSearchFilter(equalsTo(COLUMN_TASK_ID,
-                                                                    v)),
-                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_TASK_ID,
-                                                                       v))
+                              f -> addSearchFilter(f,
+                                                   equalsTo(COLUMN_TASK_ID,
+                                                            f.getValue()))
         );
 
         view.addTextFilter(constants.Task(),
                            constants.FilterByTaskName(),
-                           v -> addAdvancedSearchFilter(likeTo(COLUMN_NAME,
-                                                               v,
-                                                               false)),
-                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_NAME,
-                                                                  v,
-                                                                  false))
+                           f -> addSearchFilter(f,
+                                                likeTo(COLUMN_NAME,
+                                                       f.getValue(),
+                                                       false))
         );
 
         final Map<String, String> status = getStatusByType(TaskUtils.TaskType.ALL).stream().sorted().collect(Collectors.toMap(Function.identity(),
@@ -66,40 +62,33 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
         view.addSelectFilter(constants.Status(),
                              status,
                              false,
-                             v -> addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
-                                                                   v)),
-                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
-                                                                      v))
+                             f -> addSearchFilter(f,
+                                                  equalsTo(COLUMN_STATUS,
+                                                           f.getValue()))
         );
 
         view.addTextFilter(constants.Process_Instance_Correlation_Key(),
                            constants.FilterByCorrelationKey(),
-                           v -> addAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
-                                                               v,
-                                                               false)),
-                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
-                                                                  v,
-                                                                  false))
+                           f -> addSearchFilter(f,
+                                                likeTo(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
+                                                       f.getValue(),
+                                                       false))
         );
 
         view.addTextFilter(constants.Actual_Owner(),
                            constants.FilterByActualOwner(),
-                           v -> addAdvancedSearchFilter(likeTo(COLUMN_ACTUAL_OWNER,
-                                                               v,
-                                                               false)),
-                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_ACTUAL_OWNER,
-                                                                  v,
-                                                                  false))
+                           f -> addSearchFilter(f,
+                                                likeTo(COLUMN_ACTUAL_OWNER,
+                                                       f.getValue(),
+                                                       false))
         );
 
         view.addTextFilter(constants.Process_Instance_Description(),
                            constants.FilterByProcessInstanceDescription(),
-                           v -> addAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                                               v,
-                                                               false)),
-                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                                                  v,
-                                                                  false))
+                           f -> addSearchFilter(f,
+                                                likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                       f.getValue(),
+                                                       false))
         );
 
         addProcessNameFilter(getDataSetId());
@@ -107,12 +96,10 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
         view.addDateRangeFilter(constants.Created_On(),
                                 constants.Created_On_Placeholder(),
                                 true,
-                                v -> addAdvancedSearchFilter(between(COLUMN_CREATED_ON,
-                                                                     v.getStartDate(),
-                                                                     v.getEndDate())),
-                                v -> removeAdvancedSearchFilter(between(COLUMN_CREATED_ON,
-                                                                        v.getStartDate(),
-                                                                        v.getEndDate()))
+                                f -> addSearchFilter(f,
+                                                     between(COLUMN_CREATED_ON,
+                                                             f.getValue().getStartDate(),
+                                                             f.getValue().getEndDate()))
         );
     }
 
@@ -125,14 +112,12 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
                       SortOrder.ASCENDING)
                 .buildLookup();
         view.addDataSetSelectFilter(constants.Process_Definition_Id(),
-                                    AbstractMultiGridView.TAB_SEARCH,
                                     dataSetLookup,
                                     COLUMN_PROCESS_ID,
                                     COLUMN_PROCESS_ID,
-                                    v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_ID,
-                                                                          v)),
-                                    v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_ID,
-                                                                             v)));
+                                    f -> addSearchFilter(f,
+                                                         equalsTo(COLUMN_PROCESS_ID,
+                                                                  f.getValue())));
     }
 
     public abstract String getDataSetId();

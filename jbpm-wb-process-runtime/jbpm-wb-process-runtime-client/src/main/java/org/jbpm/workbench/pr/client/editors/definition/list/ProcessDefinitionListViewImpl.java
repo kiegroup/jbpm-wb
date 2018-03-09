@@ -27,7 +27,6 @@ import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.view.client.CellPreviewEvent;
@@ -35,8 +34,8 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.AbstractListView;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.ButtonActionCell;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
@@ -110,11 +109,6 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         listGrid.setSelectionModel(selectionModel,
                                    noActionColumnManager);
         listGrid.setEmptyTableCaption(constants.No_Process_Definitions_Found());
-
-        listGrid.getElement().getStyle().setPaddingRight(20,
-                                                         Style.Unit.PX);
-        listGrid.getElement().getStyle().setPaddingLeft(20,
-                                                        Style.Unit.PX);
     }
 
     @Override
@@ -127,16 +121,17 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
 
         List<ColumnMeta<ProcessSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessSummary>>();
-        columnMetas.add(new ColumnMeta<ProcessSummary>(processNameColumn,
-                                                       constants.Name()));
-        columnMetas.add(new ColumnMeta<ProcessSummary>(versionColumn,
-                                                       constants.Version()));
-        columnMetas.add(new ColumnMeta<ProcessSummary>(projectColumn,
-                                                       constants.Project()));
-        columnMetas.add(new ColumnMeta<ProcessSummary>(actionsColumn,
-                                                       constants.Actions()));
+        columnMetas.add(new ColumnMeta<>(processNameColumn,
+                                         constants.Name()));
+        columnMetas.add(new ColumnMeta<>(versionColumn,
+                                         constants.Version()));
+        columnMetas.add(new ColumnMeta<>(projectColumn,
+                                         constants.Project()));
+        columnMetas.add(new ColumnMeta<>(actionsColumn,
+                                         constants.Actions()));
 
         extendedPagedTable.addColumns(columnMetas);
+        extendedPagedTable.getColumnSortList().push(processNameColumn);
     }
 
     private Column initProcessNameColumn() {
@@ -148,6 +143,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
             }
         };
         processNameColumn.setSortable(true);
+        processNameColumn.setDefaultSortAscending(false);
         processNameColumn.setDataStoreName(COL_ID_PROCESSNAME);
         return processNameColumn;
     }

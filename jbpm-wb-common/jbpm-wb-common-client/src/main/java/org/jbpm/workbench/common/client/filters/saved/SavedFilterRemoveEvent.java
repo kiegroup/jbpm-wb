@@ -14,40 +14,20 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.common.client.filters;
+package org.jbpm.workbench.common.client.filters.saved;
 
-import org.jboss.errai.databinding.client.api.Bindable;
+import org.jbpm.workbench.df.client.filter.SavedFilter;
 
-@Bindable
-public class SavedFilter {
+public class SavedFilterRemoveEvent {
 
-    private String key;
+    private SavedFilter savedFilter;
 
-    private String name;
-
-    public SavedFilter() {
+    public SavedFilterRemoveEvent(final SavedFilter savedFilter) {
+        this.savedFilter = savedFilter;
     }
 
-    public SavedFilter(final String key,
-                       final String name) {
-        this.key = key;
-        this.name = name;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public SavedFilter getSavedFilter() {
+        return savedFilter;
     }
 
     @Override
@@ -55,25 +35,24 @@ public class SavedFilter {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof SavedFilter)) {
+        if (!(o instanceof SavedFilterRemoveEvent)) {
             return false;
         }
 
-        SavedFilter that = (SavedFilter) o;
+        SavedFilterRemoveEvent that = (SavedFilterRemoveEvent) o;
 
-        return getKey().equals(that.getKey());
+        return getSavedFilter().equals(that.getSavedFilter());
     }
 
     @Override
     public int hashCode() {
-        return getKey().hashCode();
+        return getSavedFilter().hashCode();
     }
 
     @Override
     public String toString() {
-        return "SavedFilter{" +
-                "key='" + key + '\'' +
-                ", name='" + name + '\'' +
+        return "SavedFilterRemoveEvent{" +
+                "savedFilter=" + savedFilter +
                 '}';
     }
 }

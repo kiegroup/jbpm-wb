@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.common.client.filters;
+package org.jbpm.workbench.common.client.filters.saved;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Composite;
-import elemental2.dom.Event;
 import elemental2.dom.HTMLButtonElement;
-import elemental2.dom.HTMLElement;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
@@ -34,6 +32,7 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
+import org.jbpm.workbench.df.client.filter.SavedFilter;
 
 @Dependent
 @Templated
@@ -41,9 +40,8 @@ public class SavedFilterView extends Composite implements TakesValue<SavedFilter
 
     @Inject
     @DataField("name")
-    @Named("span")
     @Bound
-    HTMLElement name;
+    HTMLButtonElement name;
 
     @Inject
     @DataField("remove")
@@ -54,7 +52,10 @@ public class SavedFilterView extends Composite implements TakesValue<SavedFilter
     private DataBinder<SavedFilter> dataBinder;
 
     @Inject
-    private javax.enterprise.event.Event<RemoveSavedFilterEvent> event;
+    private Event<SavedFilterRemoveEvent> savedFilterRemoveEvent;
+
+    @Inject
+    private Event<SavedFilterSelectedEvent> savedFilterSelectedEvent;
 
     @PostConstruct
     public void init(){
@@ -72,7 +73,12 @@ public class SavedFilterView extends Composite implements TakesValue<SavedFilter
     }
 
     @EventHandler("remove")
-    public void onRemove(@ForEvent("click") Event e) {
-        event.fire(new RemoveSavedFilterEvent(getValue()));
+    public void onRemove(@ForEvent("click") elemental2.dom.Event e) {
+        savedFilterRemoveEvent.fire(new SavedFilterRemoveEvent(getValue()));
+    }
+
+    @EventHandler("name")
+    public void onFilterSelected(@ForEvent("click") elemental2.dom.Event e) {
+        savedFilterSelectedEvent.fire(new SavedFilterSelectedEvent(getValue()));
     }
 }

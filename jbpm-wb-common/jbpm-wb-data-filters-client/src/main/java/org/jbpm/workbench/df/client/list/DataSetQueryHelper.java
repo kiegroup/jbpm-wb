@@ -15,6 +15,10 @@
  */
 package org.jbpm.workbench.df.client.list;
 
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import com.google.gwt.core.client.GWT;
 import org.dashbuilder.common.client.StringUtils;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
@@ -22,27 +26,20 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetClientServices;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.sort.SortOrder;
-
 import org.dashbuilder.displayer.client.DataSetHandler;
 import org.dashbuilder.displayer.client.DataSetHandlerImpl;
 import org.jbpm.workbench.df.client.events.DataSetReadyEvent;
-import org.jbpm.workbench.ks.integration.ConsoleDataSetLookup;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
+import org.jbpm.workbench.ks.integration.ConsoleDataSetLookup;
 
 @Dependent
 public class DataSetQueryHelper {
 
     protected FilterSettings currentTableSetting;
 
-    protected int numberOfRows = 0;
+    protected String lastOrderedColumn;
 
-    protected String lastOrderedColumn = null;
-
-    protected SortOrder lastSortOrder = null;
+    protected SortOrder lastSortOrder;
 
     protected DataSet dataSet;
 
@@ -53,13 +50,16 @@ public class DataSetQueryHelper {
     protected Event<DataSetReadyEvent> event;
 
     @Inject
-    public DataSetQueryHelper(DataSetClientServices dataSetClientServices,
-                              Event<DataSetReadyEvent> event) {
+    public void setDataSetClientServices(final DataSetClientServices dataSetClientServices) {
         this.dataSetClientServices = dataSetClientServices;
+    }
+
+    @Inject
+    public void setDataSetReadyEvent(final Event<DataSetReadyEvent> event) {
         this.event = event;
     }
 
-    public void lookupDataSet(Integer offset,
+    public void lookupDataSet(final Integer offset,
                               final DataSetReadyCallback callback) {
         try {
             // Get the sort settings
@@ -85,7 +85,6 @@ public class DataSetQueryHelper {
 
                         public void callback(DataSet dataSet) {
                             DataSetQueryHelper.this.dataSet = dataSet;
-                            numberOfRows = dataSet.getRowCountNonTrimmed();
                             callback.callback(dataSet);
                             event.fire(new DataSetReadyEvent(currentTableSetting));
                         }
@@ -113,14 +112,6 @@ public class DataSetQueryHelper {
 
     public void setCurrentTableSettings(FilterSettings currentTableSetting) {
         this.currentTableSetting = currentTableSetting;
-    }
-
-    public int getNumberOfRows() {
-        return numberOfRows;
-    }
-
-    public void setNumberOfRows(int numberOfRows) {
-        this.numberOfRows = numberOfRows;
     }
 
     public String getLastOrderedColumn() {

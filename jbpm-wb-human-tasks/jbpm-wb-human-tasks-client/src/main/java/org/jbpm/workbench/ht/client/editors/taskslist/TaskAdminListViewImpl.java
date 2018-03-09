@@ -35,9 +35,6 @@ import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 @Templated(value = "/org/jbpm/workbench/common/client/list/AbstractMultiGridView.html", stylesheet = "/org/jbpm/workbench/common/client/resources/css/kie-manage.less")
 public class TaskAdminListViewImpl extends AbstractTaskListView<TaskAdminListPresenter> {
 
-    private static final String DATA_SET_TASK_LIST_PREFIX = "DataSetTaskAdminGrid";
-    protected static final String TAB_ADMIN = DATA_SET_TASK_LIST_PREFIX + "_0";
-
     @Inject
     private ManagedInstance<GenericErrorSummaryCountCell> popoverCellInstance;
 
@@ -49,21 +46,6 @@ public class TaskAdminListViewImpl extends AbstractTaskListView<TaskAdminListPre
                              COLUMN_CREATED_ON,
                              COLUMN_ERROR_COUNT,
                              COL_ID_ACTIONS);
-    }
-
-    @Override
-    public void initDefaultFilters() {
-        super.initDefaultFilters();
-        initTabFilter(presenter.createAdminTabSettings(),
-                      TAB_ADMIN,
-                      constants.Task_Admin(),
-                      constants.FilterTaskAdmin(),
-                      HUMAN_TASKS_WITH_ADMIN_DATASET);
-    }
-
-    @Override
-    public String getGridGlobalPreferencesKey() {
-        return DATA_SET_TASK_LIST_PREFIX;
     }
 
     @Override

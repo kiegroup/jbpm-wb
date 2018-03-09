@@ -19,12 +19,12 @@ package org.jbpm.workbench.es.client.editors.requestlist;
 import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetLookupFactory;
 import org.dashbuilder.dataset.sort.SortOrder;
-import org.jbpm.workbench.common.client.filters.BasicFiltersPresenter;
-import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
+import org.jbpm.workbench.common.client.filters.basic.BasicFiltersPresenter;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.util.RequestStatus;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -42,6 +42,11 @@ public class JobListBasicFiltersPresenter extends BasicFiltersPresenter {
     @Override
     protected String getAdvancedFilterPopupTitle() {
         return constants.New_JobList();
+    }
+
+    @Inject
+    public void setFilterSettingsManager(final JobListFilterSettingsManager filterSettingsManager) {
+        super.setFilterSettingsManager(filterSettingsManager);
     }
 
     @Override
@@ -63,10 +68,9 @@ public class JobListBasicFiltersPresenter extends BasicFiltersPresenter {
         view.addSelectFilter(constants.Status(),
                              status,
                              false,
-                             v -> addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
-                                                                   v)),
-                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
-                                                                      v))
+                             f -> addSearchFilter(f,
+                                                  equalsTo(COLUMN_STATUS,
+                                                           f.getValue()))
         );
 
         final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
@@ -77,62 +81,51 @@ public class JobListBasicFiltersPresenter extends BasicFiltersPresenter {
                       SortOrder.ASCENDING)
                 .buildLookup();
         view.addDataSetSelectFilter(constants.Process_Name(),
-                                    AbstractMultiGridView.TAB_SEARCH,
                                     dataSetLookup,
                                     COLUMN_PROCESS_NAME,
                                     COLUMN_PROCESS_NAME,
-                                    v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_NAME,
-                                                                          v)),
-                                    v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_NAME,
-                                                                             v)));
+                                    f -> addSearchFilter(f,
+                                                         equalsTo(COLUMN_PROCESS_NAME,
+                                                                  f.getValue())));
 
         view.addNumericFilter(constants.Process_Instance_Id(),
                               constants.FilterByProcessInstanceId(),
-                              v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
-                                                                    v)),
-                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
-                                                                       v))
+                              f -> addSearchFilter(f,
+                                                   equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                                                            f.getValue()))
         );
 
         view.addTextFilter(constants.BusinessKey(),
                            constants.FilterByBusinessKey(),
-                           v -> addAdvancedSearchFilter(likeTo(COLUMN_BUSINESSKEY,
-                                                               v,
-                                                               false)),
-                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_BUSINESSKEY,
-                                                                  v,
-                                                                  false))
+                           f -> addSearchFilter(f,
+                                                likeTo(COLUMN_BUSINESSKEY,
+                                                       f.getValue(),
+                                                       false))
         );
 
         view.addTextFilter(constants.Type(),
                            constants.FilterByType(),
-                           v -> addAdvancedSearchFilter(likeTo(COLUMN_COMMANDNAME,
-                                                               v,
-                                                               false)),
-                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_COMMANDNAME,
-                                                                  v,
-                                                                  false))
+                           f -> addSearchFilter(f,
+                                                likeTo(COLUMN_COMMANDNAME,
+                                                       f.getValue(),
+                                                       false))
         );
 
         view.addTextFilter(constants.Process_Instance_Description(),
                            constants.FilterByProcessDescription(),
-                           v -> addAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                                               v,
-                                                               false)),
-                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                                                  v,
-                                                                  false))
+                           f -> addSearchFilter(f,
+                                                likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                                                       f.getValue(),
+                                                       false))
         );
 
         view.addDateRangeFilter(constants.Due_On(),
                                 constants.Due_On_Placeholder(),
                                 false,
-                                v -> addAdvancedSearchFilter(between(COLUMN_TIMESTAMP,
-                                                                     v.getStartDate(),
-                                                                     v.getEndDate())),
-                                v -> removeAdvancedSearchFilter(between(COLUMN_TIMESTAMP,
-                                                                        v.getStartDate(),
-                                                                        v.getEndDate()))
+                                f -> addSearchFilter(f,
+                                                     between(COLUMN_TIMESTAMP,
+                                                             f.getValue().getStartDate(),
+                                                             f.getValue().getEndDate()))
         );
     }
 }

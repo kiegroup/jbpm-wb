@@ -56,11 +56,6 @@ import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionErrorSummary, ExecutionErrorListPresenter>
         implements ExecutionErrorListPresenter.ExecutionErrorListView {
 
-    private static final String EXECUTION_ERROR_LIST_PREFIX = "DS_ExecutionErrorListGrid";
-    protected static final String TAB_ALL = EXECUTION_ERROR_LIST_PREFIX + "_0";
-    protected static final String TAB_ACK = EXECUTION_ERROR_LIST_PREFIX + "_1";
-    protected static final String TAB_NEW = EXECUTION_ERROR_LIST_PREFIX + "_2";
-
     private final Constants constants = Constants.INSTANCE;
 
     @Inject
@@ -92,16 +87,6 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                              COLUMN_PROCESS_INST_ID,
                              COLUMN_ERROR_DATE,
                              COL_ID_ACTIONS);
-    }
-
-    @Override
-    public String getGridGlobalPreferencesKey() {
-        return EXECUTION_ERROR_LIST_PREFIX;
-    }
-
-    @Override
-    public String getNewFilterPopupTitle() {
-        return constants.New_ErrorList();
     }
 
     @Override
@@ -185,9 +170,11 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_ACTIVITY_NAME,
                                                           errorSummary -> errorSummary.getActivityName()),
                                          constants.ActivityName()));
-        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_ERROR_DATE,
-                                                          errorSummary ->
-                                                                  dateTimeConverter.toWidgetValue(errorSummary.getErrorDate())),
+        final Column<ExecutionErrorSummary, String> errorDateColumn = createTextColumn(COLUMN_ERROR_DATE,
+                                                                                  errorSummary ->
+                                                                                          dateTimeConverter.toWidgetValue(errorSummary.getErrorDate()));
+        errorDateColumn.setDefaultSortAscending(false);
+        columnMetas.add(new ColumnMeta<>(errorDateColumn,
                                          constants.ErrorDate()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_DEPLOYMENT_ID,
                                                           errorSummary -> errorSummary.getDeploymentId()),
@@ -212,6 +199,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                                           Style.Unit.PX);
 
         extendedPagedTable.addColumns(columnMetas);
+        extendedPagedTable.getColumnSortList().push(errorDateColumn);
     }
 
     private Column<ExecutionErrorSummary, ExecutionErrorSummary> initActionsColumn() {
@@ -247,29 +235,5 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
         };
         actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         return actionsColumn;
-    }
-
-    @Override
-    public void initDefaultFilters() {
-
-        super.initDefaultFilters();
-
-        initTabFilter(presenter.createAllTabSettings(),
-                      TAB_ALL,
-                      constants.All(),
-                      constants.FilterAll(),
-                      EXECUTION_ERROR_LIST_DATASET);
-
-        initTabFilter(presenter.createNewTabSettings(),
-                      TAB_NEW,
-                      constants.New(),
-                      constants.UnacknowledgedErrors(),
-                      EXECUTION_ERROR_LIST_DATASET);
-
-        initTabFilter(presenter.createAcknowledgedTabSettings(),
-                      TAB_ACK,
-                      constants.Acknowledged(),
-                      constants.AcknowledgedErrors(),
-                      EXECUTION_ERROR_LIST_DATASET);
     }
 }

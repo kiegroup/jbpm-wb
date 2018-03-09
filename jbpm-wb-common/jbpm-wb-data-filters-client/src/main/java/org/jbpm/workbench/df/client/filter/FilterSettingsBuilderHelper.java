@@ -81,8 +81,8 @@ public final class FilterSettingsBuilderHelper {
                                   sortOrder);
     }
 
-    public void tableWidth(int width) {
-        builder.tableWidth(width);
+    public void key(final String key) {
+        builder.key(key);
     }
 
     public void group(String columnId) {

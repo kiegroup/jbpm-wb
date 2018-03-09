@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,50 +14,42 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.common.client.list;
+package org.jbpm.workbench.common.client.filters.basic;
 
 import java.util.Map;
 import java.util.function.Consumer;
 
 import org.dashbuilder.dataset.DataSetLookup;
+import org.jboss.errai.common.client.api.IsElement;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.util.DateRange;
+import org.uberfire.mvp.Command;
 
-public interface AdvancedSearchFiltersView {
+public interface BasicFiltersView extends IsElement {
+
+    void setAdvancedFiltersCallback(Command callback);
 
     void addTextFilter(String label,
                        String placeholder,
-                       Consumer<String> addCallback,
-                       Consumer<String> removeCallback);
+                       Consumer<ActiveFilterItem<String>> callback);
 
     void addNumericFilter(String label,
                           String placeholder,
-                          Consumer<String> addCallback,
-                          Consumer<String> removeCallback);
+                          Consumer<ActiveFilterItem<String>> callback);
 
     void addDateRangeFilter(String label,
                             String placeholder,
                             Boolean useMaxDate,
-                            Consumer<DateRange> addCallback,
-                            Consumer<DateRange> removeCallback);
+                            Consumer<ActiveFilterItem<DateRange>> callback);
 
     void addSelectFilter(String label,
                          Map<String, String> options,
                          Boolean liveSearch,
-                         Consumer<String> addCallback,
-                         Consumer<String> removeCallback);
+                         Consumer<ActiveFilterItem<String>> callback);
 
     void addDataSetSelectFilter(String label,
-                                String tableKey,
                                 DataSetLookup lookup,
                                 String textColumnId,
                                 String valueColumnId,
-                                Consumer<String> addCallback,
-                                Consumer<String> removeCallback);
-
-    <T extends Object> void addActiveFilter(String labelKey,
-                                            String labelValue,
-                                            T value,
-                                            Consumer<T> removeCallback);
-
-    void removeAllActiveFilters();
+                                Consumer<ActiveFilterItem<String>> callback);
 }

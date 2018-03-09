@@ -65,59 +65,12 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
     }
 
     @Override
-    public List<String> getExpectedTabs() {
-        return Arrays.asList(TAB_SEARCH,
-                             TAB_ALL,
-                             TAB_GROUP,
-                             TAB_PERSONAL,
-                             TAB_ACTIVE);
-    }
-
-    @Override
     public List<String> getExpectedInitialColumns() {
         return Arrays.asList(COLUMN_NAME,
                              COLUMN_PROCESS_ID,
                              COLUMN_STATUS,
                              COLUMN_CREATED_ON,
                              COL_ID_ACTIONS);
-    }
-
-    @Before
-    @Override
-    public void setupMocks() {
-        super.setupMocks();
-        when(presenter.createActiveTabSettings()).thenReturn(filterSettings);
-        when(presenter.createAllTabSettings()).thenReturn(filterSettings);
-        when(presenter.createGroupTabSettings()).thenReturn(filterSettings);
-        when(presenter.createPersonalTabSettings()).thenReturn(filterSettings);
-    }
-
-    @Test
-    public void testLoadPreferencesRemovingAdminTab() {
-        final MultiGridPreferencesStore pref = new MultiGridPreferencesStore();
-        pref.getGridsId().add(TAB_ALL);
-        pref.getGridsId().add(TAB_GROUP);
-        pref.getGridsId().add(TAB_PERSONAL);
-        pref.getGridsId().add(TAB_ACTIVE);
-        pref.getGridsId().add(TAB_ADMIN);
-
-        view.loadTabsFromPreferences(pref,
-                                     presenter);
-
-        assertFalse(pref.getGridsId().contains(TAB_ADMIN));
-
-        assertTabAdded(TAB_SEARCH,
-                       TAB_ALL,
-                       TAB_GROUP,
-                       TAB_PERSONAL,
-                       TAB_ACTIVE);
-
-        verify(filterPagedTable,
-               never())
-                .addTab(any(ExtendedPagedTable.class),
-                        eq(TAB_ADMIN),
-                        any(Command.class),
-                        eq(false));
     }
 
     @Test

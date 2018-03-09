@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.common.client.list;
+package org.jbpm.workbench.common.client.filters.active;
 
-public class ActiveFilterItemRemoved {
+import org.jboss.errai.common.client.api.elemental2.IsElement;
+import org.uberfire.mvp.ParameterizedCommand;
 
-    private ActiveFilterItem activeFilterItem;
+public interface ActiveFiltersView extends IsElement {
 
-    public ActiveFilterItemRemoved(final ActiveFilterItem activeFilterItem) {
-        this.activeFilterItem = activeFilterItem;
-    }
+    <T extends Object> void addActiveFilter(ActiveFilterItem filter);
 
-    public ActiveFilterItem getActiveFilterItem() {
-        return activeFilterItem;
-    }
+    void removeAllActiveFilters();
+
+    void setSaveFilterCallback(ParameterizedCommand<String> callback);
+
+    void closeSaveFilter();
+
+    void setSaveFilterErrorMessage(String message);
 }

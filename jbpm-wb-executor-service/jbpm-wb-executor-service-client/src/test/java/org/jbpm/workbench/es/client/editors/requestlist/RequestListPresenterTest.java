@@ -17,13 +17,14 @@ package org.jbpm.workbench.es.client.editors.requestlist;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.function.Consumer;
 
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
+import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
@@ -41,6 +42,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
@@ -49,7 +51,6 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.PlaceRequest;
 
-import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
 import static org.jbpm.workbench.es.client.editors.util.JobUtils.createRequestSummary;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 import static org.junit.Assert.*;
@@ -101,6 +102,9 @@ public class RequestListPresenterTest {
     @Mock
     private NewJobPresenter newJobPresenterMock;
 
+    @Mock
+    private DataSet dataSet;
+
     @Spy
     private FilterSettings filterSettings;
 
@@ -112,15 +116,20 @@ public class RequestListPresenterTest {
         callerMockExecutorService = new CallerMock<ExecutorService>(executorServiceMock);
 
         filterSettings.setDataSetLookup(dataSetLookup);
+        filterSettings.setKey("key");
 
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(extendedPagedTable.getColumnSortList()).thenReturn(null);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
-        when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
         when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
         when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
 
+        doAnswer((InvocationOnMock invocation) -> {
+            ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSet);
+            return null;
+        }).when(dataSetQueryHelper).lookupDataSet(anyInt(),
+                                                  any(DataSetReadyCallback.class));
 
         presenter = new RequestListPresenter(viewMock,
                                              callerMockExecutorService,
@@ -136,11 +145,11 @@ public class RequestListPresenterTest {
 
     @Test
     public void getDataTest() {
-        presenter.setAddingDefaultFilters(false);
         presenter.getData(new Range(0,
                                     5));
 
-        verify(dataSetQueryHelper).setLastSortOrder(ASCENDING);
+        verify(dataSetQueryHelper).lookupDataSet(anyInt(),
+                                                 any(DataSetReadyCallback.class));
         verify(viewMock).hideBusyIndicator();
     }
 
@@ -267,10 +276,17 @@ public class RequestListPresenterTest {
     public void testDefaultActiveSearchFilters() {
         presenter.setupDefaultActiveSearchFilters();
 
-        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Status()),
-                                         eq(Constants.INSTANCE.Running()),
-                                         eq(RequestStatus.RUNNING.name()),
-                                         any(Consumer.class));
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(Constants.INSTANCE.Status(),
+                     captor.getValue().getKey());
+        assertEquals(Constants.INSTANCE.Status() + ": " + Constants.INSTANCE.Running(),
+                     captor.getValue().getLabelValue());
+        assertEquals(RequestStatus.RUNNING.name(),
+                     (captor.getValue().getValue()));
     }
 
     @Test
@@ -282,10 +298,17 @@ public class RequestListPresenterTest {
 
         presenter.setupActiveSearchFilters();
 
-        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Status()),
-                                         eq(Constants.INSTANCE.Running()),
-                                         eq(RequestStatus.RUNNING.name()),
-                                         any(Consumer.class));
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(Constants.INSTANCE.Status(),
+                     captor.getValue().getKey());
+        assertEquals(Constants.INSTANCE.Status() + ": " + Constants.INSTANCE.Running(),
+                     captor.getValue().getLabelValue());
+        assertEquals(RequestStatus.RUNNING.name(),
+                     (captor.getValue().getValue()));
     }
 
     @Test
