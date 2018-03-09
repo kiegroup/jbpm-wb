@@ -112,7 +112,7 @@ public interface Constants extends Messages {
 
     String Process_Instances();
 
-    String Tasks_Admin();
+    String Tasks();
 
     String Task_Inbox();
 

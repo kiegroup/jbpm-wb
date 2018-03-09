@@ -143,7 +143,7 @@ public class ShowcaseEntryPointTest {
                      processManagementMenuItems.get(1).getCaption());
         assertEquals(showcaseEntryPoint.constants.Process_Instances_Admin(),
                      processManagementMenuItems.get(2).getCaption());
-        assertEquals(showcaseEntryPoint.commonConstants.Tasks_Admin(),
+        assertEquals(showcaseEntryPoint.commonConstants.Tasks(),
                      processManagementMenuItems.get(3).getCaption());
         assertEquals(showcaseEntryPoint.commonConstants.ExecutionErrors(),
                      processManagementMenuItems.get(4).getCaption());
