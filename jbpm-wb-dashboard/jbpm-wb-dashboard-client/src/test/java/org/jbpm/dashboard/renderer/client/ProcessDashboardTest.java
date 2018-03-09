@@ -35,7 +35,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.client.mvp.PerspectiveActivity;
+import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 
 import static org.dashbuilder.dataset.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -57,6 +60,12 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
 
     @Mock
     DisplayerListener totalMetricListener;
+
+    @Mock
+    PerspectiveManager perspectiveManagerMock;
+
+    @Mock
+    UberfireBreadcrumbs uberfireBreadcrumbsMock;
 
     ProcessDashboard presenter;
     DataSet dataSet;
@@ -99,6 +108,9 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
                                          placeManager,
                                          instanceSelectionEvent,
                                          serverTemplateSelectorMenuBuilder);
+        when(perspectiveManagerMock.getCurrentPerspective()).thenReturn(mock(PerspectiveActivity.class));
+        presenter.setPerspectiveManager(perspectiveManagerMock);
+        presenter.setUberfireBreadcrumbs(uberfireBreadcrumbsMock);
         presenter.init();
     }
 

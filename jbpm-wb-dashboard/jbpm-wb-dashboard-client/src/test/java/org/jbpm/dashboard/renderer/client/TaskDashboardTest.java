@@ -40,7 +40,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.client.mvp.PerspectiveActivity;
+import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.workbench.events.NotificationEvent;
 
@@ -72,6 +75,12 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Mock
     DisplayerListener totalMetricListener;
+
+    @Mock
+    PerspectiveManager perspectiveManagerMock;
+
+    @Mock
+    UberfireBreadcrumbs uberfireBreadcrumbsMock;
 
     TaskDashboard presenter;
     DataSet dataSet;
@@ -118,13 +127,15 @@ public class TaskDashboardTest extends AbstractDashboardTest {
                                       serverTemplateSelectorMenuBuilder,
                                       taskServiceCaller,
                                       notificationEvent);
+        when(perspectiveManagerMock.getCurrentPerspective()).thenReturn(mock(PerspectiveActivity.class));
+        presenter.setPerspectiveManager(perspectiveManagerMock);
+        presenter.setUberfireBreadcrumbs(uberfireBreadcrumbsMock);
 
         presenter.init();
     }
 
     @Test
     public void testDrawAll() {
-
         verify(view).init(presenter,
                           presenter.getTotalMetric(),
                           presenter.getCreatedMetric(),
@@ -289,14 +300,21 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
         ColumnSettings taskDurationSettings = displayerSettings.getColumnSettings(COLUMN_TASK_DURATION);
         assertNotNull(taskDurationSettings);
-        assertEquals("value/60000", taskDurationSettings.getValueExpression());
-        assertEquals("#,##0 min", taskDurationSettings.getValuePattern());
+        assertEquals("value/60000",
+                     taskDurationSettings.getValueExpression());
+        assertEquals("#,##0 min",
+                     taskDurationSettings.getValuePattern());
 
-        assertEquals(COLUMN_PROCESS_NAME, dataSet.getColumnByIndex(0).getId());
-        assertEquals("Tasks", dataSet.getColumnByIndex(1).getId());
-        assertEquals(COLUMN_TASK_DURATION, dataSet.getColumnByIndex(2).getId());
-        assertEquals(COLUMN_PROCESS_NAME, dataSet.getColumnByIndex(3).getId());
-        assertEquals("Tasks", dataSet.getColumnByIndex(4).getId());
+        assertEquals(COLUMN_PROCESS_NAME,
+                     dataSet.getColumnByIndex(0).getId());
+        assertEquals("Tasks",
+                     dataSet.getColumnByIndex(1).getId());
+        assertEquals(COLUMN_TASK_DURATION,
+                     dataSet.getColumnByIndex(2).getId());
+        assertEquals(COLUMN_PROCESS_NAME,
+                     dataSet.getColumnByIndex(3).getId());
+        assertEquals("Tasks",
+                     dataSet.getColumnByIndex(4).getId());
 
         assertDataSetValues(dataSet,
                             new String[][]{

@@ -57,10 +57,6 @@ public class TaskDetailsMultiViewImpl extends Composite
 
     private TabListItem taskDetailsTab;
 
-    private TabPane processContextPane;
-
-    private TabListItem processContextTab;
-
     private TabPane taskAssignmentsPane;
 
     private TabListItem taskAssignmentsTab;
@@ -215,9 +211,6 @@ public class TaskDetailsMultiViewImpl extends Composite
         }
         taskDetailsPane.setVisible(true);
         taskDetailsTab.setVisible(true);
-
-        processContextTab.setVisible(true);
-        processContextPane.setVisible(true);
 
         taskLogsPane.setVisible(true);
         taskLogsTab.setVisible(true);

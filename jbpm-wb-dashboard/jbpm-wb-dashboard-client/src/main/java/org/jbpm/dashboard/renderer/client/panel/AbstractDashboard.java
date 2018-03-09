@@ -16,6 +16,10 @@
 
 package org.jbpm.dashboard.renderer.client.panel;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.dataset.DataSetLookup;
@@ -27,13 +31,18 @@ import org.dashbuilder.displayer.client.DisplayerCoordinator;
 import org.dashbuilder.displayer.client.DisplayerLocator;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.ks.integration.ConsoleDataSetLookup;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardI18n;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
+import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.events.ClosePlaceEvent;
+import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mvp.Command;
+import org.uberfire.mvp.Commands;
 
 import static org.kie.soup.commons.validation.PortablePreconditions.*;
 
@@ -51,6 +60,19 @@ public abstract class AbstractDashboard {
 
     protected ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
 
+    UberfireBreadcrumbs breadcrumbs;
+
+    private PerspectiveManager perspectiveManager;
+
+    private String detailScreenId;
+
+    public String getPerspectiveId() {
+        return perspectiveManager.getCurrentPerspective().getIdentifier();
+    }
+
+    public AbstractDashboard() {
+    }
+
     public AbstractDashboard(final DataSetClientServices dataSetClientServices,
                              final PlaceManager placeManager,
                              final DashboardI18n i18n,
@@ -65,6 +87,64 @@ public abstract class AbstractDashboard {
         this.displayerLocator = displayerLocator;
         this.displayerCoordinator = displayerCoordinator;
         this.serverTemplateSelectorMenuBuilder = serverTemplateSelectorMenuBuilder;
+    }
+
+    @PostConstruct
+    public void setBreadcrumbs() {
+        createListBreadcrumb();
+        breadcrumbs.addToolbar(getPerspectiveId(),
+                               serverTemplateSelectorMenuBuilder.getView().getElement());
+    }
+
+    @Inject
+    public void setServerTemplateSelectorMenuBuilder(final ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder) {
+        this.serverTemplateSelectorMenuBuilder = serverTemplateSelectorMenuBuilder;
+    }
+
+    public abstract void createListBreadcrumb();
+
+    public abstract void tableRedraw();
+
+    public void setupListBreadcrumb(String listLabel) {
+        breadcrumbs.clearBreadcrumbs(getPerspectiveId());
+
+        breadcrumbs.addBreadCrumb(getPerspectiveId(),
+                                  i18n.Home(),
+                                  () -> placeManager.goTo(PerspectiveIds.HOME));
+        breadcrumbs.addBreadCrumb(getPerspectiveId(),
+                                  listLabel,
+                                  Commands.DO_NOTHING);
+    }
+
+    public void setupDetailBreadcrumb(String listLabel,
+                                      String detailLabel,
+                                      String detailScreenId) {
+        breadcrumbs.clearBreadcrumbs(getPerspectiveId());
+        breadcrumbs.addBreadCrumb(getPerspectiveId(),
+                                  i18n.Home(),
+                                  () -> placeManager.goTo(PerspectiveIds.HOME));
+        breadcrumbs.addBreadCrumb(getPerspectiveId(),
+                                  listLabel,
+                                  () -> closeDetails(detailScreenId));
+        breadcrumbs.addBreadCrumb(getPerspectiveId(),
+                                  detailLabel,
+                                  Commands.DO_NOTHING);
+        this.detailScreenId = detailScreenId;
+    }
+
+    private void closeDetails(String detailScreenId) {
+        placeManager.closePlace(detailScreenId);
+        createListBreadcrumb();
+        tableRedraw();
+    }
+
+    public void onDetailScreenClosed(@Observes ClosePlaceEvent closed) {
+        if (closed.getPlace() != null
+                && detailScreenId != null
+                && detailScreenId.equals(closed.getPlace().getIdentifier())) {
+            createListBreadcrumb();
+            tableRedraw();
+        }
     }
 
     public MetricDisplayer createMetricDisplayer(DisplayerSettings settings) {
@@ -173,6 +253,16 @@ public abstract class AbstractDashboard {
         getView().hideBreadCrumb();
     }
 
+    @Inject
+    public void setPerspectiveManager(PerspectiveManager perspectiveManager) {
+        this.perspectiveManager = perspectiveManager;
+    }
+
+    @Inject
+    public void setUberfireBreadcrumbs(UberfireBreadcrumbs uberfireBreadcrumbs) {
+        this.breadcrumbs = uberfireBreadcrumbs;
+    }
+
     public interface View extends IsWidget {
 
         void showBreadCrumb(String processName);
@@ -190,5 +280,7 @@ public abstract class AbstractDashboard {
         void showInstances();
 
         DashboardI18n getI18nService();
+
+        boolean isDashboardPanelVisible();
     }
 }
