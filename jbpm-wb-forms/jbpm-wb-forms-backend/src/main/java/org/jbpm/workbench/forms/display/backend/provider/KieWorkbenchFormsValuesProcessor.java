@@ -35,7 +35,7 @@ import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic
 import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.util.BPMNVariableUtils;
 import org.kie.workbench.common.forms.model.FormDefinition;
-import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
+import org.kie.workbench.common.forms.services.backend.serialization.FormDefinitionSerializer;
 import org.slf4j.Logger;
 
 public abstract class KieWorkbenchFormsValuesProcessor<T extends RenderingSettings> {
