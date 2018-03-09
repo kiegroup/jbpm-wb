@@ -39,8 +39,8 @@ import org.kie.workbench.common.forms.model.FormDefinition;
 import org.kie.workbench.common.forms.model.ModelProperty;
 import org.kie.workbench.common.forms.model.impl.meta.entries.FieldReadOnlyEntry;
 import org.kie.workbench.common.forms.model.impl.meta.entries.FieldTypeEntry;
-import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
 import org.kie.workbench.common.forms.service.backend.util.ModelPropertiesGenerator;
+import org.kie.workbench.common.forms.services.backend.serialization.FormDefinitionSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

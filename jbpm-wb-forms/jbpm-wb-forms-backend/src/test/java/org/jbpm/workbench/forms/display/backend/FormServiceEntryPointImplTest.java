@@ -59,10 +59,10 @@ import org.kie.workbench.common.forms.jbpm.server.service.formGeneration.impl.ru
 import org.kie.workbench.common.forms.jbpm.server.service.impl.DynamicBPMNFormGeneratorImpl;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
 import org.kie.workbench.common.forms.model.FieldDefinition;
-import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
-import org.kie.workbench.common.forms.serialization.impl.FieldSerializer;
-import org.kie.workbench.common.forms.serialization.impl.FormDefinitionSerializerImpl;
-import org.kie.workbench.common.forms.serialization.impl.FormModelSerializer;
+import org.kie.workbench.common.forms.services.backend.serialization.FormDefinitionSerializer;
+import org.kie.workbench.common.forms.services.backend.serialization.impl.FieldSerializer;
+import org.kie.workbench.common.forms.services.backend.serialization.impl.FormDefinitionSerializerImpl;
+import org.kie.workbench.common.forms.services.backend.serialization.impl.FormModelSerializer;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 

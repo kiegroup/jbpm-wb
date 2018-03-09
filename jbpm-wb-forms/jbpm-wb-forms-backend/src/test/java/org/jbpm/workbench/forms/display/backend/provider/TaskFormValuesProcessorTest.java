@@ -31,7 +31,7 @@ import org.jbpm.workbench.forms.service.providing.model.TaskDefinition;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
-import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
+import org.kie.workbench.common.forms.services.backend.serialization.FormDefinitionSerializer;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
