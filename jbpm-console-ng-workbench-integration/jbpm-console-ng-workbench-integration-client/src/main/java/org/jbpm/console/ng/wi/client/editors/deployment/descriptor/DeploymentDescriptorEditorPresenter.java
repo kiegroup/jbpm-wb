@@ -15,19 +15,16 @@
 
 package org.jbpm.console.ng.wi.client.editors.deployment.descriptor;
 
-import java.util.List;
-
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.console.ng.wi.client.editors.deployment.descriptor.type.DDResourceType;
 import org.jbpm.console.ng.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.console.ng.wi.dd.service.DDEditorService;
-import org.kie.workbench.common.widgets.client.popups.validation.ValidationPopup;
+import org.kie.workbench.common.widgets.client.callbacks.AssetValidatedCallback;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
 import org.kie.workbench.common.widgets.metadata.client.KieEditor;
 import org.uberfire.backend.vfs.ObservablePath;
@@ -107,23 +104,10 @@ public class DeploymentDescriptorEditorPresenter extends KieEditor {
 
     @Override
     protected void onValidate(final Command callFinished) {
-        ddEditorService.call(new RemoteCallback<List<ValidationMessage>>() {
-            @Override
-            public void callback(final List<ValidationMessage> results) {
-                if (results == null || results.isEmpty()) {
-                    notifyValidationSuccess();
-                } else {
-                    ValidationPopup.showMessages(results);
-                }
-                callFinished.execute();
-            }
-        }, new CommandErrorCallback(callFinished)).validate(versionRecordManager.getCurrentPath(),
-                                                            model);
-    }
-
-    protected void notifyValidationSuccess() {
-        notification.fire(new NotificationEvent(CommonConstants.INSTANCE.ItemValidatedSuccessfully(),
-                                                NotificationEvent.NotificationType.SUCCESS));
+        ddEditorService.call(new AssetValidatedCallback(callFinished, notification),
+                             new CommandErrorCallback(callFinished))
+                .validate(versionRecordManager.getCurrentPath(),
+                          model);
     }
 
     protected void save() {
