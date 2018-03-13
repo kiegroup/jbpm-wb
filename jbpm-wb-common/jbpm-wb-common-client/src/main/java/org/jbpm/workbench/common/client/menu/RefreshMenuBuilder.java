@@ -17,13 +17,12 @@
 package org.jbpm.workbench.common.client.menu;
 
 import elemental2.dom.HTMLElement;
+import org.jboss.errai.ioc.client.container.IOC;
 import org.uberfire.client.views.pfly.widgets.Button;
 import org.uberfire.ext.widgets.common.client.resources.i18n.CommonConstants;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
-
-import static elemental2.dom.DomGlobal.document;
 
 public class RefreshMenuBuilder implements MenuFactory.CustomMenuBuilder {
 
@@ -44,7 +43,7 @@ public class RefreshMenuBuilder implements MenuFactory.CustomMenuBuilder {
         return new BaseMenuCustom<HTMLElement>() {
             @Override
             public HTMLElement build() {
-                return menuRefreshButton;
+                return menuRefreshButton.getElement();
             }
 
             @Override
@@ -60,11 +59,11 @@ public class RefreshMenuBuilder implements MenuFactory.CustomMenuBuilder {
     }
 
     public void setupMenuButton() {
-        menuRefreshButton = (Button) document.createElement("button");
+        menuRefreshButton = IOC.getBeanManager().lookupBean(Button.class).newInstance();
         menuRefreshButton.setButtonStyleType(Button.ButtonStyleType.LINK);
         menuRefreshButton.addIcon("fa",
                                   "fa-refresh");
-        menuRefreshButton.title = CommonConstants.INSTANCE.Refresh();
+        menuRefreshButton.getElement().title = CommonConstants.INSTANCE.Refresh();
         menuRefreshButton.setClickHandler(() -> supportsRefresh.onRefresh());
     }
 

@@ -22,8 +22,6 @@ import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 import com.google.gwt.dom.client.BrowserEvents;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
@@ -39,9 +37,9 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
 
     private List<Column<T, ?>> ignoreSelectionColumns = new ArrayList<Column<T, ?>>();
 
-    private List<T> selectedItems;
+    private List<T> selectedItems = new ArrayList<T>();
 
-    private Consumer<T> selectionCallback = null;
+    private Consumer<T> selectionCallback;
 
     public ExtendedPagedTable(final GridGlobalPreferences gridPreferences) {
         super(DEFAULT_PAGE_SIZE,
@@ -52,7 +50,6 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
               false,
               false);
 
-        selectedItems = new ArrayList<T>();
         dataGrid.addColumnSortHandler(new AsyncHandler(dataGrid));
         setSelectionModel(createSelectionModel(),
                           createNoActionColumnManager());
@@ -106,7 +103,7 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
         return selectedItems;
     }
 
-    public void setSelectedItems(List<T> selectedItems) {
+    protected void setSelectedItems(List<T> selectedItems) {
         this.selectedItems = selectedItems;
     }
 
@@ -115,21 +112,50 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
     }
 
     public boolean hasSelectedItems() {
-        return StreamSupport.stream(this.getVisibleItems().spliterator(),
-                                    false).anyMatch(domain -> domain.isSelected());
+        return StreamSupport.stream(getVisibleItems().spliterator(),
+                                    false).anyMatch(item -> isItemSelected(item));
     }
 
     public void deselectAllItems() {
-        this.getVisibleItems().forEach(pis -> pis.setSelected(false));
-        selectedItems = new ArrayList<T>();
+        for (int i = 0; i < getVisibleItemCount(); i++) {
+            final T item = getVisibleItem(i);
+            if (selectedItems.contains(item)) {
+                updateSelectedColumnRow(i,
+                                        item,
+                                        false);
+            }
+        }
+        selectedItems.clear();
+    }
+
+    public void selectAllItems() {
+        for (int i = 0; i < getVisibleItemCount(); i++) {
+            final T item = getVisibleItem(i);
+            if (selectedItems.contains(item) == false) {
+                updateSelectedColumnRow(i,
+                                        item,
+                                        true);
+                selectedItems.add(item);
+            }
+        }
+    }
+
+    public void updateSelectedColumnRow(final Integer row,
+                                        final T object,
+                                        final Boolean value) {
+        final Column<T, Boolean> column = (Column<T, Boolean>) this.dataGrid.getColumn(0);
+        column.getFieldUpdater().update(row,
+                                        object,
+                                        value);
+        dataGrid.redrawRow(row);
     }
 
     public boolean isAllItemsSelected() {
-        if (this.getVisibleItemCount() == 0) {
+        if (getVisibleItemCount() == 0) {
             return false;
         } else {
-            return StreamSupport.stream(this.getVisibleItems().spliterator(),
-                                        false).allMatch(pis -> pis.isSelected());
+            return StreamSupport.stream(getVisibleItems().spliterator(),
+                                        false).allMatch(item -> isItemSelected(item));
         }
     }
 
@@ -143,11 +169,6 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
         return selectionModel;
     }
 
-    public void setVisibleSelectedItems() {
-        getVisibleItems().forEach(item -> item.setSelected(isItemSelected(item)));
-        redraw();
-    }
-
     protected DefaultSelectionEventManager<T> createNoActionColumnManager() {
         final ExtendedPagedTable<T> extendedPagedTable = this;
         return DefaultSelectionEventManager.createCustomManager(new DefaultSelectionEventManager.EventTranslator<T>() {
@@ -159,35 +180,13 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
 
             @Override
             public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<T> event) {
-                DefaultSelectionEventManager.SelectAction ret = DefaultSelectionEventManager.SelectAction.DEFAULT;
                 NativeEvent nativeEvent = event.getNativeEvent();
-                if (BrowserEvents.CLICK.equals(nativeEvent.getType())) {
+                if (BrowserEvents.CLICK.equals(nativeEvent.getType()) && extendedPagedTable.isSelectionIgnoreColumn(event.getColumn())) {
                     // Ignore if the event didn't occur in the correct column.
-                    if (extendedPagedTable.isSelectionIgnoreColumn(event.getColumn())) {
-                        ret = DefaultSelectionEventManager.SelectAction.IGNORE;
-                    }
-                    //Extension for checkboxes
-                    Element target = nativeEvent.getEventTarget().cast();
-                    if ("input".equals(target.getTagName().toLowerCase())) {
-                        final InputElement input = target.cast();
-                        if ("checkbox".equals(input.getType().toLowerCase())) {
-                            // Synchronize the checkbox with the current selection state.
-                            final T domain = event.getValue();
-                            if (domain.isSelected()) {
-                                input.setChecked(false);
-                                setItemSelection(domain,
-                                                 false);
-                            } else {
-                                input.setChecked(true);
-                                setItemSelection(domain,
-                                                 true);
-                            }
-                            extendedPagedTable.redraw();
-                            ret = DefaultSelectionEventManager.SelectAction.IGNORE;
-                        }
-                    }
+                    return DefaultSelectionEventManager.SelectAction.IGNORE;
+                } else {
+                    return DefaultSelectionEventManager.SelectAction.DEFAULT;
                 }
-                return ret;
             }
         });
     }
@@ -196,18 +195,22 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
         this.selectionCallback = selectionCallback;
     }
 
-    public void setItemSelection(T item,
-                                 boolean newValue) {
-        if (item == null || selectedItems == null) {
+    public void setItemSelection(final T item,
+                                 final Boolean newValue) {
+        if (item == null) {
             return;
         }
-        boolean prevSelected = isItemSelected(item);
-        if (newValue && !prevSelected) {
-            selectedItems.add(item);
+
+        if (newValue == isItemSelected(item)) {
+            return;
         }
-        if (!newValue && prevSelected) {
+
+        if (newValue) {
+            selectedItems.add(item);
+        } else {
             selectedItems.remove(item);
         }
-        item.setSelected(newValue);
+
+        dataGrid.redrawHeaders();
     }
 }

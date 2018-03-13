@@ -58,10 +58,12 @@ public class ExtendedPagedTableTest {
         assertFalse(table.hasSelectedItems());
 
         GenericSummary gs = mock(GenericSummary.class);
-        when(gs.isSelected()).thenReturn(true,
-                                         false);
+
         when(dataGrid.getVisibleItems()).thenReturn(asList(gs,
                                                            gs));
+
+        table.setItemSelection(gs,
+                               true);
 
         assertTrue(table.hasSelectedItems());
     }
@@ -74,8 +76,7 @@ public class ExtendedPagedTableTest {
 
         table.deselectAllItems();
 
-        verify(gs,
-               times(2)).setSelected(false);
+        assertTrue(table.getSelectedItems().isEmpty());
     }
 
     @Test
@@ -129,27 +130,8 @@ public class ExtendedPagedTableTest {
     }
 
     @Test
-    public void testSetVisibleSelectedItems() {
-        GenericSummary gs_selected = mock(GenericSummary.class);
-        GenericSummary gs_not_selected = mock(GenericSummary.class);
-        List<GenericSummary> selectedItems = new ArrayList<>();
-        selectedItems.add(gs_selected);
-        table.setSelectedItems(selectedItems);
-
-        when(dataGrid.getVisibleItems()).thenReturn(asList(gs_selected,
-                                                           gs_not_selected));
-        table.setVisibleSelectedItems();
-        verify(gs_selected).setSelected(true);
-        verify(gs_not_selected).setSelected(false);
-    }
-
-
-    @Test
     public void testIsAllItemsSelected() {
         final GenericSummary gs = mock(GenericSummary.class);
-        when(gs.isSelected()).thenReturn(true,
-                                         true,
-                                         false);
 
         final List<GenericSummary> list1 = emptyList();
         final List<GenericSummary> list2 = asList(gs,
@@ -162,7 +144,15 @@ public class ExtendedPagedTableTest {
                                                     list3);
 
         assertFalse(table.isAllItemsSelected());
+
+        table.setItemSelection(gs,
+                               true);
+
         assertTrue(table.isAllItemsSelected());
+
+        table.setItemSelection(gs,
+                               false);
+
         assertFalse(table.isAllItemsSelected());
     }
 }

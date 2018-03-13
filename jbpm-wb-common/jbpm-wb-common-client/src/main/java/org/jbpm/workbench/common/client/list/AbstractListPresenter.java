@@ -67,14 +67,13 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
                                      int startRange,
                                      int totalRowCount,
                                      boolean isExact) {
-
-        getListView().hideBusyIndicator();
         dataProvider.updateRowCount(totalRowCount,
                                     isExact);
+
         dataProvider.updateRowData(startRange,
                                    instanceSummaries);
 
-        getListView().getListGrid().setVisibleSelectedItems();
+        getListView().hideBusyIndicator();
     }
 
     public void addDataDisplay(final HasData<T> display) {

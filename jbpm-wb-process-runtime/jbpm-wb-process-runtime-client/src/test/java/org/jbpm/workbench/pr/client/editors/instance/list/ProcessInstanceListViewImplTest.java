@@ -46,7 +46,7 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
     private GenericErrorSummaryCountCell cellMock;
 
     @Mock
-    private ManagedInstance<GenericErrorSummaryCountCell> cellInstance;
+    private ManagedInstance<GenericErrorSummaryCountCell> popoverCellInstance;
 
     @InjectMocks
     @Spy
@@ -92,6 +92,6 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
     @Override
     public void setupMocks() {
         super.setupMocks();
-        when(cellInstance.get()).thenReturn(cellMock);
+        when(popoverCellInstance.get()).thenReturn(cellMock);
     }
 }

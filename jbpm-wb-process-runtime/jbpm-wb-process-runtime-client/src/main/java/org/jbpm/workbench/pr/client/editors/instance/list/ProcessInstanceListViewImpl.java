@@ -18,14 +18,11 @@ package org.jbpm.workbench.pr.client.editors.instance.list;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
@@ -44,7 +41,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.ListTable;
-import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
+import org.jbpm.workbench.common.client.util.ConditionalAction;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.common.client.util.GenericErrorSummaryCountCell;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
@@ -100,10 +97,11 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     @Override
     public void initColumns(final ListTable<ProcessInstanceSummary> extendedPagedTable) {
         final ColumnMeta checkColumnMeta = initChecksColumn(extendedPagedTable);
-
-        Column<ProcessInstanceSummary, ?> actionsColumn = initActionsColumn();
+        ColumnMeta<ProcessInstanceSummary> actionsColumnMeta = initActionsColumn();
         Column<ProcessInstanceSummary, ?> errorCountColumn = initErrorCountColumn();
-        extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
+
+        extendedPagedTable.addSelectionIgnoreColumn(checkColumnMeta.getColumn());
+        extendedPagedTable.addSelectionIgnoreColumn(actionsColumnMeta.getColumn());
         extendedPagedTable.addSelectionIgnoreColumn(errorCountColumn);
 
         final List<ColumnMeta<ProcessInstanceSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessInstanceSummary>>();
@@ -143,7 +141,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                                           }),
                                          constants.State()));
         final Column<ProcessInstanceSummary, String> startColumn = createTextColumn(COLUMN_START,
-                                                                                   process -> DateUtils.getDateTimeStr(process.getStartTime()));
+                                                                                    process -> DateUtils.getDateTimeStr(process.getStartTime()));
         startColumn.setDefaultSortAscending(false);
         columnMetas.add(new ColumnMeta<>(startColumn,
                                          constants.Start_Date()));
@@ -155,8 +153,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                          constants.Correlation_Key()));
         columnMetas.add(new ColumnMeta<>(errorCountColumn,
                                          constants.Errors()));
-        columnMetas.add(new ColumnMeta<>(actionsColumn,
-                                         constants.Actions()));
+        columnMetas.add(actionsColumnMeta);
 
         List<GridColumnPreference> columnPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
 
@@ -173,10 +170,13 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         }
         extendedPagedTable.addColumns(columnMetas);
         extendedPagedTable.setColumnWidth(checkColumnMeta.getColumn(),
-                                          42,
+                                          CHECK_COLUMN_WIDTH,
                                           Style.Unit.PX);
         extendedPagedTable.setColumnWidth(errorCountColumn,
-                                          65,
+                                          ERROR_COLUMN_WIDTH,
+                                          Style.Unit.PX);
+        extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
+                                          ACTIONS_COLUMN_WIDTH,
                                           Style.Unit.PX);
         extendedPagedTable.getColumnSortList().push(startColumn);
     }
@@ -267,6 +267,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         bulkButton.setDataToggle(Toggle.DROPDOWN);
         bulkButton.getElement().getStyle().setMarginRight(5,
                                                           Style.Unit.PX);
+        bulkButton.setEnabled(false);
         bulkActions.add(bulkButton);
 
         final DropDownMenu bulkDropDown = GWT.create(DropDownMenu.class);
@@ -288,7 +289,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                   () -> {
                                       presenter.bulkAbort(extendedPagedTable.getSelectedItems());
                                       extendedPagedTable.deselectAllItems();
-                                      extendedPagedTable.redraw();
                                   });
             }
         });
@@ -299,8 +299,8 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             @Override
             public void onClick(ClickEvent event) {
                 presenter.bulkSignal(extendedPagedTable.getSelectedItems());
-                extendedPagedTable.deselectAllItems();
-                extendedPagedTable.redraw();
+                //Only clear model, view will refresh once popup is closed
+                extendedPagedTable.getSelectedItems().clear();
             }
         });
 
@@ -323,54 +323,51 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         return column;
     }
 
-    private Column<ProcessInstanceSummary, ProcessInstanceSummary> initActionsColumn() {
-        List<HasCell<ProcessInstanceSummary, ?>> cells = new LinkedList<HasCell<ProcessInstanceSummary, ?>>();
+    @Override
+    protected List<ConditionalAction<ProcessInstanceSummary>> getConditionalActions() {
+        return Arrays.asList(
 
-        cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
-                constants.Signal(),
-                processInstance -> presenter.signalProcessInstance(processInstance),
-                presenter.getSignalActionCondition()
-        ));
+                new ConditionalAction<>(
+                        constants.Signal(),
+                        processInstance -> presenter.signalProcessInstance(processInstance),
+                        presenter.getSignalActionCondition(),
+                        false
+                ),
 
-        cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
-                constants.Abort(),
-                processInstance -> {
-                    confirmPopup.show(constants.Abort_Confirmation(),
-                                      constants.Abort(),
-                                      constants.Abort_Process_Instance(),
-                                      () -> presenter.abortProcessInstance(processInstance.getDeploymentId(),
-                                                                           processInstance.getProcessInstanceId()));
-                },
-                presenter.getAbortActionCondition()
-        ));
+                new ConditionalAction<>(
+                        constants.Abort(),
+                        processInstance -> {
+                            confirmPopup.show(constants.Abort_Confirmation(),
+                                              constants.Abort(),
+                                              constants.Abort_Process_Instance(),
+                                              () -> presenter.abortProcessInstance(processInstance.getDeploymentId(),
+                                                                                   processInstance.getProcessInstanceId()));
+                        },
+                        presenter.getAbortActionCondition(),
+                        false
+                ),
 
-        cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
-                constants.ViewJobs(),
-                processInstance -> presenter.openJobsView(Long.toString(processInstance.getProcessInstanceId())),
-                presenter.getViewJobsActionCondition()
-        ));
+                new ConditionalAction<>(
+                        constants.ViewJobs(),
+                        processInstance -> presenter.openJobsView(Long.toString(processInstance.getProcessInstanceId())),
+                        presenter.getViewJobsActionCondition(),
+                        true
+                ),
 
-        cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
-                constants.ViewTasks(),
-                processInstance -> presenter.openTaskView(Long.toString(processInstance.getProcessInstanceId())),
-                presenter.getViewTasksActionCondition()
-        ));
+                new ConditionalAction<>(
+                        constants.ViewTasks(),
+                        processInstance -> presenter.openTaskView(Long.toString(processInstance.getProcessInstanceId())),
+                        presenter.getViewTasksActionCondition(),
+                        true
+                ),
 
-        cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
-                constants.ViewErrors(),
-                processInstance -> presenter.openErrorView(Long.toString(processInstance.getProcessInstanceId())),
-                presenter.getViewErrorsActionCondition()
-        ));
+                new ConditionalAction<>(
+                        constants.ViewErrors(),
+                        processInstance -> presenter.openErrorView(Long.toString(processInstance.getProcessInstanceId())),
+                        presenter.getViewErrorsActionCondition(),
+                        true
+                )
 
-        CompositeCell<ProcessInstanceSummary> cell = new CompositeCell<ProcessInstanceSummary>(cells);
-        Column<ProcessInstanceSummary, ProcessInstanceSummary> actionsColumn = new Column<ProcessInstanceSummary, ProcessInstanceSummary>(cell) {
-            @Override
-            public ProcessInstanceSummary getValue(ProcessInstanceSummary object) {
-                return object;
-            }
-        };
-        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
-
-        return actionsColumn;
+        );
     }
 }

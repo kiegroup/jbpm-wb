@@ -17,18 +17,17 @@
 package org.jbpm.workbench.common.client.menu;
 
 import elemental2.dom.HTMLElement;
+import org.jboss.errai.ioc.client.container.IOC;
 import org.uberfire.client.views.pfly.widgets.Button;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
-import static elemental2.dom.DomGlobal.document;
-
 public class PrimaryActionMenuBuilder implements MenuFactory.CustomMenuBuilder {
 
+    private boolean isOn = true;
     private Button button;
-    boolean isOn = true;
 
     public PrimaryActionMenuBuilder(final String label,
                                     final Command command) {
@@ -74,7 +73,7 @@ public class PrimaryActionMenuBuilder implements MenuFactory.CustomMenuBuilder {
         return new BaseMenuCustom<HTMLElement>() {
             @Override
             public HTMLElement build() {
-                return button;
+                return button.getElement();
             }
 
             @Override
@@ -92,7 +91,7 @@ public class PrimaryActionMenuBuilder implements MenuFactory.CustomMenuBuilder {
     private void initPrimaryActionButton(String label,
                                          String icon,
                                          String title) {
-        button = (Button) document.createElement("button");
+        button = IOC.getBeanManager().lookupBean(Button.class).newInstance();
         button.setType(Button.ButtonType.BUTTON);
         button.setButtonStyleType(Button.ButtonStyleType.PRIMARY);
         setupButton(label,
@@ -103,7 +102,7 @@ public class PrimaryActionMenuBuilder implements MenuFactory.CustomMenuBuilder {
     private void initPrimaryActionLink(String label,
                                        String icon,
                                        String title) {
-        button = (Button) document.createElement("button");
+        button = IOC.getBeanManager().lookupBean(Button.class).newInstance();
         button.setButtonStyleType(Button.ButtonStyleType.LINK);
         setupButton(label,
                     icon,
@@ -113,8 +112,8 @@ public class PrimaryActionMenuBuilder implements MenuFactory.CustomMenuBuilder {
     private void setupButton(String label,
                              String icon,
                              String title) {
-        while (button.hasChildNodes()) {
-            button.removeChild(button.lastChild);
+        while (button.getElement().hasChildNodes()) {
+            button.getElement().removeChild(button.getElement().lastChild);
         }
 
         if (label != null && !label.isEmpty()) {
@@ -125,7 +124,7 @@ public class PrimaryActionMenuBuilder implements MenuFactory.CustomMenuBuilder {
                            icon);
         }
         if (title != null && !title.isEmpty()) {
-            button.title = title;
+            button.getElement().title = title;
         }
     }
 

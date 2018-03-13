@@ -20,7 +20,7 @@ import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 
 public class ListTable<T extends GenericSummary> extends ExtendedPagedTable<T> {
 
-    public static final int ROW_HEIGHT_PX = 44;
+    public static final int ROW_HEIGHT_PX = 47;
 
     public ListTable(GridGlobalPreferences gridPreferences) {
         super(gridPreferences);

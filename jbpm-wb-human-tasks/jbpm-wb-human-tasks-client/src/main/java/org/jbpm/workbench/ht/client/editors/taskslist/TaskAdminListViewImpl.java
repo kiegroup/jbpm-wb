@@ -56,7 +56,7 @@ public class TaskAdminListViewImpl extends AbstractTaskListView<TaskAdminListPre
         columnMetas.add(new ColumnMeta<>(errorCountColumn,
                                          constants.Errors()));
         extendedPagedTable.setColumnWidth(errorCountColumn,
-                                          65,
+                                          ERROR_COLUMN_WIDTH,
                                           Style.Unit.PX);
     }
 

@@ -18,19 +18,17 @@ package org.jbpm.workbench.ht.client.editors.taskslist;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.view.client.CellPreviewEvent;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ListTable;
-import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
+import org.jbpm.workbench.common.client.util.ConditionalAction;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
@@ -75,8 +73,8 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     public void initColumns(ListTable<TaskSummary> extendedPagedTable) {
         initCellPreview(extendedPagedTable);
 
-        Column actionsColumn = initActionsColumn();
-        extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
+        ColumnMeta<TaskSummary> actionsColumnMeta = initActionsColumn();
+        extendedPagedTable.addSelectionIgnoreColumn(actionsColumnMeta.getColumn());
 
         List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
         columnMetas.add(new ColumnMeta<>(
@@ -152,8 +150,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         ));
         addNewColumn(extendedPagedTable,
                      columnMetas);
-        columnMetas.add(new ColumnMeta<>(actionsColumn,
-                                         constants.Actions()));
+        columnMetas.add(actionsColumnMeta);
 
         List<GridColumnPreference> columPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
         for (GridColumnPreference colPref : columPreferenceList) {
@@ -167,6 +164,10 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                                             true));
             }
         }
+
+        extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
+                                          ACTIONS_COLUMN_WIDTH,
+                                          Style.Unit.PX);
         extendedPagedTable.addColumns(columnMetas);
         extendedPagedTable.getColumnSortList().push(createdOnColumn);
     }
@@ -200,42 +201,35 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         }
     }
 
-    protected Column<TaskSummary, ?> initActionsColumn() {
-        List<HasCell<TaskSummary, ?>> cells = new LinkedList<HasCell<TaskSummary, ?>>();
+    @Override
+    protected List<ConditionalAction<TaskSummary>> getConditionalActions() {
+        return Arrays.asList(
 
-        cells.add(new ConditionalButtonActionCell<TaskSummary>(constants.Claim(),
-                                                               task -> presenter.claimTask(task),
-                                                               presenter.getClaimActionCondition()));
+                new ConditionalAction<TaskSummary>(constants.Claim(),
+                                                   task -> presenter.claimTask(task),
+                                                   presenter.getClaimActionCondition(),
+                                                   false),
 
-        cells.add(new ConditionalButtonActionCell<TaskSummary>(constants.Release(),
-                                                               task -> presenter.releaseTask(task),
-                                                               presenter.getReleaseActionCondition()));
+                new ConditionalAction<TaskSummary>(constants.Release(),
+                                                   task -> presenter.releaseTask(task),
+                                                   presenter.getReleaseActionCondition(),
+                                                   false),
 
-        cells.add(new ConditionalButtonActionCell<TaskSummary>(constants.Suspend(),
-                                                               task -> presenter.suspendTask(task),
-                                                               presenter.getSuspendActionCondition()));
+                new ConditionalAction<TaskSummary>(constants.Suspend(),
+                                                   task -> presenter.suspendTask(task),
+                                                   presenter.getSuspendActionCondition(),
+                                                   false),
 
-        cells.add(new ConditionalButtonActionCell<TaskSummary>(constants.Resume(),
-                                                               task -> presenter.resumeTask(task),
-                                                               presenter.getResumeActionCondition()));
+                new ConditionalAction<TaskSummary>(constants.Resume(),
+                                                   task -> presenter.resumeTask(task),
+                                                   presenter.getResumeActionCondition(),
+                                                   false),
 
-        cells.add(new ConditionalButtonActionCell<TaskSummary>(constants.ViewProcess(),
-                                                               task -> presenter.openProcessInstanceView(task.getProcessInstanceId().toString()),
-                                                               presenter.getProcessInstanceCondition()));
-
-        cells.add(new ConditionalButtonActionCell<TaskSummary>(constants.Open(),
-                                                               task -> presenter.selectTask(task),
-                                                               presenter.getCompleteActionCondition()));
-
-        CompositeCell<TaskSummary> cell = new CompositeCell<TaskSummary>(cells);
-        Column<TaskSummary, TaskSummary> actionsColumn = new Column<TaskSummary, TaskSummary>(cell) {
-            @Override
-            public TaskSummary getValue(TaskSummary object) {
-                return object;
-            }
-        };
-        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
-        return actionsColumn;
+                new ConditionalAction<TaskSummary>(constants.ViewProcess(),
+                                                   task -> presenter.openProcessInstanceView(task.getProcessInstanceId().toString()),
+                                                   presenter.getProcessInstanceCondition(),
+                                                   true)
+        );
     }
 
     protected boolean isColumnAdded(List<ColumnMeta<TaskSummary>> columnMetas,

@@ -78,7 +78,6 @@ public class AbstractListPresenterTest {
                                                 false);
         verify(dataProviderMock).updateRowData(0,
                                                instanceSummaries);
-        verify(extendedPagedTable).setVisibleSelectedItems();
     }
 
     @Test

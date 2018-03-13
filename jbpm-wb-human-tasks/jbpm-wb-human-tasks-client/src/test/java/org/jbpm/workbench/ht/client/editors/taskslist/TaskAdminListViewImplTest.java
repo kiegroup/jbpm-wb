@@ -56,7 +56,7 @@ public class TaskAdminListViewImplTest extends AbstractTaskListViewTest {
     private GenericErrorSummaryCountCell cellMock;
 
     @Mock
-    private ManagedInstance<GenericErrorSummaryCountCell> cellInstance;
+    private ManagedInstance<GenericErrorSummaryCountCell> popoverCellInstance;
 
     @Override
     public AbstractTaskListView getView() {
@@ -87,7 +87,7 @@ public class TaskAdminListViewImplTest extends AbstractTaskListViewTest {
     @Override
     public void setupMocks() {
         super.setupMocks();
-        when(cellInstance.get()).thenReturn(cellMock);
+        when(popoverCellInstance.get()).thenReturn(cellMock);
     }
 
     @Test

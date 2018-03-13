@@ -18,13 +18,10 @@ package org.jbpm.workbench.es.client.editors.errorlist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -41,7 +38,7 @@ import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.BooleanConverter;
-import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
+import org.jbpm.workbench.common.client.util.ConditionalAction;
 import org.jbpm.workbench.common.client.util.DateTimeConverter;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.client.util.ExecutionErrorTypeConverter;
@@ -108,6 +105,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
         bulkButton.setDataToggle(Toggle.DROPDOWN);
         bulkButton.getElement().getStyle().setMarginRight(5,
                                                           Style.Unit.PX);
+        bulkButton.setEnabled(false);
         bulkActions.add(bulkButton);
         final DropDownMenu bulkDropDown = GWT.create(DropDownMenu.class);
         bulkDropDown.addStyleName(Styles.DROPDOWN_MENU + "-right");
@@ -124,7 +122,6 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                               () -> {
                                   presenter.bulkAcknowledge(extendedPagedTable.getSelectedItems());
                                   extendedPagedTable.deselectAllItems();
-                                  extendedPagedTable.redraw();
                               });
         });
 
@@ -134,6 +131,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
     @Override
     public void initColumns(final ListTable<ExecutionErrorSummary> extendedPagedTable) {
         final ColumnMeta<ExecutionErrorSummary> checkColumnMeta = initChecksColumn(extendedPagedTable);
+        extendedPagedTable.addSelectionIgnoreColumn(checkColumnMeta.getColumn());
 
         final List<ColumnMeta<ExecutionErrorSummary>> columnMetas = new ArrayList<ColumnMeta<ExecutionErrorSummary>>();
 
@@ -171,8 +169,8 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                                                           errorSummary -> errorSummary.getActivityName()),
                                          constants.ActivityName()));
         final Column<ExecutionErrorSummary, String> errorDateColumn = createTextColumn(COLUMN_ERROR_DATE,
-                                                                                  errorSummary ->
-                                                                                          dateTimeConverter.toWidgetValue(errorSummary.getErrorDate()));
+                                                                                       errorSummary ->
+                                                                                               dateTimeConverter.toWidgetValue(errorSummary.getErrorDate()));
         errorDateColumn.setDefaultSortAscending(false);
         columnMetas.add(new ColumnMeta<>(errorDateColumn,
                                          constants.ErrorDate()));
@@ -183,57 +181,51 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                                                           errorSummary -> errorSummary.getErrorMessage()),
                                          constants.Message()));
 
-        Column<ExecutionErrorSummary, ExecutionErrorSummary> actionsColumn = initActionsColumn();
+        ColumnMeta<ExecutionErrorSummary> actionsColumnMeta = initActionsColumn();
 
-        extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
+        extendedPagedTable.addSelectionIgnoreColumn(actionsColumnMeta.getColumn());
 
-        ColumnMeta actionsColumnMeta = new ColumnMeta<>(actionsColumn,
-                                                        constants.Actions());
         columnMetas.add(actionsColumnMeta);
 
         extendedPagedTable.setColumnWidth(checkColumnMeta.getColumn(),
-                                          38,
+                                          CHECK_COLUMN_WIDTH,
                                           Style.Unit.PX);
         extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
-                                          340,
+                                          ACTIONS_COLUMN_WIDTH,
                                           Style.Unit.PX);
 
         extendedPagedTable.addColumns(columnMetas);
         extendedPagedTable.getColumnSortList().push(errorDateColumn);
     }
 
-    private Column<ExecutionErrorSummary, ExecutionErrorSummary> initActionsColumn() {
-        List<HasCell<ExecutionErrorSummary, ?>> cells = new LinkedList<HasCell<ExecutionErrorSummary, ?>>();
+    @Override
+    protected List<ConditionalAction<ExecutionErrorSummary>> getConditionalActions() {
+        return Arrays.asList(
 
-        cells.add(new ConditionalButtonActionCell<ExecutionErrorSummary>(
-                constants.Acknowledge(),
-                errorSummary -> presenter.acknowledgeExecutionError(errorSummary.getErrorId(),
-                                                                    errorSummary.getDeploymentId()),
-                presenter.getAcknowledgeActionCondition()));
+                new ConditionalAction<>(
+                        constants.Acknowledge(),
+                        errorSummary -> presenter.acknowledgeExecutionError(errorSummary.getErrorId(),
+                                                                            errorSummary.getDeploymentId()),
+                        presenter.getAcknowledgeActionCondition(),
+                        false),
 
-        cells.add(new ConditionalButtonActionCell<ExecutionErrorSummary>(
-                constants.ViewProcessInstance(),
-                errorSummary -> presenter.goToProcessInstance(errorSummary),
-                presenter.getViewProcessInstanceActionCondition()));
+                new ConditionalAction<>(
+                        constants.ViewProcessInstance(),
+                        errorSummary -> presenter.goToProcessInstance(errorSummary),
+                        presenter.getViewProcessInstanceActionCondition(),
+                        true),
 
-        cells.add(new ConditionalButtonActionCell<ExecutionErrorSummary>(
-                constants.ViewJob(),
-                errorSummary -> presenter.goToJob(errorSummary),
-                presenter.getViewJobActionCondition()));
+                new ConditionalAction<>(
+                        constants.ViewJob(),
+                        errorSummary -> presenter.goToJob(errorSummary),
+                        presenter.getViewJobActionCondition(),
+                        true),
 
-        cells.add(new ConditionalButtonActionCell<ExecutionErrorSummary>(
-                constants.ViewTask(),
-                errorSummary -> presenter.goToTask(errorSummary),
-                presenter.getViewTaskActionCondition()));
-
-        CompositeCell<ExecutionErrorSummary> cell = new CompositeCell<ExecutionErrorSummary>(cells);
-        Column<ExecutionErrorSummary, ExecutionErrorSummary> actionsColumn = new Column<ExecutionErrorSummary, ExecutionErrorSummary>(cell) {
-            @Override
-            public ExecutionErrorSummary getValue(ExecutionErrorSummary object) {
-                return object;
-            }
-        };
-        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
-        return actionsColumn;
+                new ConditionalAction<>(
+                        constants.ViewTask(),
+                        errorSummary -> presenter.goToTask(errorSummary),
+                        presenter.getViewTaskActionCondition(),
+                        true)
+        );
     }
 }

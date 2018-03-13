@@ -26,9 +26,9 @@ import com.google.common.collect.Iterables;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.Header;
+import com.google.gwt.user.cellview.client.TextHeader;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -36,9 +36,13 @@ import com.google.gwt.user.client.ui.Widget;
 import elemental2.dom.HTMLDivElement;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilters;
+import org.jbpm.workbench.common.client.resources.i18n.Constants;
+import org.jbpm.workbench.common.client.util.ConditionalAction;
+import org.jbpm.workbench.common.client.util.ConditionalKebabActionCell;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
@@ -54,9 +58,15 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     public static final String COL_ID_SELECT = "Select";
     public static final String COL_ID_ACTIONS = "Actions";
+    public static final int ACTIONS_COLUMN_WIDTH = 120;
+    public static final int CHECK_COLUMN_WIDTH = 38;
+    public static final int ERROR_COLUMN_WIDTH = 65;
 
     @Inject
     protected Event<NotificationEvent> notification;
+
+    @Inject
+    protected ManagedInstance<ConditionalKebabActionCell> conditionalKebabActionCell;
 
     @Inject
     protected PlaceManager placeManager;
@@ -84,9 +94,9 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     protected void controlBulkOperations(final ListTable<T> extendedPagedTable) {
-        Scheduler.get().scheduleDeferred(() -> enableWidgets(Iterables.getFirst(extendedPagedTable.getRightActionsToolbar(),
-                                                                                null),
-                                                             extendedPagedTable.hasSelectedItems()));
+        enableWidgets(Iterables.getFirst(extendedPagedTable.getRightActionsToolbar(),
+                                         null),
+                      extendedPagedTable.hasSelectedItems());
     }
 
     protected void enableWidgets(final Widget widget,
@@ -114,7 +124,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         final ListTable<T> newListGrid = new ListTable<T>(pref);
         newListGrid.setShowLastPagerButton(false);
         newListGrid.setShowFastFordwardPagerButton(false);
-        newListGrid.dataGrid.addRedrawHandler(() -> controlBulkOperations(newListGrid));
         newListGrid.setPreferencesService(userPreferencesService);
         userPreferencesService.call((GridPreferencesStore preferencesStore) -> {
             if (preferencesStore == null) {
@@ -199,11 +208,15 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                                      false);
         Column<T, Boolean> checkColumn = new Column<T, Boolean>(checkboxCell) {
             @Override
-            public Boolean getValue(T pis) {
+            public Boolean getValue(T item) {
                 // Get the value from the selection model.
-                return pis.isSelected();
+                return extendedPagedTable.isItemSelected(item);
             }
         };
+
+        checkColumn.setSortable(false);
+        checkColumn.setDataStoreName(COL_ID_SELECT);
+        checkColumn.setCellStyleNames("kie-datatable-select");
 
         Header<Boolean> selectPageHeader = new Header<Boolean>(checkboxCell) {
             @Override
@@ -213,19 +226,53 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         };
 
         selectPageHeader.setUpdater(value -> {
-            getListGrid().getVisibleItems().forEach(pis -> extendedPagedTable.setItemSelection(pis,
-                                                                                               value));
-            getListGrid().redraw();
+            if (value) {
+                extendedPagedTable.selectAllItems();
+            } else {
+                extendedPagedTable.deselectAllItems();
+            }
+            controlBulkOperations(extendedPagedTable);
         });
         selectPageHeader.setHeaderStyleNames("kie-datatable-select");
 
-        checkColumn.setSortable(false);
-        checkColumn.setDataStoreName(COL_ID_SELECT);
-        checkColumn.setCellStyleNames("kie-datatable-select");
+        checkColumn.setFieldUpdater((int index,
+                                     T model,
+                                     Boolean value) -> {
+            extendedPagedTable.setItemSelection(model,
+                                                value);
+
+            controlBulkOperations(extendedPagedTable);
+        });
+
         ColumnMeta<T> checkColMeta = new ColumnMeta<T>(checkColumn,
                                                        "");
         checkColMeta.setHeader(selectPageHeader);
         return checkColMeta;
+    }
+
+    protected abstract List<ConditionalAction<T>> getConditionalActions();
+
+    protected ColumnMeta<T> initActionsColumn() {
+        final ConditionalKebabActionCell<T> cell = conditionalKebabActionCell.get();
+
+        cell.setActions(getConditionalActions());
+
+        Column<T, T> actionsColumn = new Column<T, T>(cell) {
+            @Override
+            public T getValue(T object) {
+                return object;
+            }
+        };
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
+        actionsColumn.setCellStyleNames("kie-table-view-pf-actions text-center");
+
+        Header header = new TextHeader(Constants.INSTANCE.Actions());
+        header.setHeaderStyleNames("text-center");
+
+        final ColumnMeta<T> actionsColMeta = new ColumnMeta<T>(actionsColumn,
+                                                               "");
+        actionsColMeta.setHeader(header);
+        return actionsColMeta;
     }
 
     @Override

@@ -20,6 +20,8 @@ import java.util.List;
 
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.view.client.AsyncDataProvider;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jbpm.workbench.common.client.util.ConditionalKebabActionCell;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.junit.Before;
@@ -59,6 +61,9 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
     @Spy
     protected GridPreferencesStore gridPreferencesStore;
 
+    @Mock
+    protected ManagedInstance<ConditionalKebabActionCell> conditionalKebabActionCell;
+
     protected abstract AbstractMultiGridView getView();
 
     protected abstract AbstractMultiGridPresenter getPresenter();
@@ -76,6 +81,7 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
         when(getPresenter().getDataProvider()).thenReturn(dataProviderMock);
         when(userPreferencesServiceMock.loadUserPreferences(anyString(),
                                                             eq(UserPreferencesType.GRIDPREFERENCES))).thenReturn(new GridPreferencesStore(new GridGlobalPreferences()));
+        when(conditionalKebabActionCell.get()).thenReturn(mock(ConditionalKebabActionCell.class));
     }
 
     @Test

@@ -18,19 +18,17 @@ package org.jbpm.workbench.es.client.editors.requestlist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.HasCell;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ListTable;
-import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
+import org.jbpm.workbench.common.client.util.ConditionalAction;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.client.util.JobStatusConverter;
@@ -66,8 +64,8 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
     @Override
     public void initColumns(final ListTable extendedPagedTable) {
-        Column actionsColumn = initActionsColumn();
-        extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
+        ColumnMeta<RequestSummary> actionsColumnMeta = initActionsColumn();
+        extendedPagedTable.addSelectionIgnoreColumn(actionsColumnMeta.getColumn());
 
         final List<ColumnMeta<RequestSummary>> columnMetas = new ArrayList<ColumnMeta<RequestSummary>>();
         columnMetas.add(new ColumnMeta<>(createNumberColumn(COLUMN_ID,
@@ -85,7 +83,7 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         ),
                                          constants.Status()));
         final Column<RequestSummary, String> timestampColumn = createTextColumn(COLUMN_TIMESTAMP,
-                                                                           req -> DateUtils.getDateTimeStr(req.getTime()));
+                                                                                req -> DateUtils.getDateTimeStr(req.getTime()));
         timestampColumn.setDefaultSortAscending(false);
         columnMetas.add(new ColumnMeta<>(timestampColumn,
                                          constants.Due_On()));
@@ -98,9 +96,11 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
                                                           req -> req.getProcessInstanceDescription()),
                                          constants.Process_Instance_Description()));
-        columnMetas.add(new ColumnMeta<>(actionsColumn,
-                                         constants.Actions()));
+        columnMetas.add(actionsColumnMeta);
 
+        extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
+                                          ACTIONS_COLUMN_WIDTH,
+                                          Style.Unit.PX);
         extendedPagedTable.addColumns(columnMetas);
         extendedPagedTable.getColumnSortList().push(timestampColumn);
     }
@@ -111,44 +111,38 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         extendedPagedTable.setSelectionCallback((job) -> presenter.selectJob(job));
     }
 
-    private Column<RequestSummary, RequestSummary> initActionsColumn() {
-        List<HasCell<RequestSummary, ?>> cells = new LinkedList<HasCell<RequestSummary, ?>>();
+    @Override
+    protected List<ConditionalAction<RequestSummary>> getConditionalActions() {
+        return Arrays.asList(
 
-        cells.add(new ConditionalButtonActionCell<RequestSummary>(
-                constants.Cancel(),
-                job -> {
-                    if (Window.confirm(constants.CancelJob())) {
-                        presenter.cancelRequest(job.getDeploymentId(),
-                                                job.getJobId());
-                    }
-                },
-                presenter.getCancelActionCondition()));
+                new ConditionalAction<>(
+                        constants.Cancel(),
+                        job -> {
+                            if (Window.confirm(constants.CancelJob())) {
+                                presenter.cancelRequest(job.getDeploymentId(),
+                                                        job.getJobId());
+                            }
+                        },
+                        presenter.getCancelActionCondition(),
+                        false),
 
-        cells.add(new ConditionalButtonActionCell<RequestSummary>(
-                constants.Requeue(),
-                job -> {
-                    if (Window.confirm(constants.RequeueJob())) {
-                        presenter.requeueRequest(job.getDeploymentId(),
-                                                 job.getJobId());
-                    }
-                },
-                presenter.getRequeueActionCondition()));
+                new ConditionalAction<>(
+                        constants.Requeue(),
+                        job -> {
+                            if (Window.confirm(constants.RequeueJob())) {
+                                presenter.requeueRequest(job.getDeploymentId(),
+                                                         job.getJobId());
+                            }
+                        },
+                        presenter.getRequeueActionCondition(),
+                        false),
 
-        cells.add(new ConditionalButtonActionCell<RequestSummary>(
-                constants.ViewProcessInstance(),
-                job -> {
-                    presenter.openProcessInstanceView(Long.toString(job.getProcessInstanceId()));
-                },
-                presenter.getViewProcessActionCondition()));
-
-        CompositeCell<RequestSummary> cell = new CompositeCell<RequestSummary>(cells);
-        Column<RequestSummary, RequestSummary> actionsColumn = new Column<RequestSummary, RequestSummary>(cell) {
-            @Override
-            public RequestSummary getValue(RequestSummary object) {
-                return object;
-            }
-        };
-        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
-        return actionsColumn;
+                new ConditionalAction<>(
+                        constants.ViewProcessInstance(),
+                        job -> {
+                            presenter.openProcessInstanceView(Long.toString(job.getProcessInstanceId()));
+                        },
+                        presenter.getViewProcessActionCondition(),
+                        true));
     }
 }

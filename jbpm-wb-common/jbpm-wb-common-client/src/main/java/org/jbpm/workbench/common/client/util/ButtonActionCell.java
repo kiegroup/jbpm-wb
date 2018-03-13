@@ -33,6 +33,8 @@ public class ButtonActionCell<T> implements HasCell<T, T> {
 
     private String text;
 
+    private ButtonSize size;
+
     public ButtonActionCell(final ActionCell.Delegate<T> delegate) {
         this("",
              delegate);
@@ -40,7 +42,16 @@ public class ButtonActionCell<T> implements HasCell<T, T> {
 
     public ButtonActionCell(final String text,
                             final ActionCell.Delegate<T> delegate) {
+        this(text,
+             delegate,
+             ButtonSize.SMALL);
+    }
+
+    public ButtonActionCell(final String text,
+                            final ActionCell.Delegate<T> delegate,
+                            final ButtonSize size) {
         this.text = text;
+        this.size = size;
         this.cell = new ActionCell<T>(text,
                                       delegate) {
             @Override
@@ -62,7 +73,7 @@ public class ButtonActionCell<T> implements HasCell<T, T> {
         btn.setText(getText(value));
         btn.setTitle(getText(value));
         btn.setType(ButtonType.DEFAULT);
-        btn.setSize(ButtonSize.SMALL);
+        btn.setSize(size);
         btn.getElement().getStyle().setMarginRight(5,
                                                    Style.Unit.PX);
         mysb.appendHtmlConstant(btn.getElement().getString());
