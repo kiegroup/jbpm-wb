@@ -24,9 +24,9 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.workbench.df.client.filter.SavedFilter;
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.df.client.filter.SavedFilter;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
@@ -56,8 +56,8 @@ public class TaskListFilterSettingsManager extends AbstractTaskListFilterSetting
     }
 
     @Override
-    protected void loadSavedFiltersFromPreferences(final MultiGridPreferencesStore store,
-                                                   final Consumer<List<SavedFilter>> savedFiltersConsumer) {
+    public void loadSavedFiltersFromPreferences(final MultiGridPreferencesStore store,
+                                                final Consumer<List<SavedFilter>> savedFiltersConsumer) {
         final ArrayList<String> existingGrids = new ArrayList<>(store.getGridsId());
 
         //Remove old Admin tab in case still in the user preferences

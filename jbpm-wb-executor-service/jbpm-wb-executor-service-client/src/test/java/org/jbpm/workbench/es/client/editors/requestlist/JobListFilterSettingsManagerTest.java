@@ -14,75 +14,71 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.ht.client.editors.taskslist;
+package org.jbpm.workbench.es.client.editors.requestlist;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.df.client.filter.FilterSettingsJSONMarshaller;
 import org.jbpm.workbench.df.client.filter.SavedFilter;
-import org.jbpm.workbench.ht.client.resources.i18n.Constants;
+import org.jbpm.workbench.es.client.i18n.Constants;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
+import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
+import org.uberfire.mocks.CallerMock;
 
-import static org.jbpm.workbench.ht.client.editors.taskslist.TaskListFilterSettingsManager.TAB_ADMIN;
-import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_USER_DATASET;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class TaskListFilterSettingsManagerTest extends AbstractTaskListFilterSettingsManagerTest {
+public class JobListFilterSettingsManagerTest {
+
+    @Mock
+    UserPreferencesService userPreferencesService;
+
+    @Mock
+    FilterSettingsJSONMarshaller marshaller;
+
+    Caller<UserPreferencesService> preferencesService;
 
     @InjectMocks
-    TaskListFilterSettingsManager manager;
+    JobListFilterSettingsManager manager;
 
-    @Override
-    public AbstractTaskListFilterSettingsManager getFilterSettingsManager() {
-        return manager;
-    }
-
-    @Override
-    public String getDataSetId() {
-        return HUMAN_TASKS_WITH_USER_DATASET;
-    }
-
-    @Test
-    public void testLoadPreferencesRemovingAdminTab() {
-        final MultiGridPreferencesStore pref = new MultiGridPreferencesStore();
-        pref.getGridsId().add(TAB_ADMIN);
-
-        manager.loadSavedFiltersFromPreferences(pref,
-                                                null);
-
-        ArgumentCaptor<MultiGridPreferencesStore> captor = ArgumentCaptor.forClass(MultiGridPreferencesStore.class);
-        verify(preferencesService,
-               times(2)).saveUserPreferences(captor.capture());
-
-        assertFalse(captor.getAllValues().get(0).getGridsId().contains(TAB_ADMIN));
+    @Before
+    public void init() {
+        preferencesService = new CallerMock<>(userPreferencesService);
+        manager.setPreferencesService(preferencesService);
     }
 
     @Test
     public void testDefaultFilters() {
         Consumer<List<SavedFilter>> callback = filters -> {
-            assertEquals(4,
+            assertEquals(6,
                          filters.size());
-            assertEquals(Constants.INSTANCE.Active(),
+            assertEquals(Constants.INSTANCE.Queued(),
                          filters.get(0).getName());
-            assertEquals(Constants.INSTANCE.Personal(),
+            assertEquals(Constants.INSTANCE.Running(),
                          filters.get(1).getName());
-            assertEquals(Constants.INSTANCE.Group(),
+            assertEquals(Constants.INSTANCE.Retrying(),
                          filters.get(2).getName());
-            assertEquals(Constants.INSTANCE.All(),
+            assertEquals(Constants.INSTANCE.Error(),
                          filters.get(3).getName());
+            assertEquals(Constants.INSTANCE.Completed(),
+                         filters.get(4).getName());
+            assertEquals(Constants.INSTANCE.Canceled(),
+                         filters.get(5).getName());
         };
 
         final MultiGridPreferencesStore store = new MultiGridPreferencesStore();
         manager.loadSavedFiltersFromPreferences(store,
                                                 callback);
 
-        verify(preferencesService).saveUserPreferences(store);
+        verify(userPreferencesService).saveUserPreferences(store);
     }
 }

@@ -34,7 +34,7 @@ import org.uberfire.mvp.Commands;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
-public abstract class SavedFiltersPresenter implements RestoreDefaultFiltersMenuBuilder.SupportsRestoreDefaultFilters {
+public class SavedFiltersPresenter implements RestoreDefaultFiltersMenuBuilder.SupportsRestoreDefaultFilters {
 
     private final Constants constants = Constants.INSTANCE;
 

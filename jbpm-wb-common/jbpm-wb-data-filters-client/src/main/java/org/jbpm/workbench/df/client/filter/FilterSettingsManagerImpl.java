@@ -132,8 +132,8 @@ public abstract class FilterSettingsManagerImpl implements FilterSettingsManager
         preferencesService.call(r -> callback.execute()).saveUserPreferences(store);
     }
 
-    protected void loadSavedFiltersFromPreferences(final MultiGridPreferencesStore store,
-                                                   final Consumer<List<SavedFilter>> savedFiltersConsumer) {
+    public void loadSavedFiltersFromPreferences(final MultiGridPreferencesStore store,
+                                                final Consumer<List<SavedFilter>> savedFiltersConsumer) {
         if (store.getGridsId().isEmpty()) {
             final List<FilterSettings> defaultFilters = initDefaultFilters();
             defaultFilters.forEach(f -> addFilterToPreferencesStore(f,

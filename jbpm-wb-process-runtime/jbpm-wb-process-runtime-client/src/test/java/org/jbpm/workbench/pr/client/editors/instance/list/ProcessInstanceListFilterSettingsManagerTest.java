@@ -16,6 +16,9 @@
 
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetOpType;
@@ -26,12 +29,19 @@ import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.group.DataSetGroup;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.dashbuilder.displayer.DisplayerType;
+import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsJSONMarshaller;
+import org.jbpm.workbench.df.client.filter.SavedFilter;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
+import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
+import org.uberfire.mocks.CallerMock;
 
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.junit.Assert.*;
@@ -41,10 +51,41 @@ import static org.mockito.Mockito.*;
 public class ProcessInstanceListFilterSettingsManagerTest {
 
     @Mock
+    UserPreferencesService userPreferencesService;
+
+    Caller<UserPreferencesService> preferencesService;
+
+    @Mock
     FilterSettingsJSONMarshaller marshaller;
 
     @InjectMocks
     ProcessInstanceListFilterSettingsManager manager;
+
+    @Before
+    public void init() {
+        preferencesService = new CallerMock<>(userPreferencesService);
+        manager.setPreferencesService(preferencesService);
+    }
+
+    @Test
+    public void testDefaultFilters() {
+        Consumer<List<SavedFilter>> callback = filters -> {
+            assertEquals(3,
+                         filters.size());
+            assertEquals(Constants.INSTANCE.Active(),
+                         filters.get(0).getName());
+            assertEquals(Constants.INSTANCE.Completed(),
+                         filters.get(1).getName());
+            assertEquals(Constants.INSTANCE.Aborted(),
+                         filters.get(2).getName());
+        };
+
+        final MultiGridPreferencesStore store = new MultiGridPreferencesStore();
+        manager.loadSavedFiltersFromPreferences(store,
+                                                callback);
+
+        verify(userPreferencesService).saveUserPreferences(store);
+    }
 
     /**
      * Test Filter Settings migration from String based to builder class

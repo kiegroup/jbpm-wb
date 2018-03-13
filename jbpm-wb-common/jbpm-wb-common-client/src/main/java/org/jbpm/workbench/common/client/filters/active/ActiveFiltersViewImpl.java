@@ -99,13 +99,17 @@ public class ActiveFiltersViewImpl implements ActiveFiltersView {
         });
 
         saveFilterPopover = jQueryPopover.wrap(this.saveFilter);
-        saveFilterPopoverView.setCancelCallback(() -> closeSaveFilter());
-        saveFilterPopoverView.setSaveCallback(name -> saveFilter(name));
+        setSaveFilterPopoverCallback();
         final PopoverOptions popoverOptions = new PopoverOptions();
         popoverOptions.setContent(e -> saveFilterPopoverView.getElement());
         saveFilterPopover.popover(popoverOptions);
         saveFilterPopover.addShowListener(() -> saveFilterPopoverView.onOpen());
         saveFilterPopover.addShownListener(() -> saveFilterPopoverView.onShow());
+    }
+
+    protected void setSaveFilterPopoverCallback() {
+        saveFilterPopoverView.setCancelCallback(() -> closeSaveFilter());
+        saveFilterPopoverView.setSaveCallback(name -> saveFilter(name));
     }
 
     @PreDestroy

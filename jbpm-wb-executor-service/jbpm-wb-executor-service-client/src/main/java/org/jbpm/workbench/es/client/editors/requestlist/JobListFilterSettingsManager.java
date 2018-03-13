@@ -59,7 +59,7 @@ public class JobListFilterSettingsManager extends FilterSettingsManagerImpl {
     }
 
     @Override
-    protected void loadSavedFiltersFromPreferences(final MultiGridPreferencesStore store,
+    public void loadSavedFiltersFromPreferences(final MultiGridPreferencesStore store,
                                                    final Consumer<List<SavedFilter>> savedFiltersConsumer) {
         final ArrayList<String> existingGrids = new ArrayList<>(store.getGridsId());
 

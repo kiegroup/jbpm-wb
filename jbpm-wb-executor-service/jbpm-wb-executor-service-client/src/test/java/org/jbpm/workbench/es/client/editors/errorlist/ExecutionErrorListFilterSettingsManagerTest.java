@@ -14,61 +14,65 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.ht.client.editors.taskslist;
+package org.jbpm.workbench.es.client.editors.errorlist;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.df.client.filter.FilterSettingsJSONMarshaller;
 import org.jbpm.workbench.df.client.filter.SavedFilter;
-import org.jbpm.workbench.ht.client.resources.i18n.Constants;
+import org.jbpm.workbench.es.client.i18n.Constants;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
+import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
+import org.uberfire.mocks.CallerMock;
 
-import static org.jbpm.workbench.ht.model.TaskDataSetConstants.COLUMN_ERROR_COUNT;
-import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_ADMIN_DATASET;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class TaskAdminListFilterSettingsManagerTest extends AbstractTaskListFilterSettingsManagerTest {
+public class ExecutionErrorListFilterSettingsManagerTest {
+
+    @Mock
+    UserPreferencesService userPreferencesService;
+
+    @Mock
+    FilterSettingsJSONMarshaller marshaller;
+
+    Caller<UserPreferencesService> preferencesService;
 
     @InjectMocks
-    TaskAdminListFilterSettingsManager manager;
+    ExecutionErrorListFilterSettingsManager manager;
 
-    @Override
-    public AbstractTaskListFilterSettingsManager getFilterSettingsManager() {
-        return manager;
-    }
-
-    @Override
-    public String getDataSetId() {
-        return HUMAN_TASKS_WITH_ADMIN_DATASET;
-    }
-
-    @Override
-    protected List<String> getDataSetExpectedColumns() {
-        final List<String> dataSetExpectedColumns = new ArrayList<>(super.getDataSetExpectedColumns());
-        dataSetExpectedColumns.add(COLUMN_ERROR_COUNT);
-        return dataSetExpectedColumns;
+    @Before
+    public void init() {
+        preferencesService = new CallerMock<>(userPreferencesService);
+        manager.setPreferencesService(preferencesService);
     }
 
     @Test
     public void testDefaultFilters() {
         Consumer<List<SavedFilter>> callback = filters -> {
-            assertEquals(1,
+            assertEquals(3,
                          filters.size());
-            assertEquals(Constants.INSTANCE.Task_Admin(),
+            assertEquals(Constants.INSTANCE.All(),
                          filters.get(0).getName());
+            assertEquals(Constants.INSTANCE.New(),
+                         filters.get(1).getName());
+            assertEquals(Constants.INSTANCE.Acknowledged(),
+                         filters.get(2).getName());
         };
 
         final MultiGridPreferencesStore store = new MultiGridPreferencesStore();
         manager.loadSavedFiltersFromPreferences(store,
                                                 callback);
 
-        verify(preferencesService).saveUserPreferences(store);
+        verify(userPreferencesService).saveUserPreferences(store);
     }
 }
