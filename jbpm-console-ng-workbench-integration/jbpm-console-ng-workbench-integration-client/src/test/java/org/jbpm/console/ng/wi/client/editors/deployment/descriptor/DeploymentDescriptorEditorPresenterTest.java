@@ -54,11 +54,6 @@ public class DeploymentDescriptorEditorPresenterTest {
                 ddEditorService = new CallerMock<>(DeploymentDescriptorEditorPresenterTest.this.ddEditorService);
                 versionRecordManager = mock(VersionRecordManager.class);
             }
-
-            @Override
-            protected void notifyValidationSuccess() {
-
-            }
         };
     }
 
