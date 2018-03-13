@@ -61,6 +61,8 @@ public class DataSetDefsBootstrap {
                             "log.correlationKey, " +
                             "log.externalId, " +
                             "log.processInstanceDescription, " +
+                            "log.sla_due_date, " +
+                            "log.slaCompliance, " +
                             "COALESCE(info.lastModificationDate, log.end_date) as lastModificationDate, " +
                             "(select COUNT(errInfo.id) " +
                                 "from " +
@@ -90,7 +92,9 @@ public class DataSetDefsBootstrap {
                 .label(COLUMN_PROCESS_NAME)
                 .label(COLUMN_CORRELATION_KEY)
                 .label(COLUMN_EXTERNAL_ID)
-                .label(COLUMN_PROCESS_INSTANCE_DESCRIPTION)
+                .label(COLUMN_PROCESS_INSTANCE_DESCRIPTION)                
+                .date(COLUMN_SLA_DUE_DATE)
+                .number(COLUMN_SLA_COMPLIANCE)
                 .date(COLUMN_LAST_MODIFICATION_DATE)
                 .number(COLUMN_ERROR_COUNT)
                 .buildDef();

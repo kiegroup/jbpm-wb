@@ -35,6 +35,8 @@ public final class ProcessInstanceDataSetConstants {
     public static final String COLUMN_EXTERNAL_ID = "externalId";
     public static final String COLUMN_PROCESS_INSTANCE_DESCRIPTION = "processInstanceDescription";
     public static final String COLUMN_LAST_MODIFICATION_DATE = "lastModificationDate";
+    public static final String COLUMN_SLA_DUE_DATE = "sla_due_date";
+    public static final String COLUMN_SLA_COMPLIANCE = "slaCompliance";
     public static final String COLUMN_ERROR_COUNT = "errorCount";
     public static final String PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX = "DS_ProcessInstancesWithVariablesIncludedGrid";
     public static final String PROCESS_INSTANCE_ID = "processInstanceId";
