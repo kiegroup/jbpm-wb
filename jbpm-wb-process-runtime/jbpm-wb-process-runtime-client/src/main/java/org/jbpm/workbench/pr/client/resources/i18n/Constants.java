@@ -284,4 +284,6 @@ public interface Constants extends Messages {
     String SlaCompliance();
     
     String SlaDueDate();
+
+    String Process_Diagram_Not_Found();
 }

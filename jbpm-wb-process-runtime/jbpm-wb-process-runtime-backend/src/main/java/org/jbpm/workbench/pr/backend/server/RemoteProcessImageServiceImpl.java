@@ -35,8 +35,8 @@ public class RemoteProcessImageServiceImpl extends AbstractKieServerService impl
                                                       containerId,
                                                       UIServicesClient.class);
 
-        return uiServicesClient.getProcessInstanceImage(containerId,
-                                                        processInstanceId);
+        return removeActionsFromSVG(uiServicesClient.getProcessInstanceImage(containerId,
+                                                                             processInstanceId));
     }
 
     @Override
@@ -47,7 +47,16 @@ public class RemoteProcessImageServiceImpl extends AbstractKieServerService impl
                                                       containerId,
                                                       UIServicesClient.class);
 
-        return uiServicesClient.getProcessImage(containerId,
-                                                processId);
+        return removeActionsFromSVG(uiServicesClient.getProcessImage(containerId,
+                                                                     processId));
+    }
+
+    protected String removeActionsFromSVG(final String originalHTML) {
+        if (originalHTML == null) {
+            return null;
+        }
+
+        return originalHTML.replaceAll("onclick=\".*\"|onmouseover=\".*\"",
+                                       "");
     }
 }

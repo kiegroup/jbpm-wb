@@ -16,18 +16,12 @@
 
 package org.jbpm.workbench.pr.client.editors.diagram;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.RequiresResize;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
@@ -37,38 +31,29 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.ext.widgets.common.client.common.HasBusyIndicator;
 
 @Dependent
-public class ProcessDiagramPresenter extends Composite implements RequiresResize {
+public class ProcessDiagramPresenter {
 
     @Inject
-    private ProcessDiagramWidgetView designerWidget;
+    private ProcessDiagramWidgetView view;
 
-    @Inject
     private Caller<ProcessImageService> processImageService;
 
-    private FlowPanel container = new FlowPanel();
+    private Constants constants = Constants.INSTANCE;
 
-    private Constants constants = GWT.create(Constants.class);
-
-    @PostConstruct
-    public void init() {
-        container.clear();
-        container.add(designerWidget);
+    @Inject
+    public void setProcessImageService(final Caller<ProcessImageService> processImageService) {
+        this.processImageService = processImageService;
     }
 
     public void onProcessInstanceSelectionEvent(@Observes ProcessInstanceSelectionEvent event) {
         String containerId = event.getDeploymentId();
-        String processInstanceId = String.valueOf(event.getProcessInstanceId());
+        Long processInstanceId = event.getProcessInstanceId();
         String serverTemplateId = event.getServerTemplateId();
 
-        if (processInstanceId != null && !processInstanceId.isEmpty()) {
-            processImageService.call(new RemoteCallback<String>() {
-                @Override
-                public void callback(final String svgContent) {
-                    designerWidget.displayImage(svgContent);
-                }
-            }).getProcessInstanceDiagram(serverTemplateId,
-                                         containerId,
-                                         Long.parseLong(processInstanceId));
+        if (processInstanceId != null) {
+            processImageService.call((String svgContent) -> displayImage(svgContent)).getProcessInstanceDiagram(serverTemplateId,
+                                                                                                                containerId,
+                                                                                                                processInstanceId);
         }
     }
 
@@ -76,14 +61,17 @@ public class ProcessDiagramPresenter extends Composite implements RequiresResize
         String containerId = event.getDeploymentId();
         String serverTemplateId = event.getServerTemplateId();
         String processId = event.getProcessId();
-        processImageService.call(new RemoteCallback<String>() {
-            @Override
-            public void callback(final String svgContent) {
-                designerWidget.displayImage(svgContent);
-            }
-        }).getProcessDiagram(serverTemplateId,
-                             containerId,
-                             processId);
+        processImageService.call((String svgContent) -> displayImage(svgContent)).getProcessDiagram(serverTemplateId,
+                                                                                                    containerId,
+                                                                                                    processId);
+    }
+
+    protected void displayImage(final String svgContent) {
+        if (svgContent == null || svgContent.isEmpty()) {
+            view.displayMessage(constants.Process_Diagram_Not_Found());
+        } else {
+            view.displayImage(svgContent);
+        }
     }
 
     @WorkbenchPartTitle
@@ -93,21 +81,7 @@ public class ProcessDiagramPresenter extends Composite implements RequiresResize
 
     @WorkbenchPartView
     public IsWidget getView() {
-        return container;
-    }
-
-    @Override
-    public void onResize() {
-
-        int height = getContainer().getParent().getOffsetHeight();
-        int width = getContainer().getParent().getOffsetWidth();
-
-        getContainer().setWidth(width + "px");
-        getContainer().setHeight(height + "px");
-    }
-
-    public FlowPanel getContainer() {
-        return this.container;
+        return view;
     }
 
     public interface View
