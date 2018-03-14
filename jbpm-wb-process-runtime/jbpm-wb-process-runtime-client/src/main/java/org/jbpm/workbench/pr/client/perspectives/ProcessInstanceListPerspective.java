@@ -17,23 +17,39 @@ package org.jbpm.workbench.pr.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
+import static org.jbpm.workbench.common.client.PerspectiveIds.*;
+
 @ApplicationScoped
-@WorkbenchPerspective(identifier = PerspectiveIds.PROCESS_INSTANCES)
+@WorkbenchPerspective(identifier = PROCESS_INSTANCES)
 public class ProcessInstanceListPerspective extends AbstractPerspective {
 
     @Override
     public PlaceRequest getPlaceRequest() {
-        return new DefaultPlaceRequest(PerspectiveIds.PROCESS_INSTANCE_LIST_SCREEN);
+        return new DefaultPlaceRequest(PROCESS_INSTANCE_LIST_SCREEN);
     }
 
     @Override
     public String getPerspectiveId() {
-        return PerspectiveIds.PROCESS_INSTANCES;
+        return PROCESS_INSTANCES;
+    }
+
+    @Override
+    public String getBasicFiltersScreenId() {
+        return PROCESS_INSTANCE_LIST_BASIC_FILTERS_SCREEN;
+    }
+
+    @Override
+    public String getSavedFiltersScreenId() {
+        return PROCESS_INSTANCE_LIST_SAVED_FILTERS_SCREEN;
+    }
+
+    @Override
+    public String getDetailsScreenId() {
+        return PROCESS_INSTANCE_DETAILS_SCREEN;
     }
 }

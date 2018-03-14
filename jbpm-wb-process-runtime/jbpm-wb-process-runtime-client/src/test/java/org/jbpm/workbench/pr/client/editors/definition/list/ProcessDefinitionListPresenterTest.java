@@ -24,6 +24,7 @@ import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
@@ -38,11 +39,14 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.uberfire.client.mvp.PerspectiveActivity;
+import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
-import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.Commands;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -50,8 +54,21 @@ import static org.mockito.Mockito.*;
 @RunWith(GwtMockitoTestRunner.class)
 public class ProcessDefinitionListPresenterTest {
 
+    private static final String PERSPECTIVE_ID = PerspectiveIds.PROCESS_DEFINITIONS;
+
+    private org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants;
+
     @Mock
     protected PlaceManager placeManager;
+
+    @Mock
+    private UberfireBreadcrumbs breadcrumbs;
+
+    @Mock
+    private PerspectiveManager perspectiveManager;
+
+    @Mock
+    private PerspectiveActivity perspectiveActivity;
 
     @Mock
     protected EventSourceMock<ProcessDefSelectionEvent> processDefSelectionEvent;
@@ -93,9 +110,12 @@ public class ProcessDefinitionListPresenterTest {
         presenter.setProcessRuntimeDataService(processRuntimeDataServiceCaller);
         when(view.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getColumnSortList()).thenReturn(new ColumnSortList());
+        when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
+        when(perspectiveActivity.getIdentifier()).thenReturn(PERSPECTIVE_ID);
 
         when(next.getVisibleRange()).thenReturn(new Range(1,
                                                           1));
+        commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
         presenter.getDataProvider().addDataDisplay(next);
     }
 
@@ -107,9 +127,7 @@ public class ProcessDefinitionListPresenterTest {
         processSummary.setProcessDefName("testProcessDefName");
         processSummary.setDynamic(false);
 
-        when(placeManager.getStatus(any(PlaceRequest.class))).thenReturn(PlaceStatus.CLOSE);
-        presenter.selectProcessDefinition(processSummary,
-                                          true);
+        presenter.selectProcessDefinition(processSummary);
 
         verify(processDefSelectionEvent).fire(any(ProcessDefSelectionEvent.class));
         ArgumentCaptor<ProcessDefSelectionEvent> argument = ArgumentCaptor.forClass(ProcessDefSelectionEvent.class);
@@ -123,6 +141,11 @@ public class ProcessDefinitionListPresenterTest {
                      event.getProcessId());
         assertEquals(processSummary.isDynamic(),
                      event.isDynamic());
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(Constants.INSTANCE.ProcessDefinitionBreadcrumb((processSummary.getName()))),
+                                          eq(Commands.DO_NOTHING));
+
     }
 
     @Test
@@ -173,7 +196,7 @@ public class ProcessDefinitionListPresenterTest {
     @Test
     public void testOnRuntimeDataServiceError() {
         final ProcessDefinitionListPresenter presenter = spy(this.presenter);
-        final String errorMessage = Constants.INSTANCE.ResourceCouldNotBeLoaded(Constants.INSTANCE.Process_Definitions());
+        final String errorMessage = Constants.INSTANCE.ResourceCouldNotBeLoaded(commonConstants.Process_Definitions());
 
         doNothing().when(presenter).showErrorPopup(any());
 
@@ -181,5 +204,57 @@ public class ProcessDefinitionListPresenterTest {
         verify(presenter).showErrorPopup(errorMessage);
         verify(view,
                times(2)).hideBusyIndicator();
+    }
+
+    @Test
+    public void testListBreadcrumbCreation() {
+        presenter.createListBreadcrumb();
+        ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
+        verify(breadcrumbs).clearBreadcrumbs(PERSPECTIVE_ID);
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Home()),
+                                          captureCommand.capture());
+
+        captureCommand.getValue().execute();
+        verify(placeManager).goTo(PerspectiveIds.HOME);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Manage_Process_Definitions()),
+                                          eq(Commands.DO_NOTHING));
+
+        verifyNoMoreInteractions(breadcrumbs);
+    }
+
+    @Test
+    public void testSetupDetailBreadcrumb() {
+        String detailLabel = "detailLabel";
+        String detailScreenId = "screenId";
+
+        PlaceManager placeManagerMock = mock(PlaceManager.class);
+        presenter.setPlaceManager(placeManagerMock);
+        presenter.setupDetailBreadcrumb(placeManagerMock,
+                                        commonConstants.Manage_Process_Definitions(),
+                                        detailLabel,
+                                        detailScreenId);
+
+        ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
+
+        verify(breadcrumbs).clearBreadcrumbs(PERSPECTIVE_ID);
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Home()),
+                                          captureCommand.capture());
+        captureCommand.getValue().execute();
+        verify(placeManagerMock).goTo(PerspectiveIds.HOME);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Manage_Process_Definitions()),
+                                          captureCommand.capture());
+
+        captureCommand.getValue().execute();
+        verify(placeManagerMock).closePlace(detailScreenId);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(detailLabel),
+                                          eq(Commands.DO_NOTHING));
     }
 }

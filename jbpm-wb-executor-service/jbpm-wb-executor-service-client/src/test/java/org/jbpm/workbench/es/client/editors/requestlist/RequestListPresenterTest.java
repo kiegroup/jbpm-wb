@@ -17,14 +17,15 @@ package org.jbpm.workbench.es.client.editors.requestlist;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.function.Consumer;
 
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
+import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
+import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
@@ -41,16 +42,17 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
+import org.uberfire.client.mvp.PerspectiveActivity;
+import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.PlaceStatus;
+import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.Commands;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.menu.MenuItem;
-import org.uberfire.workbench.model.menu.Menus;
 
-import static org.dashbuilder.dataset.sort.SortOrder.ASCENDING;
 import static org.jbpm.workbench.es.client.editors.util.JobUtils.createRequestSummary;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 import static org.junit.Assert.*;
@@ -60,6 +62,9 @@ import static org.mockito.Mockito.*;
 public class RequestListPresenterTest {
 
     private static final Long REQUEST_ID = 1L;
+    private static final String PERSPECTIVE_ID = PerspectiveIds.JOBS;
+
+    private org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants;
 
     private CallerMock<ExecutorService> callerMockExecutorService;
 
@@ -76,7 +81,7 @@ public class RequestListPresenterTest {
     private DataSetLookup dataSetLookup;
 
     @Mock
-    private ExtendedPagedTable<RequestSummary> extendedPagedTable;
+    private ListTable<RequestSummary> extendedPagedTable;
 
     @Mock
     private EventSourceMock<RequestChangedEvent> requestChangedEvent;
@@ -88,7 +93,22 @@ public class RequestListPresenterTest {
     private PlaceManager placeManager;
 
     @Mock
+    private UberfireBreadcrumbs breadcrumbs;
+
+    @Mock
+    private PerspectiveManager perspectiveManager;
+
+    @Mock
+    private PerspectiveActivity perspectiveActivity;
+
+    @Mock
+    ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
+
+    @Mock
     private NewJobPresenter newJobPresenterMock;
+
+    @Mock
+    private DataSet dataSet;
 
     @Spy
     private FilterSettings filterSettings;
@@ -101,12 +121,22 @@ public class RequestListPresenterTest {
         callerMockExecutorService = new CallerMock<ExecutorService>(executorServiceMock);
 
         filterSettings.setDataSetLookup(dataSetLookup);
+        filterSettings.setKey("key");
 
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(extendedPagedTable.getColumnSortList()).thenReturn(null);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
-        when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
+        when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
+        when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
+        when(perspectiveActivity.getIdentifier()).thenReturn(PERSPECTIVE_ID);
+
+        doAnswer((InvocationOnMock invocation) -> {
+            ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSet);
+            return null;
+        }).when(dataSetQueryHelper).lookupDataSet(anyInt(),
+                                                  any(DataSetReadyCallback.class));
+        commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
 
         presenter = new RequestListPresenter(viewMock,
                                              callerMockExecutorService,
@@ -114,18 +144,19 @@ public class RequestListPresenterTest {
                                              requestChangedEvent,
                                              jobSelectedEventMock,
                                              placeManager);
-
+        presenter.setUberfireBreadcrumbs(breadcrumbs);
+        presenter.setPerspectiveManager(perspectiveManager);
+        presenter.setServerTemplateSelectorMenuBuilder(serverTemplateSelectorMenuBuilder);
         presenter.setNewJobPresenter(newJobPresenterMock);
-        presenter.setServerTemplateSelectorMenuBuilder(new ServerTemplateSelectorMenuBuilder());
     }
 
     @Test
     public void getDataTest() {
-        presenter.setAddingDefaultFilters(false);
         presenter.getData(new Range(0,
                                     5));
 
-        verify(dataSetQueryHelper).setLastSortOrder(ASCENDING);
+        verify(dataSetQueryHelper).lookupDataSet(anyInt(),
+                                                 any(DataSetReadyCallback.class));
         verify(viewMock).hideBusyIndicator();
     }
 
@@ -252,10 +283,17 @@ public class RequestListPresenterTest {
     public void testDefaultActiveSearchFilters() {
         presenter.setupDefaultActiveSearchFilters();
 
-        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Status()),
-                                         eq(Constants.INSTANCE.Running()),
-                                         eq(RequestStatus.RUNNING.name()),
-                                         any(Consumer.class));
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(Constants.INSTANCE.Status(),
+                     captor.getValue().getKey());
+        assertEquals(Constants.INSTANCE.Status() + ": " + Constants.INSTANCE.Running(),
+                     captor.getValue().getLabelValue());
+        assertEquals(RequestStatus.RUNNING.name(),
+                     (captor.getValue().getValue()));
     }
 
     @Test
@@ -267,10 +305,17 @@ public class RequestListPresenterTest {
 
         presenter.setupActiveSearchFilters();
 
-        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Status()),
-                                         eq(Constants.INSTANCE.Running()),
-                                         eq(RequestStatus.RUNNING.name()),
-                                         any(Consumer.class));
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(Constants.INSTANCE.Status(),
+                     captor.getValue().getKey());
+        assertEquals(Constants.INSTANCE.Status() + ": " + Constants.INSTANCE.Running(),
+                     captor.getValue().getLabelValue());
+        assertEquals(RequestStatus.RUNNING.name(),
+                     (captor.getValue().getValue()));
     }
 
     @Test
@@ -307,10 +352,7 @@ public class RequestListPresenterTest {
     @Test
     public void testJobSelectionWithDetailsClosed() {
         RequestSummary job = createRequestSummary();
-        boolean closed = true;
-        when(placeManager.getStatus(any(DefaultPlaceRequest.class))).thenReturn(PlaceStatus.CLOSE);
-        presenter.selectJob(job,
-                            closed);
+        presenter.selectJob(job);
 
         verify(placeManager).goTo(PerspectiveIds.JOB_DETAILS_SCREEN);
         final ArgumentCaptor<JobSelectedEvent> captor = ArgumentCaptor.forClass(JobSelectedEvent.class);
@@ -318,15 +360,15 @@ public class RequestListPresenterTest {
         assertJobSelectedEventContent(captor.getValue(),
                                       job.getDeploymentId(),
                                       job.getId());
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(Constants.INSTANCE.JobBreadcrumb(job.getId())),
+                                          eq(Commands.DO_NOTHING));
     }
 
     @Test
     public void testJobSelectionWithDetailsOpen() {
         RequestSummary job = createRequestSummary();
-        boolean closed = false;
-        when(placeManager.getStatus(any(DefaultPlaceRequest.class))).thenReturn(PlaceStatus.OPEN);
-        presenter.selectJob(job,
-                            closed);
+        presenter.selectJob(job);
 
         verify(placeManager,
                never()).goTo(any(PlaceRequest.class));
@@ -339,25 +381,8 @@ public class RequestListPresenterTest {
     }
 
     @Test
-    public void testCloseDetails() {
-        RequestSummary job = createRequestSummary();
-        boolean closed = true;
-        when(placeManager.getStatus(any(DefaultPlaceRequest.class))).thenReturn(PlaceStatus.OPEN);
-        presenter.selectJob(job,
-                            closed);
-
-        verify(placeManager,
-               never()).goTo(anyString());
-        verify(jobSelectedEventMock,
-               never()).fire(any());
-        verify(placeManager).closePlace(PerspectiveIds.JOB_DETAILS_SCREEN);
-    }
-
-    @Test
     public void testOpenNewJobDialog_serverTemplateNull() {
         presenter.setSelectedServerTemplate(null);
-
-        presenter.getMenus();
 
         assertNotNull(presenter.getNewJobCommand());
 
@@ -371,8 +396,6 @@ public class RequestListPresenterTest {
     @Test
     public void testOpenNewJobDialog_serverTemplateEmpty() {
         assertTrue(presenter.getSelectedServerTemplate().isEmpty());
-
-        presenter.getMenus();
 
         assertNotNull(presenter.getNewJobCommand());
 
@@ -388,13 +411,6 @@ public class RequestListPresenterTest {
         final String serverTemplateTest = "serverTemplateTest";
         presenter.setSelectedServerTemplate(serverTemplateTest);
 
-        Menus menus = presenter.getMenus();
-
-        MenuItem newJobItem = menus.getItems().get(0);
-        assertEquals("New_Job",
-                     newJobItem.getCaption());
-        assertTrue(newJobItem.isEnabled());
-
         assertNotNull(presenter.getNewJobCommand());
 
         presenter.getNewJobCommand().execute();
@@ -403,6 +419,58 @@ public class RequestListPresenterTest {
         verify(viewMock,
                times(3)).getListGrid();
         verifyNoMoreInteractions(viewMock);
+    }
+
+    @Test
+    public void testListBreadcrumbCreation() {
+        presenter.createListBreadcrumb();
+        ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
+        verify(breadcrumbs).clearBreadcrumbs(PERSPECTIVE_ID);
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Home()),
+                                          captureCommand.capture());
+
+        captureCommand.getValue().execute();
+        verify(placeManager).goTo(PerspectiveIds.HOME);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Manage_Jobs()),
+                                          eq(Commands.DO_NOTHING));
+
+        verifyNoMoreInteractions(breadcrumbs);
+    }
+
+    @Test
+    public void testSetupDetailBreadcrumb() {
+        String detailLabel = "detailLabel";
+        String detailScreenId = "screenId";
+
+        PlaceManager placeManagerMock = mock(PlaceManager.class);
+        presenter.setPlaceManager(placeManagerMock);
+        presenter.setupDetailBreadcrumb(placeManagerMock,
+                                        commonConstants.Manage_Jobs(),
+                                        detailLabel,
+                                        detailScreenId);
+
+        ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
+
+        verify(breadcrumbs).clearBreadcrumbs(PERSPECTIVE_ID);
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Home()),
+                                          captureCommand.capture());
+        captureCommand.getValue().execute();
+        verify(placeManagerMock).goTo(PerspectiveIds.HOME);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Manage_Jobs()),
+                                          captureCommand.capture());
+
+        captureCommand.getValue().execute();
+        verify(placeManagerMock).closePlace(detailScreenId);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(detailLabel),
+                                          eq(Commands.DO_NOTHING));
     }
 
     private void assertJobSelectedEventContent(JobSelectedEvent event,

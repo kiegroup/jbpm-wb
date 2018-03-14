@@ -21,15 +21,12 @@ import javax.enterprise.context.Dependent;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.displayer.client.Displayer;
-import org.gwtbootstrap3.client.ui.AnchorButton;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.Heading;
 import org.gwtbootstrap3.client.ui.Row;
@@ -52,9 +49,6 @@ public class TaskDashboardView extends Composite implements TaskDashboard.View {
 
     @UiField
     Panel instancesPanel;
-
-    @UiField
-    AnchorButton instancesAnchor;
 
     @UiField
     Row processBreadCrumbRow;
@@ -259,25 +253,19 @@ public class TaskDashboardView extends Composite implements TaskDashboard.View {
 
     @Override
     public void showDashboard() {
-        instancesAnchor.setText(DashboardConstants.INSTANCE.showTasks());
         dashboardPanel.setVisible(true);
         instancesPanel.setVisible(false);
     }
 
     @Override
     public void showInstances() {
-        instancesAnchor.setText(DashboardConstants.INSTANCE.showDashboard());
         dashboardPanel.setVisible(false);
         instancesPanel.setVisible(true);
     }
 
-    @UiHandler("instancesAnchor")
-    protected void onShowInstances(ClickEvent event) {
-        if (dashboardPanel.isVisible()) {
-            presenter.showTasksTable();
-        } else {
-            presenter.showDashboard();
-        }
+    @Override
+    public boolean isDashboardPanelVisible() {
+        return dashboardPanel.isVisible();
     }
 
     interface Binder extends UiBinder<Widget, TaskDashboardView> {

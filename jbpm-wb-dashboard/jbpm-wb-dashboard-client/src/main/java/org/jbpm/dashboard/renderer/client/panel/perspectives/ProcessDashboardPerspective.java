@@ -21,7 +21,7 @@ import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
+import org.uberfire.client.workbench.panels.impl.MultiScreenWorkbenchPanelPresenter;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
@@ -34,7 +34,7 @@ public class ProcessDashboardPerspective {
 
     @Perspective
     public PerspectiveDefinition buildPerspective() {
-        PerspectiveDefinition perspective = new PerspectiveDefinitionImpl(SimpleWorkbenchPanelPresenter.class.getName());
+        PerspectiveDefinition perspective = new PerspectiveDefinitionImpl(MultiScreenWorkbenchPanelPresenter.class.getName());
         perspective.setName(DashboardConstants.INSTANCE.processDashboardName());
         perspective.getRoot().addPart(PerspectiveIds.PROCESS_DASHBOARD_SCREEN);
         return perspective;

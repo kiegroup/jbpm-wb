@@ -22,23 +22,20 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.service.TaskService;
-import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.ht.client.editors.taskadmin.TaskAdminPresenter;
 import org.jbpm.workbench.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
 import org.jbpm.workbench.ht.client.editors.taskcomments.TaskCommentsPresenter;
 import org.jbpm.workbench.ht.client.editors.taskdetails.TaskDetailsPresenter;
 import org.jbpm.workbench.ht.client.editors.taskform.TaskFormPresenter;
 import org.jbpm.workbench.ht.client.editors.tasklogs.TaskLogsPresenter;
-import org.jbpm.workbench.ht.client.editors.taskprocesscontext.TaskProcessContextPresenter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.forms.display.api.HumanTaskDisplayerConfig;
 import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayProvider;
 import org.jbpm.workbench.ht.model.TaskKey;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
-import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -48,13 +45,13 @@ import org.uberfire.client.mvp.UberView;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.workbench.model.CompassPosition;
-import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
+import static org.jbpm.workbench.common.client.PerspectiveIds.TASK_DETAILS_SCREEN;
+
 @Dependent
-@WorkbenchScreen(identifier = PerspectiveIds.TASK_DETAILS_SCREEN, preferredWidth = 655)
+@WorkbenchScreen(identifier = TASK_DETAILS_SCREEN)
 public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
 
     private Caller<TaskService> taskDataService;
@@ -87,9 +84,6 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
     private TaskAdminPresenter taskAdminPresenter;
 
     @Inject
-    private TaskProcessContextPresenter taskProcessContextPresenter;
-
-    @Inject
     private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
 
     @Inject
@@ -112,11 +106,6 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
     @WorkbenchPartView
     public UberView<TaskDetailsMultiPresenter> getView() {
         return view;
-    }
-
-    @DefaultPosition
-    public Position getPosition() {
-        return CompassPosition.EAST;
     }
 
     @WorkbenchPartTitle
@@ -217,10 +206,6 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
 
     public IsWidget getTaskDetailsView() {
         return taskDetailsPresenter.getView();
-    }
-
-    public IsWidget getProcessContextView() {
-        return taskProcessContextPresenter.getView();
     }
 
     public IsWidget getTaskAssignmentsView() {

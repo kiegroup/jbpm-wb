@@ -18,18 +18,17 @@ package org.jbpm.workbench.es.client.editors.requestlist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.HasCell;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
+import org.jbpm.workbench.common.client.list.ListTable;
+import org.jbpm.workbench.common.client.util.ConditionalAction;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.client.util.JobStatusConverter;
@@ -39,17 +38,10 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 
 @Dependent
+@Templated(value = "/org/jbpm/workbench/common/client/list/AbstractMultiGridView.html", stylesheet = "/org/jbpm/workbench/common/client/resources/css/kie-manage.less")
 public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, RequestListPresenter>
         implements RequestListPresenter.RequestListView {
 
-    private static final String REQUEST_LIST_PREFIX = "DS_RequestListGrid";
-    protected static final String TAB_CANCELED = REQUEST_LIST_PREFIX + "_6";
-    protected static final String TAB_COMPLETED = REQUEST_LIST_PREFIX + "_5";
-    protected static final String TAB_ERROR = REQUEST_LIST_PREFIX + "_4";
-    protected static final String TAB_RETRYING = REQUEST_LIST_PREFIX + "_3";
-    protected static final String TAB_RUNNING = REQUEST_LIST_PREFIX + "_2";
-    protected static final String TAB_QUEUED = REQUEST_LIST_PREFIX + "_1";
-    protected static final String TAB_ALL = REQUEST_LIST_PREFIX + "_0";
     private final Constants constants = Constants.INSTANCE;
 
     @Inject
@@ -71,19 +63,9 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     }
 
     @Override
-    public String getGridGlobalPreferencesKey() {
-        return REQUEST_LIST_PREFIX;
-    }
-
-    @Override
-    public String getNewFilterPopupTitle() {
-        return constants.New_JobList();
-    }
-
-    @Override
-    public void initColumns(ExtendedPagedTable extendedPagedTable) {
-        Column actionsColumn = initActionsColumn();
-        extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
+    public void initColumns(final ListTable extendedPagedTable) {
+        ColumnMeta<RequestSummary> actionsColumnMeta = initActionsColumn();
+        extendedPagedTable.addSelectionIgnoreColumn(actionsColumnMeta.getColumn());
 
         final List<ColumnMeta<RequestSummary>> columnMetas = new ArrayList<ColumnMeta<RequestSummary>>();
         columnMetas.add(new ColumnMeta<>(createNumberColumn(COLUMN_ID,
@@ -100,8 +82,10 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                                                           req -> jobStatusConverter.toWidgetValue(req.getStatus())
         ),
                                          constants.Status()));
-        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_TIMESTAMP,
-                                                          req -> DateUtils.getDateTimeStr(req.getTime())),
+        final Column<RequestSummary, String> timestampColumn = createTextColumn(COLUMN_TIMESTAMP,
+                                                                                req -> DateUtils.getDateTimeStr(req.getTime()));
+        timestampColumn.setDefaultSortAscending(false);
+        columnMetas.add(new ColumnMeta<>(timestampColumn,
                                          constants.Due_On()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_PROCESS_NAME,
                                                           req -> req.getProcessName()),
@@ -112,98 +96,53 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
                                                           req -> req.getProcessInstanceDescription()),
                                          constants.Process_Instance_Description()));
-        columnMetas.add(new ColumnMeta<>(actionsColumn,
-                                         constants.Actions()));
+        columnMetas.add(actionsColumnMeta);
 
+        extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
+                                          ACTIONS_COLUMN_WIDTH,
+                                          Style.Unit.PX);
         extendedPagedTable.addColumns(columnMetas);
+        extendedPagedTable.getColumnSortList().push(timestampColumn);
     }
 
     @Override
-    public void initSelectionModel(ExtendedPagedTable<RequestSummary> extendedPagedTable) {
+    public void initSelectionModel(ListTable<RequestSummary> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption(constants.No_Jobs_Found());
-        extendedPagedTable.setSelectionCallback((job, close) -> presenter.selectJob(job,
-                                                                                    close));
-    }
-
-    private Column<RequestSummary, RequestSummary> initActionsColumn() {
-        List<HasCell<RequestSummary, ?>> cells = new LinkedList<HasCell<RequestSummary, ?>>();
-
-        cells.add(new ConditionalButtonActionCell<RequestSummary>(
-                constants.Cancel(),
-                job -> {
-                    if (Window.confirm(constants.CancelJob())) {
-                        presenter.cancelRequest(job.getDeploymentId(), 
-                                                job.getJobId());
-                    }
-                },
-                presenter.getCancelActionCondition()));
-
-        cells.add(new ConditionalButtonActionCell<RequestSummary>(
-                constants.Requeue(),
-                job -> {
-                    if (Window.confirm(constants.RequeueJob())) {
-                        presenter.requeueRequest(job.getDeploymentId(), 
-                                                 job.getJobId());
-                    }
-                },
-                presenter.getRequeueActionCondition()));
-
-        cells.add(new ConditionalButtonActionCell<RequestSummary>(
-                constants.ViewProcessInstance(),
-                job -> {
-                    presenter.openProcessInstanceView(Long.toString(job.getProcessInstanceId()));
-                },
-                presenter.getViewProcessActionCondition()));
-
-        CompositeCell<RequestSummary> cell = new CompositeCell<RequestSummary>(cells);
-        Column<RequestSummary, RequestSummary> actionsColumn = new Column<RequestSummary, RequestSummary>(cell) {
-            @Override
-            public RequestSummary getValue(RequestSummary object) {
-                return object;
-            }
-        };
-        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
-        return actionsColumn;
+        extendedPagedTable.setSelectionCallback((job) -> presenter.selectJob(job));
     }
 
     @Override
-    public void initDefaultFilters() {
-        super.initDefaultFilters();
+    protected List<ConditionalAction<RequestSummary>> getConditionalActions() {
+        return Arrays.asList(
 
-        initTabFilter(presenter.createAllTabSettings(),
-                      TAB_ALL,
-                      constants.All(),
-                      constants.FilterAll(),
-                      REQUEST_LIST_DATASET);
-        initTabFilter(presenter.createQueuedTabSettings(),
-                      TAB_QUEUED,
-                      constants.Queued(),
-                      constants.FilterQueued(),
-                      REQUEST_LIST_DATASET);
-        initTabFilter(presenter.createRunningTabSettings(),
-                      TAB_RUNNING,
-                      constants.Running(),
-                      constants.FilterRunning(),
-                      REQUEST_LIST_DATASET);
-        initTabFilter(presenter.createRetryingTabSettings(),
-                      TAB_RETRYING,
-                      constants.Retrying(),
-                      constants.FilterRetrying(),
-                      REQUEST_LIST_DATASET);
-        initTabFilter(presenter.createErrorTabSettings(),
-                      TAB_ERROR,
-                      constants.Error(),
-                      constants.FilterError(),
-                      REQUEST_LIST_DATASET);
-        initTabFilter(presenter.createCompletedTabSettings(),
-                      TAB_COMPLETED,
-                      constants.Completed(),
-                      constants.FilterCompleted(),
-                      REQUEST_LIST_DATASET);
-        initTabFilter(presenter.createCanceledTabSettings(),
-                      TAB_CANCELED,
-                      constants.Canceled(),
-                      constants.FilterCanceled(),
-                      REQUEST_LIST_DATASET);
+                new ConditionalAction<>(
+                        constants.Cancel(),
+                        job -> {
+                            if (Window.confirm(constants.CancelJob())) {
+                                presenter.cancelRequest(job.getDeploymentId(),
+                                                        job.getJobId());
+                            }
+                        },
+                        presenter.getCancelActionCondition(),
+                        false),
+
+                new ConditionalAction<>(
+                        constants.Requeue(),
+                        job -> {
+                            if (Window.confirm(constants.RequeueJob())) {
+                                presenter.requeueRequest(job.getDeploymentId(),
+                                                         job.getJobId());
+                            }
+                        },
+                        presenter.getRequeueActionCondition(),
+                        false),
+
+                new ConditionalAction<>(
+                        constants.ViewProcessInstance(),
+                        job -> {
+                            presenter.openProcessInstanceView(Long.toString(job.getProcessInstanceId()));
+                        },
+                        presenter.getViewProcessActionCondition(),
+                        true));
     }
 }

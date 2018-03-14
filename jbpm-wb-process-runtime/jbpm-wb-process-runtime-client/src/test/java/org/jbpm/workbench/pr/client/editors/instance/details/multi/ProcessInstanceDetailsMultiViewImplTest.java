@@ -60,6 +60,12 @@ public class ProcessInstanceDetailsMultiViewImplTest {
     @Mock(name = "logsPane")
     private TabPane logsPane;
 
+    @Mock(name = "diagramTab")
+    private TabListItem diagramTab;
+
+    @Mock(name = "diagramPane")
+    private TabPane diagramPane;
+
     @Mock
     private ProcessInstanceDetailsMultiPresenter presenter;
 
@@ -110,6 +116,8 @@ public class ProcessInstanceDetailsMultiViewImplTest {
         verify(instanceDetailsTab).setVisible(true);
         verify(logsPane).setVisible(true);
         verify(logsTab).setVisible(true);
+        verify(diagramPane).setVisible(true);
+        verify(diagramTab).setVisible(true);
         verify(instanceDetailsTab).showTab();
     }
 
@@ -121,10 +129,11 @@ public class ProcessInstanceDetailsMultiViewImplTest {
         verify(presenter).getProcessVariablesView();
         verify(presenter).getDocumentView();
         verify(presenter).getLogsView();
+        verify(presenter).getProcessDiagramView();
 
         verify(navTabs,
-               times(4)).add(any(TabListItem.class));
+               times(5)).add(any(TabListItem.class));
         verify(tabContent,
-               times(4)).add(any(TabPane.class));
+               times(5)).add(any(TabPane.class));
     }
 }

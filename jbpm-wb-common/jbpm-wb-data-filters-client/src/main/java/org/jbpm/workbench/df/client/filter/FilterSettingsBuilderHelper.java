@@ -37,6 +37,10 @@ public final class FilterSettingsBuilderHelper {
         builder.dataset(dataSetId);
     }
 
+    public void uuid(String uuid) {
+        builder.uuid(uuid);
+    }
+
     public void filter(ColumnFilter... filter) {
         builder.filter(filter);
     }
@@ -77,8 +81,8 @@ public final class FilterSettingsBuilderHelper {
                                   sortOrder);
     }
 
-    public void tableWidth(int width) {
-        builder.tableWidth(width);
+    public void key(final String key) {
+        builder.key(key);
     }
 
     public void group(String columnId) {

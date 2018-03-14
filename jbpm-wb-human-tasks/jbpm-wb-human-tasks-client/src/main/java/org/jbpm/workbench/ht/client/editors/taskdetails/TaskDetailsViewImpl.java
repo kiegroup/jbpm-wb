@@ -37,6 +37,7 @@ import org.jbpm.workbench.common.client.util.UTCTimeBox;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.uberfire.workbench.events.NotificationEvent;
 
+
 @Dependent
 @Templated(value = "TaskDetailsViewImpl.html")
 public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresenter.TaskDetailsView {
@@ -58,6 +59,14 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @Inject
     @DataField
     public Select taskPriorityListBox;
+
+    @Inject
+    @DataField
+    public Paragraph processInstanceIdText;
+
+    @Inject
+    @DataField
+    public Paragraph processIdText;
 
     @Inject
     @DataField
@@ -91,6 +100,14 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @DataField
     public FormLabel taskDescriptionLabel;
 
+    @Inject
+    @DataField
+    public FormLabel processInstanceIdLabel;
+
+    @Inject
+    @DataField
+    public FormLabel processIdLabel;
+
     private TaskDetailsPresenter presenter;
 
     private String[] priorities = {"0 - " + constants.High(), "1", "2", "3", "4", "5 - " + constants.Medium(), "6", "7", "8", "9", "10 - " + constants.Low()};
@@ -117,6 +134,10 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
         taskPriorityLabel.setText(constants.Priority());
 
         taskDescriptionLabel.setText(constants.Description());
+
+        processInstanceIdLabel.setText(constants.Process_Instance_Id());
+
+        processIdLabel.setText(constants.Process_Definition_Id());
 
         updateTaskButton.setText(constants.Update());
 
@@ -180,6 +201,18 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     public void setTaskPriorityEnabled(final Boolean enabled) {
         taskPriorityListBox.setEnabled(enabled);
         refreshPriorities();
+    }
+
+    @Override
+    public void setProcessInstanceId(String piid) {
+        processInstanceIdLabel.setVisible(!piid.isEmpty());
+        processInstanceIdText.setText(piid);
+    }
+
+    @Override
+    public void setProcessId(String pid) {
+        processIdLabel.setVisible(!pid.isEmpty());
+        processIdText.setText(pid);
     }
 
     @Override

@@ -32,6 +32,7 @@ import org.kie.server.controller.api.model.events.ServerTemplateDeleted;
 import org.kie.server.controller.api.model.events.ServerTemplateUpdated;
 import org.kie.server.controller.api.model.spec.ServerTemplateList;
 import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
+import org.uberfire.client.mvp.UberElement;
 import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
@@ -41,7 +42,10 @@ import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenuBuilder {
 
     @Inject
-    private ServerTemplateSelectorView view;
+    private ServerTemplateSelectorWidgetView widgetView;
+
+    @Inject
+    private ServerTemplateSelectorElementView view;
 
     @Inject
     private Caller<SpecManagementService> specManagementService;
@@ -51,36 +55,49 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
 
     @PostConstruct
     public void init() {
-        view.setServerTemplateChangeHandler(e -> serverTemplateSelectedEvent.fire(new ServerTemplateSelected(e)));
+        widgetView.setServerTemplateChangeHandler(e -> {
+            serverTemplateSelectedEvent.fire(new ServerTemplateSelected(e));
+            view.updateSelectedValue(e);
+        });
+        view.setServerTemplateChangeHandler(e -> {
+            serverTemplateSelectedEvent.fire(new ServerTemplateSelected(e));
+            widgetView.updateSelectedValue(e);
+        });
+
         loadServerTemplates();
     }
 
     protected void loadServerTemplates() {
+        widgetView.removeAllServerTemplates();
+        view.removeAllServerTemplates();
         specManagementService.call((ServerTemplateList serverTemplates) -> {
-            view.removeAllServerTemplates();
-
             final Set<String> ids = FluentIterable.from(serverTemplates.getServerTemplates())
                     .filter(s -> s.getServerInstanceKeys() != null && !s.getServerInstanceKeys().isEmpty())
                     .transform(s -> s.getId())
                     .toSortedSet(String.CASE_INSENSITIVE_ORDER);
 
             for (String id : ids) {
+                widgetView.addServerTemplate(id);
                 view.addServerTemplate(id);
             }
 
             if (ids.size() == 1) {
+                widgetView.selectServerTemplate(ids.iterator().next());
                 view.selectServerTemplate(ids.iterator().next());
             } else {
-                final String selectedServerTemplate = view.getSelectedServerTemplate();
+                final String selectedServerTemplate = getSelectedServerTemplate();
                 if (selectedServerTemplate != null) {
                     if (ids.contains(selectedServerTemplate)) {
+                        widgetView.selectServerTemplate(selectedServerTemplate);
                         view.selectServerTemplate(selectedServerTemplate);
                     } else {
+                        widgetView.clearSelectedServerTemplate();
                         view.clearSelectedServerTemplate();
                     }
                 }
             }
 
+            widgetView.setVisible(ids.size() > 1);
             view.setVisible(ids.size() > 1);
         }).listServerTemplates();
     }
@@ -94,7 +111,7 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
         return new BaseMenuCustom<IsWidget>() {
             @Override
             public IsWidget build() {
-                return view;
+                return widgetView;
             }
 
             @Override
@@ -106,6 +123,10 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
             public void setEnabled(boolean enabled) {
             }
         };
+    }
+
+    public ServerTemplateSelectorElementView getView() {
+        return view;
     }
 
     public void onServerTemplateDeleted(@Observes final ServerTemplateDeleted serverTemplateDeleted) {
@@ -131,9 +152,11 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
         return view.getSelectedServerTemplate();
     }
 
-    public interface ServerTemplateSelectorView extends IsWidget {
+    public interface ServerTemplateSelectorView {
 
         void selectServerTemplate(String serverTemplateId);
+
+        void updateSelectedValue(String serverTemplateId);
 
         void setVisible(boolean visible);
 
@@ -146,5 +169,15 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
         void removeAllServerTemplates();
 
         void setServerTemplateChangeHandler(ParameterizedCommand<String> command);
+    }
+
+    public interface ServerTemplateSelectorWidgetView extends ServerTemplateSelectorView,
+                                                              IsWidget {
+
+    }
+
+    public interface ServerTemplateSelectorElementView extends ServerTemplateSelectorView,
+                                                               UberElement<ServerTemplateSelectorMenuBuilder> {
+
     }
 }

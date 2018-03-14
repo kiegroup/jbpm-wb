@@ -144,15 +144,14 @@ public class TaskDetailsMultiViewImplTest {
 
         verify(presenter).getGenericFormView();
         verify(presenter).getTaskDetailsView();
-        verify(presenter).getProcessContextView();
         verify(presenter).getTaskAssignmentsView();
         verify(presenter).getTaskCommentsView();
         verify(presenter).getTaskAdminView();
         verify(presenter).getTaskLogsView();
 
         verify(navTabs,
-               times(7)).add(any(TabListItem.class));
+               times(6)).add(any(TabListItem.class));
         verify(tabContent,
-               times(7)).add(any(TabPane.class));
+               times(6)).add(any(TabPane.class));
     }
 }

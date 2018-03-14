@@ -39,7 +39,6 @@
     <b:Row>
       <b:Column size="MD_12">
         <g:FlowPanel>
-          <b:AnchorButton ui:field="instancesAnchor" type="LINK" pull="RIGHT" text="{i18n.showTasks}"/>
           <b:Heading ui:field="headerLabel" size="H3" text="{i18n.allTasks}"/>
         </g:FlowPanel>
 

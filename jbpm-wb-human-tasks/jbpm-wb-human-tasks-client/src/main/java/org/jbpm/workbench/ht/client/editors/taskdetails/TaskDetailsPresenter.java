@@ -88,7 +88,9 @@ public class TaskDetailsPresenter {
                                   String description,
                                   String actualOwner,
                                   Date expirationTime,
-                                  String priority) {
+                                  String priority,
+                                  Long processInstanceId,
+                                  String processId) {
         view.setTaskDescription(description);
         final Long date = UTCDateBox.date2utc(expirationTime);
         if (date != null) {
@@ -98,6 +100,14 @@ public class TaskDetailsPresenter {
         view.setUser(actualOwner);
         view.setTaskStatus(status);
         view.setTaskPriority(priority);
+        if (processInstanceId == null) {
+            view.setProcessInstanceId("");
+            view.setProcessId("");
+            return;
+        }
+
+        view.setProcessInstanceId(String.valueOf(processInstanceId));
+        view.setProcessId(processId);
     }
 
     public void setReadOnlyTaskDetail() {
@@ -120,7 +130,9 @@ public class TaskDetailsPresenter {
                        event.getDescription(),
                        event.getActualOwner(),
                        event.getExpirationTime(),
-                       String.valueOf(event.getPriority()));
+                       String.valueOf(event.getPriority()),
+                       event.getProcessInstanceId(),
+                       event.getProcessId());
     }
 
     public interface TaskDetailsView extends IsWidget {
@@ -144,6 +156,10 @@ public class TaskDetailsPresenter {
         void setTaskStatus(String status);
 
         void setTaskPriority(String priority);
+
+        void setProcessInstanceId(String none);
+
+        void setProcessId(String none);
 
         void setTaskPriorityEnabled(Boolean enabled);
 

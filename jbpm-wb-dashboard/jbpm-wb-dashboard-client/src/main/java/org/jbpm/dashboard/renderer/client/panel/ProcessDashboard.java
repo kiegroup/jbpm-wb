@@ -37,8 +37,8 @@ import org.dashbuilder.displayer.client.DisplayerListener;
 import org.dashbuilder.displayer.client.DisplayerLocator;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
-import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
 import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.common.events.ServerTemplateSelected;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
@@ -55,7 +55,6 @@ import org.uberfire.workbench.model.menu.Menus;
 
 import static org.jbpm.dashboard.renderer.model.DashboardData.*;
 import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN;
-
 
 @Dependent
 @WorkbenchScreen(identifier = PerspectiveIds.PROCESS_DASHBOARD_SCREEN)
@@ -152,15 +151,7 @@ public class ProcessDashboard extends AbstractDashboard {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return DashboardConstants.INSTANCE.processDashboardName();
-    }
-
-    @WorkbenchMenu
-    public Menus getMenus() {
-        return MenuFactory
-                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder)
-                .endMenu()
-                .build();
+        return i18n.processDashboardName();
     }
 
     public void onServerTemplateSelected(@Observes final ServerTemplateSelected serverTemplateSelected) {
@@ -280,6 +271,38 @@ public class ProcessDashboard extends AbstractDashboard {
         return view;
     }
 
+    @WorkbenchMenu
+    public Menus getMenus() {
+        return MenuFactory
+                .newTopLevelCustomMenu(new PrimaryActionMenuBuilder("",
+                                                                    "fa-table",
+                                                                    i18n.viewTable(),
+                                                                    "",
+                                                                    "fa-th",
+                                                                    i18n.viewDashboard(),
+                                                                    () -> {
+                                                                        if (view.isDashboardPanelVisible()) {
+                                                                            showProcessesTable();
+                                                                        } else {
+                                                                            showDashboard();
+                                                                        }
+                                                                    }
+                ))
+                .endMenu()
+                .build();
+    }
+
+    @Override
+    public void createListBreadcrumb() {
+        setupListBreadcrumb(i18n.processDashboardName());
+    }
+
+    @Override
+    public void tableRedraw() {
+        processesTable.filterReset();
+        processesTable.redraw();
+    }
+
     public void resetProcessBreadcrumb() {
         processesByType.filterReset();
         processesByRunningTime.filterReset();
@@ -333,6 +356,9 @@ public class ProcessDashboard extends AbstractDashboard {
                                                                      COLUMN_PROCESS_STATUS).toString()).intValue();
 
         openProcessDetailsScreen();
+        setupDetailBreadcrumb(i18n.processDashboardName(),
+                              i18n.ProcessInstanceBreadcrumb(processInstanceId),
+                              PROCESS_INSTANCE_DETAILS_SCREEN);
 
         instanceSelectionEvent.fire(new ProcessInstanceSelectionEvent(
                 deploymentId,

@@ -17,6 +17,7 @@ package org.jbpm.workbench.es.client.editors.errordetails;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.es.model.ErrorSummary;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
@@ -97,5 +98,18 @@ public class ExecutionErrorDetailsPresenterTest {
                              " - " + testError.getProcessInstanceId() +
                              " (" + testError.getDeploymentId() + ")",
                      captor.getValue().getTitle());
+    }
+
+    @Test
+    public void testErrorDetailTitleGeneration() {
+
+        ExecutionErrorSummary testError = createTestError(errorId,
+                                                          deploymentId);
+        String title = ExecutionErrorDetailsPresenter.getErrorDetailTitle(testError);
+
+        assertEquals(testError.getProcessId() +
+                             " - " + testError.getProcessInstanceId() +
+                             " (" + testError.getDeploymentId() + ")",
+                     title);
     }
 }

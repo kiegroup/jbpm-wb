@@ -15,7 +15,7 @@
  */
 package org.jbpm.workbench.client.screens;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,7 +24,6 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Maps;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.api.ProcessAdminService;
@@ -32,7 +31,7 @@ import org.jbpm.workbench.client.i18n.ProcessAdminConstants;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
-import org.kie.server.controller.api.model.spec.ServerTemplate;
+import org.kie.server.controller.api.model.spec.ServerTemplateList;
 import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -66,11 +65,13 @@ public class ProcessAdminSettingsPresenter {
     @PostConstruct
     public void init() {
         specManagementService.call(
-                (Collection<ServerTemplate> st) -> {
-                    final Set<String> stId = FluentIterable.from(st)
-                            .filter(e -> e.getServerInstanceKeys() != null && !e.getServerInstanceKeys().isEmpty())
-                            .transform(s -> s.getId())
-                            .toSet();
+                (ServerTemplateList st) -> {
+                    if (st.getServerTemplates() == null) {
+                        return;
+                    }
+                    final Set<String> stId = Arrays.stream(st.getServerTemplates()).filter(e -> e.getServerInstanceKeys() != null && !e.getServerInstanceKeys().isEmpty())
+                            .map(s -> s.getId())
+                            .collect(Collectors.toSet());
                     view.addServerTemplates(stId);
                 }).listServerTemplates();
     }
@@ -114,11 +115,11 @@ public class ProcessAdminSettingsPresenter {
         processRuntimeDataService.call(
                 (List<ProcessSummary> ps) -> {
                     processeSummaryMap.clear();
-                    final Set<String> pid = FluentIterable.from(ps).transform(p -> {
+                    final Set<String> pid = ps.stream().map(p -> {
                         processeSummaryMap.put(p.getProcessDefId(),
                                                p);
                         return p.getProcessDefId();
-                    }).toSet();
+                    }).collect(Collectors.toSet());
                     view.addProcessList(pid);
                 })
                 .getProcesses(serverTemplateId,

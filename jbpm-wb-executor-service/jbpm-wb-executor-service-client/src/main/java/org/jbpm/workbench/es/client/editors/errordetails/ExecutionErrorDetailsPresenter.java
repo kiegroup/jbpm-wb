@@ -21,26 +21,24 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
-import org.uberfire.client.annotations.DefaultPosition;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
-import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.workbench.model.CompassPosition;
-import org.uberfire.workbench.model.Position;
+
+import static org.jbpm.workbench.common.client.PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN;
 
 @Dependent
-@WorkbenchScreen(identifier = PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN, preferredWidth = 655)
+@WorkbenchScreen(identifier = EXECUTION_ERROR_DETAILS_SCREEN)
 public class ExecutionErrorDetailsPresenter implements RefreshMenuBuilder.SupportsRefresh {
 
     @Inject
@@ -65,11 +63,6 @@ public class ExecutionErrorDetailsPresenter implements RefreshMenuBuilder.Suppor
         return view;
     }
 
-    @DefaultPosition
-    public Position getPosition() {
-        return CompassPosition.EAST;
-    }
-
     @WorkbenchPartTitle
     public String getTitle() {
         return Constants.INSTANCE.Details();
@@ -78,6 +71,10 @@ public class ExecutionErrorDetailsPresenter implements RefreshMenuBuilder.Suppor
     @OnStartup
     public void onStartup(final PlaceRequest place) {
         this.place = place;
+    }
+
+    public static String getErrorDetailTitle(final ExecutionErrorSummary summary) {
+        return summary.getProcessId() + " - " + summary.getProcessInstanceId() + " (" + summary.getDeploymentId() + ")";
     }
 
     public void onExecutionErrorSelectedEvent(@Observes ExecutionErrorSelectedEvent event) {
@@ -109,10 +106,6 @@ public class ExecutionErrorDetailsPresenter implements RefreshMenuBuilder.Suppor
                 .getError(serverTemplateId,
                           deploymentId,
                           errorId);
-    }
-
-    private String getErrorDetailTitle(ExecutionErrorSummary summary) {
-        return summary.getProcessId() + " - " + summary.getProcessInstanceId() + " (" + summary.getDeploymentId() + ")";
     }
 
     @Inject

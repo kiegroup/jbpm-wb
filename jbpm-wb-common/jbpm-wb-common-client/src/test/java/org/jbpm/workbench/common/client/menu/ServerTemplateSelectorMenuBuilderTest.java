@@ -43,7 +43,10 @@ public class ServerTemplateSelectorMenuBuilderTest {
     ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
 
     @Mock
-    ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorView view;
+    ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorWidgetView viewWidget;
+
+    @Mock
+    ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView view;
 
     private CallerMock<SpecManagementService> specManagementServiceCaller;
 

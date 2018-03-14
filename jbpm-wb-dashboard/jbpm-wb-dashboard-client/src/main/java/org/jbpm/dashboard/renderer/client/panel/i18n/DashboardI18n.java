@@ -45,6 +45,10 @@ public interface DashboardI18n {
 
     String processInstances();
 
+    String ProcessInstanceBreadcrumb(Long processInstanceId);
+
+    String TaskBreadcrumb(Long taskId);
+
     String processTableInstanceId();
 
     String processTableDeploymentId();
@@ -113,11 +117,9 @@ public interface DashboardI18n {
 
     String loadingDashboard();
 
-    String showDashboard();
+    String viewDashboard();
 
-    String showInstances();
-
-    String showTasks();
+    String viewTable();
 
     String total();
 
@@ -236,4 +238,6 @@ public interface DashboardI18n {
     String displayerNotFound(String name);
 
     String dashboardCouldNotBeLoaded();
+
+    String Home();
 }

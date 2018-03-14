@@ -1,0 +1,11 @@
+.dropdown:hover {
+    cursor: pointer;
+}
+
+.dropdown .server-template-dropdown-menu.dropdown-menu {
+    margin-top: 6px;
+}
+
+.server-template-text {
+    color: #4d5258;
+}

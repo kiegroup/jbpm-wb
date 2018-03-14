@@ -21,15 +21,14 @@ import java.util.List;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridViewTest;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
-import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 
-import static org.jbpm.workbench.es.client.editors.errorlist.ExecutionErrorListViewImpl.*;
+import static org.jbpm.workbench.es.client.editors.errorlist.ExecutionErrorListViewImpl.COL_ID_ACTIONS;
+import static org.jbpm.workbench.es.client.editors.errorlist.ExecutionErrorListViewImpl.COL_ID_SELECT;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
-import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class ExecutionErrorListViewImplTest extends AbstractMultiGridViewTest<ExecutionErrorSummary> {
@@ -49,14 +48,6 @@ public class ExecutionErrorListViewImplTest extends AbstractMultiGridViewTest<Ex
     @Override
     public ExecutionErrorListPresenter getPresenter() {
         return presenter;
-    }
-
-    @Override
-    public List<String> getExpectedTabs() {
-        return Arrays.asList(TAB_SEARCH,
-                             TAB_ACK,
-                             TAB_ALL,
-                             TAB_NEW);
     }
 
     @Override
@@ -83,12 +74,4 @@ public class ExecutionErrorListViewImplTest extends AbstractMultiGridViewTest<Ex
         return 15;
     }
 
-    @Before
-    @Override
-    public void setupMocks() {
-        super.setupMocks();
-        when(presenter.createAllTabSettings()).thenReturn(filterSettings);
-        when(presenter.createNewTabSettings()).thenReturn(filterSettings);
-        when(presenter.createAcknowledgedTabSettings()).thenReturn(filterSettings);
-    }
 }

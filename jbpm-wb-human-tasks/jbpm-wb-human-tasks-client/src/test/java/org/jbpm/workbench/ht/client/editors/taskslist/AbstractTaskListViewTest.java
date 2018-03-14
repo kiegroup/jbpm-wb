@@ -22,7 +22,7 @@ import java.util.Set;
 
 import com.google.gwt.user.cellview.client.RowStyles;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridViewTest;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
 import org.jbpm.workbench.ht.model.TaskSummary;
@@ -32,13 +32,14 @@ import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.COL_ID_ACTIONS;
-import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
+import static org.jbpm.workbench.ht.model.TaskDataSetConstants.COLUMN_NAME;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest<TaskSummary> {
 
     public abstract AbstractTaskListView getView();
+
     public abstract AbstractTaskListPresenter getPresenter();
 
     @Override
@@ -54,7 +55,7 @@ public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest
 
     @Test
     public void addDomainSpecifColumnsTest() {
-        final ExtendedPagedTable<TaskSummary> currentListGrid = spy(new ExtendedPagedTable<>(new GridGlobalPreferences()));
+        final ListTable<TaskSummary> currentListGrid = spy(new ListTable<>(new GridGlobalPreferences()));
         final Set<String> domainColumns = new HashSet<String>();
         domainColumns.add("var1");
         domainColumns.add("var2");
@@ -77,13 +78,12 @@ public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest
 
     @Test
     public void testStylesNotAppliedDependingOnPriority() {
-        final ExtendedPagedTable<TaskSummary> currentListGrid = spy(new ExtendedPagedTable<>(new GridGlobalPreferences()));
+        final ListTable<TaskSummary> currentListGrid = spy(new ListTable<>(new GridGlobalPreferences()));
         getView().initSelectionModel(currentListGrid);
 
         final ArgumentCaptor<RowStyles> rowStylesApplied = ArgumentCaptor.forClass(RowStyles.class);
 
         verify(currentListGrid).setRowStyles(rowStylesApplied.capture());
-        when(currentListGrid.getSelectedRow()).thenReturn(0);
 
         assertNull(rowStylesApplied.getValue().getStyleNames(TaskSummary.builder()
                                                                      .status(TaskUtils.TASK_STATUS_READY)
@@ -107,7 +107,6 @@ public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest
                                                                        .build(),
                                                                1));
     }
-    
-    public abstract  List<String> getExpectedInitialColumns();
-    
+
+    public abstract List<String> getExpectedInitialColumns();
 }

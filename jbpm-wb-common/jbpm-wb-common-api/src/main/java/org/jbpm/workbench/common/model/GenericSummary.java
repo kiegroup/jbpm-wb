@@ -26,7 +26,6 @@ public abstract class GenericSummary<T> extends AbstractPageRow implements Seria
 
     protected T id;
     protected String name;
-    private boolean selected = false;
 
     public GenericSummary() {
     }
@@ -51,14 +50,6 @@ public abstract class GenericSummary<T> extends AbstractPageRow implements Seria
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
     }
 
     @Override
@@ -107,7 +98,6 @@ public abstract class GenericSummary<T> extends AbstractPageRow implements Seria
         return "GenericSummary{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", selected=" + selected +
-                '}';
+                "} " + super.toString();
     }
 }

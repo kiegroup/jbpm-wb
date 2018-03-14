@@ -16,39 +16,14 @@
 
 package org.jbpm.workbench.pr.client.editors.definition.details.multi;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.IsWidget;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 
 public abstract class BaseProcessDefDetailsMultiViewImpl extends Composite
         implements BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView {
-
-    private Button newInstanceButton = GWT.create(Button.class);
-
-    public BaseProcessDefDetailsMultiViewImpl() {
-        newInstanceButton.setSize(ButtonSize.SMALL);
-        newInstanceButton.setIcon(IconType.PLAY);
-        newInstanceButton.setText(Constants.INSTANCE.New_Instance());
-        newInstanceButton.addClickHandler(event -> createNewProcessInstance());
-    }
-
-    @Override
-    public IsWidget getNewInstanceButton() {
-        return newInstanceButton;
-    }
 
     protected abstract IsWidget getTabView();
 
     protected abstract void closeDetails();
 
-    protected abstract void createNewProcessInstance();
-
-    @Override
-    public void setNewInstanceButtonVisible(boolean visible) {
-        newInstanceButton.setVisible(visible);
-    }
 }

@@ -32,7 +32,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 
-import static org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceListViewImpl.*;
+import static org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceListViewImpl.COL_ID_ACTIONS;
+import static org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceListViewImpl.COL_ID_SELECT;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.mockito.Mockito.*;
 
@@ -47,7 +48,7 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
 
     @Mock
     private ManagedInstance<GenericErrorSummaryCountCell> popoverCellInstance;
-    
+
     @InjectMocks
     @Spy
     private ProcessInstanceListViewImpl view;
@@ -60,14 +61,6 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
     @Override
     protected AbstractMultiGridPresenter getPresenter() {
         return presenter;
-    }
-
-    @Override
-    public List<String> getExpectedTabs() {
-        return Arrays.asList(TAB_ACTIVE,
-                             TAB_SEARCH,
-                             TAB_ABORTED,
-                             TAB_COMPLETED);
     }
 
     @Override
@@ -100,9 +93,6 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
     @Override
     public void setupMocks() {
         super.setupMocks();
-        when(presenter.createActiveTabSettings()).thenReturn(filterSettings);
-        when(presenter.createCompletedTabSettings()).thenReturn(filterSettings);
-        when(presenter.createAbortedTabSettings()).thenReturn(filterSettings);
         when(popoverCellInstance.get()).thenReturn(cellMock);
     }
 }

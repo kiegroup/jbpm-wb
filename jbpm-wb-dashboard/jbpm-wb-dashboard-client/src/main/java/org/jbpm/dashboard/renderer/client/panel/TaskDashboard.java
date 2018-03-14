@@ -40,9 +40,9 @@ import org.dashbuilder.renderer.client.table.TableDisplayer;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
-import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardConstants;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
 import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.common.events.ServerTemplateSelected;
 import org.jbpm.workbench.ht.model.TaskSummary;
@@ -170,15 +170,38 @@ public class TaskDashboard extends AbstractDashboard {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return DashboardConstants.INSTANCE.taskDashboardName();
+        return i18n.taskDashboardName();
     }
 
     @WorkbenchMenu
     public Menus getMenus() {
         return MenuFactory
-                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder)
+                .newTopLevelCustomMenu(new PrimaryActionMenuBuilder("",
+                                                                    "fa-table",
+                                                                    i18n.viewTable(),
+                                                                    "",
+                                                                    "fa-th",
+                                                                    i18n.viewDashboard(),
+                                                                    () -> {
+                                                                        if (view.isDashboardPanelVisible()) {
+                                                                            showTasksTable();
+                                                                        } else {
+                                                                            showDashboard();
+                                                                        }
+                                                                    }))
                 .endMenu()
                 .build();
+    }
+
+    @Override
+    public void createListBreadcrumb() {
+        setupListBreadcrumb(i18n.taskDashboardName());
+    }
+
+    @Override
+    public void tableRedraw() {
+        tasksTable.filterReset();
+        tasksTable.redraw();
     }
 
     public void onServerTemplateSelected(@Observes final ServerTemplateSelected serverTemplateSelected) {
@@ -398,6 +421,9 @@ public class TaskDashboard extends AbstractDashboard {
 
         taskDataService.call((TaskSummary taskSummary) -> {
             openTaskDetailsScreen();
+            setupDetailBreadcrumb(i18n.taskDashboardName(),
+                                  i18n.TaskBreadcrumb(taskId),
+                                  TASK_DETAILS_SCREEN);
             taskSelectionEvent.fire(new TaskSelectionEvent(serverTemplateId,
                                                            taskSummary.getDeploymentId(),
                                                            taskSummary.getId(),

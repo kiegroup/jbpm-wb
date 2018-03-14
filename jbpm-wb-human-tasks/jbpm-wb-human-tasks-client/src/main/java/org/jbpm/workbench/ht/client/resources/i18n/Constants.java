@@ -61,6 +61,8 @@ public interface Constants extends Messages {
 
     String Task();
 
+    String TaskBreadcrumb(Long taskId);
+
     String Id();
 
     String Status();
