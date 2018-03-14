@@ -16,19 +16,34 @@
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.mockito.Spy;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.Commands;
 
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_USER_DATASET;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskListPresenterTest extends AbstractTaskListPresenterTest {
+
+    private static final String PERSPECTIVE_ID = PerspectiveIds.TASKS;
+
+    private org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants;
 
     @Spy
     TaskListFilterSettingsManager manager;
@@ -44,6 +59,13 @@ public class TaskListPresenterTest extends AbstractTaskListPresenterTest {
     @Override
     protected AbstractTaskListFilterSettingsManager getFilterSettingsManager() {
         return manager;
+    }
+
+    @Before
+    public void setupMocks() {
+        super.setupMocks();
+        when(perspectiveActivity.getIdentifier()).thenReturn(PERSPECTIVE_ID);
+        commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
     }
 
     @Test
@@ -63,5 +85,57 @@ public class TaskListPresenterTest extends AbstractTaskListPresenterTest {
     public void userShouldNotBeAbleToReleaseTasksOwnedByOthers() {
         assertFalse(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner("userx").status(TASK_STATUS_RESERVED).build()));
         assertFalse(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner("userx").status(TASK_STATUS_IN_PROGRESS).build()));
+    }
+
+    @Test
+    public void testListBreadcrumbCreation() {
+        presenter.createListBreadcrumb();
+        ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
+        verify(breadcrumbs).clearBreadcrumbs(PERSPECTIVE_ID);
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Home()),
+                                          captureCommand.capture());
+
+        captureCommand.getValue().execute();
+        verify(placeManager).goTo(PerspectiveIds.HOME);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Task_Inbox()),
+                                          eq(Commands.DO_NOTHING));
+
+        verifyNoMoreInteractions(breadcrumbs);
+    }
+
+    @Test
+    public void testSetupDetailBreadcrumb() {
+        String detailLabel = "detailLabel";
+        String detailScreenId = "screenId";
+
+        PlaceManager placeManagerMock = mock(PlaceManager.class);
+        presenter.setPlaceManager(placeManagerMock);
+        presenter.setupDetailBreadcrumb(placeManagerMock,
+                                        commonConstants.Task_Inbox(),
+                                        detailLabel,
+                                        detailScreenId);
+
+        ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
+
+        verify(breadcrumbs).clearBreadcrumbs(PERSPECTIVE_ID);
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Home()),
+                                          captureCommand.capture());
+        captureCommand.getValue().execute();
+        verify(placeManagerMock).goTo(PerspectiveIds.HOME);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Task_Inbox()),
+                                          captureCommand.capture());
+
+        captureCommand.getValue().execute();
+        verify(placeManagerMock).closePlace(detailScreenId);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(detailLabel),
+                                          eq(Commands.DO_NOTHING));
     }
 }

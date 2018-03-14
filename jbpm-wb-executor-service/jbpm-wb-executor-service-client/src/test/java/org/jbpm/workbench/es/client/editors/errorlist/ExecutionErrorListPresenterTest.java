@@ -31,6 +31,7 @@ import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
+import org.jbpm.workbench.es.client.editors.errordetails.ExecutionErrorDetailsPresenter;
 import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
@@ -51,6 +52,8 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.Commands;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.ResourceRef;
 import org.uberfire.security.authz.AuthorizationManager;
@@ -63,6 +66,9 @@ import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class ExecutionErrorListPresenterTest {
+
+    private static final String PERSPECTIVE_ID = PerspectiveIds.EXECUTION_ERRORS;
+    private org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants;
 
     private CallerMock<ExecutorService> callerMockExecutorService;
 
@@ -127,13 +133,14 @@ public class ExecutionErrorListPresenterTest {
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
         when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
         when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
+        when(perspectiveActivity.getIdentifier()).thenReturn(PERSPECTIVE_ID);
 
         doAnswer((InvocationOnMock invocation) -> {
             ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSet);
             return null;
         }).when(dataSetQueryHelper).lookupDataSet(anyInt(),
                                                   any(DataSetReadyCallback.class));
-
+        commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
         presenter.setExecutorService(callerMockExecutorService);
     }
 
@@ -276,7 +283,7 @@ public class ExecutionErrorListPresenterTest {
                      filterItem.getKey());
         assertEquals("0",
                      filterItem.getValue());
-        assertEquals(Constants.INSTANCE.Acknowledged() + ": " + org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No(),
+        assertEquals(Constants.INSTANCE.Acknowledged() + ": " + commonConstants.No(),
                      filterItem.getLabelValue());
     }
 
@@ -298,7 +305,7 @@ public class ExecutionErrorListPresenterTest {
                      filterItem.getKey());
         assertEquals("0",
                      filterItem.getValue());
-        assertEquals(Constants.INSTANCE.Acknowledged() + ": " + org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.No(),
+        assertEquals(Constants.INSTANCE.Acknowledged() + ": " + commonConstants.No(),
                      filterItem.getLabelValue());
     }
 
@@ -454,6 +461,65 @@ public class ExecutionErrorListPresenterTest {
                      captor.getValue().getDeploymentId());
         assertEquals(errorId,
                      captor.getValue().getErrorId());
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(Constants.INSTANCE.ExecutionErrorBreadcrumb(ExecutionErrorDetailsPresenter.getErrorDetailTitle(errorSummary))),
+                                          eq(Commands.DO_NOTHING));
+        assertEquals("Evaluation - 1 (evaluation.1.0.1)",
+                     ExecutionErrorDetailsPresenter.getErrorDetailTitle(errorSummary));
+    }
+
+    @Test
+    public void testListBreadcrumbCreation() {
+        presenter.createListBreadcrumb();
+
+        ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
+        verify(breadcrumbs).clearBreadcrumbs(PERSPECTIVE_ID);
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Home()),
+                                          captureCommand.capture());
+
+        captureCommand.getValue().execute();
+        verify(placeManager).goTo(PerspectiveIds.HOME);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Manage_ExecutionErrors()),
+                                          eq(Commands.DO_NOTHING));
+
+        verifyNoMoreInteractions(breadcrumbs);
+    }
+
+    @Test
+    public void testSetupDetailBreadcrumb() {
+        String detailLabel = "detailLabel";
+        String detailScreenId = "screenId";
+
+        PlaceManager placeManagerMock = mock(PlaceManager.class);
+        presenter.setPlaceManager(placeManagerMock);
+        presenter.setupDetailBreadcrumb(placeManagerMock,
+                                        commonConstants.Manage_ExecutionErrors(),
+                                        detailLabel,
+                                        detailScreenId);
+
+        ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
+
+        verify(breadcrumbs).clearBreadcrumbs(PERSPECTIVE_ID);
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Home()),
+                                          captureCommand.capture());
+        captureCommand.getValue().execute();
+        verify(placeManagerMock).goTo(PerspectiveIds.HOME);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Manage_ExecutionErrors()),
+                                          captureCommand.capture());
+
+        captureCommand.getValue().execute();
+        verify(placeManagerMock).closePlace(detailScreenId);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(detailLabel),
+                                          eq(Commands.DO_NOTHING));
     }
 
     protected class PerspectiveAnswer implements Answer<Boolean> {

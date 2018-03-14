@@ -36,6 +36,7 @@ import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.df.client.filter.FilterSettingsManager;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
@@ -63,6 +64,8 @@ import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.Commands;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.ResourceRef;
 import org.uberfire.security.authz.AuthorizationManager;
@@ -80,6 +83,10 @@ import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class ProcessInstanceListPresenterTest {
+
+    private static final String PERSPECTIVE_ID = PerspectiveIds.PROCESS_INSTANCES;
+
+    private org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants;
 
     @Mock
     protected PlaceManager placeManager;
@@ -200,6 +207,7 @@ public class ProcessInstanceListPresenterTest {
         when(filterSettingsManager.getVariablesFilterSettings(any())).thenReturn(filterSettings);
         when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
         when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
+        when(perspectiveActivity.getIdentifier()).thenReturn(PERSPECTIVE_ID);
 
         doAnswer(new Answer() {
 
@@ -220,6 +228,7 @@ public class ProcessInstanceListPresenterTest {
             }
         }).when(dataSetQueryHelperDomainSpecific).lookupDataSet(anyInt(),
                                                                 any(DataSetReadyCallback.class));
+        commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
 
         presenter.setProcessService(remoteProcessServiceCaller);
     }
@@ -739,7 +748,59 @@ public class ProcessInstanceListPresenterTest {
         doNothing().when(spy).showErrorPopup(any());
         assertFalse(callback.onError(error));
         verify(viewMock).hideBusyIndicator();
-        verify(spy).showErrorPopup(Constants.INSTANCE.ResourceCouldNotBeLoaded(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Process_Instances()));
+        verify(spy).showErrorPopup(Constants.INSTANCE.ResourceCouldNotBeLoaded(commonConstants.Process_Instances()));
+    }
+
+    @Test
+    public void testListBreadcrumbCreation() {
+        presenter.createListBreadcrumb();
+        ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
+        verify(breadcrumbs).clearBreadcrumbs(PERSPECTIVE_ID);
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Home()),
+                                          captureCommand.capture());
+
+        captureCommand.getValue().execute();
+        verify(placeManager).goTo(PerspectiveIds.HOME);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Manage_Process_Instances()),
+                                          eq(Commands.DO_NOTHING));
+
+        verifyNoMoreInteractions(breadcrumbs);
+    }
+
+    @Test
+    public void testSetupDetailBreadcrumb() {
+        String detailLabel = "detailLabel";
+        String detailScreenId = "screenId";
+
+        PlaceManager placeManagerMock = mock(PlaceManager.class);
+        presenter.setPlaceManager(placeManagerMock);
+        presenter.setupDetailBreadcrumb(placeManagerMock,
+                                        commonConstants.Manage_Process_Instances(),
+                                        detailLabel,
+                                        detailScreenId);
+
+        ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
+
+        verify(breadcrumbs).clearBreadcrumbs(PERSPECTIVE_ID);
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Home()),
+                                          captureCommand.capture());
+        captureCommand.getValue().execute();
+        verify(placeManagerMock).goTo(PerspectiveIds.HOME);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Manage_Process_Instances()),
+                                          captureCommand.capture());
+
+        captureCommand.getValue().execute();
+        verify(placeManagerMock).closePlace(detailScreenId);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(detailLabel),
+                                          eq(Commands.DO_NOTHING));
     }
 
     protected class PerspectiveAnswer implements Answer<Boolean> {

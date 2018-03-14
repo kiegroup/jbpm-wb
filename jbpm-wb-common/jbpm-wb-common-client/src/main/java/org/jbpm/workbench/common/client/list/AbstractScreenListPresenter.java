@@ -175,4 +175,8 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
     public void setPerspectiveManager(PerspectiveManager perspectiveManager) {
         this.perspectiveManager = perspectiveManager;
     }
+
+    public void setPlaceManager(PlaceManager placeManager) {
+        this.placeManager = placeManager;
+    }
 }

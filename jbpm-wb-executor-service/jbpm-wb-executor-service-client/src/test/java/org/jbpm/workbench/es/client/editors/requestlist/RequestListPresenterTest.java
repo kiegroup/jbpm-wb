@@ -49,6 +49,8 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.Commands;
 import org.uberfire.mvp.PlaceRequest;
 
 import static org.jbpm.workbench.es.client.editors.util.JobUtils.createRequestSummary;
@@ -60,6 +62,9 @@ import static org.mockito.Mockito.*;
 public class RequestListPresenterTest {
 
     private static final Long REQUEST_ID = 1L;
+    private static final String PERSPECTIVE_ID = PerspectiveIds.JOBS;
+
+    private org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants;
 
     private CallerMock<ExecutorService> callerMockExecutorService;
 
@@ -124,12 +129,14 @@ public class RequestListPresenterTest {
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
         when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
         when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
+        when(perspectiveActivity.getIdentifier()).thenReturn(PERSPECTIVE_ID);
 
         doAnswer((InvocationOnMock invocation) -> {
             ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSet);
             return null;
         }).when(dataSetQueryHelper).lookupDataSet(anyInt(),
                                                   any(DataSetReadyCallback.class));
+        commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
 
         presenter = new RequestListPresenter(viewMock,
                                              callerMockExecutorService,
@@ -353,6 +360,9 @@ public class RequestListPresenterTest {
         assertJobSelectedEventContent(captor.getValue(),
                                       job.getDeploymentId(),
                                       job.getId());
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(Constants.INSTANCE.JobBreadcrumb(job.getId())),
+                                          eq(Commands.DO_NOTHING));
     }
 
     @Test
@@ -409,6 +419,58 @@ public class RequestListPresenterTest {
         verify(viewMock,
                times(3)).getListGrid();
         verifyNoMoreInteractions(viewMock);
+    }
+
+    @Test
+    public void testListBreadcrumbCreation() {
+        presenter.createListBreadcrumb();
+        ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
+        verify(breadcrumbs).clearBreadcrumbs(PERSPECTIVE_ID);
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Home()),
+                                          captureCommand.capture());
+
+        captureCommand.getValue().execute();
+        verify(placeManager).goTo(PerspectiveIds.HOME);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Manage_Jobs()),
+                                          eq(Commands.DO_NOTHING));
+
+        verifyNoMoreInteractions(breadcrumbs);
+    }
+
+    @Test
+    public void testSetupDetailBreadcrumb() {
+        String detailLabel = "detailLabel";
+        String detailScreenId = "screenId";
+
+        PlaceManager placeManagerMock = mock(PlaceManager.class);
+        presenter.setPlaceManager(placeManagerMock);
+        presenter.setupDetailBreadcrumb(placeManagerMock,
+                                        commonConstants.Manage_Jobs(),
+                                        detailLabel,
+                                        detailScreenId);
+
+        ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
+
+        verify(breadcrumbs).clearBreadcrumbs(PERSPECTIVE_ID);
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Home()),
+                                          captureCommand.capture());
+        captureCommand.getValue().execute();
+        verify(placeManagerMock).goTo(PerspectiveIds.HOME);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Manage_Jobs()),
+                                          captureCommand.capture());
+
+        captureCommand.getValue().execute();
+        verify(placeManagerMock).closePlace(detailScreenId);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(detailLabel),
+                                          eq(Commands.DO_NOTHING));
     }
 
     private void assertJobSelectedEventContent(JobSelectedEvent event,
