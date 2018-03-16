@@ -55,10 +55,6 @@ public interface Constants extends Messages {
 
     String Home();
 
-    String Process_Definitions();
-
-    String Process_Instances();
-
     String Process_Instances_Admin();
 
     String Deploy();
@@ -74,10 +70,6 @@ public interface Constants extends Messages {
     String Settings();
 
     String Users();
-
-    String Jobs();
-
-    String ExecutionErrors();
 
     String Pagination_For_Tables();
 

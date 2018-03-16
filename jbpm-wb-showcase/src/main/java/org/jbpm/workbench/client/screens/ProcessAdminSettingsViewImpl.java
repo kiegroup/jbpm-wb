@@ -120,7 +120,7 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
 
         correlationKeyLabel.setText(constants.Correlation_Key());
 
-        generateMockInstancesButton.setText(constants.Generate_Mock_Instances());
+        generateMockInstancesButton.setText(constants.Generate_Instances());
         resetButton.setText(constants.Reset());
 
         serverTemplate.addValueChangeHandler(e -> presenter.onServerTemplateSelected(serverTemplate.getValue()));
@@ -165,7 +165,8 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
         Scheduler.get().scheduleDeferred(() -> {
             serverTemplate.refresh();
             serverTemplate.setValue("");
-            serverTemplateIds.stream().findFirst().ifPresent(serverTemplateId -> serverTemplate.setValue(serverTemplateId, true));
+            serverTemplateIds.stream().findFirst().ifPresent(serverTemplateId -> serverTemplate.setValue(serverTemplateId,
+                                                                                                         true));
         });
     }
 
@@ -193,11 +194,11 @@ public class ProcessAdminSettingsViewImpl extends Composite implements ProcessAd
             processList.add(option);
         }
 
-
         Scheduler.get().scheduleDeferred(() -> {
             processList.refresh();
             processList.setValue("");
-            processIds.stream().findFirst().ifPresent(processId -> processList.setValue(processId, true));
+            processIds.stream().findFirst().ifPresent(processId -> processList.setValue(processId,
+                                                                                        true));
         });
     }
 }

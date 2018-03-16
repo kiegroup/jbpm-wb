@@ -57,10 +57,6 @@ public class TaskDetailsMultiViewImpl extends Composite
 
     private TabListItem taskDetailsTab;
 
-    private TabPane processContextPane;
-
-    private TabListItem processContextTab;
-
     private TabPane taskAssignmentsPane;
 
     private TabListItem taskAssignmentsTab;
@@ -109,20 +105,6 @@ public class TaskDetailsMultiViewImpl extends Composite
 
             navTabs.add(taskDetailsTab);
             tabContent.add(taskDetailsPane);
-        }
-
-        {
-            processContextPane = GWT.create(TabPane.class);
-            processContextPane.add(presenter.getProcessContextView());
-
-            processContextTab = GWT.create(TabListItem.class);
-            processContextTab.setText(constants.Process_Context());
-            processContextTab.setDataTargetWidget(processContextPane);
-            processContextTab.addStyleName("uf-dropdown-tab-list-item");
-
-            navTabs.add(processContextTab);
-            tabContent.add(processContextPane);
-
         }
 
         {
@@ -229,9 +211,6 @@ public class TaskDetailsMultiViewImpl extends Composite
         }
         taskDetailsPane.setVisible(true);
         taskDetailsTab.setVisible(true);
-
-        processContextTab.setVisible(true);
-        processContextPane.setVisible(true);
 
         taskLogsPane.setVisible(true);
         taskLogsTab.setVisible(true);

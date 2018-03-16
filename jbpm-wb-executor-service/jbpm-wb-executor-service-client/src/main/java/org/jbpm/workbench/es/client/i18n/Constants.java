@@ -111,8 +111,6 @@ public interface Constants extends Messages {
 
     String Status();
 
-    String Jobs();
-
     String No_Jobs_Found();
 
     String The_Job_Must_Have_A_BusinessKey();
@@ -179,7 +177,7 @@ public interface Constants extends Messages {
 
     String ExecutionErrorAcknowledged(String executionErrorId);
 
-    String ExecutionErrors();
+    String ExecutionErrorBreadcrumb(String errorId);
 
     String New_ErrorList();
 
@@ -226,6 +224,8 @@ public interface Constants extends Messages {
     String DB();
 
     String Job();
+
+    String JobBreadcrumb(Long id);
 
     String Unknown();
 

@@ -16,26 +16,28 @@
 package org.jbpm.workbench.pr.client.editors.definition.list;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.Cell;
-import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.TextHeader;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.list.AbstractListView;
+import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.ButtonActionCell;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessSummary;
@@ -43,6 +45,7 @@ import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 @Dependent
+@Templated(value = "/org/jbpm/workbench/common/client/list/AbstractListView.html", stylesheet = "/org/jbpm/workbench/common/client/resources/css/kie-manage.less")
 public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSummary, ProcessDefinitionListPresenter>
         implements ProcessDefinitionListPresenter.ProcessDefinitionListView {
 
@@ -54,8 +57,12 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     private Constants constants = Constants.INSTANCE;
 
     @Override
-    public void init(final ProcessDefinitionListPresenter presenter) {
+    protected ExtendedPagedTable<ProcessSummary> createListGrid(final GridGlobalPreferences preferences) {
+        return new ListTable<>(preferences);
+    }
 
+    @Override
+    public void init(final ProcessDefinitionListPresenter presenter) {
         List<String> bannedColumns = new ArrayList<String>();
         bannedColumns.add(COL_ID_PROCESSNAME);
         bannedColumns.add(COL_ID_ACTIONS);
@@ -73,24 +80,9 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             @Override
             public void onSelectionChange(SelectionChangeEvent event) {
-
-                boolean close = false;
-                if (selectedRow == -1) {
-                    listGrid.setRowStyles(selectedStyles);
-                    selectedRow = listGrid.getKeyboardSelectedRow();
-                    listGrid.redraw();
-                } else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
-                    listGrid.setRowStyles(selectedStyles);
-                    selectedRow = listGrid.getKeyboardSelectedRow();
-                    listGrid.redraw();
-                } else {
-                    close = true;
-                }
-
                 selectedItem = selectionModel.getLastSelectedObject();
 
-                presenter.selectProcessDefinition(selectedItem,
-                                                  close);
+                presenter.selectProcessDefinition(selectedItem);
             }
         });
         final ExtendedPagedTable<ProcessSummary> extendedPagedTable = getListGrid();
@@ -118,12 +110,6 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         listGrid.setSelectionModel(selectionModel,
                                    noActionColumnManager);
         listGrid.setEmptyTableCaption(constants.No_Process_Definitions_Found());
-        listGrid.setRowStyles(selectedStyles);
-
-        listGrid.getElement().getStyle().setPaddingRight(20,
-                                                         Style.Unit.PX);
-        listGrid.getElement().getStyle().setPaddingLeft(20,
-                                                        Style.Unit.PX);
     }
 
     @Override
@@ -136,16 +122,24 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
 
         List<ColumnMeta<ProcessSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessSummary>>();
-        columnMetas.add(new ColumnMeta<ProcessSummary>(processNameColumn,
-                                                       constants.Name()));
-        columnMetas.add(new ColumnMeta<ProcessSummary>(versionColumn,
-                                                       constants.Version()));
-        columnMetas.add(new ColumnMeta<ProcessSummary>(projectColumn,
-                                                       constants.Project()));
-        columnMetas.add(new ColumnMeta<ProcessSummary>(actionsColumn,
-                                                       constants.Actions()));
+        columnMetas.add(new ColumnMeta<>(processNameColumn,
+                                         constants.Name()));
+        columnMetas.add(new ColumnMeta<>(versionColumn,
+                                         constants.Version()));
+        columnMetas.add(new ColumnMeta<>(projectColumn,
+                                         constants.Project()));
+        final ColumnMeta columnMeta = new ColumnMeta<>(actionsColumn,
+                                                       "");
+        final TextHeader header = new TextHeader(constants.Actions());
+        header.setHeaderStyleNames("text-center");
+        columnMeta.setHeader(header);
+        columnMetas.add(columnMeta);
 
         extendedPagedTable.addColumns(columnMetas);
+        extendedPagedTable.setColumnWidth(actionsColumn,
+                                          AbstractMultiGridView.ACTIONS_COLUMN_WIDTH,
+                                          Style.Unit.PX);
+        extendedPagedTable.getColumnSortList().push(processNameColumn);
     }
 
     private Column initProcessNameColumn() {
@@ -157,6 +151,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
             }
         };
         processNameColumn.setSortable(true);
+        processNameColumn.setDefaultSortAscending(false);
         processNameColumn.setDataStoreName(COL_ID_PROCESSNAME);
         return processNameColumn;
     }
@@ -186,24 +181,20 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     }
 
     private Column initActionsColumn() {
-        // actions (icons)
-        List<HasCell<ProcessSummary, ?>> cells = new LinkedList<HasCell<ProcessSummary, ?>>();
+        final StartButtonActionCell actionCell = new StartButtonActionCell(constants.Start(),
+                                                                           processSummary ->
+                                                                                   presenter.openGenericForm(processSummary.getProcessDefId(),
+                                                                                                             processSummary.getDeploymentId(),
+                                                                                                             processSummary.getProcessDefName()));
 
-        cells.add(new StartButtonActionCell(constants.Start(),
-                                            (ProcessSummary process) ->
-                                                    presenter.openGenericForm(process.getProcessDefId(),
-                                                                              process.getDeploymentId(),
-                                                                              process.getProcessDefName())
-        ));
-
-        CompositeCell<ProcessSummary> cell = new CompositeCell<ProcessSummary>(cells);
-        Column<ProcessSummary, ProcessSummary> actionsColumn = new Column<ProcessSummary, ProcessSummary>(cell) {
+        Column<ProcessSummary, ProcessSummary> actionsColumn = new Column<ProcessSummary, ProcessSummary>(actionCell.getCell()) {
             @Override
             public ProcessSummary getValue(ProcessSummary object) {
                 return object;
             }
         };
         actionsColumn.setDataStoreName(COL_ID_ACTIONS);
+        actionsColumn.setCellStyleNames("text-center");
         return actionsColumn;
     }
 
@@ -212,7 +203,8 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         public StartButtonActionCell(final String text,
                                      final ActionCell.Delegate<ProcessSummary> delegate) {
             super(text,
-                  delegate);
+                  delegate,
+                  ButtonSize.DEFAULT);
         }
 
         @Override

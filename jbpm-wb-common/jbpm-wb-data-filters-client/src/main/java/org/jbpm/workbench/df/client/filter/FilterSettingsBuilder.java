@@ -19,12 +19,17 @@ import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.impl.TableDisplayerSettingsBuilderImpl;
 
 /**
- * Table settings builder
+ * Filter Settings builder
  */
 public final class FilterSettingsBuilder extends TableDisplayerSettingsBuilderImpl {
 
     public static FilterSettingsBuilder init() {
         return new FilterSettingsBuilder();
+    }
+
+    public FilterSettingsBuilder key(final String key) {
+        ((FilterSettings) displayerSettings).setKey(key);
+        return this;
     }
 
     @Override

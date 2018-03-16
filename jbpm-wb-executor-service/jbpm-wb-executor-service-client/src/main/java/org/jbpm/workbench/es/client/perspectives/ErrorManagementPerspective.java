@@ -17,26 +17,41 @@ package org.jbpm.workbench.es.client.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.perspectives.AbstractPerspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
+import static org.jbpm.workbench.common.client.PerspectiveIds.*;
 /**
  * A Perspective to show Execution Errors
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = PerspectiveIds.EXECUTION_ERRORS)
+@WorkbenchPerspective(identifier = EXECUTION_ERRORS)
 public class ErrorManagementPerspective extends AbstractPerspective {
 
     @Override
     public PlaceRequest getPlaceRequest() {
-        return new DefaultPlaceRequest(PerspectiveIds.EXECUTION_ERROR_LIST_SCREEN);
+        return new DefaultPlaceRequest(EXECUTION_ERROR_LIST_SCREEN);
     }
 
     @Override
     public String getPerspectiveId() {
-        return PerspectiveIds.EXECUTION_ERRORS;
+        return EXECUTION_ERRORS;
+    }
+
+    @Override
+    public String getBasicFiltersScreenId() {
+        return EXECUTION_ERROR_LIST_BASIC_FILTERS_SCREEN;
+    }
+
+    @Override
+    public String getSavedFiltersScreenId() {
+        return EXECUTION_ERROR_LIST_SAVED_FILTERS_SCREEN;
+    }
+
+    @Override
+    public String getDetailsScreenId() {
+        return EXECUTION_ERROR_DETAILS_SCREEN;
     }
 }

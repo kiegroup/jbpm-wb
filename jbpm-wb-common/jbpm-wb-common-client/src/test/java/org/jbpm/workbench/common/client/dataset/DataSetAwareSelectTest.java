@@ -79,30 +79,8 @@ public class DataSetAwareSelectTest {
     }
 
     @Test
-    public void testDifferentTableKey() {
-        filterSettings.setKey("anotherkey");
-        dataSetAwareSelect.setTableKey("key");
-
-        dataSetAwareSelect.onDataSetReady(new DataSetReadyEvent(filterSettings));
-
-        verifyZeroInteractions(dataSetClientServices);
-        verifyZeroInteractions(select);
-    }
-
-    @Test
-    public void testFilterSettingsWithoutKey() {
-        dataSetAwareSelect.setTableKey("key");
-
-        dataSetAwareSelect.onDataSetReady(new DataSetReadyEvent(filterSettings));
-
-        verifyZeroInteractions(dataSetClientServices);
-        verifyZeroInteractions(select);
-    }
-
-    @Test
     public void testEmptyServerTemplate() {
         filterSettings.setKey("key");
-        dataSetAwareSelect.setTableKey("key");
 
         dataSetAwareSelect.onDataSetReady(new DataSetReadyEvent(filterSettings));
 
@@ -119,7 +97,6 @@ public class DataSetAwareSelectTest {
         final String columnText = "processNameText";
 
         filterSettings.setKey(key);
-        dataSetAwareSelect.setTableKey(key);
         filterSettings.setServerTemplateId(serverTemplateId);
         final DataSetLookup lookup = mock(DataSetLookup.class);
         when(lookup.getDataSetUUID()).thenReturn(dataUUID);
@@ -168,7 +145,6 @@ public class DataSetAwareSelectTest {
         final String columnText = "processNameText";
 
         filterSettings.setKey(key);
-        dataSetAwareSelect.setTableKey(key);
         filterSettings.setServerTemplateId(serverTemplateId);
         final DataSetLookup lookup = mock(DataSetLookup.class);
         when(lookup.getDataSetUUID()).thenReturn(dataUUID);
@@ -223,7 +199,6 @@ public class DataSetAwareSelectTest {
         final String dataUUID = "dataUUID";
 
         filterSettings.setKey(key);
-        dataSetAwareSelect.setTableKey(key);
         filterSettings.setServerTemplateId(serverTemplateId);
         final DataSetLookup lookup = mock(DataSetLookup.class);
         when(lookup.getDataSetUUID()).thenReturn(dataUUID);

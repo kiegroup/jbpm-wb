@@ -97,6 +97,55 @@ public interface Constants extends Messages {
     String LastDays(Integer days);
 
     String Custom();
-    
+
+    String Home();
+
+    String Filters();
+
+    String Select();
+
+    String Apply();
+
+    String AdvancedFilters();
+
+    String Process_Definitions();
+
+    String Process_Instances();
+
+    String Tasks();
+
+    String Task_Inbox();
+
+    String ExecutionErrors();
+
+    String Jobs();
+
+    String Manage();
+
+    String Manage_Process_Definitions();
+
+    String Manage_Process_Instances();
+
+    String Manage_Tasks();
+
+    String Manage_ExecutionErrors();
+
+    String Manage_Jobs();
+
+    String FilterBy();
+
+    String SavedFilters();
+
+    String RemoveSavedFilterTitle();
+
+    String RemoveSavedFilterMessage(String filterName);
+
+    String Remove();
+
     String ErrorCountNumberView(@PluralCount int errCount);
+
+    String UnexpectedError(String message);
+
+    String FilterWithSameNameAlreadyExists();
+
 }

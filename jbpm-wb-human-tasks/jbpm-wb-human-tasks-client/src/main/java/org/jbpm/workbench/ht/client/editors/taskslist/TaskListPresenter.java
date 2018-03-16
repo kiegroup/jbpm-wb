@@ -15,24 +15,20 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Predicate;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.jbpm.workbench.common.client.util.TaskUtils;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchPartTitleDecoration;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
-import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Dependent
 @WorkbenchScreen(identifier = PerspectiveIds.TASK_LIST_SCREEN)
@@ -40,7 +36,12 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return constants.Task_Inbox();
+        return org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Task_Inbox();
+    }
+
+    @WorkbenchPartTitleDecoration
+    public IsWidget getTitleDecorator() {
+        return null;
     }
 
     @WorkbenchMenu
@@ -49,62 +50,22 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
     }
 
     @Override
-    public void setupAdvancedSearchView() {
-        super.setupAdvancedSearchView();
-        addProcessNameFilter(HUMAN_TASKS_WITH_USER_DATASET);
+    public void createListBreadcrumb() {
+        setupListBreadcrumb(placeManager,
+                            org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Task_Inbox());
     }
 
     @Override
-    public FilterSettings createTableSettingsPrototype() {
-        return createStatusSettings(HUMAN_TASKS_WITH_USER_DATASET,
-                                    null);
+    public void setupDetailBreadcrumb(String detailLabel) {
+        setupDetailBreadcrumb(placeManager,
+                              org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Task_Inbox(),
+                              detailLabel,
+                              PerspectiveIds.TASK_DETAILS_SCREEN);
     }
 
-    public FilterSettings createGroupTabSettings() {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(HUMAN_TASKS_WITH_USER_DATASET);
-        List<Comparable> names = new ArrayList<>(getStatusByType(TaskUtils.TaskType.GROUP));
-        builder.filter(COLUMN_STATUS,
-                       equalsTo(COLUMN_STATUS,
-                                names));
-
-        builder.filter(COLUMN_ACTUAL_OWNER,
-                       OR(equalsTo(""),
-                          isNull()));
-
-        builder.group(COLUMN_TASK_ID);
-
-        addCommonColumnSettings(builder);
-
-        return builder.buildSettings();
-    }
-
-    public FilterSettings createPersonalTabSettings() {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(HUMAN_TASKS_DATASET);
-        List<Comparable> names = new ArrayList<>(getStatusByType(TaskUtils.TaskType.PERSONAL));
-        builder.filter(equalsTo(COLUMN_STATUS,
-                                names));
-        builder.filter(equalsTo(COLUMN_ACTUAL_OWNER,
-                                identity.getIdentifier()));
-
-        addCommonColumnSettings(builder);
-
-        return builder.buildSettings();
-    }
-
-    public FilterSettings createAllTabSettings() {
-        return createStatusSettings(HUMAN_TASKS_WITH_USER_DATASET,
-                                    new ArrayList<>(getStatusByType(TaskUtils.TaskType.ALL)));
-    }
-
-    public FilterSettings createActiveTabSettings() {
-        return createStatusSettings(HUMAN_TASKS_WITH_USER_DATASET,
-                                    new ArrayList<>(getStatusByType(TaskUtils.TaskType.ACTIVE)));
+    @Inject
+    public void setFilterSettingsManager(final TaskListFilterSettingsManager filterSettingsManager) {
+        super.setFilterSettingsManager(filterSettingsManager);
     }
 
     @Override

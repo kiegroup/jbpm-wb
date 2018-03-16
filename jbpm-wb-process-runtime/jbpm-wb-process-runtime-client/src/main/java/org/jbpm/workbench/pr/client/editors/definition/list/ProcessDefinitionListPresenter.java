@@ -30,6 +30,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.list.AbstractScreenListPresenter;
 import org.jbpm.workbench.common.client.list.ListView;
+import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.common.model.PortableQueryFilter;
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
@@ -42,14 +43,10 @@ import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.uberfire.client.annotations.WorkbenchMenu;
-import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
-import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -77,20 +74,28 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
     private Constants constants = Constants.INSTANCE;
 
-    private String placeIdentifier;
+    private final org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
 
     public ProcessDefinitionListPresenter() {
         super();
     }
 
-    @WorkbenchPartTitle
-    public String getTitle() {
-        return constants.Process_Definitions();
-    }
-
     @WorkbenchPartView
     public UberView<ProcessDefinitionListPresenter> getView() {
         return view;
+    }
+
+    @Override
+    public void createListBreadcrumb() {
+        setupListBreadcrumb(placeManager,
+                            commonConstants.Manage_Process_Definitions());
+    }
+
+    public void setupDetailBreadcrumb(String detailLabel) {
+        setupDetailBreadcrumb(placeManager,
+                              commonConstants.Manage_Process_Definitions(),
+                              detailLabel,
+                              PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN);
     }
 
     public void openGenericForm(final String processDefId,
@@ -122,8 +127,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                                                     visibleRange.getLength(),
                                                     false,
                                                     "",
-                                                    columnSortList.size() > 0 ? columnSortList.get(0)
-                                                            .getColumn().getDataStoreName() : "",
+                                                    columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "",
                                                     columnSortList.size() == 0 || columnSortList.get(0).isAscending());
         }
         // If we are refreshing after a search action, we need to go back to offset 0
@@ -136,8 +140,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
             currentFilter.setCount(view.getListGrid().getPageSize());
         }
 
-        currentFilter.setOrderBy(columnSortList.size() > 0 ? columnSortList.get(0)
-                .getColumn().getDataStoreName() : "");
+        currentFilter.setOrderBy(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "");
         currentFilter.setIsAscending(columnSortList.size() == 0 || columnSortList.get(0).isAscending());
 
         processRuntimeDataService.call(new RemoteCallback<List<ProcessSummary>>() {
@@ -166,7 +169,7 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     boolean onRuntimeDataServiceError() {
         view.hideBusyIndicator();
 
-        showErrorPopup(Constants.INSTANCE.ResourceCouldNotBeLoaded(Constants.INSTANCE.Process_Definitions()));
+        showErrorPopup(constants.ResourceCouldNotBeLoaded(commonConstants.Process_Definitions()));
 
         return false;
     }
@@ -178,32 +181,15 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     @WorkbenchMenu
     public Menus buildMenu() {
         return MenuFactory
-                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder)
-                .endMenu()
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this))
                 .endMenu()
                 .build();
     }
 
-    protected void selectProcessDefinition(final ProcessSummary processSummary,
-                                           final Boolean close) {
-        PlaceStatus instanceDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN));
-
-        if (instanceDetailsStatus == PlaceStatus.OPEN) {
-            placeManager.closePlace(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
-        }
-
-        placeIdentifier = PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN;
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(placeIdentifier));
-
-        if (status == PlaceStatus.CLOSE) {
-            placeManager.goTo(placeIdentifier);
-            fireProcessDefSelectionEvent(processSummary);
-        } else if (status == PlaceStatus.OPEN && !close) {
-            fireProcessDefSelectionEvent(processSummary);
-        } else if (status == PlaceStatus.OPEN && close) {
-            placeManager.closePlace(placeIdentifier);
-        }
+    protected void selectProcessDefinition(final ProcessSummary processSummary) {
+        setupDetailBreadcrumb(constants.ProcessDefinitionBreadcrumb(processSummary.getName()));
+        placeManager.goTo(PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN);
+        fireProcessDefSelectionEvent(processSummary);
     }
 
     private void fireProcessDefSelectionEvent(final ProcessSummary processSummary) {
@@ -215,12 +201,10 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     }
 
     public void refreshNewProcessInstance(@Observes NewProcessInstanceEvent newProcessInstance) {
-        placeIdentifier = PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN;
-
-        PlaceStatus definitionDetailsStatus = placeManager.getStatus(new DefaultPlaceRequest(placeIdentifier));
-        if (definitionDetailsStatus == PlaceStatus.OPEN) {
-            placeManager.closePlace(placeIdentifier);
-        }
+        setupDetailBreadcrumb(placeManager,
+                              commonConstants.Manage_Process_Definitions(),
+                              constants.ProcessInstanceBreadcrumb(newProcessInstance.getNewProcessInstanceId()),
+                              PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
         placeManager.goTo(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
         processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getDeploymentId(),
                                                                        newProcessInstance.getNewProcessInstanceId(),

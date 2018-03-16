@@ -19,22 +19,15 @@ package org.jbpm.workbench.ht.client.editors.taskslist;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.view.client.Range;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
-import org.dashbuilder.dataset.DataSetLookup;
-import org.dashbuilder.dataset.DataSetLookupFactory;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
@@ -45,17 +38,13 @@ import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.security.shared.api.Group;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
-import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.list.MultiGridView;
-import org.jbpm.workbench.common.client.menu.RestoreDefaultFiltersMenuBuilder;
-import org.jbpm.workbench.common.client.util.DateUtils;
+import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
@@ -63,16 +52,14 @@ import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
-import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
-import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
@@ -80,39 +67,19 @@ import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresenter.TaskListView> extends AbstractMultiGridPresenter<TaskSummary, V> {
 
     protected Constants constants = Constants.INSTANCE;
+
     private Caller<TaskService> taskService;
+
     private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
+
     @Inject
     private ErrorPopupPresenter errorPopup;
+
     @Inject
     private Event<TaskSelectionEvent> taskSelected;
 
-    @Override
-    public void getData(final Range visibleRange) {
-        try {
-            if (!isAddingDefaultFilters()) {
-                FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
-                currentTableSettings.setServerTemplateId(getSelectedServerTemplate());
-                currentTableSettings.setTablePageSize(view.getListGrid().getPageSize());
-                ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-                if (columnSortList != null && columnSortList.size() > 0) {
-                    dataSetQueryHelper.setLastOrderedColumn(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "");
-                    dataSetQueryHelper.setLastSortOrder((columnSortList.size() > 0) && columnSortList.get(0).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
-                } else {
-                    dataSetQueryHelper.setLastOrderedColumn(COLUMN_CREATED_ON);
-                    dataSetQueryHelper.setLastSortOrder(SortOrder.ASCENDING);
-                }
+    public abstract void setupDetailBreadcrumb(String detailLabel);
 
-                dataSetQueryHelper.setDataSetHandler(currentTableSettings);
-                dataSetQueryHelper.lookupDataSet(visibleRange.getStart(),
-                                                 createDataSetTaskCallback(visibleRange.getStart(),
-                                                                           currentTableSettings));
-            }
-        } catch (Exception e) {
-            errorPopup.showMessage(constants.UnexpectedError(e.getMessage()));
-        }
-    }
-    
     @Override
     public void openErrorView(final String tId) {
         final PlaceRequest request = new DefaultPlaceRequest(PerspectiveIds.EXECUTION_ERRORS);
@@ -124,47 +91,15 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                              constants.Task());
         placeManager.goTo(request);
     }
-    
+
     @Override
     public Predicate<TaskSummary> getViewErrorsActionCondition() {
         return tId -> isUserAuthorizedForPerspective(PerspectiveIds.EXECUTION_ERRORS) && tId.getErrorCount() != null && tId.getErrorCount() > 0;
     }
 
-    /**
-     * Generates a dataset filter depending of the user roles and the kind of dataset.
-     * <br>In case of the adminDataset (isAdminDateset=true), retrieve the tasks that are accessible for the user logged
-     * roles, without restriction over the task owner.
-     * <br>In other cases, retrieve the tasks available for the user logged roles AND without owner(claimed by the groups
-     * members) OR the user logged owned tasks
-     * @param isAdminDataset true if the filter to create is an adminDataSet
-     * @return the dynamic filter to add, depeding on the user logged roles and the kind of dataset
-     */
-    protected ColumnFilter getUserGroupFilters(boolean isAdminDataset) {
-        Set<Group> groups = identity.getGroups();
-        List<ColumnFilter> condList = new ArrayList<ColumnFilter>();
-        for (Group g : groups) {
-            condList.add(equalsTo(COLUMN_ORGANIZATIONAL_ENTITY,
-                                  g.getName()));
-        }
-        condList.add(equalsTo(COLUMN_ORGANIZATIONAL_ENTITY,
-                              identity.getIdentifier()));
-        ColumnFilter myGroupFilter;
-        if (isAdminDataset) {
-            return OR(COLUMN_ORGANIZATIONAL_ENTITY,
-                      condList);
-        } else {
-            myGroupFilter = AND(OR(condList),
-                                OR(equalsTo(COLUMN_ACTUAL_OWNER,
-                                            ""),
-                                   isNull(COLUMN_ACTUAL_OWNER)));
-            return OR(myGroupFilter,
-                      equalsTo(COLUMN_ACTUAL_OWNER,
-                               identity.getIdentifier()));
-        }
-    }
-
-    protected DataSetReadyCallback createDataSetTaskCallback(final int startRange,
-                                                             final FilterSettings tableSettings) {
+    @Override
+    protected DataSetReadyCallback getDataSetReadyCallback(final Integer startRange,
+                                                           final FilterSettings tableSettings) {
         return new AbstractDataSetReadyCallback(errorPopup,
                                                 view,
                                                 tableSettings.getUUID()) {
@@ -186,7 +121,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
                     List<DataSetOp> ops = tableSettings.getDataSetLookup().getOperationList();
                     String filterValue = isFilteredByTaskName(ops); //Add here the check to add the domain data columns taskName?
-                    if (AbstractMultiGridView.TAB_SEARCH.equals(tableSettings.getKey()) == false && filterValue != null) {
+                    if (filterValue != null) {
                         getDomainSpecifDataForTasks(startRange,
                                                     filterValue,
                                                     myTasksFromDataSet,
@@ -241,12 +176,12 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         return null;
     }
 
-    public void getDomainSpecifDataForTasks(final int startRange,
-                                            String filterValue,
+    public void getDomainSpecifDataForTasks(final Integer startRange,
+                                            final String filterValue,
                                             final List<TaskSummary> myTasksFromDataSet,
-                                            boolean lastPageExactCount) {
+                                            final Boolean lastPageExactCount) {
 
-        FilterSettings variablesTableSettings = getVariablesTableSettings(filterValue);
+        FilterSettings variablesTableSettings = filterSettingsManager.getVariablesFilterSettings(filterValue);
         variablesTableSettings.setTablePageSize(-1);
         variablesTableSettings.setServerTemplateId(getSelectedServerTemplate());
 
@@ -302,7 +237,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                             }
                         }
                     }
-                    view.addDomainSpecifColumns(view.getListGrid(),
+                    view.addDomainSpecifColumns((ListTable) view.getListGrid(),
                                                 columns);
                 }
                 updateDataOnCallback(instances,
@@ -324,8 +259,6 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                 }).releaseTask(getSelectedServerTemplate(),
                                task.getDeploymentId(),
                                task.getId());
-        fireTaskSelectionEvent(task,
-                               false);
     }
 
     public void claimTask(final TaskSummary task) {
@@ -340,8 +273,6 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         ).claimTask(getSelectedServerTemplate(),
                     task.getDeploymentId(),
                     task.getId());
-        fireTaskSelectionEvent(task,
-                               false);
     }
 
     public void resumeTask(final TaskSummary task) {
@@ -356,8 +287,6 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         ).resumeTask(getSelectedServerTemplate(),
                      task.getDeploymentId(),
                      task.getId());
-        fireTaskSelectionEvent(task,
-                               false);
     }
 
     public void suspendTask(final TaskSummary task) {
@@ -372,37 +301,24 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         ).suspendTask(getSelectedServerTemplate(),
                       task.getDeploymentId(),
                       task.getId());
-        fireTaskSelectionEvent(task,
-                               false);
     }
 
     public Menus getMenus() { //To be used by subclass methods annotated with @WorkbenchMenu
         return MenuFactory
-                .newTopLevelCustomMenu(serverTemplateSelectorMenuBuilder).endMenu()
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
-                .newTopLevelCustomMenu(refreshSelectorMenuBuilder).endMenu()
-                .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
                 .build();
     }
 
-    public void selectTask(final TaskSummary summary,
-                           final Boolean close) {
-        PlaceStatus status = placeManager.getStatus(new DefaultPlaceRequest(PerspectiveIds.TASK_DETAILS_SCREEN));
+    public void selectTask(final TaskSummary summary) {
         boolean logOnly = false;
         if (TASK_STATUS_COMPLETED.equals(summary.getStatus()) ||
                 TASK_STATUS_EXITED.equals(summary.getStatus())) {
             logOnly = true;
         }
-        if (status == PlaceStatus.CLOSE) {
-            placeManager.goTo(PerspectiveIds.TASK_DETAILS_SCREEN);
-            fireTaskSelectionEvent(summary,
-                                   logOnly);
-        } else if (status == PlaceStatus.OPEN && !close) {
-            fireTaskSelectionEvent(summary,
-                                   logOnly);
-        } else if (status == PlaceStatus.OPEN && close) {
-            placeManager.closePlace(PerspectiveIds.TASK_DETAILS_SCREEN);
-        }
+        setupDetailBreadcrumb(constants.TaskBreadcrumb(summary.getId()));
+        placeManager.goTo(PerspectiveIds.TASK_DETAILS_SCREEN);
+        fireTaskSelectionEvent(summary,
+                               logOnly);
     }
 
     private void fireTaskSelectionEvent(TaskSummary summary,
@@ -441,105 +357,32 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     }
 
     @Override
-    public void setupAdvancedSearchView() {
-        view.addNumericFilter(constants.Id(),
-                              constants.FilterByTaskId(),
-                              v -> addAdvancedSearchFilter(equalsTo(COLUMN_TASK_ID,
-                                                                    v)),
-                              v -> removeAdvancedSearchFilter(equalsTo(COLUMN_TASK_ID,
-                                                                       v))
-        );
-
-        view.addTextFilter(constants.Task(),
-                           constants.FilterByTaskName(),
-                           v -> addAdvancedSearchFilter(likeTo(COLUMN_NAME,
-                                                               v,
-                                                               false)),
-                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_NAME,
-                                                                  v,
-                                                                  false))
-        );
-
-        final Map<String, String> status = getStatusByType(TaskType.ALL).stream().sorted().collect(Collectors.toMap(Function.identity(),
-                                                                                                                    Function.identity()));
-        view.addSelectFilter(constants.Status(),
-                             status,
-                             false,
-                             v -> addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
-                                                                   v)),
-                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
-                                                                      v))
-        );
-
-        view.addTextFilter(constants.Process_Instance_Correlation_Key(),
-                           constants.FilterByCorrelationKey(),
-                           v -> addAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
-                                                               v,
-                                                               false)),
-                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
-                                                                  v,
-                                                                  false))
-        );
-
-        view.addTextFilter(constants.Actual_Owner(),
-                           constants.FilterByActualOwner(),
-                           v -> addAdvancedSearchFilter(likeTo(COLUMN_ACTUAL_OWNER,
-                                                               v,
-                                                               false)),
-                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_ACTUAL_OWNER,
-                                                                  v,
-                                                                  false))
-        );
-
-        view.addTextFilter(constants.Process_Instance_Description(),
-                           constants.FilterByProcessInstanceDescription(),
-                           v -> addAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                                               v,
-                                                               false)),
-                           v -> removeAdvancedSearchFilter(likeTo(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                                                  v,
-                                                                  false))
-        );
-
-        view.addDateRangeFilter(constants.Created_On(),
-                                constants.Created_On_Placeholder(),
-                                true,
-                                v -> addAdvancedSearchFilter(between(COLUMN_CREATED_ON,
-                                                                     v.getStartDate(),
-                                                                     v.getEndDate())),
-                                v -> removeAdvancedSearchFilter(between(COLUMN_CREATED_ON,
-                                                                        v.getStartDate(),
-                                                                        v.getEndDate()))
-        );
-    }
-
-    @Override
     public void setupActiveSearchFilters() {
         final Optional<String> processInstIdSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
         if (processInstIdSearch.isPresent()) {
             final String processInstId = processInstIdSearch.get();
-            view.addActiveFilter(
+            addActiveFilter(
+                    equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                             processInstId),
                     constants.Process_Instance_Id(),
                     processInstId,
                     processInstId,
-                    v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
-                                                             v))
+                    v -> removeActiveFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
+                                                     v))
             );
-            addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
-                                             processInstId));
         } else {
             final Optional<String> taskIdSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_TASK_ID);
             if (taskIdSearch.isPresent()) {
                 final String taskId = taskIdSearch.get();
-                view.addActiveFilter(
+                addActiveFilter(
+                        equalsTo(COLUMN_TASK_ID,
+                                 taskId),
                         constants.Task(),
                         taskId,
                         taskId,
-                        v -> removeAdvancedSearchFilter(equalsTo(COLUMN_TASK_ID,
-                                                                 v))
+                        v -> removeActiveFilter(equalsTo(COLUMN_TASK_ID,
+                                                         v))
                 );
-                addAdvancedSearchFilter(equalsTo(COLUMN_TASK_ID,
-                                                 taskId));
             } else {
                 super.setupActiveSearchFilters();
             }
@@ -548,133 +391,20 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     @Override
     public void setupDefaultActiveSearchFilters() {
-        view.addActiveFilter(constants.Status(),
-                             TASK_STATUS_READY,
-                             TASK_STATUS_READY,
-                             v -> removeAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
-                                                                      v))
+        addActiveFilter(equalsTo(COLUMN_STATUS,
+                                 TASK_STATUS_READY),
+                        constants.Status(),
+                        TASK_STATUS_READY,
+                        TASK_STATUS_READY,
+                        v -> removeActiveFilter(equalsTo(COLUMN_STATUS,
+                                                         v))
         );
-        addAdvancedSearchFilter(equalsTo(COLUMN_STATUS,
-                                         TASK_STATUS_READY));
     }
 
     public void openProcessInstanceView(final String processInstanceId) {
         navigateToPerspective(PerspectiveIds.PROCESS_INSTANCES,
                               PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID,
                               processInstanceId);
-    }
-
-    protected void addProcessNameFilter(final String dataSetId) {
-        final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
-                .dataset(dataSetId)
-                .group(COLUMN_PROCESS_ID)
-                .column(COLUMN_PROCESS_ID)
-                .sort(COLUMN_PROCESS_ID,
-                      SortOrder.ASCENDING)
-                .buildLookup();
-        view.addDataSetSelectFilter(constants.Process_Definition_Id(),
-                                    AbstractMultiGridView.TAB_SEARCH,
-                                    dataSetLookup,
-                                    COLUMN_PROCESS_ID,
-                                    COLUMN_PROCESS_ID,
-                                    v -> addAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_ID,
-                                                                          v)),
-                                    v -> removeAdvancedSearchFilter(equalsTo(COLUMN_PROCESS_ID,
-                                                                             v)));
-    }
-
-    public FilterSettings createStatusSettings(final String dataSetId,
-                                               final List<Comparable> status) {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(dataSetId);
-
-        if (status != null) {
-            builder.filter(COLUMN_STATUS,
-                           equalsTo(COLUMN_STATUS,
-                                    status));
-        }
-        builder.group(COLUMN_TASK_ID);
-
-        addCommonColumnSettings(builder);
-        return builder.buildSettings();
-    }
-
-    protected void addCommonColumnSettings(FilterSettingsBuilderHelper builder) {
-        builder.setColumn(COLUMN_ACTIVATION_TIME,
-                          constants.ActivationTime(),
-                          DateUtils.getDateTimeFormatMask());
-        builder.setColumn(COLUMN_ACTUAL_OWNER,
-                          constants.Actual_Owner());
-        builder.setColumn(COLUMN_CREATED_BY,
-                          constants.CreatedBy());
-        builder.setColumn(COLUMN_CREATED_ON,
-                          constants.Created_On(),
-                          DateUtils.getDateTimeFormatMask());
-        builder.setColumn(COLUMN_DEPLOYMENT_ID,
-                          constants.DeploymentId());
-        builder.setColumn(COLUMN_DESCRIPTION,
-                          constants.Description());
-        builder.setColumn(COLUMN_DUE_DATE,
-                          constants.DueDate(),
-                          DateUtils.getDateTimeFormatMask());
-        builder.setColumn(COLUMN_NAME,
-                          constants.Task());
-        builder.setColumn(COLUMN_PARENT_ID,
-                          constants.ParentId());
-        builder.setColumn(COLUMN_PRIORITY,
-                          constants.Priority());
-        builder.setColumn(COLUMN_PROCESS_ID,
-                          constants.Process_Definition_Id());
-        builder.setColumn(COLUMN_PROCESS_INSTANCE_ID,
-                          constants.Process_Instance_Id());
-        builder.setColumn(COLUMN_PROCESS_SESSION_ID,
-                          constants.ProcessSessionId());
-        builder.setColumn(COLUMN_STATUS,
-                          constants.Status());
-        builder.setColumn(COLUMN_TASK_ID,
-                          constants.Id());
-        builder.setColumn(COLUMN_WORK_ITEM_ID,
-                          constants.WorkItemId());
-        builder.setColumn(COLUMN_LAST_MODIFICATION_DATE,
-                          constants.Last_Modification_Date());
-        builder.setColumn(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
-                          constants.Process_Instance_Correlation_Key());
-        builder.setColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                          constants.Process_Instance_Description());
-        builder.filterOn(true,
-                         true,
-                         true);
-        builder.tableOrderEnabled(true);
-        builder.tableOrderDefault(COLUMN_CREATED_ON,
-                                  SortOrder.DESCENDING);
-    }
-
-    public FilterSettings getVariablesTableSettings(String taskName) {
-        FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
-        builder.initBuilder();
-
-        builder.dataset(HUMAN_TASKS_WITH_VARIABLES_DATASET);
-        builder.filter(equalsTo(COLUMN_TASK_VARIABLE_TASK_NAME,
-                                taskName));
-
-        builder.filterOn(true,
-                         true,
-                         true);
-        builder.tableOrderEnabled(true);
-        builder.tableOrderDefault(COLUMN_TASK_ID,
-                                  SortOrder.ASCENDING);
-
-        FilterSettings varTableSettings = builder.buildSettings();
-        varTableSettings.setTablePageSize(-1);
-
-        return varTableSettings;
-    }
-
-    @Override
-    public FilterSettings createSearchTabSettings() {
-        return createTableSettingsPrototype();
     }
 
     protected abstract Predicate<TaskSummary> getSuspendActionCondition();
@@ -699,9 +429,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     public interface TaskListView<T extends AbstractTaskListPresenter> extends MultiGridView<TaskSummary, T> {
 
-        void addDomainSpecifColumns(ExtendedPagedTable<TaskSummary> extendedPagedTable,
+        void addDomainSpecifColumns(ListTable<TaskSummary> extendedPagedTable,
                                     Set<String> columns);
 
-        void setSelectedTask(TaskSummary selectedTask);
     }
 }

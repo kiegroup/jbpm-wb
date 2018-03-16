@@ -16,18 +16,31 @@
 
 package org.jbpm.workbench.common.client.list;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
-
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.view.client.Range;
+import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.sort.SortOrder;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
+import org.jbpm.workbench.common.client.filters.basic.BasicFilterAddEvent;
+import org.jbpm.workbench.common.client.filters.saved.SavedFilterSelectedEvent;
+import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.df.client.filter.FilterSettingsManager;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.ext.widgets.common.client.menu.RefreshSelectorMenuBuilder;
+import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -35,18 +48,21 @@ import org.uberfire.security.ResourceRef;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.workbench.model.ActivityResourceType;
 
-public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V extends MultiGridView> extends AbstractScreenListPresenter<T> implements RefreshSelectorMenuBuilder.SupportsRefreshInterval {
+public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V extends MultiGridView> extends AbstractScreenListPresenter<T> {
 
     protected DataSetQueryHelper dataSetQueryHelper;
 
-    protected RefreshSelectorMenuBuilder refreshSelectorMenuBuilder = new RefreshSelectorMenuBuilder(this);
-
     protected V view;
 
-    private AuthorizationManager authorizationManager;
+    protected AuthorizationManager authorizationManager;
+
+    protected FilterSettingsManager filterSettingsManager;
 
     @Inject
-    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
+    protected ErrorPopupPresenter errorPopup;
+
+    @Inject
+    public void setAuthorizationManager(final AuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
     }
 
@@ -55,32 +71,8 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
         this.dataSetQueryHelper = dataSetQueryHelper;
     }
 
-    public void filterGrid(FilterSettings tableSettings) {
-        dataSetQueryHelper.setCurrentTableSettings(tableSettings);
-        refreshGrid();
-    }
-
-    @Override
-    public void onUpdateRefreshInterval(boolean enableAutoRefresh,
-                                        int newInterval) {
-        super.onUpdateRefreshInterval(enableAutoRefresh,
-                                      newInterval);
-        view.saveRefreshValue(newInterval);
-    }
-
-    @Override
-    public void onGridPreferencesStoreLoaded() {
-        refreshSelectorMenuBuilder.loadOptions(view.getRefreshValue());
-        clearActiveSearchFilters();
-        setupActiveSearchFilters();
-        view.selectFirstTabAndEnableQueries();
-    }
-
-    public void onRestoreTabs() {
-        view.restoreTabs();
-        clearActiveSearchFilters();
-        setupDefaultActiveSearchFilters();
-        view.selectFirstTabAndEnableQueries();
+    public void setFilterSettingsManager(final FilterSettingsManager filterSettingsManager) {
+        this.filterSettingsManager = filterSettingsManager;
     }
 
     @Override
@@ -98,45 +90,127 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
         this.view = view;
     }
 
-    public abstract FilterSettings createTableSettingsPrototype();
-
-    public abstract FilterSettings createSearchTabSettings();
-
-    public abstract void setupAdvancedSearchView();
-
     public void setupActiveSearchFilters() {
         setupDefaultActiveSearchFilters();
     }
 
     public abstract void setupDefaultActiveSearchFilters();
 
+    @PostConstruct
+    public void init() {
+        final BiConsumer<String, Consumer<String>> filterNameCallback = (name, callback) -> saveSearchFilterSettings(name,
+                                                                                                                     callback);
+        view.setSaveFilterCallback(filterNameCallback);
+    }
+
     @Override
     @OnOpen
     public void onOpen() {
         super.onOpen();
-        setupAdvancedSearchView();
+        setFilterSettings(filterSettingsManager.createDefaultFilterSettingsPrototype(),
+                          table -> {
+                              setupActiveSearchFilters();
+                              addDataDisplay(table);
+                          });
     }
 
-    protected void clearActiveSearchFilters() {
-        final FilterSettings settings = view.getAdvancedSearchFilterSettings();
-        settings.removeAllColumnFilters();
-        view.saveAdvancedSearchFilterSettings(settings);
+    protected void onBasicFilterAddEvent(@Observes final BasicFilterAddEvent event) {
+        addActiveFilter(event.getFilter(),
+                        event.getActiveFilterItem());
+    }
+
+    protected void onSavedFilterSelectedEvent(@Observes final SavedFilterSelectedEvent event) {
+        filterSettingsManager.getFilterSettings(event.getSavedFilter().getKey(),
+                                                filter -> addActiverFilters(filter));
+    }
+
+    protected void setFilterSettings(final FilterSettings filter,
+                                     final Consumer<ListTable<T>> readyCallback) {
+        dataSetQueryHelper.setCurrentTableSettings(filter);
+        view.loadListTable(filter.getKey(),
+                           readyCallback);
+    }
+
+    protected void addActiverFilters(final FilterSettings filter) {
         view.removeAllActiveFilters();
+        setFilterSettings(filter,
+                          table -> {
+                              if (filter.getDataSetLookup().getFirstFilterOp() != null) {
+                                  List<ColumnFilter> filters = filter.getDataSetLookup().getFirstFilterOp().getColumnFilterList();
+                                  filters.forEach(column -> {
+                                      final ActiveFilterItem activeFilter = new ActiveFilterItem<>(column.getColumnId(),
+                                                                                                   column.toString(),
+                                                                                                   null,
+                                                                                                   null,
+                                                                                                   v -> removeActiveFilter(column));
+                                      view.addActiveFilter(activeFilter);
+                                  });
+                              }
+                              addDataDisplay(table);
+                          });
     }
 
-    protected void addAdvancedSearchFilter(final ColumnFilter columnFilter) {
-        final FilterSettings settings = view.getAdvancedSearchFilterSettings();
-        settings.addColumnFilter(columnFilter);
-        view.saveAdvancedSearchFilterSettings(settings);
-        filterGrid(settings);
-    }
+    @Override
+    public void getData(final Range visibleRange) {
+        try {
+            final FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
+            currentTableSettings.setServerTemplateId(getSelectedServerTemplate());
+            currentTableSettings.setTablePageSize(view.getListGrid().getPageSize());
+            ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+            if (columnSortList != null && columnSortList.size() > 0) {
+                dataSetQueryHelper.setLastOrderedColumn(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "");
+                dataSetQueryHelper.setLastSortOrder(columnSortList.size() > 0 && columnSortList.get(0).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
+            }
 
-    protected void removeAdvancedSearchFilter(final ColumnFilter columnFilter) {
-        final FilterSettings settings = view.getAdvancedSearchFilterSettings();
-        if (settings.removeColumnFilter(columnFilter)) {
-            view.saveAdvancedSearchFilterSettings(settings);
-            filterGrid(settings);
+            dataSetQueryHelper.setCurrentTableSettings(currentTableSettings);
+            dataSetQueryHelper.setDataSetHandler(currentTableSettings);
+            dataSetQueryHelper.lookupDataSet(visibleRange.getStart(),
+                                             getDataSetReadyCallback(visibleRange.getStart(),
+                                                                     currentTableSettings));
+        } catch (Exception e) {
+            errorPopup.showMessage(Constants.INSTANCE.UnexpectedError(e.getMessage()));
+            view.hideBusyIndicator();
         }
+    }
+
+    protected abstract DataSetReadyCallback getDataSetReadyCallback(final Integer startRange,
+                                                                    final FilterSettings tableSettings);
+
+    protected <T extends Object> void addActiveFilter(final ColumnFilter columnFilter,
+                                                      final String labelKey,
+                                                      final String labelValue,
+                                                      final T value,
+                                                      final Consumer<T> removeCallback) {
+        addActiveFilter(columnFilter,
+                        new ActiveFilterItem<>(labelKey,
+                                               labelKey + ": " + labelValue,
+                                               null,
+                                               value,
+                                               removeCallback));
+    }
+
+    protected <T extends Object> void addActiveFilter(final ColumnFilter columnFilter,
+                                                      final ActiveFilterItem<T> filter) {
+        filter.setCallback(v -> removeActiveFilter(columnFilter));
+        final FilterSettings settings = dataSetQueryHelper.getCurrentTableSettings();
+        settings.addColumnFilter(columnFilter);
+        view.addActiveFilter(filter);
+        refreshGrid();
+    }
+
+    protected void removeActiveFilter(final ColumnFilter columnFilter) {
+        final FilterSettings settings = dataSetQueryHelper.getCurrentTableSettings();
+        settings.removeColumnFilter(columnFilter);
+        refreshGrid();
+    }
+
+    public void saveSearchFilterSettings(final String filterName,
+                                         final Consumer<String> callback) {
+        final FilterSettings settings = dataSetQueryHelper.getCurrentTableSettings();
+        settings.setTableName(filterName);
+        settings.setTableDescription(filterName);
+        filterSettingsManager.saveFilterIntoPreferences(settings,
+                                                        state -> callback.accept(state ? null : Constants.INSTANCE.FilterWithSameNameAlreadyExists()));
     }
 
     protected Optional<String> getSearchParameter(final String parameterId) {
@@ -152,17 +226,18 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
                              parameterValue);
         placeManager.goTo(request);
     }
-    
+
     public boolean isUserAuthorizedForPerspective(final String perspectiveId) {
         final ResourceRef resourceRef = new ResourceRef(perspectiveId,
                                                         ActivityResourceType.PERSPECTIVE);
         return authorizationManager.authorize(resourceRef,
                                               identity);
     }
-    
-    public void openErrorView(final String parameterId) {}
-    
-    public Predicate<T> getViewErrorsActionCondition(){
+
+    public void openErrorView(final String parameterId) {
+    }
+
+    public Predicate<T> getViewErrorsActionCondition() {
         return null;
     }
 }

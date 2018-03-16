@@ -62,7 +62,7 @@ public class GenericErrorSummaryCountCell<C extends GenericErrorSummary> extends
         } else {
             tooltipClasses.remove(ERROR_PRESENT_STYLE);
         }
-        
+
         if (viewPresenter.getViewErrorsActionCondition().test(value)) {
             tooltip.setTitle(Constants.INSTANCE.ErrorCountNumberView(errCount));
             tooltip.setAttribute(DATA_INSTANCE_ATTRIBUTE,
@@ -101,8 +101,8 @@ public class GenericErrorSummaryCountCell<C extends GenericErrorSummary> extends
                 .filter("." + linkClassName)
                 .tooltip()
                 .on("click", function () {
-                    var Id = $wnd.jQuery(this).attr(IdAttrName);
-                    thisCellRef.@org.jbpm.workbench.common.client.util.GenericErrorSummaryCountCell::openErrorView(Ljava/lang/String;)(Id);
+                    var id = $wnd.jQuery(this).attr(IdAttrName);
+                    thisCellRef.@org.jbpm.workbench.common.client.util.GenericErrorSummaryCountCell::openErrorView(Ljava/lang/String;)(id);
                 });
         });
     }-*/;

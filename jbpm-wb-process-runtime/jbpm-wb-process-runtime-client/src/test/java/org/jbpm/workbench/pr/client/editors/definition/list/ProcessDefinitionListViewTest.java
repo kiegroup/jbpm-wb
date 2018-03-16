@@ -17,6 +17,7 @@ package org.jbpm.workbench.pr.client.editors.definition.list;
 
 import java.util.List;
 
+import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.junit.Test;
@@ -51,6 +52,7 @@ public class ProcessDefinitionListViewTest {
                 return null;
             }
         }).when(currentListGrid).addColumns(anyList());
+        when(currentListGrid.getColumnSortList()).thenReturn(new ColumnSortList());
 
         view.initColumns(currentListGrid);
 

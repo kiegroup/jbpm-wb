@@ -1,0 +1,221 @@
+@import "/org/uberfire/client/views/static/uberfire-variables.less";
+
+// Styles for KIE Manage screens
+
+.manage {
+
+  @kie-icon-size-base: (14 / @font-size-base) * 1px;
+  @pf-font-weight-bold: 600;
+  @min-touch-width: 44px;
+  @icon-size-md: 1.75rem; // 21 px
+  @list-pf-padding: 20px;
+
+  /////////////////
+  // filter styles
+  .kie-tab-content--filters {
+    //darken horizontal rules
+    hr {
+      border-color: @color-pf-black-300;
+    }
+  }
+
+  // add background color. Left border may not be needed once in place
+  .tab-content {
+    //border-left: 1px solid @panel-default-border-color;
+    background-color: @color-pf-black-100;
+  }
+
+  // New kind of list with a background color for placement on a background color other than white
+  .kie-list-pf-light {
+    background-color: @color-pf-white;
+  }
+
+  // Remove gradient from collapsible panel heading
+  .panel-group .panel-default .panel-heading {
+    background: none;
+  }
+
+  .panel-group .panel-heading + .panel-collapse .panel-body {
+    border-top-color: transparent;
+  }
+
+  // Dock panel styles
+
+  // adjust spacing of an HR
+  .kie-dock__divider {
+    margin-top: 25px;
+    margin-bottom: 15px;
+    .form-group + &,
+    .panel-group + & {
+      margin-top: 15px;
+    }
+  }
+
+  .kie-dock__heading {
+    font-weight: @pf-font-weight-bold;
+  }
+
+  .kie-dock__heading--section {
+    font-size: @font-size-base;
+    font-weight: @pf-font-weight-bold;
+  }
+
+  .kie-dock__panel-group {
+    margin-bottom: 0;
+  }
+
+  .kie-dock__panel {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    margin-bottom: 0;
+  }
+
+  .kie-dock__panel-heading {
+    padding: 0;
+  }
+
+  .kie-dock__panel-body {
+    padding-top: 0;
+    padding-bottom: 0;
+    border: none;
+  }
+
+  .kie-dock__datepicker {
+    margin-bottom: @form-group-margin-bottom;
+  }
+
+  // list inside the dock
+  .kie-dock__list-pf-item {
+    :hover {
+      background-color: #EDF8FF;
+      .btn-link {
+        color: @link-hover-color;
+      }
+    }
+  }
+
+  .kie-dock__list-pf-item.active {
+    background-color: @color-pf-blue-50;
+    border-color: transparent;
+  }
+
+  .kie-dock__list-pf-container {
+    padding: @list-pf-padding/2 0 @list-pf-padding/2 @list-pf-padding/2;
+  }
+
+  .kie-dock__list-pf-left {
+    margin-right: @list-pf-padding/2;
+  }
+
+  .kie-dock__list-pf-title {
+    margin-bottom: .5em;
+  }
+
+  .kie-dock__list-pf-main-content {
+    line-height: 1.4em;
+  }
+
+  .kie-dock__KVP:not(:last-child) {
+    margin-bottom: .5em;
+  }
+
+  .kie-dock__list-pf-actions {
+    margin-left: 0;
+  }
+
+  .kie-dock__list-pf-actions .btn-link {
+    color: @text-color;
+    font-size: @kie-icon-size-base;
+    min-width: @min-touch-width;
+  }
+
+  .kie-list-pf-icon-md {
+    font-size: @icon-size-md;
+  }
+
+  // override normal label and form-control for input box embedded inside the radio button (or checkbox)
+  .radio .kie-label--embedded,
+  .checkbox .kie-label--embedded {
+    padding-left: 0;
+  }
+
+  .kie-input--inline,
+  .radio .kie-input--inline,
+  .checkbox .kie-input--inline {
+    display: inline-block;
+    width: auto;
+  }
+
+  // Styles for left side dock selector
+  // For docks in other positions, the border will need to be adjusted to the appropriate side
+
+  // Selector needed to override specificity
+  .kie-dock-selector > li > a {
+    padding: @pf-spacer-sm @pf-spacer-xxl;
+    color: @color-pf-black;
+    &:hover,
+    &:focus {
+      background-color: @color-pf-blue-50;
+      color: @link-color;
+    }
+  }
+
+  .kie-dock-selector > li.active a {
+    background-color: @color-pf-blue-50;
+    color: @link-color;
+  }
+
+  // Styles for KIE-specific datatables.net components
+
+  .content-view-pf-pagination,
+  .table-view-pf-toolbar.toolbar-pf {
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  .kie-datatable > thead > tr > th,
+  .kie-datatable > tbody > tr > th,
+  .kie-datatable > tfoot > tr > th,
+  .kie-datatable > thead > tr > td,
+  .kie-datatable > tbody > tr > td,
+  .kie-datatable tfoot > tr > td {
+    padding: @pf-spacer-sm @pf-spacer-md;
+    border-left-color: transparent;
+    border-right-color: transparent;
+  }
+
+  .kie-datatable > thead {
+    background-color: @color-pf-black-150;
+    background-image: none;
+  }
+
+  .table-view-pf-actions {
+    background-color: transparent;
+  }
+
+  table.kie-datatable tbody > tr:hover > td.table-view-pf-actions {
+    background-color: transparent;
+  }
+
+  table.dataTable thead .sorting_asc:before,
+  table.dataTable thead .sorting_desc:before {
+    background: transparent;
+  }
+
+  ///// This styles the GWT-generated version of the table (in addition to inline styles where they already existed)
+  .kie-table--pagination .btn {
+    padding-left: @pf-spacer-xxs;
+    padding-right: @pf-spacer-xxs;
+  }
+
+  .kie-table__cell--separated {
+    padding-left: @pf-spacer-xxs;
+    padding-right: @pf-spacer-xxs;
+  }
+
+  .kie-datatable-select {
+    text-align: center;
+  }
+
+}

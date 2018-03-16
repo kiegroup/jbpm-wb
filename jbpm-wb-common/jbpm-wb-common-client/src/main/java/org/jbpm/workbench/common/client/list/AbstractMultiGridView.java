@@ -15,10 +15,8 @@
  */
 package org.jbpm.workbench.common.client.list;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.enterprise.event.Event;
@@ -28,198 +26,77 @@ import com.google.common.collect.Iterables;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.Header;
+import com.google.gwt.user.cellview.client.TextHeader;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
-import org.dashbuilder.dataset.DataSetLookup;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.IconType;
+import elemental2.dom.HTMLDivElement;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.security.shared.api.identity.User;
+import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilters;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
-import org.jbpm.workbench.common.client.util.DateRange;
+import org.jbpm.workbench.common.client.util.ConditionalAction;
+import org.jbpm.workbench.common.client.util.ConditionalKebabActionCell;
 import org.jbpm.workbench.common.model.GenericSummary;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.list.DataSetEditorManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
-import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
-import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
-import org.uberfire.ext.widgets.common.client.tables.FilterPagedTable;
-import org.uberfire.ext.widgets.common.client.tables.popup.NewTabFilterPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
-import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
 
 public abstract class AbstractMultiGridView<T extends GenericSummary, V extends AbstractMultiGridPresenter>
         extends Composite implements MultiGridView<T, V> {
 
-    public static final String TAB_SEARCH = "base";
-    public static final String FILTER_TABLE_SETTINGS = "tableSettings";
-    public static final String USER_DEFINED = "ud_";
     public static final String COL_ID_SELECT = "Select";
     public static final String COL_ID_ACTIONS = "Actions";
-    private static Binder uiBinder = GWT.create(Binder.class);
-
-    private final Constants constants = Constants.INSTANCE;
-
-    @Inject
-    protected User identity;
-
-    protected Button createTabButton = GWT.create(Button.class);
+    public static final int ACTIONS_COLUMN_WIDTH = 120;
+    public static final int CHECK_COLUMN_WIDTH = 38;
+    public static final int ERROR_COLUMN_WIDTH = 65;
 
     @Inject
     protected Event<NotificationEvent> notification;
 
-    protected DataSetEditorManager dataSetEditorManager;
+    @Inject
+    protected ManagedInstance<ConditionalKebabActionCell> conditionalKebabActionCell;
 
     @Inject
     protected PlaceManager placeManager;
 
-    @Inject
-    protected AdvancedSearchFiltersViewImpl advancedSearchFiltersView;
+    protected Caller<UserPreferencesService> userPreferencesService;
+
+    protected ListTable<T> listTable;
 
     protected V presenter;
 
-    protected FilterPagedTable<T> filterPagedTable = GWT.create(FilterPagedTable.class);
+    @Inject
+    @DataField("column")
+    protected HTMLDivElement column;
 
-    protected ExtendedPagedTable<T> currentListGrid;
-
-    @UiField
-    protected org.gwtbootstrap3.client.ui.Column column;
-
-    private Caller<UserPreferencesService> userPreferencesService;
-
-    public AbstractMultiGridView() {
-        initWidget(uiBinder.createAndBindUi(this));
-        column.add(filterPagedTable.makeWidget());
-        createTabButton.setIcon(IconType.PLUS);
-        createTabButton.setSize(ButtonSize.SMALL);
-    }
-
-    public void init(final V presenter) {
-        this.presenter = presenter;
-
-        createTabButton.addClickHandler(event -> createNewTab(presenter));
-
-        userPreferencesService.call((MultiGridPreferencesStore multiGridPreferencesStore) -> {
-            if (multiGridPreferencesStore == null) {
-                multiGridPreferencesStore = new MultiGridPreferencesStore(getGridGlobalPreferencesKey());
-            }
-            loadTabsFromPreferences(multiGridPreferencesStore,
-                                    presenter);
-        }).loadUserPreferences(getGridGlobalPreferencesKey(),
-                               UserPreferencesType.MULTIGRIDPREFERENCES);
-    }
-
-    protected void createNewTab(final V presenter) {
-        final String key = getValidKeyForAdditionalListGrid(getGridGlobalPreferencesKey() + "_");
-
-        final Command addNewGrid = () -> {
-
-            final ExtendedPagedTable<T> extendedPagedTable = createGridInstance(key);
-
-            extendedPagedTable.setDataProvider(presenter.getDataProvider());
-
-            filterPagedTable.createNewTab(extendedPagedTable,
-                                          key,
-                                          createTabButton,
-                                          (() -> {
-                                              currentListGrid = extendedPagedTable;
-                                              applyFilterOnPresenter(key);
-                                          }));
-            applyFilterOnPresenter(key);
-        };
-
-        final FilterSettings tableSettings = presenter.createTableSettingsPrototype();
-        tableSettings.setKey(key);
-        dataSetEditorManager.showTableSettingsEditor(filterPagedTable,
-                                                     getNewFilterPopupTitle(),
-                                                     tableSettings,
-                                                     addNewGrid);
-    }
-
-    protected void loadTabsFromPreferences(final MultiGridPreferencesStore multiGridPreferencesStore,
-                                           final V presenter) {
-        filterPagedTable.setMultiGridPreferencesStore(multiGridPreferencesStore);
-
-        presenter.setAddingDefaultFilters(true);
-
-        final ArrayList<String> existingGrids = new ArrayList<>(multiGridPreferencesStore.getGridsId());
-
-        if (existingGrids.isEmpty()) {
-            initDefaultFilters();
-        } else {
-            //Special handling for the search tab when upgrading from previous versions
-            if (existingGrids.contains(TAB_SEARCH) == false) {
-                initSearchFilter();
-            }
-            existingGrids.forEach(key -> {
-                final ExtendedPagedTable<T> extendedPagedTable = loadGridInstance(key);
-                extendedPagedTable.setDataProvider(presenter.getDataProvider());
-                filterPagedTable.addTab(extendedPagedTable,
-                                        key,
-                                        () -> {
-                                            currentListGrid = extendedPagedTable;
-                                            applyFilterOnPresenter(key);
-                                        },
-                                        false);
-            });
-            //Ensure Search tab is always the first one
-            if (multiGridPreferencesStore.getGridsId().indexOf(TAB_SEARCH) != 0) {
-                multiGridPreferencesStore.getGridsId().remove(TAB_SEARCH);
-                multiGridPreferencesStore.getGridsId().add(0,
-                                                           TAB_SEARCH);
-            }
-        }
-        multiGridPreferencesStore.setSelectedGrid(TAB_SEARCH);
-        filterPagedTable.addAddTableButton(createTabButton);
-        presenter.onGridPreferencesStoreLoaded();
-    }
+    @Inject
+    @DataField("active-filters")
+    protected ActiveFilters filters;
 
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
 
-    public void showRestoreDefaultFilterConfirmationPopup() {
-        YesNoCancelPopup yesNoCancelPopup = YesNoCancelPopup.newYesNoCancelPopup(constants.RestoreDefaultFilters(),
-                                                                                 constants.AreYouSureRestoreDefaultFilters(),
-                                                                                 () -> {
-                                                                                     showBusyIndicator(constants.Loading());
-                                                                                     presenter.onRestoreTabs();
-                                                                                 },
-                                                                                 null,
-                                                                                 () -> {
-                                                                                 });
-        yesNoCancelPopup.show();
+    public void init(final V presenter) {
+        this.presenter = presenter;
     }
 
-    public void restoreTabs() {
-        presenter.setAddingDefaultFilters(true);
-        final List<String> grids = new ArrayList<>(getMultiGridPreferencesStore().getGridsId());
-        grids.forEach(key -> filterPagedTable.removeTab(key));
-        filterPagedTable.removeTab(0);
-        initDefaultFilters();
-        filterPagedTable.addAddTableButton(createTabButton);
-    }
-
-    protected void controlBulkOperations(final ExtendedPagedTable<T> extendedPagedTable) {
-        Scheduler.get().scheduleDeferred(() -> enableWidgets(Iterables.getFirst(extendedPagedTable.getRightActionsToolbar(),
-                                                                                null),
-                                                             extendedPagedTable.hasSelectedItems()));
+    protected void controlBulkOperations(final ListTable<T> extendedPagedTable) {
+        enableWidgets(Iterables.getFirst(extendedPagedTable.getRightActionsToolbar(),
+                                         null),
+                      extendedPagedTable.hasSelectedItems());
     }
 
     protected void enableWidgets(final Widget widget,
@@ -238,59 +115,20 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         }
     }
 
-    public String getValidKeyForAdditionalListGrid(String baseName) {
-        return filterPagedTable.getValidKeyForAdditionalListGrid(baseName + USER_DEFINED);
-    }
-
-    public ExtendedPagedTable<T> createGridInstance(final String key) {
-        final ExtendedPagedTable<T> newListGrid = createExtendedPagedTable(key);
+    @Override
+    public void loadListTable(final String key,
+                              final Consumer<ListTable<T>> readyCallback) {
+        final GridGlobalPreferences pref = new GridGlobalPreferences(key,
+                                                                     getInitColumns(),
+                                                                     getBannedColumns());
+        final ListTable<T> newListGrid = new ListTable<T>(pref);
         newListGrid.setShowLastPagerButton(false);
         newListGrid.setShowFastFordwardPagerButton(false);
         newListGrid.setPreferencesService(userPreferencesService);
-        initColumns(newListGrid);
-        initSelectionModel(newListGrid);
-        newListGrid.loadPageSizePreferences();
-        newListGrid.createPageSizesListBox(5,
-                                           20,
-                                           5);
-
-        return newListGrid;
-    }
-
-    protected ExtendedPagedTable<T> createExtendedPagedTable(final String key) {
-        GridGlobalPreferences pref;
-        ExtendedPagedTable<T> table;
-        if (TAB_SEARCH.equals(key)) {
-            pref = new GridGlobalPreferences(getGridGlobalPreferencesKey() + key,
-                                             getInitColumns(),
-                                             getBannedColumns());
-            table = createAdvancedSearchTable(pref);
-        } else {
-            pref = new GridGlobalPreferences(key,
-                                             getInitColumns(),
-                                             getBannedColumns());
-            table = new ExtendedPagedTable<T>(pref);
-        }
-        table.setGridPreferencesStore(new GridPreferencesStore(pref));
-        return table;
-    }
-
-    protected ExtendedPagedTable<T> createAdvancedSearchTable(final GridGlobalPreferences preferences) {
-        final ExtendedPagedTable advancedSearchTable = new ExtendedPagedTable<T>(preferences);
-        advancedSearchTable.getElement().getStyle().setPaddingTop(0,
-                                                                  Style.Unit.PX);
-        advancedSearchTable.getTopToolbar().add(advancedSearchFiltersView);
-        return advancedSearchTable;
-    }
-
-    public ExtendedPagedTable<T> loadGridInstance(final String key) {
-        final ExtendedPagedTable<T> newListGrid = createExtendedPagedTable(key);
-        newListGrid.setShowLastPagerButton(false);
-        newListGrid.setShowFastFordwardPagerButton(false);
-        newListGrid.dataGrid.addRedrawHandler(() -> controlBulkOperations(newListGrid));
         userPreferencesService.call((GridPreferencesStore preferencesStore) -> {
-            newListGrid.setPreferencesService(userPreferencesService);
-            if(preferencesStore != null) {
+            if (preferencesStore == null) {
+                newListGrid.setGridPreferencesStore(new GridPreferencesStore(pref));
+            } else {
                 newListGrid.setGridPreferencesStore(preferencesStore);
             }
             initColumns(newListGrid);
@@ -299,10 +137,15 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
             newListGrid.createPageSizesListBox(5,
                                                20,
                                                5);
-        }).loadUserPreferences(newListGrid.getGridPreferencesStore().getPreferenceKey(),
+            if (column.childNodes.length == 1) {
+                column.removeChild(column.firstChild);
+            }
+            new Elemental2DomUtil().appendWidgetToElement(column,
+                                                          newListGrid);
+            listTable = newListGrid;
+            readyCallback.accept(listTable);
+        }).loadUserPreferences(key,
                                UserPreferencesType.GRIDPREFERENCES);
-
-        return newListGrid;
     }
 
     public void showBusyIndicator(final String message) {
@@ -313,152 +156,25 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         BusyPopup.close();
     }
 
-    public ExtendedPagedTable<T> getListGrid() {
-        return currentListGrid;
+    public ListTable<T> getListGrid() {
+        return listTable;
     }
 
     /*
      * For each specific implementation define the
      *  DataGrid columns and how they must be initialized
      */
-    public abstract void initColumns(ExtendedPagedTable<T> extendedPagedTable);
+    public abstract void initColumns(ListTable<T> extendedPagedTable);
 
-    public abstract void initSelectionModel(ExtendedPagedTable<T> extendedPagedTable);
+    public abstract void initSelectionModel(ListTable<T> extendedPagedTable);
 
     public abstract List<String> getInitColumns();
 
     public abstract List<String> getBannedColumns();
 
-    public abstract String getGridGlobalPreferencesKey();
-
-    public abstract String getNewFilterPopupTitle();
-
-    public MultiGridPreferencesStore getMultiGridPreferencesStore() {
-        if (filterPagedTable != null) {
-            return filterPagedTable.getMultiGridPreferencesStore();
-        }
-        return null;
-    }
-
-    public void initDefaultFilters() {
-        initSearchFilter();
-    }
-
-    protected void initSearchFilter() {
-        //Search Tab
-        final FilterSettings settings = presenter.createSearchTabSettings();
-        settings.setTableName(constants.Search());
-        settings.setTableDescription(constants.SearchResults());
-        settings.setKey(TAB_SEARCH);
-        addNewTab(settings);
-    }
-
-    public void initTabFilter(final FilterSettings tableSettings,
-                              final String key,
-                              final String tabName,
-                              final String tabDesc,
-                              final String dataSetUUID) {
-
-        tableSettings.setKey(key);
-        tableSettings.setTableName(tabName);
-        tableSettings.setTableDescription(tabDesc);
-        tableSettings.setUUID(dataSetUUID);
-
-        addNewTab(tableSettings);
-    }
-
-    public void addNewTab(final FilterSettings tableSettings) {
-        final HashMap<String, Object> tabSettingsValues = new HashMap<>();
-
-        tabSettingsValues.put(FILTER_TABLE_SETTINGS,
-                              dataSetEditorManager.getTableSettingsToStr(tableSettings));
-        tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_NAME_PARAM,
-                              tableSettings.getTableName());
-        tabSettingsValues.put(NewTabFilterPopup.FILTER_TAB_DESC_PARAM,
-                              tableSettings.getTableDescription());
-
-        filterPagedTable.saveNewTabSettings(tableSettings.getKey(),
-                                            tabSettingsValues);
-
-        final ExtendedPagedTable<T> extendedPagedTable = createGridInstance(tableSettings.getKey());
-        currentListGrid = extendedPagedTable;
-        extendedPagedTable.setDataProvider(presenter.getDataProvider());
-
-        filterPagedTable.addTab(extendedPagedTable,
-                                tableSettings.getKey(),
-                                () -> {
-                                    currentListGrid = extendedPagedTable;
-                                    applyFilterOnPresenter(tableSettings.getKey());
-                                },
-                                false
-        );
-    }
-
-    public void selectFirstTabAndEnableQueries() {
-        Scheduler.get().scheduleDeferred(getSelectFirstTabAndEnableQueriesCommand());
-    }
-
-    protected Scheduler.ScheduledCommand getSelectFirstTabAndEnableQueriesCommand() {
-        return () -> {
-            presenter.setAddingDefaultFilters(false);
-            getMultiGridPreferencesStore().setSelectedGrid(TAB_SEARCH);
-            filterPagedTable.setSelectedTab();
-        };
-    }
-
-    public void applyFilterOnPresenter(final String key) {
-        applyFilterOnPresenter(getTableFilterSettings(key));
-    }
-
-    public void applyFilterOnPresenter(final FilterSettings filterSettings) {
-        presenter.filterGrid(filterSettings);
-    }
-
-    protected FilterSettings getTableFilterSettings(final String key) {
-        final HashMap<String, Object> params = getGridSettings(key);
-        final String tableSettingsJSON = (String) params.get(FILTER_TABLE_SETTINGS);
-        return dataSetEditorManager.getStrToTableSettings(tableSettingsJSON);
-    }
-
-    @Override
-    public FilterSettings getAdvancedSearchFilterSettings() {
-        return getTableFilterSettings(TAB_SEARCH);
-    }
-
-    @Override
-    public void saveAdvancedSearchFilterSettings(final FilterSettings settings) {
-        final HashMap<String, Object> gridSettings = getGridSettings(TAB_SEARCH);
-        gridSettings.put(FILTER_TABLE_SETTINGS,
-                         dataSetEditorManager.getTableSettingsToStr(settings));
-        filterPagedTable.saveTabSettings(TAB_SEARCH,
-                                         gridSettings);
-    }
-
-    protected HashMap<String, Object> getGridSettings(final String key) {
-        return filterPagedTable.getMultiGridPreferencesStore().getGridSettings(key);
-    }
-
-    public void setIdentity(User identity) {
-        this.identity = identity;
-    }
-
     @Inject
     public void setUserPreferencesService(final Caller<UserPreferencesService> userPreferencesService) {
         this.userPreferencesService = userPreferencesService;
-        this.filterPagedTable.setPreferencesService(userPreferencesService);
-    }
-
-    @Inject
-    public void setDataSetEditorManager(final DataSetEditorManager dataSetEditorManager) {
-        this.dataSetEditorManager = dataSetEditorManager;
-    }
-
-    public FilterPagedTable<T> getFilterPagedTable() {
-        return filterPagedTable;
-    }
-
-    public void setFilterPagedTable(FilterPagedTable<T> filterPagedTable) {
-        this.filterPagedTable = filterPagedTable;
     }
 
     public Column<T, String> createTextColumn(final String columnId,
@@ -487,16 +203,20 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         return column;
     }
 
-    protected ColumnMeta<T> initChecksColumn(final ExtendedPagedTable<T> extendedPagedTable) {
+    protected ColumnMeta<T> initChecksColumn(final ListTable<T> extendedPagedTable) {
         CheckboxCell checkboxCell = new CheckboxCell(true,
                                                      false);
         Column<T, Boolean> checkColumn = new Column<T, Boolean>(checkboxCell) {
             @Override
-            public Boolean getValue(T pis) {
+            public Boolean getValue(T item) {
                 // Get the value from the selection model.
-                return pis.isSelected();
+                return extendedPagedTable.isItemSelected(item);
             }
         };
+
+        checkColumn.setSortable(false);
+        checkColumn.setDataStoreName(COL_ID_SELECT);
+        checkColumn.setCellStyleNames("kie-datatable-select");
 
         Header<Boolean> selectPageHeader = new Header<Boolean>(checkboxCell) {
             @Override
@@ -506,109 +226,67 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         };
 
         selectPageHeader.setUpdater(value -> {
-            getListGrid().getVisibleItems().forEach(pis -> extendedPagedTable.setItemSelection(pis,
-                                                                                               value));
-            getListGrid().redraw();
+            if (value) {
+                extendedPagedTable.selectAllItems();
+            } else {
+                extendedPagedTable.deselectAllItems();
+            }
+            controlBulkOperations(extendedPagedTable);
+        });
+        selectPageHeader.setHeaderStyleNames("kie-datatable-select");
+
+        checkColumn.setFieldUpdater((int index,
+                                     T model,
+                                     Boolean value) -> {
+            extendedPagedTable.setItemSelection(model,
+                                                value);
+
+            controlBulkOperations(extendedPagedTable);
         });
 
-        checkColumn.setSortable(false);
-        checkColumn.setDataStoreName(COL_ID_SELECT);
         ColumnMeta<T> checkColMeta = new ColumnMeta<T>(checkColumn,
                                                        "");
         checkColMeta.setHeader(selectPageHeader);
         return checkColMeta;
     }
 
-    public int getRefreshValue() {
-        return getMultiGridPreferencesStore().getRefreshInterval();
-    }
+    protected abstract List<ConditionalAction<T>> getConditionalActions();
 
-    public void saveRefreshValue(int newValue) {
-        filterPagedTable.saveNewRefreshInterval(newValue);
-    }
+    protected ColumnMeta<T> initActionsColumn() {
+        final ConditionalKebabActionCell<T> cell = conditionalKebabActionCell.get();
 
-    @Override
-    public void addTextFilter(String label,
-                              String placeholder,
-                              Consumer<String> addCallback,
-                              Consumer<String> removeCallback) {
-        advancedSearchFiltersView.addTextFilter(label,
-                                                placeholder,
-                                                addCallback,
-                                                removeCallback);
-    }
+        cell.setActions(getConditionalActions());
 
-    @Override
-    public void addNumericFilter(String label,
-                                 String placeholder,
-                                 Consumer<String> addCallback,
-                                 Consumer<String> removeCallback) {
-        advancedSearchFiltersView.addNumericFilter(label,
-                                                   placeholder,
-                                                   addCallback,
-                                                   removeCallback);
+        Column<T, T> actionsColumn = new Column<T, T>(cell) {
+            @Override
+            public T getValue(T object) {
+                return object;
+            }
+        };
+        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
+        actionsColumn.setCellStyleNames("kie-table-view-pf-actions text-center");
+
+        Header header = new TextHeader(Constants.INSTANCE.Actions());
+        header.setHeaderStyleNames("text-center");
+
+        final ColumnMeta<T> actionsColMeta = new ColumnMeta<T>(actionsColumn,
+                                                               "");
+        actionsColMeta.setHeader(header);
+        return actionsColMeta;
     }
 
     @Override
-    public void addSelectFilter(String label,
-                                Map<String, String> options,
-                                Boolean liveSearch,
-                                Consumer<String> addCallback,
-                                Consumer<String> removeCallback) {
-        advancedSearchFiltersView.addSelectFilter(label,
-                                                  options,
-                                                  liveSearch,
-                                                  addCallback,
-                                                  removeCallback);
+    public void setSaveFilterCallback(final BiConsumer<String, Consumer<String>> filterNameCallback) {
+        filters.setSaveFilterCallback(filterNameCallback);
     }
 
     @Override
-    public <T extends Object> void addActiveFilter(String labelKey,
-                                                   String labelValue,
-                                                   T value,
-                                                   Consumer<T> removeCallback) {
-        advancedSearchFiltersView.addActiveFilter(labelKey,
-                                                  labelValue,
-                                                  value,
-                                                  removeCallback);
-    }
-
-    @Override
-    public void addDataSetSelectFilter(String label,
-                                       String tableKey,
-                                       DataSetLookup lookup,
-                                       String textColumnId,
-                                       String valueColumnId,
-                                       Consumer<String> addCallback,
-                                       Consumer<String> removeCallback) {
-        advancedSearchFiltersView.addDataSetSelectFilter(label,
-                                                         tableKey,
-                                                         lookup,
-                                                         textColumnId,
-                                                         valueColumnId,
-                                                         addCallback,
-                                                         removeCallback);
-    }
-
-    @Override
-    public void addDateRangeFilter(String label,
-                                   String placeholder,
-                                   Boolean useMaxDate,
-                                   Consumer<DateRange> addCallback,
-                                   Consumer<DateRange> removeCallback) {
-        advancedSearchFiltersView.addDateRangeFilter(label,
-                                                     placeholder,
-                                                     useMaxDate,
-                                                     addCallback,
-                                                     removeCallback);
+    public <T extends Object> void addActiveFilter(final ActiveFilterItem<T> filter) {
+        filters.addActiveFilter(filter);
     }
 
     @Override
     public void removeAllActiveFilters() {
-        advancedSearchFiltersView.removeAllActiveFilters();
-    }
-
-    interface Binder extends UiBinder<Widget, AbstractMultiGridView> {
-
+        filters.removeAllActiveFilters();
     }
 }

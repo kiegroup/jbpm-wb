@@ -15,8 +15,12 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import com.google.common.collect.Lists;
@@ -32,7 +36,12 @@ import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.df.client.filter.FilterSettingsManager;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.list.ListTable;
+import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsJSONMarshaller;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
@@ -50,8 +59,13 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.uberfire.client.mvp.PerspectiveActivity;
+import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.Commands;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.ResourceRef;
 import org.uberfire.security.authz.AuthorizationManager;
@@ -62,7 +76,6 @@ import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
-import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.kie.workbench.common.workbench.client.PerspectiveIds.*;
@@ -70,6 +83,10 @@ import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class ProcessInstanceListPresenterTest {
+
+    private static final String PERSPECTIVE_ID = PerspectiveIds.PROCESS_INSTANCES;
+
+    private org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants;
 
     @Mock
     protected PlaceManager placeManager;
@@ -95,7 +112,7 @@ public class ProcessInstanceListPresenterTest {
     private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
 
     @Mock
-    private ExtendedPagedTable extendedPagedTable;
+    private ListTable extendedPagedTable;
 
     @Spy
     private FilterSettings filterSettings;
@@ -112,7 +129,22 @@ public class ProcessInstanceListPresenterTest {
     @Mock
     private User identity;
 
+    @Mock
+    ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
+
+    @Mock
+    UberfireBreadcrumbs breadcrumbs;
+
+    @Mock
+    private PerspectiveManager perspectiveManager;
+
+    @Mock
+    private PerspectiveActivity perspectiveActivity;
+
     private ArrayList<ProcessInstanceSummary> processInstanceSummaries;
+
+    @Mock
+    private FilterSettingsManager filterSettingsManager;
 
     @InjectMocks
     private ProcessInstanceListPresenter presenter;
@@ -165,13 +197,17 @@ public class ProcessInstanceListPresenterTest {
 
         processInstanceSummaries = createProcessInstanceSummaryList(5);
 
-        when(filterSettings.getDataSetLookup()).thenReturn(dataSetLookup);
+        filterSettings.setKey("key");
+        filterSettings.setDataSetLookup(dataSetLookup);
+
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(filterSettingsJSONMarshaller.fromJsonString(anyString())).thenReturn(filterSettings);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
-        when(viewMock.getAdvancedSearchFilterSettings()).thenReturn(filterSettings);
-        when(filterSettings.getKey()).thenReturn("key");
+        when(filterSettingsManager.getVariablesFilterSettings(any())).thenReturn(filterSettings);
+        when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
+        when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
+        when(perspectiveActivity.getIdentifier()).thenReturn(PERSPECTIVE_ID);
 
         doAnswer(new Answer() {
 
@@ -192,17 +228,21 @@ public class ProcessInstanceListPresenterTest {
             }
         }).when(dataSetQueryHelperDomainSpecific).lookupDataSet(anyInt(),
                                                                 any(DataSetReadyCallback.class));
+        commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
 
         presenter.setProcessService(remoteProcessServiceCaller);
     }
 
     @Test
     public void getDataTest() {
-        presenter.setAddingDefaultFilters(false);
         presenter.getData(new Range(0,
                                     5));
 
-        verify(dataSetQueryHelper).setLastSortOrder(SortOrder.ASCENDING);
+        verify(dataSetQueryHelper).lookupDataSet(anyInt(),
+                                                 any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelperDomainSpecific,
+               never()).lookupDataSet(anyInt(),
+                                      any(DataSetReadyCallback.class));
         verify(viewMock,
                times(2)).hideBusyIndicator();
     }
@@ -336,30 +376,7 @@ public class ProcessInstanceListPresenterTest {
     }
 
     @Test
-    public void testSkipDomainSpecificColumnsForSearchTab() {
-        presenter.setAddingDefaultFilters(false);
-        final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_PROCESS_ID,
-                                        "testProc"));
-        filterSettings.getDataSetLookup().addOperation(filter);
-        filterSettings.setKey(TAB_SEARCH);
-        when(filterSettings.getKey()).thenReturn(TAB_SEARCH);
-
-        when(dataSet.getRowCount()).thenReturn(1);//1 process instance
-        when(dataSet.getValueAt(0,
-                                COLUMN_PROCESS_INSTANCE_ID)).thenReturn(Long.valueOf(1));
-
-        presenter.getData(new Range(0,
-                                    5));
-
-        verifyZeroInteractions(dataSetQueryHelperDomainSpecific);
-        verify(viewMock,
-               times(2)).hideBusyIndicator();
-    }
-
-    @Test
     public void getDomainSpecifDataForProcessInstancesTest() {
-        presenter.setAddingDefaultFilters(false);
         final DataSetFilter filter = new DataSetFilter();
         filter.addFilterColumn(equalsTo(COLUMN_PROCESS_ID,
                                         "testProc"));
@@ -527,10 +544,17 @@ public class ProcessInstanceListPresenterTest {
     public void testDefaultActiveSearchFilters() {
         presenter.setupDefaultActiveSearchFilters();
 
-        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.State()),
-                                         eq(Constants.INSTANCE.Active()),
-                                         eq(String.valueOf(ProcessInstance.STATE_ACTIVE)),
-                                         any(Consumer.class));
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(Constants.INSTANCE.State(),
+                     captor.getValue().getKey());
+        assertEquals(Constants.INSTANCE.State() + ": " + Constants.INSTANCE.Active(),
+                     captor.getValue().getLabelValue());
+        assertEquals(String.valueOf(ProcessInstance.STATE_ACTIVE),
+                     (captor.getValue().getValue()));
     }
 
     @Test
@@ -542,10 +566,17 @@ public class ProcessInstanceListPresenterTest {
 
         presenter.setupActiveSearchFilters();
 
-        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.State()),
-                                         eq(Constants.INSTANCE.Active()),
-                                         eq(String.valueOf(ProcessInstance.STATE_ACTIVE)),
-                                         any(Consumer.class));
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(Constants.INSTANCE.State(),
+                     captor.getValue().getKey());
+        assertEquals(Constants.INSTANCE.State() + ": " + Constants.INSTANCE.Active(),
+                     captor.getValue().getLabelValue());
+        assertEquals(String.valueOf(ProcessInstance.STATE_ACTIVE),
+                     (captor.getValue().getValue()));
     }
 
     @Test
@@ -558,10 +589,17 @@ public class ProcessInstanceListPresenterTest {
 
         presenter.setupActiveSearchFilters();
 
-        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Process_Definition_Id()),
-                                         eq(processDefinitionId),
-                                         eq(processDefinitionId),
-                                         any(Consumer.class));
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(Constants.INSTANCE.Process_Definition_Id(),
+                     captor.getValue().getKey());
+        assertEquals(Constants.INSTANCE.Process_Definition_Id() + ": " + processDefinitionId,
+                     captor.getValue().getLabelValue());
+        assertEquals(processDefinitionId,
+                     (captor.getValue().getValue()));
     }
 
     @Test
@@ -576,10 +614,17 @@ public class ProcessInstanceListPresenterTest {
 
         presenter.setupActiveSearchFilters();
 
-        verify(viewMock).addActiveFilter(eq(Constants.INSTANCE.Id()),
-                                         eq(processInstanceId),
-                                         eq(processInstanceId),
-                                         any(Consumer.class));
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(Constants.INSTANCE.Id(),
+                     captor.getValue().getKey());
+        assertEquals(Constants.INSTANCE.Id() + ": " + processInstanceId,
+                     captor.getValue().getLabelValue());
+        assertEquals(processInstanceId,
+                     (captor.getValue().getValue()));
     }
 
     @Test
@@ -698,12 +743,64 @@ public class ProcessInstanceListPresenterTest {
         final ProcessInstanceListPresenter spy = spy(presenter);
         final ClientRuntimeError error = new ClientRuntimeError("");
         final FilterSettings filterSettings = mock(FilterSettings.class);
-        final DataSetReadyCallback callback = spy.createDataSetProcessInstanceCallback(0,
-                                                                                       filterSettings);
+        final DataSetReadyCallback callback = spy.getDataSetReadyCallback(0,
+                                                                          filterSettings);
         doNothing().when(spy).showErrorPopup(any());
         assertFalse(callback.onError(error));
         verify(viewMock).hideBusyIndicator();
-        verify(spy).showErrorPopup(Constants.INSTANCE.ResourceCouldNotBeLoaded(Constants.INSTANCE.Process_Instances()));
+        verify(spy).showErrorPopup(Constants.INSTANCE.ResourceCouldNotBeLoaded(commonConstants.Process_Instances()));
+    }
+
+    @Test
+    public void testListBreadcrumbCreation() {
+        presenter.createListBreadcrumb();
+        ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
+        verify(breadcrumbs).clearBreadcrumbs(PERSPECTIVE_ID);
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Home()),
+                                          captureCommand.capture());
+
+        captureCommand.getValue().execute();
+        verify(placeManager).goTo(PerspectiveIds.HOME);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Manage_Process_Instances()),
+                                          eq(Commands.DO_NOTHING));
+
+        verifyNoMoreInteractions(breadcrumbs);
+    }
+
+    @Test
+    public void testSetupDetailBreadcrumb() {
+        String detailLabel = "detailLabel";
+        String detailScreenId = "screenId";
+
+        PlaceManager placeManagerMock = mock(PlaceManager.class);
+        presenter.setPlaceManager(placeManagerMock);
+        presenter.setupDetailBreadcrumb(placeManagerMock,
+                                        commonConstants.Manage_Process_Instances(),
+                                        detailLabel,
+                                        detailScreenId);
+
+        ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
+
+        verify(breadcrumbs).clearBreadcrumbs(PERSPECTIVE_ID);
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Home()),
+                                          captureCommand.capture());
+        captureCommand.getValue().execute();
+        verify(placeManagerMock).goTo(PerspectiveIds.HOME);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(commonConstants.Manage_Process_Instances()),
+                                          captureCommand.capture());
+
+        captureCommand.getValue().execute();
+        verify(placeManagerMock).closePlace(detailScreenId);
+
+        verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
+                                          eq(detailLabel),
+                                          eq(Commands.DO_NOTHING));
     }
 
     protected class PerspectiveAnswer implements Answer<Boolean> {

@@ -50,6 +50,8 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
 
     protected Constants constants = Constants.INSTANCE;
 
+    protected org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
+
     protected SyncBeanManager iocManager;
 
     protected User identity;
@@ -111,24 +113,24 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
 
     protected List<? extends MenuItem> getProcessManagementViews() {
         return Arrays.asList(
-                MenuFactory.newSimpleItem(constants.Process_Definitions()).perspective(PROCESS_DEFINITIONS).endMenu().build().getItems().get(0),
-                MenuFactory.newSimpleItem(constants.Process_Instances()).perspective(PROCESS_INSTANCES).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(commonConstants.Process_Definitions()).perspective(PROCESS_DEFINITIONS).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(commonConstants.Process_Instances()).perspective(PROCESS_INSTANCES).endMenu().build().getItems().get(0),
                 MenuFactory.newSimpleItem(constants.Process_Instances_Admin()).perspective(ProcessAdminSettingsPerspective.PERSPECTIVE_ID).endMenu().build().getItems().get(0),
-                MenuFactory.newSimpleItem(constants.Tasks()).perspective(TASKS_ADMIN).endMenu().build().getItems().get(0),
-                MenuFactory.newSimpleItem(constants.ExecutionErrors()).perspective(EXECUTION_ERRORS).endMenu().build().getItems().get(0)
+                MenuFactory.newSimpleItem(commonConstants.Tasks()).perspective(TASKS_ADMIN).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(commonConstants.ExecutionErrors()).perspective(EXECUTION_ERRORS).endMenu().build().getItems().get(0)
         );
     }
 
     protected List<? extends MenuItem> getDeploymentViews() {
         return Arrays.asList(
                 MenuFactory.newSimpleItem(constants.Execution_Servers()).place(new DefaultPlaceRequest(SERVER_MANAGEMENT)).endMenu().build().getItems().get(0),
-                MenuFactory.newSimpleItem(constants.Jobs()).perspective(JOBS).endMenu().build().getItems().get(0)
+                MenuFactory.newSimpleItem(commonConstants.Jobs()).perspective(JOBS).endMenu().build().getItems().get(0)
         );
     }
 
     protected List<? extends MenuItem> getWorkViews() {
         return Arrays.asList(
-                MenuFactory.newSimpleItem(constants.Task_Inbox()).perspective(TASKS).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(commonConstants.Task_Inbox()).perspective(TASKS).endMenu().build().getItems().get(0),
                 MenuFactory.newSimpleItem(constants.Tasks_List_Admin()).perspective(TaskAdminSettingsPerspective.PERSPECTIVE_ID).endMenu().build().getItems().get(0),
                 MenuFactory.newSimpleItem(constants.Data_Sets()).perspective(DATASET_AUTHORING).endMenu().build().getItems().get(0)
         );

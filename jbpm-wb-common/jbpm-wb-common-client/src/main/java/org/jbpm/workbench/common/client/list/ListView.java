@@ -31,7 +31,5 @@ public interface ListView<T extends GenericSummary, V> extends IsWidget,
 
     void displayNotification(String text);
 
-    void showRestoreDefaultFilterConfirmationPopup();
-
     ExtendedPagedTable<T> getListGrid();
 }

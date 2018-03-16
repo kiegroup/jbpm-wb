@@ -86,4 +86,6 @@ public interface FiltersConstants extends Messages {
     String Labels();
 
     String Filter_parameters();
+
+    String PleaseDefineAtLeastColumnFilter();
 }

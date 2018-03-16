@@ -23,16 +23,13 @@ import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridViewTest;
 import org.jbpm.workbench.es.model.RequestSummary;
-import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 
-import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.TAB_SEARCH;
-import static org.jbpm.workbench.es.client.editors.requestlist.RequestListViewImpl.*;
+import static org.jbpm.workbench.es.client.editors.requestlist.RequestListViewImpl.COL_ID_ACTIONS;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
-import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class RequestListViewImplTest extends AbstractMultiGridViewTest<RequestSummary> {
@@ -55,18 +52,6 @@ public class RequestListViewImplTest extends AbstractMultiGridViewTest<RequestSu
     }
 
     @Override
-    public List<String> getExpectedTabs() {
-        return Arrays.asList(TAB_SEARCH,
-                             TAB_CANCELED,
-                             TAB_COMPLETED,
-                             TAB_ERROR,
-                             TAB_RETRYING,
-                             TAB_RUNNING,
-                             TAB_QUEUED,
-                             TAB_ALL);
-    }
-
-    @Override
     public List<String> getExpectedInitialColumns() {
         return Arrays.asList(COLUMN_ID,
                              COLUMN_BUSINESSKEY,
@@ -84,18 +69,5 @@ public class RequestListViewImplTest extends AbstractMultiGridViewTest<RequestSu
     @Override
     public Integer getExpectedNumberOfColumns() {
         return 9;
-    }
-
-    @Before
-    @Override
-    public void setupMocks() {
-        super.setupMocks();
-        when(presenter.createAllTabSettings()).thenReturn(filterSettings);
-        when(presenter.createCanceledTabSettings()).thenReturn(filterSettings);
-        when(presenter.createCompletedTabSettings()).thenReturn(filterSettings);
-        when(presenter.createErrorTabSettings()).thenReturn(filterSettings);
-        when(presenter.createQueuedTabSettings()).thenReturn(filterSettings);
-        when(presenter.createRetryingTabSettings()).thenReturn(filterSettings);
-        when(presenter.createRunningTabSettings()).thenReturn(filterSettings);
     }
 }

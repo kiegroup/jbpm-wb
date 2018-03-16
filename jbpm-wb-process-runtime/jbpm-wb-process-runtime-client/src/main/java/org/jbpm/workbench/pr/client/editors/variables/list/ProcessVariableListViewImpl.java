@@ -37,6 +37,7 @@ import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.AbstractListView;
 import org.jbpm.workbench.common.client.util.ButtonActionCell;
@@ -53,6 +54,7 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.ParameterizedCommand;
 
 @Dependent
+@Templated(value = "/org/jbpm/workbench/common/client/list/AbstractListView.html")
 public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariableSummary, ProcessVariableListPresenter>
         implements ProcessVariableListPresenter.ProcessVariableListView {
 
@@ -82,6 +84,8 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
         List<String> initColumns = new ArrayList<String>();
         initColumns.add(COL_ID_VARID);
         initColumns.add(COL_ID_VARVALUE);
+        initColumns.add(COL_ID_VARTYPE);
+        initColumns.add(COL_ID_LASTMOD);
         initColumns.add(COL_ID_ACTIONS);
 
         super.init(presenter,
@@ -95,17 +99,6 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
         selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
             @Override
             public void onSelectionChange(SelectionChangeEvent event) {
-
-                if (selectedRow == -1) {
-                    listGrid.setRowStyles(selectedStyles);
-                    selectedRow = listGrid.getKeyboardSelectedRow();
-                    listGrid.redraw();
-                } else if (listGrid.getKeyboardSelectedRow() != selectedRow) {
-                    listGrid.setRowStyles(selectedStyles);
-                    selectedRow = listGrid.getKeyboardSelectedRow();
-                    listGrid.redraw();
-                }
-
                 selectedItem = selectionModel.getLastSelectedObject();
             }
         });
@@ -132,7 +125,6 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
 
         listGrid.setSelectionModel(selectionModel,
                                    noActionColumnManager);
-        listGrid.setRowStyles(selectedStyles);
     }
 
     @Override

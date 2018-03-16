@@ -20,33 +20,29 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.uberfire.ext.widgets.common.client.menu.RefreshMenuBuilder;
+import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.pr.client.editors.definition.details.advance.AdvancedViewProcessDefDetailsPresenter;
 import org.jbpm.workbench.pr.client.editors.definition.details.multi.BaseProcessDefDetailsMultiPresenter;
-import org.uberfire.client.annotations.DefaultPosition;
+import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramPresenter;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.workbench.model.CompassPosition;
-import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.MenuFactory;
-import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
-import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
+
+import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN;
 
 @Dependent
-@WorkbenchScreen(identifier = PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN, preferredWidth = 500)
+@WorkbenchScreen(identifier = PROCESS_DEFINITION_DETAILS_SCREEN)
 public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetailsMultiPresenter<AdvancedProcessDefDetailsMultiPresenter.AdvancedProcessDefDetailsMultiView> {
 
     @Inject
     private AdvancedViewProcessDefDetailsPresenter detailPresenter;
 
-    @DefaultPosition
-    public Position getPosition() {
-        return CompassPosition.EAST;
-    }
+    @Inject
+    private ProcessDiagramPresenter processDiagramPresenter;
 
     @WorkbenchPartView
     public UberView<AdvancedProcessDefDetailsMultiPresenter> getView() {
@@ -56,27 +52,15 @@ public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetai
     @WorkbenchMenu
     public Menus buildMenu() {
         return MenuFactory
-                .newTopLevelCustomMenu(newInstanceMenu).endMenu()
-
-                .newTopLevelCustomMenu(new MenuFactory.CustomMenuBuilder() {
-
-                    @Override
-                    public void push(MenuFactory.CustomMenuBuilder element) {
-                    }
-
-                    @Override
-                    public MenuItem build() {
-                        return new BaseMenuCustom<IsWidget>() {
-
-                            @Override
-                            public IsWidget build() {
-                                return view.getOptionsButton();
-                            }
-                        };
-                    }
-                }).endMenu()
-
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
+                .newTopLevelCustomMenu(primaryActionMenuBuilder).endMenu()
+                .newTopLevelMenu(Constants.INSTANCE.Options())
+                    .menus()
+                        .menu(Constants.INSTANCE.View_Process_Instances())
+                            .respondsWith(() -> viewProcessInstances())
+                        .endMenu()
+                    .endMenus()
+                .endMenu()
                 .build();
     }
 
@@ -84,10 +68,13 @@ public class AdvancedProcessDefDetailsMultiPresenter extends BaseProcessDefDetai
         return detailPresenter.getWidget();
     }
 
+    public IsWidget getProcessDiagramView() {
+        return processDiagramPresenter.getView();
+    }
+
     public interface AdvancedProcessDefDetailsMultiView extends
                                                         UberView<AdvancedProcessDefDetailsMultiPresenter>,
                                                         BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView {
 
-        IsWidget getOptionsButton();
     }
 }

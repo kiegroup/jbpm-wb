@@ -87,7 +87,7 @@ public interface Constants extends Messages {
 
     String Bulk_Signal();
 
-    String Process_Instances();
+    String ProcessInstanceBreadcrumb(Long processInstanceId);
 
     String History();
 
@@ -127,7 +127,7 @@ public interface Constants extends Messages {
 
     String No_History_For_This_Variable();
 
-    String Process_Definitions();
+    String ProcessDefinitionBreadcrumb(String title);
 
     String Process_Instance_Details();
 
@@ -149,7 +149,7 @@ public interface Constants extends Messages {
 
     String Signal_Name();
 
-    String Process_Diagram();
+    String Diagram();
 
     String Bulk_Actions();
 
@@ -284,4 +284,6 @@ public interface Constants extends Messages {
     String SlaCompliance();
     
     String SlaDueDate();
+
+    String Process_Diagram_Not_Found();
 }

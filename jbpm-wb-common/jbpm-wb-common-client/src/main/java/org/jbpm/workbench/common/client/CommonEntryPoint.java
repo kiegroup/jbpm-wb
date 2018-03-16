@@ -19,15 +19,15 @@ package org.jbpm.workbench.common.client;
 import javax.annotation.PostConstruct;
 
 import org.jboss.errai.ioc.client.api.EntryPoint;
-import org.jbpm.workbench.common.client.resources.CommonResources;
+import org.jboss.errai.ui.shared.api.annotations.Bundle;
 import org.uberfire.client.views.pfly.sys.PatternFlyBootstrapper;
 
 @EntryPoint
+@Bundle("resources/i18n/Constants.properties")
 public class CommonEntryPoint {
 
     @PostConstruct
     public void init() {
-        CommonResources.INSTANCE.css().ensureInjected();
         PatternFlyBootstrapper.ensureBootstrapSelectIsAvailable();
         PatternFlyBootstrapper.ensureBootstrapDateRangePickerIsAvailable();
     }

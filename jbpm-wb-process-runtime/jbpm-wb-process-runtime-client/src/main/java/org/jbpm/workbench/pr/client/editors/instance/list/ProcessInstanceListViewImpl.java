@@ -15,12 +15,14 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
@@ -35,9 +37,11 @@ import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.util.ConditionalButtonActionCell;
+import org.jbpm.workbench.common.client.list.ListTable;
+import org.jbpm.workbench.common.client.util.ConditionalAction;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.common.client.util.GenericErrorSummaryCountCell;
 import org.jbpm.workbench.common.client.util.SLAComplianceCell;
@@ -51,21 +55,18 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
+@Templated(value = "/org/jbpm/workbench/common/client/list/AbstractMultiGridView.html", stylesheet = "/org/jbpm/workbench/common/client/resources/css/kie-manage.less")
 public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessInstanceSummary, ProcessInstanceListPresenter>
         implements ProcessInstanceListPresenter.ProcessInstanceListView {
 
-    protected static final String TAB_ACTIVE = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_0";
-    protected static final String TAB_COMPLETED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_1";
-    protected static final String TAB_ABORTED = PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_2";
-    
     private final Constants constants = Constants.INSTANCE;
 
     @Inject
-    ConfirmPopup confirmPopup;
+    private ConfirmPopup confirmPopup;
 
     @Inject
     private ManagedInstance<GenericErrorSummaryCountCell> popoverCellInstance;
-       
+
     @Override
     public List<String> getInitColumns() {
         return Arrays.asList(COL_ID_SELECT,
@@ -88,31 +89,20 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     }
 
     @Override
-    public String getGridGlobalPreferencesKey() {
-        return PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX;
-    }
-
-    @Override
-    public String getNewFilterPopupTitle() {
-        return constants.New_Process_InstanceList();
-    }
-
-    @Override
-    public void initSelectionModel(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
+    public void initSelectionModel(final ListTable<ProcessInstanceSummary> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption(constants.No_Process_Instances_Found());
-        extendedPagedTable.setSelectionCallback((pis, close) -> presenter.selectProcessInstance(pis,
-                                                                                                close));
+        extendedPagedTable.setSelectionCallback((pis) -> presenter.selectProcessInstance(pis));
         initBulkActions(extendedPagedTable);
     }
 
     @Override
-    public void initColumns(ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
+    public void initColumns(final ListTable<ProcessInstanceSummary> extendedPagedTable) {
         final ColumnMeta checkColumnMeta = initChecksColumn(extendedPagedTable);
-
-        Column<ProcessInstanceSummary, ?> actionsColumn = initActionsColumn();
+        ColumnMeta<ProcessInstanceSummary> actionsColumnMeta = initActionsColumn();
         Column<ProcessInstanceSummary, ?> errorCountColumn = initErrorCountColumn();
         Column<ProcessInstanceSummary, ?> slaComplianceColumn = initSlaComplianceColumn();
-        extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
+        extendedPagedTable.addSelectionIgnoreColumn(checkColumnMeta.getColumn());
+        extendedPagedTable.addSelectionIgnoreColumn(actionsColumnMeta.getColumn());
         extendedPagedTable.addSelectionIgnoreColumn(errorCountColumn);
 
         final List<ColumnMeta<ProcessInstanceSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessInstanceSummary>>();
@@ -151,13 +141,15 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                                               }
                                                           }),
                                          constants.State()));
-        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_START,
-                                                          process -> DateUtils.getDateTimeStr(process.getStartTime())),
+        final Column<ProcessInstanceSummary, String> startColumn = createTextColumn(COLUMN_START,
+                                                                                    process -> DateUtils.getDateTimeStr(process.getStartTime()));
+        startColumn.setDefaultSortAscending(false);
+        columnMetas.add(new ColumnMeta<>(startColumn,
                                          constants.Start_Date()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_LAST_MODIFICATION_DATE,
                                                           process -> DateUtils.getDateTimeStr(process.getLastModificationDate())),
                                          constants.Last_Modification_Date()));
-        
+
         columnMetas.add(new ColumnMeta<>(slaComplianceColumn,
                                          constants.SlaCompliance()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_SLA_DUE_DATE,
@@ -168,31 +160,32 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                          constants.Correlation_Key()));
         columnMetas.add(new ColumnMeta<>(errorCountColumn,
                                          constants.Errors()));
-        columnMetas.add(new ColumnMeta<>(actionsColumn,
-                                         constants.Actions()));
+        columnMetas.add(actionsColumnMeta);
 
-        List<GridColumnPreference> columPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
+        List<GridColumnPreference> columnPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
 
-        for (GridColumnPreference colPref : columPreferenceList) {
+        for (GridColumnPreference colPref : columnPreferenceList) {
             if (!isColumnAdded(columnMetas,
                                colPref.getName())) {
                 Column genericColumn = initGenericColumn(colPref.getName());
                 genericColumn.setSortable(false);
-                columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(genericColumn,
-                                                                       colPref.getName(),
-                                                                       true,
-                                                                       true));
+                columnMetas.add(new ColumnMeta<>(genericColumn,
+                                                 colPref.getName(),
+                                                 true,
+                                                 true));
             }
         }
         extendedPagedTable.addColumns(columnMetas);
         extendedPagedTable.setColumnWidth(checkColumnMeta.getColumn(),
-                                          38,
+                                          CHECK_COLUMN_WIDTH,
                                           Style.Unit.PX);
         extendedPagedTable.setColumnWidth(errorCountColumn,
-                                          65,
+                                          ERROR_COLUMN_WIDTH,
                                           Style.Unit.PX);
-
-        extendedPagedTable.storeColumnToPreferences();
+        extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
+                                          ACTIONS_COLUMN_WIDTH,
+                                          Style.Unit.PX);
+        extendedPagedTable.getColumnSortList().push(startColumn);
     }
 
     private boolean isColumnAdded(List<ColumnMeta<ProcessInstanceSummary>> columnMetas,
@@ -302,7 +295,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                   () -> {
                                       presenter.bulkAbort(extendedPagedTable.getSelectedItems());
                                       extendedPagedTable.deselectAllItems();
-                                      extendedPagedTable.redraw();
                                   });
             }
         });
@@ -313,8 +305,8 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
             @Override
             public void onClick(ClickEvent event) {
                 presenter.bulkSignal(extendedPagedTable.getSelectedItems());
-                extendedPagedTable.deselectAllItems();
-                extendedPagedTable.redraw();
+                //Only clear model, view will refresh once popup is closed
+                extendedPagedTable.getSelectedItems().clear();
             }
         });
 
@@ -336,9 +328,9 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         column.setDataStoreName(COLUMN_ERROR_COUNT);
         return column;
     }
-    
+
     private Column<ProcessInstanceSummary, Integer> initSlaComplianceColumn() {
-        
+
         final List<String> slaDescriptions = new ArrayList<>();
         slaDescriptions.add(constants.Unknown());
         slaDescriptions.add(constants.SlaNA());
@@ -346,7 +338,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         slaDescriptions.add(constants.SlaMet());
         slaDescriptions.add(constants.SlaAborted());
         slaDescriptions.add(constants.SlaViolated());
-        
+
         Column<ProcessInstanceSummary, Integer> column = new Column<ProcessInstanceSummary, Integer>(
                 new SLAComplianceCell(slaDescriptions)) {
 
@@ -361,81 +353,51 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         return column;
     }
 
-    private Column<ProcessInstanceSummary, ProcessInstanceSummary> initActionsColumn() {
-        List<HasCell<ProcessInstanceSummary, ?>> cells = new LinkedList<HasCell<ProcessInstanceSummary, ?>>();
-
-        cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
-                constants.Signal(),
-                processInstance -> presenter.signalProcessInstance(processInstance),
-                presenter.getSignalActionCondition()
-        ));
-
-        cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
-                constants.Abort(),
-                processInstance -> {
-                    confirmPopup.show(constants.Abort_Confirmation(),
-                                      constants.Abort(),
-                                      constants.Abort_Process_Instance(),
-                                      () -> presenter.abortProcessInstance(processInstance.getDeploymentId(),
-                                                                           processInstance.getProcessInstanceId()));
-                },
-                presenter.getAbortActionCondition()
-        ));
-
-        cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
-                constants.ViewJobs(),
-                processInstance -> presenter.openJobsView(Long.toString(processInstance.getProcessInstanceId())),
-                presenter.getViewJobsActionCondition()
-        ));
-
-        cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
-                constants.ViewTasks(),
-                processInstance -> presenter.openTaskView(Long.toString(processInstance.getProcessInstanceId())),
-                presenter.getViewTasksActionCondition()
-        ));
-
-        cells.add(new ConditionalButtonActionCell<ProcessInstanceSummary>(
-                constants.ViewErrors(),
-                processInstance -> presenter.openErrorView(Long.toString(processInstance.getProcessInstanceId())),
-                presenter.getViewErrorsActionCondition()
-        ));
-
-        CompositeCell<ProcessInstanceSummary> cell = new CompositeCell<ProcessInstanceSummary>(cells);
-        Column<ProcessInstanceSummary, ProcessInstanceSummary> actionsColumn = new Column<ProcessInstanceSummary, ProcessInstanceSummary>(cell) {
-            @Override
-            public ProcessInstanceSummary getValue(ProcessInstanceSummary object) {
-                return object;
-            }
-        };
-        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
-
-        return actionsColumn;
-    }
-
     @Override
-    public void initDefaultFilters() {
-        super.initDefaultFilters();
+    protected List<ConditionalAction<ProcessInstanceSummary>> getConditionalActions() {
+        return Arrays.asList(
 
-        //Filter status Active
-        initTabFilter(presenter.createActiveTabSettings(),
-                      TAB_ACTIVE,
-                      constants.Active(),
-                      constants.FilterActive(),
-                      PROCESS_INSTANCE_DATASET);
+                new ConditionalAction<>(
+                        constants.Signal(),
+                        processInstance -> presenter.signalProcessInstance(processInstance),
+                        presenter.getSignalActionCondition(),
+                        false
+                ),
 
-        //Filter status completed
-        initTabFilter(presenter.createCompletedTabSettings(),
-                      TAB_COMPLETED,
-                      constants.Completed(),
-                      constants.FilterCompleted(),
-                      PROCESS_INSTANCE_DATASET);
+                new ConditionalAction<>(
+                        constants.Abort(),
+                        processInstance -> {
+                            confirmPopup.show(constants.Abort_Confirmation(),
+                                              constants.Abort(),
+                                              constants.Abort_Process_Instance(),
+                                              () -> presenter.abortProcessInstance(processInstance.getDeploymentId(),
+                                                                                   processInstance.getProcessInstanceId()));
+                        },
+                        presenter.getAbortActionCondition(),
+                        false
+                ),
 
-        //Filter status aborted
-        initTabFilter(presenter.createAbortedTabSettings(),
-                      TAB_ABORTED,
-                      constants.Aborted(),
-                      constants.FilterAborted(),
-                      PROCESS_INSTANCE_DATASET);
+                new ConditionalAction<>(
+                        constants.ViewJobs(),
+                        processInstance -> presenter.openJobsView(Long.toString(processInstance.getProcessInstanceId())),
+                        presenter.getViewJobsActionCondition(),
+                        true
+                ),
+
+                new ConditionalAction<>(
+                        constants.ViewTasks(),
+                        processInstance -> presenter.openTaskView(Long.toString(processInstance.getProcessInstanceId())),
+                        presenter.getViewTasksActionCondition(),
+                        true
+                ),
+
+                new ConditionalAction<>(
+                        constants.ViewErrors(),
+                        processInstance -> presenter.openErrorView(Long.toString(processInstance.getProcessInstanceId())),
+                        presenter.getViewErrorsActionCondition(),
+                        true
+                )
+
+        );
     }
-
 }
