@@ -43,6 +43,7 @@ public class TaskAdminListViewImpl extends AbstractTaskListView<TaskAdminListPre
         return Arrays.asList(COLUMN_NAME,
                              COLUMN_PROCESS_ID,
                              COLUMN_STATUS,
+                             COLUMN_ACTUAL_OWNER,
                              COLUMN_CREATED_ON,
                              COLUMN_ERROR_COUNT,
                              COL_ID_ACTIONS);
