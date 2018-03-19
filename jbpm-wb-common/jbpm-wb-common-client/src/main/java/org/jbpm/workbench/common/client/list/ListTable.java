@@ -15,6 +15,8 @@
  */
 package org.jbpm.workbench.common.client.list;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NodeList;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 
@@ -24,14 +26,22 @@ public class ListTable<T extends GenericSummary> extends ExtendedPagedTable<T> {
 
     public ListTable(GridGlobalPreferences gridPreferences) {
         super(gridPreferences);
-        this.addDataGridStyles("kie-datatable", "kie-datatable");
+        this.addDataGridStyles("kie-datatable",
+                               "kie-datatable");
         this.dataGrid.setStriped(false);
     }
 
     @Override
     protected void setTableHeight() {
+        final NodeList<Element> byTagName = dataGrid.getElement().getFirstChildElement().getElementsByTagName("table");
+        int tableHeaderOffset = HEIGHT_OFFSET_PX;
+        if (byTagName.getLength() > 0) {
+            final Element element = byTagName.getItem(0);
+            tableHeaderOffset = element.getOffsetHeight() + 1;
+        }
+
         int base = dataGrid.getRowCount() - dataGrid.getVisibleRange().getStart();
-        int height = ((base <= 0 ? 1 : base) * ROW_HEIGHT_PX) + HEIGHT_OFFSET_PX;
+        int height = ((base <= 0 ? 1 : base) * ROW_HEIGHT_PX) + tableHeaderOffset;
         this.dataGrid.setHeight(height + "px");
     }
 }
