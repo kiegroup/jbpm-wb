@@ -16,13 +16,17 @@
 
 package org.jbpm.workbench.es.client.editors.errorlist;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.enterprise.context.Dependent;
 
 import org.jbpm.workbench.df.client.filter.FilterSettingsManagerImpl;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.df.client.filter.SavedFilter;
 import org.jbpm.workbench.es.client.i18n.Constants;
+import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
@@ -50,16 +54,25 @@ public class ExecutionErrorListFilterSettingsManager extends FilterSettingsManag
     }
 
     @Override
+    public void loadSavedFiltersFromPreferences(final MultiGridPreferencesStore store,
+                                                final Consumer<List<SavedFilter>> savedFiltersConsumer) {
+        final ArrayList<String> existingGrids = new ArrayList<>(store.getGridsId());
+
+        //Remove old All tab in case still in the user preferences
+        if (existingGrids.contains(TAB_ALL)) {
+            removeSavedFilterFromPreferences(TAB_ALL,
+                                             store,
+                                             () -> super.loadSavedFiltersFromPreferences(store,
+                                                                                         savedFiltersConsumer));
+        } else {
+            super.loadSavedFiltersFromPreferences(store,
+                                                  savedFiltersConsumer);
+        }
+    }
+
+    @Override
     public List<FilterSettings> initDefaultFilters() {
         return Arrays.asList(
-                //Filter All
-                createFilterSettings(EXECUTION_ERROR_LIST_DATASET,
-                                     COLUMN_ERROR_DATE,
-                                     null,
-                                     TAB_ALL,
-                                     constants.All(),
-                                     constants.FilterAll()),
-
                 //Filter Unacknowledged
                 createFilterSettings(EXECUTION_ERROR_LIST_DATASET,
                                      COLUMN_ERROR_DATE,

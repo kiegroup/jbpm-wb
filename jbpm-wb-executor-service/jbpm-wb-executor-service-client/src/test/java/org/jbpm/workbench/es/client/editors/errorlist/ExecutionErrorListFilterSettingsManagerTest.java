@@ -59,14 +59,12 @@ public class ExecutionErrorListFilterSettingsManagerTest {
     @Test
     public void testDefaultFilters() {
         Consumer<List<SavedFilter>> callback = filters -> {
-            assertEquals(3,
+            assertEquals(2,
                          filters.size());
-            assertEquals(Constants.INSTANCE.All(),
-                         filters.get(0).getName());
             assertEquals(Constants.INSTANCE.New(),
-                         filters.get(1).getName());
+                         filters.get(0).getName());
             assertEquals(Constants.INSTANCE.Acknowledged(),
-                         filters.get(2).getName());
+                         filters.get(1).getName());
         };
 
         final MultiGridPreferencesStore store = new MultiGridPreferencesStore();

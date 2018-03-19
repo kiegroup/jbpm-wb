@@ -35,10 +35,6 @@ public interface Constants extends Messages {
 
     String FilterQueued();
 
-    String All();
-
-    String FilterAll();
-
     String Running();
 
     String FilterRunning();
