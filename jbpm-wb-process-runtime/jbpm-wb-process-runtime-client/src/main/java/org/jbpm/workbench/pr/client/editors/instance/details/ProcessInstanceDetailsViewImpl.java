@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,157 +13,166 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.workbench.pr.client.editors.instance.details;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
-
-import elemental2.dom.HTMLParagraphElement;
-
-import org.gwtbootstrap3.client.ui.FormLabel;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
+import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.shared.event.TabShowEvent;
+import org.gwtbootstrap3.client.shared.event.TabShowHandler;
+import org.gwtbootstrap3.client.ui.NavTabs;
+import org.gwtbootstrap3.client.ui.TabContent;
+import org.gwtbootstrap3.client.ui.TabListItem;
+import org.gwtbootstrap3.client.ui.TabPane;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 
 @Dependent
-@Templated(value = "ProcessInstanceDetailsViewImpl.html")
-public class ProcessInstanceDetailsViewImpl extends Composite implements
-                                                              ProcessInstanceDetailsPresenter.ProcessInstanceDetailsView {
+public class ProcessInstanceDetailsViewImpl extends Composite implements ProcessInstanceDetailsPresenter.ProcessInstanceDetailsView {
 
-    @Inject
-    @DataField
-    public HTML processDefinitionIdText;
+    private static Binder uiBinder = GWT.create(Binder.class);
 
-    @Inject
-    @DataField
-    public HTML processDeploymentText;
+    private final Constants constants = Constants.INSTANCE;
 
-    @Inject
-    @DataField
-    public HTML processVersionText;
-    
-    @Inject
-    @DataField
-    public HTMLParagraphElement slaComplianceText;
+    @UiField
+    NavTabs navTabs;
 
-    @Inject
-    @DataField
-    public HTML correlationKeyText;
+    @UiField
+    TabContent tabContent;
 
-    @Inject
-    @DataField
-    public FormLabel parentProcessInstanceIdLabel;
+    private TabListItem instanceDetailsTab;
 
-    @Inject
-    @DataField
-    public HTML parentProcessInstanceIdText;
+    private TabPane instanceDetailsPane;
 
-    @Inject
-    @DataField
-    public HTML stateText;
+    private TabListItem processVariablesTab;
 
-    @Inject
-    @DataField
-    public HTML currentActivitiesListBox;
+    private TabPane processVariablesPane;
 
-    @Inject
-    @DataField
-    public FormLabel processDefinitionIdLabel;
+    private TabListItem documentTab;
 
-    @Inject
-    @DataField
-    public FormLabel processDeploymentLabel;
+    private TabPane documentPane;
 
-    @Inject
-    @DataField
-    public FormLabel processVersionLabel;
-    
-    @Inject
-    @DataField
-    public FormLabel slaComplianceLabel;
+    private TabListItem logsTab;
 
-    @Inject
-    @DataField
-    public FormLabel correlationKeyLabel;
+    private TabPane logsPane;
 
-    @Inject
-    @DataField
-    public FormLabel stateLabel;
+    private TabListItem diagramTab;
 
-    @Inject
-    @DataField
-    public FormLabel currentActivitiesListLabel;
+    private TabPane diagramPane;
 
-    @Inject
-    @DataField
-    public HTML activeTasksListBox;
+    private ProcessInstanceDetailsPresenter presenter;
 
-    @Inject
-    @DataField
-    public FormLabel activeTasksListLabel;
+    @Override
+    public void init(final ProcessInstanceDetailsPresenter presenter) {
+        initWidget(uiBinder.createAndBindUi(this));
+        this.presenter = presenter;
+        initTabs();
+    }
 
-    private Constants constants = Constants.INSTANCE;
-
-    @PostConstruct
-    public void init() {
-        processDefinitionIdLabel.setText(constants.Process_Definition_Id());
-        processDeploymentLabel.setText(constants.Deployment_Name());
-        processVersionLabel.setText(constants.Process_Definition_Version());
-        slaComplianceLabel.setText(constants.Process_SLA_Compliance());
-        correlationKeyLabel.setText(constants.Correlation_Key());
-        stateLabel.setText(constants.Process_Instance_State());
-        activeTasksListLabel.setText(constants.Active_Tasks());
-        currentActivitiesListLabel.setText(constants.Current_Activities());
-        parentProcessInstanceIdLabel.setText(constants.Parent_Process_Instance());
+    public void initTabs() {
+        {
+            instanceDetailsPane = GWT.create(TabPane.class);
+            instanceDetailsPane.add(presenter.getProcessInstanceView());
+            instanceDetailsTab = GWT.create(TabListItem.class);
+            instanceDetailsTab.setText(constants.Process_Instance_Details());
+            instanceDetailsTab.setDataTargetWidget(instanceDetailsPane);
+            instanceDetailsTab.addStyleName("uf-dropdown-tab-list-item");
+            tabContent.add(instanceDetailsPane);
+            navTabs.add(instanceDetailsTab);
+        }
+        {
+            processVariablesPane = GWT.create(TabPane.class);
+            processVariablesPane.add(presenter.getProcessVariablesView());
+            processVariablesTab = GWT.create(TabListItem.class);
+            processVariablesTab.setText(constants.Process_Variables());
+            processVariablesTab.setDataTargetWidget(processVariablesPane);
+            processVariablesTab.addStyleName("uf-dropdown-tab-list-item");
+            tabContent.add(processVariablesPane);
+            navTabs.add(processVariablesTab);
+            processVariablesTab.addShowHandler(new TabShowHandler() {
+                @Override
+                public void onShow(final TabShowEvent event) {
+                    presenter.variableListRefreshGrid();
+                }
+            });
+        }
+        {
+            documentPane = GWT.create(TabPane.class);
+            documentPane.add(presenter.getDocumentView());
+            documentTab = GWT.create(TabListItem.class);
+            documentTab.setText(constants.Documents());
+            documentTab.setDataTargetWidget(documentPane);
+            documentTab.addStyleName("uf-dropdown-tab-list-item");
+            tabContent.add(documentPane);
+            navTabs.add(documentTab);
+            documentTab.addShowHandler(new TabShowHandler() {
+                @Override
+                public void onShow(final TabShowEvent event) {
+                    presenter.documentListRefreshGrid();
+                }
+            });
+        }
+        {
+            logsPane = GWT.create(TabPane.class);
+            logsPane.add(presenter.getLogsView());
+            logsTab = GWT.create(TabListItem.class);
+            logsTab.setText(constants.Logs());
+            logsTab.setDataTargetWidget(logsPane);
+            logsTab.addStyleName("uf-dropdown-tab-list-item");
+            tabContent.add(logsPane);
+            navTabs.add(logsTab);
+        }
+        {
+            diagramPane = GWT.create(TabPane.class);
+            diagramPane.add(presenter.getProcessDiagramView());
+            diagramTab = GWT.create(TabListItem.class);
+            diagramTab.setText(constants.Diagram());
+            diagramTab.setDataTargetWidget(diagramPane);
+            diagramTab.addStyleName("uf-dropdown-tab-list-item");
+            tabContent.add(diagramPane);
+            navTabs.add(diagramTab);
+        }
     }
 
     @Override
-    public HTML getProcessDefinitionIdText() {
-        return processDefinitionIdText;
+    public void selectInstanceDetailsTab() {
+        instanceDetailsTab.showTab();
     }
 
     @Override
-    public HTML getCurrentActivitiesListBox() {
-        return currentActivitiesListBox;
+    public void displayAllTabs() {
+        for (Widget active : navTabs) {
+            active.setVisible(true);
+        }
+        for (Widget active : tabContent) {
+            active.setVisible(true);
+        }
+        ((TabListItem) navTabs.getWidget(0)).showTab();
     }
 
     @Override
-    public HTML getActiveTasksListBox() {
-        return activeTasksListBox;
+    public void displayOnlyLogTab() {
+        for (Widget active : navTabs) {
+            active.setVisible(false);
+        }
+        for (Widget active : tabContent) {
+            active.setVisible(false);
+        }
+        instanceDetailsPane.setVisible(true);
+        instanceDetailsTab.setVisible(true);
+
+        logsPane.setVisible(true);
+        logsTab.setVisible(true);
+
+        diagramPane.setVisible(true);
+        diagramTab.setVisible(true);
+        instanceDetailsTab.showTab();
     }
 
-    @Override
-    public HTML getStateText() {
-        return this.stateText;
-    }
+    interface Binder extends UiBinder<Widget, ProcessInstanceDetailsViewImpl> {
 
-    @Override
-    public HTML getProcessDeploymentText() {
-        return processDeploymentText;
-    }
-
-    @Override
-    public HTML getCorrelationKeyText() {
-        return correlationKeyText;
-    }
-
-    @Override
-    public HTML getParentProcessInstanceIdText() {
-        return parentProcessInstanceIdText;
-    }
-
-    @Override
-    public HTML getProcessVersionText() {
-        return processVersionText;
-    }
-    
-    @Override
-    public void setSlaComplianceText(String value) {
-        slaComplianceText.textContent = value;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.pr.client.editors.instance.details.multi;
+package org.jbpm.workbench.pr.client.editors.instance.details;
 
 import java.util.Iterator;
 
@@ -32,7 +32,7 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class ProcessInstanceDetailsMultiViewImplTest {
+public class ProcessInstanceDetailsViewImplTest {
 
     @Mock
     TabContent tabContent;
@@ -67,10 +67,10 @@ public class ProcessInstanceDetailsMultiViewImplTest {
     private TabPane diagramPane;
 
     @Mock
-    private ProcessInstanceDetailsMultiPresenter presenter;
+    private ProcessInstanceDetailsPresenter presenter;
 
     @InjectMocks
-    private ProcessInstanceDetailsMultiViewImpl processInstanceDetailsMultiView;
+    private ProcessInstanceDetailsViewImpl processInstanceDetailsMultiView;
 
     @Before
     public void setupMocks() {
@@ -125,7 +125,7 @@ public class ProcessInstanceDetailsMultiViewImplTest {
     public void initTabsTest() {
         processInstanceDetailsMultiView.initTabs();
 
-        verify(presenter).getProcessIntanceView();
+        verify(presenter).getProcessInstanceView();
         verify(presenter).getProcessVariablesView();
         verify(presenter).getDocumentView();
         verify(presenter).getLogsView();
