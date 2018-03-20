@@ -78,7 +78,7 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
 
     @PostConstruct
     public void init() {
-        setPrimaryActionMenuBuilder(new PrimaryActionMenuBuilder(Constants.INSTANCE.New_Instance(),
+        setPrimaryActionMenuBuilder(new PrimaryActionMenuBuilder(Constants.INSTANCE.New_Process_Instance(),
                                                                  () -> createNewProcessInstance()));
     }
 

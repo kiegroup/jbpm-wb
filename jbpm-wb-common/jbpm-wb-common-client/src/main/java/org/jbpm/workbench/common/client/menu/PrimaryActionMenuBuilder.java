@@ -16,51 +16,50 @@
 
 package org.jbpm.workbench.common.client.menu;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import elemental2.dom.HTMLElement;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.uberfire.client.views.pfly.widgets.Button;
 import org.uberfire.mvp.Command;
+import org.uberfire.workbench.model.menu.EnabledStateChangeListener;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 public class PrimaryActionMenuBuilder implements MenuFactory.CustomMenuBuilder {
 
-    private boolean isOn = true;
+    private final List<EnabledStateChangeListener> changeListeners = new ArrayList<>();
     private Button button;
 
     public PrimaryActionMenuBuilder(final String label,
                                     final Command command) {
-        initPrimaryActionButton(label,
-                                "",
-                                "");
+        button = IOC.getBeanManager().lookupBean(Button.class).newInstance();
+        button.setType(Button.ButtonType.BUTTON);
+        button.setButtonStyleType(Button.ButtonStyleType.PRIMARY);
+        setupButton(label,
+                    "",
+                    "");
         button.setClickHandler(() -> command.execute());
     }
 
-    public PrimaryActionMenuBuilder(final String onLabel,
-                                    final String onIcon,
-                                    final String onTitle,
-                                    final String offLabel,
-                                    final String offIcon,
-                                    final String offTitle,
-                                    final Command command) {
+    public PrimaryActionMenuBuilder(final String label,
+                                    final String icon,
+                                    final String title,
+                                    final Command command,
+                                    boolean notifyChangeListeners) {
 
-        isOn = true;
-        initPrimaryActionLink(onLabel,
-                              onIcon,
-                              onTitle);
+        button = IOC.getBeanManager().lookupBean(Button.class).newInstance();
+        button.setButtonStyleType(Button.ButtonStyleType.LINK);
+        setupButton(label,
+                    icon,
+                    title);
         button.setClickHandler(() -> {
-            if (isOn) {
-                setupButton(offLabel,
-                            offIcon,
-                            offTitle);
-            } else {
-                setupButton(onLabel,
-                            onIcon,
-                            onTitle);
-            }
             command.execute();
-            isOn = !isOn;
+            if (notifyChangeListeners) {
+                notifyListeners(true);
+            }
         });
     }
 
@@ -78,44 +77,24 @@ public class PrimaryActionMenuBuilder implements MenuFactory.CustomMenuBuilder {
 
             @Override
             public boolean isEnabled() {
-                return true;
+                return super.isEnabled();
             }
 
             @Override
-            public void setEnabled(boolean enabled) {
+            public void setEnabled(final boolean enabled) {
+                super.setEnabled(enabled);
+                notifyListeners(enabled);
+            }
 
+            public void addEnabledStateChangeListener(final EnabledStateChangeListener listener) {
+                addChangeListener(listener);
             }
         };
-    }
-
-    private void initPrimaryActionButton(String label,
-                                         String icon,
-                                         String title) {
-        button = IOC.getBeanManager().lookupBean(Button.class).newInstance();
-        button.setType(Button.ButtonType.BUTTON);
-        button.setButtonStyleType(Button.ButtonStyleType.PRIMARY);
-        setupButton(label,
-                    icon,
-                    title);
-    }
-
-    private void initPrimaryActionLink(String label,
-                                       String icon,
-                                       String title) {
-        button = IOC.getBeanManager().lookupBean(Button.class).newInstance();
-        button.setButtonStyleType(Button.ButtonStyleType.LINK);
-        setupButton(label,
-                    icon,
-                    title);
     }
 
     private void setupButton(String label,
                              String icon,
                              String title) {
-        while (button.getElement().hasChildNodes()) {
-            button.getElement().removeChild(button.getElement().lastChild);
-        }
-
         if (label != null && !label.isEmpty()) {
             button.setText(label);
         }
@@ -133,6 +112,16 @@ public class PrimaryActionMenuBuilder implements MenuFactory.CustomMenuBuilder {
             button.show();
         } else {
             button.hide();
+        }
+    }
+
+    public void addChangeListener(final EnabledStateChangeListener listener) {
+        changeListeners.add(listener);
+    }
+
+    private void notifyListeners(final boolean enabled) {
+        for (final EnabledStateChangeListener listener : changeListeners) {
+            listener.enabledStateChanged(enabled);
         }
     }
 }

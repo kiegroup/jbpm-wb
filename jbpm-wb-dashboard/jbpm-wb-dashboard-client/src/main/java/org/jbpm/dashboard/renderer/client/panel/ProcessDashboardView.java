@@ -257,11 +257,6 @@ public class ProcessDashboardView extends Composite implements ProcessDashboard.
         instancesPanel.setVisible(true);
     }
 
-    @Override
-    public boolean isDashboardPanelVisible() {
-        return dashboardPanel.isVisible();
-    }
-
     interface Binder extends UiBinder<Widget, ProcessDashboardView> {
 
     }

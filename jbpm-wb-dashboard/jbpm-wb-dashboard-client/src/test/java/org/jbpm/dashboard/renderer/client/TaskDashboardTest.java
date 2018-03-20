@@ -198,7 +198,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
     @Test
     public void testShowInstances() {
         reset(displayerListener);
-        presenter.showTasksTable();
+        presenter.showTable();
         verify(view).showInstances();
         verify(displayerListener).onRedraw(presenter.getTasksTable());
     }
