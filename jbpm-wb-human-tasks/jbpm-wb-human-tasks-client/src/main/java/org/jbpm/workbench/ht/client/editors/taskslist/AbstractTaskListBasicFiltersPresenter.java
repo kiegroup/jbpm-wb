@@ -30,6 +30,7 @@ import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.common.client.util.TaskUtils.getStatusByType;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.COLUMN_STATUS;
 
 public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFiltersPresenter {
 
@@ -59,13 +60,11 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
 
         final Map<String, String> status = getStatusByType(TaskUtils.TaskType.ALL).stream().sorted().collect(Collectors.toMap(Function.identity(),
                                                                                                                               Function.identity()));
-        view.addSelectFilter(constants.Status(),
-                             status,
-                             false,
-                             f -> addSearchFilter(f,
-                                                  equalsTo(COLUMN_STATUS,
-                                                           f.getValue()))
-        );
+        view.addMultiSelectFilter(constants.Status(),
+                                  status,
+                                  f -> addSearchFilterList(COLUMN_STATUS,
+                                                           f,
+                                                           status.size()));
 
         view.addTextFilter(constants.Process_Instance_Correlation_Key(),
                            constants.FilterByCorrelationKey(),

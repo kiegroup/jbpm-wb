@@ -64,6 +64,11 @@ public class ActiveFiltersImpl implements ActiveFilters {
     }
 
     @Override
+    public <T> void removeActiveFilter(final ActiveFilterItem<T> filter) {
+        view.removeActiveFilter(filter);
+    }
+
+    @Override
     public void removeAllActiveFilters() {
         view.removeAllActiveFilters();
     }

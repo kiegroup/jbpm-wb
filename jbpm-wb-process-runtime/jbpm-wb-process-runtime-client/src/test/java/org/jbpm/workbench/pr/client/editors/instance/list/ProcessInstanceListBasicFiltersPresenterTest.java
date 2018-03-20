@@ -55,14 +55,12 @@ public class ProcessInstanceListBasicFiltersPresenterTest extends AbstractBasicF
         verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Description()),
                                         any(),
                                         any());
-        verify(getView()).addSelectFilter(eq(Constants.INSTANCE.State()),
-                                          any(),
-                                          any(),
-                                          any());
-        verify(getView()).addSelectFilter(eq(Constants.INSTANCE.Errors()),
-                                          any(),
-                                          any(),
-                                          any());
+        verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.State()),
+                                               any(),
+                                               any());
+        verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.Errors()),
+                                               any(),
+                                               any());
         verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Name()),
                                                  any(),
                                                  any(),

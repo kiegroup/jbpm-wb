@@ -16,6 +16,9 @@
 
 package org.jbpm.workbench.common.client.filters.basic;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -104,6 +107,8 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
 
     @Inject
     private ManagedInstance<DateRangePicker> dateRangePickerProvider;
+
+    private Map<String, List<Input>> selectInputs = new HashMap<>();
 
     @PostConstruct
     public void init() {
@@ -201,7 +206,6 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
         select.setTextColumnId(textColumnId);
         select.setValueColumnId(valueColumnId);
         setupSelect(label,
-                    false,
                     select.getSelect(),
                     callback);
     }
@@ -297,25 +301,95 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
     @Override
     public void addSelectFilter(final String label,
                                 final Map<String, String> options,
-                                final Boolean liveSearch,
                                 final Consumer<ActiveFilterItem<String>> callback) {
         final Select select = selectProvider.get();
         options.forEach((k, v) -> select.addOption(v,
                                                    k));
         setupSelect(label,
-                    liveSearch,
                     select,
                     callback);
     }
 
+    @Override
+    public void clearAllSelectFilter() {
+        selectInputs.values().forEach(values -> {
+            values.forEach(i -> {
+                if (i.getChecked()) {
+                    i.setChecked(false);
+                }
+            });
+        });
+    }
+
+    @Override
+    public void clearSelectFilter(final String label) {
+        selectInputs.computeIfPresent(label,
+                                      (key, values) -> {
+                                          values.forEach(i -> {
+                                              if (i.getChecked()) {
+                                                  i.setChecked(false);
+                                              }
+                                          });
+                                          return values;
+                                      });
+    }
+
+    @Override
+    public void addMultiSelectFilter(final String label,
+                                     final Map<String, String> options,
+                                     final Consumer<ActiveFilterItem<List<String>>> callback) {
+
+        appendHorizontalRule();
+        appendSectionTitle(label);
+        final Div div = (Div) getDocument().createElement("div");
+        addCSSClass(div,
+                    "form-group");
+        for (Map.Entry<String, String> entry : options.entrySet()) {
+            final Label labelElement = (Label) getDocument().createElement("label");
+            final Input input = (Input) getDocument().createElement("input");
+            input.setType("checkbox");
+            input.setValue(entry.getKey());
+            input.setAttribute("data-label",
+                               entry.getValue());
+            input.addEventListener("change",
+                                   e -> {
+                                       final List<String> values = new ArrayList<>();
+                                       final List<String> labels = new ArrayList<>();
+
+                                       selectInputs.get(label).stream().filter(i -> i.getChecked()).forEach(i -> {
+                                           values.add(i.getValue());
+                                           labels.add(i.getAttribute("data-label"));
+                                       });
+
+                                       addActiveFilter(label,
+                                                       String.join(", ",
+                                                                   labels),
+                                                       null,
+                                                       values,
+                                                       callback);
+                                   },
+                                   false);
+            selectInputs.computeIfAbsent(label,
+                                         key -> new ArrayList<Input>());
+            selectInputs.get(label).add(input);
+            labelElement.appendChild(input);
+            labelElement.appendChild(getDocument().createTextNode(entry.getValue()));
+            final Div checkBoxDiv = (Div) getDocument().createElement("div");
+            addCSSClass(checkBoxDiv,
+                        "checkbox");
+            checkBoxDiv.appendChild(labelElement);
+            div.appendChild(checkBoxDiv);
+        }
+
+        filterList.appendChild(div);
+    }
+
     private void setupSelect(final String label,
-                             final Boolean liveSearch,
                              final Select select,
                              final Consumer<ActiveFilterItem<String>> callback) {
         appendHorizontalRule();
         appendSectionTitle(label);
         select.setTitle(constants.Select());
-        select.setLiveSearch(liveSearch);
         select.setWidth("100%");
         addCSSClass(select.getElement(),
                     "selectpicker");
@@ -455,5 +529,9 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
                                                  value,
                                                  null));
         }
+    }
+
+    protected Map<String, List<Input>> getSelectInputs() {
+        return selectInputs;
     }
 }

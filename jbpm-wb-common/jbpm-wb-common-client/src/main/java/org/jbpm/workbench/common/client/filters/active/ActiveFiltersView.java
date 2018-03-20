@@ -21,7 +21,9 @@ import org.uberfire.mvp.ParameterizedCommand;
 
 public interface ActiveFiltersView extends IsElement {
 
-    <T extends Object> void addActiveFilter(ActiveFilterItem filter);
+    <T extends Object> void addActiveFilter(ActiveFilterItem<T> filter);
+
+    <T extends Object> void removeActiveFilter(ActiveFilterItem<T> filter);
 
     void removeAllActiveFilters();
 

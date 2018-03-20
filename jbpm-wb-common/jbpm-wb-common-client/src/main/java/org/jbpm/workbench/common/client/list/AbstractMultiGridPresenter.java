@@ -32,6 +32,7 @@ import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterAddEvent;
+import org.jbpm.workbench.common.client.filters.basic.BasicFilterRemoveEvent;
 import org.jbpm.workbench.common.client.filters.saved.SavedFilterSelectedEvent;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.model.GenericSummary;
@@ -114,9 +115,14 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
                           });
     }
 
-    protected void onBasicFilterAddEvent(@Observes final BasicFilterAddEvent event) {
+    public void onBasicFilterAddEvent(@Observes final BasicFilterAddEvent event) {
         addActiveFilter(event.getFilter(),
                         event.getActiveFilterItem());
+    }
+
+    public void onBasicFilterRemoveEvent(@Observes final BasicFilterRemoveEvent event) {
+        removeActiveFilter(event.getFilter(),
+                           event.getActiveFilterItem());
     }
 
     protected void onSavedFilterSelectedEvent(@Observes final SavedFilterSelectedEvent event) {
@@ -202,6 +208,12 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
         final FilterSettings settings = dataSetQueryHelper.getCurrentTableSettings();
         settings.removeColumnFilter(columnFilter);
         refreshGrid();
+    }
+
+    protected void removeActiveFilter(final ColumnFilter columnFilter,
+                                      final ActiveFilterItem<T> filter) {
+        view.removeActiveFilter(filter);
+        removeActiveFilter(columnFilter);
     }
 
     public void saveSearchFilterSettings(final String filterName,

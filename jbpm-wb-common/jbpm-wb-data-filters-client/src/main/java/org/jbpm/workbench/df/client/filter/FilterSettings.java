@@ -157,4 +157,15 @@ public class FilterSettings extends DisplayerSettings {
             getDataSetLookup().getFirstFilterOp().getColumnFilterList().clear();
         }
     }
+
+    @Override
+    public String toString() {
+        return "FilterSettings{" +
+                "key='" + key + '\'' +
+                ", tableName='" + tableName + '\'' +
+                ", tableDescription='" + tableDescription + '\'' +
+                ", editable=" + editable +
+                ", serverTemplateId='" + serverTemplateId + '\'' +
+                "} " + super.toString();
+    }
 }

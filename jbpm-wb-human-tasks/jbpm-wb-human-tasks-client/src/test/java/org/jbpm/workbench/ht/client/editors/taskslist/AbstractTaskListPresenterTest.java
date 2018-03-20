@@ -30,10 +30,13 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
+import org.jbpm.workbench.common.client.filters.basic.BasicFilterAddEvent;
+import org.jbpm.workbench.common.client.filters.basic.BasicFilterRemoveEvent;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
@@ -440,5 +443,35 @@ public abstract class AbstractTaskListPresenterTest {
         final ArgumentCaptor<TaskSelectionEvent> captor = ArgumentCaptor.forClass(TaskSelectionEvent.class);
         verify(taskSelected).fire(captor.capture());
         assertFalse(captor.getValue().isForLog());
+    }
+
+    @Test
+    public void testOnBasicFilterAddEvent() {
+        final ActiveFilterItem<Object> filter = new ActiveFilterItem<>("key1",
+                                                                       null,
+                                                                       null,
+                                                                       null,
+                                                                       null);
+        final ColumnFilter columnFilter = mock(ColumnFilter.class);
+        getPresenter().onBasicFilterAddEvent(new BasicFilterAddEvent(filter,
+                                                                columnFilter));
+
+        verify(viewMock).addActiveFilter(filter);
+        verify(filterSettings).addColumnFilter(columnFilter);
+    }
+
+    @Test
+    public void testOnBasicFilterRemoveEvent() {
+        final ActiveFilterItem<Object> filter = new ActiveFilterItem<>("key1",
+                                                                       null,
+                                                                       null,
+                                                                       null,
+                                                                       null);
+        final ColumnFilter columnFilter = mock(ColumnFilter.class);
+        getPresenter().onBasicFilterRemoveEvent(new BasicFilterRemoveEvent(filter,
+                                                                      columnFilter));
+
+        verify(viewMock).removeActiveFilter(filter);
+        verify(filterSettings).removeColumnFilter(columnFilter);
     }
 }

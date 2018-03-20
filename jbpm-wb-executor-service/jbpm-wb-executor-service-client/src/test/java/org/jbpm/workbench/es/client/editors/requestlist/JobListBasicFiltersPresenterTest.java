@@ -55,10 +55,9 @@ public class JobListBasicFiltersPresenterTest extends AbstractBasicFiltersPresen
         verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Description()),
                                         any(),
                                         any());
-        verify(getView()).addSelectFilter(eq(Constants.INSTANCE.Status()),
-                                          any(),
-                                          any(),
-                                          any());
+        verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.Status()),
+                                               any(),
+                                               any());
         verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Process_Name()),
                                                  any(),
                                                  any(),

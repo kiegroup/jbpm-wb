@@ -16,7 +16,7 @@
 
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -24,7 +24,7 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import static org.jbpm.workbench.common.client.PerspectiveIds.TASK_LIST_BASIC_FILTERS_SCREEN;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_USER_DATASET;
 
-@Dependent
+@ApplicationScoped
 @WorkbenchScreen(identifier = TASK_LIST_BASIC_FILTERS_SCREEN)
 public class TaskListBasicFiltersPresenter extends AbstractTaskListBasicFiltersPresenter {
 

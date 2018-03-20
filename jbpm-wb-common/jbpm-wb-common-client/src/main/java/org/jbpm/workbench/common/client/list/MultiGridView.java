@@ -26,6 +26,8 @@ public interface MultiGridView<T extends GenericSummary, V> extends ListView<T, 
 
     <T extends Object> void addActiveFilter(ActiveFilterItem<T> filter);
 
+    <T extends Object> void removeActiveFilter(ActiveFilterItem<T> filter);
+
     void removeAllActiveFilters();
 
     void loadListTable(String key,

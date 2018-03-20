@@ -286,6 +286,11 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     @Override
+    public <T extends Object> void removeActiveFilter(final ActiveFilterItem<T> filter) {
+        filters.removeActiveFilter(filter);
+    }
+
+    @Override
     public void removeAllActiveFilters() {
         filters.removeAllActiveFilters();
     }

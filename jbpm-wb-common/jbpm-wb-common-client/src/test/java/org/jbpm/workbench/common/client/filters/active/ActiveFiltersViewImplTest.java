@@ -16,6 +16,12 @@
 
 package org.jbpm.workbench.common.client.filters.active;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
+
+import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,6 +32,7 @@ import org.uberfire.client.views.pfly.widgets.Popover;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.ParameterizedCommand;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -37,6 +44,9 @@ public class ActiveFiltersViewImplTest {
 
     @Mock
     SaveFilterPopoverView saveFilterPopoverView;
+
+    @Mock
+    DataBinder<List<ActiveFilterItem>> activeFiltersList;
 
     @InjectMocks
     @Spy
@@ -67,5 +77,19 @@ public class ActiveFiltersViewImplTest {
         view.setSaveFilterPopoverCallback();
 
         verify(saveFilterPopover).hide();
+    }
+
+    @Test
+    public void testRemoveActiveFilter(){
+        final List<ActiveFilterItem> model = new ArrayList<>();
+        when(activeFiltersList.getModel()).thenReturn(model);
+        model.add(new ActiveFilterItem<>("key1", null, null, null, null));
+        model.add(new ActiveFilterItem<>("key2", null, null, null, null));
+
+        view.removeActiveFilter(new ActiveFilterItem<>("key1", null, null, null, null));
+        view.removeActiveFilter(new ActiveFilterItem<>("key3", null, null, null, null));
+
+        assertEquals(1, model.size());
+        verify(activeFiltersList, times(2)).getModel();
     }
 }

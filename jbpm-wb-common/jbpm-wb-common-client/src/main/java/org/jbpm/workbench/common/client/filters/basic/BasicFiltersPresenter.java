@@ -16,13 +16,16 @@
 
 package org.jbpm.workbench.common.client.filters.basic;
 
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItemRemovedEvent;
 import org.jbpm.workbench.common.client.filters.saved.SavedFilterSelectedEvent;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.df.client.filter.FilterEditorPopup;
@@ -30,6 +33,9 @@ import org.jbpm.workbench.df.client.filter.FilterSettingsManager;
 import org.jbpm.workbench.df.client.filter.SavedFilter;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
+import org.uberfire.lifecycle.OnOpen;
+
+import static org.dashbuilder.dataset.filter.FilterFactory.in;
 
 public abstract class BasicFiltersPresenter {
 
@@ -41,7 +47,10 @@ public abstract class BasicFiltersPresenter {
     protected FilterSettingsManager filterSettingsManager;
 
     @Inject
-    protected Event<BasicFilterAddEvent> activeFilters;
+    protected Event<BasicFilterAddEvent> basicFilterAddEvent;
+
+    @Inject
+    protected Event<BasicFilterRemoveEvent> basicFilterRemoveEvent;
 
     @Inject
     private FilterEditorPopup filterEditorPopup;
@@ -65,6 +74,11 @@ public abstract class BasicFiltersPresenter {
         loadFilters();
     }
 
+    @OnOpen
+    public void onOpen(){
+        view.clearAllSelectFilter();
+    }
+
     public abstract void loadFilters();
 
     public void setFilterSettingsManager(final FilterSettingsManager filterSettingsManager) {
@@ -73,8 +87,28 @@ public abstract class BasicFiltersPresenter {
 
     protected void addSearchFilter(final ActiveFilterItem filter,
                                    final ColumnFilter columnFilter) {
-        activeFilters.fire(new BasicFilterAddEvent(filter,
-                                                   columnFilter));
+        basicFilterAddEvent.fire(new BasicFilterAddEvent(filter,
+                                                         columnFilter));
+    }
+
+    protected void addSearchFilterList(final String columnId,
+                                       final ActiveFilterItem<List<String>> filter,
+                                       final Integer size) {
+        final ColumnFilter columnFilter = in(columnId,
+                                             filter.getValue());
+        if (filter.getValue().isEmpty() || filter.getValue().size() == size) {
+            removeSearchFilter(filter,
+                               columnFilter);
+        } else {
+            addSearchFilter(filter,
+                            columnFilter);
+        }
+    }
+
+    protected void removeSearchFilter(final ActiveFilterItem filter,
+                                      final ColumnFilter columnFilter) {
+        basicFilterRemoveEvent.fire(new BasicFilterRemoveEvent(filter,
+                                                               columnFilter));
     }
 
     protected void showAdvancedFilters() {
@@ -95,4 +129,12 @@ public abstract class BasicFiltersPresenter {
     }
 
     protected abstract String getAdvancedFilterPopupTitle();
+
+    public void onRemoveActiveFilter(@Observes final ActiveFilterItemRemovedEvent event) {
+        view.clearSelectFilter(event.getActiveFilterItem().getKey());
+    }
+
+    protected void onSavedFilterSelectedEvent(@Observes final SavedFilterSelectedEvent event) {
+        view.clearAllSelectFilter();
+    }
 }
