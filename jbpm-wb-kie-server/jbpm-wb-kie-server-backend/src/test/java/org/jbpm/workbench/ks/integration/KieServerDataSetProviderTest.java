@@ -22,15 +22,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.DataColumn;
 import org.dashbuilder.dataset.DataSetLookup;
-import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
@@ -43,6 +47,7 @@ import org.dashbuilder.dataset.impl.DataSetImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.api.model.definition.QueryDefinition;
 import org.kie.server.api.model.definition.QueryFilterSpec;
 import org.kie.server.api.model.definition.QueryParam;
 import org.kie.server.client.KieServicesClient;
@@ -50,6 +55,7 @@ import org.kie.server.client.QueryServicesClient;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -73,7 +79,7 @@ public class KieServerDataSetProviderTest {
     DataSetImpl dataSet;
 
     @Mock
-    DataSetDef dataSetDef;
+    RemoteDataSetDef dataSetDef;
 
     @Before
     public void setUp() {
@@ -196,7 +202,8 @@ public class KieServerDataSetProviderTest {
 
         List<QueryParam> filterParams = new ArrayList<>();
         List<DataColumn> extraColumns = new ArrayList<>();
-        kieServerDataSetProvider.handleDataSetGroup(dataSetGroup, 
+        kieServerDataSetProvider.handleDataSetGroup(dataSetDef, 
+                                                    dataSetGroup, 
                                                     filterParams, 
                                                     extraColumns);
 
@@ -228,7 +235,8 @@ public class KieServerDataSetProviderTest {
 
         List<QueryParam> filterParams = new ArrayList<>();
         List<DataColumn> extraColumns = new ArrayList<>();
-        kieServerDataSetProvider.handleDataSetGroup(dataSetGroup, 
+        kieServerDataSetProvider.handleDataSetGroup(dataSetDef, 
+                                                    dataSetGroup, 
                                                     filterParams, 
                                                     extraColumns);
 
@@ -243,5 +251,96 @@ public class KieServerDataSetProviderTest {
                      filterParams.get(0).getValue().size());
         assertEquals(COLUMN_TEST,
                      filterParams.get(0).getValue().get(0));
+    }
+    
+    @Test
+    public void testPerformQueryTestMode() {
+        QueryFilterSpec filterSpec = new QueryFilterSpec();
+        
+        ConsoleDataSetLookup dataSetLookup = Mockito.mock(ConsoleDataSetLookup.class);
+        when(dataSetLookup.testMode()).thenReturn(true);
+        when(dataSetLookup.getNumberOfRows()).thenReturn(10);
+        when(dataSetLookup.getRowOffset()).thenReturn(1);
+        when(dataSetLookup.getDataSetUUID()).thenReturn("");
+        
+        kieServerDataSetProvider.performQuery(dataSetDef, dataSetLookup, queryServicesClient, filterSpec);
+        
+        verify(kieServerIntegration).broadcastToKieServers(anyString(),
+                                                           any());
+        verify(dataSetLookup, times(1)).testMode();
+        
+        verify(queryServicesClient).query(anyString(),
+                                          anyString(),
+                                          any(QueryFilterSpec.class),
+                                          anyInt(),
+                                          anyInt(),
+                                          any());
+    }
+    
+    @Test
+    public void testPerformQueryRegularMode() {
+        QueryFilterSpec filterSpec = new QueryFilterSpec();
+        
+        ConsoleDataSetLookup dataSetLookup = Mockito.mock(ConsoleDataSetLookup.class);
+        when(dataSetLookup.testMode()).thenReturn(false);
+        when(dataSetLookup.getNumberOfRows()).thenReturn(10);
+        when(dataSetLookup.getRowOffset()).thenReturn(1);
+        when(dataSetLookup.getDataSetUUID()).thenReturn("");
+        
+        kieServerDataSetProvider.performQuery(dataSetDef, dataSetLookup, queryServicesClient, filterSpec);
+        
+        verify(kieServerIntegration, times(0)).broadcastToKieServers(anyString(),
+                                                           any());
+        verify(dataSetLookup, times(1)).testMode();
+        
+        verify(queryServicesClient).query(anyString(),
+                                          anyString(),
+                                          any(QueryFilterSpec.class),
+                                          anyInt(),
+                                          anyInt(),
+                                          any());
+    }    
+    
+    @Test
+    public void testDataSetMetaData() throws Exception {
+        Map<String, String> columns = new HashMap<>();
+        columns.put("test", "NUMBER");
+        QueryDefinition definition = QueryDefinition.builder()
+                .name("q1")
+                .columns(columns)
+                .build();
+        
+        when(dataSetDef.getColumns()).thenReturn(null, new ArrayList<>());
+        when(dataSetDef.getServerTemplateId()).thenReturn("servereTemplateId");
+        when(queryServicesClient.getQuery(anyString())).thenReturn(definition);        
+        
+        kieServerDataSetProvider.getDataSetMetadata(dataSetDef);
+        
+        verify(dataSetDef, times(1)).addColumn(eq("test"), eq(ColumnType.NUMBER));
+        
+        verify(queryServicesClient).getQuery(anyString());
+    }
+    
+    @Test
+    public void testNoAdoptLookup() throws Exception {
+        ConsoleDataSetLookup dataSetLookup = Mockito.mock(ConsoleDataSetLookup.class);      
+        
+        kieServerDataSetProvider.adoptLookup(dataSetDef, dataSetLookup);
+        
+        verify(dataSetDef, times(0)).getServerTemplateId();        
+    }
+    
+    @Test
+    public void testAdoptLookup() throws Exception {
+        DataSetLookup dataSetLookup = Mockito.mock(DataSetLookup.class);
+        when(dataSetDef.getDataSetFilter()).thenReturn(Mockito.mock(DataSetFilter.class));
+        when(dataSetDef.getServerTemplateId()).thenReturn("servereTemplateId");
+        when(dataSetLookup.cloneInstance()).thenReturn(dataSetLookup);
+        
+        ConsoleDataSetLookup adopted = kieServerDataSetProvider.adoptLookup(dataSetDef, dataSetLookup);
+        
+        verify(dataSetDef, times(1)).getServerTemplateId(); 
+        assertNotNull(adopted.getOperationList());
+        assertEquals(1, adopted.getOperationList().size());
     }
 }

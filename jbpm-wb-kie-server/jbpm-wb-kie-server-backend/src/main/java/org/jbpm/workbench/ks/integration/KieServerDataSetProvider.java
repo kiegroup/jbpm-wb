@@ -19,6 +19,8 @@ package org.jbpm.workbench.ks.integration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
+
 import javax.enterprise.context.ApplicationScoped;
 
 import org.dashbuilder.dataprovider.DataSetProvider;
@@ -45,8 +47,10 @@ import org.dashbuilder.dataset.impl.DataSetMetadataImpl;
 import org.dashbuilder.dataset.sort.ColumnSort;
 import org.dashbuilder.dataset.sort.DataSetSort;
 import org.dashbuilder.dataset.sort.SortOrder;
+import org.kie.server.api.model.definition.QueryDefinition;
 import org.kie.server.api.model.definition.QueryFilterSpec;
 import org.kie.server.api.model.definition.QueryParam;
+import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.QueryServicesClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,13 +70,28 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
     public DataSetMetadata getDataSetMetadata(DataSetDef def) throws Exception {
         List<String> columnNames = new ArrayList<>();
         List<ColumnType> columnTypes = new ArrayList<>();
-        List<DataColumnDef> columns = def.getColumns();
+        
 
+        if (def.getColumns() == null && def instanceof RemoteDataSetDef) {
+            final QueryServicesClient queryClient = getClient(((RemoteDataSetDef) def).getServerTemplateId(),
+                                                              QueryServicesClient.class);
+            
+            QueryDefinition definition = queryClient.getQuery(def.getUUID());
+            if (definition.getColumns() != null) {
+                
+                for (Entry<String, String> entry : definition.getColumns().entrySet()) {
+                    if (def.getColumnById(entry.getKey()) == null) {
+                        def.addColumn(entry.getKey(), ColumnType.valueOf(entry.getValue()));
+                    }  
+                }
+            }
+            
+        }
+        List<DataColumnDef> columns = def.getColumns();
         for (DataColumnDef column : columns) {
             columnNames.add(column.getId());
             columnTypes.add(column.getColumnType());
         }
-
         return new DataSetMetadataImpl(def,
                                        def.getUUID(),
                                        -1,
@@ -85,10 +104,9 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
     @Override
     public DataSet lookupDataSet(DataSetDef def,
                                  DataSetLookup lookup) throws Exception {
-        if (!(lookup instanceof ConsoleDataSetLookup)) {
-            throw new IllegalArgumentException("DataSetLookup is of incorrect type " + lookup.getClass().getName());
-        }
-        ConsoleDataSetLookup dataSetLookup = (ConsoleDataSetLookup) lookup;
+        
+        ConsoleDataSetLookup dataSetLookup = adoptLookup(def, lookup);
+        
         LOGGER.debug("Data Set lookup using Server Template Id: {}",
                      dataSetLookup.getServerTemplateId());
         if (dataSetLookup.getServerTemplateId() == null || dataSetLookup.getServerTemplateId().isEmpty()) {
@@ -135,7 +153,7 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
         }
 
         DataSetGroup dataSetGroup = dataSetLookup.getLastGroupOp();
-        handleDataSetGroup(dataSetGroup, filterParams, extraColumns);
+        handleDataSetGroup(def, dataSetGroup, filterParams, extraColumns);
 
         if (!filterParams.isEmpty()) {
             filterSpec.setParameters(filterParams.toArray(new QueryParam[filterParams.size()]));
@@ -156,20 +174,91 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
             filterSpec.setOrderBy(orderBy.toString());
             filterSpec.setAscending(sortOrder.equals(SortOrder.ASCENDING));
         }
-        final List<List> instances = queryClient.query(
-                dataSetLookup.getDataSetUUID(),
-                QueryServicesClient.QUERY_MAP_RAW,
-                filterSpec,
-                dataSetLookup.getRowOffset() / dataSetLookup.getNumberOfRows(),
-                dataSetLookup.getNumberOfRows(),
-                List.class
-        );
+        final List<List> instances = performQuery((RemoteDataSetDef) def, dataSetLookup, queryClient, filterSpec);
         LOGGER.debug("Query client returned {} row(s)",
                      instances.size());
 
         return buildDataSet(def,
                             instances,
                             extraColumns);
+    }
+    
+    protected ConsoleDataSetLookup adoptLookup(DataSetDef def, DataSetLookup lookup) {
+        ConsoleDataSetLookup dataSetLookup = null;
+        if (!(lookup instanceof ConsoleDataSetLookup)) {
+            
+            if (def instanceof RemoteDataSetDef) {
+                dataSetLookup = (ConsoleDataSetLookup) ConsoleDataSetLookup.fromInstance(lookup, ((RemoteDataSetDef) def).getServerTemplateId());
+                DataSetFilter filter = def.getDataSetFilter();
+                if (filter != null) {
+                    dataSetLookup.addOperation(filter);
+                }
+            } else {
+            
+                throw new IllegalArgumentException("DataSetLookup is of incorrect type " + lookup.getClass().getName());
+            }
+        } else {
+            dataSetLookup = (ConsoleDataSetLookup) lookup;
+        }
+        
+        return dataSetLookup;
+    }
+    
+    protected List<List> performQuery(RemoteDataSetDef def, ConsoleDataSetLookup dataSetLookup, QueryServicesClient queryClient, QueryFilterSpec filterSpec) {
+        
+        if (dataSetLookup.testMode()) {
+            QueryDefinition queryDefinition = QueryDefinition.builder()
+                    .name(dataSetLookup.getDataSetUUID())
+                    .source(def.getDataSource())
+                    .target(def.getQueryTarget())
+                    .expression(def.getDbSQL())
+                    .build();
+            
+            kieServerIntegration.broadcastToKieServers(((RemoteDataSetDef) def).getServerTemplateId(), (KieServicesClient client) -> {
+                QueryServicesClient instanceQueryClient = client.getServicesClient(QueryServicesClient.class);
+                QueryDefinition registered = instanceQueryClient.replaceQuery(queryDefinition);
+                if (registered.getColumns() != null) {
+                    
+                    for (Entry<String, String> entry : registered.getColumns().entrySet()) {
+                        if (def.getColumnById(entry.getKey()) == null) {
+                            def.addColumn(entry.getKey(), ColumnType.valueOf(entry.getValue()));
+                        }  
+                    }
+                }
+                return registered;
+            });
+            
+            
+            
+            try {
+                final List<List> instances = queryClient.query(
+                                                               dataSetLookup.getDataSetUUID(),
+                                                               QueryServicesClient.QUERY_MAP_RAW,
+                                                               filterSpec,
+                                                               dataSetLookup.getRowOffset() / dataSetLookup.getNumberOfRows(),
+                                                               dataSetLookup.getNumberOfRows(),
+                                                               List.class
+                                                       );
+                return instances;
+                
+            } catch (Exception e) {
+                queryClient.unregisterQuery(dataSetLookup.getDataSetUUID());
+                throw new RuntimeException(e);
+            }
+            
+        } else {
+        
+            final List<List> instances = queryClient.query(
+                                                       dataSetLookup.getDataSetUUID(),
+                                                       QueryServicesClient.QUERY_MAP_RAW,
+                                                       filterSpec,
+                                                       dataSetLookup.getRowOffset() / dataSetLookup.getNumberOfRows(),
+                                                       dataSetLookup.getNumberOfRows(),
+                                                       List.class
+                                               );
+            
+            return instances;
+        }
     }
 
     @Override
@@ -272,7 +361,7 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
         }
     }
     
-    protected void handleDataSetGroup(DataSetGroup dataSetGroup, List<QueryParam> filterParams, List<DataColumn> extraColumns) {
+    protected void handleDataSetGroup(DataSetDef def, DataSetGroup dataSetGroup, List<QueryParam> filterParams, List<DataColumn> extraColumns) {
         if (dataSetGroup != null) {
             if (dataSetGroup.getColumnGroup() != null) {
                 // handle group
@@ -302,7 +391,7 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
                                                     null,
                                                     Arrays.asList(groupFunction.getColumnId())));
                     extraColumns.add(new DataColumnImpl(groupFunction.getSourceId(),
-                                                        ColumnType.LABEL));
+                                                        def.getColumnById(groupFunction.getColumnId()).getColumnType()));
                 }
             }
         }

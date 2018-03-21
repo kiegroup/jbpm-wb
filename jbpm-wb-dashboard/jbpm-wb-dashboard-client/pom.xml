@@ -58,6 +58,21 @@
       <artifactId>kie-wb-common-workbench-client</artifactId>
       <scope>provided</scope>
     </dependency>
+    
+    <dependency>
+      <groupId>org.kie.workbench.services</groupId>
+      <artifactId>kie-wb-common-services-api</artifactId>
+    </dependency>
+    
+     <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-server-ui-api</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.kie.server</groupId>
+      <artifactId>kie-server-controller-api</artifactId>
+    </dependency>
 
     <!-- Dashbuilder -->
 
@@ -111,6 +126,18 @@
     <dependency>
       <groupId>org.dashbuilder</groupId>
       <artifactId>dashbuilder-renderer-default</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-validations</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-widgets</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -187,6 +214,11 @@
       <groupId>org.gwtbootstrap3</groupId>
       <artifactId>gwtbootstrap3</artifactId>
       <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
 
     <!-- Unit testing -->

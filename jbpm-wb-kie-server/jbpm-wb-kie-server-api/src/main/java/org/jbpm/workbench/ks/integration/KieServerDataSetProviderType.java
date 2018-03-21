@@ -17,13 +17,11 @@
 package org.jbpm.workbench.ks.integration;
 
 import org.dashbuilder.dataprovider.DataSetProviderType;
-import org.dashbuilder.dataset.def.SQLDataSetDef;
 import org.dashbuilder.dataset.json.DataSetDefJSONMarshallerExt;
-import org.dashbuilder.dataset.json.SQLDefJSONMarshaller;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class KieServerDataSetProviderType implements DataSetProviderType<SQLDataSetDef> {
+public class KieServerDataSetProviderType implements DataSetProviderType<RemoteDataSetDef> {
 
     public KieServerDataSetProviderType() {
 
@@ -35,12 +33,30 @@ public class KieServerDataSetProviderType implements DataSetProviderType<SQLData
     }
 
     @Override
-    public SQLDataSetDef createDataSetDef() {
-        return new SQLDataSetDef();
+    public RemoteDataSetDef createDataSetDef() {
+        RemoteDataSetDef def = new RemoteDataSetDef();
+        def.setProvider(this);
+        def.setDataSource("${org.kie.server.persistence.ds}");
+        return def;
     }
 
     @Override
-    public DataSetDefJSONMarshallerExt<SQLDataSetDef> getJsonMarshaller() {
-        return SQLDefJSONMarshaller.INSTANCE;
+    public DataSetDefJSONMarshallerExt<RemoteDataSetDef> getJsonMarshaller() {
+        return RemoteDefJSONMarshaller.INSTANCE;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (! (obj instanceof DataSetProviderType)) {
+            return false;
+        }
+        return getName().equals(((DataSetProviderType) obj).getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
+    }
+    
+    
 }

@@ -15,21 +15,21 @@
  */
 package org.jbpm.workbench.ht.backend.server;
 
+import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.dashbuilder.dataset.def.DataSetDef;
-import org.dashbuilder.dataset.def.DataSetDefFactory;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.dashbuilder.dataset.impl.SQLDataSetDefBuilderImpl;
 import org.jbpm.workbench.ks.integration.KieServerDataSetProvider;
+import org.jbpm.workbench.ks.integration.RemoteDataSetDefBuilder;
 import org.kie.server.api.KieServerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
-
-import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Startup
 @ApplicationScoped
@@ -63,10 +63,11 @@ public class DataSetDefsBootstrap {
 
     @PostConstruct
     protected void registerDataSetDefinitions() {
-        SQLDataSetDefBuilderImpl builder = DataSetDefFactory.newSQLDataSetDef()
+        SQLDataSetDefBuilderImpl builder = RemoteDataSetDefBuilder.get()
                 .uuid(HUMAN_TASKS_DATASET)
                 .name("Human tasks")
                 .dataSource(JBPM_DATA_SOURCE)
+                .queryTarget("CUSTOM")
                 .dbSQL("select " +
                                SQL_SELECT_COMMON_COLS +
                                "from " +
@@ -80,10 +81,11 @@ public class DataSetDefsBootstrap {
         builder = addBuilderCommonColumns(builder);
         DataSetDef humanTasksDef = builder.buildDef();
 
-        builder = DataSetDefFactory.newSQLDataSetDef()
+        builder = RemoteDataSetDefBuilder.get()
                 .uuid(HUMAN_TASKS_WITH_USER_DATASET)
                 .name("FILTERED_PO_TASK-Human tasks and users")
                 .dataSource(JBPM_DATA_SOURCE)
+                .queryTarget("FILTERED_PO_TASK")
                 .dbSQL("select " +
                                SQL_SELECT_COMMON_COLS + ", " +
                                     "oe.id, " +
@@ -113,10 +115,11 @@ public class DataSetDefsBootstrap {
                 .label(COLUMN_EXCLUDED_OWNER);
         DataSetDef humanTasksWithUserDef = builder.buildDef();
 
-        builder = DataSetDefFactory.newSQLDataSetDef()
+        builder = RemoteDataSetDefBuilder.get()
                 .uuid(HUMAN_TASKS_WITH_ADMIN_DATASET)
                 .name("FILTERED_BA_TASK-Human tasks and admins")
                 .dataSource(JBPM_DATA_SOURCE)
+                .queryTarget("FILTERED_BA_TASK")
                 .dbSQL("select " +
                                SQL_SELECT_COMMON_COLS + "," +
                                     "oe.id, " +
@@ -151,7 +154,7 @@ public class DataSetDefsBootstrap {
         builder.number(COLUMN_ERROR_COUNT);
         DataSetDef humanTaskWithAdminDef = builder.buildDef();
 
-        DataSetDef humanTasksWithUserDomainDef = DataSetDefFactory.newSQLDataSetDef()       //Add to this dataset TaskName? to apply with the specified filter
+        DataSetDef humanTasksWithUserDomainDef = RemoteDataSetDefBuilder.get()       //Add to this dataset TaskName? to apply with the specified filter
                 .uuid(HUMAN_TASKS_WITH_VARIABLES_DATASET)
                 .name("Domain Specific Task")
                 .dataSource(JBPM_DATA_SOURCE)

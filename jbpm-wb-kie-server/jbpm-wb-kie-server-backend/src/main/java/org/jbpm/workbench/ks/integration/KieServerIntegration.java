@@ -16,6 +16,11 @@
 
 package org.jbpm.workbench.ks.integration;
 
+import static java.util.Collections.emptyMap;
+import static org.jbpm.workbench.ks.utils.KieServerUtils.createKieServicesClient;
+import static org.jbpm.workbench.ks.utils.KieServerUtils.getAdminCredentialsProvider;
+import static org.jbpm.workbench.ks.utils.KieServerUtils.getCredentialsProvider;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +28,8 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Function;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -53,9 +60,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
 
-import static java.util.Collections.emptyMap;
-import static org.jbpm.workbench.ks.utils.KieServerUtils.*;
-
 @Startup
 @ApplicationScoped
 public class KieServerIntegration {
@@ -71,6 +75,7 @@ public class KieServerIntegration {
     private ConcurrentMap<String, ServerInstanceKey> serverInstancesById = new ConcurrentHashMap<String, ServerInstanceKey>();
 
     private List<KieServicesClientProvider> clientProviders = new ArrayList<>();
+    private List<KieServicesClientProvider> allClientProviders = new ArrayList<>();
 
     @Inject
     private SpecManagementService specManagementService;
@@ -88,6 +93,7 @@ public class KieServerIntegration {
             if (!provider.supports("http")) {
                 clientProviders.add(provider);
             }
+            allClientProviders.add(provider);
         });
 
         clientProviders.sort((KieServicesClientProvider one, KieServicesClientProvider two) -> one.getPriority().compareTo(two.getPriority()));
@@ -244,6 +250,39 @@ public class KieServerIntegration {
         // once all steps are completed successfully notify other parts interested so the serverClient can actually be used
         serverInstanceRegisteredEvent.fire(new ServerInstanceRegistered(serverInstanceConnected.getServerInstance()));
     }
+    
+    public List<Object> broadcastToKieServers(String serverTemplateId,
+                                              Function<KieServicesClient, Object> operation) {
+        List<Object> results = new ArrayList<>();
+        
+        ServerTemplate serverTemplate = specManagementService.getServerTemplate(serverTemplateId);
+
+        if (serverTemplate.getServerInstanceKeys() == null || serverTemplate.getServerInstanceKeys().isEmpty()) {
+
+            return results;
+        }
+
+        for (ServerInstanceKey instanceUrl : serverTemplate.getServerInstanceKeys()) {
+
+            try {
+                KieServicesClient client = getClient(instanceUrl.getUrl());
+
+                Object result = operation.apply(client);
+                results.add(result);
+                logger.debug("KIE Server at {} returned result {} for broadcast operation {}", instanceUrl, result, operation);
+            } catch (Exception e) {
+                logger.debug("Unable to send breadcast to {} due to {}", instanceUrl, e.getMessage(), e);
+            }
+        }
+
+        return results;
+    }
+    
+    protected KieServicesClient getClient(String url) {
+        KieServicesClient client = allClientProviders.stream().filter(provider -> provider.supports(url)).findFirst().get().get(url);
+        logger.debug("Using client {}", client);
+        return client;
+    }
 
     protected void updateOrBuildClient(KieServicesClient client,
                                        ServerInstance serverInstance) {
@@ -366,4 +405,9 @@ public class KieServerIntegration {
     protected Map<String, ServerInstanceKey> getServerInstancesById() {
         return serverInstancesById;
     }
+ 
+    protected void setKieServicesClientProviders(List<KieServicesClientProvider> providers) {
+        this.allClientProviders = providers;
+    }
+
 }

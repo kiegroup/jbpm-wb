@@ -15,20 +15,20 @@
  */
 package org.jbpm.dashboard.renderer.backend;
 
+import static org.jbpm.dashboard.renderer.model.DashboardData.*;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.dashbuilder.dataset.def.DataSetDef;
-import org.dashbuilder.dataset.def.DataSetDefFactory;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.jbpm.workbench.ks.integration.KieServerDataSetProvider;
+import org.jbpm.workbench.ks.integration.RemoteDataSetDefBuilder;
 import org.kie.server.api.KieServerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
-
-import static org.jbpm.dashboard.renderer.model.DashboardData.*;
 
 @Startup
 @ApplicationScoped
@@ -42,10 +42,11 @@ public class DataSetDefsBootstrap {
 
     @PostConstruct
     protected void registerDataSetDefinitions() {
-        DataSetDef processMonitoringDef = DataSetDefFactory.newSQLDataSetDef()
+        DataSetDef processMonitoringDef = RemoteDataSetDefBuilder.get()
                 .uuid(DATASET_PROCESS_INSTANCES)
                 .name("FILTERED_PROCESS-Processes monitoring")
                 .dataSource(JBPM_DATA_SOURCE)
+                .queryTarget("FILTERED_PROCESS")
                 .dbSQL("select " +
                                     "log.processInstanceId, " +
                                     "log.processId, " +
@@ -72,10 +73,11 @@ public class DataSetDefsBootstrap {
                 .label(COLUMN_PROCESS_EXTERNAL_ID)
                 .buildDef();
 
-        DataSetDef taskMonitoringDef = DataSetDefFactory.newSQLDataSetDef()
+        DataSetDef taskMonitoringDef = RemoteDataSetDefBuilder.get()
                 .uuid(DATASET_HUMAN_TASKS)
                 .name("FILTERED_PROCESS-Tasks monitoring")
                 .dataSource(JBPM_DATA_SOURCE)
+                .queryTarget("FILTERED_PROCESS")
                 .dbSQL("select " +
                                     "p.processName, " +
                                     "p.externalId, " +

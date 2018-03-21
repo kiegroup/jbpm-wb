@@ -239,5 +239,27 @@ public interface DashboardI18n {
 
     String dashboardCouldNotBeLoaded();
 
-    String Home();
+    String Home();    
+    
+    String remote_datasource_description();
+    String remote_server_template_description();
+    String remote_query_target_description();
+    String remote_source_description();
+    String remote_query_placeHolder();
+    
+    String sql_source();
+    String sql_source_description();
+    String sql_datasource();
+    String sql_datasource_description();
+    String server_template();
+    String server_template_description();    
+    String query_target();
+    String query_target_description();
+    
+    String remote_query_target_hint();
+    String remote_server_template_hint();
+    
+    String remote_data_set_editor();
+    String remote_data_set_editor_description();
+
 }
