@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,57 +14,66 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.pr.client.editors.definition.details.multi;
+package org.jbpm.workbench.pr.client.editors.definition.details;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
+import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramPresenter;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchPartView;
+import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
-import org.uberfire.lifecycle.OnStartup;
+import org.uberfire.client.mvp.UberView;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.Menus;
 
-import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCES;
+import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.PROCESS_INSTANCES;
 
-public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessDefDetailsMultiPresenter.BaseProcessDefDetailsMultiView> implements RefreshMenuBuilder.SupportsRefresh {
-
-    @Inject
-    protected PopupFormDisplayerView formDisplayPopUp;
-
-    @Inject
-    protected T view;
-
-    @Inject
-    protected StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
-
-    protected PrimaryActionMenuBuilder primaryActionMenuBuilder;
+@Dependent
+@WorkbenchScreen(identifier = PROCESS_DEFINITION_DETAILS_SCREEN)
+public class ProcessDefinitionDetailsPresenter implements RefreshMenuBuilder.SupportsRefresh {
 
     private Constants constants = GWT.create(Constants.class);
 
     @Inject
-    private PlaceManager placeManager;
+    private ProcessDefinitionDetailsTabPresenter detailPresenter;
 
     @Inject
     private Event<ProcessDefSelectionEvent> processDefSelectionEvent;
 
     @Inject
-    private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
+    private ProcessDiagramPresenter processDiagramPresenter;
 
-    private PlaceRequest place;
+    @Inject
+    protected ProcessDefinitionDetailsView view;
+
+    @Inject
+    protected PopupFormDisplayerView formDisplayPopUp;
+
+    @Inject
+    protected StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
+
+    @Inject
+    private PlaceManager placeManager;
 
     private String deploymentId = "";
 
@@ -76,14 +85,32 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
 
     private boolean dynamic;
 
+    protected PrimaryActionMenuBuilder primaryActionMenuBuilder;
+
     @PostConstruct
     public void init() {
         setPrimaryActionMenuBuilder(new PrimaryActionMenuBuilder(Constants.INSTANCE.New_Process_Instance(),
                                                                  () -> createNewProcessInstance()));
     }
 
-    protected void setPrimaryActionMenuBuilder(final PrimaryActionMenuBuilder primaryActionMenuBuilder){
-        this.primaryActionMenuBuilder = primaryActionMenuBuilder;
+    @WorkbenchPartView
+    public UberView<ProcessDefinitionDetailsPresenter> getView() {
+        return view;
+    }
+
+    @WorkbenchMenu
+    public Menus buildMenu() {
+        return MenuFactory
+                .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
+                .newTopLevelCustomMenu(primaryActionMenuBuilder).endMenu()
+                .newTopLevelMenu(Constants.INSTANCE.Options())
+                    .menus()
+                        .menu(Constants.INSTANCE.View_Process_Instances())
+                            .respondsWith(() -> viewProcessInstances())
+                        .endMenu()
+                    .endMenus()
+                .endMenu()
+                .build();
     }
 
     @WorkbenchPartTitle
@@ -91,9 +118,17 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
         return constants.Details();
     }
 
-    @OnStartup
-    public void onStartup(final PlaceRequest place) {
-        this.place = place;
+    @Override
+    public void onRefresh() {
+        processDefSelectionEvent.fire(new ProcessDefSelectionEvent(processId,
+                                                                   deploymentId,
+                                                                   serverTemplateId,
+                                                                   processDefName,
+                                                                   dynamic));
+    }
+
+    protected void setPrimaryActionMenuBuilder(final PrimaryActionMenuBuilder primaryActionMenuBuilder){
+        this.primaryActionMenuBuilder = primaryActionMenuBuilder;
     }
 
     public void onProcessSelectionEvent(@Observes final ProcessDefSelectionEvent event) {
@@ -104,9 +139,6 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
         dynamic = event.isDynamic();
 
         primaryActionMenuBuilder.setVisible(dynamic == false);
-
-        changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place,
-                                                               String.valueOf(deploymentId) + " - " + processDefName));
     }
 
     public void createNewProcessInstance() {
@@ -128,20 +160,15 @@ public abstract class BaseProcessDefDetailsMultiPresenter<T extends BaseProcessD
         placeManager.goTo(placeRequestImpl);
     }
 
-    @Override
-    public void onRefresh() {
-        processDefSelectionEvent.fire(new ProcessDefSelectionEvent(processId,
-                                                                   deploymentId,
-                                                                   serverTemplateId,
-                                                                   processDefName,
-                                                                   dynamic));
+    public IsWidget getDetailsView() {
+        return detailPresenter.getWidget();
     }
 
-    public void closeDetails() {
-        placeManager.forceClosePlace(place);
+    public IsWidget getProcessDiagramView() {
+        return processDiagramPresenter.getView();
     }
 
-    public interface BaseProcessDefDetailsMultiView {
+    public interface ProcessDefinitionDetailsView extends UberView<ProcessDefinitionDetailsPresenter> {
 
     }
 }

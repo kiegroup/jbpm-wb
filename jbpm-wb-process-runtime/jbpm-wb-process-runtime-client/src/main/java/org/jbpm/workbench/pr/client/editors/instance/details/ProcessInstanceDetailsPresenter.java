@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,187 +15,231 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.details;
 
-import java.util.List;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.workbench.pr.model.NodeInstanceSummary;
-import org.jbpm.workbench.pr.model.ProcessInstanceKey;
-import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
-import org.jbpm.workbench.pr.model.UserTaskSummary;
+import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
+import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramPresenter;
+import org.jbpm.workbench.pr.client.editors.documents.list.ProcessDocumentListPresenter;
+import org.jbpm.workbench.pr.client.editors.instance.log.RuntimeLogPresenter;
+import org.jbpm.workbench.pr.client.editors.variables.list.ProcessVariableListPresenter;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
-import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
+import org.jbpm.workbench.pr.service.ProcessService;
+import org.uberfire.client.annotations.WorkbenchMenu;
+import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchPartView;
+import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
+import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
+import org.uberfire.lifecycle.OnStartup;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.Menus;
+
+import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN;
 
 @Dependent
-public class ProcessInstanceDetailsPresenter {
-
-    private String currentDeploymentId;
-
-    private String currentProcessInstanceId;
-
-    private String currentServerTemplateId;
-
-    private ProcessInstanceDetailsView view;
-
-    private Constants constants = Constants.INSTANCE;
-
-    private Caller<ProcessRuntimeDataService> processRuntimeDataService;
+@WorkbenchScreen(identifier = PROCESS_INSTANCE_DETAILS_SCREEN)
+public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.SupportsRefresh {
 
     @Inject
-    public void setView(final ProcessInstanceDetailsView view) {
-        this.view = view;
-    }
+    public ProcessInstanceDetailsView view;
 
     @Inject
-    public void setProcessRuntimeDataService(final Caller<ProcessRuntimeDataService> processRuntimeDataService) {
-        this.processRuntimeDataService = processRuntimeDataService;
+    ConfirmPopup confirmPopup;
+
+    private Constants constants = GWT.create(Constants.class);
+
+    @Inject
+    private PlaceManager placeManager;
+
+    private Caller<ProcessService> processService;
+
+    @Inject
+    private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
+
+    @Inject
+    private Event<ProcessInstancesUpdateEvent> processInstancesUpdatedEvent;
+
+    @Inject
+    private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
+
+    @Inject
+    private ProcessInstanceDetailsTabPresenter detailsPresenter;
+
+    @Inject
+    private ProcessDiagramPresenter processDiagramPresenter;
+
+    @Inject
+    private ProcessVariableListPresenter variableListPresenter;
+
+    @Inject
+    private ProcessDocumentListPresenter documentListPresenter;
+
+    @Inject
+    private RuntimeLogPresenter runtimeLogPresenter;
+
+    private String selectedDeploymentId = "";
+
+    private int selectedProcessInstanceStatus = 0;
+
+    private String selectedProcessDefName = "";
+
+    private PlaceRequest place;
+
+    private String deploymentId = "";
+
+    private String processId = "";
+
+    private Long processInstanceId;
+
+    private String serverTemplateId = "";
+
+    private boolean forLog = false;
+
+    @Inject
+    public void setProcessService(final Caller<ProcessService> processService) {
+        this.processService = processService;
     }
 
-    public IsWidget getWidget() {
+    @WorkbenchPartView
+    public UberView<ProcessInstanceDetailsPresenter> getView() {
         return view;
     }
 
-    public void onProcessInstanceSelectionEvent(@Observes ProcessInstanceSelectionEvent event) {
-        this.currentDeploymentId = event.getDeploymentId();
-        this.currentProcessInstanceId = String.valueOf(event.getProcessInstanceId());
-        this.currentServerTemplateId = event.getServerTemplateId();
-
-        refreshProcessInstanceDataRemote(currentDeploymentId,
-                                         currentProcessInstanceId,
-                                         currentServerTemplateId);
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return constants.Details();
     }
 
-    public void refreshProcessInstanceDataRemote(final String deploymentId,
-                                                 final String processId,
-                                                 final String serverTemplateId) {
-        view.getProcessDefinitionIdText().setText("");
-        view.getProcessVersionText().setText("");
-        view.getProcessDeploymentText().setText("");
-        view.getCorrelationKeyText().setText("");
-        view.getParentProcessInstanceIdText().setText("");
-        view.getActiveTasksListBox().setText("");
-        view.getStateText().setText("");
-        view.getCurrentActivitiesListBox().setText("");
-
-        processRuntimeDataService.call(new RemoteCallback<ProcessInstanceSummary>() {
-            @Override
-            public void callback(final ProcessInstanceSummary process) {
-                view.getProcessDefinitionIdText().setText(process.getProcessId());
-                view.getProcessVersionText().setText(process.getProcessVersion());
-                view.getProcessDeploymentText().setText(process.getDeploymentId());
-                view.getCorrelationKeyText().setText(process.getCorrelationKey());
-                if (process.getParentId() > 0) {
-                    view.getParentProcessInstanceIdText().setText(process.getParentId().toString());
-                } else {
-                    view.getParentProcessInstanceIdText().setText(constants.No_Parent_Process_Instance());
-                }
-
-                String statusStr = constants.Unknown();
-                switch (process.getState()) {
-                    case ProcessInstance.STATE_ACTIVE:
-                        statusStr = constants.Active();
-                        break;
-                    case ProcessInstance.STATE_ABORTED:
-                        statusStr = constants.Aborted();
-                        break;
-                    case ProcessInstance.STATE_COMPLETED:
-                        statusStr = constants.Completed();
-                        break;
-                    case ProcessInstance.STATE_PENDING:
-                        statusStr = constants.Pending();
-                        break;
-                    case ProcessInstance.STATE_SUSPENDED:
-                        statusStr = constants.Suspended();
-                        break;
-                    default:
-                        break;
-                }
-                view.getStateText().setText(statusStr);
-                
-                String slaComplianceStr = mapSlaCompliance(process);
-                view.setSlaComplianceText(slaComplianceStr);
-
-                if (process.getActiveTasks() != null && !process.getActiveTasks().isEmpty()) {
-                    SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-
-                    for (UserTaskSummary uts : process.getActiveTasks()) {
-                        safeHtmlBuilder.appendEscapedLines(uts.getName() + " (" + uts.getStatus() + ")  " + constants.Owner() + ": " + uts.getOwner() + " \n");
-                    }
-                    view.getActiveTasksListBox().setHTML(safeHtmlBuilder.toSafeHtml());
-                }
-                
-            }
-        }).getProcessInstance(serverTemplateId,
-                              new ProcessInstanceKey(serverTemplateId,
-                                                     deploymentId,
-                                                     Long.parseLong(processId)));
-
-        processRuntimeDataService.call(new RemoteCallback<List<NodeInstanceSummary>>() {
-            @Override
-            public void callback(final List<NodeInstanceSummary> details) {
-                final SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                for (NodeInstanceSummary nis : details) {
-                    safeHtmlBuilder.appendEscapedLines(nis.getTimestamp() + ": "
-                                                               + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType() + ") \n");
-                }
-                view.getCurrentActivitiesListBox().setHTML(safeHtmlBuilder.toSafeHtml());
-            }
-        }).getProcessInstanceActiveNodes(serverTemplateId,
-                                         deploymentId,
-                                         Long.parseLong(processId));
+    @OnStartup
+    public void onStartup(final PlaceRequest place) {
+        this.place = place;
     }
 
-    protected String mapSlaCompliance(ProcessInstanceSummary process) {
-        String slaComplianceStr = constants.Unknown();
-        switch (process.getSlaCompliance()) {
-            case ProcessInstance.SLA_NA:
-                slaComplianceStr = constants.SlaNA();
-                break;
-            case ProcessInstance.SLA_PENDING:
-                slaComplianceStr = constants.SlaPending();
-                break;
-            case ProcessInstance.SLA_MET:
-                slaComplianceStr = constants.SlaMet();
-                break;
-            case ProcessInstance.SLA_ABORTED:
-                slaComplianceStr = constants.SlaAborted();
-                break;
-            case ProcessInstance.SLA_VIOLATED:
-                slaComplianceStr = constants.SlaViolated();
-                break;
-            default:
-                break;
+    public boolean isForLog() {
+        return forLog;
+    }
+
+    public void setIsForLog(boolean isForLog) {
+        this.forLog = isForLog;
+    }
+
+    public void onProcessSelectionEvent(@Observes ProcessInstanceSelectionEvent event) {
+
+        deploymentId = event.getDeploymentId();
+        processId = event.getProcessDefId();
+        processInstanceId = event.getProcessInstanceId();
+        serverTemplateId = event.getServerTemplateId();
+        selectedDeploymentId = event.getDeploymentId();
+        selectedProcessInstanceStatus = event.getProcessInstanceStatus();
+        selectedProcessDefName = event.getProcessDefName();
+        setIsForLog(event.isForLog());
+
+        changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place,
+                                                               String.valueOf(processInstanceId) + " - " + selectedProcessDefName));
+
+        if (isForLog()) {
+            view.displayOnlyLogTab();
+        } else {
+            view.displayAllTabs();
         }
-        return slaComplianceStr;
+        view.selectInstanceDetailsTab();
     }
 
-    public interface ProcessInstanceDetailsView extends IsWidget {
+    @Override
+    public void onRefresh() {
+        processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedDeploymentId,
+                                                                       processInstanceId,
+                                                                       processId,
+                                                                       selectedProcessDefName,
+                                                                       selectedProcessInstanceStatus,
+                                                                       isForLog(),
+                                                                       serverTemplateId));
+    }
 
-        //      TODO Review interface to not expose GWT components
-        HTML getCurrentActivitiesListBox();
+    public void signalProcessInstance() {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Signal Process Popup");
 
-        HTML getActiveTasksListBox();
+        placeRequestImpl.addParameter("processInstanceId",
+                                      String.valueOf(processInstanceId));
+        placeRequestImpl.addParameter("deploymentId",
+                                      deploymentId);
+        placeRequestImpl.addParameter("serverTemplateId",
+                                      serverTemplateId);
+        placeManager.goTo(placeRequestImpl);
+    }
 
-        HTML getProcessDefinitionIdText();
+    public void abortProcessInstance() {
+        confirmPopup.show(constants.Abort_Confirmation(),
+                          constants.Abort(),
+                          constants.Abort_Process_Instance(),
+                          () -> processService.call(
+                                  (Void processInstance) ->
+                                          processInstancesUpdatedEvent
+                                                  .fire(new ProcessInstancesUpdateEvent(0L)))
+                                  .abortProcessInstance(serverTemplateId,
+                                                        deploymentId,
+                                                        processInstanceId));
+    }
 
-        HTML getStateText();
+    @WorkbenchMenu
+    public Menus buildMenu() {
+        return MenuFactory
+                .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
+                .newTopLevelMenu(constants.Signal())
+                    .respondsWith(() -> signalProcessInstance())
+                .endMenu()
+                .newTopLevelMenu(constants.Abort())
+                .respondsWith(() -> abortProcessInstance())
+                .endMenu()
+                .build();
+    }
 
-        HTML getProcessDeploymentText();
+    public void variableListRefreshGrid() {
+        variableListPresenter.refreshGrid();
+    }
 
-        HTML getProcessVersionText();
+    public void documentListRefreshGrid() {
+        documentListPresenter.refreshGrid();
+    }
 
-        HTML getCorrelationKeyText();
+    public IsWidget getProcessInstanceView() {
+        return detailsPresenter.getWidget();
+    }
 
-        HTML getParentProcessInstanceIdText();
-        
-        void setSlaComplianceText(String value);
+    public IsWidget getProcessVariablesView() {
+        return variableListPresenter.getWidget();
+    }
+
+    public IsWidget getDocumentView() {
+        return documentListPresenter.getWidget();
+    }
+
+    public IsWidget getLogsView() {
+        return runtimeLogPresenter.getWidget();
+    }
+
+    public IsWidget getProcessDiagramView() {
+        return processDiagramPresenter.getView();
+    }
+
+    public interface ProcessInstanceDetailsView extends UberView<ProcessInstanceDetailsPresenter> {
+
+        void selectInstanceDetailsTab();
+
+        void displayAllTabs();
+
+        void displayOnlyLogTab();
     }
 }

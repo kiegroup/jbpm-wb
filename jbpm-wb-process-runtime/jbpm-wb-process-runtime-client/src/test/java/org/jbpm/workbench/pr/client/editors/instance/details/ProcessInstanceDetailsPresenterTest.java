@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.pr.client.editors.instance.details.multi;
+package org.jbpm.workbench.pr.client.editors.instance.details;
 
 import javax.enterprise.event.Event;
 
@@ -38,21 +38,23 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class ProcessInstanceDetailsMultiPresenterTest {
+public class ProcessInstanceDetailsPresenterTest {
 
     private static final Long PI_ID = 1L;
     private static final String SERVER_TEMPLATE_ID = "serverTemplateIdTest";
     private static final String PI_DEPLOYMENT_ID = "deploymentIdTest";
     private static final String PI_PROCESS_DEF_ID = "processDefIdTest";
     private static final String PI_PROCESS_DEF_NAME = "processDefNameTest";
+
     @Mock
-    public ProcessInstanceDetailsMultiPresenter.ProcessInstanceDetailsMultiView view;
+    public ProcessInstanceDetailsPresenter.ProcessInstanceDetailsView view;
 
     @Mock
     ConfirmPopup confirmPopup;
 
     @Spy
     Event<ProcessInstancesUpdateEvent> processInstancesUpdatedEvent = new EventSourceMock<>();
+
     @Spy
     Event<ProcessInstanceSelectionEvent> processInstanceSelected = new EventSourceMock<ProcessInstanceSelectionEvent>();
 
@@ -65,7 +67,7 @@ public class ProcessInstanceDetailsMultiPresenterTest {
     private ProcessService processService;
 
     @InjectMocks
-    private ProcessInstanceDetailsMultiPresenter presenter;
+    private ProcessInstanceDetailsPresenter presenter;
 
     @Before
     public void setupMocks() {

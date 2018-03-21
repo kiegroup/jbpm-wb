@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.pr.client.editors.instance.details.multi;
+package org.jbpm.workbench.pr.client.editors.instance.details;
 
-import java.util.List;
-
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jbpm.workbench.pr.client.editors.instance.details.ProcessInstanceDetailsPresenter;
-import org.jbpm.workbench.pr.client.editors.instance.details.ProcessInstanceDetailsViewImpl;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
@@ -34,15 +28,15 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.stubbing.Answer;
 import org.uberfire.mocks.CallerMock;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
 import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class ProcessInstanceDetailsPresenterTest {
+public class ProcessInstanceDetailsTabPresenterTest {
 
     private static final int ACTIVE_STATE = 1;
     private static final int SLA_MET = 2;
@@ -52,24 +46,21 @@ public class ProcessInstanceDetailsPresenterTest {
     private static final String SERVER_TEMPLATE_ID = "testTemplate";
     private static final String DEPLOYMENT_ID = "evaluation_1.0.0-SNAPSHOT";
 
-    private HTML htmlMock;
     private UserTaskSummary userTaskSummary;
     private NodeInstanceSummary nodeInstanceSummary;
     private ProcessInstanceSummary processInstanceSummary;
-    private ProcessInstanceDetailsPresenter.ProcessInstanceDetailsView viewMock;
+
+    @Mock
+    private ProcessInstanceDetailsTabPresenter.ProcessInstanceDetailsTabView view;
 
     @Mock
     private ProcessRuntimeDataService processRuntimeDataServiceMock;
-    @InjectMocks
-    private ProcessInstanceDetailsPresenter presenter;
 
+    @InjectMocks
+    private ProcessInstanceDetailsTabPresenter presenter;
 
     @Before
     public void setUp() {
-        htmlMock = mock(HTML.class);
-        viewMock = mock(ProcessInstanceDetailsViewImpl.class,
-                        (Answer) invocationOnMock -> htmlMock);
-        presenter.setView(viewMock);
         presenter.setProcessRuntimeDataService(new CallerMock<>(processRuntimeDataServiceMock));
         nodeInstanceSummary = getNodeInstanceSummary();
         when(processRuntimeDataServiceMock.getProcessInstanceActiveNodes(SERVER_TEMPLATE_ID,
@@ -86,30 +77,35 @@ public class ProcessInstanceDetailsPresenterTest {
                                                    PROCESS_INSTANCE_ID,
                                                    SERVER_TEMPLATE_ID);
 
-        verify(htmlMock).setText(processInstanceSummary.getProcessId());
-        verify(htmlMock).setText(Constants.INSTANCE.Active());
-        verify(htmlMock).setText(processInstanceSummary.getDeploymentId());
-        verify(htmlMock).setText(processInstanceSummary.getProcessVersion());
-        verify(htmlMock).setText(processInstanceSummary.getCorrelationKey());
-        verify(htmlMock).setText(Constants.INSTANCE.No_Parent_Process_Instance());
-        verify(viewMock).setSlaComplianceText(Constants.INSTANCE.SlaMet());
+        verify(view).setProcessDefinitionIdText(processInstanceSummary.getProcessId());
+        verify(view).setStateText(Constants.INSTANCE.Active());
+        verify(view).setProcessDeploymentText(processInstanceSummary.getDeploymentId());
+        verify(view).setProcessVersionText(processInstanceSummary.getProcessVersion());
+        verify(view).setCorrelationKeyText(processInstanceSummary.getCorrelationKey());
+        verify(view).setParentProcessInstanceIdText(Constants.INSTANCE.No_Parent_Process_Instance());
+        verify(view).setSlaComplianceText(Constants.INSTANCE.SlaMet());
 
-        ArgumentCaptor<SafeHtml> argumentCaptor = ArgumentCaptor.forClass(SafeHtml.class);
-        verify(htmlMock,
-               times(2)).setHTML(argumentCaptor.capture());
-        List<SafeHtml> safeHtmlList = argumentCaptor.getAllValues();
-        assertThat(safeHtmlList).as("Active user tasks & Current Activities are set").hasSize(2);
-        assertThat(safeHtmlList.get(0).asString())
-                  .as("Active user tasks")
-                  .contains(userTaskSummary.getName(),
-                            userTaskSummary.getStatus(),
-                            userTaskSummary.getOwner());
-        assertThat(safeHtmlList.get(1).asString())
-                  .as("Current Activities")
-                  .contains(nodeInstanceSummary.getTimestamp(),
-                            String.valueOf(nodeInstanceSummary.getId()),
-                            nodeInstanceSummary.getNodeName(),
-                            nodeInstanceSummary.getType());
+        ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
+        verify(view, times(2)).setActiveTasksListBox(argumentCaptor.capture());
+
+        assertThat(argumentCaptor.getAllValues()).as("Active user tasks are set").hasSize(2);
+        assertEquals("", argumentCaptor.getAllValues().get(0));
+        assertThat(argumentCaptor.getAllValues().get(1))
+                .as("Active user tasks")
+                .contains(userTaskSummary.getName(),
+                          userTaskSummary.getStatus(),
+                          userTaskSummary.getOwner());
+
+        argumentCaptor = ArgumentCaptor.forClass(String.class);
+        verify(view, times(2)).setCurrentActivitiesListBox(argumentCaptor.capture());
+        assertThat(argumentCaptor.getAllValues()).as("Current Activities are set").hasSize(2);
+        assertEquals("", argumentCaptor.getAllValues().get(0));
+        assertThat(argumentCaptor.getAllValues().get(1))
+                .as("Current Activities")
+                .contains(nodeInstanceSummary.getTimestamp(),
+                          String.valueOf(nodeInstanceSummary.getId()),
+                          nodeInstanceSummary.getNodeName(),
+                          nodeInstanceSummary.getType());
     }
 
     private NodeInstanceSummary getNodeInstanceSummary() {
