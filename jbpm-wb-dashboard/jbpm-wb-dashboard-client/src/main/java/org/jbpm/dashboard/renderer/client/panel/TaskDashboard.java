@@ -42,7 +42,6 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
 import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.common.events.ServerTemplateSelected;
 import org.jbpm.workbench.ht.model.TaskSummary;
@@ -55,7 +54,6 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.workbench.events.NotificationEvent;
-import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.jbpm.dashboard.renderer.model.DashboardData.*;
@@ -175,22 +173,7 @@ public class TaskDashboard extends AbstractDashboard {
 
     @WorkbenchMenu
     public Menus getMenus() {
-        return MenuFactory
-                .newTopLevelCustomMenu(new PrimaryActionMenuBuilder("",
-                                                                    "fa-table",
-                                                                    i18n.viewTable(),
-                                                                    "",
-                                                                    "fa-th",
-                                                                    i18n.viewDashboard(),
-                                                                    () -> {
-                                                                        if (view.isDashboardPanelVisible()) {
-                                                                            showTasksTable();
-                                                                        } else {
-                                                                            showDashboard();
-                                                                        }
-                                                                    }))
-                .endMenu()
-                .build();
+        return super.getMenus();
     }
 
     @Override
@@ -447,7 +430,7 @@ public class TaskDashboard extends AbstractDashboard {
         closeTaskDetailsScreen();
     }
 
-    public void showTasksTable() {
+    public void showTable() {
         view.showInstances();
         tasksTable.redraw();
     }

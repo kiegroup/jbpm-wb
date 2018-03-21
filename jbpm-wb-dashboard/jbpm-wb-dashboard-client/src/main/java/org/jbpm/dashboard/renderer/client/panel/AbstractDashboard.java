@@ -32,6 +32,7 @@ import org.dashbuilder.displayer.client.DisplayerLocator;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
 import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.ks.integration.ConsoleDataSetLookup;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
@@ -43,6 +44,8 @@ import org.uberfire.client.workbench.events.ClosePlaceEvent;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.Commands;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.Menus;
 
 import static org.kie.soup.commons.validation.PortablePreconditions.*;
 
@@ -101,6 +104,10 @@ public abstract class AbstractDashboard {
         this.serverTemplateSelectorMenuBuilder = serverTemplateSelectorMenuBuilder;
     }
 
+    public abstract void showTable();
+
+    public abstract void showDashboard();
+
     public abstract void createListBreadcrumb();
 
     public abstract void tableRedraw();
@@ -145,6 +152,40 @@ public abstract class AbstractDashboard {
             createListBreadcrumb();
             tableRedraw();
         }
+    }
+
+    public Menus getMenus() {
+
+        PrimaryActionMenuBuilder viewTableAction = new PrimaryActionMenuBuilder(i18n.viewTable(),
+                                                                                "fa-table",
+                                                                                i18n.viewTable(),
+                                                                                () -> showTable(),
+                                                                                true);
+        PrimaryActionMenuBuilder viewDashboardAction = new PrimaryActionMenuBuilder(i18n.viewDashboard(),
+                                                                                    "fa-th",
+                                                                                    i18n.viewDashboard(),
+                                                                                    () -> {
+                                                                                        showDashboard();
+                                                                                    },
+                                                                                    true);
+        viewTableAction.addChangeListener(enabled -> {
+            viewTableAction.setVisible(false);
+            viewDashboardAction.setVisible(true);
+        });
+        viewDashboardAction.addChangeListener(enabled -> {
+            viewTableAction.setVisible(true);
+            viewDashboardAction.setVisible(false);
+        });
+
+        viewTableAction.setVisible(true);
+        viewDashboardAction.setVisible(false);
+
+        return MenuFactory
+                .newTopLevelCustomMenu(viewTableAction)
+                .endMenu()
+                .newTopLevelCustomMenu(viewDashboardAction)
+                .endMenu()
+                .build();
     }
 
     public MetricDisplayer createMetricDisplayer(DisplayerSettings settings) {
@@ -280,7 +321,5 @@ public abstract class AbstractDashboard {
         void showInstances();
 
         DashboardI18n getI18nService();
-
-        boolean isDashboardPanelVisible();
     }
 }

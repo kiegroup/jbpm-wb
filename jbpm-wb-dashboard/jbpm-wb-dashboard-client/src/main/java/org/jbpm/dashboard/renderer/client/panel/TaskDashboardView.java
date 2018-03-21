@@ -263,11 +263,6 @@ public class TaskDashboardView extends Composite implements TaskDashboard.View {
         instancesPanel.setVisible(true);
     }
 
-    @Override
-    public boolean isDashboardPanelVisible() {
-        return dashboardPanel.isVisible();
-    }
-
     interface Binder extends UiBinder<Widget, TaskDashboardView> {
 
     }

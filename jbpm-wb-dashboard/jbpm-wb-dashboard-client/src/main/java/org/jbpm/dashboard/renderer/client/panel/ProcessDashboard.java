@@ -38,7 +38,6 @@ import org.dashbuilder.displayer.client.DisplayerLocator;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
 import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.common.events.ServerTemplateSelected;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
@@ -50,7 +49,6 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.PlaceStatus;
-import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.jbpm.dashboard.renderer.model.DashboardData.*;
@@ -273,23 +271,7 @@ public class ProcessDashboard extends AbstractDashboard {
 
     @WorkbenchMenu
     public Menus getMenus() {
-        return MenuFactory
-                .newTopLevelCustomMenu(new PrimaryActionMenuBuilder("",
-                                                                    "fa-table",
-                                                                    i18n.viewTable(),
-                                                                    "",
-                                                                    "fa-th",
-                                                                    i18n.viewDashboard(),
-                                                                    () -> {
-                                                                        if (view.isDashboardPanelVisible()) {
-                                                                            showProcessesTable();
-                                                                        } else {
-                                                                            showDashboard();
-                                                                        }
-                                                                    }
-                ))
-                .endMenu()
-                .build();
+        return super.getMenus();
     }
 
     @Override
@@ -389,7 +371,7 @@ public class ProcessDashboard extends AbstractDashboard {
         }
     }
 
-    public void showProcessesTable() {
+    public void showTable() {
         view.showInstances();
         processesTable.redraw();
     }

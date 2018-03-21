@@ -157,8 +157,6 @@ public interface Constants extends Messages {
 
     String Definition_Details();
 
-    String New_Instance();
-
     String Bulk_Abort();
 
     String Services();

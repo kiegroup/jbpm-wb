@@ -169,7 +169,7 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
     @Test
     public void testShowInstances() {
         reset(displayerListener);
-        presenter.showProcessesTable();
+        presenter.showTable();
         verify(view).showInstances();
         verify(displayerListener).onRedraw(presenter.getProcessesTable());
     }
