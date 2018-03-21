@@ -87,6 +87,16 @@ public class ItemObjectModel {
     }
 
     @Override
+    public String toString() {
+        return "ItemObjectModel{" +
+                "name='" + name + '\'' +
+                ", value='" + value + '\'' +
+                ", resolver='" + resolver + '\'' +
+                ", parameters=" + parameters +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

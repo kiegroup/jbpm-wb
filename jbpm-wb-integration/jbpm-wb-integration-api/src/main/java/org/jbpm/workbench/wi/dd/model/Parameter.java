@@ -49,4 +49,38 @@ public class Parameter {
     public void setType(String type) {
         this.type = type;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Parameter)) {
+            return false;
+        }
+
+        Parameter parameter = (Parameter) o;
+
+        if (!getType().equals(parameter.getType())) {
+            return false;
+        }
+        return getValue().equals(parameter.getValue());
+    }
+
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
+    @Override
+    public int hashCode() {
+        int result = getType().hashCode();
+        result = 31 * result + getValue().hashCode();
+        result = ~~result;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Parameter{" +
+                "type='" + type + '\'' +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }

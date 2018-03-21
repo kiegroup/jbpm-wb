@@ -36,7 +36,6 @@ import org.kie.internal.runtime.conf.NamedObjectModel;
 import org.kie.internal.runtime.conf.ObjectModel;
 import org.kie.internal.runtime.conf.PersistenceMode;
 import org.kie.internal.runtime.conf.RuntimeStrategy;
-import org.kie.test.util.compare.ComparePair;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -128,20 +127,13 @@ public class DDEditorServiceTest extends DDEditorServiceImpl {
                                                      origModel);
 
         // compare round-tripped DeploymentDescriptor
-        ComparePair.compareObjectsViaFields(origDepDesc,
-                                            copyDepDesc,
-                                            "mappedRoles");
+        assertThat(origDepDesc).isEqualToIgnoringGivenFields(copyDepDesc, "mappedRoles");
 
         // round trip DeploymenDescriptorModel
         DeploymentDescriptorModel copyModel = marshal(copyDepDesc);
 
         // compare round-tripped DeploymentDescriptorModel
-        new ComparePair(origModel,
-                        copyModel)
-                .useFields()
-                .addNullFields("ItemObjectModel.name",
-                               "DeploymentDescriptorModel.overview")
-                .compare();
+        assertThat(origModel).isEqualToComparingFieldByFieldRecursively(copyModel);
     }
 
     @Test
