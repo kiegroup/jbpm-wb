@@ -49,10 +49,9 @@ public class TaskAdminListBasicFiltersPresenterTest extends AbstractBasicFilters
         verify(getView()).addTextFilter(eq(Constants.INSTANCE.Task()),
                                         any(),
                                         any());
-        verify(getView()).addSelectFilter(eq(Constants.INSTANCE.Status()),
-                                          any(),
-                                          any(),
-                                          any());
+        verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.Status()),
+                                               any(),
+                                               any());
         verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Correlation_Key()),
                                         any(),
                                         any());

@@ -139,13 +139,18 @@ public class ActiveFiltersViewImpl implements ActiveFiltersView {
     }
 
     @Override
-    public <T extends Object> void addActiveFilter(final ActiveFilterItem filter) {
+    public <T extends Object> void addActiveFilter(final ActiveFilterItem<T> filter) {
         activeFiltersList.getModel().removeIf(f -> f.getKey().equals(filter.getKey()));
         activeFiltersList.getModel().add(filter);
     }
 
     public void onRemoveActiveFilter(@Observes final ActiveFilterItemRemovedEvent event) {
         activeFiltersList.getModel().remove(event.getActiveFilterItem());
+    }
+
+    @Override
+    public <T extends Object> void removeActiveFilter(final ActiveFilterItem<T> filter) {
+        activeFiltersList.getModel().removeIf(f -> f.getKey().equals(filter.getKey()));
     }
 
     @EventHandler("remove-all-filters")

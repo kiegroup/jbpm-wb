@@ -52,14 +52,12 @@ public class ExecutionErrorListBasicFiltersPresenterTest extends AbstractBasicFi
         verify(getView()).addTextFilter(eq(Constants.INSTANCE.Id()),
                                         any(),
                                         any());
-        verify(getView()).addSelectFilter(eq(Constants.INSTANCE.Type()),
-                                          any(),
-                                          any(),
-                                          any());
+        verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.Type()),
+                                               any(),
+                                               any());
         verify(getView()).addSelectFilter(eq(Constants.INSTANCE.Acknowledged()),
-                                          any(),
-                                          any(),
-                                          any());
+                                               any(),
+                                               any());
         verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.ErrorDate()),
                                              any(),
                                              any(),

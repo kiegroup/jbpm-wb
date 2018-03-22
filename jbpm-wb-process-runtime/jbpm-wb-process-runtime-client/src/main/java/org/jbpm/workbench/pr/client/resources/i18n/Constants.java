@@ -243,9 +243,9 @@ public interface Constants extends Messages {
 
     String FilterByDescription();
 
-    String HasAtLeastOneError();
+    String WithErrors();
 
-    String HasNoErrors();
+    String WithoutErrors();
 
     String ViewJobs();
 

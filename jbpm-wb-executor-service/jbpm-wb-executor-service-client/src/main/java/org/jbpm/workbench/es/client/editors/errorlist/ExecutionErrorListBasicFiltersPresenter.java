@@ -18,7 +18,7 @@ package org.jbpm.workbench.es.client.editors.errorlist;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jbpm.workbench.common.client.filters.basic.BasicFiltersPresenter;
@@ -30,7 +30,7 @@ import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.common.client.PerspectiveIds.EXECUTION_ERROR_LIST_BASIC_FILTERS_SCREEN;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 
-@Dependent
+@ApplicationScoped
 @WorkbenchScreen(identifier = EXECUTION_ERROR_LIST_BASIC_FILTERS_SCREEN)
 public class ExecutionErrorListBasicFiltersPresenter extends BasicFiltersPresenter {
 
@@ -78,13 +78,11 @@ public class ExecutionErrorListBasicFiltersPresenter extends BasicFiltersPresent
                    constants.Process());
         states.put(ExecutionErrorType.JOB.getType(),
                    constants.Job());
-        view.addSelectFilter(constants.Type(),
-                             states,
-                             false,
-                             f -> addSearchFilter(f,
-                                                  equalsTo(COLUMN_ERROR_TYPE,
-                                                           f.getValue()))
-        );
+        view.addMultiSelectFilter(constants.Type(),
+                                  states,
+                                  f -> addSearchFilterList(COLUMN_ERROR_TYPE,
+                                                           f,
+                                                           states.size()));
 
         final Map<String, String> acks = new HashMap<>();
         final org.jbpm.workbench.common.client.resources.i18n.Constants constants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
@@ -94,7 +92,6 @@ public class ExecutionErrorListBasicFiltersPresenter extends BasicFiltersPresent
                  constants.No());
         view.addSelectFilter(this.constants.Acknowledged(),
                              acks,
-                             false,
                              f -> addSearchFilter(f,
                                                   equalsTo(COLUMN_ERROR_ACK,
                                                            f.getValue()))

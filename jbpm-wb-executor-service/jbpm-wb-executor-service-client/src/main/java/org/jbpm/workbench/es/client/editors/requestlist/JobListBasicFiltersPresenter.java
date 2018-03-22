@@ -18,7 +18,7 @@ package org.jbpm.workbench.es.client.editors.requestlist;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.dashbuilder.dataset.DataSetLookup;
@@ -33,7 +33,7 @@ import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.common.client.PerspectiveIds.JOB_LIST_BASIC_FILTERS_SCREEN;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 
-@Dependent
+@ApplicationScoped
 @WorkbenchScreen(identifier = JOB_LIST_BASIC_FILTERS_SCREEN)
 public class JobListBasicFiltersPresenter extends BasicFiltersPresenter {
 
@@ -65,13 +65,11 @@ public class JobListBasicFiltersPresenter extends BasicFiltersPresenter {
         status.put(RequestStatus.RUNNING.name(),
                    constants.Running());
 
-        view.addSelectFilter(constants.Status(),
-                             status,
-                             false,
-                             f -> addSearchFilter(f,
-                                                  equalsTo(COLUMN_STATUS,
-                                                           f.getValue()))
-        );
+        view.addMultiSelectFilter(constants.Status(),
+                                  status,
+                                  f -> addSearchFilterList(COLUMN_STATUS,
+                                                           f,
+                                                           status.size()));
 
         final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
                 .dataset(REQUEST_LIST_DATASET)

@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.common.client.filters.basic;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -42,9 +43,16 @@ public interface BasicFiltersView extends IsElement {
                             Boolean useMaxDate,
                             Consumer<ActiveFilterItem<DateRange>> callback);
 
+    void clearSelectFilter(String label);
+
+    void clearAllSelectFilter();
+
+    void addMultiSelectFilter(String label,
+                              Map<String, String> options,
+                              Consumer<ActiveFilterItem<List<String>>> callback);
+
     void addSelectFilter(String label,
                          Map<String, String> options,
-                         Boolean liveSearch,
                          Consumer<ActiveFilterItem<String>> callback);
 
     void addDataSetSelectFilter(String label,

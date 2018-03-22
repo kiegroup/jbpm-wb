@@ -25,6 +25,8 @@ public interface ActiveFilters extends IsElement {
 
     <T extends Object> void addActiveFilter(ActiveFilterItem<T> filter);
 
+    <T extends Object> void removeActiveFilter(ActiveFilterItem<T> filter);
+
     void removeAllActiveFilters();
 
     void setSaveFilterCallback(BiConsumer<String, Consumer<String>> filterNameCallback);

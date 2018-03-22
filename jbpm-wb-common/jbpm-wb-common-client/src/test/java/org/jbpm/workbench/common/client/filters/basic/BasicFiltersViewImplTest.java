@@ -16,11 +16,13 @@
 
 package org.jbpm.workbench.common.client.filters.basic;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.function.Consumer;
 
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jboss.errai.common.client.dom.Input;
 import org.jboss.errai.common.client.dom.KeyboardEvent;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
@@ -140,5 +142,45 @@ public class BasicFiltersViewImplTest {
                      filterItem.getHint());
         assertEquals(value,
                      filterItem.getValue());
+    }
+
+    @Test
+    public void testClearAllSelectFilter(){
+        final Input input = mock(Input.class);
+        when(input.getChecked()).thenReturn(true, false);
+        view.getSelectInputs().put("label",
+                                   Arrays.asList(
+                                           input,
+                                           input
+                                   ));
+
+        view.clearAllSelectFilter();
+
+        verify(input).setChecked(false);
+        verify(input, times(2)).getChecked();
+        verifyNoMoreInteractions(input);
+    }
+
+    @Test
+    public void testClearSelectFilter(){
+        final Input input = mock(Input.class);
+        when(input.getChecked()).thenReturn(true, false);
+        view.getSelectInputs().put("label1",
+                                   Arrays.asList(
+                                           input,
+                                           input
+                                   ));
+        view.getSelectInputs().put("label2",
+                                   Arrays.asList(
+                                           input,
+                                           input
+                                   ));
+
+        view.clearSelectFilter("label1");
+        view.clearSelectFilter("label3");
+
+        verify(input).setChecked(false);
+        verify(input, times(2)).getChecked();
+        verifyNoMoreInteractions(input);
     }
 }

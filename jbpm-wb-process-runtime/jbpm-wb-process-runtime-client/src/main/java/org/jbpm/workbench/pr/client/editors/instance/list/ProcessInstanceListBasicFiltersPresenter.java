@@ -19,7 +19,7 @@ package org.jbpm.workbench.pr.client.editors.instance.list;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.dashbuilder.dataset.DataSetLookup;
@@ -35,7 +35,7 @@ import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCE_LIST_BASIC_FILTERS_SCREEN;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
-@Dependent
+@ApplicationScoped
 @WorkbenchScreen(identifier = PROCESS_INSTANCE_LIST_BASIC_FILTERS_SCREEN)
 public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresenter {
 
@@ -95,28 +95,33 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
                    constants.Pending());
         states.put(String.valueOf(ProcessInstance.STATE_SUSPENDED),
                    constants.Suspended());
-        view.addSelectFilter(constants.State(),
-                             states,
-                             false,
-                             f -> addSearchFilter(f,
-                                                  equalsTo(COLUMN_STATUS,
-                                                           f.getValue()))
-        );
+        view.addMultiSelectFilter(constants.State(),
+                                  states,
+                                  f -> addSearchFilterList(COLUMN_STATUS,
+                                                           f,
+                                                           states.size()));
 
         final Map<String, String> errorOptions = new HashMap<>();
         errorOptions.put(String.valueOf(true),
-                         constants.HasAtLeastOneError());
+                         constants.WithErrors());
         errorOptions.put(String.valueOf(false),
-                         constants.HasNoErrors());
+                         constants.WithoutErrors());
         final Function<String, ColumnFilter> errorFilterGenerator = (String hasErrors) ->
                 (Boolean.valueOf(hasErrors) ? greaterThan(COLUMN_ERROR_COUNT,
                                                           0) : lowerOrEqualsTo(COLUMN_ERROR_COUNT,
                                                                                0));
-        view.addSelectFilter(constants.Errors(),
-                             errorOptions,
-                             false,
-                             f -> addSearchFilter(f,
-                                                  errorFilterGenerator.apply(f.getValue())));
+        view.addMultiSelectFilter(constants.Errors(),
+                                  errorOptions,
+                                  f -> {
+                                      if (f.getValue().isEmpty() || f.getValue().size() == 2) {
+                                          removeSearchFilter(f,
+                                                             notNull(COLUMN_ERROR_COUNT));
+                                      } else {
+                                          addSearchFilter(f,
+                                                          errorFilterGenerator.apply(f.getValue().get(0)));
+                                      }
+                                  }
+        );
 
         final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
                 .dataset(PROCESS_INSTANCE_DATASET)
