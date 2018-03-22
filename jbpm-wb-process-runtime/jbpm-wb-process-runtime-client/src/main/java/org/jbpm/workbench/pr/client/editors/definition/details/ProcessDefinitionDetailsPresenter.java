@@ -37,16 +37,11 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN;
-import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.PROCESS_INSTANCES;
 
 @Dependent
 @WorkbenchScreen(identifier = PROCESS_DEFINITION_DETAILS_SCREEN)
@@ -71,9 +66,6 @@ public class ProcessDefinitionDetailsPresenter implements RefreshMenuBuilder.Sup
 
     @Inject
     protected StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
-
-    @Inject
-    private PlaceManager placeManager;
 
     private String deploymentId = "";
 
@@ -103,13 +95,6 @@ public class ProcessDefinitionDetailsPresenter implements RefreshMenuBuilder.Sup
         return MenuFactory
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
                 .newTopLevelCustomMenu(primaryActionMenuBuilder).endMenu()
-                .newTopLevelMenu(Constants.INSTANCE.Options())
-                    .menus()
-                        .menu(Constants.INSTANCE.View_Process_Instances())
-                            .respondsWith(() -> viewProcessInstances())
-                        .endMenu()
-                    .endMenus()
-                .endMenu()
                 .build();
     }
 
@@ -151,13 +136,6 @@ public class ProcessDefinitionDetailsPresenter implements RefreshMenuBuilder.Sup
         formDisplayPopUp.setTitle(processDefName);
         startProcessDisplayProvider.setup(config,
                                           formDisplayPopUp);
-    }
-
-    public void viewProcessInstances() {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(PROCESS_INSTANCES);
-        placeRequestImpl.addParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID,
-                                      processId);
-        placeManager.goTo(placeRequestImpl);
     }
 
     public IsWidget getDetailsView() {

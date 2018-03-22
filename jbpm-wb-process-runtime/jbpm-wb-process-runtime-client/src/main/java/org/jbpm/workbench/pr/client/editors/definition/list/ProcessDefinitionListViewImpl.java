@@ -16,29 +16,30 @@
 package org.jbpm.workbench.pr.client.editors.definition.list;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
-import com.google.gwt.cell.client.ActionCell;
-import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.cellview.client.TextHeader;
 import com.google.gwt.view.client.CellPreviewEvent;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.NoSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.list.AbstractListView;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.ListTable;
-import org.jbpm.workbench.common.client.util.ButtonActionCell;
+import org.jbpm.workbench.common.client.util.ConditionalAction;
+import org.jbpm.workbench.common.client.util.ConditionalKebabActionCell;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
@@ -55,6 +56,9 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     public static final String COL_ID_ACTIONS = "Actions";
 
     private Constants constants = Constants.INSTANCE;
+
+    @Inject
+    protected ManagedInstance<ConditionalKebabActionCell> conditionalKebabActionCell;
 
     @Override
     protected ExtendedPagedTable<ProcessSummary> createListGrid(final GridGlobalPreferences preferences) {
@@ -117,9 +121,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         Column processNameColumn = initProcessNameColumn();
         Column versionColumn = initVersionColumn();
         Column projectColumn = initProjectColumn();
-        Column actionsColumn = initActionsColumn();
-
-        extendedPagedTable.addSelectionIgnoreColumn(actionsColumn);
+        ColumnMeta<ProcessSummary> actionsColumnMeta = initActionsColumn();
 
         List<ColumnMeta<ProcessSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessSummary>>();
         columnMetas.add(new ColumnMeta<>(processNameColumn,
@@ -128,15 +130,11 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
                                          constants.Version()));
         columnMetas.add(new ColumnMeta<>(projectColumn,
                                          constants.Project()));
-        final ColumnMeta columnMeta = new ColumnMeta<>(actionsColumn,
-                                                       "");
-        final TextHeader header = new TextHeader(constants.Actions());
-        header.setHeaderStyleNames("text-center");
-        columnMeta.setHeader(header);
-        columnMetas.add(columnMeta);
+        columnMetas.add(actionsColumnMeta);
 
+        extendedPagedTable.addSelectionIgnoreColumn(actionsColumnMeta.getColumn());
         extendedPagedTable.addColumns(columnMetas);
-        extendedPagedTable.setColumnWidth(actionsColumn,
+        extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
                                           AbstractMultiGridView.ACTIONS_COLUMN_WIDTH,
                                           Style.Unit.PX);
         extendedPagedTable.getColumnSortList().push(processNameColumn);
@@ -180,42 +178,49 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         return projectColumn;
     }
 
-    private Column initActionsColumn() {
-        final StartButtonActionCell actionCell = new StartButtonActionCell(constants.Start(),
-                                                                           processSummary ->
-                                                                                   presenter.openGenericForm(processSummary.getProcessDefId(),
-                                                                                                             processSummary.getDeploymentId(),
-                                                                                                             processSummary.getProcessDefName()));
+    private ColumnMeta<ProcessSummary> initActionsColumn() {
+        final ConditionalKebabActionCell<ProcessSummary> cell = conditionalKebabActionCell.get();
 
-        Column<ProcessSummary, ProcessSummary> actionsColumn = new Column<ProcessSummary, ProcessSummary>(actionCell.getCell()) {
+        cell.setActions(getConditionalActions());
+        Column<ProcessSummary, ProcessSummary> actionsColumn = new Column<ProcessSummary, ProcessSummary>(cell) {
             @Override
             public ProcessSummary getValue(ProcessSummary object) {
                 return object;
             }
         };
         actionsColumn.setDataStoreName(COL_ID_ACTIONS);
-        actionsColumn.setCellStyleNames("text-center");
-        return actionsColumn;
+        actionsColumn.setCellStyleNames("kie-table-view-pf-actions text-center");
+
+        Header header = new TextHeader(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Actions());
+        header.setHeaderStyleNames("text-center");
+
+        final ColumnMeta<ProcessSummary> actionsColMeta = new ColumnMeta<ProcessSummary>(actionsColumn,
+                                                                                         "");
+        actionsColMeta.setHeader(header);
+        return actionsColMeta;
+
     }
 
-    protected class StartButtonActionCell extends ButtonActionCell<ProcessSummary> {
+    protected List<ConditionalAction<ProcessSummary>> getConditionalActions() {
+        return Arrays.asList(
 
-        public StartButtonActionCell(final String text,
-                                     final ActionCell.Delegate<ProcessSummary> delegate) {
-            super(text,
-                  delegate,
-                  ButtonSize.DEFAULT);
-        }
+                new ConditionalAction<>(
+                        constants.Start(),
+                        processSummary ->
+                                presenter.openGenericForm(processSummary.getProcessDefId(),
+                                                          processSummary.getDeploymentId(),
+                                                          processSummary.getProcessDefName()),
+                        presenter.getStartCondition(),
+                        false
+                ),
 
-        @Override
-        public void render(final Cell.Context context,
-                           final ProcessSummary summary,
-                           final SafeHtmlBuilder sb) {
-            if (summary.isDynamic() == false) {
-                super.render(context,
-                             summary,
-                             sb);
-            }
-        }
+                new ConditionalAction<>(
+                        constants.View_Process_Instances(),
+                        processSummary ->
+                                presenter.viewProcessInstances(processSummary.getProcessDefId()),
+                        presenter.getViewProcessInstanceActionCondition(),
+                        true
+                )
+        );
     }
 }
