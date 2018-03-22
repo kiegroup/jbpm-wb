@@ -24,6 +24,7 @@ import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
@@ -39,6 +40,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
@@ -47,8 +50,14 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.Commands;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.security.ResourceRef;
+import org.uberfire.security.authz.AuthorizationManager;
+import org.uberfire.workbench.model.ActivityResourceType;
 
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
 import static org.junit.Assert.*;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.PROCESS_INSTANCES;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -63,6 +72,12 @@ public class ProcessDefinitionListPresenterTest {
 
     @Mock
     private UberfireBreadcrumbs breadcrumbs;
+
+    @Mock
+    private AuthorizationManager authorizationManager;
+
+    @Mock
+    private User identity;
 
     @Mock
     private PerspectiveManager perspectiveManager;
@@ -256,5 +271,72 @@ public class ProcessDefinitionListPresenterTest {
         verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
                                           eq(detailLabel),
                                           eq(Commands.DO_NOTHING));
+    }
+
+    @Test
+    public void testIsAuthorizedForView() {
+        String perspectiveId = PROCESS_INSTANCES;
+        when(authorizationManager.authorize(any(ResourceRef.class),
+                                            eq(identity))).thenReturn(true,
+                                                                      false);
+
+        assertTrue(presenter.isUserAuthorizedForPerspective(perspectiveId));
+
+        final ArgumentCaptor<ResourceRef> captor = ArgumentCaptor.forClass(ResourceRef.class);
+        verify(authorizationManager).authorize(captor.capture(),
+                                               eq(identity));
+        assertEquals(perspectiveId,
+                     captor.getValue().getIdentifier());
+        assertEquals(ActivityResourceType.PERSPECTIVE,
+                     captor.getValue().getResourceType());
+
+        assertFalse(presenter.isUserAuthorizedForPerspective(perspectiveId));
+    }
+
+    @Test
+    public void testViewProcessInstanceActionCondition() {
+
+        doAnswer(new PerspectiveAnswer(PROCESS_INSTANCES)).when(authorizationManager).authorize(any(ResourceRef.class),
+                                                                                                eq(identity));
+        assertTrue(presenter.getViewProcessInstanceActionCondition().test(new ProcessSummary()));
+
+        when(authorizationManager.authorize(any(ResourceRef.class),
+                                            eq(identity))).thenReturn(false);
+
+        assertFalse(presenter.getViewProcessInstanceActionCondition().test(new ProcessSummary()));
+    }
+
+    @Test
+    public void testViewProcessInstances() {
+        String processDefinition = "procDef";
+        when(authorizationManager.authorize(any(ResourceRef.class),
+                                            eq(identity))).thenReturn(true);
+
+        presenter.viewProcessInstances(processDefinition);
+
+        final ArgumentCaptor<PlaceRequest> captor = ArgumentCaptor.forClass(PlaceRequest.class);
+        verify(placeManager).goTo(captor.capture());
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(PROCESS_INSTANCES,
+                     captor.getValue().getIdentifier());
+        assertEquals(1,
+                     captor.getValue().getParameters().size());
+        assertEquals(processDefinition,
+                     captor.getValue().getParameters().get(SEARCH_PARAMETER_PROCESS_DEFINITION_ID));
+    }
+
+    protected class PerspectiveAnswer implements Answer<Boolean> {
+
+        private String perspectiveId;
+
+        public PerspectiveAnswer(String perspectiveId) {
+            this.perspectiveId = perspectiveId;
+        }
+
+        @Override
+        public Boolean answer(InvocationOnMock invocation) throws Throwable {
+            return perspectiveId.equals(((ResourceRef) invocation.getArguments()[0]).getIdentifier());
+        }
     }
 }

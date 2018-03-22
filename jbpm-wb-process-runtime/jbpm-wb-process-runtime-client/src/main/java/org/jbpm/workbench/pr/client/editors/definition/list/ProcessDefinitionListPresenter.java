@@ -16,6 +16,7 @@
 package org.jbpm.workbench.pr.client.editors.definition.list;
 
 import java.util.List;
+import java.util.function.Predicate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -47,8 +48,16 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.security.ResourceRef;
+import org.uberfire.security.authz.AuthorizationManager;
+import org.uberfire.workbench.model.ActivityResourceType;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
+
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.PROCESS_INSTANCES;
 
 @Dependent
 @WorkbenchScreen(identifier = PerspectiveIds.PROCESS_DEFINITION_LIST_SCREEN)
@@ -65,6 +74,13 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
     @Inject
     private Caller<ProcessRuntimeDataService> processRuntimeDataService;
+
+    protected AuthorizationManager authorizationManager;
+
+    @Inject
+    public void setAuthorizationManager(final AuthorizationManager authorizationManager) {
+        this.authorizationManager = authorizationManager;
+    }
 
     @Inject
     private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
@@ -212,6 +228,28 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                                                                        newProcessInstance.getProcessDefName(),
                                                                        newProcessInstance.getNewProcessInstanceStatus(),
                                                                        newProcessInstance.getServerTemplateId()));
+    }
+
+    public Predicate<ProcessSummary> getViewProcessInstanceActionCondition() {
+        return pis -> isUserAuthorizedForPerspective(PROCESS_INSTANCES);
+    }
+
+    public Predicate<ProcessSummary> getStartCondition() {
+        return processSummary -> !processSummary.isDynamic();
+    }
+
+    public void viewProcessInstances(String processDefId) {
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(PROCESS_INSTANCES);
+        placeRequestImpl.addParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID,
+                                      processDefId);
+        placeManager.goTo(placeRequestImpl);
+    }
+
+    public boolean isUserAuthorizedForPerspective(final String perspectiveId) {
+        final ResourceRef resourceRef = new ResourceRef(perspectiveId,
+                                                        ActivityResourceType.PERSPECTIVE);
+        return authorizationManager.authorize(resourceRef,
+                                              identity);
     }
 
     @Inject

@@ -19,7 +19,10 @@ import java.util.List;
 
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.common.client.util.ConditionalKebabActionCell;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -37,8 +40,19 @@ public class ProcessDefinitionListViewTest {
     @Mock
     protected ExtendedPagedTable currentListGrid;
 
+    @Mock
+    ManagedInstance<ConditionalKebabActionCell> conditionalKebabActionCell;
+
+    @Mock
+    ProcessDefinitionListPresenter presenter;
+
     @InjectMocks
     private ProcessDefinitionListViewImpl view;
+
+    @Before
+    public void setup() {
+        when(conditionalKebabActionCell.get()).thenReturn(mock(ConditionalKebabActionCell.class));
+    }
 
     @Test
     public void testDataStoreNameIsSet() {
