@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -401,7 +401,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     }
 
     public void signalProcessInstance(final ProcessInstanceSummary processInstance) {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Signal Process Popup");
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(ProcessInstanceSignalPresenter.SIGNAL_PROCESS_POPUP);
         placeRequestImpl.addParameter("processInstanceId",
                                       Long.toString(processInstance.getProcessInstanceId()));
         placeRequestImpl.addParameter("deploymentId",
@@ -424,7 +424,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     }
 
     public void formClosed(@Observes BeforeClosePlaceEvent closed) {
-        if ("Signal Process Popup".equals(closed.getPlace().getIdentifier())) {
+        if (ProcessInstanceSignalPresenter.SIGNAL_PROCESS_POPUP.equals(closed.getPlace().getIdentifier())) {
             refreshGrid();
         }
     }

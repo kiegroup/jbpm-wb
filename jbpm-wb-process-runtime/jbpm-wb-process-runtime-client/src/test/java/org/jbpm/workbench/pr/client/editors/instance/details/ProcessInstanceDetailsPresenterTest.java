@@ -18,6 +18,7 @@ package org.jbpm.workbench.pr.client.editors.instance.details;
 import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
 import org.jbpm.workbench.pr.service.ProcessService;
@@ -33,6 +34,7 @@ import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.Command;
+import org.uberfire.workbench.events.NotificationEvent;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -51,6 +53,9 @@ public class ProcessInstanceDetailsPresenterTest {
 
     @Mock
     ConfirmPopup confirmPopup;
+
+    @Mock
+    EventSourceMock<NotificationEvent> notificationEvent;
 
     @Spy
     Event<ProcessInstancesUpdateEvent> processInstancesUpdatedEvent = new EventSourceMock<>();
@@ -132,6 +137,16 @@ public class ProcessInstanceDetailsPresenterTest {
         remoteProcessServiceCaller = new CallerMock<ProcessService>(processService);
         presenter.setProcessService(remoteProcessServiceCaller);
         captureCommand.getValue().execute();
+
+        final ArgumentCaptor<NotificationEvent> captor = ArgumentCaptor.forClass(NotificationEvent.class);
+        verify(notificationEvent).fire(captor.capture());
+
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(NotificationEvent.NotificationType.DEFAULT,
+                     captor.getValue().getType());
+        assertEquals(Constants.INSTANCE.Aborting_Process_Instance(PI_ID),
+                     captor.getValue().getNotification());
 
         verify(processService).abortProcessInstance(eq(SERVER_TEMPLATE_ID),
                                                     eq(PI_DEPLOYMENT_ID),
