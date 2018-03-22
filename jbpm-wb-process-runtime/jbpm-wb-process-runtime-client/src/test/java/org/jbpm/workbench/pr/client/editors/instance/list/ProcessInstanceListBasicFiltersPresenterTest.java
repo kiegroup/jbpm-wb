@@ -21,6 +21,7 @@ import org.jbpm.workbench.common.client.filters.basic.AbstractBasicFiltersPresen
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 
 import static org.mockito.Matchers.any;
@@ -43,36 +44,38 @@ public class ProcessInstanceListBasicFiltersPresenterTest extends AbstractBasicF
     public void testLoadFilters() {
         presenter.loadFilters();
 
-        verify(getView()).addNumericFilter(eq(Constants.INSTANCE.Id()),
-                                           any(),
-                                           any());
-        verify(getView()).addTextFilter(eq(Constants.INSTANCE.Initiator()),
-                                        any(),
-                                        any());
-        verify(getView()).addTextFilter(eq(Constants.INSTANCE.Correlation_Key()),
-                                        any(),
-                                        any());
-        verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Description()),
-                                        any(),
-                                        any());
-        verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.State()),
-                                               any(),
-                                               any());
-        verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.Errors()),
-                                               any(),
-                                               any());
-        verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Name()),
-                                                 any(),
-                                                 any(),
-                                                 any(),
-                                                 any());
-        verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Start_Date()),
-                                             any(),
-                                             any(),
-                                             any());
-        verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Last_Modification_Date()),
-                                             any(),
-                                             any(),
-                                             any());
+        final InOrder inOrder = inOrder(getView());
+
+        inOrder.verify(getView()).addNumericFilter(eq(Constants.INSTANCE.Id()),
+                                                   any(),
+                                                   any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Initiator()),
+                                                any(),
+                                                any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Correlation_Key()),
+                                                any(),
+                                                any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Description()),
+                                                any(),
+                                                any());
+        inOrder.verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.Errors()),
+                                                       any(),
+                                                       any());
+        inOrder.verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.State()),
+                                                       any(),
+                                                       any());
+        inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Name()),
+                                                         any(),
+                                                         any(),
+                                                         any(),
+                                                         any());
+        inOrder.verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Start_Date()),
+                                                     any(),
+                                                     any(),
+                                                     any());
+        inOrder.verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Last_Modification_Date()),
+                                                     any(),
+                                                     any(),
+                                                     any());
     }
 }

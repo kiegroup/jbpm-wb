@@ -21,6 +21,7 @@ import org.jbpm.workbench.common.client.filters.basic.AbstractBasicFiltersPresen
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 
 import static org.mockito.Matchers.any;
@@ -43,32 +44,34 @@ public class TaskListBasicFiltersPresenterTest extends AbstractBasicFiltersPrese
     public void testLoadFilters() {
         presenter.loadFilters();
 
-        verify(getView()).addNumericFilter(eq(Constants.INSTANCE.Id()),
-                                           any(),
-                                           any());
-        verify(getView()).addTextFilter(eq(Constants.INSTANCE.Task()),
-                                        any(),
-                                        any());
-        verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.Status()),
-                                               any(),
-                                               any());
-        verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Correlation_Key()),
-                                        any(),
-                                        any());
-        verify(getView()).addTextFilter(eq(Constants.INSTANCE.Actual_Owner()),
-                                        any(),
-                                        any());
-        verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Description()),
-                                        any(),
-                                        any());
-        verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Process_Definition_Id()),
-                                                 any(),
-                                                 any(),
-                                                 any(),
-                                                 any());
-        verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Created_On()),
-                                             any(),
-                                             any(),
-                                             any());
+        final InOrder inOrder = inOrder(getView());
+
+        inOrder.verify(getView()).addNumericFilter(eq(Constants.INSTANCE.Id()),
+                                                   any(),
+                                                   any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Task()),
+                                                any(),
+                                                any());
+        inOrder.verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.Status()),
+                                                       any(),
+                                                       any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Correlation_Key()),
+                                                any(),
+                                                any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Actual_Owner()),
+                                                any(),
+                                                any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Description()),
+                                                any(),
+                                                any());
+        inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Process_Definition_Id()),
+                                                         any(),
+                                                         any(),
+                                                         any(),
+                                                         any());
+        inOrder.verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Created_On()),
+                                                     any(),
+                                                     any(),
+                                                     any());
     }
 }

@@ -84,23 +84,6 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
                                                        false))
         );
 
-        final Map<String, String> states = new HashMap<>();
-        states.put(String.valueOf(ProcessInstance.STATE_ACTIVE),
-                   constants.Active());
-        states.put(String.valueOf(ProcessInstance.STATE_ABORTED),
-                   constants.Aborted());
-        states.put(String.valueOf(ProcessInstance.STATE_COMPLETED),
-                   constants.Completed());
-        states.put(String.valueOf(ProcessInstance.STATE_PENDING),
-                   constants.Pending());
-        states.put(String.valueOf(ProcessInstance.STATE_SUSPENDED),
-                   constants.Suspended());
-        view.addMultiSelectFilter(constants.State(),
-                                  states,
-                                  f -> addSearchFilterList(COLUMN_STATUS,
-                                                           f,
-                                                           states.size()));
-
         final Map<String, String> errorOptions = new HashMap<>();
         errorOptions.put(String.valueOf(true),
                          constants.WithErrors());
@@ -122,6 +105,23 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
                                       }
                                   }
         );
+
+        final Map<String, String> states = new HashMap<>();
+        states.put(String.valueOf(ProcessInstance.STATE_ACTIVE),
+                   constants.Active());
+        states.put(String.valueOf(ProcessInstance.STATE_ABORTED),
+                   constants.Aborted());
+        states.put(String.valueOf(ProcessInstance.STATE_COMPLETED),
+                   constants.Completed());
+        states.put(String.valueOf(ProcessInstance.STATE_PENDING),
+                   constants.Pending());
+        states.put(String.valueOf(ProcessInstance.STATE_SUSPENDED),
+                   constants.Suspended());
+        view.addMultiSelectFilter(constants.State(),
+                                  states,
+                                  f -> addSearchFilterList(COLUMN_STATUS,
+                                                           f,
+                                                           states.size()));
 
         final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
                 .dataset(PROCESS_INSTANCE_DATASET)

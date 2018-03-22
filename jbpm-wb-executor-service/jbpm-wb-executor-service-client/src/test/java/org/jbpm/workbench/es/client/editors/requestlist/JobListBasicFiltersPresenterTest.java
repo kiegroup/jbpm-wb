@@ -21,6 +21,7 @@ import org.jbpm.workbench.common.client.filters.basic.AbstractBasicFiltersPresen
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 
 import static org.mockito.Matchers.any;
@@ -43,29 +44,31 @@ public class JobListBasicFiltersPresenterTest extends AbstractBasicFiltersPresen
     public void testLoadFilters() {
         presenter.loadFilters();
 
-        verify(getView()).addNumericFilter(eq(Constants.INSTANCE.Process_Instance_Id()),
-                                           any(),
-                                           any());
-        verify(getView()).addTextFilter(eq(Constants.INSTANCE.BusinessKey()),
-                                        any(),
-                                        any());
-        verify(getView()).addTextFilter(eq(Constants.INSTANCE.Type()),
-                                        any(),
-                                        any());
-        verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Description()),
-                                        any(),
-                                        any());
-        verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.Status()),
-                                               any(),
-                                               any());
-        verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Process_Name()),
-                                                 any(),
-                                                 any(),
-                                                 any(),
-                                                 any());
-        verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Due_On()),
-                                             any(),
-                                             any(),
-                                             any());
+        final InOrder inOrder = inOrder(getView());
+
+        inOrder.verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.Status()),
+                                                       any(),
+                                                       any());
+        inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Process_Name()),
+                                                         any(),
+                                                         any(),
+                                                         any(),
+                                                         any());
+        inOrder.verify(getView()).addNumericFilter(eq(Constants.INSTANCE.Process_Instance_Id()),
+                                                   any(),
+                                                   any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.BusinessKey()),
+                                                any(),
+                                                any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Type()),
+                                                any(),
+                                                any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Description()),
+                                                any(),
+                                                any());
+        inOrder.verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Due_On()),
+                                                     any(),
+                                                     any(),
+                                                     any());
     }
 }

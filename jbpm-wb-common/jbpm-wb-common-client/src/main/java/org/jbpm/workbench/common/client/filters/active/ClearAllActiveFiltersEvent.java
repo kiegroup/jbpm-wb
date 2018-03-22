@@ -16,23 +16,6 @@
 
 package org.jbpm.workbench.common.client.filters.active;
 
-import org.jboss.errai.common.client.api.elemental2.IsElement;
-import org.uberfire.mvp.Command;
-import org.uberfire.mvp.ParameterizedCommand;
+public class ClearAllActiveFiltersEvent {
 
-public interface ActiveFiltersView extends IsElement {
-
-    <T extends Object> void addActiveFilter(ActiveFilterItem<T> filter);
-
-    <T extends Object> void removeActiveFilter(ActiveFilterItem<T> filter);
-
-    void removeAllActiveFilters(Boolean useCallback);
-
-    void setSaveFilterCallback(ParameterizedCommand<String> callback);
-
-    void setRemoveAllFilterCallback(Command callback);
-
-    void closeSaveFilter();
-
-    void setSaveFilterErrorMessage(String message);
 }

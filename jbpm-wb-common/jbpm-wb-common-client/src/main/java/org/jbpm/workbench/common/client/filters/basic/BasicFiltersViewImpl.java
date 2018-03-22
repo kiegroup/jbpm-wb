@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.user.client.DOM;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.*;
@@ -93,6 +94,10 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
     @Inject
     @DataField("advanced-filters")
     Button advancedFilters;
+
+    @Inject
+    @DataField("form")
+    Form form;
 
     private Command advancedFiltersCallback;
 
@@ -339,8 +344,63 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
                                      final Map<String, String> options,
                                      final Consumer<ActiveFilterItem<List<String>>> callback) {
 
-        appendHorizontalRule();
-        appendSectionTitle(label);
+        final HTMLElement hr = getDocument().createElement("hr");
+        addCSSClass(hr,
+                    "kie-dock__divider");
+        addCSSClass(hr,
+                    "kie-dock__divider_collapse");
+        form.insertBefore(hr,
+                          form.getFirstChild());
+
+        final Div group = (Div) getDocument().createElement("div");
+        addCSSClass(group,
+                    "panel-group");
+        addCSSClass(group,
+                    "kie-dock__panel-group");
+        form.insertBefore(group,
+                          form.getFirstChild());
+
+        final Div heading = (Div) getDocument().createElement("div");
+        addCSSClass(heading,
+                    "panel-heading");
+        addCSSClass(heading,
+                    "kie-dock__panel-heading");
+        group.appendChild(heading);
+
+        final Div title = (Div) getDocument().createElement("div");
+        addCSSClass(title,
+                    "panel-title");
+        addCSSClass(title,
+                    "kie-dock__heading--section");
+        heading.appendChild(title);
+
+        final Anchor anchorTitle = (Anchor) getDocument().createElement("a");
+        anchorTitle.setAttribute("data-toggle",
+                                 "collapse");
+        final String divId = DOM.createUniqueId();
+        anchorTitle.setAttribute("data-target",
+                                 "#" + divId);
+        anchorTitle.setTextContent(label);
+        title.appendChild(anchorTitle);
+
+        final Div content = (Div) getDocument().createElement("div");
+        addCSSClass(content,
+                    "panel-collapse");
+        addCSSClass(content,
+                    "collapse");
+        addCSSClass(content,
+                    "in");
+        content.setId(divId);
+        group.appendChild(content);
+
+        final Div divPanel = (Div) getDocument().createElement("div");
+        addCSSClass(divPanel,
+                    "panel-body");
+        addCSSClass(divPanel,
+                    "kie-dock__panel-body");
+
+        content.appendChild(divPanel);
+
         final Div div = (Div) getDocument().createElement("div");
         addCSSClass(div,
                     "form-group");
@@ -381,7 +441,7 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
             div.appendChild(checkBoxDiv);
         }
 
-        filterList.appendChild(div);
+        divPanel.appendChild(div);
     }
 
     private void setupSelect(final String label,

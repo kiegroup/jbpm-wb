@@ -21,6 +21,7 @@ import org.jbpm.workbench.common.client.filters.basic.AbstractBasicFiltersPresen
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 
 import static org.mockito.Matchers.any;
@@ -43,24 +44,26 @@ public class ExecutionErrorListBasicFiltersPresenterTest extends AbstractBasicFi
     public void testLoadFilters() {
         presenter.loadFilters();
 
-        verify(getView()).addNumericFilter(eq(Constants.INSTANCE.Process_Instance_Id()),
-                                           any(),
-                                           any());
-        verify(getView()).addNumericFilter(eq(Constants.INSTANCE.JobId()),
-                                           any(),
-                                           any());
-        verify(getView()).addTextFilter(eq(Constants.INSTANCE.Id()),
-                                        any(),
-                                        any());
-        verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.Type()),
-                                               any(),
-                                               any());
-        verify(getView()).addSelectFilter(eq(Constants.INSTANCE.Acknowledged()),
-                                               any(),
-                                               any());
-        verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.ErrorDate()),
-                                             any(),
-                                             any(),
-                                             any());
+        final InOrder inOrder = inOrder(getView());
+
+        inOrder.verify(getView()).addNumericFilter(eq(Constants.INSTANCE.Process_Instance_Id()),
+                                                   any(),
+                                                   any());
+        inOrder.verify(getView()).addNumericFilter(eq(Constants.INSTANCE.JobId()),
+                                                   any(),
+                                                   any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Id()),
+                                                any(),
+                                                any());
+        inOrder.verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.Type()),
+                                                       any(),
+                                                       any());
+        inOrder.verify(getView()).addSelectFilter(eq(Constants.INSTANCE.Acknowledged()),
+                                                  any(),
+                                                  any());
+        inOrder.verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.ErrorDate()),
+                                                     any(),
+                                                     any(),
+                                                     any());
     }
 }
