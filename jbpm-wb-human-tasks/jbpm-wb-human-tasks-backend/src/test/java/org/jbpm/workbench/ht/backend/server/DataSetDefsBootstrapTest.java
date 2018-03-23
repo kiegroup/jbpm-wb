@@ -106,7 +106,7 @@ public class DataSetDefsBootstrapTest {
         DataSetDef humanTaskWithAdminDataSet =
                 dsList.stream().filter(a -> a.getUUID().equals(HUMAN_TASKS_WITH_ADMIN_DATASET)).findFirst().get();
         List<DataColumnDef> dataSetColumns = humanTaskWithAdminDataSet.getColumns();
-        assertEquals(20,
+        assertEquals(21,
                      dataSetColumns.size());
     }
 }
