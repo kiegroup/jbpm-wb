@@ -16,14 +16,21 @@
 
 package org.jbpm.workbench.common.client.filters.basic;
 
+import javax.enterprise.event.Event;
+
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.active.ActiveFiltersImpl;
 import org.jbpm.workbench.common.client.filters.active.ActiveFiltersView;
+import org.jbpm.workbench.common.client.filters.active.ClearAllActiveFiltersEvent;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.Command;
 import org.uberfire.mvp.ParameterizedCommand;
 
 import static org.mockito.Matchers.any;
@@ -35,14 +42,37 @@ public class ActiveFiltersImplTest {
     @Mock
     ActiveFiltersView view;
 
+    @Spy
+    Event<ClearAllActiveFiltersEvent> clearAllActiveFiltersEvent = new EventSourceMock<>();
+
     @InjectMocks
     ActiveFiltersImpl activeFilters;
+
+    @Before
+    public void setup() {
+        doNothing().when(clearAllActiveFiltersEvent).fire(any());
+    }
 
     @Test
     public void testRemoveAllActiveFilters() {
         activeFilters.removeAllActiveFilters();
 
-        verify(view).removeAllActiveFilters();
+        verify(view).removeAllActiveFilters(false);
+        verify(clearAllActiveFiltersEvent).fire(any());
+    }
+
+    @Test
+    public void testRemoveAllActiveFiltersCallback() {
+        doAnswer(invocation -> {
+            final Command callback = (Command) invocation.getArguments()[0];
+            callback.execute();
+            return null;
+        }).when(view).setRemoveAllFilterCallback(any());
+
+        activeFilters.init();
+
+        verify(view).removeAllActiveFilters(true);
+        verify(clearAllActiveFiltersEvent).fire(any());
     }
 
     @Test

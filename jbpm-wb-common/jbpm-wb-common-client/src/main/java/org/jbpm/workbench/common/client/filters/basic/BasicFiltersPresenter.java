@@ -26,6 +26,7 @@ import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItemRemovedEvent;
+import org.jbpm.workbench.common.client.filters.active.ClearAllActiveFiltersEvent;
 import org.jbpm.workbench.common.client.filters.saved.SavedFilterSelectedEvent;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.df.client.filter.FilterEditorPopup;
@@ -76,6 +77,10 @@ public abstract class BasicFiltersPresenter {
 
     @OnOpen
     public void onOpen(){
+        view.clearAllSelectFilter();
+    }
+
+    public void onClearAllActiveFiltersEvent(@Observes ClearAllActiveFiltersEvent event){
         view.clearAllSelectFilter();
     }
 

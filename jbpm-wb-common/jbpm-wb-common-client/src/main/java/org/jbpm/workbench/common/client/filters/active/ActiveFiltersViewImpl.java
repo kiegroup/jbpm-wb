@@ -42,6 +42,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.client.views.pfly.widgets.JQueryProducer;
 import org.uberfire.client.views.pfly.widgets.Popover;
 import org.uberfire.client.views.pfly.widgets.PopoverOptions;
+import org.uberfire.mvp.Command;
 import org.uberfire.mvp.ParameterizedCommand;
 
 @Templated
@@ -59,10 +60,6 @@ public class ActiveFiltersViewImpl implements ActiveFiltersView {
     @Inject
     @DataField("content")
     HTMLDivElement content;
-
-    @Inject
-    @DataField("actions")
-    HTMLDivElement actions;
 
     @Inject
     @DataField("active-filters")
@@ -84,27 +81,33 @@ public class ActiveFiltersViewImpl implements ActiveFiltersView {
 
     private ParameterizedCommand<String> saveFilterCallback;
 
+    private Command removeAllFilterCallback;
+
     @PostConstruct
     public void init() {
+        saveFilterPopover = jQueryPopover.wrap(this.saveFilter);
+        setSaveFilterPopoverCallback();
         activeFiltersList.setModel(new ArrayList<>());
-        activeFilters.addComponentCreationHandler(v -> actions.classList.remove("hidden"));
+        activeFilters.addComponentCreationHandler(v -> {
+            saveFilter.getClassList().remove("disabled");
+            removeAll.classList.remove("disabled");
+            final PopoverOptions popoverOptions = new PopoverOptions();
+            popoverOptions.setContent(e -> saveFilterPopoverView.getElement());
+            saveFilterPopover.popover(popoverOptions);
+            saveFilterPopover.addShowListener(() -> saveFilterPopoverView.onOpen());
+            saveFilterPopover.addShownListener(() -> saveFilterPopoverView.onShow());
+        });
         activeFilters.addComponentDestructionHandler(v -> {
             if (activeFiltersList.getModel().isEmpty()) {
-                actions.classList.add("hidden");
+                saveFilter.getClassList().add("disabled");
+                removeAll.classList.add("disabled");
+                saveFilterPopover.destroy();
             }
             final Consumer callback = v.getValue().getCallback();
             if (callback != null) {
                 callback.accept(v.getValue().getValue());
             }
         });
-
-        saveFilterPopover = jQueryPopover.wrap(this.saveFilter);
-        setSaveFilterPopoverCallback();
-        final PopoverOptions popoverOptions = new PopoverOptions();
-        popoverOptions.setContent(e -> saveFilterPopoverView.getElement());
-        saveFilterPopover.popover(popoverOptions);
-        saveFilterPopover.addShowListener(() -> saveFilterPopoverView.onOpen());
-        saveFilterPopover.addShownListener(() -> saveFilterPopoverView.onShow());
     }
 
     protected void setSaveFilterPopoverCallback() {
@@ -120,6 +123,11 @@ public class ActiveFiltersViewImpl implements ActiveFiltersView {
     @Override
     public void setSaveFilterCallback(final ParameterizedCommand<String> callback) {
         saveFilterCallback = callback;
+    }
+
+    @Override
+    public void setRemoveAllFilterCallback(final Command callback) {
+        removeAllFilterCallback = callback;
     }
 
     @Override
@@ -155,7 +163,9 @@ public class ActiveFiltersViewImpl implements ActiveFiltersView {
 
     @EventHandler("remove-all-filters")
     public void onRemoveAll(@ForEvent("click") Event e) {
-        activeFiltersList.getModel().clear();
+        if (activeFiltersList.getModel().isEmpty() == false && removeAllFilterCallback != null) {
+            removeAllFilterCallback.execute();
+        }
     }
 
     @EventHandler("save-filter")
@@ -164,8 +174,10 @@ public class ActiveFiltersViewImpl implements ActiveFiltersView {
     }
 
     @Override
-    public void removeAllActiveFilters() {
-        activeFiltersList.getModel().forEach(f -> f.setCallback(null));
+    public void removeAllActiveFilters(final Boolean useCallback) {
+        if (useCallback == false) {
+            activeFiltersList.getModel().forEach(f -> f.setCallback(null));
+        }
         activeFiltersList.getModel().clear();
     }
 

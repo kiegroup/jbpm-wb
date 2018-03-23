@@ -20,6 +20,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import elemental2.dom.HTMLElement;
@@ -29,6 +30,9 @@ public class ActiveFiltersImpl implements ActiveFilters {
 
     @Inject
     ActiveFiltersView view;
+
+    @Inject
+    Event<ClearAllActiveFiltersEvent> clearAllActiveFiltersEvent;
 
     private BiConsumer<String, Consumer<String>> filterNameCallback;
 
@@ -45,6 +49,10 @@ public class ActiveFiltersImpl implements ActiveFilters {
                                               }
                                           });
             }
+        });
+        view.setRemoveAllFilterCallback(() -> {
+            view.removeAllActiveFilters(true);
+            clearAllActiveFiltersEvent.fire(new ClearAllActiveFiltersEvent());
         });
     }
 
@@ -70,6 +78,7 @@ public class ActiveFiltersImpl implements ActiveFilters {
 
     @Override
     public void removeAllActiveFilters() {
-        view.removeAllActiveFilters();
+        view.removeAllActiveFilters(false);
+        clearAllActiveFiltersEvent.fire(new ClearAllActiveFiltersEvent());
     }
 }
