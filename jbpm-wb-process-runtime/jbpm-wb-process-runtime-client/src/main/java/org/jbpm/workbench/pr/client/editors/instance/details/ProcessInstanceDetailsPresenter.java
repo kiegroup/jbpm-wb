@@ -27,6 +27,7 @@ import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramPresenter;
 import org.jbpm.workbench.pr.client.editors.documents.list.ProcessDocumentListPresenter;
 import org.jbpm.workbench.pr.client.editors.instance.log.RuntimeLogPresenter;
+import org.jbpm.workbench.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
 import org.jbpm.workbench.pr.client.editors.variables.list.ProcessVariableListPresenter;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
@@ -43,6 +44,7 @@ import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.events.NotificationEvent;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -73,6 +75,9 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
 
     @Inject
     private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
+
+    @Inject
+    protected Event<NotificationEvent> notification;
 
     @Inject
     private ProcessInstanceDetailsTabPresenter detailsPresenter;
@@ -169,7 +174,7 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
     }
 
     public void signalProcessInstance() {
-        PlaceRequest placeRequestImpl = new DefaultPlaceRequest("Signal Process Popup");
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(ProcessInstanceSignalPresenter.SIGNAL_PROCESS_POPUP);
 
         placeRequestImpl.addParameter("processInstanceId",
                                       String.valueOf(processInstanceId));
@@ -184,13 +189,20 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
         confirmPopup.show(constants.Abort_Confirmation(),
                           constants.Abort(),
                           constants.Abort_Process_Instance(),
-                          () -> processService.call(
-                                  (Void processInstance) ->
-                                          processInstancesUpdatedEvent
-                                                  .fire(new ProcessInstancesUpdateEvent(0L)))
-                                  .abortProcessInstance(serverTemplateId,
-                                                        deploymentId,
-                                                        processInstanceId));
+                          () -> {
+                              displayNotification(constants.Aborting_Process_Instance(processInstanceId));
+                              processService.call(
+                                      (Void processInstance) ->
+                                              processInstancesUpdatedEvent
+                                                      .fire(new ProcessInstancesUpdateEvent(0L)))
+                                      .abortProcessInstance(serverTemplateId,
+                                                            deploymentId,
+                                                            processInstanceId);
+                          });
+    }
+
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     @WorkbenchMenu
