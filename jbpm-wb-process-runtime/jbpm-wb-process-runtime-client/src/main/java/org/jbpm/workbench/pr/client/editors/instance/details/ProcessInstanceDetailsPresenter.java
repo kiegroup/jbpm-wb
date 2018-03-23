@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramPresenter;
 import org.jbpm.workbench.pr.client.editors.documents.list.ProcessDocumentListPresenter;
@@ -33,6 +34,7 @@ import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
 import org.jbpm.workbench.pr.service.ProcessService;
+import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -112,6 +114,10 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
 
     private boolean forLog = false;
 
+    PrimaryActionMenuBuilder signalProcessInstanceAction;
+
+    PrimaryActionMenuBuilder abortProcessInstanceAction;
+
     @Inject
     public void setProcessService(final Caller<ProcessService> processService) {
         this.processService = processService;
@@ -129,7 +135,24 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
 
     @OnStartup
     public void onStartup(final PlaceRequest place) {
+        setSignalProcessInstanceAction(new PrimaryActionMenuBuilder(constants.Signal(),
+                                                                    () -> signalProcessInstance()));
+        setAbortProcessInstanceAction(new PrimaryActionMenuBuilder(constants.Abort(),
+                                                                   () -> openAbortProcessInstancePopup()));
         this.place = place;
+    }
+
+    public void setSignalProcessInstanceAction(PrimaryActionMenuBuilder signalProcessInstanceAction) {
+        this.signalProcessInstanceAction = signalProcessInstanceAction;
+    }
+
+    public void setAbortProcessInstanceAction(PrimaryActionMenuBuilder abortProcessInstanceAction) {
+        this.abortProcessInstanceAction = abortProcessInstanceAction;
+    }
+
+    private void setSignalAbortActionsVisible(boolean visible) {
+        signalProcessInstanceAction.setVisible(visible);
+        abortProcessInstanceAction.setVisible(visible);
     }
 
     public boolean isForLog() {
@@ -154,11 +177,16 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
         changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place,
                                                                String.valueOf(processInstanceId) + " - " + selectedProcessDefName));
 
+        boolean signalAbortVisible = false;
         if (isForLog()) {
             view.displayOnlyLogTab();
         } else {
+            if (selectedProcessInstanceStatus == ProcessInstance.STATE_ACTIVE) {
+                signalAbortVisible = true;
+            }
             view.displayAllTabs();
         }
+        setSignalAbortActionsVisible(signalAbortVisible);
         view.selectInstanceDetailsTab();
     }
 
@@ -185,20 +213,25 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
         placeManager.goTo(placeRequestImpl);
     }
 
-    public void abortProcessInstance() {
+    public void openAbortProcessInstancePopup() {
         confirmPopup.show(constants.Abort_Confirmation(),
                           constants.Abort(),
                           constants.Abort_Process_Instance(),
-                          () -> {
-                              displayNotification(constants.Aborting_Process_Instance(processInstanceId));
-                              processService.call(
-                                      (Void processInstance) ->
-                                              processInstancesUpdatedEvent
-                                                      .fire(new ProcessInstancesUpdateEvent(0L)))
-                                      .abortProcessInstance(serverTemplateId,
-                                                            deploymentId,
-                                                            processInstanceId);
-                          });
+                          () -> abortProcessInstance());
+    }
+
+    protected void abortProcessInstance() {
+        processService.call(
+                (Void processInstance) -> {
+                    displayNotification(constants.Aborting_Process_Instance(processInstanceId));
+                    selectedProcessInstanceStatus = ProcessInstance.STATE_ABORTED;
+                    setSignalAbortActionsVisible(false);
+                    processInstancesUpdatedEvent
+                            .fire(new ProcessInstancesUpdateEvent(0L));
+                })
+                .abortProcessInstance(serverTemplateId,
+                                      deploymentId,
+                                      processInstanceId);
     }
 
     public void displayNotification(String text) {
@@ -209,11 +242,9 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
     public Menus buildMenu() {
         return MenuFactory
                 .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
-                .newTopLevelMenu(constants.Signal())
-                    .respondsWith(() -> signalProcessInstance())
+                .newTopLevelCustomMenu(signalProcessInstanceAction)
                 .endMenu()
-                .newTopLevelMenu(constants.Abort())
-                .respondsWith(() -> abortProcessInstance())
+                .newTopLevelCustomMenu(abortProcessInstanceAction)
                 .endMenu()
                 .build();
     }
