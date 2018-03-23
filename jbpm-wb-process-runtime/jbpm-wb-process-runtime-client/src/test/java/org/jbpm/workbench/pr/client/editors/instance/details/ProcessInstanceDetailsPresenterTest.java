@@ -19,12 +19,14 @@ import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
+import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.api.runtime.process.ProcessInstance;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -71,6 +73,12 @@ public class ProcessInstanceDetailsPresenterTest {
     @Mock
     private ProcessService processService;
 
+    @Mock
+    PrimaryActionMenuBuilder signalProcessInstanceAction;
+
+    @Mock
+    PrimaryActionMenuBuilder abortProcessInstanceAction;
+
     @InjectMocks
     private ProcessInstanceDetailsPresenter presenter;
 
@@ -79,6 +87,10 @@ public class ProcessInstanceDetailsPresenterTest {
         doNothing().when(changeTitleWidgetEvent).fire(any(ChangeTitleWidgetEvent.class));
         doNothing().when(processInstanceSelected).fire(any(ProcessInstanceSelectionEvent.class));
         doNothing().when(processInstancesUpdatedEvent).fire(any(ProcessInstancesUpdateEvent.class));
+        presenter.setSignalProcessInstanceAction(signalProcessInstanceAction);
+        presenter.setAbortProcessInstanceAction(abortProcessInstanceAction);
+        remoteProcessServiceCaller = new CallerMock<ProcessService>(processService);
+        presenter.setProcessService(remoteProcessServiceCaller);
     }
 
     @Test
@@ -127,7 +139,7 @@ public class ProcessInstanceDetailsPresenterTest {
                                                                             0,
                                                                             true,
                                                                             SERVER_TEMPLATE_ID));
-        presenter.abortProcessInstance();
+        presenter.openAbortProcessInstancePopup();
         ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
         verify(confirmPopup).show(any(),
                                   any(),
@@ -151,5 +163,93 @@ public class ProcessInstanceDetailsPresenterTest {
         verify(processService).abortProcessInstance(eq(SERVER_TEMPLATE_ID),
                                                     eq(PI_DEPLOYMENT_ID),
                                                     eq(PI_ID));
+    }
+
+    @Test
+    public void abortActiveInstanceFromDetailsHidesActionsTest() {
+        doAnswer(invocation -> null).when(processService).abortProcessInstance(eq(SERVER_TEMPLATE_ID),
+                                                                               eq(PI_DEPLOYMENT_ID),
+                                                                               eq(PI_ID));
+
+        presenter.onProcessSelectionEvent(new ProcessInstanceSelectionEvent(PI_DEPLOYMENT_ID,
+                                                                            PI_ID,
+                                                                            PI_PROCESS_DEF_ID,
+                                                                            PI_PROCESS_DEF_NAME,
+                                                                            ProcessInstance.STATE_ACTIVE,
+                                                                            false,
+                                                                            SERVER_TEMPLATE_ID));
+        verifySignalAbortActionsVisibility(true);
+        verifyNoMoreInteractionsWithSignalAbortActions();
+
+        presenter.abortProcessInstance();
+
+        verifySignalAbortActionsVisibility(false);
+        verifyNoMoreInteractionsWithSignalAbortActions();
+    }
+
+    @Test
+    public void actionsDisabledForAbortedProcessInstance() {
+        verifyActionsVisibility(ProcessInstance.STATE_ABORTED,
+                                false,
+                                false);
+    }
+
+    @Test
+    public void actionsDisabledForCompletedProcessInstance() {
+        verifyActionsVisibility(ProcessInstance.STATE_COMPLETED,
+                                false,
+                                false);
+    }
+
+    @Test
+    public void actionDisabledForPendingProcessInstance() {
+        verifyActionsVisibility(ProcessInstance.STATE_PENDING,
+                                false,
+                                false);
+    }
+
+    @Test
+    public void actionDisabledForSuspendedProcessInstance() {
+        verifyActionsVisibility(ProcessInstance.STATE_SUSPENDED,
+                                false,
+                                false);
+    }
+
+    @Test
+    public void actionEnabledForActiveProcessInstance() {
+        verifyActionsVisibility(ProcessInstance.STATE_ACTIVE,
+                                false,
+                                true);
+    }
+
+    @Test
+    public void actionDisabledForActiveProcessInstanceForLog() {
+        verifyActionsVisibility(ProcessInstance.STATE_ACTIVE,
+                                true,
+                                false);
+    }
+
+    private void verifyActionsVisibility(int status,
+                                         boolean isForLog,
+                                         boolean visibilityExpected) {
+        presenter.onProcessSelectionEvent(new ProcessInstanceSelectionEvent(PI_DEPLOYMENT_ID,
+                                                                            PI_ID,
+                                                                            PI_PROCESS_DEF_ID,
+                                                                            PI_PROCESS_DEF_NAME,
+                                                                            status,
+                                                                            isForLog,
+                                                                            SERVER_TEMPLATE_ID));
+        verifySignalAbortActionsVisibility(visibilityExpected);
+        verifyNoMoreInteractionsWithSignalAbortActions();
+    }
+
+    private void verifySignalAbortActionsVisibility(boolean expectedValue) {
+        verify(signalProcessInstanceAction).setVisible(expectedValue);
+        verify(abortProcessInstanceAction).setVisible(expectedValue);
+    }
+
+    private void verifyNoMoreInteractionsWithSignalAbortActions() {
+        verifyNoMoreInteractions(signalProcessInstanceAction);
+        verifyNoMoreInteractions(abortProcessInstanceAction);
     }
 }
