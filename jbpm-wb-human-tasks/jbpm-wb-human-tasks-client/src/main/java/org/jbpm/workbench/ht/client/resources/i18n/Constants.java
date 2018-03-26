@@ -51,10 +51,6 @@ public interface Constants extends Messages {
 
     String FilterActive();
 
-    String All();
-
-    String FilterAll();
-
     String No_Tasks_Found();
 
     String Priority();
