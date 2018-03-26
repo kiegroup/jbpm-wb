@@ -119,25 +119,35 @@ public class DataSetDefsBootstrap {
                 .dataSource(JBPM_DATA_SOURCE)
                 .dbSQL("select " +
                                SQL_SELECT_COMMON_COLS + "," +
+                                    "oe.id, " +
                                " (select COUNT(errInfo.id) " +
                                 "from " +
                                     "ExecutionErrorInfo errInfo " +
                                 "where " +
-                                    "errInfo.activity_id=t.taskId and " +
-                                    "errInfo.process_inst_id=pil.processInstanceId and " +
-                                    "errInfo.error_ack=0 and " +
-                                    "errInfo.error_type=\'Task\'" +
+                                    "errInfo.activity_id = t.taskId and " +
+                                    "errInfo.process_inst_id = pil.processInstanceId and " +
+                                    "errInfo.error_ack = 0 and " +
+                                    "errInfo.error_type = \'Task\'" +
                                ") as " + COLUMN_ERROR_COUNT + " " +
                                "from " +
-                               "AuditTaskImpl t  " +
+                                    "AuditTaskImpl t  " +
                                "left join " +
                                     "ProcessInstanceLog pil " +
                                "on " +
-                                    "pil.id=t.processInstanceId"
+                                    "pil.id = t.processInstanceId " +
+                               "left join " +
+                                    "PeopleAssignments_BAs ba " +
+                               "on " +
+                                    "t.taskId = ba.task_id " +
+                               "left join " +
+                                    "OrganizationalEntity oe " +
+                               "on " +
+                                    "ba.entity_id = oe.id"
                         ,
                        false);
 
         builder = addBuilderCommonColumns(builder);
+        builder.label(COLUMN_ORGANIZATIONAL_ENTITY);
         builder.number(COLUMN_ERROR_COUNT);
         DataSetDef humanTaskWithAdminDef = builder.buildDef();
 
