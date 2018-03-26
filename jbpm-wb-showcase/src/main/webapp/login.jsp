@@ -148,10 +148,10 @@
       <br style="clear: both;"/>
 
       <p>
-        <% if ( request.getParameter( "gwt.codesvr" ) != null ) { %>
+        <% if (request.getParameter("gwt.codesvr") != null) { %>
         <input type="hidden" name="gwt.codesvr" value="<%= org.owasp.encoder.Encode.forHtmlAttribute(request.getParameter("gwt.codesvr")) %>"/>
         <% } %>
-        <% if ( request.getParameter( "message" ) != null ) { %>
+        <% if (request.getParameter("message") != null) { %>
         <span class="error">Login failed. Please try again.</span>
         <% } %>
         <input class="button" type="submit" value="Sign In"/>
