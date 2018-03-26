@@ -64,8 +64,13 @@ public class TaskListFilterSettingsManager extends AbstractTaskListFilterSetting
         if (existingGrids.contains(TAB_ADMIN)) {
             removeSavedFilterFromPreferences(TAB_ADMIN,
                                              store,
-                                             () -> super.loadSavedFiltersFromPreferences(store,
-                                                                                         savedFiltersConsumer));
+                                             () -> loadSavedFiltersFromPreferences(store,
+                                                                                   savedFiltersConsumer));
+        } else if (existingGrids.contains(TAB_ALL)) {
+            removeSavedFilterFromPreferences(TAB_ALL,
+                                             store,
+                                             () -> loadSavedFiltersFromPreferences(store,
+                                                                                   savedFiltersConsumer));
         } else {
             super.loadSavedFiltersFromPreferences(store,
                                                   savedFiltersConsumer);
@@ -134,22 +139,8 @@ public class TaskListFilterSettingsManager extends AbstractTaskListFilterSetting
                                      },
                                      TAB_GROUP,
                                      constants.Group(),
-                                     constants.FilterGroup()),
+                                     constants.FilterGroup())
 
-                //Filter status All
-                createFilterSettings(HUMAN_TASKS_WITH_USER_DATASET,
-                                     COLUMN_CREATED_ON,
-                                     builder -> {
-                                         final List<Comparable> status = new ArrayList<>(getStatusByType(TaskUtils.TaskType.ALL));
-                                         builder.filter(COLUMN_STATUS,
-                                                        equalsTo(COLUMN_STATUS,
-                                                                 status));
-                                         builder.group(COLUMN_TASK_ID);
-                                         commonColumnSettings().accept(builder);
-                                     },
-                                     TAB_ALL,
-                                     constants.All(),
-                                     constants.FilterAll())
         );
     }
 }
