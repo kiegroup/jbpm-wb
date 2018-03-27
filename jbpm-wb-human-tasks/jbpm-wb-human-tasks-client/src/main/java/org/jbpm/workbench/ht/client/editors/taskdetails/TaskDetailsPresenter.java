@@ -16,7 +16,6 @@
 package org.jbpm.workbench.ht.client.editors.taskdetails;
 
 import java.util.Date;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -27,21 +26,24 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.util.UTCDateBox;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
+import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
-
-import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 
 @Dependent
 public class TaskDetailsPresenter {
 
     @Inject
     protected Event<TaskRefreshedEvent> taskRefreshed;
+
     TaskDetailsView view;
+
     private Constants constants = Constants.INSTANCE;
+
     @Inject
     private Caller<TaskService> taskService;
+
     private long currentTaskId = 0;
 
     private String currentServerTemplateId;
@@ -133,6 +135,22 @@ public class TaskDetailsPresenter {
                        String.valueOf(event.getPriority()),
                        event.getProcessInstanceId(),
                        event.getProcessId());
+    }
+
+    public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {
+        if (currentTaskId == event.getTaskId()) {
+            taskService.call((TaskSummary task) -> {
+                setTaskDetails(task.getStatus(),
+                               task.getDescription(),
+                               task.getActualOwner(),
+                               task.getExpirationTime(),
+                               String.valueOf(task.getPriority()),
+                               task.getProcessInstanceId(),
+                               task.getProcessId());
+            }).getTask(currentServerTemplateId,
+                       currentContainerId,
+                       currentTaskId);
+        }
     }
 
     public interface TaskDetailsView extends IsWidget {

@@ -16,7 +16,6 @@
 
 package org.jbpm.workbench.ht.backend.server;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +69,6 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
                 throw kieException;
             }
         }
-
     }
 
     @Override
@@ -272,7 +270,6 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
                 throw kieException;
             }
         }
-
     }
 
     @Override
@@ -346,16 +343,8 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
                                                        false,
                                                        false,
                                                        true);
-            TaskAssignmentSummary summary = new TaskAssignmentSummary();
-            summary.setTaskId(task.getId());
-            summary.setActualOwner(task.getActualOwner());
-            summary.setTaskName(task.getName());
-            summary.setPotOwnersString(task.getPotentialOwners());
-            summary.setCreatedBy(task.getCreatedBy());
-            summary.setBusinessAdmins(task.getBusinessAdmins());
-            summary.setStatus(task.getStatus());
-            summary.setDelegationAllowed(isDelegationAllowed(task));
-            return summary;
+
+            return new TaskAssignmentSummaryMapper().apply(task, identityProvider);
         } catch (KieServicesHttpException kieException) {
             if (kieException.getHttpCode() == NOT_FOUND_ERROR_CODE) {
                 return null;
@@ -363,44 +352,6 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
                 throw kieException;
             }
         }
-    }
-
-    protected Boolean isDelegationAllowed(final TaskInstance task) {
-
-        if (task == null) {
-            return false;
-        }
-
-        if ("Completed".equals(task.getStatus())) {
-            return false;
-        }
-
-        final String actualOwner = task.getActualOwner();
-        if (actualOwner != null && actualOwner.equals(identityProvider.getName())) {
-            return true;
-        }
-
-        final String initiator = task.getCreatedBy();
-        if (initiator != null && initiator.equals(identityProvider.getName())) {
-            return true;
-        }
-
-        List<String> roles = identityProvider.getRoles();
-
-        //TODO Needs to check if po or ba string is a group or a user
-        final List<String> potentialOwners = task.getPotentialOwners();
-        if (potentialOwners != null && Collections.disjoint(potentialOwners,
-                                                            roles) == false) {
-            return true;
-        }
-
-        final List<String> businessAdministrators = task.getBusinessAdmins();
-        if (businessAdministrators != null && Collections.disjoint(businessAdministrators,
-                                                                   roles) == false) {
-            return true;
-        }
-
-        return false;
     }
 
     @Override

@@ -16,9 +16,11 @@
 package org.jbpm.workbench.ht.client.editors.taskadmin;
 
 import java.util.Arrays;
+import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskAssignmentSummary;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
@@ -26,10 +28,16 @@ import org.jbpm.workbench.ht.service.TaskService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.workbench.events.NotificationEvent;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -40,26 +48,29 @@ public class TaskAdminPresenterTest {
     private static final String OTHER_USER2 = "OTHER_USER2";
 
     @Mock
-    private TaskAdminPresenter.TaskAdminView viewMock;
+    TaskAdminPresenter.TaskAdminView viewMock;
 
     @Mock
-    private TaskService taskService;
+    TaskService taskService;
 
-    private Caller<TaskService> remoteTaskServiceCaller;
+    Caller<TaskService> remoteTaskServiceCaller;
 
-    @Mock
-    private EventSourceMock<TaskRefreshedEvent> taskRefreshedEvent;
+    @Spy
+    Event<TaskRefreshedEvent> taskRefreshed = new EventSourceMock<>();
 
-    private TaskAdminPresenter presenter;
+    @Spy
+    Event<NotificationEvent> notification = new EventSourceMock<>();
+
+    @InjectMocks
+    TaskAdminPresenter presenter;
 
     @Before
     public void initMocks() {
-        remoteTaskServiceCaller = new CallerMock<TaskService>(taskService);
-        doNothing().when(taskRefreshedEvent).fire(any(TaskRefreshedEvent.class));
+        remoteTaskServiceCaller = new CallerMock<>(taskService);
+        doNothing().when(taskRefreshed).fire(any());
+        doNothing().when(notification).fire(any());
 
-        presenter = new TaskAdminPresenter(viewMock,
-                                           remoteTaskServiceCaller,
-                                           taskRefreshedEvent);
+        presenter.setTaskService(remoteTaskServiceCaller);
     }
 
     @Test
@@ -98,6 +109,7 @@ public class TaskAdminPresenterTest {
         ts.setPotOwnersString(Arrays.asList(OTHER_USER,
                                             OTHER_USER2));
         ts.setActualOwner(CURRENT_USER);
+        ts.setForwardAllowed(true);
         when(taskService.getTaskAssignmentDetails(eq(serverTemplateId),
                                                   eq(containerId),
                                                   eq(taskId))).thenReturn(ts);
@@ -118,7 +130,8 @@ public class TaskAdminPresenterTest {
         verify(viewMock).enableUserOrGroupText(true);
         verify(viewMock).enableReminderButton(true);
         verify(viewMock).setActualOwnerText(CURRENT_USER);
-        verify(viewMock).setUsersGroupsControlsPanelText("[" + OTHER_USER + ", " + OTHER_USER2 + "]");
+        verify(viewMock).setUsersGroupsControlsPanelText(Arrays.asList(OTHER_USER,
+                                                                       OTHER_USER2));
     }
 
     @Test
@@ -141,5 +154,43 @@ public class TaskAdminPresenterTest {
                                     containerId,
                                     taskId,
                                     entity);
+        verify(notification).fire(any());
+        verify(taskRefreshed).fire(any());
+    }
+
+    @Test
+    public void testRefreshTaskPotentialOwners() {
+        final String serverTemplateId = "serverTemplateId";
+        final String containerId = "containerId";
+        final Long taskId = 1L;
+        final TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId,
+                                                                containerId,
+                                                                taskId,
+                                                                "task",
+                                                                true,
+                                                                false);
+
+        final TaskAssignmentSummary summary = new TaskAssignmentSummary();
+        summary.setForwardAllowed(false);
+        when(taskService.getTaskAssignmentDetails(serverTemplateId,
+                                                  containerId,
+                                                  taskId)).thenReturn(summary);
+
+        presenter.onTaskSelectionEvent(event);
+
+        InOrder inOrder = inOrder(viewMock);
+
+        inOrder.verify(viewMock).enableReminderButton(false);
+        inOrder.verify(viewMock).enableForwardButton(false);
+        inOrder.verify(viewMock).enableUserOrGroupText(false);
+        inOrder.verify(viewMock).setUsersGroupsControlsPanelText(emptyList());
+        inOrder.verify(viewMock).clearUserOrGroupText();
+        inOrder.verify(viewMock).setActualOwnerText("");
+
+        inOrder.verify(viewMock).setUsersGroupsControlsPanelText(singletonList(Constants.INSTANCE.No_Potential_Owners()));
+        inOrder.verify(viewMock).enableForwardButton(false);
+        inOrder.verify(viewMock).enableUserOrGroupText(false);
+        inOrder.verify(viewMock).enableReminderButton(false);
+        inOrder.verify(viewMock).setActualOwnerText(Constants.INSTANCE.No_Actual_Owner());
     }
 }

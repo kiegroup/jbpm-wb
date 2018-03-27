@@ -141,6 +141,7 @@ public class TaskAssignmentsPresenterTest {
         when(taskService.getTaskAssignmentDetails(anyString(),
                                                   anyString(),
                                                   eq(COMPLETED_TASK_ID))).thenReturn(task);
+        task.setDelegationAllowed(false);
 
         // When task in status Completed is selected
         boolean isForLog = false;
