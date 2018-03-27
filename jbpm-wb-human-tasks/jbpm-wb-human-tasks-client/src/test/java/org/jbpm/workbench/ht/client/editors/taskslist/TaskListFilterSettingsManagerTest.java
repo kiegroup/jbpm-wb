@@ -29,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 
 import static org.jbpm.workbench.ht.client.editors.taskslist.TaskListFilterSettingsManager.TAB_ADMIN;
+import static org.jbpm.workbench.ht.client.editors.taskslist.TaskListFilterSettingsManager.TAB_ALL;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_USER_DATASET;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -50,9 +51,18 @@ public class TaskListFilterSettingsManagerTest extends AbstractTaskListFilterSet
     }
 
     @Test
-    public void testLoadPreferencesRemovingAdminTab() {
+    public void testLoadPreferencesRemovingFilterAdmin() {
+        testRemoveFilter(TAB_ADMIN);
+    }
+
+    @Test
+    public void testLoadPreferencesRemovingFilterAll() {
+        testRemoveFilter(TAB_ALL);
+    }
+
+    private void testRemoveFilter(final String name){
         final MultiGridPreferencesStore pref = new MultiGridPreferencesStore();
-        pref.getGridsId().add(TAB_ADMIN);
+        pref.getGridsId().add(name);
 
         manager.loadSavedFiltersFromPreferences(pref,
                                                 null);
@@ -61,13 +71,13 @@ public class TaskListFilterSettingsManagerTest extends AbstractTaskListFilterSet
         verify(preferencesService,
                times(2)).saveUserPreferences(captor.capture());
 
-        assertFalse(captor.getAllValues().get(0).getGridsId().contains(TAB_ADMIN));
+        assertFalse(captor.getAllValues().get(0).getGridsId().contains(name));
     }
 
     @Test
     public void testDefaultFilters() {
         Consumer<List<SavedFilter>> callback = filters -> {
-            assertEquals(4,
+            assertEquals(3,
                          filters.size());
             assertEquals(Constants.INSTANCE.Active(),
                          filters.get(0).getName());
@@ -75,8 +85,6 @@ public class TaskListFilterSettingsManagerTest extends AbstractTaskListFilterSet
                          filters.get(1).getName());
             assertEquals(Constants.INSTANCE.Group(),
                          filters.get(2).getName());
-            assertEquals(Constants.INSTANCE.All(),
-                         filters.get(3).getName());
         };
 
         final MultiGridPreferencesStore store = new MultiGridPreferencesStore();
