@@ -15,7 +15,6 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskadmin;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -25,13 +24,17 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskAssignmentSummary;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
+import org.uberfire.client.mvp.UberView;
+import org.uberfire.workbench.events.NotificationEvent;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 
 @Dependent
 public class TaskAdminPresenter {
@@ -57,12 +60,11 @@ public class TaskAdminPresenter {
     private Event<TaskRefreshedEvent> taskRefreshed;
 
     @Inject
-    public TaskAdminPresenter(TaskAdminPresenter.TaskAdminView view,
-                              Caller<TaskService> taskService,
-                              Event<TaskRefreshedEvent> taskRefreshed) {
-        this.view = view;
+    private Event<NotificationEvent> notification;
+
+    @Inject
+    public void setTaskService(final Caller<TaskService> taskService) {
         this.taskService = taskService;
-        this.taskRefreshed = taskRefreshed;
     }
 
     @PostConstruct
@@ -75,66 +77,52 @@ public class TaskAdminPresenter {
     }
 
     public void forwardTask(final String entity) {
-        taskService.call(
-                new RemoteCallback<Void>() {
-                    @Override
-                    public void callback(Void nothing) {
-                        view.displayNotification(constants.TaskSuccessfullyForwarded());
-                        taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
-                        refreshTaskPotentialOwners();
-                    }
-                }
-        ).forward(serverTemplateId,
-                  containerId,
-                  currentTaskId,
-                  entity);
+        taskService.call(nothing -> {
+            notification.fire(new NotificationEvent(constants.TaskSuccessfullyForwarded()));
+            taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
+            refreshTaskPotentialOwners();
+        }).forward(serverTemplateId,
+                   containerId,
+                   currentTaskId,
+                   entity);
     }
 
     public void reminder() {
-        taskService.call(
-                new RemoteCallback<TaskAssignmentSummary>() {
-                    @Override
-                    public void callback(TaskAssignmentSummary ts) {
-                        view.displayNotification(constants.ReminderSentTo(identity.getIdentifier()));
-                    }
-                }
-        ).executeReminderForTask(serverTemplateId,
-                                 containerId,
-                                 currentTaskId,
-                                 identity.getIdentifier());
+        taskService.call(ts -> notification.fire(new NotificationEvent(constants.ReminderSentTo(identity.getIdentifier()))))
+                .executeReminderForTask(serverTemplateId,
+                                        containerId,
+                                        currentTaskId,
+                                        identity.getIdentifier());
     }
 
     public void refreshTaskPotentialOwners() {
-        List<Long> taskIds = new ArrayList<Long>(1);
-        taskIds.add(currentTaskId);
+        view.enableReminderButton(false);
+        view.enableForwardButton(false);
+        view.enableUserOrGroupText(false);
+        view.setUsersGroupsControlsPanelText(emptyList());
+        view.clearUserOrGroupText();
+        view.setActualOwnerText("");
+        taskService.call((TaskAssignmentSummary ts) -> {
+                             if (ts == null) {
+                                 return;
+                             }
+                             if (ts.getPotOwnersString() == null || ts.getPotOwnersString().isEmpty()) {
+                                 view.setUsersGroupsControlsPanelText(singletonList(Constants.INSTANCE.No_Potential_Owners()));
+                             } else {
+                                 view.setUsersGroupsControlsPanelText(ts.getPotOwnersString());
+                             }
 
-        taskService.call(
-                new RemoteCallback<TaskAssignmentSummary>() {
-                    @Override
-                    public void callback(TaskAssignmentSummary ts) {
-                        if (ts == null) {
-                            view.enableReminderButton(false);
-                            view.enableForwardButton(false);
-                            view.enableUserOrGroupText(false);
-                            return;
-                        }
-                        if (ts.getPotOwnersString() != null && ts.getPotOwnersString().isEmpty()) {
-                            view.setUsersGroupsControlsPanelText(Constants.INSTANCE.No_Potential_Owners());
-                        } else {
-                            view.setUsersGroupsControlsPanelText("" + ts.getPotOwnersString().toString());
-                        }
-                        view.enableForwardButton(true);
-                        view.enableUserOrGroupText(true);
+                             view.enableForwardButton(ts.isForwardAllowed());
+                             view.enableUserOrGroupText(ts.isForwardAllowed());
 
-                        if (ts.getActualOwner() == null || ts.getActualOwner().equals("")) {
-                            view.enableReminderButton(false);
-                            view.setActualOwnerText(Constants.INSTANCE.No_Actual_Owner());
-                        } else {
-                            view.enableReminderButton(true);
-                            view.setActualOwnerText(ts.getActualOwner());
-                        }
-                    }
-                }
+                             if (ts.getActualOwner() == null || ts.getActualOwner().equals("")) {
+                                 view.enableReminderButton(false);
+                                 view.setActualOwnerText(Constants.INSTANCE.No_Actual_Owner());
+                             } else {
+                                 view.enableReminderButton(true);
+                                 view.setActualOwnerText(ts.getActualOwner());
+                             }
+                         }
         ).getTaskAssignmentDetails(serverTemplateId,
                                    containerId,
                                    currentTaskId);
@@ -155,11 +143,9 @@ public class TaskAdminPresenter {
         }
     }
 
-    public interface TaskAdminView extends IsWidget {
+    public interface TaskAdminView extends UberView<TaskAdminPresenter> {
 
-        void displayNotification(String text);
-
-        void setUsersGroupsControlsPanelText(String text);
+        void setUsersGroupsControlsPanelText(List<String> text);
 
         void enableForwardButton(boolean enabled);
 
@@ -169,6 +155,6 @@ public class TaskAdminPresenter {
 
         void setActualOwnerText(String actualOwnerText);
 
-        void init(final TaskAdminPresenter presenter);
+        void clearUserOrGroupText();
     }
 }
