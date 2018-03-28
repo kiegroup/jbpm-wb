@@ -17,6 +17,7 @@
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -59,7 +60,7 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
 import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
@@ -391,13 +392,17 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     @Override
     public void setupDefaultActiveSearchFilters() {
-        addActiveFilter(equalsTo(COLUMN_STATUS,
-                                 TASK_STATUS_READY),
+        final List<String> status = Arrays.asList(TASK_STATUS_READY,
+                                                  TASK_STATUS_IN_PROGRESS,
+                                                  TASK_STATUS_RESERVED);
+        addActiveFilter(in(COLUMN_STATUS,
+                           status),
                         constants.Status(),
-                        TASK_STATUS_READY,
-                        TASK_STATUS_READY,
-                        v -> removeActiveFilter(equalsTo(COLUMN_STATUS,
-                                                         v))
+                        String.join(", ",
+                                    status),
+                        status,
+                        v -> removeActiveFilter(in(COLUMN_STATUS,
+                                                   status))
         );
     }
 
