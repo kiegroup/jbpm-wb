@@ -33,6 +33,9 @@ public class PrimaryActionMenuBuilder implements MenuFactory.CustomMenuBuilder {
     private final List<EnabledStateChangeListener> changeListeners = new ArrayList<>();
     private Button button;
 
+    public PrimaryActionMenuBuilder() {
+    }
+
     public PrimaryActionMenuBuilder(final String label,
                                     final Command command) {
         button = IOC.getBeanManager().lookupBean(Button.class).newInstance();
