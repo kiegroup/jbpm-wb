@@ -134,9 +134,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
             initColumns(newListGrid);
             initSelectionModel(newListGrid);
             newListGrid.loadPageSizePreferences();
-            newListGrid.createPageSizesListBox(5,
-                                               20,
-                                               5);
             if (column.childNodes.length == 1) {
                 column.removeChild(column.firstChild);
             }
