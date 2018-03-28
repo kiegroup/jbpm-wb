@@ -38,6 +38,9 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
+import org.uberfire.lifecycle.OnStartup;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -67,6 +70,9 @@ public class ProcessDefinitionDetailsPresenter implements RefreshMenuBuilder.Sup
     @Inject
     protected StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
 
+    @Inject
+    private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
+
     private String deploymentId = "";
 
     private String processId = "";
@@ -79,10 +85,17 @@ public class ProcessDefinitionDetailsPresenter implements RefreshMenuBuilder.Sup
 
     protected PrimaryActionMenuBuilder primaryActionMenuBuilder;
 
+    private PlaceRequest place;
+
     @PostConstruct
     public void init() {
         setPrimaryActionMenuBuilder(new PrimaryActionMenuBuilder(Constants.INSTANCE.New_Process_Instance(),
                                                                  () -> createNewProcessInstance()));
+    }
+
+    @OnStartup
+    public void onStartup(final PlaceRequest place) {
+        this.place = place;
     }
 
     @WorkbenchPartView
@@ -124,6 +137,9 @@ public class ProcessDefinitionDetailsPresenter implements RefreshMenuBuilder.Sup
         dynamic = event.isDynamic();
 
         primaryActionMenuBuilder.setVisible(dynamic == false);
+
+        changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place,
+                                                               String.valueOf(deploymentId) + " - " + processDefName));
     }
 
     public void createNewProcessInstance() {
