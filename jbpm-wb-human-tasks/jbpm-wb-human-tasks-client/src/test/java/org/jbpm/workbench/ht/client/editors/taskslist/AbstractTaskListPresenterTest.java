@@ -365,9 +365,11 @@ public abstract class AbstractTaskListPresenterTest {
         assertNotNull(filterItem);
         assertEquals(Constants.INSTANCE.Status(),
                      filterItem.getKey());
-        assertEquals(TASK_STATUS_READY,
+        assertEquals(Arrays.asList(TASK_STATUS_READY,
+                                   TASK_STATUS_IN_PROGRESS,
+                                   TASK_STATUS_RESERVED),
                      filterItem.getValue());
-        assertEquals(Constants.INSTANCE.Status() + ": " + TASK_STATUS_READY,
+        assertEquals("Status: Ready, InProgress, Reserved",
                      filterItem.getLabelValue());
     }
 
