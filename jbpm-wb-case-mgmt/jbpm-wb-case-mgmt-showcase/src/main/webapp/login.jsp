@@ -9,21 +9,17 @@
 <head>
     <link rel="stylesheet" href="<%=request.getContextPath()%>/org.jbpm.workbench.cm.jBPMCaseManagement/css/patternfly.min.css">
     <link rel="stylesheet" href="<%=request.getContextPath()%>/org.jbpm.workbench.cm.jBPMCaseManagement/css/patternfly-additions.min.css">
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/org.jbpm.workbench.cm.jBPMCaseManagement/css/showcase.css">
     <link rel="shortcut icon" href="favicon.ico"/>
-    <title>jBPM Case Management</title>
+    <title>Sample Case Management App</title>
 </head>
 
 <body>
     <span id="badge">
-        <img src="<%=request.getContextPath()%>/org.jbpm.workbench.cm.jBPMCaseManagement/img/kie-ide.png" alt="KIE IDE Logo" title="Powered By Drools/jBPM" />
+        <img src="<%=request.getContextPath()%>/org.jbpm.workbench.cm.jBPMCaseManagement/img/logo.png" />
     </span>
     <div class="container">
         <div class="row">
-            <div class="col-sm-12">
-                <div id="brand">
-                    <%--<img src="/assets/img/brand.svg" alt="PatternFly Enterprise Application">--%>
-                </div>
-            </div>
             <div class="col-sm-7 col-md-6 col-lg-5 login">
                 <c:if test="${param.message != null}">
                     <div class="alert alert-danger">
@@ -50,9 +46,6 @@
                         </div>
                     </div>
                 </form>
-            </div>
-            <div class="col-sm-5 col-md-6 col-lg-7 details">
-                <p><strong>Welcome to jBPM Case Management Showcase app!</strong></p>
             </div>
         </div>
     </div>

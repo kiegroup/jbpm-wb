@@ -40,7 +40,7 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
-import static org.jbpm.workbench.cm.client.resources.i18n.Constants.CASES_LIST;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.CASE_LIST;
 
 @Dependent
 @WorkbenchScreen(identifier = CaseInstanceListPresenter.SCREEN_ID)
@@ -61,7 +61,7 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return translationService.format(CASES_LIST);
+        return translationService.format(CASE_LIST);
     }
 
     @PostConstruct
