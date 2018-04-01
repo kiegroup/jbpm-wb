@@ -38,24 +38,29 @@ import static org.mockito.Mockito.*;
 
 public abstract class AbstractCaseInstancePresenterTest {
 
+    final protected static String serverTemplateId = "serverTemplateId",
+                                  containerId = "containerId",
+                                  caseDefId = "caseDefinitionId",
+                                  caseId = "caseId";
+
     @Mock
     protected CaseManagementService caseManagementService;
 
     protected Caller<CaseManagementService> caseService;
 
     @Mock
-    TranslationService translationService;
+    private TranslationService translationService;
 
     protected static CaseInstanceSummary newCaseInstanceSummary() {
         return CaseInstanceSummary.builder()
-                .caseId("caseId")
+                .caseId(caseId)
                 .description("description")
                 .status(CaseStatus.OPEN)
-                .containerId("containerId")
+                .containerId(containerId)
                 .owner("admin")
                 .completedAt(new Date())
                 .startedAt(new Date())
-                .caseDefinitionId("caseDefinitionId")
+                .caseDefinitionId(caseDefId)
                 .roleAssignments(Collections.emptyList())
                 .build();
     }
