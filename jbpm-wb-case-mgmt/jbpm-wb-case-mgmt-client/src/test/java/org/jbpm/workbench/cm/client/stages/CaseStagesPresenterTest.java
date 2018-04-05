@@ -16,58 +16,33 @@
 
 package org.jbpm.workbench.cm.client.stages;
 
-import com.google.common.collect.Lists;
 import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenterTest;
-import org.jbpm.workbench.cm.util.CaseStageStatus;
-import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.CaseStageSummary;
-import org.jbpm.workbench.cm.util.CaseStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.uberfire.mocks.CallerMock;
 
+import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.*;
+import static org.jbpm.workbench.cm.util.CaseStageStatus.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseStagesPresenterTest extends AbstractCaseInstancePresenterTest {
 
-    final static String serverTemplateId = "serverTemplateId",
-            containerId = "containerId",
-            caseDefId = "caseDefinitionId",
-            caseId = "caseId";
+    private CaseStageItemViewImpl caseStageItemViewMock;
 
     @Mock
-    CaseStagesPresenter.CaseStagesView caseStagesView;
+    private CaseStagesPresenter.CaseStagesView caseStagesView;
 
+    @Spy
     @InjectMocks
-
-    CaseStagesPresenter presenter;
-
-    CaseInstanceSummary cis;
-
-    private static CaseStageSummary createCaseStageSummary() {
-        return CaseStageSummary.builder()
-                .identifier("stage1")
-                .name("stageName")
-                .status(CaseStageStatus.AVAILABLE.getStatus())
-                .build();
-    }
-
-    private static CaseInstanceSummary createCaseInstance() {
-        return CaseInstanceSummary.builder()
-                .caseId(caseId)
-                .caseDefinitionId(caseDefId)
-                .description("description")
-                .status(CaseStatus.OPEN)
-                .containerId(containerId)
-                .stages(Lists.newArrayList(createCaseStageSummary()))
-                .build();
-    }
+    private CaseStagesPresenter presenter;
 
     @Override
     public CaseStagesPresenter getPresenter() {
@@ -75,40 +50,49 @@ public class CaseStagesPresenterTest extends AbstractCaseInstancePresenterTest {
     }
 
     @Before
-    public void init() {
-        cis = createCaseInstance();
-        caseService = new CallerMock<>(caseManagementService);
-
-        presenter.setCaseService(caseService);
-
-        cis = CaseInstanceSummary.builder().containerId(containerId).caseId(caseId).caseDefinitionId(caseDefId).build();
-        final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().id(caseDefId).build();
-
-        when(caseManagementService.getCaseDefinition(serverTemplateId,
-                                                     cis.getContainerId(),
-                                                     cis.getCaseDefinitionId())).thenReturn(cds);
-        when(caseManagementService.getCaseInstance(serverTemplateId,
-                                                   containerId,
-                                                   caseId)).thenReturn(cis);
+    public void setup() {
+        caseStageItemViewMock = Mockito.mock(CaseStageItemViewImpl.class);
     }
 
     @Test
-    public void testClearCaseInstance() {
-        presenter.clearCaseInstance();
-
-        verifyClearCaseInstance();
-    }
-
-    private void verifyClearCaseInstance() {
-        verify(caseStagesView).removeAllStages();
-    }
-
-    @Test
-    public void testLoadCaseInstance() {
+    public void testClearAndLoadCaseInstance() {
+        final CaseInstanceSummary cis = newCaseInstanceSummary();
+        cis.setStages(singletonList(createCaseStageSummary(AVAILABLE.getStatus())));
         setupCaseInstance(cis,
                           serverTemplateId);
 
-        verifyClearCaseInstance();
+        verify(caseStagesView).removeAllStages();
         verify(caseStagesView).setCaseStagesList(cis.getStages());
+        verify(caseStagesView).getCaseStageComponentList();
+        verify(presenter).setStages();
+        verifyNoMoreInteractions(caseStagesView);
+    }
+
+    @Test
+    public void testSetStage_stageActive() {
+        when(caseStageItemViewMock.getValue()).thenReturn(createCaseStageSummary(ACTIVE.getStatus()));
+        getPresenter().setStage(caseStageItemViewMock);
+        verify(caseStageItemViewMock).showStageActive();
+    }
+
+    @Test
+    public void testSetStage_stageNotActive() {
+        when(caseStageItemViewMock.getValue()).thenReturn(createCaseStageSummary(AVAILABLE.getStatus()),
+                                                          createCaseStageSummary(COMPLETED.getStatus()),
+                                                          createCaseStageSummary(CANCELED.getStatus()));
+        getPresenter().setStage(caseStageItemViewMock);
+        getPresenter().setStage(caseStageItemViewMock);
+        getPresenter().setStage(caseStageItemViewMock);
+
+        verify(caseStageItemViewMock,
+               never()).showStageActive();
+    }
+
+    private CaseStageSummary createCaseStageSummary(final String stageStatus) {
+        return CaseStageSummary.builder()
+                               .identifier("stage")
+                               .name("stageName")
+                               .status(stageStatus)
+                               .build();
     }
 }

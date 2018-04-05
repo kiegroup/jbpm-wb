@@ -26,16 +26,14 @@ import org.jboss.errai.common.client.dom.ListItem;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.databinding.client.api.DataBinder;
-import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.cm.client.util.AbstractView;
-import org.jbpm.workbench.cm.util.CaseStageStatus;
 import org.jbpm.workbench.cm.model.CaseStageSummary;
 
-import static org.jboss.errai.common.client.dom.DOMUtil.*;
+import static org.jboss.errai.common.client.dom.DOMUtil.addCSSClass;
 
 @Dependent
 @Templated
@@ -43,16 +41,13 @@ public class CaseStageItemViewImpl extends AbstractView<CaseStagesPresenter> imp
                                                                                         IsElement {
 
     @Inject
-    protected TranslationService translationService;
-
-    @Inject
     @DataField("stage-name")
     @Bound
-    Span name;
+    private Span name;
 
     @Inject
     @DataField("list-group-item")
-    ListItem listGroupItem;
+    private ListItem listGroupItem;
 
     @Inject
     @AutoBound
@@ -76,10 +71,10 @@ public class CaseStageItemViewImpl extends AbstractView<CaseStagesPresenter> imp
     @Override
     public void setValue(final CaseStageSummary model) {
         this.caseStageSummary.setModel(model);
+    }
 
-        if (model.getStatus().equals(CaseStageStatus.ACTIVE.getStatus())) {
-            addCSSClass(this.listGroupItem,
-                        "active");
-        }
+    void showStageActive() {
+        addCSSClass(this.listGroupItem,
+                    "active");
     }
 }

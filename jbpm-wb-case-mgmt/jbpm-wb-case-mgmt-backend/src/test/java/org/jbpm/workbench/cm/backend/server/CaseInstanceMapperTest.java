@@ -33,8 +33,8 @@ import static org.junit.Assert.*;
 
 public class CaseInstanceMapperTest {
 
-    public static void assertCaseInstance(final CaseInstance ci,
-                                          final CaseInstanceSummary cis) {
+    static void assertCaseInstance(final CaseInstance ci,
+                                   final CaseInstanceSummary cis) {
         assertNotNull(cis);
         assertEquals(ci.getCaseId(),
                      cis.getCaseId());
@@ -56,8 +56,8 @@ public class CaseInstanceMapperTest {
                          cis.getStages());
     }
 
-    public static void assertCaseStages(final List<CaseStage> csl,
-                                        final List<CaseStageSummary> cssl) {
+    private static void assertCaseStages(final List<CaseStage> csl,
+                                         final List<CaseStageSummary> cssl) {
         assertNotNull(cssl);
         if (csl == null) {
             assertEquals(0,
@@ -84,9 +84,9 @@ public class CaseInstanceMapperTest {
         }
     }
 
-    public static void assertCaseStageAdHocFragments(final List<CaseAdHocFragment> cahfl,
-                                                     final List<CaseActionSummary> casl,
-                                                     String stageId) {
+    private static void assertCaseStageAdHocFragments(final List<CaseAdHocFragment> cahfl,
+                                                      final List<CaseActionSummary> casl,
+                                                      final String stageId) {
         assertNotNull(casl);
         if (cahfl == null) {
             assertEquals(0,
@@ -113,8 +113,8 @@ public class CaseInstanceMapperTest {
     @Test
     public void testCaseInstanceMapper_mapCaseInstance() {
         final CaseInstance ci = createCaseInstance();
-        List<CaseStage> stagesList = new ArrayList();
-        List<CaseAdHocFragment> stageAdHocFragments = new ArrayList();
+        final List<CaseStage> stagesList = new ArrayList();
+        final List<CaseAdHocFragment> stageAdHocFragments = new ArrayList();
         stageAdHocFragments.add(CaseAdHocFragment.builder().name("ad_hoc_stage_f1_name").build());
         stageAdHocFragments.add(CaseAdHocFragment.builder().name("ad_hoc_stage_f2_name").build());
 
