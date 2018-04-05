@@ -22,6 +22,7 @@ import org.jbpm.workbench.cm.client.resources.i18n.Constants;
 import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenter;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.CaseStageSummary;
+import org.jbpm.workbench.cm.util.CaseStageStatus;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberElement;
@@ -45,6 +46,17 @@ public class CaseStagesPresenter extends AbstractCaseInstancePresenter<CaseStage
     @Override
     protected void loadCaseInstance(final CaseInstanceSummary cis) {
         view.setCaseStagesList(cis.getStages());
+        setStages();
+    }
+
+    void setStages() {
+        view.getCaseStageComponentList().forEach(this::setStage);
+    }
+
+    void setStage(final CaseStageItemViewImpl caseStageItem) {
+        if (caseStageItem.getValue().getStatus().equals(CaseStageStatus.ACTIVE.getStatus())) {
+            caseStageItem.showStageActive();
+        }
     }
 
     public interface CaseStagesView extends UberElement<CaseStagesPresenter> {
@@ -52,5 +64,7 @@ public class CaseStagesPresenter extends AbstractCaseInstancePresenter<CaseStage
         void removeAllStages();
 
         void setCaseStagesList(List<CaseStageSummary> caseStagesList);
+
+        List<CaseStageItemViewImpl> getCaseStageComponentList();
     }
 }

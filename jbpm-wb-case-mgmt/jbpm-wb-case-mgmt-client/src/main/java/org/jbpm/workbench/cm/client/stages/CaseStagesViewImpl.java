@@ -18,6 +18,7 @@ package org.jbpm.workbench.cm.client.stages;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -32,7 +33,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.cm.client.util.AbstractView;
 import org.jbpm.workbench.cm.model.CaseStageSummary;
 
-import static org.jboss.errai.common.client.dom.DOMUtil.*;
+import static java.util.stream.Collectors.toList;
 
 @Dependent
 @Templated
@@ -65,6 +66,15 @@ public class CaseStagesViewImpl extends AbstractView<CaseStagesPresenter> implem
     @Override
     public void removeAllStages() {
         caseStageList.setModel(new ArrayList<>());
+    }
+
+    @Override
+    public List<CaseStageItemViewImpl> getCaseStageComponentList() {
+        return caseStageList.getModel().stream()
+                                       .map(caseStage -> stages.getComponent(caseStage))
+                                       .filter(Optional::isPresent)
+                                       .map(Optional::get)
+                                       .collect(toList());
     }
 
     @Override
