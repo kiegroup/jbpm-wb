@@ -258,6 +258,7 @@ public class NewJobViewImpl implements NewJobPresenter.NewJobView,
         options.setTimePickerIncrement(1);
         options.setSingleDatePicker(true);
         options.setMinDate(moment());
+        options.setParentEl("[data-field='modal']");
 
         return options;
     }
