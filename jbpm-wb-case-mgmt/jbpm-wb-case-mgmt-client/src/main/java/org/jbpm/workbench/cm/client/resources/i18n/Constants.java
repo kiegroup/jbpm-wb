@@ -27,7 +27,7 @@ public interface Constants {
     String OWNER = "Owner";
 
     @TranslationKey(defaultValue = "")
-    String CASES_LIST = "CasesList";
+    String CASE_LIST = "CaseList";
 
     @TranslationKey(defaultValue = "")
     String CASE_CREATED_WITH_ID = "CaseCreatedWithId";

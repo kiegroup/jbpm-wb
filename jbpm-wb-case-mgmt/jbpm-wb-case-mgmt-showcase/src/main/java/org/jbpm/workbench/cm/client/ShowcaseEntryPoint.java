@@ -31,11 +31,13 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.api.UncaughtExceptionHandler;
+import org.jboss.errai.security.shared.api.Group;
 import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
+import org.jbpm.workbench.cm.client.perspectives.CaseInstanceListPerspective;
 import org.kie.server.api.exception.KieServicesHttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +45,7 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.views.pfly.menu.UserMenu;
 import org.uberfire.client.views.pfly.widgets.ErrorPopup;
 import org.uberfire.client.workbench.events.ApplicationReadyEvent;
-import org.uberfire.client.workbench.widgets.menu.UtilityMenuBar;
+import org.uberfire.client.workbench.widgets.menu.megamenu.WorkbenchMegaMenuPresenter;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
@@ -57,7 +59,7 @@ public class ShowcaseEntryPoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShowcaseEntryPoint.class);
 
     @Inject
-    protected UtilityMenuBar utilityMenuBar;
+    protected WorkbenchMegaMenuPresenter menuBar;
 
     @Inject
     protected UserMenu userMenu;
@@ -87,14 +89,27 @@ public class ShowcaseEntryPoint {
     }
 
     public void setupMenu(@Observes final ApplicationReadyEvent event) {
-        final Menus utilityMenus =
-                MenuFactory.newTopLevelCustomMenu(userMenu)
-                        .endMenu()
+        final Menus menus =
+                MenuFactory
+                        .newTopLevelMenu(translationService.format(CASE_LIST)).perspective(CaseInstanceListPerspective.PERSPECTIVE_ID).endMenu()
+                        .newTopLevelCustomMenu(userMenu).endMenu()
                         .build();
 
-        utilityMenuBar.addMenus(utilityMenus);
+        addUserMenus();
 
+        menuBar.addMenus(menus);
+    }
+
+    public void addUserMenus(){
+        final Menus userMenus = MenuFactory
+                .newTopLevelMenu(translationService.format(LOG_OUT))
+                .respondsWith(new LogoutCommand())
+                .endMenu()
+                .build();
+
+        userMenu.addMenus(userMenus);
         addRolesMenuItems();
+        addGroupsMenuItems();
     }
 
     public void addRolesMenuItems() {
@@ -103,11 +118,27 @@ public class ShowcaseEntryPoint {
         }
     }
 
+    public void addGroupsMenuItems() {
+        for (Menus groups : getGroups()) {
+            userMenu.addMenus(groups);
+        }
+    }
+
+    public List<Menus> getGroups() {
+        final Set<Group> groups = identity.getGroups();
+        final List<Menus> result = new ArrayList<Menus>(groups.size());
+
+        for (final Group group : groups) {
+            result.add(MenuFactory.newSimpleItem(translationService.format(GROUP) + ": " + group.getName()).endMenu().build());
+        }
+
+        return result;
+    }
+
     public List<Menus> getRoles() {
         final Set<Role> roles = identity.getRoles();
         final List<Menus> result = new ArrayList<>(roles.size());
 
-        result.add(MenuFactory.newSimpleItem(translationService.format(LOG_OUT)).respondsWith(new LogoutCommand()).endMenu().build());
         for (final Role role : roles) {
             if (!role.getName().equals("IS_REMEMBER_ME")) {
                 result.add(MenuFactory.newSimpleItem(translationService.format(ROLE) + ": " + role.getName()).endMenu().build());
@@ -181,4 +212,5 @@ public class ShowcaseEntryPoint {
             return GWT.getModuleName();
         }
     }
+
 }
