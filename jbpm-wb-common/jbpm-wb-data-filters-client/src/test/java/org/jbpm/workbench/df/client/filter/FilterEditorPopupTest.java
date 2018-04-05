@@ -49,7 +49,7 @@ public class FilterEditorPopupTest {
     @Mock
     DataSetLookup previousLookup;
 
-    @GwtMock
+    @Mock
     DataSetFilterEditor filterEditor;
 
     @Mock
@@ -70,6 +70,7 @@ public class FilterEditorPopupTest {
     @Before
     public void setupMocks() {
         filterEditorPopup.setFilterSettings(tableDisplayerSettings);
+        filterEditorPopup.setFilterEditor(filterEditor);
     }
 
     @Test

@@ -17,12 +17,14 @@ package org.jbpm.workbench.df.client.filter;
 
 import java.util.List;
 import java.util.function.Consumer;
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSetLookup;
@@ -35,8 +37,6 @@ import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.displayer.client.widgets.filter.DataSetFilterEditor;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.TabListItem;
-import org.gwtbootstrap3.client.ui.TabPane;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
@@ -45,31 +45,16 @@ import org.jbpm.workbench.df.client.i18n.FiltersConstants;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 
-@Dependent
+@ApplicationScoped
 public class FilterEditorPopup extends BaseModal {
 
     private static Binder uiBinder = GWT.create(Binder.class);
-
-    @UiField
-    public TabListItem basictab;
-
-    @UiField
-    public TabListItem filtertab;
-
-    @UiField
-    public TabPane basictabPane;
-
-    @UiField
-    public TabPane filtertabPane;
 
     @UiField
     public FormGroup tableNameControlGroup;
 
     @UiField
     public TextBox tableNameText;
-
-    @UiField
-    public FormGroup tableDescControlGroup;
 
     @UiField
     public TextBox tableDescText;
@@ -86,10 +71,7 @@ public class FilterEditorPopup extends BaseModal {
     HelpBlock tableNameHelpInline;
 
     @UiField
-    HelpBlock tableDescHelpInline;
-
-    @UiField(provided = true)
-    DataSetFilterEditor filterEditor;
+    FlowPanel filtersControlPanel;
 
     Consumer<FilterSettings> editorListener;
 
@@ -99,19 +81,13 @@ public class FilterEditorPopup extends BaseModal {
 
     DataSetClientServices dataSetClientServices;
 
+    DataSetFilterEditor filterEditor;
+
     @Inject
-    public FilterEditorPopup(DataSetClientServices dataSetClientServices,
-                             DataSetFilterEditor filterEditor) {
-        this.filterEditor = filterEditor;
+    public FilterEditorPopup(DataSetClientServices dataSetClientServices) {
+
         this.dataSetClientServices = dataSetClientServices;
         setBody(uiBinder.createAndBindUi(FilterEditorPopup.this));
-
-        basictab.setDataTargetWidget(basictabPane);
-        filtertab.setDataTargetWidget(filtertabPane);
-
-        tableNameText.addChangeHandler((Void) -> validateForm());
-
-        tableDescText.addChangeHandler((Void) -> validateForm());
 
         final GenericModalFooter footer = new GenericModalFooter();
         footer.addButton(FiltersConstants.INSTANCE.ok(),
@@ -130,12 +106,7 @@ public class FilterEditorPopup extends BaseModal {
     public void show(final FilterSettings settings,
                      final Consumer<FilterSettings> editorListener) {
         clean();
-        basictab.setActive(true);
-        basictabPane.setActive(true);
-        filtertab.setActive(false);
-        filtertabPane.setActive(false);
-        basictab.showTab();
-
+        filtersControlPanel.add(filterEditor.asWidget());
         setEditorListener(editorListener);
         filterSettings = settings;
         if (settings.getDataSet() == null && settings.getDataSetLookup() != null) {
@@ -190,9 +161,7 @@ public class FilterEditorPopup extends BaseModal {
     private void clearErrorMessages() {
         errorMessages.setText("");
         tableNameHelpInline.setText("");
-        tableDescHelpInline.setText("");
         tableNameControlGroup.setValidationState(ValidationState.NONE);
-        tableDescControlGroup.setValidationState(ValidationState.NONE);
     }
 
     public void fetchDataSetLookup() {
@@ -276,12 +245,23 @@ public class FilterEditorPopup extends BaseModal {
         this.filterSettings = filterSettings;
     }
 
+    @Inject
+    public void setFilterEditor(DataSetFilterEditor filterEditor) {
+        this.filterEditor = filterEditor;
+    }
+
     public DataSetFilter getDatasetFilter() {
         return filterEditor.getFilter();
     }
 
     protected void setEditorListener(final Consumer<FilterSettings> editorListener) {
         this.editorListener = editorListener;
+    }
+
+    @Override
+    public void onHide(Event e) {
+        super.onHide(e);
+        filtersControlPanel.clear();
     }
 
     interface Binder extends UiBinder<Widget, FilterEditorPopup> {
