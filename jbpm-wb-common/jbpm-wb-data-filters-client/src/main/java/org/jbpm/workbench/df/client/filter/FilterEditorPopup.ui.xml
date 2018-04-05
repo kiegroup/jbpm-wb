@@ -19,64 +19,47 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
-             xmlns:df="urn:import:org.dashbuilder.displayer.client.widgets.filter"
              xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
-    <ui:with field="i18n" type="org.jbpm.workbench.df.client.i18n.FiltersConstants"/>
-    <ui:style>
-        .tab {
-            margin-top: 15px;
-        }
-    </ui:style>
-
-    <b:Container fluid="true">
-        <b:Row>
-            <b:Column size="MD_12">
-                <b:TabPanel addStyleNames="uf-tabbar-panel">
-                    <b:NavTabs addStyleNames="uf-tabbar-panel-nav-tabs nav-tabs-pf">
-                        <b:TabListItem active="true" text="{i18n.Labels}" ui:field="basictab" addStyleNames="uf-dropdown-tab-list-item"/>
-                        <b:TabListItem text="{i18n.Filter_parameters}" ui:field="filtertab" addStyleNames="uf-dropdown-tab-list-item"/>
-                    </b:NavTabs>
-                    <b:TabContent>
-                        <b:TabPane active="true" ui:field="basictabPane" addStyleNames="{style.tab}">
-                            <b:Form type="HORIZONTAL">
-                                <b:FieldSet>
-                                    <b:FormGroup ui:field="tableNameControlGroup">
-                                        <b:FormLabel for="tableNameText" showRequiredIndicator="true" addStyleNames="col-md-3">
-                                            <ui:text from="{i18n.Name}"/>
-                                        </b:FormLabel>
-                                        <b:Column size="MD_9">
-                                            <b:TextBox ui:field="tableNameText" placeholder="{i18n.Name}"/>
-                                            <b:HelpBlock ui:field="tableNameHelpInline"/>
-                                        </b:Column>
-                                    </b:FormGroup>
-                                    <b:FormGroup ui:field="tableDescControlGroup">
-                                        <b:FormLabel for="tableDescText" addStyleNames="col-md-3">
-                                            <ui:text from="{i18n.Description}"/>
-                                        </b:FormLabel>
-                                        <b:Column size="MD_9">
-                                            <b:TextBox ui:field="tableDescText" placeholder="{i18n.Description}"/>
-                                            <b:HelpBlock ui:field="tableDescHelpInline"/>
-                                        </b:Column>
-                                    </b:FormGroup>
-                                </b:FieldSet>
-                            </b:Form>
-                        </b:TabPane>
-                        <b:TabPane ui:field="filtertabPane" addStyleNames="{style.tab}">
-                            <b:FieldSet>
-                                <g:FlowPanel ui:field="filtersControlPanel" visible="true">
-                                    <df:DataSetFilterEditor ui:field="filterEditor"/>
-                                </g:FlowPanel>
-                                <b:FormGroup ui:field="errorMessagesGroup">
-                                    <b:HelpBlock ui:field="errorMessages"/>
-                                </b:FormGroup>
-                            </b:FieldSet>
-                        </b:TabPane>
-                    </b:TabContent>
-                </b:TabPanel>
-            </b:Column>
-        </b:Row>
-    </b:Container>
+  <ui:with field="i18n" type="org.jbpm.workbench.df.client.i18n.FiltersConstants"/>
+  <b:Container fluid="true">
+    <b:Row>
+      <b:Column size="MD_12">
+        <b:Form type="HORIZONTAL">
+          <b:FieldSet>
+            <b:FormGroup ui:field="tableNameControlGroup">
+              <b:FormLabel for="tableNameText" showRequiredIndicator="true" addStyleNames="col-md-3">
+                <ui:text from="{i18n.Name}"/>
+              </b:FormLabel>
+              <b:Column size="MD_9">
+                <b:TextBox ui:field="tableNameText" placeholder="{i18n.Name}"/>
+                <b:HelpBlock ui:field="tableNameHelpInline"/>
+              </b:Column>
+            </b:FormGroup>
+            <b:FormGroup>
+              <b:FormLabel for="tableDescText" addStyleNames="col-md-3">
+                <ui:text from="{i18n.Description}"/>
+              </b:FormLabel>
+              <b:Column size="MD_9">
+                <b:TextBox ui:field="tableDescText" placeholder="{i18n.Description}"/>
+              </b:Column>
+            </b:FormGroup>
+          </b:FieldSet>
+        </b:Form>
+      </b:Column>
+    </b:Row>
+    <b:Row>
+      <b:Column size="MD_3">
+      </b:Column>
+      <b:Column size="MD_9">
+        <g:FlowPanel ui:field="filtersControlPanel" visible="true">
+        </g:FlowPanel>
+        <b:FormGroup ui:field="errorMessagesGroup">
+          <b:HelpBlock ui:field="errorMessages"/>
+        </b:FormGroup>
+      </b:Column>
+    </b:Row>
+  </b:Container>
 
 
 </ui:UiBinder>
