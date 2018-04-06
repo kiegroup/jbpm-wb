@@ -91,6 +91,7 @@ public class DeploymentsMarshallingStrategiesPresenter extends Section<Deploymen
         fireChangeEvent();
     }
 
+    //FIXME: duplicated
     ItemObjectModel newObjectModelItem(final String name) {
         final ItemObjectModel model = new ItemObjectModel();
         model.setValue(name);
@@ -109,6 +110,7 @@ public class DeploymentsMarshallingStrategiesPresenter extends Section<Deploymen
         return marshallingStrategyPresenters.getObjectsList().hashCode();
     }
 
+    //FIXME: urgh
     public void setParentPresenter(final DeploymentsSectionPresenter deploymentsSectionPresenter) {
         this.parentPresenter = deploymentsSectionPresenter;
     }

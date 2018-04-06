@@ -164,6 +164,7 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
         return createIfNotExists().then(ignore -> loadDeploymentDescriptor()).then(model -> {
             sectionManager.setupMenuItems();
             deploymentsSections.getList().forEach(section -> section.setup(model));
+            sectionManager.goToFirstAvailable();
 
             this.model = model;
 
