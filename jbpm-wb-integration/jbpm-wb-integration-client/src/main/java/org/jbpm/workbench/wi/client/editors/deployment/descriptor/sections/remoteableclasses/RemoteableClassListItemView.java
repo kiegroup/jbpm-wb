@@ -27,7 +27,7 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 @Templated("#root")
-public class RemotableClassListItemView implements RemotableClassListItemPresenter.View {
+public class RemoteableClassListItemView implements RemoteableClassListItemPresenter.View {
 
     @Inject
     @Named("span")
@@ -39,10 +39,10 @@ public class RemotableClassListItemView implements RemotableClassListItemPresent
     @SuppressWarnings("PMD.UnusedPrivateField")
     private HTMLAnchorElement removeButton;
 
-    private RemotableClassListItemPresenter presenter;
+    private RemoteableClassListItemPresenter presenter;
 
     @Override
-    public void init(final RemotableClassListItemPresenter presenter) {
+    public void init(final RemoteableClassListItemPresenter presenter) {
         this.presenter = presenter;
     }
 

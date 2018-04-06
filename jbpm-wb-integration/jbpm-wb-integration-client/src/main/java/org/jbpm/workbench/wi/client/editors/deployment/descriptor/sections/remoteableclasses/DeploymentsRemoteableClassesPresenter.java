@@ -26,7 +26,6 @@ import javax.inject.Inject;
 import elemental2.promise.Promise;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.RequiredRolesListItemPresenter;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
@@ -48,8 +47,6 @@ public class DeploymentsRemoteableClassesPresenter extends Section<DeploymentDes
 
     @Inject
     private AddSingleValueModal addRemoteableClassModal;
-
-    private DeploymentsSectionPresenter parentPresenter;
 
     @Inject
     public DeploymentsRemoteableClassesPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
@@ -75,7 +72,7 @@ public class DeploymentsRemoteableClassesPresenter extends Section<DeploymentDes
         remoteableClassesListPresenter.setup(
                 view.getRemoteableClassesTable(),
                 model.getRemotableClasses(),
-                (clazz, presenter) -> presenter.setup(clazz, parentPresenter));
+                (clazz, presenter) -> presenter.setup(clazz, this));
 
         return promises.resolve();
     }
@@ -99,16 +96,11 @@ public class DeploymentsRemoteableClassesPresenter extends Section<DeploymentDes
         return remoteableClassesListPresenter.getObjectsList().hashCode();
     }
 
-    //FIXME: urgh
-    public void setParentPresenter(final DeploymentsSectionPresenter deploymentsSectionPresenter) {
-        this.parentPresenter = deploymentsSectionPresenter;
-    }
-
     @Dependent
-    public static class RemoteableClassesListPresenter extends ListPresenter<String, RequiredRolesListItemPresenter> {
+    public static class RemoteableClassesListPresenter extends ListPresenter<String, RemoteableClassListItemPresenter> {
 
         @Inject
-        public RemoteableClassesListPresenter(final ManagedInstance<RequiredRolesListItemPresenter> itemPresenters) {
+        public RemoteableClassesListPresenter(final ManagedInstance<RemoteableClassListItemPresenter> itemPresenters) {
             super(itemPresenters);
         }
     }

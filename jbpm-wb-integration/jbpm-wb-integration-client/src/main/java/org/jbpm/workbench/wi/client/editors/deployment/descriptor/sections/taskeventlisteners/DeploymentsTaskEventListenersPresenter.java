@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.marshallingstrategies;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.taskeventlisteners;
 
 import java.util.ArrayList;
 
@@ -40,21 +40,21 @@ import org.kie.workbench.common.screens.library.client.settings.util.modal.singl
 import org.uberfire.client.promise.Promises;
 
 @Dependent
-public class DeploymentsMarshallingStrategiesPresenter extends Section<DeploymentDescriptorModel> {
+public class DeploymentsTaskEventListenersPresenter extends Section<DeploymentDescriptorModel> {
 
     @Inject
-    private DeploymentsMarshallingStrategiesView view;
+    private DeploymentsTaskEventListenersView view;
 
     @Inject
-    private MarshallingStrategiesListPresenter marshallingStrategyPresenters;
+    private TaskEventListenersListPresenter taskEventListenerPresenters;
 
     @Inject
-    private AddSingleValueModal addMarshallingStrategyModal;
+    private AddSingleValueModal addTaskEventListenerModal;
 
     @Inject
-    public DeploymentsMarshallingStrategiesPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
-                                                     final MenuItem<DeploymentDescriptorModel> menuItem,
-                                                     final Promises promises) {
+    public DeploymentsTaskEventListenersPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
+                                                  final MenuItem<DeploymentDescriptorModel> menuItem,
+                                                  final Promises promises) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
     }
@@ -66,26 +66,26 @@ public class DeploymentsMarshallingStrategiesPresenter extends Section<Deploymen
 
     @Override
     public Promise<Void> setup(final DeploymentDescriptorModel model) {
-        addMarshallingStrategyModal.setup(LibraryConstants.AddMarshallingStrategy, LibraryConstants.Id);
+        addTaskEventListenerModal.setup(LibraryConstants.AddEventListener, LibraryConstants.Id);
 
-        if (model.getMarshallingStrategies() == null) {
-            model.setMarshallingStrategies(new ArrayList<>());
+        if (model.getTaskEventListeners() == null) {
+            model.setTaskEventListeners(new ArrayList<>());
         }
 
-        marshallingStrategyPresenters.setup(
-                view.getMarshallingStrategiesTable(),
-                model.getMarshallingStrategies(),
-                (marshallingStrategy, presenter) -> presenter.setup(marshallingStrategy, this));
+        taskEventListenerPresenters.setup(
+                view.getTaskEventListenersTable(),
+                model.getTaskEventListeners(),
+                (eventListener, presenter) -> presenter.setup(eventListener, this));
 
         return promises.resolve();
     }
 
-    public void openNewMarshallingStrategyModal() {
-        addMarshallingStrategyModal.show(this::addMarshallingStrategy);
+    public void openNewTaskEventListenerModal() {
+        addTaskEventListenerModal.show(this::addTaskEventListener);
     }
 
-    void addMarshallingStrategy(final String name) {
-        marshallingStrategyPresenters.add(newObjectModelItem(name));
+    void addTaskEventListener(final String name) {
+        taskEventListenerPresenters.add(newObjectModelItem(name));
         fireChangeEvent();
     }
 
@@ -105,14 +105,14 @@ public class DeploymentsMarshallingStrategiesPresenter extends Section<Deploymen
 
     @Override
     public int currentHashCode() {
-        return marshallingStrategyPresenters.getObjectsList().hashCode();
+        return taskEventListenerPresenters.getObjectsList().hashCode();
     }
 
     @Dependent
-    public static class MarshallingStrategiesListPresenter extends ListPresenter<ItemObjectModel, ObjectItemPresenter> {
+    public static class TaskEventListenersListPresenter extends ListPresenter<ItemObjectModel, ObjectItemPresenter> {
 
         @Inject
-        public MarshallingStrategiesListPresenter(final ManagedInstance<ObjectItemPresenter> itemPresenters) {
+        public TaskEventListenersListPresenter(final ManagedInstance<ObjectItemPresenter> itemPresenters) {
             super(itemPresenters);
         }
     }

@@ -35,6 +35,7 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.globa
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.marshallingstrategies.DeploymentsMarshallingStrategiesPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.remoteableclasses.DeploymentsRemoteableClassesPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles.DeploymentsRequiredRolesPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.taskeventlisteners.DeploymentsTaskEventListenersPresenter;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
@@ -101,31 +102,6 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
 
     @PostConstruct
     public void init() {
-
-        //FIXME: urgh
-        deploymentsSections.getList().forEach(s -> {
-
-            if (s instanceof DeploymentsMarshallingStrategiesPresenter) {
-                ((DeploymentsMarshallingStrategiesPresenter) s).setParentPresenter(this);
-            }
-
-            if (s instanceof DeploymentsGlobalsPresenter) {
-                ((DeploymentsGlobalsPresenter) s).setParentPresenter(this);
-            }
-
-            if (s instanceof DeploymentsRequiredRolesPresenter) {
-                ((DeploymentsRequiredRolesPresenter) s).setParentPresenter(this);
-            }
-
-            if (s instanceof DeploymentsEventListenersPresenter) {
-                ((DeploymentsEventListenersPresenter) s).setParentPresenter(this);
-            }
-
-            if (s instanceof DeploymentsRemoteableClassesPresenter) {
-                ((DeploymentsRemoteableClassesPresenter) s).setParentPresenter(this);
-            }
-        });
-
         sectionManager.init(deploymentsSections.getList(),
                             view.getMenuItemsContainer(),
                             view.getContentContainer());
