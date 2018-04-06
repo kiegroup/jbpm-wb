@@ -26,6 +26,7 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.event
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.general.DeploymentsGeneralSettingsPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.globals.DeploymentsGlobalsPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.marshallingstrategies.DeploymentsMarshallingStrategiesPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.remoteableclasses.DeploymentsRemoteableClassesPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles.DeploymentsRequiredRolesPresenter;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.kie.workbench.common.screens.library.client.settings.sections.Section;
@@ -38,19 +39,22 @@ public class DeploymentsSections {
     private final DeploymentsGlobalsPresenter deploymentsGlobalsPresenter;
     private final DeploymentsEventListenersPresenter deploymentsEventListenersPresenter;
     private final DeploymentsRequiredRolesPresenter deploymentsRequiredRolesPresenter;
+    private final DeploymentsRemoteableClassesPresenter deploymentsRemoteableClassesPresenter;
 
     @Inject
     public DeploymentsSections(final DeploymentsGeneralSettingsPresenter deploymentsGeneralSettingsPresenter,
                                final DeploymentsMarshallingStrategiesPresenter deploymentsMarshallingStrategiesPresenter,
                                final DeploymentsGlobalsPresenter deploymentsGlobalsPresenter,
                                final DeploymentsEventListenersPresenter deploymentsEventListenersPresenter,
-                               final DeploymentsRequiredRolesPresenter deploymentsRequiredRolesPresenter) {
+                               final DeploymentsRequiredRolesPresenter deploymentsRequiredRolesPresenter,
+                               final DeploymentsRemoteableClassesPresenter deploymentsRemoteableClassesPresenter) {
 
         this.deploymentsGeneralSettingsPresenter = deploymentsGeneralSettingsPresenter;
         this.deploymentsMarshallingStrategiesPresenter = deploymentsMarshallingStrategiesPresenter;
         this.deploymentsGlobalsPresenter = deploymentsGlobalsPresenter;
         this.deploymentsEventListenersPresenter = deploymentsEventListenersPresenter;
         this.deploymentsRequiredRolesPresenter = deploymentsRequiredRolesPresenter;
+        this.deploymentsRemoteableClassesPresenter = deploymentsRemoteableClassesPresenter;
     }
 
     public List<Section<DeploymentDescriptorModel>> getList() {
@@ -59,7 +63,8 @@ public class DeploymentsSections {
                 deploymentsMarshallingStrategiesPresenter,
                 deploymentsGlobalsPresenter,
                 deploymentsEventListenersPresenter,
-                deploymentsRequiredRolesPresenter
+                deploymentsRequiredRolesPresenter,
+                deploymentsRemoteableClassesPresenter
         );
     }
 }

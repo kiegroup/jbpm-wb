@@ -33,6 +33,7 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.Deplo
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.eventlisteners.DeploymentsEventListenersPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.globals.DeploymentsGlobalsPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.marshallingstrategies.DeploymentsMarshallingStrategiesPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.remoteableclasses.DeploymentsRemoteableClassesPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles.DeploymentsRequiredRolesPresenter;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
@@ -119,6 +120,10 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
             if (s instanceof DeploymentsEventListenersPresenter) {
                 ((DeploymentsEventListenersPresenter) s).setParentPresenter(this);
             }
+
+            if (s instanceof DeploymentsRemoteableClassesPresenter) {
+                ((DeploymentsRemoteableClassesPresenter) s).setParentPresenter(this);
+            }
         });
 
         sectionManager.init(deploymentsSections.getList(),
@@ -127,7 +132,7 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
     }
 
     @Override
-    public Promise<Void> setup(final ProjectScreenModel i) {
+    public Promise<Void> setup(final ProjectScreenModel ignore) {
 
         view.init(this);
 
@@ -141,18 +146,14 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
         concurrentDeploymentsXmlUpdateInfo = null;
         pathToDeploymentsXml.onConcurrentUpdate(info -> concurrentDeploymentsXmlUpdateInfo = info);
 
-        return createIfNotExists().then(ignore -> loadDeploymentDescriptor()).then(model -> {
-            sectionManager.setupMenuItems();
-            deploymentsSections.getList().forEach(section -> {
-                section.setup(model).then(as -> {
-                    sectionManager.resetDirtyIndicator(section);
-                    return promises.resolve();
-                });
-            });
-            sectionManager.goTo(sectionManager.getCurrentSection());
-
+        return createIfNotExists().then(i -> loadDeploymentDescriptor()).then(model -> {
             this.model = model;
-            return promises.resolve();
+            //FIXME: generics issue
+            final Promise<Void> all = promises.all(deploymentsSections.getList(), (final Section<DeploymentDescriptorModel> section) -> section.setup(model));
+            return all;
+        }).then(i -> {
+            sectionManager.resetAllDirtyIndicators();
+            return sectionManager.goTo(sectionManager.getCurrentSection());
         });
     }
 
@@ -172,12 +173,15 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
     public Promise<Void> save(final String comment,
                               final Supplier<Promise<Void>> chain) {
 
-        if (concurrentDeploymentsXmlUpdateInfo == null) {
-            return save(comment);
-        } else {
+        if (concurrentDeploymentsXmlUpdateInfo != null) {
             notificationEvent.fire(new NotificationEvent(view.getConcurrentUpdateMessage(), WARNING));
             return setup(null);
         }
+
+        return save(comment).then(i -> {
+            sectionManager.resetAllDirtyIndicators();
+            return promises.resolve();
+        });
     }
 
     Promise<Void> save(final String comment) {

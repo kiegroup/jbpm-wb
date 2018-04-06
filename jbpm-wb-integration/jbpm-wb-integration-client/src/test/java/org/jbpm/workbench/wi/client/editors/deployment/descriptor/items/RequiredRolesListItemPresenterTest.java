@@ -17,7 +17,8 @@
 package org.jbpm.workbench.wi.client.editors.deployment.descriptor.items;
 
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter.RequiredRolesListPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles.DeploymentsRequiredRolesPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles.DeploymentsRequiredRolesPresenter.RequiredRolesListPresenter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
