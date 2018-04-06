@@ -21,11 +21,16 @@ import javax.enterprise.context.ApplicationScoped;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.jbpm.workbench.pr.service.ProcessImageService;
+import org.kie.server.api.exception.KieServicesHttpException;
 import org.kie.server.client.UIServicesClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @ApplicationScoped
 public class RemoteProcessImageServiceImpl extends AbstractKieServerService implements ProcessImageService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RemoteProcessImageServiceImpl.class);
 
     @Override
     public String getProcessInstanceDiagram(String serverTemplateId,
@@ -35,8 +40,18 @@ public class RemoteProcessImageServiceImpl extends AbstractKieServerService impl
                                                       containerId,
                                                       UIServicesClient.class);
 
-        return removeActionsFromSVG(uiServicesClient.getProcessInstanceImage(containerId,
-                                                                             processInstanceId));
+        try {
+            return removeActionsFromSVG(uiServicesClient.getProcessInstanceImage(containerId,
+                                                                                 processInstanceId));
+        } catch (KieServicesHttpException ex) {
+            LOGGER.warn("Failed to retrieve process instance image: {}",
+                        ex.getMessage());
+            if (ex.getHttpCode() == 404) {
+                return null;
+            } else {
+                throw ex;
+            }
+        }
     }
 
     @Override
@@ -47,8 +62,18 @@ public class RemoteProcessImageServiceImpl extends AbstractKieServerService impl
                                                       containerId,
                                                       UIServicesClient.class);
 
-        return removeActionsFromSVG(uiServicesClient.getProcessImage(containerId,
-                                                                     processId));
+        try {
+            return removeActionsFromSVG(uiServicesClient.getProcessImage(containerId,
+                                                                         processId));
+        } catch (KieServicesHttpException ex) {
+            LOGGER.warn("Failed to retrieve process definition image: {}",
+                        ex.getMessage());
+            if (ex.getHttpCode() == 404) {
+                return null;
+            } else {
+                throw ex;
+            }
+        }
     }
 
     protected String removeActionsFromSVG(final String originalHTML) {
