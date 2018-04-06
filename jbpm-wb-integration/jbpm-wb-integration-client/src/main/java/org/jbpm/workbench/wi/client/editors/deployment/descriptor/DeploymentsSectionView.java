@@ -19,14 +19,15 @@ package org.jbpm.workbench.wi.client.editors.deployment.descriptor;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import elemental2.dom.Element;
 import elemental2.dom.HTMLButtonElement;
 import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLHeadingElement;
 import elemental2.dom.HTMLInputElement;
 import elemental2.dom.HTMLTableSectionElement;
+import elemental2.dom.HTMLUListElement;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -41,36 +42,6 @@ public class DeploymentsSectionView implements DeploymentsSectionPresenter.View 
 
     @TranslationKey(defaultValue = "")
     public static final String DeploymentsXmlConcurrentUpdate = "DeploymentsXmlConcurrentUpdate";
-
-    @Inject
-    @DataField("runtime-strategies")
-    private HTMLDivElement runtimeStrategies;
-
-    @Inject
-    @DataField("persistence-unit-name")
-    private HTMLInputElement persistenceUnitName;
-
-    @Inject
-    @DataField("persistence-modes")
-    private HTMLDivElement persistenceModes;
-
-    @Inject
-    @DataField("audit-persistence-unit-name")
-    private HTMLInputElement auditPersistenceUnitName;
-
-    @Inject
-    @DataField("audit-modes")
-    private HTMLDivElement auditModes;
-
-    @Inject
-    @Named("tbody")
-    @DataField("marshalling-strategies")
-    private HTMLTableSectionElement marshallingStrategiesTable;
-
-    @Inject
-    @DataField("add-marshalling-strategy-button")
-    @SuppressWarnings("PMD.UnusedPrivateField")
-    private HTMLButtonElement addMarshallingStrategyButton;
 
     @Inject
     @Named("tbody")
@@ -103,30 +74,18 @@ public class DeploymentsSectionView implements DeploymentsSectionPresenter.View 
     private HTMLButtonElement addRequiredRoleButton;
 
     @Inject
-    @Named("h3")
-    @DataField("title")
-    private HTMLHeadingElement title;
+    @DataField("menu-items-container")
+    private HTMLUListElement menuItemsContainer;
+
+    @Inject
+    @DataField("content")
+    private HTMLDivElement content;
 
     private DeploymentsSectionPresenter presenter;
 
     @Override
     public void init(final DeploymentsSectionPresenter presenter) {
         this.presenter = presenter;
-    }
-
-    @EventHandler("persistence-unit-name")
-    public void onPersistenceUnitNameChanged(final ChangeEvent ignore) {
-        presenter.setPersistenceUnitName(persistenceUnitName.value);
-    }
-
-    @EventHandler("audit-persistence-unit-name")
-    public void onAuditPersistenceUnitNameChanged(final ChangeEvent ignore) {
-        presenter.setAuditPersistenceUnitName(auditPersistenceUnitName.value);
-    }
-
-    @EventHandler("add-marshalling-strategy-button")
-    public void onAddMarshallingStrategyButtonClicked(final ClickEvent ignore) {
-        presenter.openNewMarshallingStrategyModal();
     }
 
     @EventHandler("add-event-listener-button")
@@ -150,11 +109,6 @@ public class DeploymentsSectionView implements DeploymentsSectionPresenter.View 
     }
 
     @Override
-    public Element getMarshallingStrategiesTable() {
-        return marshallingStrategiesTable;
-    }
-
-    @Override
     public Element getGlobalsTable() {
         return globalsTable;
     }
@@ -165,37 +119,22 @@ public class DeploymentsSectionView implements DeploymentsSectionPresenter.View 
     }
 
     @Override
-    public void setPersistenceUnitName(final String persistenceUnitName) {
-        this.persistenceUnitName.value = persistenceUnitName;
-    }
-
-    @Override
-    public void setAuditPersistenceUnitName(final String auditPersistenceUnitName) {
-        this.auditPersistenceUnitName.value = auditPersistenceUnitName;
-    }
-
-    @Override
-    public Element getRuntimeStrategiesContainer() {
-        return runtimeStrategies;
-    }
-
-    @Override
-    public Element getAuditModesContainer() {
-        return auditModes;
-    }
-
-    @Override
     public String getConcurrentUpdateMessage() {
         return translationService.format(DeploymentsXmlConcurrentUpdate);
     }
 
     @Override
-    public Element getPersistenceModesContainer() {
-        return persistenceModes;
+    public HTMLElement getMenuItemsContainer() {
+        return menuItemsContainer;
+    }
+
+    @Override
+    public HTMLElement getContentContainer() {
+        return content;
     }
 
     @Override
     public String getTitle() {
-        return title.textContent;
+        return "Deployments"; //FIXME: i18n
     }
 }

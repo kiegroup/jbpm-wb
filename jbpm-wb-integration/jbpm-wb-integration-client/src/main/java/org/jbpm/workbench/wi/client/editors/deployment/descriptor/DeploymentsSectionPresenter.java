@@ -18,11 +18,14 @@ package org.jbpm.workbench.wi.client.editors.deployment.descriptor;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
+
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import elemental2.dom.Element;
+import elemental2.dom.HTMLElement;
 import elemental2.promise.Promise;
 import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
 import org.jboss.errai.common.client.api.Caller;
@@ -34,12 +37,18 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.AuditMod
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.PersistenceMode;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.RuntimeStrategy;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.general.DeploymentsMarshallingStrategiesPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.general.DeploymentsSections;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
 import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
 import org.kie.workbench.common.screens.library.client.settings.SettingsPresenter;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
+import org.kie.workbench.common.screens.library.client.settings.sections.MenuItem;
+import org.kie.workbench.common.screens.library.client.settings.sections.Section;
+import org.kie.workbench.common.screens.library.client.settings.sections.SectionManager;
+import org.kie.workbench.common.screens.library.client.settings.sections.SectionView;
 import org.kie.workbench.common.screens.library.client.settings.util.KieEnumSelectElement;
 import org.kie.workbench.common.screens.library.client.settings.util.ListPresenter;
 import org.kie.workbench.common.screens.library.client.settings.util.modal.doublevalue.AddDoubleValueModal;
@@ -53,33 +62,32 @@ import org.uberfire.workbench.events.NotificationEvent;
 import static org.uberfire.workbench.events.NotificationEvent.NotificationType.WARNING;
 
 @Dependent
-public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
+public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
 
     private final View view;
 
     private final WorkspaceProjectContext projectContext;
     private final Caller<DDEditorService> ddEditorService;
     private final ManagedInstance<ObservablePath> observablePaths;
-    private final MarshallingStrategiesListPresenter marshallingStrategyPresenters;
     private final EventListenersListPresenter eventListenerPresenters;
     private final GlobalsListPresenter globalPresenters;
     private final RequiredRolesListPresenter requiredRolePresenters;
-    private final AddSingleValueModal addMarshallingStrategyModal;
     private final AddSingleValueModal addEventListenerModal;
     private final AddDoubleValueModal addGlobalModal;
     private final AddSingleValueModal addRequiredRoleModal;
-    private final KieEnumSelectElement<RuntimeStrategy> runtimeStrategiesSelect;
-    private final KieEnumSelectElement<PersistenceMode> persistenceModesSelect;
-    private final KieEnumSelectElement<AuditMode> auditModesSelect;
     private final Event<NotificationEvent> notificationEvent;
 
     private ObservablePath pathToDeploymentsXml;
     ObservablePath.OnConcurrentUpdateEvent concurrentDeploymentsXmlUpdateInfo;
     DeploymentDescriptorModel model;
 
-    public interface View extends SettingsPresenter.View.Section<DeploymentsSectionPresenter> {
+    @Inject
+    private SectionManager<DeploymentDescriptorModel> sectionManager;
 
-        Element getMarshallingStrategiesTable();
+    @Inject
+    private DeploymentsSections deploymentsSections;
+
+    public interface View extends SectionView<DeploymentsSectionPresenter> {
 
         Element getEventListenersTable();
 
@@ -87,64 +95,59 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
 
         Element getRequiredRolesTable();
 
-        void setPersistenceUnitName(final String persistenceUnitName);
-
-        void setAuditPersistenceUnitName(final String auditPersistenceUnitName);
-
-        Element getRuntimeStrategiesContainer();
-
-        Element getPersistenceModesContainer();
-
-        Element getAuditModesContainer();
-
         String getConcurrentUpdateMessage();
+
+        HTMLElement getMenuItemsContainer();
+
+        HTMLElement getContentContainer();
     }
 
     @Inject
     public DeploymentsSectionPresenter(final View view,
                                        final Promises promises,
-                                       final SettingsPresenter.MenuItem menuItem,
-                                       final AddSingleValueModal addMarshallingStrategyModal,
+                                       final MenuItem<ProjectScreenModel> menuItem,
                                        final AddSingleValueModal addEventListenerModal,
                                        final AddDoubleValueModal addGlobalModal,
                                        final AddSingleValueModal addRequiredRoleModal,
-                                       final KieEnumSelectElement<RuntimeStrategy> runtimeStrategiesSelect,
-                                       final KieEnumSelectElement<PersistenceMode> persistenceModesSelect,
-                                       final KieEnumSelectElement<AuditMode> auditModesSelect,
                                        final WorkspaceProjectContext projectContext,
                                        final Caller<DDEditorService> ddEditorService,
                                        final ManagedInstance<ObservablePath> observablePaths,
-                                       final Event<SettingsSectionChange> settingsSectionChangeEvent,
-                                       final MarshallingStrategiesListPresenter marshallingStrategyPresenters,
+                                       final Event<SettingsSectionChange<ProjectScreenModel>> settingsSectionChangeEvent,
                                        final EventListenersListPresenter eventListenerPresenters,
                                        final GlobalsListPresenter globalPresenters,
                                        final RequiredRolesListPresenter requiredRolePresenters, Event<NotificationEvent> notificationEvent) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
         this.view = view;
-        this.addMarshallingStrategyModal = addMarshallingStrategyModal;
         this.addEventListenerModal = addEventListenerModal;
         this.addGlobalModal = addGlobalModal;
         this.addRequiredRoleModal = addRequiredRoleModal;
-        this.runtimeStrategiesSelect = runtimeStrategiesSelect;
-        this.persistenceModesSelect = persistenceModesSelect;
-        this.auditModesSelect = auditModesSelect;
         this.projectContext = projectContext;
         this.ddEditorService = ddEditorService;
         this.observablePaths = observablePaths;
-        this.marshallingStrategyPresenters = marshallingStrategyPresenters;
         this.eventListenerPresenters = eventListenerPresenters;
         this.globalPresenters = globalPresenters;
         this.requiredRolePresenters = requiredRolePresenters;
         this.notificationEvent = notificationEvent;
     }
 
-    @Override
-    public Promise<Void> setup(final ProjectScreenModel ignore) {
-        return setup();
+    @PostConstruct
+    public void init() {
+
+        //FIXME: urgh
+        deploymentsSections.getList().forEach(s -> {
+            if (s instanceof DeploymentsMarshallingStrategiesPresenter) {
+                ((DeploymentsMarshallingStrategiesPresenter) s).setParentPresenter(this);
+            }
+        });
+
+        sectionManager.init(deploymentsSections.getList(),
+                            view.getMenuItemsContainer(),
+                            view.getContentContainer());
     }
 
-    Promise<Void> setup() {
+    @Override
+    public Promise<Void> setup(final ProjectScreenModel i) {
 
         view.init(this);
 
@@ -159,69 +162,17 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
         pathToDeploymentsXml.onConcurrentUpdate(info -> concurrentDeploymentsXmlUpdateInfo = info);
 
         return createIfNotExists().then(ignore -> loadDeploymentDescriptor()).then(model -> {
+            sectionManager.setupMenuItems();
+            deploymentsSections.getList().forEach(section -> section.setup(model));
 
             this.model = model;
 
-            setupRuntimeStrategiesSelect(model);
-            view.setPersistenceUnitName(model.getPersistenceUnitName());
-            setupPersistenceModesSelect(model);
-            view.setAuditPersistenceUnitName(model.getAuditPersistenceUnitName());
-            setupAuditModeSelect(model);
-
-            setupMarshallingStrategiesTable(model);
             setupEventListenersTable(model);
             setupGlobalsTable(model);
             setupRequiredRolesTable(model);
 
             return promises.resolve();
         });
-    }
-
-    void setupAuditModeSelect(final DeploymentDescriptorModel model) {
-        auditModesSelect.setup(
-                view.getAuditModesContainer(),
-                AuditMode.values(),
-                AuditMode.valueOf(model.getAuditMode()),
-                auditMode -> {
-                    model.setAuditMode(auditMode.name());
-                    fireChangeEvent();
-                });
-    }
-
-    void setupPersistenceModesSelect(final DeploymentDescriptorModel model) {
-        persistenceModesSelect.setup(
-                view.getPersistenceModesContainer(),
-                PersistenceMode.values(),
-                PersistenceMode.valueOf(model.getPersistenceMode()),
-                persistenceMode -> {
-                    model.setPersistenceMode(persistenceMode.name());
-                    fireChangeEvent();
-                });
-    }
-
-    void setupRuntimeStrategiesSelect(final DeploymentDescriptorModel model) {
-        runtimeStrategiesSelect.setup(
-                view.getRuntimeStrategiesContainer(),
-                RuntimeStrategy.values(),
-                RuntimeStrategy.valueOf(model.getRuntimeStrategy()),
-                runtimeStrategy -> {
-                    model.setRuntimeStrategy(runtimeStrategy.name());
-                    fireChangeEvent();
-                });
-    }
-
-    void setupMarshallingStrategiesTable(final DeploymentDescriptorModel model) {
-
-        addMarshallingStrategyModal.setup(LibraryConstants.AddMarshallingStrategy, LibraryConstants.Id);
-
-        if (model.getMarshallingStrategies() == null) {
-            model.setMarshallingStrategies(new ArrayList<>());
-        }
-
-        marshallingStrategyPresenters.setup(
-                view.getMarshallingStrategiesTable(),
-                model.getMarshallingStrategies(),
-                (marshallingStrategy, presenter) -> presenter.setup(marshallingStrategy, this));
     }
 
     void setupEventListenersTable(final DeploymentDescriptorModel model) {
@@ -278,9 +229,6 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
         });
     }
 
-    public void openNewMarshallingStrategyModal() {
-        addMarshallingStrategyModal.show(this::addMarshallingStrategy);
-    }
 
     public void openNewEventListenerModal() {
         addEventListenerModal.show(this::addEventListener);
@@ -294,10 +242,6 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
         addRequiredRoleModal.show(this::addRequiredRole);
     }
 
-    void addMarshallingStrategy(final String name) {
-        marshallingStrategyPresenters.add(newObjectModelItem(name));
-        fireChangeEvent();
-    }
 
     void addEventListener(final String name) {
         eventListenerPresenters.add(newObjectModelItem(name));
@@ -322,7 +266,7 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
             return save(comment);
         } else {
             notificationEvent.fire(new NotificationEvent(view.getConcurrentUpdateMessage(), WARNING));
-            return setup();
+            return setup(null);
         }
     }
 
@@ -351,33 +295,14 @@ public class DeploymentsSectionPresenter extends SettingsPresenter.Section {
         return model;
     }
 
-    public void setPersistenceUnitName(final String persistenceUnitName) {
-        model.setPersistenceUnitName(persistenceUnitName);
-        fireChangeEvent();
-    }
-
-    public void setAuditPersistenceUnitName(final String auditPersistenceUnitName) {
-        model.setAuditPersistenceUnitName(auditPersistenceUnitName);
-        fireChangeEvent();
-    }
-
     @Override
     public int currentHashCode() {
         return model.hashCode();
     }
 
     @Override
-    public SettingsPresenter.View.Section getView() {
+    public SectionView getView() {
         return view;
-    }
-
-    @Dependent
-    public static class MarshallingStrategiesListPresenter extends ListPresenter<ItemObjectModel, ObjectItemPresenter> {
-
-        @Inject
-        public MarshallingStrategiesListPresenter(final ManagedInstance<ObjectItemPresenter> itemPresenters) {
-            super(itemPresenters);
-        }
     }
 
     @Dependent
