@@ -22,6 +22,8 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.configuration.DeploymentsConfigurationPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.environmententries.DeploymentsEnvironmentEntriesPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.eventlisteners.DeploymentsEventListenersPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.general.DeploymentsGeneralSettingsPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.globals.DeploymentsGlobalsPresenter;
@@ -29,6 +31,7 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.marsh
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.remoteableclasses.DeploymentsRemoteableClassesPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles.DeploymentsRequiredRolesPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.taskeventlisteners.DeploymentsTaskEventListenersPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.workitemhandlers.DeploymentsWorkItemHandlersPresenter;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.kie.workbench.common.screens.library.client.settings.sections.Section;
 
@@ -42,15 +45,22 @@ public class DeploymentsSections {
     private final DeploymentsRequiredRolesPresenter deploymentsRequiredRolesPresenter;
     private final DeploymentsRemoteableClassesPresenter deploymentsRemoteableClassesPresenter;
     private final DeploymentsTaskEventListenersPresenter deploymentsTaskEventListenersPresenter;
+    private final DeploymentsConfigurationPresenter deploymentsConfigurationPresenter;
+    private final DeploymentsEnvironmentEntriesPresenter deploymentsEnvironmentEntriesPresenter;
+    private final DeploymentsWorkItemHandlersPresenter deploymentsWorkItemHandlersPresenter;
 
     @Inject
+
     public DeploymentsSections(final DeploymentsGeneralSettingsPresenter deploymentsGeneralSettingsPresenter,
                                final DeploymentsMarshallingStrategiesPresenter deploymentsMarshallingStrategiesPresenter,
                                final DeploymentsGlobalsPresenter deploymentsGlobalsPresenter,
                                final DeploymentsEventListenersPresenter deploymentsEventListenersPresenter,
                                final DeploymentsRequiredRolesPresenter deploymentsRequiredRolesPresenter,
                                final DeploymentsRemoteableClassesPresenter deploymentsRemoteableClassesPresenter,
-                               final DeploymentsTaskEventListenersPresenter deploymentsTaskEventListenersPresenter) {
+                               final DeploymentsTaskEventListenersPresenter deploymentsTaskEventListenersPresenter,
+                               final DeploymentsConfigurationPresenter deploymentsConfigurationPresenter,
+                               final DeploymentsEnvironmentEntriesPresenter deploymentsEnvironmentEntriesPresenter,
+                               final DeploymentsWorkItemHandlersPresenter deploymentsWorkItemHandlersPresenter) {
 
         this.deploymentsGeneralSettingsPresenter = deploymentsGeneralSettingsPresenter;
         this.deploymentsMarshallingStrategiesPresenter = deploymentsMarshallingStrategiesPresenter;
@@ -59,6 +69,9 @@ public class DeploymentsSections {
         this.deploymentsRequiredRolesPresenter = deploymentsRequiredRolesPresenter;
         this.deploymentsRemoteableClassesPresenter = deploymentsRemoteableClassesPresenter;
         this.deploymentsTaskEventListenersPresenter = deploymentsTaskEventListenersPresenter;
+        this.deploymentsConfigurationPresenter = deploymentsConfigurationPresenter;
+        this.deploymentsEnvironmentEntriesPresenter = deploymentsEnvironmentEntriesPresenter;
+        this.deploymentsWorkItemHandlersPresenter = deploymentsWorkItemHandlersPresenter;
     }
 
     public List<Section<DeploymentDescriptorModel>> getList() {
@@ -69,7 +82,10 @@ public class DeploymentsSections {
                 deploymentsEventListenersPresenter,
                 deploymentsRequiredRolesPresenter,
                 deploymentsRemoteableClassesPresenter,
-                deploymentsTaskEventListenersPresenter
+                deploymentsTaskEventListenersPresenter,
+                deploymentsConfigurationPresenter,
+                deploymentsEnvironmentEntriesPresenter,
+                deploymentsWorkItemHandlersPresenter
         );
     }
 }
