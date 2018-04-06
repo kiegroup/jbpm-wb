@@ -44,14 +44,14 @@ public class RequiredRolesListItemPresenterTest {
 
     @Test
     public void testSetup() {
-        requiredRolesListItemPresenter.setup("Role", mock(DeploymentsSectionPresenter.class));
+        requiredRolesListItemPresenter.setup("Role", mock(DeploymentsRequiredRolesPresenter.class));
         verify(view).init(eq(requiredRolesListItemPresenter));
         verify(view).setRole(eq("Role"));
     }
 
     @Test
     public void testRemove() {
-        final DeploymentsSectionPresenter parentPresenter = mock(DeploymentsSectionPresenter.class);
+        final DeploymentsRequiredRolesPresenter parentPresenter = mock(DeploymentsRequiredRolesPresenter.class);
         final RequiredRolesListPresenter listPresenter = mock(RequiredRolesListPresenter.class);
 
         requiredRolesListItemPresenter.parentPresenter = parentPresenter;
