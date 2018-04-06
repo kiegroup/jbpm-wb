@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.general;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,7 +30,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.kie.workbench.common.screens.library.client.settings.sections.SectionView;
 
 @Templated
-public class DeploymentsMarshallingStrategiesView implements SectionView<DeploymentsMarshallingStrategiesPresenter> {
+public class DeploymentsRequiredRolesView implements SectionView<DeploymentsRequiredRolesPresenter> {
 
     @Inject
     @Named("h3")
@@ -39,28 +39,28 @@ public class DeploymentsMarshallingStrategiesView implements SectionView<Deploym
 
     @Inject
     @Named("tbody")
-    @DataField("marshalling-strategies")
-    private HTMLTableSectionElement marshallingStrategiesTable;
+    @DataField("required-roles")
+    private HTMLTableSectionElement requiredRolesTable;
 
     @Inject
-    @DataField("add-marshalling-strategy-button")
+    @DataField("add-required-role-button")
     @SuppressWarnings("PMD.UnusedPrivateField")
-    private HTMLButtonElement addMarshallingStrategyButton;
+    private HTMLButtonElement addRequiredRoleButton;
 
-    private DeploymentsMarshallingStrategiesPresenter presenter;
+    private DeploymentsRequiredRolesPresenter presenter;
 
     @Override
-    public void init(final DeploymentsMarshallingStrategiesPresenter presenter) {
+    public void init(final DeploymentsRequiredRolesPresenter presenter) {
         this.presenter = presenter;
     }
 
-    @EventHandler("add-marshalling-strategy-button")
-    public void onAddMarshallingStrategyButtonClicked(final ClickEvent ignore) {
-        presenter.openNewMarshallingStrategyModal();
+    @EventHandler("add-required-role-button")
+    public void onAddRequiredRoleButtonClicked(final ClickEvent ignore) {
+        presenter.openNewRequiredRoleModal();
     }
 
-    public Element getMarshallingStrategiesTable() {
-        return marshallingStrategiesTable;
+    public Element getRequiredRolesTable() {
+        return requiredRolesTable;
     }
 
     @Override

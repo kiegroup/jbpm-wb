@@ -19,6 +19,8 @@ package org.jbpm.workbench.wi.client.editors.deployment.descriptor.items;
 import com.google.common.collect.ImmutableList;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.general.DeploymentsMarshallingStrategiesPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.general.DeploymentsMarshallingStrategiesPresenter.MarshallingStrategiesListPresenter;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.model.Parameter;
 import org.junit.Before;
@@ -74,7 +76,7 @@ public class NamedObjectItemPresenterTest {
     @Test
     public void testRemove() {
         final DeploymentsSectionPresenter parentPresenter = mock(DeploymentsSectionPresenter.class);
-        final DeploymentsSectionPresenter.MarshallingStrategiesListPresenter listPresenter = mock(DeploymentsSectionPresenter.MarshallingStrategiesListPresenter.class);
+        final MarshallingStrategiesListPresenter listPresenter = mock(MarshallingStrategiesListPresenter.class);
 
         namedObjectItemPresenter.parentPresenter = parentPresenter;
         namedObjectItemPresenter.setListPresenter(listPresenter);

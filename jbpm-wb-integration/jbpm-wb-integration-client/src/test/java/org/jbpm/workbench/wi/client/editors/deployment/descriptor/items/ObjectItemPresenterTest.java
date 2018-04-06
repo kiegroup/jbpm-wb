@@ -18,7 +18,6 @@ package org.jbpm.workbench.wi.client.editors.deployment.descriptor.items;
 
 import com.google.common.collect.ImmutableList;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter.MarshallingStrategiesListPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.model.Parameter;
@@ -29,6 +28,7 @@ import org.kie.workbench.common.screens.library.client.settings.util.KieEnumSele
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.general.DeploymentsMarshallingStrategiesPresenter.MarshallingStrategiesListPresenter;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;

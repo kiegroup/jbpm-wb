@@ -14,8 +14,12 @@
   ~ limitations under the License.
   -->
 
-<form>
-    <h3 data-i18n-key="EventListeners"></h3>
+<form role="form">
+
+    <h3 data-field="title" data-i18n-key="MarshallingStrategies"></h3>
+
+    <br>
+
     <table class="table table-hover kie-tablelist">
         <thead>
         <tr class="kie-tablelist__row kie-tablelist__row--header">
@@ -27,13 +31,13 @@
             </th>
         </tr>
         </thead>
-        <tbody data-field="event-listeners">
+        <tbody data-field="marshalling-strategies">
         </tbody>
 
     </table>
 
-    <button type="button" class="btn btn-link" data-field="add-event-listener-button">
+    <button type="button" class="btn btn-link" data-field="add-marshalling-strategy-button">
         <span class="pficon pficon-add-circle-o"></span>
-        <span data-i18n-key="AddEventListener"></span>
+        <span data-i18n-key="AddMarshallingStrategy"></span>
     </button>
 </form>
