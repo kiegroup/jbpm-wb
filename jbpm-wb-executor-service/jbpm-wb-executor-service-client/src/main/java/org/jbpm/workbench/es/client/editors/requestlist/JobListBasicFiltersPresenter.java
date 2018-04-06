@@ -68,8 +68,7 @@ public class JobListBasicFiltersPresenter extends BasicFiltersPresenter {
         view.addMultiSelectFilter(constants.Status(),
                                   status,
                                   f -> addSearchFilterList(COLUMN_STATUS,
-                                                           f,
-                                                           status.size()));
+                                                           f));
 
         final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
                 .dataset(REQUEST_LIST_DATASET)
