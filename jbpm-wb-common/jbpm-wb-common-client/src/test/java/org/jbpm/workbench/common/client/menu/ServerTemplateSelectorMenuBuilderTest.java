@@ -17,9 +17,11 @@
 package org.jbpm.workbench.common.client.menu;
 
 import java.util.Arrays;
-import java.util.Collections;
+
+import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jbpm.workbench.common.events.ServerTemplateSelected;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,13 +30,18 @@ import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.kie.server.controller.api.model.spec.ServerTemplateList;
 import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.uberfire.mocks.CallerMock;
+import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.ParameterizedCommand;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.emptyList;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class ServerTemplateSelectorMenuBuilderTest {
@@ -53,8 +60,12 @@ public class ServerTemplateSelectorMenuBuilderTest {
     @Mock
     private SpecManagementService specManagementService;
 
+    @Spy
+    private Event<ServerTemplateSelected> serverTemplateSelectedEvent = new EventSourceMock<>();
+
     @Before
     public void setup() {
+        doNothing().when(serverTemplateSelectedEvent).fire(any());
         specManagementServiceCaller = new CallerMock<SpecManagementService>(specManagementService);
         serverTemplateSelectorMenuBuilder.setSpecManagementService(specManagementServiceCaller);
     }
@@ -123,7 +134,7 @@ public class ServerTemplateSelectorMenuBuilderTest {
                                                       "kie-server-template1");
         st1.addServerInstance(new ServerInstanceKey());
 
-        when(specManagementService.listServerTemplates()).thenReturn(new ServerTemplateList(Collections.singletonList(st1)));
+        when(specManagementService.listServerTemplates()).thenReturn(new ServerTemplateList(singletonList(st1)));
 
         serverTemplateSelectorMenuBuilder.init();
 
@@ -144,7 +155,7 @@ public class ServerTemplateSelectorMenuBuilderTest {
                                                       "kie-server-template1");
         st1.addServerInstance(new ServerInstanceKey());
 
-        when(specManagementService.listServerTemplates()).thenReturn(new ServerTemplateList(Collections.singletonList(st1)));
+        when(specManagementService.listServerTemplates()).thenReturn(new ServerTemplateList(singletonList(st1)));
         when(view.getSelectedServerTemplate()).thenReturn(serverTemplateId);
 
         serverTemplateSelectorMenuBuilder.init();
@@ -166,7 +177,7 @@ public class ServerTemplateSelectorMenuBuilderTest {
                                                       "kie-server-template1");
         st1.addServerInstance(new ServerInstanceKey());
 
-        when(specManagementService.listServerTemplates()).thenReturn(new ServerTemplateList(Collections.singletonList(st1)));
+        when(specManagementService.listServerTemplates()).thenReturn(new ServerTemplateList(singletonList(st1)));
         when(view.getSelectedServerTemplate()).thenReturn("id2");
 
         serverTemplateSelectorMenuBuilder.init();
@@ -186,7 +197,7 @@ public class ServerTemplateSelectorMenuBuilderTest {
         final String serverTemplateId = "id1";
         final ServerTemplate st1 = new ServerTemplate(serverTemplateId,
                                                       "kie-server-template1");
-        when(specManagementService.listServerTemplates()).thenReturn(new ServerTemplateList(Collections.singletonList(st1)));
+        when(specManagementService.listServerTemplates()).thenReturn(new ServerTemplateList(singletonList(st1)));
 
         serverTemplateSelectorMenuBuilder.onServerTemplateUpdated(new ServerTemplateUpdated(st1));
 
@@ -206,10 +217,35 @@ public class ServerTemplateSelectorMenuBuilderTest {
         final ServerTemplate st1 = new ServerTemplate(serverTemplateId,
                                                       "kie-server-template1");
         st1.addServerInstance(new ServerInstanceKey());
-        when(specManagementService.listServerTemplates()).thenReturn(new ServerTemplateList(Collections.singletonList(st1)));
+        when(specManagementService.listServerTemplates()).thenReturn(new ServerTemplateList(singletonList(st1)));
 
         serverTemplateSelectorMenuBuilder.onServerTemplateUpdated(new ServerTemplateUpdated(st1));
 
         verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void testServerTemplateChangeHandler(){
+        final String serverTemplateId = "id1";
+
+        when(specManagementService.listServerTemplates()).thenReturn(new ServerTemplateList(emptyList()));
+        doAnswer(invocation -> {
+            ParameterizedCommand<String> command = (ParameterizedCommand)invocation.getArguments()[0];
+            command.execute(serverTemplateId);
+            return null;
+        }).when(view).setServerTemplateChangeHandler(any());
+        doAnswer(invocation -> {
+            ParameterizedCommand<String> command = (ParameterizedCommand)invocation.getArguments()[0];
+            command.execute(serverTemplateId);
+            return null;
+        }).when(viewWidget).setServerTemplateChangeHandler(any());
+
+        serverTemplateSelectorMenuBuilder.init();
+
+        InOrder inOrder = inOrder(view, viewWidget, serverTemplateSelectedEvent);
+        inOrder.verify(view).updateSelectedValue(serverTemplateId);
+        inOrder.verify(serverTemplateSelectedEvent).fire(any());
+        inOrder.verify(viewWidget).updateSelectedValue(serverTemplateId);
+        inOrder.verify(serverTemplateSelectedEvent).fire(any());
     }
 }
