@@ -63,8 +63,7 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
         view.addMultiSelectFilter(constants.Status(),
                                   status,
                                   f -> addSearchFilterList(COLUMN_STATUS,
-                                                           f,
-                                                           status.size()));
+                                                           f));
 
         view.addTextFilter(constants.Process_Instance_Correlation_Key(),
                            constants.FilterByCorrelationKey(),
