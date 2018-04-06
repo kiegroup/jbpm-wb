@@ -22,6 +22,7 @@ import javax.inject.Named;
 import com.google.gwt.event.dom.client.ClickEvent;
 import elemental2.dom.Element;
 import elemental2.dom.HTMLButtonElement;
+import elemental2.dom.HTMLHeadingElement;
 import elemental2.dom.HTMLTableSectionElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -30,6 +31,11 @@ import org.kie.workbench.common.screens.library.client.settings.sections.Section
 
 @Templated
 public class DeploymentsMarshallingStrategiesView implements SectionView<DeploymentsMarshallingStrategiesPresenter> {
+
+    @Inject
+    @Named("h3")
+    @DataField("title")
+    private HTMLHeadingElement title;
 
     @Inject
     @Named("tbody")
@@ -59,6 +65,6 @@ public class DeploymentsMarshallingStrategiesView implements SectionView<Deploym
 
     @Override
     public String getTitle() {
-        return "Marshalling Strategies"; //FIXME: i18n
+        return title.textContent;
     }
 }

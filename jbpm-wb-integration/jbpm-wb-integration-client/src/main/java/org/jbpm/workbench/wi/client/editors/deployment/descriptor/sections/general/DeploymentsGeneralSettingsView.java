@@ -17,10 +17,12 @@
 package org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.general;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import elemental2.dom.Element;
 import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLHeadingElement;
 import elemental2.dom.HTMLInputElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -30,6 +32,11 @@ import org.kie.workbench.common.screens.library.client.settings.sections.Section
 
 @Templated
 public class DeploymentsGeneralSettingsView implements SectionView<DeploymentsGeneralSettingsPresenter> {
+
+    @Inject
+    @Named("h3")
+    @DataField("title")
+    private HTMLHeadingElement title;
 
     @Inject
     @DataField("runtime-strategies")
@@ -90,6 +97,6 @@ public class DeploymentsGeneralSettingsView implements SectionView<DeploymentsGe
 
     @Override
     public String getTitle() {
-        return "General"; //FIXME: i18n
+        return title.textContent;
     }
 }
