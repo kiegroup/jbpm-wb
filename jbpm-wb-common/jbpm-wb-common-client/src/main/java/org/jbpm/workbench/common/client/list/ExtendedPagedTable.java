@@ -135,7 +135,6 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
                 updateSelectedColumnRow(i,
                                         item,
                                         true);
-                selectedItems.add(item);
             }
         }
     }
