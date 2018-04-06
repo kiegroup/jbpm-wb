@@ -17,20 +17,12 @@
 package org.jbpm.workbench.wi.client.editors.deployment.descriptor;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import elemental2.dom.Element;
-import elemental2.dom.HTMLButtonElement;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
-import elemental2.dom.HTMLHeadingElement;
-import elemental2.dom.HTMLInputElement;
-import elemental2.dom.HTMLTableSectionElement;
 import elemental2.dom.HTMLUListElement;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jboss.errai.ui.shared.api.annotations.TranslationKey;
 
@@ -42,36 +34,6 @@ public class DeploymentsSectionView implements DeploymentsSectionPresenter.View 
 
     @TranslationKey(defaultValue = "")
     public static final String DeploymentsXmlConcurrentUpdate = "DeploymentsXmlConcurrentUpdate";
-
-    @Inject
-    @Named("tbody")
-    @DataField("event-listeners")
-    private HTMLTableSectionElement eventListenersTable;
-
-    @Inject
-    @DataField("add-event-listener-button")
-    @SuppressWarnings("PMD.UnusedPrivateField")
-    private HTMLButtonElement addEventListenerButton;
-
-    @Inject
-    @Named("tbody")
-    @DataField("globals")
-    private HTMLTableSectionElement globalsTable;
-
-    @Inject
-    @DataField("add-global-button")
-    @SuppressWarnings("PMD.UnusedPrivateField")
-    private HTMLButtonElement addGlobalButton;
-
-    @Inject
-    @Named("tbody")
-    @DataField("required-roles")
-    private HTMLTableSectionElement requiredRolesTable;
-
-    @Inject
-    @DataField("add-required-role-button")
-    @SuppressWarnings("PMD.UnusedPrivateField")
-    private HTMLButtonElement addRequiredRoleButton;
 
     @Inject
     @DataField("menu-items-container")
@@ -86,36 +48,6 @@ public class DeploymentsSectionView implements DeploymentsSectionPresenter.View 
     @Override
     public void init(final DeploymentsSectionPresenter presenter) {
         this.presenter = presenter;
-    }
-
-    @EventHandler("add-event-listener-button")
-    public void onAddEventListenerButtonClicked(final ClickEvent ignore) {
-        presenter.openNewEventListenerModal();
-    }
-
-    @EventHandler("add-global-button")
-    public void onAddGlobalButtonClicked(final ClickEvent ignore) {
-        presenter.openNewGlobalModal();
-    }
-
-    @EventHandler("add-required-role-button")
-    public void onAddRequiredRoleButtonClicked(final ClickEvent ignore) {
-        presenter.openNewRequiredRoleModal();
-    }
-
-    @Override
-    public Element getEventListenersTable() {
-        return eventListenersTable;
-    }
-
-    @Override
-    public Element getGlobalsTable() {
-        return globalsTable;
-    }
-
-    @Override
-    public Element getRequiredRolesTable() {
-        return requiredRolesTable;
     }
 
     @Override

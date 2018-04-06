@@ -16,43 +16,31 @@
 
 package org.jbpm.workbench.wi.client.editors.deployment.descriptor;
 
-import java.util.ArrayList;
 import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import elemental2.dom.Element;
 import elemental2.dom.HTMLElement;
 import elemental2.promise.Promise;
 import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.NamedObjectItemPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ObjectItemPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.RequiredRolesListItemPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.AuditMode;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.PersistenceMode;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.RuntimeStrategy;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.general.DeploymentsMarshallingStrategiesPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.general.DeploymentsSections;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.DeploymentsSections;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.eventlisteners.DeploymentsEventListenersPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.globals.DeploymentsGlobalsPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.marshallingstrategies.DeploymentsMarshallingStrategiesPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles.DeploymentsRequiredRolesPresenter;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
-import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
-import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
-import org.kie.workbench.common.screens.library.client.settings.SettingsPresenter;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.sections.SectionManager;
 import org.kie.workbench.common.screens.library.client.settings.sections.SectionView;
-import org.kie.workbench.common.screens.library.client.settings.util.KieEnumSelectElement;
-import org.kie.workbench.common.screens.library.client.settings.util.ListPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.doublevalue.AddDoubleValueModal;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.kie.workbench.common.screens.projecteditor.model.ProjectScreenModel;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.backend.vfs.PathFactory;
@@ -69,12 +57,7 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
     private final WorkspaceProjectContext projectContext;
     private final Caller<DDEditorService> ddEditorService;
     private final ManagedInstance<ObservablePath> observablePaths;
-    private final EventListenersListPresenter eventListenerPresenters;
-    private final GlobalsListPresenter globalPresenters;
-    private final RequiredRolesListPresenter requiredRolePresenters;
-    private final AddSingleValueModal addEventListenerModal;
-    private final AddDoubleValueModal addGlobalModal;
-    private final AddSingleValueModal addRequiredRoleModal;
+    private final Event<SettingsSectionChange<ProjectScreenModel>> settingsSectionChangeEvent;
     private final Event<NotificationEvent> notificationEvent;
 
     private ObservablePath pathToDeploymentsXml;
@@ -89,12 +72,6 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
 
     public interface View extends SectionView<DeploymentsSectionPresenter> {
 
-        Element getEventListenersTable();
-
-        Element getGlobalsTable();
-
-        Element getRequiredRolesTable();
-
         String getConcurrentUpdateMessage();
 
         HTMLElement getMenuItemsContainer();
@@ -106,28 +83,18 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
     public DeploymentsSectionPresenter(final View view,
                                        final Promises promises,
                                        final MenuItem<ProjectScreenModel> menuItem,
-                                       final AddSingleValueModal addEventListenerModal,
-                                       final AddDoubleValueModal addGlobalModal,
-                                       final AddSingleValueModal addRequiredRoleModal,
                                        final WorkspaceProjectContext projectContext,
                                        final Caller<DDEditorService> ddEditorService,
                                        final ManagedInstance<ObservablePath> observablePaths,
                                        final Event<SettingsSectionChange<ProjectScreenModel>> settingsSectionChangeEvent,
-                                       final EventListenersListPresenter eventListenerPresenters,
-                                       final GlobalsListPresenter globalPresenters,
-                                       final RequiredRolesListPresenter requiredRolePresenters, Event<NotificationEvent> notificationEvent) {
+                                       Event<NotificationEvent> notificationEvent) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
         this.view = view;
-        this.addEventListenerModal = addEventListenerModal;
-        this.addGlobalModal = addGlobalModal;
-        this.addRequiredRoleModal = addRequiredRoleModal;
         this.projectContext = projectContext;
         this.ddEditorService = ddEditorService;
         this.observablePaths = observablePaths;
-        this.eventListenerPresenters = eventListenerPresenters;
-        this.globalPresenters = globalPresenters;
-        this.requiredRolePresenters = requiredRolePresenters;
+        this.settingsSectionChangeEvent = settingsSectionChangeEvent;
         this.notificationEvent = notificationEvent;
     }
 
@@ -136,8 +103,21 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
 
         //FIXME: urgh
         deploymentsSections.getList().forEach(s -> {
+
             if (s instanceof DeploymentsMarshallingStrategiesPresenter) {
                 ((DeploymentsMarshallingStrategiesPresenter) s).setParentPresenter(this);
+            }
+
+            if (s instanceof DeploymentsGlobalsPresenter) {
+                ((DeploymentsGlobalsPresenter) s).setParentPresenter(this);
+            }
+
+            if (s instanceof DeploymentsRequiredRolesPresenter) {
+                ((DeploymentsRequiredRolesPresenter) s).setParentPresenter(this);
+            }
+
+            if (s instanceof DeploymentsEventListenersPresenter) {
+                ((DeploymentsEventListenersPresenter) s).setParentPresenter(this);
             }
         });
 
@@ -163,59 +143,17 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
 
         return createIfNotExists().then(ignore -> loadDeploymentDescriptor()).then(model -> {
             sectionManager.setupMenuItems();
-            deploymentsSections.getList().forEach(section -> section.setup(model));
-            sectionManager.goToFirstAvailable();
+            deploymentsSections.getList().forEach(section -> {
+                section.setup(model).then(as -> {
+                    sectionManager.resetDirtyIndicator(section);
+                    return promises.resolve();
+                });
+            });
+            sectionManager.goTo(sectionManager.getCurrentSection());
 
             this.model = model;
-
-            setupEventListenersTable(model);
-            setupGlobalsTable(model);
-            setupRequiredRolesTable(model);
-
             return promises.resolve();
         });
-    }
-
-    void setupEventListenersTable(final DeploymentDescriptorModel model) {
-
-        addEventListenerModal.setup(LibraryConstants.AddEventListener, LibraryConstants.Id);
-
-        if (model.getEventListeners() == null) {
-            model.setEventListeners(new ArrayList<>());
-        }
-
-        eventListenerPresenters.setup(
-                view.getEventListenersTable(),
-                model.getEventListeners(),
-                (eventListener, presenter) -> presenter.setup(eventListener, this));
-    }
-
-    void setupGlobalsTable(final DeploymentDescriptorModel model) {
-
-        addGlobalModal.setup(LibraryConstants.AddGlobal, LibraryConstants.Name, LibraryConstants.Value);
-
-        if (model.getGlobals() == null) {
-            model.setGlobals(new ArrayList<>());
-        }
-
-        globalPresenters.setup(
-                view.getGlobalsTable(),
-                model.getGlobals(),
-                (global, presenter) -> presenter.setup(global, this));
-    }
-
-    void setupRequiredRolesTable(final DeploymentDescriptorModel model) {
-
-        addRequiredRoleModal.setup(LibraryConstants.AddRequiredRole, LibraryConstants.Role);
-
-        if (model.getRequiredRoles() == null) {
-            model.setRequiredRoles(new ArrayList<>());
-        }
-
-        requiredRolePresenters.setup(
-                view.getRequiredRolesTable(),
-                model.getRequiredRoles(),
-                (requiredRole, presenter) -> presenter.setup(requiredRole, this));
     }
 
     Promise<DeploymentDescriptorModel> loadDeploymentDescriptor() {
@@ -228,35 +166,6 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
         return promises.promisify(ddEditorService, s -> {
             s.createIfNotExists(pathToDeploymentsXml);
         });
-    }
-
-
-    public void openNewEventListenerModal() {
-        addEventListenerModal.show(this::addEventListener);
-    }
-
-    public void openNewGlobalModal() {
-        addGlobalModal.show(this::addGlobal);
-    }
-
-    public void openNewRequiredRoleModal() {
-        addRequiredRoleModal.show(this::addRequiredRole);
-    }
-
-
-    void addEventListener(final String name) {
-        eventListenerPresenters.add(newObjectModelItem(name));
-        fireChangeEvent();
-    }
-
-    void addGlobal(final String name, final String value) {
-        globalPresenters.add(newNamedObjectModelItem(name, value));
-        fireChangeEvent();
-    }
-
-    void addRequiredRole(final String role) {
-        requiredRolePresenters.add(role);
-        fireChangeEvent();
     }
 
     @Override
@@ -277,23 +186,14 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
         });
     }
 
-    ItemObjectModel newObjectModelItem(final String name) {
-        final ItemObjectModel model = new ItemObjectModel();
-        model.setValue(name);
-        model.setResolver(Resolver.MVEL.name().toLowerCase());
-        model.setParameters(new ArrayList<>());
-        return model;
-    }
+    public void onSectionChanged(@Observes final SettingsSectionChange<DeploymentDescriptorModel> settingsSectionChange) {
 
-    ItemObjectModel newNamedObjectModelItem(final String name,
-                                            final String value) {
+        if (!sectionManager.getSections().contains(settingsSectionChange.getSection())) {
+            return;
+        }
 
-        final ItemObjectModel model = new ItemObjectModel();
-        model.setName(name);
-        model.setValue(value);
-        model.setResolver(Resolver.MVEL.name().toLowerCase());
-        model.setParameters(new ArrayList<>());
-        return model;
+        sectionManager.updateDirtyIndicator(settingsSectionChange.getSection());
+        fireChangeEvent();
     }
 
     @Override
@@ -304,32 +204,5 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
     @Override
     public SectionView getView() {
         return view;
-    }
-
-    @Dependent
-    public static class EventListenersListPresenter extends ListPresenter<ItemObjectModel, ObjectItemPresenter> {
-
-        @Inject
-        public EventListenersListPresenter(final ManagedInstance<ObjectItemPresenter> itemPresenters) {
-            super(itemPresenters);
-        }
-    }
-
-    @Dependent
-    public static class GlobalsListPresenter extends ListPresenter<ItemObjectModel, NamedObjectItemPresenter> {
-
-        @Inject
-        public GlobalsListPresenter(final ManagedInstance<NamedObjectItemPresenter> itemPresenters) {
-            super(itemPresenters);
-        }
-    }
-
-    @Dependent
-    public static class RequiredRolesListPresenter extends ListPresenter<String, RequiredRolesListItemPresenter> {
-
-        @Inject
-        public RequiredRolesListPresenter(final ManagedInstance<RequiredRolesListItemPresenter> itemPresenters) {
-            super(itemPresenters);
-        }
     }
 }

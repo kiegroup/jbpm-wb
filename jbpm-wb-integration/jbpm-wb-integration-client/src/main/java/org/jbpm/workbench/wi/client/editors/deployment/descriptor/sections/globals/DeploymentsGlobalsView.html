@@ -14,14 +14,17 @@
   ~ limitations under the License.
   -->
 
-<form>
+<form role="form">
 
-    <h3 data-field="title" data-i18n-key="MarshallingStrategies"></h3>
+    <h3 data-field="title" data-i18n-key="Global"></h3>
+
+    <br>
 
     <table class="table table-hover kie-tablelist">
         <thead>
         <tr class="kie-tablelist__row kie-tablelist__row--header">
             <th class="kie-tablelist__cell kie-tablelist__cell--header" data-i18n-key="Name"></th>
+            <th class="kie-tablelist__cell kie-tablelist__cell--header" data-i18n-key="Value"></th>
             <th class="kie-tablelist__cell kie-tablelist__cell--header" data-i18n-key="Resolver"></th>
             <th class="kie-tablelist__cell kie-tablelist__cell--header" data-i18n-key="Parameters"></th>
             <th class="kie-tablelist__cell kie-tablelist__cell--header kie-tablelist__cell--actions">
@@ -29,13 +32,13 @@
             </th>
         </tr>
         </thead>
-        <tbody data-field="marshalling-strategies">
+        <tbody data-field="globals">
         </tbody>
 
     </table>
 
-    <button type="button" class="btn btn-link" data-field="add-marshalling-strategy-button">
+    <button type="button" class="btn btn-link" data-field="add-global-button">
         <span class="pficon pficon-add-circle-o"></span>
-        <span data-i18n-key="AddMarshallingStrategy"></span>
+        <span data-i18n-key="AddGlobal"></span>
     </button>
 </form>
