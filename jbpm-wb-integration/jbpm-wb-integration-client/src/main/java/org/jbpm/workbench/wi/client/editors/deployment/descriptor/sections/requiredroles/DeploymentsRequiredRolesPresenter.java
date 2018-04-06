@@ -49,8 +49,6 @@ public class DeploymentsRequiredRolesPresenter extends Section<DeploymentDescrip
     @Inject
     private AddSingleValueModal addRequiredRoleModal;
 
-    private DeploymentsSectionPresenter parentPresenter;
-
     @Inject
     public DeploymentsRequiredRolesPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
                                              final MenuItem<DeploymentDescriptorModel> menuItem,
@@ -75,7 +73,7 @@ public class DeploymentsRequiredRolesPresenter extends Section<DeploymentDescrip
         requiredRolesListPresenter.setup(
                 view.getRequiredRolesTable(),
                 model.getRequiredRoles(),
-                (requiredRole, presenter) -> presenter.setup(requiredRole, parentPresenter));
+                (requiredRole, presenter) -> presenter.setup(requiredRole, this));
 
         return promises.resolve();
     }
@@ -97,11 +95,6 @@ public class DeploymentsRequiredRolesPresenter extends Section<DeploymentDescrip
     @Override
     public int currentHashCode() {
         return requiredRolesListPresenter.getObjectsList().hashCode();
-    }
-
-    //FIXME: urgh
-    public void setParentPresenter(final DeploymentsSectionPresenter deploymentsSectionPresenter) {
-        this.parentPresenter = deploymentsSectionPresenter;
     }
 
     @Dependent

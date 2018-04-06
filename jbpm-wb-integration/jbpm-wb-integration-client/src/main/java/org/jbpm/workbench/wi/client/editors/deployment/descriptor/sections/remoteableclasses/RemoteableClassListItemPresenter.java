@@ -25,20 +25,20 @@ import org.kie.workbench.common.screens.library.client.settings.util.ListItemPre
 import org.kie.workbench.common.screens.library.client.settings.util.UberElementalListItem;
 
 @Dependent
-public class RemotableClassListItemPresenter extends ListItemPresenter<String, DeploymentsSectionPresenter, RemotableClassListItemPresenter.View> {
+public class RemoteableClassListItemPresenter extends ListItemPresenter<String, DeploymentsRemoteableClassesPresenter, RemoteableClassListItemPresenter.View> {
 
     private String role;
 
-    DeploymentsSectionPresenter parentPresenter;
+    DeploymentsRemoteableClassesPresenter parentPresenter;
 
     @Inject
-    public RemotableClassListItemPresenter(final View view) {
+    public RemoteableClassListItemPresenter(final View view) {
         super(view);
     }
 
     @Override
-    public RemotableClassListItemPresenter setup(final String role,
-                                                 final DeploymentsSectionPresenter parentPresenter) {
+    public RemoteableClassListItemPresenter setup(final String role,
+                                                  final DeploymentsRemoteableClassesPresenter parentPresenter) {
         this.role = role;
         this.parentPresenter = parentPresenter;
 
@@ -59,7 +59,7 @@ public class RemotableClassListItemPresenter extends ListItemPresenter<String, D
         return role;
     }
 
-    public interface View extends UberElementalListItem<RemotableClassListItemPresenter>,
+    public interface View extends UberElementalListItem<RemoteableClassListItemPresenter>,
                                   IsElement {
 
         void setClass(final String role);

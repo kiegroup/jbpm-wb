@@ -51,8 +51,6 @@ public class DeploymentsEventListenersPresenter extends Section<DeploymentDescri
     @Inject
     private AddSingleValueModal addEventListenerModal;
 
-    private DeploymentsSectionPresenter parentPresenter;
-
     @Inject
     public DeploymentsEventListenersPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
                                               final MenuItem<DeploymentDescriptorModel> menuItem,
@@ -77,7 +75,7 @@ public class DeploymentsEventListenersPresenter extends Section<DeploymentDescri
         eventListenerPresenters.setup(
                 view.getEventListenersTable(),
                 model.getEventListeners(),
-                (eventListener, presenter) -> presenter.setup(eventListener, parentPresenter));
+                (eventListener, presenter) -> presenter.setup(eventListener, this));
 
         return promises.resolve();
     }
@@ -108,11 +106,6 @@ public class DeploymentsEventListenersPresenter extends Section<DeploymentDescri
     @Override
     public int currentHashCode() {
         return eventListenerPresenters.getObjectsList().hashCode();
-    }
-
-    //FIXME: urgh
-    public void setParentPresenter(final DeploymentsSectionPresenter deploymentsSectionPresenter) {
-        this.parentPresenter = deploymentsSectionPresenter;
     }
 
     @Dependent

@@ -51,8 +51,6 @@ public class DeploymentsGlobalsPresenter extends Section<DeploymentDescriptorMod
     @Inject
     private AddDoubleValueModal addGlobalModal;
 
-    private DeploymentsSectionPresenter parentPresenter;
-
     @Inject
     public DeploymentsGlobalsPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
                                        final MenuItem<DeploymentDescriptorModel> menuItem,
@@ -78,7 +76,7 @@ public class DeploymentsGlobalsPresenter extends Section<DeploymentDescriptorMod
         globalPresenters.setup(
                 view.getGlobalsTable(),
                 model.getGlobals(),
-                (global, presenter) -> presenter.setup(global, parentPresenter));
+                (global, presenter) -> presenter.setup(global, this));
 
         return promises.resolve();
     }
@@ -111,11 +109,6 @@ public class DeploymentsGlobalsPresenter extends Section<DeploymentDescriptorMod
     @Override
     public int currentHashCode() {
         return globalPresenters.getObjectsList().hashCode();
-    }
-
-    //FIXME: urgh
-    public void setParentPresenter(final DeploymentsSectionPresenter deploymentsSectionPresenter) {
-        this.parentPresenter = deploymentsSectionPresenter;
     }
 
     @Dependent
