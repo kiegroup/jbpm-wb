@@ -86,7 +86,7 @@ public class DeploymentsRemoteableClassesPresenter extends Section<DeploymentDes
     }
 
     @Override
-    public SectionView getView() {
+    public SectionView<?> getView() {
         return view;
     }
 

@@ -53,18 +53,13 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
     private final WorkspaceProjectContext projectContext;
     private final Caller<DDEditorService> ddEditorService;
     private final ManagedInstance<ObservablePath> observablePaths;
-    private final Event<SettingsSectionChange<ProjectScreenModel>> settingsSectionChangeEvent;
     private final Event<NotificationEvent> notificationEvent;
+    private final SectionManager<DeploymentDescriptorModel> sectionManager;
+    private final DeploymentsSections deploymentsSections;
 
     private ObservablePath pathToDeploymentsXml;
     ObservablePath.OnConcurrentUpdateEvent concurrentDeploymentsXmlUpdateInfo;
     DeploymentDescriptorModel model;
-
-    @Inject
-    private SectionManager<DeploymentDescriptorModel> sectionManager;
-
-    @Inject
-    private DeploymentsSections deploymentsSections;
 
     public interface View extends SectionView<DeploymentsSectionPresenter> {
 
@@ -83,15 +78,18 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
                                        final Caller<DDEditorService> ddEditorService,
                                        final ManagedInstance<ObservablePath> observablePaths,
                                        final Event<SettingsSectionChange<ProjectScreenModel>> settingsSectionChangeEvent,
-                                       Event<NotificationEvent> notificationEvent) {
+                                       final Event<NotificationEvent> notificationEvent,
+                                       final SectionManager<DeploymentDescriptorModel> sectionManager,
+                                       final DeploymentsSections deploymentsSections) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
         this.view = view;
         this.projectContext = projectContext;
         this.ddEditorService = ddEditorService;
         this.observablePaths = observablePaths;
-        this.settingsSectionChangeEvent = settingsSectionChangeEvent;
         this.notificationEvent = notificationEvent;
+        this.sectionManager = sectionManager;
+        this.deploymentsSections = deploymentsSections;
     }
 
     @PostConstruct
@@ -106,7 +104,7 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
         return setup();
     }
 
-    private Promise<Void> setup() {
+    Promise<Void> setup() {
 
         view.init(this);
 
@@ -164,7 +162,7 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
 
     public void onSectionChanged(@Observes final SettingsSectionChange<DeploymentDescriptorModel> settingsSectionChange) {
 
-        if (!sectionManager.getSections().contains(settingsSectionChange.getSection())) {
+        if (!sectionManager.manages(settingsSectionChange.getSection())) {
             return;
         }
 
@@ -178,7 +176,7 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
     }
 
     @Override
-    public SectionView getView() {
+    public SectionView<?> getView() {
         return view;
     }
 }

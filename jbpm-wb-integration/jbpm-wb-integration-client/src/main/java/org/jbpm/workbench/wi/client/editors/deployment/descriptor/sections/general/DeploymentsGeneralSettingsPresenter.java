@@ -36,26 +36,27 @@ import org.uberfire.client.promise.Promises;
 @Dependent
 public class DeploymentsGeneralSettingsPresenter extends Section<DeploymentDescriptorModel> {
 
-    @Inject
-    private DeploymentsGeneralSettingsView view;
+    private final DeploymentsGeneralSettingsView view;
+    private final KieEnumSelectElement<RuntimeStrategy> runtimeStrategiesSelect;
+    private final KieEnumSelectElement<PersistenceMode> persistenceModesSelect;
+    private final KieEnumSelectElement<AuditMode> auditModesSelect;
 
-    @Inject
-    private KieEnumSelectElement<RuntimeStrategy> runtimeStrategiesSelect;
-
-    @Inject
-    private KieEnumSelectElement<PersistenceMode> persistenceModesSelect;
-
-    @Inject
-    private KieEnumSelectElement<AuditMode> auditModesSelect;
-
-    private DeploymentDescriptorModel model;
+    protected DeploymentDescriptorModel model;
 
     @Inject
     public DeploymentsGeneralSettingsPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
                                                final MenuItem<DeploymentDescriptorModel> menuItem,
-                                               final Promises promises) {
+                                               final Promises promises,
+                                               final DeploymentsGeneralSettingsView view,
+                                               final KieEnumSelectElement<RuntimeStrategy> runtimeStrategiesSelect,
+                                               final KieEnumSelectElement<PersistenceMode> persistenceModesSelect,
+                                               final KieEnumSelectElement<AuditMode> auditModesSelect) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
+        this.view = view;
+        this.runtimeStrategiesSelect = runtimeStrategiesSelect;
+        this.persistenceModesSelect = persistenceModesSelect;
+        this.auditModesSelect = auditModesSelect;
     }
 
     @PostConstruct
@@ -77,7 +78,7 @@ public class DeploymentsGeneralSettingsPresenter extends Section<DeploymentDescr
         return promises.resolve();
     }
 
-    private void setupAuditModeSelect(final DeploymentDescriptorModel model) {
+    void setupAuditModeSelect(final DeploymentDescriptorModel model) {
         auditModesSelect.setup(
                 view.getAuditModesContainer(),
                 AuditMode.values(),
@@ -88,7 +89,7 @@ public class DeploymentsGeneralSettingsPresenter extends Section<DeploymentDescr
                 });
     }
 
-    private void setupPersistenceModesSelect(final DeploymentDescriptorModel model) {
+    void setupPersistenceModesSelect(final DeploymentDescriptorModel model) {
         persistenceModesSelect.setup(
                 view.getPersistenceModesContainer(),
                 PersistenceMode.values(),
@@ -99,7 +100,7 @@ public class DeploymentsGeneralSettingsPresenter extends Section<DeploymentDescr
                 });
     }
 
-    private void setupRuntimeStrategiesSelect(final DeploymentDescriptorModel model) {
+    void setupRuntimeStrategiesSelect(final DeploymentDescriptorModel model) {
         runtimeStrategiesSelect.setup(
                 view.getRuntimeStrategiesContainer(),
                 RuntimeStrategy.values(),
@@ -121,7 +122,7 @@ public class DeploymentsGeneralSettingsPresenter extends Section<DeploymentDescr
     }
 
     @Override
-    public SectionView getView() {
+    public SectionView<?> getView() {
         return view;
     }
 
