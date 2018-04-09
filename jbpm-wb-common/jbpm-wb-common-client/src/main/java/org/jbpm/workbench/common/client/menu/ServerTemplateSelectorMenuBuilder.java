@@ -56,12 +56,12 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
     @PostConstruct
     public void init() {
         widgetView.setServerTemplateChangeHandler(e -> {
-            serverTemplateSelectedEvent.fire(new ServerTemplateSelected(e));
             view.updateSelectedValue(e);
+            serverTemplateSelectedEvent.fire(new ServerTemplateSelected(e));
         });
         view.setServerTemplateChangeHandler(e -> {
-            serverTemplateSelectedEvent.fire(new ServerTemplateSelected(e));
             widgetView.updateSelectedValue(e);
+            serverTemplateSelectedEvent.fire(new ServerTemplateSelected(e));
         });
 
         loadServerTemplates();
