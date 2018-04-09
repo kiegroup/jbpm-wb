@@ -81,8 +81,7 @@ public class ExecutionErrorListBasicFiltersPresenter extends BasicFiltersPresent
         view.addMultiSelectFilter(constants.Type(),
                                   states,
                                   f -> addSearchFilterList(COLUMN_ERROR_TYPE,
-                                                           f,
-                                                           states.size()));
+                                                           f));
 
         final Map<String, String> acks = new HashMap<>();
         final org.jbpm.workbench.common.client.resources.i18n.Constants constants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
