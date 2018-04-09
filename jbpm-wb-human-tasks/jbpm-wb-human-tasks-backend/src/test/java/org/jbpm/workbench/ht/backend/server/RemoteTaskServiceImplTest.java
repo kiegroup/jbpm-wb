@@ -16,7 +16,6 @@
 package org.jbpm.workbench.ht.backend.server;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
@@ -28,7 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.internal.identity.IdentityProvider;
 import org.kie.server.api.model.instance.TaskEventInstance;
-import org.kie.server.api.model.instance.TaskInstance;
 import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.UserTaskServicesClient;
 import org.mockito.InjectMocks;
@@ -43,7 +41,6 @@ import static org.mockito.Mockito.*;
 public class RemoteTaskServiceImplTest {
 
     private static final String CURRENT_USER = "Jan";
-    private static final String OTHER_USER = "OTHER_USER";
 
     @Mock
     IdentityProvider identityProvider;
@@ -65,82 +62,6 @@ public class RemoteTaskServiceImplTest {
         when(identityProvider.getName()).thenReturn(CURRENT_USER);
         when(kieServerIntegration.getServerClient(anyString())).thenReturn(kieServicesClient);
         when(kieServicesClient.getServicesClient(UserTaskServicesClient.class)).thenReturn(userTaskServicesClient);
-    }
-
-    @Test
-    public void allowDelegateStatusCompleted() {
-        final TaskInstance task = new TaskInstance();
-        task.setStatus("Completed");
-
-        assertFalse(remoteTaskService.isDelegationAllowed(task));
-    }
-
-    @Test
-    public void allowDelegateActualOwner() {
-        final TaskInstance task = new TaskInstance();
-        task.setActualOwner(CURRENT_USER);
-
-        assertTrue(remoteTaskService.isDelegationAllowed(task));
-    }
-
-    @Test
-    public void allowDelegateActualOwnerNotCurrentUser() {
-        final TaskInstance task = new TaskInstance();
-        task.setActualOwner(OTHER_USER);
-
-        assertFalse(remoteTaskService.isDelegationAllowed(task));
-    }
-
-    @Test
-    public void allowDelegateCreatedBy() {
-        final TaskInstance task = new TaskInstance();
-        task.setCreatedBy(CURRENT_USER);
-
-        assertTrue(remoteTaskService.isDelegationAllowed(task));
-    }
-
-    @Test
-    public void allowDelegateCreatedByNotCurrentUser() {
-        final TaskInstance task = new TaskInstance();
-        task.setCreatedBy(OTHER_USER);
-
-        assertFalse(remoteTaskService.isDelegationAllowed(task));
-    }
-
-    @Test
-    public void allowDelegatePotentialOwner() {
-        final TaskInstance task = new TaskInstance();
-        task.setPotentialOwners(Arrays.asList(CURRENT_USER));
-        when(identityProvider.getRoles()).thenReturn(Arrays.asList(CURRENT_USER));
-
-        assertTrue(remoteTaskService.isDelegationAllowed(task));
-    }
-
-    @Test
-    public void allowDelegatePotentialOwnerNotCurrentUser() {
-        final TaskInstance task = new TaskInstance();
-        task.setPotentialOwners(Arrays.asList(OTHER_USER));
-        when(identityProvider.getRoles()).thenReturn(Arrays.asList(CURRENT_USER));
-
-        assertFalse(remoteTaskService.isDelegationAllowed(task));
-    }
-
-    @Test
-    public void allowDelegateBusinessAdmins() {
-        final TaskInstance task = new TaskInstance();
-        task.setBusinessAdmins(Arrays.asList(CURRENT_USER));
-        when(identityProvider.getRoles()).thenReturn(Arrays.asList(CURRENT_USER));
-
-        assertTrue(remoteTaskService.isDelegationAllowed(task));
-    }
-
-    @Test
-    public void allowDelegateBusinessAdminsNotCurrentUser() {
-        final TaskInstance task = new TaskInstance();
-        task.setBusinessAdmins(Arrays.asList(OTHER_USER));
-        when(identityProvider.getRoles()).thenReturn(Arrays.asList(CURRENT_USER));
-
-        assertFalse(remoteTaskService.isDelegationAllowed(task));
     }
 
     @Test
