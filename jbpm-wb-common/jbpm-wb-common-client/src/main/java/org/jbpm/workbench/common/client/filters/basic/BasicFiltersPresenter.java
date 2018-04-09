@@ -97,11 +97,10 @@ public abstract class BasicFiltersPresenter {
     }
 
     protected void addSearchFilterList(final String columnId,
-                                       final ActiveFilterItem<List<String>> filter,
-                                       final Integer size) {
+                                       final ActiveFilterItem<List<String>> filter) {
         final ColumnFilter columnFilter = in(columnId,
                                              filter.getValue());
-        if (filter.getValue().isEmpty() || filter.getValue().size() == size) {
+        if (filter.getValue().isEmpty()) {
             removeSearchFilter(filter,
                                columnFilter);
         } else {

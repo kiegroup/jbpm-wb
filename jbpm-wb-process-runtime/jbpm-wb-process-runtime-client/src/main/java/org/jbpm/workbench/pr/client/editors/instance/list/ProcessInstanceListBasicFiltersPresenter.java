@@ -120,8 +120,7 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
         view.addMultiSelectFilter(constants.State(),
                                   states,
                                   f -> addSearchFilterList(COLUMN_STATUS,
-                                                           f,
-                                                           states.size()));
+                                                           f));
 
         final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
                 .dataset(PROCESS_INSTANCE_DATASET)

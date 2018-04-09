@@ -19,6 +19,7 @@ package org.jbpm.workbench.common.client.filters.basic;
 import java.util.function.Consumer;
 import javax.enterprise.event.Event;
 
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.saved.SavedFilterSelectedEvent;
 import org.jbpm.workbench.df.client.filter.FilterEditorPopup;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
@@ -31,6 +32,8 @@ import org.mockito.Spy;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.Command;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
@@ -50,6 +53,9 @@ public abstract class AbstractBasicFiltersPresenterTest {
     Event<BasicFilterAddEvent> activeFilters = new EventSourceMock<>();
 
     @Spy
+    Event<BasicFilterRemoveEvent> basicFilterRemoveEvent = new EventSourceMock<>();
+
+    @Spy
     Event<SavedFilterSelectedEvent> savedFilterSelectedEvent = new EventSourceMock<>();
 
     public abstract BasicFiltersPresenter getPresenter();
@@ -60,8 +66,9 @@ public abstract class AbstractBasicFiltersPresenterTest {
 
     @Before
     public void init() {
-        doNothing().when(savedFilterSelectedEvent).fire(any(SavedFilterSelectedEvent.class));
-        doNothing().when(activeFilters).fire(any(BasicFilterAddEvent.class));
+        doNothing().when(savedFilterSelectedEvent).fire(any());
+        doNothing().when(activeFilters).fire(any());
+        doNothing().when(basicFilterRemoveEvent).fire(any());
     }
 
     @Test
@@ -111,6 +118,30 @@ public abstract class AbstractBasicFiltersPresenterTest {
         captor.getValue().accept(false);
 
         verify(filterEditorPopup).setTableNameError(any());
+    }
+
+    @Test
+    public void testSearchFilterListEmpty() {
+        getPresenter().addSearchFilterList("columnId",
+                                           new ActiveFilterItem<>(null,
+                                                                  null,
+                                                                  null,
+                                                                  emptyList(),
+                                                                  null));
+
+        verify(basicFilterRemoveEvent).fire(any());
+    }
+
+    @Test
+    public void testSearchFilterList() {
+        getPresenter().addSearchFilterList("columnId",
+                                           new ActiveFilterItem<>(null,
+                                                                  null,
+                                                                  null,
+                                                                  singletonList("value"),
+                                                                  null));
+
+        verify(activeFilters).fire(any());
     }
 
     public abstract void testLoadFilters();
