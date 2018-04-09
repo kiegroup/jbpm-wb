@@ -32,8 +32,10 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class RemoteProcessImageServiceImplTest {
 
-    private static final String SVG_WITH_ACTIONS = "<svg></</g></g><text font-size=\"12\" id=\"_5D35D92A-455D-408D-9BF3-4D6C25D6B64D\" style=\"stroke-width:1;fill:rgb(177,194,214);font-family:arial;font-weight:bold\" transform=\"translate(10, 20)\" onmouseover=\"ORYX.Plugins.CanvasTitle.addToolTip('_5D35D92A-455D-408D-9BF3-4D6C25D6B64D')\" onclick=\"ORYX.Plugins.CanvasTitle.openTextualAnalysis()\">Evaluation v.1 (evaluation)</text></g></g></svg>";
-    private static final String SVG_WITHOUT_ACTIONS = "<svg></</g></g><text font-size=\"12\" id=\"_5D35D92A-455D-408D-9BF3-4D6C25D6B64D\" style=\"stroke-width:1;fill:rgb(177,194,214);font-family:arial;font-weight:bold\" transform=\"translate(10, 20)\" >Evaluation v.1 (evaluation)</text></g></g></svg>";
+    private static final String SVG_WITH_ACTIONS = "<svg><g><text font-size=\"12\" id=\"_5D35D92A-455D-408D-9BF3-4D6C25D6B64D\" style=\"stroke-width:1;fill:rgb(177,194,214);font-family:arial;font-weight:bold\" transform=\"translate(10, 20)\" onmouseover=\"ORYX.Plugins.CanvasTitle.addToolTip('_5D35D92A-455D-408D-9BF3-4D6C25D6B64D')\" onclick=\"ORYX.Plugins.CanvasTitle.openTextualAnalysis()\">Evaluation v.1 (evaluation)</text></g></svg>";
+    private static final String SVG_WITHOUT_ACTIONS = "<svg><g><text font-size=\"12\" id=\"_5D35D92A-455D-408D-9BF3-4D6C25D6B64D\" style=\"stroke-width:1;fill:rgb(177,194,214);font-family:arial;font-weight:bold\" transform=\"translate(10, 20)\"  >Evaluation v.1 (evaluation)</text></g></svg>";
+    private static final String SVG_WITH_LINK = "<svg><a onclick=\"parent.designeropenintab(&quot;place-order.bpmn2&quot;,&quot;default://master@myrepo/itorders/src/main/resources/org/jbpm/demo/itorders/place-order.bpmn2&quot;);\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"\" xlink:type=\"simple\" xlink:actuate=\"onRequest\" id=\"_646D12C5-DE96-4300-B822-EC8C77253514pimg\" xlink:show=\"replace\"></svg>";
+    private static final String SVG_WITHOUT_LINK = "<svg><a  xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"\" xlink:type=\"simple\" xlink:actuate=\"onRequest\" id=\"_646D12C5-DE96-4300-B822-EC8C77253514pimg\" xlink:show=\"replace\"></svg>";
 
     @Mock
     KieServerIntegration kieServerIntegration;
@@ -88,4 +90,17 @@ public class RemoteProcessImageServiceImplTest {
                                                               "",
                                                               null));
     }
+
+    @Test
+    public void testImageWithLink() {
+        when(uiServicesClient.getProcessInstanceImage("",
+                                                      null)).thenReturn(SVG_WITH_LINK);
+        final String diagram = service.getProcessInstanceDiagram("",
+                                                                 "",
+                                                                 null);
+        assertFalse(diagram.contains("onclick"));
+        assertEquals(SVG_WITHOUT_LINK,
+                     diagram);
+    }
+
 }
