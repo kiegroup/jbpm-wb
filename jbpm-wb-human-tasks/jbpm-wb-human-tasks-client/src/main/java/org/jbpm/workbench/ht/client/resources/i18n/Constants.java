@@ -225,6 +225,8 @@ public interface Constants extends Messages {
 
     String PleaseEnterUserOrAGroupToDelegate();
 
+    String PleaseEnterUserOrAGroupToForward();
+
     String CommentCannotBeEmpty();
 
     String CommentDeleted();

@@ -24,6 +24,8 @@ public class ListTable<T extends GenericSummary> extends ExtendedPagedTable<T> {
 
     public static final int ROW_HEIGHT_PX = 47;
 
+    private int tableHeaderOffset = HEIGHT_OFFSET_PX;
+
     public ListTable(GridGlobalPreferences gridPreferences) {
         super(gridPreferences);
         this.addDataGridStyles("kie-datatable",
@@ -34,12 +36,12 @@ public class ListTable<T extends GenericSummary> extends ExtendedPagedTable<T> {
     @Override
     protected void setTableHeight() {
         final NodeList<Element> byTagName = dataGrid.getElement().getFirstChildElement().getElementsByTagName("table");
-        int tableHeaderOffset = HEIGHT_OFFSET_PX;
         if (byTagName.getLength() > 0) {
             final Element element = byTagName.getItem(0);
-            tableHeaderOffset = element.getOffsetHeight() + 1;
+            if (element.getOffsetHeight() > 0) {
+                tableHeaderOffset = element.getOffsetHeight() + 1;
+            }
         }
-
         int base = dataGrid.getRowCount() - dataGrid.getVisibleRange().getStart();
         int height = ((base <= 0 ? 1 : base) * ROW_HEIGHT_PX) + tableHeaderOffset;
         this.dataGrid.setHeight(height + "px");

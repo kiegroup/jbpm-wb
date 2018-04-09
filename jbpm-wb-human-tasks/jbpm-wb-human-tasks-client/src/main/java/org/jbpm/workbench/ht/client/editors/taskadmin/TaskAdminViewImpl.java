@@ -16,23 +16,29 @@
 
 package org.jbpm.workbench.ht.client.editors.taskadmin;
 
+import java.util.List;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
+import elemental2.dom.Document;
+import elemental2.dom.Element;
+import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
+import elemental2.dom.HTMLUListElement;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.FormControlStatic;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.Legend;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
-import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 @Templated(value = "TaskAdminViewImpl.html")
@@ -60,7 +66,7 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
 
     @Inject
     @DataField
-    public FormControlStatic adminUsersGroupsControlsPanel;
+    public HTMLUListElement adminUsersGroupsControlsPanel;
 
     @Inject
     @DataField
@@ -78,10 +84,19 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
     @DataField
     public Button adminReminderButton;
 
+    @Inject
+    @DataField
+    private HTMLDivElement adminUserOrGroupFormGroup;
+
+    @Inject
+    @Named("span")
+    @DataField
+    private HTMLElement adminUserOrGroupHelp;
+
     private TaskAdminPresenter presenter;
 
     @Inject
-    private Event<NotificationEvent> notification;
+    private Document document;
 
     private Constants constants = GWT.create(Constants.class);
 
@@ -105,7 +120,8 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
             presenter.forwardTask(userOrGroup);
             adminForwardButton.setEnabled(false);
         } else {
-            displayNotification(constants.PleaseEnterUserOrAGroupToDelegate());
+            adminUserOrGroupFormGroup.classList.add("has-error");
+            adminUserOrGroupHelp.textContent = constants.PleaseEnterUserOrAGroupToForward();
         }
     }
 
@@ -115,13 +131,13 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
     }
 
     @Override
-    public void setUsersGroupsControlsPanelText(String text) {
-        adminUsersGroupsControlsPanel.setText(text);
-    }
-
-    @Override
-    public void displayNotification(String text) {
-        notification.fire(new NotificationEvent(text));
+    public void setUsersGroupsControlsPanelText(final List<String> text) {
+        new Elemental2DomUtil().removeAllElementChildren(adminUsersGroupsControlsPanel);
+        text.forEach(t -> {
+            Element li = document.createElement("li");
+            li.textContent = t;
+            adminUsersGroupsControlsPanel.appendChild(li);
+        });
     }
 
     @Override
@@ -134,6 +150,12 @@ public class TaskAdminViewImpl extends Composite implements TaskAdminPresenter.T
         adminUserOrGroupText.setEnabled(enabled);
     }
 
+    @Override
+    public void clearUserOrGroupText() {
+        adminUserOrGroupText.setText("");
+        adminUserOrGroupFormGroup.classList.remove("has-error");
+        adminUserOrGroupHelp.textContent = "";
+    }
 
     @Override
     public void enableReminderButton(boolean enabled) {
