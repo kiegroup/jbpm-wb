@@ -27,7 +27,6 @@ import elemental2.promise.Promise;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ItemObjectModelFactory;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ObjectItemPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
@@ -93,7 +92,7 @@ public class DeploymentsEventListenersPresenter extends Section<DeploymentDescri
     }
 
     @Override
-    public SectionView getView() {
+    public SectionView<?> getView() {
         return view;
     }
 
