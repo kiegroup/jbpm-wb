@@ -56,7 +56,7 @@ public class RemoteProcessImageServiceImpl extends AbstractKieServerService impl
             return null;
         }
 
-        return originalHTML.replaceAll("onclick=\".*\"|onmouseover=\".*\"",
+        return originalHTML.replaceAll("onclick=\".*?\"|onmouseover=\".*?\"",
                                        "");
     }
 }
