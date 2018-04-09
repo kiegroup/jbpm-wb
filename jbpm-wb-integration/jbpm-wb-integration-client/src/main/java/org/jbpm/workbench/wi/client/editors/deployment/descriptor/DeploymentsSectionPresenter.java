@@ -30,12 +30,6 @@ import org.guvnor.common.services.project.client.context.WorkspaceProjectContext
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.DeploymentsSections;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.eventlisteners.DeploymentsEventListenersPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.globals.DeploymentsGlobalsPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.marshallingstrategies.DeploymentsMarshallingStrategiesPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.remoteableclasses.DeploymentsRemoteableClassesPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles.DeploymentsRequiredRolesPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.taskeventlisteners.DeploymentsTaskEventListenersPresenter;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
@@ -109,6 +103,10 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
 
     @Override
     public Promise<Void> setup(final ProjectScreenModel ignore) {
+        return setup();
+    }
+
+    private Promise<Void> setup() {
 
         view.init(this);
 
@@ -124,9 +122,7 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
 
         return createIfNotExists().then(i -> loadDeploymentDescriptor()).then(model -> {
             this.model = model;
-            //FIXME: generics issue
-            final Promise<Void> all = promises.all(deploymentsSections.getList(), (final Section<DeploymentDescriptorModel> section) -> section.setup(model));
-            return all;
+            return promises.<Section<DeploymentDescriptorModel>, Void>all(deploymentsSections.getList(), section -> section.setup(model));
         }).then(i -> {
             sectionManager.resetAllDirtyIndicators();
             return sectionManager.goTo(sectionManager.getCurrentSection());
@@ -151,7 +147,7 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
 
         if (concurrentDeploymentsXmlUpdateInfo != null) {
             notificationEvent.fire(new NotificationEvent(view.getConcurrentUpdateMessage(), WARNING));
-            return setup(null);
+            return setup();
         }
 
         return save(comment).then(i -> {

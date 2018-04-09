@@ -24,16 +24,13 @@ import elemental2.dom.HTMLUListElement;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jboss.errai.ui.shared.api.annotations.TranslationKey;
+import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
 
 @Templated
 public class DeploymentsSectionView implements DeploymentsSectionPresenter.View {
 
     @Inject
     private TranslationService translationService;
-
-    @TranslationKey(defaultValue = "")
-    public static final String DeploymentsXmlConcurrentUpdate = "DeploymentsXmlConcurrentUpdate";
 
     @Inject
     @DataField("menu-items-container")
@@ -51,11 +48,6 @@ public class DeploymentsSectionView implements DeploymentsSectionPresenter.View 
     }
 
     @Override
-    public String getConcurrentUpdateMessage() {
-        return translationService.format(DeploymentsXmlConcurrentUpdate);
-    }
-
-    @Override
     public HTMLElement getMenuItemsContainer() {
         return menuItemsContainer;
     }
@@ -66,7 +58,12 @@ public class DeploymentsSectionView implements DeploymentsSectionPresenter.View 
     }
 
     @Override
+    public String getConcurrentUpdateMessage() {
+        return translationService.format(LibraryConstants.DeploymentsXmlConcurrentUpdate);
+    }
+
+    @Override
     public String getTitle() {
-        return "Deployments"; //FIXME: i18n
+        return translationService.getTranslation(LibraryConstants.Deployments);
     }
 }
