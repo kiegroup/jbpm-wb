@@ -26,8 +26,6 @@ import javax.inject.Inject;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.Column;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.Button;
@@ -51,6 +49,7 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
+import org.uberfire.mvp.Command;
 
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
@@ -272,6 +271,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         final Button bulkButton = GWT.create(Button.class);
         bulkButton.setText(constants.Bulk_Actions());
         bulkButton.setDataToggle(Toggle.DROPDOWN);
+        bulkButton.setEnabled(false);
         bulkButton.getElement().getStyle().setMarginRight(5,
                                                           Style.Unit.PX);
         bulkActions.add(bulkButton);
@@ -286,31 +286,31 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
         bulkAbortNavLink.setIcon(IconType.BAN);
         bulkAbortNavLink.setIconFixedWidth(true);
-        bulkAbortNavLink.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                confirmPopup.show(constants.Abort_Confirmation(),
-                                  constants.Abort(),
-                                  constants.Abort_Process_Instances(),
-                                  () -> {
-                                      presenter.bulkAbort(extendedPagedTable.getSelectedItems());
-                                      extendedPagedTable.deselectAllItems();
-                                  });
-            }
-        });
+        bulkAbortNavLink.addClickHandler(event -> confirmPopup.show(constants.Abort_Confirmation(),
+                                                                    constants.Abort(),
+                                                                    constants.Abort_Process_Instances(),
+                                                                    getAbortCommand(extendedPagedTable))
+        );
 
         bulkSignalNavLink.setIcon(IconType.BELL);
         bulkSignalNavLink.setIconFixedWidth(true);
-        bulkSignalNavLink.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                presenter.bulkSignal(extendedPagedTable.getSelectedItems());
-                //Only clear model, view will refresh once popup is closed
-                extendedPagedTable.getSelectedItems().clear();
-            }
-        });
+        bulkSignalNavLink.addClickHandler(event -> getSignalCommand(extendedPagedTable));
 
         extendedPagedTable.getRightActionsToolbar().add(bulkActions);
+    }
+
+    protected Command getSignalCommand(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
+        return () -> {
+            presenter.bulkSignal(extendedPagedTable.getSelectedItems());
+            extendedPagedTable.deselectAllItems();
+        };
+    }
+
+    protected Command getAbortCommand(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
+        return () -> {
+            presenter.bulkAbort(extendedPagedTable.getSelectedItems());
+            extendedPagedTable.deselectAllItems();
+        };
     }
 
     private Column<ProcessInstanceSummary, ProcessInstanceSummary> initErrorCountColumn() {

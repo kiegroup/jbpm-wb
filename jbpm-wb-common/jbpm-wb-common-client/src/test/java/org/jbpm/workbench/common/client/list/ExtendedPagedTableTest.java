@@ -19,6 +19,8 @@ package org.jbpm.workbench.common.client.list;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.user.cellview.client.Column;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.junit.Before;
@@ -77,6 +79,26 @@ public class ExtendedPagedTableTest {
         table.deselectAllItems();
 
         assertTrue(table.getSelectedItems().isEmpty());
+    }
+
+    @Test
+    public void testSelectAllItems() {
+        final Column column = mock(Column.class);
+        final FieldUpdater updater = mock(FieldUpdater.class);
+        when(column.getFieldUpdater()).thenReturn(updater);
+        when(dataGrid.getColumn(0)).thenReturn(column);
+        GenericSummary gs = mock(GenericSummary.class);
+        when(dataGrid.getVisibleItem(0)).thenReturn(gs);
+        when(dataGrid.getVisibleItem(1)).thenReturn(gs);
+        when(dataGrid.getVisibleItemCount()).thenReturn(2);
+
+        table.selectAllItems();
+
+        verify(updater).update(0, gs, true);
+        verify(updater).update(1, gs, true);
+
+        verify(dataGrid).redrawRow(0);
+        verify(dataGrid).redrawRow(1);
     }
 
     @Test
