@@ -23,10 +23,12 @@ import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridViewTest;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.GenericErrorSummaryCountCell;
 import org.jbpm.workbench.common.client.util.SLAComplianceCell;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -94,5 +96,25 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
     public void setupMocks() {
         super.setupMocks();
         when(popoverCellInstance.get()).thenReturn(cellMock);
+    }
+
+    @Test
+    public void testSignalCommand(){
+        final ExtendedPagedTable table = mock(ExtendedPagedTable.class);
+
+        view.getSignalCommand(table).execute();
+
+        verify(presenter).bulkSignal(any());
+        verify(table).deselectAllItems();
+    }
+
+    @Test
+    public void testAbortCommand(){
+        final ExtendedPagedTable table = mock(ExtendedPagedTable.class);
+
+        view.getAbortCommand(table).execute();
+
+        verify(presenter).bulkAbort(any());
+        verify(table).deselectAllItems();
     }
 }
