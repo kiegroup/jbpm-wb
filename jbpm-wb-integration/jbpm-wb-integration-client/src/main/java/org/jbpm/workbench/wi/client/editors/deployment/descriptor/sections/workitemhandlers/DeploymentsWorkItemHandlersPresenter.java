@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import elemental2.promise.Promise;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ItemObjectModelFactory;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.NamedObjectItemPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
@@ -49,6 +50,9 @@ public class DeploymentsWorkItemHandlersPresenter extends Section<DeploymentDesc
 
     @Inject
     private AddDoubleValueModal addWorkItemHandlerModal;
+
+    @Inject
+    private ItemObjectModelFactory itemObjectModelFactory;
 
     @Inject
     public DeploymentsWorkItemHandlersPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
@@ -85,19 +89,8 @@ public class DeploymentsWorkItemHandlersPresenter extends Section<DeploymentDesc
     }
 
     void addWorkItemHandler(final String name, final String value) {
-        workItemHandlersListPresenter.add(newNamedObjectModelItem(name, value));
+        workItemHandlersListPresenter.add(itemObjectModelFactory.newItemObjectModel(name, value));
         fireChangeEvent();
-    }
-
-    ItemObjectModel newNamedObjectModelItem(final String name,
-                                            final String value) {
-
-        final ItemObjectModel model = new ItemObjectModel();
-        model.setName(name);
-        model.setValue(value);
-        model.setResolver(Resolver.MVEL.name().toLowerCase());
-        model.setParameters(new ArrayList<>());
-        return model;
     }
 
     @Override

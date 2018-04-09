@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import elemental2.promise.Promise;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ItemObjectModelFactory;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.NamedObjectItemPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
@@ -49,6 +50,9 @@ public class DeploymentsGlobalsPresenter extends Section<DeploymentDescriptorMod
 
     @Inject
     private AddDoubleValueModal addGlobalModal;
+
+    @Inject
+    private ItemObjectModelFactory itemObjectModelFactory;
 
     @Inject
     public DeploymentsGlobalsPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
@@ -85,19 +89,8 @@ public class DeploymentsGlobalsPresenter extends Section<DeploymentDescriptorMod
     }
 
     void addGlobal(final String name, final String value) {
-        globalPresenters.add(newNamedObjectModelItem(name, value));
+        globalPresenters.add(itemObjectModelFactory.newItemObjectModel(name, value));
         fireChangeEvent();
-    }
-
-    ItemObjectModel newNamedObjectModelItem(final String name,
-                                            final String value) {
-
-        final ItemObjectModel model = new ItemObjectModel();
-        model.setName(name);
-        model.setValue(value);
-        model.setResolver(Resolver.MVEL.name().toLowerCase());
-        model.setParameters(new ArrayList<>());
-        return model;
     }
 
     @Override

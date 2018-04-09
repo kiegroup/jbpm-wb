@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import elemental2.promise.Promise;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ItemObjectModelFactory;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ObjectItemPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
@@ -49,6 +50,9 @@ public class DeploymentsMarshallingStrategiesPresenter extends Section<Deploymen
 
     @Inject
     private AddSingleValueModal addMarshallingStrategyModal;
+
+    @Inject
+    private ItemObjectModelFactory itemObjectModelFactory;
 
     @Inject
     public DeploymentsMarshallingStrategiesPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
@@ -84,17 +88,8 @@ public class DeploymentsMarshallingStrategiesPresenter extends Section<Deploymen
     }
 
     void addMarshallingStrategy(final String name) {
-        marshallingStrategyPresenters.add(newObjectModelItem(name));
+        marshallingStrategyPresenters.add(itemObjectModelFactory.newItemObjectModel(name));
         fireChangeEvent();
-    }
-
-    //FIXME: duplicated
-    ItemObjectModel newObjectModelItem(final String name) {
-        final ItemObjectModel model = new ItemObjectModel();
-        model.setValue(name);
-        model.setResolver(Resolver.MVEL.name().toLowerCase());
-        model.setParameters(new ArrayList<>());
-        return model;
     }
 
     @Override

@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import elemental2.promise.Promise;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ItemObjectModelFactory;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ObjectItemPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
@@ -49,6 +50,9 @@ public class DeploymentsEventListenersPresenter extends Section<DeploymentDescri
 
     @Inject
     private AddSingleValueModal addEventListenerModal;
+
+    @Inject
+    private ItemObjectModelFactory itemObjectModelFactory;
 
     @Inject
     public DeploymentsEventListenersPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
@@ -84,17 +88,8 @@ public class DeploymentsEventListenersPresenter extends Section<DeploymentDescri
     }
 
     void addEventListener(final String name) {
-        eventListenerPresenters.add(newObjectModelItem(name));
+        eventListenerPresenters.add(itemObjectModelFactory.newItemObjectModel(name));
         fireChangeEvent();
-    }
-
-    //FIXME: duplicated
-    ItemObjectModel newObjectModelItem(final String name) {
-        final ItemObjectModel model = new ItemObjectModel();
-        model.setValue(name);
-        model.setResolver(Resolver.MVEL.name().toLowerCase());
-        model.setParameters(new ArrayList<>());
-        return model;
     }
 
     @Override
