@@ -41,24 +41,25 @@ import org.uberfire.client.promise.Promises;
 @Dependent
 public class DeploymentsEventListenersPresenter extends Section<DeploymentDescriptorModel> {
 
-    @Inject
-    private DeploymentsEventListenersView view;
-
-    @Inject
-    private EventListenersListPresenter eventListenerPresenters;
-
-    @Inject
-    private AddSingleValueModal addEventListenerModal;
-
-    @Inject
-    private ItemObjectModelFactory itemObjectModelFactory;
+    private final DeploymentsEventListenersView view;
+    private final EventListenersListPresenter eventListenerPresenters;
+    private final AddSingleValueModal addEventListenerModal;
+    private final ItemObjectModelFactory itemObjectModelFactory;
 
     @Inject
     public DeploymentsEventListenersPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
                                               final MenuItem<DeploymentDescriptorModel> menuItem,
-                                              final Promises promises) {
+                                              final Promises promises,
+                                              final DeploymentsEventListenersView view,
+                                              final EventListenersListPresenter eventListenerPresenters,
+                                              final AddSingleValueModal addEventListenerModal,
+                                              final ItemObjectModelFactory itemObjectModelFactory) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
+        this.view = view;
+        this.eventListenerPresenters = eventListenerPresenters;
+        this.addEventListenerModal = addEventListenerModal;
+        this.itemObjectModelFactory = itemObjectModelFactory;
     }
 
     @PostConstruct

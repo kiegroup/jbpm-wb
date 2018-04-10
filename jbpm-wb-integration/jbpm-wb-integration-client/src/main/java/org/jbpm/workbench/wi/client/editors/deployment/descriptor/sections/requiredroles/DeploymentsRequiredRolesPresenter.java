@@ -38,21 +38,22 @@ import org.uberfire.client.promise.Promises;
 @Dependent
 public class DeploymentsRequiredRolesPresenter extends Section<DeploymentDescriptorModel> {
 
-    @Inject
     private DeploymentsRequiredRolesView view;
-
-    @Inject
-    private RequiredRolesListPresenter requiredRolesListPresenter;
-
-    @Inject
+    private RemoteableClassListPresenter requiredRolesListPresenter;
     private AddSingleValueModal addRequiredRoleModal;
 
     @Inject
     public DeploymentsRequiredRolesPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
                                              final MenuItem<DeploymentDescriptorModel> menuItem,
-                                             final Promises promises) {
+                                             final Promises promises,
+                                             final DeploymentsRequiredRolesView view,
+                                             final RemoteableClassListPresenter requiredRolesListPresenter,
+                                             final AddSingleValueModal addRequiredRoleModal) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
+        this.view = view;
+        this.requiredRolesListPresenter = requiredRolesListPresenter;
+        this.addRequiredRoleModal = addRequiredRoleModal;
     }
 
     @PostConstruct
@@ -96,10 +97,10 @@ public class DeploymentsRequiredRolesPresenter extends Section<DeploymentDescrip
     }
 
     @Dependent
-    public static class RequiredRolesListPresenter extends ListPresenter<String, RequiredRolesListItemPresenter> {
+    public static class RemoteableClassListPresenter extends ListPresenter<String, RequiredRolesListItemPresenter> {
 
         @Inject
-        public RequiredRolesListPresenter(final ManagedInstance<RequiredRolesListItemPresenter> itemPresenters) {
+        public RemoteableClassListPresenter(final ManagedInstance<RequiredRolesListItemPresenter> itemPresenters) {
             super(itemPresenters);
         }
     }
