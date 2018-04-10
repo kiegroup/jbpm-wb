@@ -41,24 +41,25 @@ import org.uberfire.client.promise.Promises;
 @Dependent
 public class DeploymentsWorkItemHandlersPresenter extends Section<DeploymentDescriptorModel> {
 
-    @Inject
-    private DeploymentsWorkItemHandlersView view;
-
-    @Inject
-    private WorkItemHandlersListPresenter workItemHandlersListPresenter;
-
-    @Inject
-    private AddDoubleValueModal addWorkItemHandlerModal;
-
-    @Inject
-    private ItemObjectModelFactory itemObjectModelFactory;
+    private final DeploymentsWorkItemHandlersView view;
+    private final WorkItemHandlersListPresenter workItemHandlersListPresenter;
+    private final AddDoubleValueModal addWorkItemHandlerModal;
+    private final ItemObjectModelFactory itemObjectModelFactory;
 
     @Inject
     public DeploymentsWorkItemHandlersPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
                                                 final MenuItem<DeploymentDescriptorModel> menuItem,
-                                                final Promises promises) {
+                                                final Promises promises,
+                                                final DeploymentsWorkItemHandlersView view,
+                                                final WorkItemHandlersListPresenter workItemHandlersListPresenter,
+                                                final AddDoubleValueModal addWorkItemHandlerModal,
+                                                final ItemObjectModelFactory itemObjectModelFactory) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
+        this.view = view;
+        this.workItemHandlersListPresenter = workItemHandlersListPresenter;
+        this.addWorkItemHandlerModal = addWorkItemHandlerModal;
+        this.itemObjectModelFactory = itemObjectModelFactory;
     }
 
     @PostConstruct

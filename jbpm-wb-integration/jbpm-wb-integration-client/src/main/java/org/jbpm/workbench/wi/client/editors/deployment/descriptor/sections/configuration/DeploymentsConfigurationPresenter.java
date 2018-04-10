@@ -41,24 +41,25 @@ import org.uberfire.client.promise.Promises;
 @Dependent
 public class DeploymentsConfigurationPresenter extends Section<DeploymentDescriptorModel> {
 
-    @Inject
-    private DeploymentsConfigurationView view;
-
-    @Inject
-    private ConfigurationsListPresenter configurationPresenters;
-
-    @Inject
-    private AddDoubleValueModal addConfigurationModal;
-
-    @Inject
-    private ItemObjectModelFactory itemObjectModelFactory;
+    private final DeploymentsConfigurationView view;
+    private final ConfigurationsListPresenter configurationPresenters;
+    private final AddDoubleValueModal addConfigurationModal;
+    private final ItemObjectModelFactory itemObjectModelFactory;
 
     @Inject
     public DeploymentsConfigurationPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
                                              final MenuItem<DeploymentDescriptorModel> menuItem,
-                                             final Promises promises) {
+                                             final Promises promises,
+                                             final DeploymentsConfigurationView view,
+                                             final ConfigurationsListPresenter configurationPresenters,
+                                             final AddDoubleValueModal addConfigurationModal,
+                                             final ItemObjectModelFactory itemObjectModelFactory) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
+        this.view = view;
+        this.configurationPresenters = configurationPresenters;
+        this.addConfigurationModal = addConfigurationModal;
+        this.itemObjectModelFactory = itemObjectModelFactory;
     }
 
     @PostConstruct
