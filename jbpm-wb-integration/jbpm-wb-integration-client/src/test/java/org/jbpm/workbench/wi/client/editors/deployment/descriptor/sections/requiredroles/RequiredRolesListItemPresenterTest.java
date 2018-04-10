@@ -16,8 +16,7 @@
 
 package org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles;
 
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles.DeploymentsRequiredRolesPresenter.RequiredRolesListPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles.DeploymentsRequiredRolesPresenter.RemoteableClassListPresenter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +51,7 @@ public class RequiredRolesListItemPresenterTest {
     @Test
     public void testRemove() {
         final DeploymentsRequiredRolesPresenter parentPresenter = mock(DeploymentsRequiredRolesPresenter.class);
-        final RequiredRolesListPresenter listPresenter = mock(RequiredRolesListPresenter.class);
+        final RemoteableClassListPresenter listPresenter = mock(RemoteableClassListPresenter.class);
 
         requiredRolesListItemPresenter.parentPresenter = parentPresenter;
         requiredRolesListItemPresenter.setListPresenter(listPresenter);

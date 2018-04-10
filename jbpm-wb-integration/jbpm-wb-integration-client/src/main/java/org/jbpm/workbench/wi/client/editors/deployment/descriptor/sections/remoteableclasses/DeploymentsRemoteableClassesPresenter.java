@@ -38,21 +38,22 @@ import org.uberfire.client.promise.Promises;
 @Dependent
 public class DeploymentsRemoteableClassesPresenter extends Section<DeploymentDescriptorModel> {
 
-    @Inject
-    private DeploymentsRemoteableClassesView view;
-
-    @Inject
-    private RemoteableClassesListPresenter remoteableClassesListPresenter;
-
-    @Inject
-    private AddSingleValueModal addRemoteableClassModal;
+    private final DeploymentsRemoteableClassesView view;
+    private final RemoteableClassesListPresenter remoteableClassesListPresenter;
+    private final AddSingleValueModal addRemoteableClassModal;
 
     @Inject
     public DeploymentsRemoteableClassesPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
                                                  final MenuItem<DeploymentDescriptorModel> menuItem,
-                                                 final Promises promises) {
+                                                 final Promises promises,
+                                                 final DeploymentsRemoteableClassesView view,
+                                                 final RemoteableClassesListPresenter remoteableClassesListPresenter,
+                                                 final AddSingleValueModal addRemoteableClassModal) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
+        this.view = view;
+        this.remoteableClassesListPresenter = remoteableClassesListPresenter;
+        this.addRemoteableClassModal = addRemoteableClassModal;
     }
 
     @PostConstruct

@@ -41,24 +41,25 @@ import org.uberfire.client.promise.Promises;
 @Dependent
 public class DeploymentsMarshallingStrategiesPresenter extends Section<DeploymentDescriptorModel> {
 
-    @Inject
-    private DeploymentsMarshallingStrategiesView view;
-
-    @Inject
-    private MarshallingStrategiesListPresenter marshallingStrategyPresenters;
-
-    @Inject
-    private AddSingleValueModal addMarshallingStrategyModal;
-
-    @Inject
-    private ItemObjectModelFactory itemObjectModelFactory;
+    private final DeploymentsMarshallingStrategiesView view;
+    private final MarshallingStrategiesListPresenter marshallingStrategyPresenters;
+    private final AddSingleValueModal addMarshallingStrategyModal;
+    private final ItemObjectModelFactory itemObjectModelFactory;
 
     @Inject
     public DeploymentsMarshallingStrategiesPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
                                                      final MenuItem<DeploymentDescriptorModel> menuItem,
-                                                     final Promises promises) {
+                                                     final Promises promises,
+                                                     final DeploymentsMarshallingStrategiesView view,
+                                                     final MarshallingStrategiesListPresenter marshallingStrategyPresenters,
+                                                     final AddSingleValueModal addMarshallingStrategyModal,
+                                                     final ItemObjectModelFactory itemObjectModelFactory) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
+        this.view = view;
+        this.marshallingStrategyPresenters = marshallingStrategyPresenters;
+        this.addMarshallingStrategyModal = addMarshallingStrategyModal;
+        this.itemObjectModelFactory = itemObjectModelFactory;
     }
 
     @PostConstruct
