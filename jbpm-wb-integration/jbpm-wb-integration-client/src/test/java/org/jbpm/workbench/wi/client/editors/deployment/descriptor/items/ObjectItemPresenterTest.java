@@ -26,7 +26,7 @@ import org.jbpm.workbench.wi.dd.model.Parameter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.workbench.common.screens.library.client.settings.util.KieEnumSelectElement;
+import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 

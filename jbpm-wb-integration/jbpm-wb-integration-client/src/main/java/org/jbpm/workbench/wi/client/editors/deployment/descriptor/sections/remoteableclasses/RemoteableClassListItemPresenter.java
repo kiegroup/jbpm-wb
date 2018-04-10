@@ -20,9 +20,8 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.ListItemPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.UberElementalListItem;
+import org.kie.workbench.common.screens.library.client.settings.util.list.ListItemPresenter;
+import org.kie.workbench.common.screens.library.client.settings.util.list.ListItemView;
 
 @Dependent
 public class RemoteableClassListItemPresenter extends ListItemPresenter<String, DeploymentsRemoteableClassesPresenter, RemoteableClassListItemPresenter.View> {
@@ -59,7 +58,7 @@ public class RemoteableClassListItemPresenter extends ListItemPresenter<String, 
         return role;
     }
 
-    public interface View extends UberElementalListItem<RemoteableClassListItemPresenter>,
+    public interface View extends ListItemView<RemoteableClassListItemPresenter>,
                                   IsElement {
 
         void setClass(final String role);

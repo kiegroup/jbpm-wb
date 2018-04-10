@@ -28,10 +28,10 @@ import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
-import org.kie.workbench.common.screens.library.client.settings.sections.MenuItem;
-import org.kie.workbench.common.screens.library.client.settings.sections.Section;
-import org.kie.workbench.common.screens.library.client.settings.sections.SectionView;
-import org.kie.workbench.common.screens.library.client.settings.util.ListPresenter;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
+import org.kie.workbench.common.screens.library.client.settings.util.list.ListPresenter;
 import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.uberfire.client.promise.Promises;
 

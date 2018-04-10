@@ -23,8 +23,8 @@ import javax.inject.Inject;
 
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.wi.dd.model.Parameter;
-import org.kie.workbench.common.screens.library.client.settings.util.ListItemPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.ListPresenter;
+import org.kie.workbench.common.screens.library.client.settings.util.list.ListItemPresenter;
+import org.kie.workbench.common.screens.library.client.settings.util.list.ListPresenter;
 import org.kie.workbench.common.screens.library.client.settings.util.modal.Elemental2Modal;
 
 @Dependent

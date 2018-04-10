@@ -27,8 +27,7 @@ import elemental2.dom.HTMLInputElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.kie.workbench.common.screens.library.client.settings.SettingsPresenter;
-import org.kie.workbench.common.screens.library.client.settings.sections.SectionView;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
 
 @Templated
 public class DeploymentsGeneralSettingsView implements SectionView<DeploymentsGeneralSettingsPresenter> {
