@@ -20,8 +20,8 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
-import org.kie.workbench.common.screens.library.client.settings.util.ListItemPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.UberElementalListItem;
+import org.kie.workbench.common.screens.library.client.settings.util.list.ListItemPresenter;
+import org.kie.workbench.common.screens.library.client.settings.util.list.ListItemView;
 
 @Dependent
 public class RequiredRolesListItemPresenter extends ListItemPresenter<String, DeploymentsRequiredRolesPresenter, RequiredRolesListItemPresenter.View> {
@@ -57,7 +57,7 @@ public class RequiredRolesListItemPresenter extends ListItemPresenter<String, De
         return role;
     }
 
-    public interface View extends UberElementalListItem<RequiredRolesListItemPresenter>,
+    public interface View extends ListItemView<RequiredRolesListItemPresenter>,
                                   IsElement {
 
         void setRole(final String role);

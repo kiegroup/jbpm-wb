@@ -22,14 +22,14 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.screens.library.client.settings.SettingsSections;
-import org.kie.workbench.common.screens.library.client.settings.dependencies.DependenciesPresenter;
-import org.kie.workbench.common.screens.library.client.settings.externaldataobjects.ExternalDataObjectsPresenter;
-import org.kie.workbench.common.screens.library.client.settings.generalsettings.GeneralSettingsPresenter;
-import org.kie.workbench.common.screens.library.client.settings.knowledgebases.KnowledgeBasesPresenter;
-import org.kie.workbench.common.screens.library.client.settings.persistence.PersistencePresenter;
-import org.kie.workbench.common.screens.library.client.settings.sections.Section;
-import org.kie.workbench.common.screens.library.client.settings.validation.ValidationPresenter;
+import org.kie.workbench.common.screens.library.client.settings.sections.SettingsSections;
+import org.kie.workbench.common.screens.library.client.settings.sections.dependencies.DependenciesPresenter;
+import org.kie.workbench.common.screens.library.client.settings.sections.externaldataobjects.ExternalDataObjectsPresenter;
+import org.kie.workbench.common.screens.library.client.settings.sections.generalsettings.GeneralSettingsPresenter;
+import org.kie.workbench.common.screens.library.client.settings.sections.knowledgebases.KnowledgeBasesPresenter;
+import org.kie.workbench.common.screens.library.client.settings.sections.persistence.PersistencePresenter;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
+import org.kie.workbench.common.screens.library.client.settings.sections.validation.ValidationPresenter;
 import org.kie.workbench.common.screens.projecteditor.model.ProjectScreenModel;
 
 @Dependent

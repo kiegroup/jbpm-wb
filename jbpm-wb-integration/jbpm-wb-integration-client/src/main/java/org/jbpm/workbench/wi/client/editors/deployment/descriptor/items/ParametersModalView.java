@@ -31,7 +31,7 @@ import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.kie.workbench.common.screens.library.client.settings.util.UberElementalListItem;
+import org.kie.workbench.common.screens.library.client.settings.util.list.ListItemView;
 import org.kie.workbench.common.screens.library.client.settings.util.modal.Elemental2Modal;
 
 @Templated
@@ -101,7 +101,7 @@ public class ParametersModalView implements Elemental2Modal.View<ParametersModal
     }
 
     @Templated("ParametersModalView.html#parameter")
-    public static class Parameter implements UberElementalListItem<ParametersModal.ParameterItemPresenter>,
+    public static class Parameter implements ListItemView<ParametersModal.ParameterItemPresenter>,
                                              IsElement {
 
         @Inject

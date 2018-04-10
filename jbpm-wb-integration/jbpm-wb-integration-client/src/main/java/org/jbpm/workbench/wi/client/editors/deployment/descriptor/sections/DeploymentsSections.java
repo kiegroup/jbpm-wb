@@ -33,7 +33,7 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requi
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.taskeventlisteners.DeploymentsTaskEventListenersPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.workitemhandlers.DeploymentsWorkItemHandlersPresenter;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
-import org.kie.workbench.common.screens.library.client.settings.sections.Section;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 
 @Dependent
 public class DeploymentsSections {

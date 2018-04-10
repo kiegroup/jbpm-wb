@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
-import org.kie.workbench.common.screens.library.client.settings.sections.MenuItem;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.modal.doublevalue.AddDoubleValueModal;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;

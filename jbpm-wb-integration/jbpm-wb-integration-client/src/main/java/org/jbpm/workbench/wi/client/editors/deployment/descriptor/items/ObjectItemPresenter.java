@@ -24,10 +24,10 @@ import javax.inject.Inject;
 import elemental2.dom.Element;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
-import org.kie.workbench.common.screens.library.client.settings.sections.Section;
-import org.kie.workbench.common.screens.library.client.settings.util.KieEnumSelectElement;
-import org.kie.workbench.common.screens.library.client.settings.util.ListItemPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.UberElementalListItem;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
+import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
+import org.kie.workbench.common.screens.library.client.settings.util.list.ListItemPresenter;
+import org.kie.workbench.common.screens.library.client.settings.util.list.ListItemView;
 
 @Dependent
 public class ObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Section<?>, ObjectItemPresenter.View> implements ObjectPresenter {
@@ -102,7 +102,7 @@ public class ObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Sect
         fireChangeEvent();
     }
 
-    public interface View extends UberElementalListItem<ObjectItemPresenter> {
+    public interface View extends ListItemView<ObjectItemPresenter> {
 
         Element getResolversContainer();
 

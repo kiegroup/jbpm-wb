@@ -1,13 +1,12 @@
 package org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.environmententries;
 
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ItemObjectModelFactory;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.workitemhandlers.DeploymentsWorkItemHandlersPresenter;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
-import org.kie.workbench.common.screens.library.client.settings.sections.MenuItem;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.modal.doublevalue.AddDoubleValueModal;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;

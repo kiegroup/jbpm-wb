@@ -33,10 +33,10 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.Deplo
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
-import org.kie.workbench.common.screens.library.client.settings.sections.MenuItem;
-import org.kie.workbench.common.screens.library.client.settings.sections.Section;
-import org.kie.workbench.common.screens.library.client.settings.sections.SectionManager;
-import org.kie.workbench.common.screens.library.client.settings.sections.SectionView;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionManager;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
 import org.kie.workbench.common.screens.projecteditor.model.ProjectScreenModel;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.backend.vfs.PathFactory;
@@ -123,7 +123,7 @@ public class DeploymentsSectionPresenter extends Section<ProjectScreenModel> {
             return promises.<Section<DeploymentDescriptorModel>, Void>all(deploymentsSections.getList(), section -> section.setup(model));
         }).then(i -> {
             sectionManager.resetAllDirtyIndicators();
-            return sectionManager.goTo(sectionManager.getCurrentSection());
+            return sectionManager.goToCurrentSection();
         });
     }
 

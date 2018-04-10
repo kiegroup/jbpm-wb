@@ -27,10 +27,10 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Persiste
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.RuntimeStrategy;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
-import org.kie.workbench.common.screens.library.client.settings.sections.MenuItem;
-import org.kie.workbench.common.screens.library.client.settings.sections.Section;
-import org.kie.workbench.common.screens.library.client.settings.sections.SectionView;
-import org.kie.workbench.common.screens.library.client.settings.util.KieEnumSelectElement;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
+import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
 import org.uberfire.client.promise.Promises;
 
 @Dependent
