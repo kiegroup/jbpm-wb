@@ -120,8 +120,16 @@ public class KieServerIntegration {
 
     public KieServicesClient getServerClient(String serverTemplateId,
                                              String containerId) {
-        return serverTemplatesClients.getOrDefault(serverTemplateId,
-                                                   emptyMap()).get(containerId);
+        KieServicesClient client = serverTemplatesClients.getOrDefault(serverTemplateId,
+                                                                       emptyMap()).get(containerId);
+
+         if (client == null) {
+             logger.warn("Container {} not found in server template {}, returning global kie server client",
+                          containerId,
+                          serverTemplateId);
+             client = getServerClient(serverTemplateId);
+         }
+         return client;
     }
 
     public KieServicesClient getAdminServerClient(String serverTemplateId,
@@ -250,11 +258,11 @@ public class KieServerIntegration {
         // once all steps are completed successfully notify other parts interested so the serverClient can actually be used
         serverInstanceRegisteredEvent.fire(new ServerInstanceRegistered(serverInstanceConnected.getServerInstance()));
     }
-    
+
     public List<Object> broadcastToKieServers(String serverTemplateId,
                                               Function<KieServicesClient, Object> operation) {
         List<Object> results = new ArrayList<>();
-        
+
         ServerTemplate serverTemplate = specManagementService.getServerTemplate(serverTemplateId);
 
         if (serverTemplate.getServerInstanceKeys() == null || serverTemplate.getServerInstanceKeys().isEmpty()) {
@@ -277,7 +285,7 @@ public class KieServerIntegration {
 
         return results;
     }
-    
+
     protected KieServicesClient getClient(String url) {
         KieServicesClient client = allClientProviders.stream().filter(provider -> provider.supports(url)).findFirst().get().get(url);
         logger.debug("Using client {}", client);
@@ -405,7 +413,7 @@ public class KieServerIntegration {
     protected Map<String, ServerInstanceKey> getServerInstancesById() {
         return serverInstancesById;
     }
- 
+
     protected void setKieServicesClientProviders(List<KieServicesClientProvider> providers) {
         this.allClientProviders = providers;
     }
