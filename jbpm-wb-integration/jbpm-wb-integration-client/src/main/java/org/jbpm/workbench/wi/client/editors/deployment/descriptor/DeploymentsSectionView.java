@@ -40,11 +40,8 @@ public class DeploymentsSectionView implements DeploymentsSectionPresenter.View 
     @DataField("content")
     private HTMLDivElement content;
 
-    private DeploymentsSectionPresenter presenter;
-
     @Override
     public void init(final DeploymentsSectionPresenter presenter) {
-        this.presenter = presenter;
     }
 
     @Override
