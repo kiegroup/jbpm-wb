@@ -20,6 +20,7 @@ import org.jbpm.workbench.ks.integration.KieServerIntegration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.api.exception.KieServicesHttpException;
 import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.UIServicesClient;
 import org.mockito.InjectMocks;
@@ -103,4 +104,59 @@ public class RemoteProcessImageServiceImplTest {
                      diagram);
     }
 
+    @Test
+    public void testProcessInstanceImageNotFound() {
+        final Integer okCode = 400;
+        when(uiServicesClient.getProcessInstanceImage("",
+                                                      null)).thenThrow(new KieServicesHttpException(null,
+                                                                                                    404,
+                                                                                                    null,
+                                                                                                    null),
+                                                                       new KieServicesHttpException(null,
+                                                                                                    okCode,
+                                                                                                    null,
+                                                                                                    null));
+
+        assertNull(service.getProcessInstanceDiagram("",
+                                                     "",
+                                                     null));
+
+        try {
+            service.getProcessInstanceDiagram("",
+                                              "",
+                                              null);
+            fail("Method should throw exception");
+        } catch (KieServicesHttpException ex) {
+            assertEquals(okCode,
+                         ex.getHttpCode());
+        }
+    }
+
+    @Test
+    public void testProcessImageNotFound() {
+        final Integer okCode = 400;
+        when(uiServicesClient.getProcessImage("",
+                                              null)).thenThrow(new KieServicesHttpException(null,
+                                                                                            404,
+                                                                                            null,
+                                                                                            null),
+                                                               new KieServicesHttpException(null,
+                                                                                            okCode,
+                                                                                            null,
+                                                                                            null));
+
+        assertNull(service.getProcessDiagram("",
+                                             "",
+                                             null));
+
+        try {
+            service.getProcessDiagram("",
+                                      "",
+                                      null);
+            fail("Method should throw exception");
+        } catch (KieServicesHttpException ex) {
+            assertEquals(okCode,
+                         ex.getHttpCode());
+        }
+    }
 }

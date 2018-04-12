@@ -39,7 +39,7 @@ public class ProcessDiagramWidgetView extends Composite implements ProcessDiagra
 
     @Inject
     @DataField("message")
-    @Named("h3")
+    @Named("h4")
     HTMLHeadingElement heading;
 
     public void displayImage(final String svgContent) {
