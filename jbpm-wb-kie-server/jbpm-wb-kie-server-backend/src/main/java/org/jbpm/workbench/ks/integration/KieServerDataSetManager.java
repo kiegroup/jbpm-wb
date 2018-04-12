@@ -16,11 +16,14 @@
 
 package org.jbpm.workbench.ks.integration;
 
+import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -29,10 +32,14 @@ import javax.inject.Inject;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.dashbuilder.dataset.def.SQLDataSetDef;
+import org.dashbuilder.dataset.events.DataSetDefModifiedEvent;
+import org.dashbuilder.dataset.events.DataSetDefRegisteredEvent;
+import org.dashbuilder.dataset.events.DataSetDefRemovedEvent;
 import org.jbpm.workbench.ks.events.KieServerDataSetRegistered;
 import org.jbpm.workbench.ks.integration.event.ServerInstanceRegistered;
 import org.kie.server.api.exception.KieServicesException;
 import org.kie.server.api.model.definition.QueryDefinition;
+import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.QueryServicesClient;
 import org.kie.server.common.rest.KieServerHttpRequestException;
 import org.kie.server.controller.api.model.runtime.ServerInstance;
@@ -93,8 +100,7 @@ public class KieServerDataSetManager {
                                                 .name(dataSetDef.getUUID())
                                                 .expression(((SQLDataSetDef) dataSetDef).getDbSQL())
                                                 .source(((SQLDataSetDef) dataSetDef).getDataSource())
-                                                .target(dataSetDef.getName().contains("-") ? dataSetDef.getName().substring(0,
-                                                                                                                            dataSetDef.getName().indexOf("-")) : "CUSTOM")
+                                                .target(extractQueryTarget(dataSetDef))
                                                 .build()
                         ).collect(Collectors.toSet());
 
@@ -108,6 +114,16 @@ public class KieServerDataSetManager {
                             e);
             }
         });
+    }
+    
+    protected String extractQueryTarget(DataSetDef dataSetDef) {
+        if (dataSetDef instanceof RemoteDataSetDef && ((RemoteDataSetDef) dataSetDef).getQueryTarget() != null) {
+            
+            return ((RemoteDataSetDef) dataSetDef).getQueryTarget();
+        }
+        
+        return dataSetDef.getName().contains("-") ? dataSetDef.getName().substring(0,
+                                                                                   dataSetDef.getName().indexOf("-")) : "CUSTOM";
     }
 
     protected void registerQueriesWithRetry(String serverTemplateId,
@@ -156,6 +172,56 @@ public class KieServerDataSetManager {
             LOGGER.info("Not possible to register queries on server {} most likely due to BPM capability missing (details {})",
                         serverInstanceId,
                         ex.getMessage());
+        }
+    }
+    
+    void onDataSetDefRegisteredEvent(@Observes DataSetDefRegisteredEvent event) {
+        checkNotNull("event",
+                     event);
+        DataSetDef def = event.getDataSetDef();
+        replaceQueryInKieServers(def);
+    }
+
+    void onDataSetDefModifiedEvent(@Observes DataSetDefModifiedEvent event) {
+        checkNotNull("event",
+                     event);
+        DataSetDef def = event.getNewDataSetDef();
+        replaceQueryInKieServers(def);        
+    }
+
+    void onDataSetDefRemovedEvent(@Observes DataSetDefRemovedEvent event) {
+        checkNotNull("event",
+                     event);
+
+        DataSetDef def = event.getDataSetDef();
+        if (def instanceof RemoteDataSetDef) {
+            kieServerIntegration.broadcastToKieServers(((RemoteDataSetDef) def).getServerTemplateId(), (KieServicesClient client) -> {
+                QueryServicesClient instanceQueryClient = client.getServicesClient(QueryServicesClient.class);
+                instanceQueryClient.unregisterQuery(def.getUUID());
+                return null;
+            });
+            
+            LOGGER.info("Data set definition {} ({}) deletion event processed", def.getUUID(), def.getName());
+        }
+        
+    }    
+
+    protected void replaceQueryInKieServers(DataSetDef def) {
+        
+        if (def instanceof RemoteDataSetDef && ((RemoteDataSetDef) def).getServerTemplateId() != null) {
+            QueryDefinition queryDefinition = QueryDefinition.builder()
+                    .name(def.getUUID())
+                    .source(((RemoteDataSetDef) def).getDataSource())
+                    .target(((RemoteDataSetDef) def).getQueryTarget())
+                    .expression(((RemoteDataSetDef) def).getDbSQL())
+                    .build();
+            
+            kieServerIntegration.broadcastToKieServers(((RemoteDataSetDef) def).getServerTemplateId(), (KieServicesClient client) -> {
+                QueryServicesClient instanceQueryClient = client.getServicesClient(QueryServicesClient.class);
+                QueryDefinition registered = instanceQueryClient.replaceQuery(queryDefinition);
+                return registered;
+            });
+            LOGGER.info("Data set definition {} ({}) modification event processed", def.getUUID(), def.getName());
         }
     }
 }

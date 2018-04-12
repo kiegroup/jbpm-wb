@@ -23,7 +23,7 @@ import org.kie.server.client.KieServicesClient;
 public abstract class AbstractKieServerService {
 
     @Inject
-    private KieServerIntegration kieServerIntegration;
+    protected KieServerIntegration kieServerIntegration;
 
     protected <T> T getClient(final String serverTemplateId,
                               final Class<T> clientType) {

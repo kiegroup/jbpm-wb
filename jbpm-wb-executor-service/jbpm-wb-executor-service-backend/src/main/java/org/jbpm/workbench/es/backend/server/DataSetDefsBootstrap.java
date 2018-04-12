@@ -15,21 +15,21 @@
  */
 package org.jbpm.workbench.es.backend.server;
 
+import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
+import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.dashbuilder.dataset.def.DataSetDef;
-import org.dashbuilder.dataset.def.DataSetDefFactory;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.jbpm.workbench.ks.integration.KieServerDataSetProvider;
+import org.jbpm.workbench.ks.integration.RemoteDataSetDefBuilder;
 import org.kie.server.api.KieServerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
-
-import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
-import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 
 @Startup
 @ApplicationScoped
@@ -43,10 +43,11 @@ public class DataSetDefsBootstrap {
 
     @PostConstruct
     protected void registerDataSetDefinitions() {
-        DataSetDef requestListDef = DataSetDefFactory.newSQLDataSetDef()
+        DataSetDef requestListDef = RemoteDataSetDefBuilder.get()
                 .uuid(REQUEST_LIST_DATASET)
                 .name("Request List")
                 .dataSource(JBPM_DATA_SOURCE)
+                .queryTarget("CUSTOM")
                 .dbSQL("select "
                                     + "ri.id, "
                                     + "ri.timestamp, "
@@ -89,10 +90,11 @@ public class DataSetDefsBootstrap {
         dataSetDefRegistry.registerDataSetDef(requestListDef);
         logger.info("Executor service datasets registered");
 
-        DataSetDef executionErrorListDef = DataSetDefFactory.newSQLDataSetDef()
+        DataSetDef executionErrorListDef = RemoteDataSetDefBuilder.get()
                 .uuid(EXECUTION_ERROR_LIST_DATASET)
                 .name("Error Management")
                 .dataSource(JBPM_DATA_SOURCE)
+                .queryTarget("CUSTOM")
                 .dbSQL("select "
                                + "eri.ERROR_ACK, "
                                + "eri.ERROR_ACK_BY, "

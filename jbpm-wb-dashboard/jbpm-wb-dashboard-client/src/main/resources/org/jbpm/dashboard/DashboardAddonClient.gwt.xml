@@ -32,8 +32,11 @@
   <inherits name="org.uberfire.UberfireWorkbench"/>
 
   <inherits name="org.dashbuilder.DashbuilderClientAll"/>
-  <inherits name="org.jbpm.dashboard.renderer.DashboardRendererApi"/>
+  <inherits name="org.jbpm.dashboard.DashboardAddonApi"/>
+  
+  <inherits name="org.kie.server.api.KieServerAPI"/>
 
-  <source path="panel"/>
+  <source path="renderer"/>
+  <source path="dataset"/>
 
 </module>

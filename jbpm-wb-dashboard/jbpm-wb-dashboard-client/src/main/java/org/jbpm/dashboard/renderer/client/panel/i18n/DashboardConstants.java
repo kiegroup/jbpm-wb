@@ -31,4 +31,6 @@ public interface DashboardConstants extends DashboardI18n,
                                             Messages {
 
     DashboardConstants INSTANCE = GWT.create(DashboardConstants.class);
+
+    
 }

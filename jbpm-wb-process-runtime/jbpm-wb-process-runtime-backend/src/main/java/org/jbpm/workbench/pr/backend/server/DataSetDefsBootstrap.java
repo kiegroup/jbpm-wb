@@ -15,20 +15,20 @@
  */
 package org.jbpm.workbench.pr.backend.server;
 
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.dashbuilder.dataset.def.DataSetDef;
-import org.dashbuilder.dataset.def.DataSetDefFactory;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.jbpm.workbench.ks.integration.KieServerDataSetProvider;
+import org.jbpm.workbench.ks.integration.RemoteDataSetDefBuilder;
 import org.kie.server.api.KieServerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
-
-import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Startup
 @ApplicationScoped
@@ -42,10 +42,11 @@ public class DataSetDefsBootstrap {
 
     @PostConstruct
     protected void registerDataSetDefinitions() {
-        DataSetDef processInstancesDef = DataSetDefFactory.newSQLDataSetDef()
+        DataSetDef processInstancesDef = RemoteDataSetDefBuilder.get()
                 .uuid(PROCESS_INSTANCE_DATASET)
                 .name("FILTERED_PROCESS-Process Instances")
                 .dataSource(JBPM_DATA_SOURCE)
+                .queryTarget("FILTERED_PROCESS")
                 .dbSQL("select " +
                             "log.processInstanceId, " +
                             "log.processId, " +
@@ -99,10 +100,11 @@ public class DataSetDefsBootstrap {
                 .number(COLUMN_ERROR_COUNT)
                 .buildDef();
 
-        DataSetDef processWithVariablesDef = DataSetDefFactory.newSQLDataSetDef()
+        DataSetDef processWithVariablesDef = RemoteDataSetDefBuilder.get()
                 .uuid(PROCESS_INSTANCE_WITH_VARIABLES_DATASET)
                 .name("Domain Specific Process Instances")
                 .dataSource(JBPM_DATA_SOURCE)
+                .queryTarget("CUSTOM")
                 .dbSQL("select " +
                             "vil.processInstanceId, " +
                             "vil.processId, " +

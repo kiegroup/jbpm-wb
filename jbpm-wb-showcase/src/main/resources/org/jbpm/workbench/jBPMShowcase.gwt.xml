@@ -85,8 +85,8 @@
   <inherits name="org.dashbuilder.renderer.GChartsRenderer"/>
 
   <!-- Process & Task dashboard -->
-  <inherits name="org.jbpm.dashboard.renderer.DashboardRendererApi"/>
-  <inherits name="org.jbpm.dashboard.renderer.client.DashboardRendererClient"/>
+  <inherits name="org.jbpm.dashboard.DashboardAddonApi"/>
+  <inherits name="org.jbpm.dashboard.DashboardAddonClient"/>
 
   <!-- Stunner -->
   <inherits name="org.kie.workbench.common.stunner.project.StunnerProjectClient"/>
