@@ -206,7 +206,7 @@ public class NewCaseProjectHandler
                                                      .orElseThrow(() -> new IllegalStateException("Cannot initialize new case project without an active organizational unit."))
                                                      .getDefaultGroupId())
                                   .build());
-        wizard.start(creationSuccessCallback,
+        wizard.start(configureCaseProjectCallback,
                      openEditorOnCreation);
     }
 
