@@ -51,7 +51,7 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
     private final Map<String, ProcessDefinitionSummary> processDefinitionSummaryMap = new HashMap<>();
 
     @Inject
-    User identity;
+    private User identity;
 
     @Inject
     private NewActionView newActionView;
@@ -73,9 +73,9 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
         newActionView.setCaseStagesList(cis.getStages());
         processDefinitionSummaryMap.clear();
         caseService.call(
-                (List<ProcessDefinitionSummary> processDefinitionsSumaries) -> {
+                (List<ProcessDefinitionSummary> processDefinitionSummaries) -> {
                     final List<String> processDefinitionNames = new ArrayList<>();
-                    for (ProcessDefinitionSummary processDefinitionSummary : processDefinitionsSumaries) {
+                    for (ProcessDefinitionSummary processDefinitionSummary : processDefinitionSummaries) {
                         processDefinitionNames.add(processDefinitionSummary.getName());
                         processDefinitionSummaryMap.put(processDefinitionSummary.getName(),
                                                         processDefinitionSummary);
@@ -190,6 +190,28 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
                           containerId,
                           caseId,
                           identity.getIdentifier());
+    }
+
+    void setAction(final CaseActionItemView caseActionItem) {
+        final CaseActionSummary caseActionItemModel = caseActionItem.getValue();
+
+        switch (caseActionItemModel.getActionStatus()) {
+            case AVAILABLE: {
+                caseActionItem.prepareAction(caseActionItemModel);
+                break;
+            }
+            case IN_PROGRESS: {
+                caseActionItem.addCreationDate();
+                final String actionOwner = caseActionItemModel.getActualOwner();
+                if (!isNullOrEmpty(actionOwner)) {
+                    caseActionItem.addActionOwner(actionOwner);
+                }
+                break;
+            }
+            case COMPLETED: {
+                caseActionItem.addCreationDate();
+            }
+        }
     }
 
     public interface CaseActionsView extends UberElement<CaseActionsPresenter> {

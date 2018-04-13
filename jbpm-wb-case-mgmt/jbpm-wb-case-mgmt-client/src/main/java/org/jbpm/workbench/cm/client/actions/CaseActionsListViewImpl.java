@@ -18,6 +18,7 @@ package org.jbpm.workbench.cm.client.actions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -34,6 +35,7 @@ import org.jbpm.workbench.cm.client.pagination.PaginationViewImpl;
 import org.jbpm.workbench.cm.client.util.AbstractView;
 import org.jbpm.workbench.cm.model.CaseActionSummary;
 
+import static java.util.stream.Collectors.toList;
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
 
 @Dependent
@@ -46,21 +48,19 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter>
 
     @Inject
     @DataField("simple-list")
-    Div simpleList;
+    private Div simpleList;
 
     @Inject
     @DataField("actions-list-header-image")
-    Span actionsListHeaderImage;
+    private Span actionsListHeaderImage;
 
     @Inject
     @DataField("actions-list-header-text")
-    Span actionsListHeaderText;
+    private Span actionsListHeaderText;
 
     @Inject
     @DataField("actions-list-header-counter")
-    Span actionsListHeaderCounter;
-
-    List<CaseActionSummary> allActionsList;
+    private Span actionsListHeaderCounter;
 
     @Inject
     @DataField("empty-list-item")
@@ -90,7 +90,6 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter>
     }
 
     public void setCaseActionList(final List<CaseActionSummary> caseActionList) {
-        allActionsList = caseActionList;
         pagination.init(caseActionList,
                         this,
                         PAGE_SIZE);
@@ -101,7 +100,7 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter>
             addCSSClass(emptyContainer,
                         "hidden");
         }
-        actionsListHeaderCounter.setTextContent(String.valueOf(allActionsList.size()));
+        actionsListHeaderCounter.setTextContent(String.valueOf(caseActionList.size()));
     }
 
     @Override
@@ -121,10 +120,20 @@ public class CaseActionsListViewImpl extends AbstractView<CaseActionsPresenter>
     @Override
     public void setVisibleItems(List<CaseActionSummary> visibleItems) {
         this.caseActionList.setModel(visibleItems);
+        setActions(visibleItems);
         int tasksSize = visibleItems.size();
         if (tasksSize > 1) {
             tasks.getComponent(tasksSize - 1).setLastElementStyle();
         }
+    }
+
+    private void setActions(List<CaseActionSummary> visibleItems) {
+        List<CaseActionItemView> caseActionItemViews = visibleItems.stream()
+                                                                   .map(task -> tasks.getComponent(task))
+                                                                   .filter(Optional::isPresent)
+                                                                   .map(Optional::get)
+                                                                   .collect(toList());
+        caseActionItemViews.forEach(action -> presenter.setAction(action));
     }
 
     @Override

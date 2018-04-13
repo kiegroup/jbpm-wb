@@ -18,13 +18,11 @@ package org.jbpm.workbench.cm.client.stages;
 
 import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenterTest;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
-import org.jbpm.workbench.cm.model.CaseStageSummary;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -51,7 +49,7 @@ public class CaseStagesPresenterTest extends AbstractCaseInstancePresenterTest {
 
     @Before
     public void setup() {
-        caseStageItemViewMock = Mockito.mock(CaseStageItemViewImpl.class);
+        caseStageItemViewMock = mock(CaseStageItemViewImpl.class);
     }
 
     @Test
@@ -86,13 +84,5 @@ public class CaseStagesPresenterTest extends AbstractCaseInstancePresenterTest {
 
         verify(caseStageItemViewMock,
                never()).showStageActive();
-    }
-
-    private CaseStageSummary createCaseStageSummary(final String stageStatus) {
-        return CaseStageSummary.builder()
-                               .identifier("stage")
-                               .name("stageName")
-                               .status(stageStatus)
-                               .build();
     }
 }

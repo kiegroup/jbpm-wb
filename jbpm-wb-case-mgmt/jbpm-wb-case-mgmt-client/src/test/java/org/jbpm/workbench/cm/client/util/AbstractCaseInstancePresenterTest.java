@@ -22,6 +22,7 @@ import java.util.Date;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
+import org.jbpm.workbench.cm.model.CaseStageSummary;
 import org.jbpm.workbench.cm.service.CaseManagementService;
 import org.jbpm.workbench.cm.util.CaseStatus;
 import org.junit.Before;
@@ -63,6 +64,14 @@ public abstract class AbstractCaseInstancePresenterTest {
                 .caseDefinitionId(caseDefId)
                 .roleAssignments(Collections.emptyList())
                 .build();
+    }
+
+    protected CaseStageSummary createCaseStageSummary(final String stageStatus) {
+        return CaseStageSummary.builder()
+                               .identifier("stage")
+                               .name("stageName")
+                               .status(stageStatus)
+                               .build();
     }
 
     @Before
