@@ -133,7 +133,7 @@ public class DeploymentsSectionPresenterTest {
 
         doReturn(promises.resolve()).when(presenter).createIfNotExists();
         doReturn(promises.resolve(model)).when(presenter).loadDeploymentDescriptor();
-        when(sectionManager.getCurrentSection()).thenReturn(section1);
+        when(sectionManager.goToCurrentSection()).thenReturn(promises.resolve());
 
         presenter.setup(mock(ProjectScreenModel.class)).catch_(i -> {
             Assert.fail("Promise should've been resolved!\n" + ((Throwable) i).getMessage());
@@ -145,7 +145,7 @@ public class DeploymentsSectionPresenterTest {
         verify(view).init(eq(presenter));
         verify(section1).setup(eq(model));
         verify(section2).setup(eq(model));
-        verify(sectionManager).goTo(eq(section1));
+        verify(sectionManager).goToCurrentSection();
         verify(sectionManager).resetAllDirtyIndicators();
     }
 
