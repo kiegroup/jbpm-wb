@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.assertj.core.api.SoftAssertions;
 import org.jbpm.workbench.cm.model.CaseActionSummary;
 import org.jbpm.workbench.cm.model.CaseCommentSummary;
 import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
@@ -49,6 +50,7 @@ import org.kie.server.client.UserTaskServicesClient;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -58,6 +60,8 @@ import static org.jbpm.workbench.cm.backend.server.CaseCommentMapperTest.assertC
 import static org.jbpm.workbench.cm.backend.server.CaseDefinitionMapperTest.assertCaseDefinition;
 import static org.jbpm.workbench.cm.backend.server.CaseInstanceMapperTest.assertCaseInstance;
 import static org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl.CASE_OWNER_ROLE;
+import static org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl.NODE_TYPE_HUMAN_TASK;
+import static org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl.PAGE_SIZE_UNLIMITED;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyList;
@@ -68,25 +72,26 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class RemoteCaseManagementServiceImplTest {
 
-    final String serverTemplateId = "serverTemplateId";
-    final String containerId = "containerId";
-    final String caseDefinitionId = "caseDefinitionId";
-    final String caseId = "CASE-1";
-    final String caseName = "case name";
-    final String caseDescription = "case description";
-    final String author = "author";
-    final String text = "text";
-    final String commentId = "commentId";
-    final String userId = "userId";
+    private final String serverTemplateId = "serverTemplateId";
+    private final String containerId = "containerId";
+    private final String caseDefinitionId = "caseDefinitionId";
+    private final String caseId = "CASE-1";
+    private final String caseName = "case name";
+    private final String caseDescription = "case description";
+    private final String author = "author";
+    private final String text = "text";
+    private final String commentId = "commentId";
+    private final String userId = "userId";
 
     @Mock
-    CaseServicesClient clientMock;
+    private CaseServicesClient clientMock;
 
     @Mock
-    UserTaskServicesClient userTaskServicesClient;
+    private UserTaskServicesClient userTaskServicesClient;
 
+    @Spy
     @InjectMocks
-    RemoteCaseManagementServiceImpl testedService;
+    private RemoteCaseManagementServiceImpl testedService;
 
     @Test
     public void testGetCaseDefinitions_singleCaseDefinition() {
@@ -545,9 +550,9 @@ public class RemoteCaseManagementServiceImplTest {
         return caseAdHocFragment;
     }
 
-    private NodeInstance createTestNodeInstace(String name,
-                                               String nodeType,
-                                               Long workItemId) {
+    private NodeInstance createTestNodeInstance(String name,
+                                                String nodeType,
+                                                Long workItemId) {
         NodeInstance nodeInstance = NodeInstance.builder()
                 .name(name)
                 .nodeType(nodeType)
@@ -613,12 +618,12 @@ public class RemoteCaseManagementServiceImplTest {
 
         Long node1WorkItemId = 1L;
         Long node2WorkItemId = 2L;
-        NodeInstance node1 = createTestNodeInstace("active1",
-                                                   "Human Task",
-                                                   node1WorkItemId);
-        NodeInstance node2 = createTestNodeInstace("active2",
-                                                   "Service Task",
-                                                   node2WorkItemId);
+        NodeInstance node1 = createTestNodeInstance("active1",
+                                                    "Human Task",
+                                                    node1WorkItemId);
+        NodeInstance node2 = createTestNodeInstance("active2",
+                                                    "Service Task",
+                                                    node2WorkItemId);
         when(clientMock.getActiveNodes(eq(containerId),
                                        eq(caseId),
                                        anyInt(),
@@ -627,12 +632,12 @@ public class RemoteCaseManagementServiceImplTest {
 
         Long node3WorkItemId = 3L;
         Long node4WorkItemId = 4L;
-        NodeInstance node3 = createTestNodeInstace("complete1",
-                                                   "Human Task",
-                                                   node3WorkItemId);
-        NodeInstance node4 = createTestNodeInstace("complete2",
-                                                   "Service Task",
-                                                   node4WorkItemId);
+        NodeInstance node3 = createTestNodeInstance("complete1",
+                                                    "Human Task",
+                                                    node3WorkItemId);
+        NodeInstance node4 = createTestNodeInstance("complete2",
+                                                    "Service Task",
+                                                    node4WorkItemId);
         when(clientMock.getCompletedNodes(eq(containerId),
                                           eq(caseId),
                                           anyInt(),
@@ -697,12 +702,12 @@ public class RemoteCaseManagementServiceImplTest {
         Long node2WorkItemId = 2L;
         String taskActualOwner = "Owner";
 
-        NodeInstance node1 = createTestNodeInstace("active1",
-                                                   "Human Task",
-                                                   node1WorkItemId);
-        NodeInstance node2 = createTestNodeInstace("active2",
-                                                   "Service Task",
-                                                   node2WorkItemId);
+        NodeInstance node1 = createTestNodeInstance("active1",
+                                                    "Human Task",
+                                                    node1WorkItemId);
+        NodeInstance node2 = createTestNodeInstance("active2",
+                                                    "Service Task",
+                                                    node2WorkItemId);
         TaskInstance t1 = TaskInstance.builder()
                 .actualOwner(taskActualOwner)
                 .build();
@@ -795,5 +800,52 @@ public class RemoteCaseManagementServiceImplTest {
 
         verify(clientMock).getAdHocFragments(containerId,
                                              caseId);
+    }
+
+    @Test
+    public void getCompletedActionsTest_withUserTasks() {
+        final NodeInstance nodeInstance = createTestNodeInstance("completedNode",
+                                                                 NODE_TYPE_HUMAN_TASK.get(0),
+                                                                 1L);
+        final TaskInstance taskInstance = TaskInstance.builder()
+                                                       .actualOwner("owner")
+                                                       .build();
+        when(clientMock.getCompletedNodes(containerId,
+                                          caseId,
+                                          0,
+                                          PAGE_SIZE_UNLIMITED)).thenReturn(singletonList(nodeInstance));
+        when(userTaskServicesClient.findTaskByWorkItemId(nodeInstance.getWorkItemId())).thenReturn(taskInstance);
+
+        final List<CaseActionSummary> result = testedService.getCompletedActions(containerId,
+                                                                                 caseId);
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(result.get(0).getName()).isEqualTo(nodeInstance.getName());
+            softly.assertThat(result.get(0).getType()).isEqualTo(nodeInstance.getNodeType());
+            softly.assertThat(result.get(0).getActualOwner()).isEqualTo(taskInstance.getActualOwner());
+            softly.assertThat(result.get(0).getActionStatus()).isEqualTo(CaseActionStatus.COMPLETED);
+        });
+    }
+
+    @Test
+    public void getCompletedActionsTest_withoutUserTasks() {
+        final NodeInstance nodeInstance = createTestNodeInstance("completedNode",
+                                                                 "Service Task",
+                                                                 1L);
+        when(clientMock.getCompletedNodes(containerId,
+                                          caseId,
+                                          0,
+                                          PAGE_SIZE_UNLIMITED)).thenReturn(singletonList(nodeInstance));
+
+        final List<CaseActionSummary> result = testedService.getCompletedActions(containerId,
+                                                                                caseId);
+
+        verifyZeroInteractions(userTaskServicesClient);
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(result.get(0).getName()).isEqualTo(nodeInstance.getName());
+            softly.assertThat(result.get(0).getType()).isEqualTo(nodeInstance.getNodeType());
+            softly.assertThat(result.get(0).getActualOwner()).isEmpty();
+            softly.assertThat(result.get(0).getActionStatus()).isEqualTo(CaseActionStatus.COMPLETED);
+        });
     }
 }
