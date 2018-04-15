@@ -16,7 +16,6 @@
 
 package org.jbpm.workbench.cm.client.actions;
 
-import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -24,10 +23,10 @@ import org.jboss.errai.security.shared.api.identity.User;
 
 import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenterTest;
 import org.jbpm.workbench.cm.model.CaseActionSummary;
-import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
 import org.jbpm.workbench.cm.util.Actions;
+import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseActionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,43 +34,46 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.uberfire.mocks.CallerMock;
 
+import static java.util.Collections.emptyList;
+import static org.jbpm.workbench.cm.util.CaseStageStatus.AVAILABLE;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
+import static java.util.Collections.singletonList;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
 
     @Mock(name = "view")
-    CaseActionsPresenter.CaseActionsView caseAllActionsView;
+    private CaseActionsPresenter.CaseActionsView caseAllActionsView;
 
     @Mock(name = "NewActionView")
-    CaseActionsPresenter.NewActionView newActionViewMock;
+    private CaseActionsPresenter.NewActionView newActionViewMock;
 
     @Mock
-    User identity;
+    private User identity;
 
     @Mock
-    Actions actions;
+    private Actions actions;
 
+    @Spy
     @InjectMocks
-    CaseActionsPresenter presenter;
+    private CaseActionsPresenter presenter;
 
-    List<CaseActionSummary> caseActionSummaryList = Lists.newArrayList(createCaseActionSummary());
-    CaseInstanceSummary cis;
-    String containerId = "containerId",
-            caseDefId = "caseDefinitionId",
-            caseId = "caseId",
-            serverTemplateId = "serverTemplateId";
+    private CaseActionItemView caseActionItemViewMock;
+
+    private CaseInstanceSummary cis;
+
+    private List<CaseActionSummary> caseActionSummaryList = Lists.newArrayList(createCaseActionSummary());
 
     private static CaseActionSummary createCaseActionSummary() {
         return CaseActionSummary.builder()
-                .id(Long.valueOf(1))
+                .id(1L)
                 .name("actionName")
                 .build();
     }
@@ -82,17 +84,11 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
     }
 
     @Before
-    public void init() {
-        caseService = new CallerMock<>(caseManagementService);
+    public void setup() {
+        caseActionItemViewMock = mock(CaseActionItemView.class);
 
-        presenter.setCaseService(caseService);
-
-        cis = CaseInstanceSummary.builder().containerId(containerId).caseId(caseId).caseDefinitionId(caseDefId).build();
-        final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().id(caseDefId).build();
-
-        when(caseManagementService.getCaseDefinition(serverTemplateId,
-                                                     cis.getContainerId(),
-                                                     cis.getCaseDefinitionId())).thenReturn(cds);
+        cis = newCaseInstanceSummary();
+        cis.setStages(singletonList(createCaseStageSummary(AVAILABLE.getStatus())));
         when(caseManagementService.getCaseActions(anyString(),
                                                   anyString(),
                                                   anyString(),
@@ -104,20 +100,46 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
     }
 
     @Test
-    public void testLoadCaseInstance() {
-        String subProcessName = "Subprocess1";
-        List<ProcessDefinitionSummary> pdsl = Arrays.asList(ProcessDefinitionSummary.builder().id("processId").name(subProcessName).build());
-        when(caseManagementService.getProcessDefinitions(containerId)).thenReturn(pdsl);
-
+    public void clearAndLoadCaseInstanceTest() {
+        when(caseManagementService.getProcessDefinitions(containerId)).thenReturn(singletonList(ProcessDefinitionSummary.builder()
+                                                                                                                        .id("processId")
+                                                                                                                        .name("SubProcess_1")
+                                                                                                                        .build()));
         setupCaseInstance(cis,
                           serverTemplateId);
+
+        verifyCaseInstanceCleared();
+        verifyCaseInstanceLoaded();
+    }
+
+    private void verifyCaseInstanceCleared() {
+        verify(caseAllActionsView).removeAllTasks();
+        verify(newActionViewMock).setCaseStagesList(emptyList());
+    }
+
+    private void verifyCaseInstanceLoaded() {
+        verify(caseAllActionsView).updateListHeaders();
+        verify(newActionViewMock).setCaseStagesList(cis.getStages());
+        verifySubProcessesLoaded();
+        verifyActionsLoaded();
+    }
+
+    private void verifySubProcessesLoaded() {
+        verify(caseManagementService).getProcessDefinitions(containerId);
+        final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        verify(newActionViewMock).setProcessDefinitions(captor.capture());
+        assertEquals("SubProcess_1",
+                     captor.getValue().get(0));
+    }
+
+    private void verifyActionsLoaded() {
+        verify(presenter).refreshData(true);
         verify(caseManagementService).getCaseActions(serverTemplateId,
                                                      containerId,
                                                      caseId,
                                                      identity.getIdentifier());
 
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
-
         verify(caseAllActionsView).setAvailableActionsList(captor.capture());
         assertEquals(caseActionSummaryList.size() + 2,
                      captor.getValue().size());
@@ -128,17 +150,56 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
 
         verify(caseAllActionsView).setInProgressActionsList(caseActionSummaryList);
         verify(caseAllActionsView).setCompletedActionsList(caseActionSummaryList);
-        verify(actions).getAvailableActions();
-        verify(actions).getInProgressAction();
-        verify(actions).getCompleteActions();
-        verify(newActionViewMock,
-               times(2)).setCaseStagesList(cis.getStages());
-        final ArgumentCaptor<List> captor2 = ArgumentCaptor.forClass(List.class);
+    }
 
-        verify(caseManagementService).getProcessDefinitions(containerId);
-        verify(newActionViewMock).setProcessDefinitions(captor.capture());
-        assertEquals(subProcessName,
-                     captor.getValue().get(0));
+    @Test
+    public void testSetAction_statusAvailable() {
+        final CaseActionSummary caseActionSummary = createCaseActionSummary(CaseActionStatus.AVAILABLE);
+        when(caseActionItemViewMock.getValue()).thenReturn(caseActionSummary);
+
+        getPresenter().setAction(caseActionItemViewMock);
+
+        verify(caseActionItemViewMock).prepareAction(caseActionSummary);
+    }
+
+    @Test
+    public void testSetAction_statusInProgress() {
+        final CaseActionSummary caseActionSummaryWithoutOwner = createCaseActionSummary(CaseActionStatus.IN_PROGRESS);
+        final CaseActionSummary caseActionSummaryWithOwner = createCaseActionSummary(CaseActionStatus.IN_PROGRESS);
+        caseActionSummaryWithOwner.setActualOwner("owner");
+        when(caseActionItemViewMock.getValue()).thenReturn(caseActionSummaryWithoutOwner,
+                                                           caseActionSummaryWithOwner);
+
+        getPresenter().setAction(caseActionItemViewMock);
+        verify(caseActionItemViewMock,
+               never()).addActionOwner(anyString());
+
+        getPresenter().setAction(caseActionItemViewMock);
+        verify(caseActionItemViewMock,
+               times(2)).addCreationDate();
+        verify(caseActionItemViewMock).addActionOwner("owner");
+        verify(caseActionItemViewMock,
+               never()).prepareAction(any(CaseActionSummary.class));
+    }
+
+    @Test
+    public void testSetAction_statusCompleted() {
+        final CaseActionSummary caseActionSummary = createCaseActionSummary(CaseActionStatus.COMPLETED);
+        when(caseActionItemViewMock.getValue()).thenReturn(caseActionSummary);
+
+        getPresenter().setAction(caseActionItemViewMock);
+
+        verify(caseActionItemViewMock).addCreationDate();
+        verify(caseActionItemViewMock,
+               never()).addActionOwner(anyString());
+        verify(caseActionItemViewMock,
+               never()).prepareAction(any(CaseActionSummary.class));
+    }
+
+    private CaseActionSummary createCaseActionSummary(final CaseActionStatus status) {
+        final CaseActionSummary caseActionSummary = createCaseActionSummary();
+        caseActionSummary.setActionStatus(status);
+        return caseActionSummary;
     }
 
     @Test

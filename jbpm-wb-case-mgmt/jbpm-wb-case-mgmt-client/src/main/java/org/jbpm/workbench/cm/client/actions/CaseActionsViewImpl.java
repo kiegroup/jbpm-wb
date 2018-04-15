@@ -32,25 +32,24 @@ import org.jbpm.workbench.cm.model.CaseActionSummary;
 @Templated
 public class CaseActionsViewImpl extends AbstractView<CaseActionsPresenter> implements CaseActionsPresenter.CaseActionsView {
 
-    public static final String AVAILABLE_ACTIONS = "AVAILABLE";
-    public static final String INPROGRESS_ACTIONS = "IN_PROGRESS";
-    public static final String COMPLETED_ACTIONS = "COMPLETED";
+    private static final String AVAILABLE_ACTIONS = "AVAILABLE";
+    private static final String IN_PROGRESS_ACTIONS = "IN_PROGRESS";
+    private static final String COMPLETED_ACTIONS = "COMPLETED";
 
     @Inject
     @DataField("available-actions")
-    CaseActionsListViewImpl availableActions;
+    private CaseActionsListViewImpl availableActions;
 
     @Inject
     @DataField("inprogress-actions")
-    CaseActionsListViewImpl inprogressActions;
+    private CaseActionsListViewImpl inProgressActions;
 
     @Inject
     @DataField("completed-actions")
-    CaseActionsListViewImpl completedActions;
+    private CaseActionsListViewImpl completedActions;
 
     @Inject
     @DataField("actions")
-
     private Div actionsContainer;
 
     @Inject
@@ -60,7 +59,7 @@ public class CaseActionsViewImpl extends AbstractView<CaseActionsPresenter> impl
     public void init(final CaseActionsPresenter presenter) {
         this.presenter = presenter;
         availableActions.init(presenter);
-        inprogressActions.init(presenter);
+        inProgressActions.init(presenter);
         completedActions.init(presenter);
     }
 
@@ -72,7 +71,7 @@ public class CaseActionsViewImpl extends AbstractView<CaseActionsPresenter> impl
     @Override
     public void removeAllTasks() {
         availableActions.removeAllTasks();
-        inprogressActions.removeAllTasks();
+        inProgressActions.removeAllTasks();
         completedActions.removeAllTasks();
     }
 
@@ -83,7 +82,7 @@ public class CaseActionsViewImpl extends AbstractView<CaseActionsPresenter> impl
 
     @Override
     public void setInProgressActionsList(List<CaseActionSummary> caseActionList) {
-        inprogressActions.setCaseActionList(caseActionList);
+        inProgressActions.setCaseActionList(caseActionList);
     }
 
     @Override
@@ -98,7 +97,7 @@ public class CaseActionsViewImpl extends AbstractView<CaseActionsPresenter> impl
                                              "fa-flag-o",
                                              "kie-card__subtitle-icon",
                                              "kie-card__subtitle-icon--available");
-        inprogressActions.updateActionsHeader(translationService.format(INPROGRESS_ACTIONS),
+        inProgressActions.updateActionsHeader(translationService.format(IN_PROGRESS_ACTIONS),
                                               "fa",
                                               "fa-flag-checkered",
                                               "kie-card__subtitle-icon",
