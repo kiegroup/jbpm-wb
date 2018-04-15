@@ -33,8 +33,6 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.cm.client.util.AbstractView;
 import org.jbpm.workbench.cm.client.util.DateConverter;
-import org.jbpm.workbench.cm.util.CaseActionStatus;
-import org.jbpm.workbench.cm.util.CaseActionType;
 import org.jbpm.workbench.cm.model.CaseActionSummary;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -57,24 +55,24 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
 
     @Inject
     @DataField("action-info")
-    Span actionInfo;
+    private Span actionInfo;
 
     @Inject
     @DataField("action-createdOn")
     @Bound(converter = DateConverter.class)
-    Span createdOn;
+    private Span createdOn;
 
     @Inject
     @DataField("list-group-item")
-    Div listGroupItem;
+    private Div listGroupItem;
 
     @Inject
     @DataField("actions-dropdown")
-    Div actions;
+    private Div actions;
 
     @Inject
     @DataField("actions-items")
-    UnorderedList actionsItems;
+    private UnorderedList actionsItems;
 
     @Inject
     @AutoBound
@@ -93,36 +91,13 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
     @Override
     public void setValue(final CaseActionSummary model) {
         this.caseActionSummary.setModel(model);
+
         removeCSSClass(actions,
                        "dropup");
-
-        final CaseActionType actionType = model.getActionType();
-        final CaseActionStatus actionStatus = model.getActionStatus();
-
-        switch (actionStatus) {
-            case AVAILABLE: {
-                prepareAction(model,
-                              actionType);
-                break;
-            }
-            case IN_PROGRESS: {
-                removeCSSClass(createdOn,
-                               "hidden");
-                if (!isNullOrEmpty(model.getActualOwner())) {
-                    actionInfo.setTextContent(" (" + model.getActualOwner() + ") ");
-                }
-                break;
-            }
-            case COMPLETED: {
-                removeCSSClass(createdOn,
-                               "hidden");
-            }
-        }
     }
 
-    private void prepareAction(CaseActionSummary model,
-                               CaseActionType actionType) {
-        switch (actionType) {
+    void prepareAction(CaseActionSummary model) {
+        switch (model.getActionType()) {
             case AD_HOC_TASK: {
                 if (isNullOrEmpty(model.getStageId())) {
                     actionInfo.setTextContent(translationService.format(AVAILABLE_IN) + ": " + translationService.format(CASE));
@@ -158,7 +133,7 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
 
                     @Override
                     public void execute() {
-                        presenter.showDynamicAction(actionType);
+                        presenter.showDynamicAction(model.getActionType());
                     }
                 });
             }
@@ -176,6 +151,15 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
         final HTMLElement li = getDocument().createElement("li");
         li.appendChild(a);
         actionsItems.appendChild(li);
+    }
+
+    public void addCreationDate() {
+        removeCSSClass(createdOn,
+                       "hidden");
+    }
+
+    public void addActionOwner(final String owner) {
+        actionInfo.setTextContent(" (" + owner + ") ");
     }
 
     public void setLastElementStyle() {
