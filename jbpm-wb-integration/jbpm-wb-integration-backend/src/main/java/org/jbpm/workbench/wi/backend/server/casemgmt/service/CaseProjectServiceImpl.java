@@ -82,13 +82,22 @@ public class CaseProjectServiceImpl implements CaseProjectService {
         org.uberfire.backend.vfs.Path rootPath1 = project.getRootPath();
         final String separator = Paths.convert(rootPath1).getFileSystem().getSeparator();
 
-        // add empty .caseproject file as marker
-        String rootPathString = project.getRootPath().toURI().toString() + separator + CASE_PROJECT_DOT_FILE;
-        Path rootPath = ioService.get(URI.create(rootPathString));
-        ioService.write(rootPath,
-                        "");
-        logger.debug("Added caseproject marker (dot) file at {}",
-                     rootPath);
+        // add empty .caseproject file as marker if it does not exist already
+        try {
+            String caseProjectDotFilePathStr = project.getMainModule().getRootPath().toURI().toString() + CASE_PROJECT_DOT_FILE;
+            Path caseProjectDotFilePath = ioService.get(new URI(caseProjectDotFilePathStr));
+            if (!ioService.exists(caseProjectDotFilePath)) {
+                ioService.write(caseProjectDotFilePath,
+                                "");
+                logger.debug("Added caseproject marker (dot) file at {}",
+                             caseProjectDotFilePath);
+            } else {
+                logger.debug("Caseproject marker (dot) file already exists. Not adding it.");
+            }
+        } catch (Exception e) {
+            logger.error("Unable to write caseproject marker (dot) file: {}",
+                         e.getMessage());
+        }
 
         String metaInfPath = Paths.convert(kieModule.getKModuleXMLPath()).getParent().toUri().toString();
         // setup kie-deployemnt-descriptor.xml
@@ -118,7 +127,7 @@ public class CaseProjectServiceImpl implements CaseProjectService {
                                           "mvel",
                                           new ArrayList<Parameter>()));
         descriptorModel.setMarshallingStrategies(modelList);
-        
+
         List<ItemObjectModel> wiModelList = descriptorModel.getWorkItemHandlers();
         if (wiModelList == null) {
             wiModelList = new ArrayList<>();
