@@ -62,5 +62,6 @@ public class NewCaseProjectHandlerTest {
         newCaseProjectHandler.configureCaseProjectCallback.callback(project);
 
         verify(creationSuccessCallback).callback(project);
+        verify(caseProjectService).configureNewCaseProject(project);
     }
 }
