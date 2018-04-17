@@ -93,6 +93,9 @@ public class KieServerIntegrationClientsTest {
                      kieServerIntegration.getServerTemplatesClients().get(serverTemplateId).size());
         assertNotNull(kieServerIntegration.getServerTemplatesClients().get(serverTemplateId).get(SERVER_TEMPLATE_KEY));
         assertNotNull(kieServerIntegration.getServerTemplatesClients().get(serverTemplateId).get(containerSpec.getId()));
+        assertNotNull(kieServerIntegration.getServerClient(serverTemplateId, "not-existing"));
+        assertEquals(kieServerIntegration.getServerTemplatesClients().get(serverTemplateId).get(SERVER_TEMPLATE_KEY),
+                     kieServerIntegration.getServerClient(serverTemplateId, "not-existing"));
         assertEquals(1,
                      kieServerIntegration.getServerInstancesById().size());
         assertNotNull(kieServerIntegration.getServerInstancesById().get(serverInstanceId2));

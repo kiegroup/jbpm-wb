@@ -114,8 +114,16 @@ public class KieServerIntegration {
 
     public KieServicesClient getServerClient(String serverTemplateId,
                                              String containerId) {
-        return serverTemplatesClients.getOrDefault(serverTemplateId,
-                                                   emptyMap()).get(containerId);
+        KieServicesClient client = serverTemplatesClients.getOrDefault(serverTemplateId,
+                                                                       emptyMap()).get(containerId);
+
+         if (client == null) {
+             logger.warn("Container {} not found in server template {}, returning global kie server client",
+                          containerId,
+                          serverTemplateId);
+             client = getServerClient(serverTemplateId);
+         }
+         return client;
     }
 
     public KieServicesClient getAdminServerClient(String serverTemplateId,
