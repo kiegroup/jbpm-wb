@@ -26,6 +26,7 @@ import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
@@ -164,6 +165,10 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
 
         getView().initColumns(currentListGrid);
 
-        verify(currentListGrid).addColumns(anyList());
+        InOrder inOrder = inOrder(currentListGrid);
+        inOrder.verify(currentListGrid).addColumns(anyList());
+        inOrder.verify(currentListGrid).setColumnWidth(any(),
+                                                       anyDouble(),
+                                                       any());
     }
 }
