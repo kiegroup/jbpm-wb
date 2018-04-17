@@ -187,18 +187,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         extendedPagedTable.getColumnSortList().push(startColumn);
     }
 
-    private boolean isColumnAdded(List<ColumnMeta<ProcessInstanceSummary>> columnMetas,
-                                  String caption) {
-        if (caption != null) {
-            for (ColumnMeta<ProcessInstanceSummary> colMet : columnMetas) {
-                if (caption.equals(colMet.getColumn().getDataStoreName())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public void addDomainSpecifColumns(ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable,
                                        Set<String> columns) {
 
