@@ -28,6 +28,7 @@ ul.nav.navbar-nav.navbar-primary.persistent-secondary {
 /* Remove extra spacing between brand image and home icon */
 #mega-menu .navbar-pf a.navbar-brand {
     padding: 0px;
+    cursor: default;
 }
 
 /* Resize brand image */
