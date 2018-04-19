@@ -81,6 +81,8 @@ public class TaskDetailsMultiViewImpl extends Composite
     }
 
     protected void initTabs() {
+        tabContent.setPaddingBottom(50);
+
         {
             genericFormDisplayPane = GWT.create(TabPane.class);
             genericFormDisplayPane.add(presenter.getGenericFormView());
