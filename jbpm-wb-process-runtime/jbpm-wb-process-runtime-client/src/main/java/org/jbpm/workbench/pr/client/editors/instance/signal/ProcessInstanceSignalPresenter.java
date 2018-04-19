@@ -19,7 +19,6 @@ package org.jbpm.workbench.pr.client.editors.instance.signal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -67,11 +66,6 @@ public class ProcessInstanceSignalPresenter {
     @Inject
     public void setProcessService(final Caller<ProcessService> processService) {
         this.processService = processService;
-    }
-
-    @PostConstruct
-    public void init() {
-
     }
 
     @OnStartup

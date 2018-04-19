@@ -18,21 +18,27 @@ package org.jbpm.workbench.pr.client.editors.instance.list;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridViewTest;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.GenericErrorSummaryCountCell;
-import org.jbpm.workbench.common.client.util.SLAComplianceCell;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
+import org.uberfire.mvp.Command;
 
 import static org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceListViewImpl.COL_ID_ACTIONS;
 import static org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceListViewImpl.COL_ID_SELECT;
@@ -50,6 +56,12 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
 
     @Mock
     private ManagedInstance<GenericErrorSummaryCountCell> popoverCellInstance;
+
+    @Mock
+    private ConfirmPopup confirmPopup;
+
+    @GwtMock
+    private AnchorListItem anchorListItem;
 
     @InjectMocks
     @Spy
@@ -99,7 +111,7 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
     }
 
     @Test
-    public void testSignalCommand(){
+    public void testSignalCommand() {
         final ExtendedPagedTable table = mock(ExtendedPagedTable.class);
 
         view.getSignalCommand(table).execute();
@@ -109,7 +121,45 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
     }
 
     @Test
-    public void testAbortCommand(){
+    public void testBulkSignal() {
+        doAnswer(invocation -> {
+            ClickHandler handler = (ClickHandler) invocation.getArguments()[0];
+            handler.onClick(mock(ClickEvent.class));
+            return null;
+        }).when(anchorListItem).addClickHandler(any());
+        final ExtendedPagedTable table = mock(ExtendedPagedTable.class);
+
+        view.getBulkSignal(table);
+
+        verify(presenter).bulkSignal(any());
+        verify(table).deselectAllItems();
+    }
+
+    @Test
+    public void testBulkAbort() {
+        doAnswer(invocation -> {
+            ClickHandler handler = (ClickHandler) invocation.getArguments()[0];
+            handler.onClick(mock(ClickEvent.class));
+            return null;
+        }).when(anchorListItem).addClickHandler(any());
+        final ExtendedPagedTable table = mock(ExtendedPagedTable.class);
+
+        view.getBulkAbort(table);
+
+        ArgumentCaptor<Command> captor = ArgumentCaptor.forClass(Command.class);
+        verify(confirmPopup).show(any(),
+                                  any(),
+                                  any(),
+                                  captor.capture());
+
+        captor.getValue().execute();
+
+        verify(presenter).bulkAbort(any());
+        verify(table).deselectAllItems();
+    }
+
+    @Test
+    public void testAbortCommand() {
         final ExtendedPagedTable table = mock(ExtendedPagedTable.class);
 
         view.getAbortCommand(table).execute();
