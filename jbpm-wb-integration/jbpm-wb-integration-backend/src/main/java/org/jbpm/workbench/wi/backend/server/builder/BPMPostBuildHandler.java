@@ -51,7 +51,7 @@ public class BPMPostBuildHandler implements PostBuildHandler {
             return;
         }
 
-        org.uberfire.java.nio.file.Path ddPath = ioService.get(URI.create(rootPathString + "/src/main/resources/META-INF/kie-deployment-descriptor.xml"));
+        org.uberfire.java.nio.file.Path ddPath = ioService.get(URI.create(rootPathString + "src/main/resources/META-INF/kie-deployment-descriptor.xml"));
         if (ioService.exists(ddPath)) {
             Path deploymentDescriptorPath = Paths.convert(ddPath);
             DeploymentDescriptorModel ddModel = deploymentDescriptorService.load(deploymentDescriptorPath);
