@@ -22,7 +22,6 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.jbpm.designer.notification.DesignerWorkitemInstalledEvent;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
@@ -30,10 +29,8 @@ import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
 import org.kie.workbench.common.services.shared.project.KieModule;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
-import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
-import org.uberfire.io.IOService;
 import org.uberfire.java.nio.base.options.CommentedOption;
 import org.uberfire.workbench.events.ResourceAddedEvent;
 import org.uberfire.workbench.events.ResourceUpdatedEvent;
@@ -47,8 +44,6 @@ public class DDConfigUpdater {
 
     private KieModuleService moduleService;
 
-    private IOService ioService;
-
     private DDEditorService ddEditorService;
 
     private DDConfigUpdaterHelper configUpdaterHelper;
@@ -59,11 +54,9 @@ public class DDConfigUpdater {
     @Inject
     public DDConfigUpdater(DDEditorService ddEditorService,
                            KieModuleService moduleService,
-                           @Named("ioStrategy") IOService ioService,
                            DDConfigUpdaterHelper configUpdaterHelper) {
         this.ddEditorService = ddEditorService;
         this.moduleService = moduleService;
-        this.ioService = ioService;
         this.configUpdaterHelper = configUpdaterHelper;
     }
 
@@ -89,32 +82,31 @@ public class DDConfigUpdater {
     private void addWorkItemToConfig(final KieModule kieModule,
                                      final DesignerWorkitemInstalledEvent workitemInstalledEvent) {
         Path deploymentDescriptorPath = getDeploymentDescriptorPath(kieModule);
-        if (ioService.exists(Paths.convert(deploymentDescriptorPath))) {
-            DeploymentDescriptorModel descriptorModel = ddEditorService.load(deploymentDescriptorPath);
+        ddEditorService.createIfNotExists(deploymentDescriptorPath);
+        DeploymentDescriptorModel descriptorModel = ddEditorService.load(deploymentDescriptorPath);
 
-            if (descriptorModel != null) {
-                if (descriptorModel.getWorkItemHandlers() == null) {
-                    descriptorModel.setWorkItemHandlers(new ArrayList<>());
-                }
+        if (descriptorModel != null) {
+            if (descriptorModel.getWorkItemHandlers() == null) {
+                descriptorModel.setWorkItemHandlers(new ArrayList<>());
+            }
 
-                if (isValidWorkitem(workitemInstalledEvent) && !workItemAlreadyInstalled(descriptorModel.getWorkItemHandlers(),
-                                                                                         workitemInstalledEvent.getName())) {
-                    ItemObjectModel itemModel = new ItemObjectModel(workitemInstalledEvent.getName(),
-                                                                    parseWorkitemValue(workitemInstalledEvent.getValue()),
-                                                                    getWorkitemResolver(workitemInstalledEvent.getValue(),
-                                                                                        workitemInstalledEvent.getResolver()),
-                                                                    null);
-                    descriptorModel.getWorkItemHandlers().add(itemModel);
+            if (isValidWorkitem(workitemInstalledEvent) && !workItemAlreadyInstalled(descriptorModel.getWorkItemHandlers(),
+                                                                                     workitemInstalledEvent.getName())) {
+                ItemObjectModel itemModel = new ItemObjectModel(workitemInstalledEvent.getName(),
+                                                                parseWorkitemValue(workitemInstalledEvent.getValue()),
+                                                                getWorkitemResolver(workitemInstalledEvent.getValue(),
+                                                                                    workitemInstalledEvent.getResolver()),
+                                                                null);
+                descriptorModel.getWorkItemHandlers().add(itemModel);
 
-                    CommentedOption commentedOption = new CommentedOption("system",
-                                                                          null,
-                                                                          "Workitem config added by system.",
-                                                                          new Date());
-                    ((DDEditorServiceImpl) ddEditorService).save(deploymentDescriptorPath,
-                                                                 descriptorModel,
-                                                                 descriptorModel.getOverview().getMetadata(),
-                                                                 commentedOption);
-                }
+                CommentedOption commentedOption = new CommentedOption("system",
+                                                                      null,
+                                                                      "Workitem config added by system.",
+                                                                      new Date());
+                ((DDEditorServiceImpl) ddEditorService).save(deploymentDescriptorPath,
+                                                             descriptorModel,
+                                                             descriptorModel.getOverview().getMetadata(),
+                                                             commentedOption);
             }
         }
     }
@@ -173,18 +165,17 @@ public class DDConfigUpdater {
 
         Path deploymentDescriptorPath = getDeploymentDescriptorPath(kieModule);
 
-        if (ioService.exists(Paths.convert(deploymentDescriptorPath))) {
-            //if deployment descriptor exists created, then update it.
-            DeploymentDescriptorModel descriptorModel = ddEditorService.load(deploymentDescriptorPath);
-            updateMarshallingConfig(descriptorModel,
-                                    deploymentDescriptorPath,
-                                    kieModule);
-        }
+        ddEditorService.createIfNotExists(deploymentDescriptorPath);
+        //if deployment descriptor exists created, then update it.
+        DeploymentDescriptorModel descriptorModel = ddEditorService.load(deploymentDescriptorPath);
+        updateMarshallingConfig(descriptorModel,
+                                deploymentDescriptorPath,
+                                kieModule);
     }
 
     private Path getDeploymentDescriptorPath(final KieModule kieModule) {
         return PathFactory.newPath("kie-deployment-descriptor.xml",
-                                   kieModule.getRootPath().toURI() + "/src/main/resources/META-INF/kie-deployment-descriptor.xml");
+                                   kieModule.getRootPath().toURI() + "src/main/resources/META-INF/kie-deployment-descriptor.xml");
     }
 
     private void updateMarshallingConfig(final DeploymentDescriptorModel descriptorModel,
