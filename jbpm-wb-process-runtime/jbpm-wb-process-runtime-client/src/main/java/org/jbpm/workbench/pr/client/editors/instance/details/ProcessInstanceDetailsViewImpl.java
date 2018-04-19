@@ -73,6 +73,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements Process
     }
 
     public void initTabs() {
+        tabContent.setPaddingBottom(50);
         {
             instanceDetailsPane = GWT.create(TabPane.class);
             instanceDetailsPane.add(presenter.getProcessInstanceView());
