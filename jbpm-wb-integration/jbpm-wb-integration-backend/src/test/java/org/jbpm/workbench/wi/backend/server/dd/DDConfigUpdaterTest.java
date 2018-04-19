@@ -43,8 +43,10 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -74,7 +76,6 @@ public class DDConfigUpdaterTest {
         model.setOverview(new Overview());
         ddConfigUpdater = new DDConfigUpdater(ddEditorService,
                                               moduleService,
-                                              ioService,
                                               configUpdaterHelper);
 
         Path rootPath = Mockito.mock(Path.class);
@@ -87,6 +88,7 @@ public class DDConfigUpdaterTest {
         when(configUpdaterHelper.buildJPAMarshallingStrategyValue(any(KieModule.class))).thenReturn(JPA_MARSHALLING_STRATEGY);
         when(moduleService.resolveModule(any(Path.class))).thenReturn(module);
         when(ddEditorService.load(any(Path.class))).thenReturn(model);
+        doNothing().when(ddEditorService).createIfNotExists(any());
     }
 
     @Test
@@ -331,16 +333,20 @@ public class DDConfigUpdaterTest {
         handler.setIoService(ioService);
 
         BuildResults results = new BuildResults();
-        results.addParameter("RootPath", "default://test-project");
+        results.addParameter("RootPath",
+                             "default://test-project");
 
         handler.process(results);
 
+        verify(ddEditorService, times(1)).createIfNotExists(any());
+
         String strategy = results.getParameter("RuntimeStrategy");
-        assertEquals(strategyFromDeploymentDescriptor, strategy);
+        assertEquals(strategyFromDeploymentDescriptor,
+                     strategy);
     }
 
     @Test
-    public void bpmPostBuildHandlerDoesNothing_whenDeploymentDescriptorDoesNotExist() {
+    public void bpmPostBuildHandlerCreatesDefaultDescriptor_whenDeploymentDescriptorDoesNotExist() {
         when(ioService.exists(any()))
                 .thenReturn(false);
 
@@ -349,14 +355,18 @@ public class DDConfigUpdaterTest {
         handler.setIoService(ioService);
 
         BuildResults results = spy(new BuildResults());
-        results.addParameter("RootPath", "default://test-project");
+        results.addParameter("RootPath",
+                             "default://test-project");
         handler.process(results);
 
-        verify(ioService).exists(any());
-        verify(ddEditorService, never())
+        verify(ddEditorService, times(1)).createIfNotExists(any());
+        verify(ddEditorService,
+               times(1))
                 .load(anyObject());
-        verify(results, never())
-                .addParameter(eq("RuntimeStrategy"), anyString());
+        verify(results,
+               times(1))
+                .addParameter(eq("RuntimeStrategy"),
+                              anyString());
     }
 
     @Test
@@ -369,9 +379,13 @@ public class DDConfigUpdaterTest {
         BuildResults resultToProcess = spy(new BuildResults());
         handler.process(resultToProcess);
 
-        verify(ddEditorService, never())
+        verify(ddEditorService, never()).createIfNotExists(any());
+        verify(ddEditorService,
+               never())
                 .load(anyObject());
-        verify(resultToProcess, never())
-                .addParameter(eq("RuntimeStrategy"), anyString());
+        verify(resultToProcess,
+               never())
+                .addParameter(eq("RuntimeStrategy"),
+                              anyString());
     }
 }
