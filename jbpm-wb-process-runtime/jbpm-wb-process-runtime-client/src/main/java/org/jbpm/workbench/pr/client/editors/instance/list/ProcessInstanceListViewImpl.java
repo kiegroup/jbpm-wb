@@ -261,10 +261,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
     private void initBulkActions(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
         extendedPagedTable.getRightActionsToolbar().clear();
-        final AnchorListItem bulkAbortNavLink = GWT.create(AnchorListItem.class);
-        bulkAbortNavLink.setText(constants.Bulk_Abort());
-        final AnchorListItem bulkSignalNavLink = GWT.create(AnchorListItem.class);
-        bulkSignalNavLink.setText(constants.Bulk_Signal());
 
         final ButtonGroup bulkActions = GWT.create(ButtonGroup.class);
 
@@ -280,10 +276,16 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         bulkDropDown.addStyleName(Styles.DROPDOWN_MENU + "-right");
         bulkDropDown.getElement().getStyle().setMarginRight(5,
                                                             Style.Unit.PX);
-        bulkDropDown.add(bulkAbortNavLink);
-        bulkDropDown.add(bulkSignalNavLink);
+        bulkDropDown.add(getBulkAbort(extendedPagedTable));
+        bulkDropDown.add(getBulkSignal(extendedPagedTable));
         bulkActions.add(bulkDropDown);
 
+        extendedPagedTable.getRightActionsToolbar().add(bulkActions);
+    }
+
+    protected AnchorListItem getBulkAbort(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable){
+        final AnchorListItem bulkAbortNavLink = GWT.create(AnchorListItem.class);
+        bulkAbortNavLink.setText(constants.Bulk_Abort());
         bulkAbortNavLink.setIcon(IconType.BAN);
         bulkAbortNavLink.setIconFixedWidth(true);
         bulkAbortNavLink.addClickHandler(event -> confirmPopup.show(constants.Abort_Confirmation(),
@@ -291,12 +293,16 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                                                     constants.Abort_Process_Instances(),
                                                                     getAbortCommand(extendedPagedTable))
         );
+        return bulkAbortNavLink;
+    }
 
+    protected AnchorListItem getBulkSignal(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable){
+        final AnchorListItem bulkSignalNavLink = GWT.create(AnchorListItem.class);
+        bulkSignalNavLink.setText(constants.Bulk_Signal());
         bulkSignalNavLink.setIcon(IconType.BELL);
         bulkSignalNavLink.setIconFixedWidth(true);
-        bulkSignalNavLink.addClickHandler(event -> getSignalCommand(extendedPagedTable));
-
-        extendedPagedTable.getRightActionsToolbar().add(bulkActions);
+        bulkSignalNavLink.addClickHandler(event -> getSignalCommand(extendedPagedTable).execute());
+        return bulkSignalNavLink;
     }
 
     protected Command getSignalCommand(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
