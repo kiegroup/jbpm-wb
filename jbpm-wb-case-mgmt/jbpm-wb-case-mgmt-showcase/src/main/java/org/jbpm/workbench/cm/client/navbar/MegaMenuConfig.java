@@ -26,7 +26,7 @@ public class MegaMenuConfig implements MegaMenuBrand {
 
     @Override
     public String brandImageUrl() {
-        return "/" + GWT.getModuleName() + "/img/logo.png";
+        return GWT.getModuleName() + "/img/logo.png";
     }
 
     @Override
