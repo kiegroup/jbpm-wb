@@ -58,6 +58,8 @@ public class ProcessDefinitionDetailsViewImpl extends Composite implements Proce
     }
 
     protected void initTabs() {
+        tabContent.setPaddingBottom(50);
+
         definitionDetailsPane = new TabPane() {{
             add(presenter.getDetailsView());
             setActive(true);
