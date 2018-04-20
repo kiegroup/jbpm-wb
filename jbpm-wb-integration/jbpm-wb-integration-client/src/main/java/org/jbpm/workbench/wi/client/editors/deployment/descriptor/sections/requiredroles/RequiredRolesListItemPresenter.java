@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptor.items;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.ListItemPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.UberElementalListItem;
+import org.kie.workbench.common.screens.library.client.settings.util.list.ListItemPresenter;
+import org.kie.workbench.common.screens.library.client.settings.util.list.ListItemView;
 
 @Dependent
-public class RequiredRolesListItemPresenter extends ListItemPresenter<String, DeploymentsSectionPresenter, RequiredRolesListItemPresenter.View> {
+public class RequiredRolesListItemPresenter extends ListItemPresenter<String, DeploymentsRequiredRolesPresenter, RequiredRolesListItemPresenter.View> {
 
     private String role;
-    DeploymentsSectionPresenter parentPresenter;
+    DeploymentsRequiredRolesPresenter parentPresenter;
 
     @Inject
     public RequiredRolesListItemPresenter(final View view) {
@@ -37,7 +36,7 @@ public class RequiredRolesListItemPresenter extends ListItemPresenter<String, De
 
     @Override
     public RequiredRolesListItemPresenter setup(final String role,
-                                                final DeploymentsSectionPresenter parentPresenter) {
+                                                final DeploymentsRequiredRolesPresenter parentPresenter) {
         this.role = role;
         this.parentPresenter = parentPresenter;
 
@@ -58,7 +57,7 @@ public class RequiredRolesListItemPresenter extends ListItemPresenter<String, De
         return role;
     }
 
-    public interface View extends UberElementalListItem<RequiredRolesListItemPresenter>,
+    public interface View extends ListItemView<RequiredRolesListItemPresenter>,
                                   IsElement {
 
         void setRole(final String role);

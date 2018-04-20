@@ -22,21 +22,21 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import elemental2.dom.Element;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
-import org.kie.workbench.common.screens.library.client.settings.util.KieEnumSelectElement;
-import org.kie.workbench.common.screens.library.client.settings.util.ListItemPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.UberElementalListItem;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
+import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
+import org.kie.workbench.common.screens.library.client.settings.util.list.ListItemPresenter;
+import org.kie.workbench.common.screens.library.client.settings.util.list.ListItemView;
 
 @Dependent
-public class NamedObjectItemPresenter extends ListItemPresenter<ItemObjectModel, DeploymentsSectionPresenter, NamedObjectItemPresenter.View> implements ObjectPresenter {
+public class NamedObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Section<?>, NamedObjectItemPresenter.View> implements ObjectPresenter {
 
     private final ParametersModal parametersModal;
     private final KieEnumSelectElement<Resolver> resolversSelect;
 
     ItemObjectModel model;
-    DeploymentsSectionPresenter parentPresenter;
+    Section<?> parentPresenter;
 
     @Inject
     public NamedObjectItemPresenter(final View view,
@@ -49,7 +49,7 @@ public class NamedObjectItemPresenter extends ListItemPresenter<ItemObjectModel,
 
     @Override
     public NamedObjectItemPresenter setup(final ItemObjectModel model,
-                                          final DeploymentsSectionPresenter parentPresenter) {
+                                          final Section<?> parentPresenter) {
         this.model = model;
         this.parentPresenter = parentPresenter;
 
@@ -102,7 +102,7 @@ public class NamedObjectItemPresenter extends ListItemPresenter<ItemObjectModel,
         fireChangeEvent();
     }
 
-    public interface View extends UberElementalListItem<NamedObjectItemPresenter> {
+    public interface View extends ListItemView<NamedObjectItemPresenter> {
 
         Element getResolversContainer();
 

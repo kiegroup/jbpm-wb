@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptor.items;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.remoteableclasses;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,22 +27,22 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 @Templated("#root")
-public class RequiredRolesListItemView implements RequiredRolesListItemPresenter.View {
+public class RemoteableClassListItemView implements RemoteableClassListItemPresenter.View {
 
     @Inject
     @Named("span")
-    @DataField("role")
-    private HTMLElement role;
+    @DataField("class")
+    private HTMLElement clazz;
 
     @Inject
     @DataField("remove-button")
     @SuppressWarnings("PMD.UnusedPrivateField")
     private HTMLAnchorElement removeButton;
 
-    private RequiredRolesListItemPresenter presenter;
+    private RemoteableClassListItemPresenter presenter;
 
     @Override
-    public void init(final RequiredRolesListItemPresenter presenter) {
+    public void init(final RemoteableClassListItemPresenter presenter) {
         this.presenter = presenter;
     }
 
@@ -52,7 +52,7 @@ public class RequiredRolesListItemView implements RequiredRolesListItemPresenter
     }
 
     @Override
-    public void setRole(final String role) {
-        this.role.textContent = role;
+    public void setClass(final String role) {
+        this.clazz.textContent = role;
     }
 }
