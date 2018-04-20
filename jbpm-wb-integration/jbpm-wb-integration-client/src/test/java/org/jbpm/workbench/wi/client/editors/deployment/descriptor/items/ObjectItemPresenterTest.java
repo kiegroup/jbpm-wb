@@ -18,14 +18,15 @@ package org.jbpm.workbench.wi.client.editors.deployment.descriptor.items;
 
 import com.google.common.collect.ImmutableList;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter.MarshallingStrategiesListPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.marshallingstrategies.DeploymentsMarshallingStrategiesPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.marshallingstrategies.DeploymentsMarshallingStrategiesPresenter.MarshallingStrategiesListPresenter;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.model.Parameter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.workbench.common.screens.library.client.settings.util.KieEnumSelectElement;
+import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 

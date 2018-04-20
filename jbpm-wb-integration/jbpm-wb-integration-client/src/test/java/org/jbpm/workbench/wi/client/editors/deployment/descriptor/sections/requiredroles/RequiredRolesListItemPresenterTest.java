@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.wi.client.editors.deployment.descriptor.items;
+package org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles;
 
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter.RequiredRolesListPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles.DeploymentsRequiredRolesPresenter.RemoteableClassListPresenter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,15 +43,15 @@ public class RequiredRolesListItemPresenterTest {
 
     @Test
     public void testSetup() {
-        requiredRolesListItemPresenter.setup("Role", mock(DeploymentsSectionPresenter.class));
+        requiredRolesListItemPresenter.setup("Role", mock(DeploymentsRequiredRolesPresenter.class));
         verify(view).init(eq(requiredRolesListItemPresenter));
         verify(view).setRole(eq("Role"));
     }
 
     @Test
     public void testRemove() {
-        final DeploymentsSectionPresenter parentPresenter = mock(DeploymentsSectionPresenter.class);
-        final RequiredRolesListPresenter listPresenter = mock(RequiredRolesListPresenter.class);
+        final DeploymentsRequiredRolesPresenter parentPresenter = mock(DeploymentsRequiredRolesPresenter.class);
+        final RemoteableClassListPresenter listPresenter = mock(RemoteableClassListPresenter.class);
 
         requiredRolesListItemPresenter.parentPresenter = parentPresenter;
         requiredRolesListItemPresenter.setListPresenter(listPresenter);
