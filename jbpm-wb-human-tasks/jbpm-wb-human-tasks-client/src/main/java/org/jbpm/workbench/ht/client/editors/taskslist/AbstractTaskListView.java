@@ -165,10 +165,10 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
             }
         }
 
+        extendedPagedTable.addColumns(columnMetas);
         extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
                                           ACTIONS_COLUMN_WIDTH,
                                           Style.Unit.PX);
-        extendedPagedTable.addColumns(columnMetas);
         extendedPagedTable.getColumnSortList().push(createdOnColumn);
     }
 
@@ -230,18 +230,6 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                                    presenter.getProcessInstanceCondition(),
                                                    true)
         );
-    }
-
-    protected boolean isColumnAdded(List<ColumnMeta<TaskSummary>> columnMetas,
-                                    String caption) {
-        if (caption != null) {
-            for (ColumnMeta<TaskSummary> colMet : columnMetas) {
-                if (caption.equals(colMet.getColumn().getDataStoreName())) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public void addDomainSpecifColumns(ListTable<TaskSummary> extendedPagedTable,

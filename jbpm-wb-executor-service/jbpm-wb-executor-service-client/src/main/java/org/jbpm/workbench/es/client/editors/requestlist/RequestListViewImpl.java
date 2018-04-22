@@ -98,10 +98,10 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                                          constants.Process_Instance_Description()));
         columnMetas.add(actionsColumnMeta);
 
+        extendedPagedTable.addColumns(columnMetas);
         extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
                                           ACTIONS_COLUMN_WIDTH,
                                           Style.Unit.PX);
-        extendedPagedTable.addColumns(columnMetas);
         extendedPagedTable.getColumnSortList().push(timestampColumn);
     }
 
