@@ -247,6 +247,18 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         return checkColMeta;
     }
 
+    protected boolean isColumnAdded(List<ColumnMeta<T>> columnMetas,
+                                    String caption) {
+        if (caption != null) {
+            for (ColumnMeta<T> colMet : columnMetas) {
+                if (caption.equals(colMet.getColumn().getDataStoreName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     protected abstract List<ConditionalAction<T>> getConditionalActions();
 
     protected ColumnMeta<T> initActionsColumn() {

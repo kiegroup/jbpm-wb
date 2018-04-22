@@ -187,14 +187,13 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
 
         columnMetas.add(actionsColumnMeta);
 
+        extendedPagedTable.addColumns(columnMetas);
         extendedPagedTable.setColumnWidth(checkColumnMeta.getColumn(),
                                           CHECK_COLUMN_WIDTH,
                                           Style.Unit.PX);
         extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
                                           ACTIONS_COLUMN_WIDTH,
                                           Style.Unit.PX);
-
-        extendedPagedTable.addColumns(columnMetas);
         extendedPagedTable.getColumnSortList().push(errorDateColumn);
     }
 

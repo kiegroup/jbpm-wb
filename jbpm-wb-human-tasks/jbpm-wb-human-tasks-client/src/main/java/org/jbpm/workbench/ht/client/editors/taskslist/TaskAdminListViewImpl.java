@@ -17,6 +17,7 @@ package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -56,9 +57,17 @@ public class TaskAdminListViewImpl extends AbstractTaskListView<TaskAdminListPre
         extendedPagedTable.addSelectionIgnoreColumn(errorCountColumn);
         columnMetas.add(new ColumnMeta<>(errorCountColumn,
                                          constants.Errors()));
-        extendedPagedTable.setColumnWidth(errorCountColumn,
-                                          ERROR_COLUMN_WIDTH,
-                                          Style.Unit.PX);
+    }
+
+    @Override
+    public void initColumns(ListTable<TaskSummary> extendedPagedTable) {
+        super.initColumns(extendedPagedTable);
+        Optional<ColumnMeta<TaskSummary>> errorCountColumn = extendedPagedTable.getColumnMetaList().stream().filter(c -> COLUMN_ERROR_COUNT.equals(c.getColumn().getDataStoreName())).findFirst();
+        if (errorCountColumn.isPresent()) {
+            extendedPagedTable.setColumnWidth(errorCountColumn.get().getColumn(),
+                                              ERROR_COLUMN_WIDTH,
+                                              Style.Unit.PX);
+        }
     }
 
     private Column<TaskSummary, TaskSummary> initErrorCountColumn() {
