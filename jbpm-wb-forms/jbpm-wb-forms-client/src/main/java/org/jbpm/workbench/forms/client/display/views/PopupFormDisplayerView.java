@@ -27,6 +27,7 @@ import org.gwtbootstrap3.client.ui.ModalFooter;
 import org.gwtbootstrap3.client.ui.ModalSize;
 import org.jbpm.workbench.forms.client.display.GenericFormDisplayer;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
+import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.mvp.Command;
 
 @Dependent
@@ -85,6 +86,11 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
         }
         setWidth("");
         initialized = false;
+    }
+
+    @Override
+    public void displayErrorMessage(String header, String errorMessage) {
+        ErrorPopup.showMessage(header + "\n" + errorMessage);
     }
 
     @Override

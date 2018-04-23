@@ -19,24 +19,27 @@ package org.jbpm.workbench.forms.client.display.providers;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
+import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayProvider;
 import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayer;
-import org.jbpm.workbench.forms.display.FormRenderingSettings;
-import org.jbpm.workbench.forms.service.shared.FormServiceEntryPoint;
 import org.jbpm.workbench.forms.client.display.views.FormDisplayerView;
 import org.jbpm.workbench.forms.client.i18n.Constants;
+import org.jbpm.workbench.forms.display.FormRenderingSettings;
 import org.jbpm.workbench.forms.display.api.HumanTaskDisplayerConfig;
+import org.jbpm.workbench.forms.display.api.TaskFormPermissionDeniedException;
+import org.jbpm.workbench.forms.service.shared.FormServiceEntryPoint;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
-import org.uberfire.mvp.Command;
 
 @ApplicationScoped
 public class HumanTaskFormDisplayProviderImpl implements HumanTaskFormDisplayProvider {
@@ -78,30 +81,30 @@ public class HumanTaskFormDisplayProviderImpl implements HumanTaskFormDisplayPro
     protected void display(final HumanTaskDisplayerConfig config,
                            final FormDisplayerView view) {
         if (taskDisplayers != null) {
-            formServices.call(new RemoteCallback<FormRenderingSettings>() {
-                @Override
-                public void callback(FormRenderingSettings settings) {
+            formServices.call((RemoteCallback<FormRenderingSettings>) settings -> {
 
-                    if (settings == null) {
-                        ErrorPopup.showMessage(constants.UnableToFindFormForTask(config.getKey().getTaskId()));
-                    } else {
-                        HumanTaskFormDisplayer displayer = taskDisplayers.get(settings.getClass());
+                if (settings == null) {
+                    ErrorPopup.showMessage(constants.UnableToFindFormForTask(config.getKey().getTaskId()));
+                } else {
+                    HumanTaskFormDisplayer displayer = taskDisplayers.get(settings.getClass());
 
-                        if (displayer != null) {
-                            config.setRenderingSettings(settings);
-                            displayer.init(config,
-                                           view.getOnCloseCommand(),
-                                           new Command() {
-                                               @Override
-                                               public void execute() {
-                                                   display(config,
-                                                           view);
-                                               }
-                                           });
-                            view.display(displayer);
-                        }
+                    if (displayer != null) {
+                        config.setRenderingSettings(settings);
+                        displayer.init(config,
+                                       view.getOnCloseCommand(),
+                                       () -> display(config, view));
+                        view.display(displayer);
                     }
                 }
+            }, (ErrorCallback<Message>) (message, throwable) -> {
+                String errorMessage;
+                if (throwable instanceof TaskFormPermissionDeniedException) {
+                    errorMessage = Constants.INSTANCE.PermissionDenied();
+                } else {
+                    errorMessage = Constants.INSTANCE.Exception(throwable.getMessage());
+                }
+                view.displayErrorMessage(Constants.INSTANCE.TaskFormErrorHeader(), errorMessage);
+                return false;
             }).getFormDisplayTask(config.getKey().getServerTemplateId(),
                                   config.getKey().getDeploymentId(),
                                   config.getKey().getTaskId());
