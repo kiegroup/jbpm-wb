@@ -22,10 +22,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.enterprise.inject.Instance;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
 import org.jbpm.workbench.forms.display.FormRenderingSettings;
 import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
+import org.jbpm.workbench.forms.display.api.TaskFormPermissionDeniedException;
 import org.jbpm.workbench.forms.display.backend.provider.DefaultKieWorkbenchFormsProvider;
 import org.jbpm.workbench.forms.display.backend.provider.KieWorkbenchFormsProvider;
 import org.jbpm.workbench.forms.display.backend.provider.ProcessFormsValuesProcessor;
@@ -36,6 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.server.api.exception.KieServicesException;
+import org.kie.server.api.exception.KieServicesHttpException;
 import org.kie.server.api.model.definition.ProcessDefinition;
 import org.kie.server.api.model.definition.TaskInputsDefinition;
 import org.kie.server.api.model.definition.TaskOutputsDefinition;
@@ -328,10 +331,31 @@ public class FormServiceEntryPointImplTest {
         checkRenderingSettings(settings);
     }
 
+    @Test(expected = TaskFormPermissionDeniedException.class)
+    public void testRenderTaskFormWithPermissionException() {
+        when(uiServicesClient.getTaskRawForm(anyString(), anyLong()))
+                .thenThrow(new KieServicesHttpException("", Response.Status.UNAUTHORIZED.getStatusCode(), "", ""));
+
+        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayTask("template",
+                                                                              "domain",
+                                                                              12);
+
+        verify(userTaskServicesClient).getTaskInstance(anyString(),
+                                                       anyLong(),
+                                                       anyBoolean(),
+                                                       anyBoolean(),
+                                                       anyBoolean());
+        verify(kieServicesClient,
+               times(2)).getClassLoader();
+        verify(uiServicesClient).getTaskRawForm(anyString(),
+                                                anyLong());
+
+        checkRenderingSettings(settings);
+    }
+
     @Test
     public void testRenderTaskDefaultFormWithException() {
-        when(uiServicesClient.getTaskRawForm(anyString(),
-                                             anyLong())).thenThrow(new KieServicesException("Unable to find form"));
+        when(uiServicesClient.getTaskRawForm(anyString(), anyLong())).thenThrow(new KieServicesException("Unable to find form"));
 
         FormRenderingSettings settings = serviceEntryPoint.getFormDisplayTask("template",
                                                                               "domain",

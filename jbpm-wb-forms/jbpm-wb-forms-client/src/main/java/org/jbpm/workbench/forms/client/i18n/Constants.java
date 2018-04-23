@@ -84,4 +84,10 @@ public interface Constants extends Messages {
     String ProcessStarted(Long processInstanceId);
 
     String UnableToFindFormForProcess(String processName);
+
+    String TaskFormErrorHeader();
+
+    String PermissionDenied();
+
+    String Exception(String message);
 }

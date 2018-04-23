@@ -22,6 +22,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.workbench.forms.client.display.views.display.EmbeddedFormDisplayer;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import com.google.gwt.user.client.ui.Composite;
@@ -38,16 +39,16 @@ public class GenericFormDisplayView extends Composite implements GenericFormDisp
     private FlowPanel formContainer = new FlowPanel();
 
     @Inject
-    private EmbeddedFormDisplayView view;
+    private EmbeddedFormDisplayer displayer;
 
     @PostConstruct
     public void init() {
-        formContainer.add(view.getView());
+        formContainer.add(displayer.asWidget());
     }
 
     @Override
     public FormDisplayerView getDisplayerView() {
-        return view;
+        return displayer;
     }
 
     @Override
