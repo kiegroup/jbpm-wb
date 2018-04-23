@@ -23,7 +23,6 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
@@ -256,12 +255,6 @@ public class FilterEditorPopup extends BaseModal {
 
     protected void setEditorListener(final Consumer<FilterSettings> editorListener) {
         this.editorListener = editorListener;
-    }
-
-    @Override
-    public void onHide(Event e) {
-        super.onHide(e);
-        filtersControlPanel.clear();
     }
 
     interface Binder extends UiBinder<Widget, FilterEditorPopup> {

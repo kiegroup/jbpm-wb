@@ -49,11 +49,8 @@
       </b:Column>
     </b:Row>
     <b:Row>
-      <b:Column size="MD_3">
-      </b:Column>
-      <b:Column size="MD_9">
-        <g:FlowPanel ui:field="filtersControlPanel" visible="true">
-        </g:FlowPanel>
+      <b:Column offset="MD_3" size="MD_9">
+        <g:FlowPanel ui:field="filtersControlPanel"/>
         <b:FormGroup ui:field="errorMessagesGroup">
           <b:HelpBlock ui:field="errorMessages"/>
         </b:FormGroup>
