@@ -38,6 +38,7 @@ import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.views.pfly.menu.MainBrand;
 import org.uberfire.client.workbench.widgets.menu.megamenu.WorkbenchMegaMenuPresenter;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.mvp.impl.ForcedPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
@@ -113,24 +114,24 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
 
     protected List<? extends MenuItem> getProcessManagementViews() {
         return Arrays.asList(
-                MenuFactory.newSimpleItem(commonConstants.Process_Definitions()).perspective(PROCESS_DEFINITIONS).endMenu().build().getItems().get(0),
-                MenuFactory.newSimpleItem(commonConstants.Process_Instances()).perspective(PROCESS_INSTANCES).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(commonConstants.Process_Definitions()).place(new ForcedPlaceRequest(PROCESS_DEFINITIONS)).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(commonConstants.Process_Instances()).place(new ForcedPlaceRequest(PROCESS_INSTANCES)).endMenu().build().getItems().get(0),
                 MenuFactory.newSimpleItem(constants.Process_Instances_Admin()).perspective(ProcessAdminSettingsPerspective.PERSPECTIVE_ID).endMenu().build().getItems().get(0),
-                MenuFactory.newSimpleItem(commonConstants.Tasks()).perspective(TASKS_ADMIN).endMenu().build().getItems().get(0),
-                MenuFactory.newSimpleItem(commonConstants.ExecutionErrors()).perspective(EXECUTION_ERRORS).endMenu().build().getItems().get(0)
+                MenuFactory.newSimpleItem(commonConstants.Tasks()).place(new ForcedPlaceRequest(TASKS_ADMIN)).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(commonConstants.ExecutionErrors()).place(new ForcedPlaceRequest(EXECUTION_ERRORS)).endMenu().build().getItems().get(0)
         );
     }
 
     protected List<? extends MenuItem> getDeploymentViews() {
         return Arrays.asList(
                 MenuFactory.newSimpleItem(constants.Execution_Servers()).place(new DefaultPlaceRequest(SERVER_MANAGEMENT)).endMenu().build().getItems().get(0),
-                MenuFactory.newSimpleItem(commonConstants.Jobs()).perspective(JOBS).endMenu().build().getItems().get(0)
+                MenuFactory.newSimpleItem(commonConstants.Jobs()).place(new ForcedPlaceRequest(JOBS)).endMenu().build().getItems().get(0)
         );
     }
 
     protected List<? extends MenuItem> getWorkViews() {
         return Arrays.asList(
-                MenuFactory.newSimpleItem(commonConstants.Task_Inbox()).perspective(TASKS).endMenu().build().getItems().get(0),
+                MenuFactory.newSimpleItem(commonConstants.Task_Inbox()).place(new ForcedPlaceRequest(TASKS)).endMenu().build().getItems().get(0),
                 MenuFactory.newSimpleItem(constants.Tasks_List_Admin()).perspective(TaskAdminSettingsPerspective.PERSPECTIVE_ID).endMenu().build().getItems().get(0),
                 MenuFactory.newSimpleItem(constants.Data_Sets()).perspective(DATASET_AUTHORING).endMenu().build().getItems().get(0)
         );
