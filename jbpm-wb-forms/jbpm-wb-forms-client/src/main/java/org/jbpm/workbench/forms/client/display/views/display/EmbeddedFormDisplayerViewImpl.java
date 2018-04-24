@@ -17,10 +17,9 @@
 package org.jbpm.workbench.forms.client.display.views.display;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Composite;
@@ -32,26 +31,31 @@ import org.jbpm.workbench.forms.client.display.GenericFormDisplayer;
 @Templated
 public class EmbeddedFormDisplayerViewImpl extends Composite implements EmbeddedFormDisplayerView {
 
+    @Inject
     @DataField
-    private DivElement formContainerRow = Document.get().createDivElement();
+    private DivElement formContainerRow;
 
     @DataField
-    private FlowPanel formContainer = GWT.create(FlowPanel.class);
+    private FlowPanel formContainer = new FlowPanel();
+
+    @Inject
+    @DataField
+    private DivElement formFooterRow;
 
     @DataField
-    private DivElement formFooterRow = Document.get().createDivElement();
+    private FlowPanel formFooter = new FlowPanel();
 
+    @Inject
     @DataField
-    private FlowPanel formFooter = GWT.create(FlowPanel.class);
+    private DivElement errorContainerRow;
 
+    @Inject
     @DataField
-    private DivElement errorContainerRow = Document.get().createDivElement();
+    private SpanElement errorHeader;
 
+    @Inject
     @DataField
-    private SpanElement errorHeader = Document.get().createSpanElement();
-
-    @DataField
-    private SpanElement errorContainer = Document.get().createSpanElement();
+    private SpanElement errorContainer;
 
     @PostConstruct
     public void initialize() {
