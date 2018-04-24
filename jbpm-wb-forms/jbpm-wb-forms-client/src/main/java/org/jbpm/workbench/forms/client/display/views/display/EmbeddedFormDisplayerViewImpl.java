@@ -19,6 +19,7 @@ package org.jbpm.workbench.forms.client.display.views.display;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
@@ -36,14 +37,14 @@ public class EmbeddedFormDisplayerViewImpl extends Composite implements Embedded
     private DivElement formContainerRow;
 
     @DataField
-    private FlowPanel formContainer = new FlowPanel();
+    private FlowPanel formContainer = GWT.create(FlowPanel.class);
 
     @Inject
     @DataField
     private DivElement formFooterRow;
 
     @DataField
-    private FlowPanel formFooter = new FlowPanel();
+    private FlowPanel formFooter = GWT.create(FlowPanel.class);
 
     @Inject
     @DataField
