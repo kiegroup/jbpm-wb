@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.Properties;
 
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -33,8 +34,12 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jbpm.workbench.wi.backend.server.casemgmt.service.CaseProvisioningSettingsImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.api.model.definition.QueryDefinition;
+import org.kie.server.client.KieServicesClient;
+import org.kie.server.client.QueryServicesClient;
 import org.uberfire.apache.commons.io.FilenameUtils;
 
+import static org.jbpm.workbench.ks.utils.KieServerUtils.createKieServicesClient;
 import static org.jbpm.workbench.wi.backend.server.casemgmt.service.CaseProvisioningSettingsImpl.CASEMGMT_PROPERTIES;
 import static org.junit.Assert.*;
 
@@ -43,7 +48,7 @@ public class DeploymentIT {
 
     public static final String ARCHIVE_NAME = "wildfly.war";
 
-    @Deployment(testable = false)
+    @Deployment(name = "workbench", order = 1, testable = false)
     public static WebArchive create() {
         final String warFile = System.getProperty(ARCHIVE_NAME);
         return ShrinkWrap.create(ZipImporter.class,
@@ -52,8 +57,28 @@ public class DeploymentIT {
                 .as(WebArchive.class);
     }
 
+    @Deployment(name = "kie-server", order = 2, testable = false)
+    public static WebArchive createKieServerWarDeployment() {
+        return createKieServerWar();
+    }
+
+    public static WebArchive createKieServerWar() {
+        try {
+            final File kieServerFile = Maven.configureResolver().workOffline().loadPomFromFile("pom.xml")
+                    .resolve("org.kie.server:kie-server:war:ee7:?").withoutTransitivity().asSingleFile();
+
+            return ShrinkWrap.create(ZipImporter.class,
+                                     "kie-server.war").importFrom(kieServerFile)
+                    .as(WebArchive.class);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
+        }
+    }
+
     @Test
     @RunAsClient
+    @OperateOnDeployment("workbench")
     public void testShowcaseDeployment(@ArquillianResource URL baseURL) throws Exception {
         HttpURLConnection c = null;
         try {
@@ -69,6 +94,7 @@ public class DeploymentIT {
 
     @Test(timeout = 30000)
     @RunAsClient
+    @OperateOnDeployment("workbench")
     public void testCaseManagementDeployment(@ArquillianResource URL baseURL) throws Exception {
         final URL cm = new URL(baseURL,
                                getCaseAppContext());
@@ -87,6 +113,48 @@ public class DeploymentIT {
                 }
             }
         }
+    }
+
+    @Test
+    @RunAsClient
+    @OperateOnDeployment("kie-server")
+    public void testCustomQueriesDeployedToKieServer(@ArquillianResource URL baseURL) throws Exception {
+        final String url = new URL(baseURL,
+                                   "services/rest/server").toString();
+
+        KieServicesClient client = createKieServicesClient(url,
+                                                           null,
+                                                           "kieserver",
+                                                           "kieserver1!",
+                                                           null);
+        QueryServicesClient queryServicesClient = client.getServicesClient(QueryServicesClient.class);
+
+        assertQueryDefinition(queryServicesClient,
+                              "jbpmProcessInstances");
+        assertQueryDefinition(queryServicesClient,
+                              "jbpmProcessInstancesWithVariables");
+        assertQueryDefinition(queryServicesClient,
+                              "processesMonitoring");
+        assertQueryDefinition(queryServicesClient,
+                              "tasksMonitoring");
+        assertQueryDefinition(queryServicesClient,
+                              "jbpmRequestList");
+        assertQueryDefinition(queryServicesClient,
+                              "jbpmExecutionErrorList");
+        assertQueryDefinition(queryServicesClient,
+                              "jbpmHumanTasks");
+        assertQueryDefinition(queryServicesClient,
+                              "jbpmHumanTasksWithUser");
+        assertQueryDefinition(queryServicesClient,
+                              "jbpmHumanTasksWithAdmin");
+        assertQueryDefinition(queryServicesClient,
+                              "jbpmHumanTasksWithVariables");
+    }
+
+    private void assertQueryDefinition(final QueryServicesClient client,
+                                       final String name) {
+        QueryDefinition qd = client.getQuery(name);
+        assertNotNull(qd);
     }
 
     private String getCaseAppContext() {
