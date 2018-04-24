@@ -32,6 +32,7 @@ import com.google.gwt.user.cellview.client.TextHeader;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
 import elemental2.dom.HTMLDivElement;
 import org.jboss.errai.common.client.api.Caller;
@@ -54,7 +55,8 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.workbench.events.NotificationEvent;
 
 public abstract class AbstractMultiGridView<T extends GenericSummary, V extends AbstractMultiGridPresenter>
-        extends Composite implements MultiGridView<T, V> {
+        extends Composite implements MultiGridView<T, V>,
+                                     RequiresResize {
 
     public static final String COL_ID_SELECT = "Select";
     public static final String COL_ID_ACTIONS = "Actions";
@@ -302,5 +304,12 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     @Override
     public void removeAllActiveFilters() {
         filters.removeAllActiveFilters();
+    }
+
+    @Override
+    public void onResize() {
+        if (listTable != null) {
+            listTable.onResize();
+        }
     }
 }
