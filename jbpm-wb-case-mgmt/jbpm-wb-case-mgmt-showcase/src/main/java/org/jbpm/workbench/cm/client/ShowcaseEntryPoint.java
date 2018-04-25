@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 
 package org.jbpm.workbench.cm.client;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
@@ -31,9 +28,6 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.api.UncaughtExceptionHandler;
-import org.jboss.errai.security.shared.api.Group;
-import org.jboss.errai.security.shared.api.Role;
-import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
@@ -41,7 +35,6 @@ import org.jbpm.workbench.cm.client.perspectives.CaseInstanceListPerspective;
 import org.kie.server.api.exception.KieServicesHttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.views.pfly.menu.UserMenu;
 import org.uberfire.client.views.pfly.widgets.ErrorPopup;
 import org.uberfire.client.workbench.events.ApplicationReadyEvent;
@@ -63,12 +56,6 @@ public class ShowcaseEntryPoint {
 
     @Inject
     protected UserMenu userMenu;
-
-    @Inject
-    protected PlaceManager placeManager;
-
-    @Inject
-    protected User identity;
 
     @Inject
     protected TranslationService translationService;
@@ -100,7 +87,7 @@ public class ShowcaseEntryPoint {
         menuBar.addMenus(menus);
     }
 
-    public void addUserMenus(){
+    public void addUserMenus() {
         final Menus userMenus = MenuFactory
                 .newTopLevelMenu(translationService.format(LOG_OUT))
                 .respondsWith(new LogoutCommand())
@@ -108,44 +95,6 @@ public class ShowcaseEntryPoint {
                 .build();
 
         userMenu.addMenus(userMenus);
-        addRolesMenuItems();
-        addGroupsMenuItems();
-    }
-
-    public void addRolesMenuItems() {
-        for (Menus roleMenus : getRoles()) {
-            userMenu.addMenus(roleMenus);
-        }
-    }
-
-    public void addGroupsMenuItems() {
-        for (Menus groups : getGroups()) {
-            userMenu.addMenus(groups);
-        }
-    }
-
-    public List<Menus> getGroups() {
-        final Set<Group> groups = identity.getGroups();
-        final List<Menus> result = new ArrayList<Menus>(groups.size());
-
-        for (final Group group : groups) {
-            result.add(MenuFactory.newSimpleItem(translationService.format(GROUP) + ": " + group.getName()).endMenu().build());
-        }
-
-        return result;
-    }
-
-    public List<Menus> getRoles() {
-        final Set<Role> roles = identity.getRoles();
-        final List<Menus> result = new ArrayList<>(roles.size());
-
-        for (final Role role : roles) {
-            if (!role.getName().equals("IS_REMEMBER_ME")) {
-                result.add(MenuFactory.newSimpleItem(translationService.format(ROLE) + ": " + role.getName()).endMenu().build());
-            }
-        }
-
-        return result;
     }
 
     public void hideLoadingPopup() {
@@ -212,5 +161,4 @@ public class ShowcaseEntryPoint {
             return GWT.getModuleName();
         }
     }
-
 }
