@@ -33,7 +33,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import org.jbpm.workbench.cm.model.CaseStageSummary;
 import org.jbpm.workbench.cm.util.CaseActionType;
-import org.jbpm.workbench.cm.util.CaseStageStatus;
 import org.uberfire.client.views.pfly.widgets.*;
 import org.uberfire.mvp.Command;
 
@@ -47,67 +46,67 @@ public class NewActionViewImpl implements CaseActionsPresenter.NewActionView {
 
     @Inject
     @DataField("action-creation-title")
-    Span modalTitle;
+    private Span modalTitle;
 
     @Inject
     @DataField("action-name-group")
-    FormGroup actionNameGroup;
+    private FormGroup actionNameGroup;
 
     @Inject
     @DataField("action-name-label")
-    FormLabel actionNameLabel;
+    private FormLabel actionNameLabel;
 
     @Inject
     @DataField("action-name-input")
-    TextInput actionNameInput;
+    private TextInput actionNameInput;
 
     @Inject
     @DataField("action-name-help")
-    Span actionNameHelp;
+    private Span actionNameHelp;
 
     @Inject
     @DataField("action-desc-group")
-    FormGroup actionDescGroup;
+    private FormGroup actionDescGroup;
 
     @Inject
     @DataField("action-desc-input")
-    TextInput actionDescInput;
+    private TextInput actionDescInput;
 
     @Inject
     @DataField("action-users-group")
-    FormGroup actionUsersGroup;
+    private FormGroup actionUsersGroup;
 
     @Inject
     @DataField("action-users-input")
-    TextInput actionUsersInput;
+    private TextInput actionUsersInput;
 
     @Inject
     @DataField("action-groups-group")
-    FormGroup actionGroupsGroup;
+    private FormGroup actionGroupsGroup;
 
     @Inject
     @DataField("action-groups-input")
-    TextInput actionGroupsInput;
+    private TextInput actionGroupsInput;
 
     @Inject
     @DataField("assignation-help")
-    Span assignationHelp;
+    private Span assignationHelp;
 
     @Inject
     @DataField("action-process-definitions-group")
-    FormGroup actionProcessDefinitionsGroup;
+    private FormGroup actionProcessDefinitionsGroup;
 
     @Inject
     @DataField("action-case-definitions-label")
-    FormLabel processDefinitionsLabel;
+    private FormLabel processDefinitionsLabel;
 
     @Inject
     @DataField("process-definitions-help")
-    Span processDefinitionsHelp;
+    private Span processDefinitionsHelp;
 
     @Inject
     @DataField("stages-select")
-    Select stages;
+    private Select stages;
 
     @Inject
     @DataField("action-process-definitions-select")
@@ -137,10 +136,12 @@ public class NewActionViewImpl implements CaseActionsPresenter.NewActionView {
     @Override
     public void show(final CaseActionType caseActionType,
                      final Command okCommand) {
-        setCaseActionType(caseActionType);
+        this.caseActionType = caseActionType;
+        this.okCommand = okCommand;
+
+        setInputFields();
         clearErrorMessages();
         clearValues();
-        this.okCommand = okCommand;
         modal.show();
     }
 
@@ -150,17 +151,21 @@ public class NewActionViewImpl implements CaseActionsPresenter.NewActionView {
     }
 
     @Override
-    public void setCaseStagesList(List<CaseStageSummary> caseStagesList) {
-        caseStagesList.stream()
-                .filter(s -> s.getStatus().equals(CaseStageStatus.ACTIVE.getStatus()))
-                .forEach(e -> stages.addOption(e.getIdentifier(),
-                                               e.getName()));
+    public void addStages(List<CaseStageSummary> activeStages) {
+        activeStages.forEach(activeStage -> stages.addOption(activeStage.getIdentifier(),
+                                                             activeStage.getName()));
         stages.refresh();
     }
 
     @Override
     public String getStageId() {
         return stages.getValue();
+    }
+
+    @Override
+    public void clearAllStages() {
+        stages.removeAllOptions();
+        stages.refresh();
     }
 
     private boolean validateForm() {
@@ -232,6 +237,12 @@ public class NewActionViewImpl implements CaseActionsPresenter.NewActionView {
     }
 
     @Override
+    public void clearAllProcessDefinitions() {
+        processDefinitionsList.removeAllOptions();
+        processDefinitionsList.refresh();
+    }
+
+    @Override
     public String getTaskName() {
         return actionNameInput.getValue();
     }
@@ -261,8 +272,7 @@ public class NewActionViewImpl implements CaseActionsPresenter.NewActionView {
         return modal.getElement();
     }
 
-    public void setCaseActionType(CaseActionType caseActionType) {
-        this.caseActionType = caseActionType;
+    private void setInputFields() {
         switch (caseActionType) {
             case DYNAMIC_USER_TASK: {
                 modalTitle.setTextContent(translationService.format(NEW_USER_TASK));

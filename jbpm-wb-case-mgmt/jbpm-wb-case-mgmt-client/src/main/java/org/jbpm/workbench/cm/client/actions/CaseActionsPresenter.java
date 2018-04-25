@@ -34,13 +34,16 @@ import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
 import org.jbpm.workbench.cm.util.Actions;
 import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseActionType;
+import org.jbpm.workbench.cm.util.CaseStageStatus;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.mvp.Command;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.stream.Collectors.toList;
 import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
+import static org.jbpm.workbench.cm.util.CaseActionType.*;
 
 @Dependent
 @WorkbenchScreen(identifier = CaseActionsPresenter.SCREEN_ID)
@@ -61,16 +64,21 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
         return translationService.format(CASE_ACTIONS);
     }
 
+    Map<String, ProcessDefinitionSummary> getProcessDefinitionSummaryMap() {
+        return processDefinitionSummaryMap;
+    }
+
     @Override
     protected void clearCaseInstance() {
         view.removeAllTasks();
-        newActionView.setCaseStagesList(new ArrayList<>());
+        newActionView.clearAllStages();
+        newActionView.clearAllProcessDefinitions();
     }
 
     @Override
     protected void loadCaseInstance(final CaseInstanceSummary cis) {
         view.updateListHeaders();
-        newActionView.setCaseStagesList(cis.getStages());
+        setCaseStagesList(cis.getStages());
         processDefinitionSummaryMap.clear();
         caseService.call(
                 (List<ProcessDefinitionSummary> processDefinitionSummaries) -> {
@@ -87,7 +95,14 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
         refreshData(true);
     }
 
-    protected void showDynamicAction(CaseActionType caseActionType) {
+    void setCaseStagesList(final List<CaseStageSummary> caseStagesList) {
+        newActionView.addStages(caseStagesList.stream()
+                                              .filter(s -> s.getStatus().equals(CaseStageStatus.ACTIVE.getStatus()))
+                                              .collect(toList()));
+    }
+
+
+    protected void setNewDynamicAction(CaseActionType caseActionType) {
         switch (caseActionType) {
             case DYNAMIC_USER_TASK: {
                 newActionView.show(caseActionType,
@@ -173,12 +188,12 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
                 List<CaseActionSummary> availableActions = new ArrayList<>();
                 availableActions.add(CaseActionSummary.builder()
                                              .name(translationService.getTranslation(NEW_USER_TASK))
-                                             .actionType(CaseActionType.DYNAMIC_USER_TASK)
+                                             .actionType(DYNAMIC_USER_TASK)
                                              .actionStatus(CaseActionStatus.AVAILABLE)
                                              .build());
                 availableActions.add(CaseActionSummary.builder()
                                              .name(translationService.getTranslation(NEW_PROCESS_TASK))
-                                             .actionType(CaseActionType.DYNAMIC_SUBPROCESS_TASK)
+                                             .actionType(DYNAMIC_SUBPROCESS_TASK)
                                              .actionStatus(CaseActionStatus.AVAILABLE)
                                              .build());
                 availableActions.addAll(actions.getAvailableActions());
@@ -197,7 +212,7 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
 
         switch (caseActionItemModel.getActionStatus()) {
             case AVAILABLE: {
-                caseActionItem.prepareAction(caseActionItemModel);
+                prepareAction(caseActionItem);
                 break;
             }
             case IN_PROGRESS: {
@@ -210,6 +225,52 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
             }
             case COMPLETED: {
                 caseActionItem.addCreationDate();
+            }
+        }
+    }
+
+    void prepareAction(final CaseActionItemView caseActionItem) {
+        final CaseActionSummary caseActionItemModel = caseActionItem.getValue();
+
+        switch (caseActionItemModel.getActionType()) {
+            case AD_HOC_TASK: {
+                if (isNullOrEmpty(caseActionItemModel.getStageId())) {
+                    caseActionItem.addActionInfo(translationService.format(AVAILABLE_IN) + ": " + translationService.format(CASE));
+                } else {
+                    caseActionItem.addActionInfo(translationService.format(AVAILABLE_IN) + ": " + caseActionItemModel.getStageId());
+                }
+                caseActionItem.addAction(new CaseActionsPresenter.CaseActionAction() {
+                    @Override
+                    public String label() {
+                        return translationService.format(ACTION_START);
+                    }
+
+                    @Override
+                    public void execute() {
+                        if (isNullOrEmpty(caseActionItemModel.getStageId())) {
+                            triggerAdHocAction(caseActionItemModel.getName());
+                        } else {
+                            triggerAdHocActionInStage(caseActionItemModel.getName(),
+                                                      caseActionItemModel.getStageId());
+                        }
+                    }
+                });
+                break;
+            }
+            case DYNAMIC_SUBPROCESS_TASK:
+            case DYNAMIC_USER_TASK: {
+                caseActionItem.addActionInfo(translationService.format(DYMANIC));
+                caseActionItem.addAction(new CaseActionsPresenter.CaseActionAction() {
+                    @Override
+                    public String label() {
+                        return translationService.format(ACTION_START);
+                    }
+
+                    @Override
+                    public void execute() {
+                        setNewDynamicAction(caseActionItemModel.getActionType());
+                    }
+                });
             }
         }
     }
@@ -254,11 +315,15 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
 
         String getGroups();
 
-        void setCaseStagesList(List<CaseStageSummary> caseStagesList);
+        void addStages(List<CaseStageSummary> caseStage);
+
+        String getStageId();
+
+        void clearAllStages();
 
         void setProcessDefinitions(List<String> processDefinitions);
 
-        String getStageId();
+        void clearAllProcessDefinitions();
     }
 
     public interface CaseActionAction extends Command {
