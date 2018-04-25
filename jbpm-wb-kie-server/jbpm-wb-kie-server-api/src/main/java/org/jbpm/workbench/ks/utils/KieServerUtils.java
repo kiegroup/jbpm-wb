@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.kie.server.common.KeyStoreHelperUtil.loadServerPassword;
 
 public class KieServerUtils {
 
@@ -128,8 +129,7 @@ public class KieServerUtils {
         } else {
             return new EnteredCredentialsProvider(System.getProperty(KieServerConstants.CFG_KIE_USER,
                                                                      "kieserver"),
-                                                  System.getProperty(KieServerConstants.CFG_KIE_PASSWORD,
-                                                                     "kieserver1!"));
+                                                  loadServerPassword());
         }
     }
 }

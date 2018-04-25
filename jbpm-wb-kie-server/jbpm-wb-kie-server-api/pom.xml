@@ -44,7 +44,7 @@
       <groupId>org.kie.soup</groupId>
       <artifactId>kie-soup-dataset-api</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.kie.soup</groupId>
       <artifactId>kie-soup-json</artifactId>
@@ -67,6 +67,10 @@
     <dependency>
       <groupId>org.kie.server</groupId>
       <artifactId>kie-server-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.server</groupId>
+      <artifactId>kie-server-common</artifactId>
     </dependency>
 
     <dependency>
