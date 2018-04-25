@@ -219,4 +219,9 @@ public class NewCaseProjectHandler
     public void setOpenEditorOnCreation(final boolean openEditorOnCreation) {
         this.openEditorOnCreation = openEditorOnCreation;
     }
+
+    @Override
+    public boolean isProjectAsset() {
+        return false;
+    }
 }
