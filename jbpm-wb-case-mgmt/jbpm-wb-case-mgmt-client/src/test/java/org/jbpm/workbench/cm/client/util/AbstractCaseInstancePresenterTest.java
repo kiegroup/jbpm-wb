@@ -50,7 +50,7 @@ public abstract class AbstractCaseInstancePresenterTest {
     protected Caller<CaseManagementService> caseService;
 
     @Mock
-    private TranslationService translationService;
+    protected TranslationService translationService;
 
     protected static CaseInstanceSummary newCaseInstanceSummary() {
         return CaseInstanceSummary.builder()

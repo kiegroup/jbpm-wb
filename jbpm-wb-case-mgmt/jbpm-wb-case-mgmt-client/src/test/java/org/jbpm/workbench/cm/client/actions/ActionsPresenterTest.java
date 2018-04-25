@@ -16,6 +16,8 @@
 
 package org.jbpm.workbench.cm.client.actions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -24,6 +26,7 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenterTest;
 import org.jbpm.workbench.cm.model.CaseActionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
+import org.jbpm.workbench.cm.model.CaseStageSummary;
 import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
 import org.jbpm.workbench.cm.util.Actions;
 import org.jbpm.workbench.cm.util.CaseActionStatus;
@@ -36,13 +39,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.mvp.Command;
 
-import static java.util.Collections.emptyList;
-import static org.jbpm.workbench.cm.util.CaseStageStatus.AVAILABLE;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
+import static org.jbpm.workbench.cm.util.CaseActionType.*;
+import static org.jbpm.workbench.cm.util.CaseStageStatus.*;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 import static java.util.Collections.singletonList;
 
@@ -88,7 +90,8 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         caseActionItemViewMock = mock(CaseActionItemView.class);
 
         cis = newCaseInstanceSummary();
-        cis.setStages(singletonList(createCaseStageSummary(AVAILABLE.getStatus())));
+        cis.setStages(new ArrayList<>(Arrays.asList(createCaseStageSummary(AVAILABLE.getStatus()),
+                                                    createCaseStageSummary(ACTIVE.getStatus()))));
         when(caseManagementService.getCaseActions(anyString(),
                                                   anyString(),
                                                   anyString(),
@@ -114,12 +117,21 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
 
     private void verifyCaseInstanceCleared() {
         verify(caseAllActionsView).removeAllTasks();
-        verify(newActionViewMock).setCaseStagesList(emptyList());
+        verify(newActionViewMock).clearAllStages();
+        verify(newActionViewMock).clearAllProcessDefinitions();
     }
 
     private void verifyCaseInstanceLoaded() {
+        final List<CaseStageSummary> allStagesList = cis.getStages();
         verify(caseAllActionsView).updateListHeaders();
-        verify(newActionViewMock).setCaseStagesList(cis.getStages());
+        verify(presenter).setCaseStagesList(allStagesList);
+
+        final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        verify(newActionViewMock).addStages(captor.capture());
+        assertEquals(1,
+                     captor.getValue().size());
+        assertEquals(ACTIVE.getStatus(),
+                     ((CaseStageSummary)captor.getValue().get(0)).getStatus());
         verifySubProcessesLoaded();
         verifyActionsLoaded();
     }
@@ -128,6 +140,8 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         verify(caseManagementService).getProcessDefinitions(containerId);
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
         verify(newActionViewMock).setProcessDefinitions(captor.capture());
+        assertEquals(1,
+                     captor.getValue().size());
         assertEquals("SubProcess_1",
                      captor.getValue().get(0));
     }
@@ -143,9 +157,9 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         verify(caseAllActionsView).setAvailableActionsList(captor.capture());
         assertEquals(caseActionSummaryList.size() + 2,
                      captor.getValue().size());
-        assertEquals(CaseActionType.DYNAMIC_USER_TASK,
+        assertEquals(DYNAMIC_USER_TASK,
                      ((CaseActionSummary) captor.getValue().get(0)).getActionType());
-        assertEquals(CaseActionType.DYNAMIC_SUBPROCESS_TASK,
+        assertEquals(DYNAMIC_SUBPROCESS_TASK,
                      ((CaseActionSummary) captor.getValue().get(1)).getActionType());
 
         verify(caseAllActionsView).setInProgressActionsList(caseActionSummaryList);
@@ -153,13 +167,51 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
     }
 
     @Test
-    public void testSetAction_statusAvailable() {
+    public void testSetAdHocAction_statusAvailable() {
         final CaseActionSummary caseActionSummary = createCaseActionSummary(CaseActionStatus.AVAILABLE);
+        caseActionSummary.setActionType(AD_HOC_TASK);
         when(caseActionItemViewMock.getValue()).thenReturn(caseActionSummary);
 
+        verifyAvailableActionIsSet(translationService.format(AVAILABLE_IN) + ": " + translationService.format(CASE));
+    }
+
+    @Test
+    public void testSetAdHocActionInStage_statusAvailable() {
+        final CaseActionSummary caseActionSummary = createCaseActionSummary(CaseActionStatus.AVAILABLE);
+        caseActionSummary.setActionType(AD_HOC_TASK);
+        caseActionSummary.setStageId("Stage_Id");
+        when(caseActionItemViewMock.getValue()).thenReturn(caseActionSummary);
+
+        verifyAvailableActionIsSet(translationService.format(AVAILABLE_IN) + ": " + caseActionSummary.getStageId());
+    }
+
+    @Test
+    public void testSetDynamicAction_statusAvailable() {
+        final CaseActionSummary caseActionSummary = createCaseActionSummary(CaseActionStatus.AVAILABLE);
+        caseActionSummary.setActionType(DYNAMIC_USER_TASK);
+        when(caseActionItemViewMock.getValue()).thenReturn(caseActionSummary);
+
+        verifyAvailableActionIsSet(translationService.format(DYMANIC));
+
+        final ArgumentCaptor<CaseActionsPresenter.CaseActionAction> caseActionActionCaptor =
+                ArgumentCaptor.forClass(CaseActionsPresenter.CaseActionAction.class);
+        verify(caseActionItemViewMock).addAction(caseActionActionCaptor.capture());
+        assertEquals(translationService.format(ACTION_START),
+                     caseActionActionCaptor.getValue().label());
+
+        caseActionActionCaptor.getValue().execute();
+        final CaseActionType actionType = caseActionSummary.getActionType();
+        verify(presenter).setNewDynamicAction(actionType);
+        verify(newActionViewMock).show(eq(actionType),
+                                       any(Command.class));
+    }
+
+    private void verifyAvailableActionIsSet(final String actionInfo) {
         getPresenter().setAction(caseActionItemViewMock);
 
-        verify(caseActionItemViewMock).prepareAction(caseActionSummary);
+        verify(presenter).prepareAction(caseActionItemViewMock);
+        verify(caseActionItemViewMock).addActionInfo(actionInfo);
+        verify(caseActionItemViewMock).addAction(any(CaseActionsPresenter.CaseActionAction.class));
     }
 
     @Test
@@ -178,8 +230,8 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         verify(caseActionItemViewMock,
                times(2)).addCreationDate();
         verify(caseActionItemViewMock).addActionOwner("owner");
-        verify(caseActionItemViewMock,
-               never()).prepareAction(any(CaseActionSummary.class));
+        verify(presenter,
+               never()).prepareAction(any(CaseActionItemView.class));
     }
 
     @Test
@@ -192,8 +244,8 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         verify(caseActionItemViewMock).addCreationDate();
         verify(caseActionItemViewMock,
                never()).addActionOwner(anyString());
-        verify(caseActionItemViewMock,
-               never()).prepareAction(any(CaseActionSummary.class));
+        verify(presenter,
+               never()).prepareAction(any(CaseActionItemView.class));
     }
 
     private CaseActionSummary createCaseActionSummary(final CaseActionStatus status) {
@@ -202,53 +254,118 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         return caseActionSummary;
     }
 
-    @Test
-    public void testAddDynamicAction() {
-        String actionName = "dynAct-name";
-        String actionDescription = "dynAct-name";
-        String actionActors = "dynAct-actors";
-        String actionGroups = "dynAct-groups";
-        setupCaseInstance(cis,
-                          serverTemplateId);
-        presenter.addDynamicUserTaskAction(actionName,
-                                           actionDescription,
-                                           actionActors,
-                                           actionGroups,
-                                           null);
+    private final String taskName = "dynTask-name";
+    private final String actors = "dynTask-actors";
+    private final String groups = "dynTask-groups";
+    private final String description = "dynTask-description";
+    private final ProcessDefinitionSummary processDefinitionSummary = ProcessDefinitionSummary.builder()
+                                                                                              .id("processDefinitionId")
+                                                                                              .build();
 
-        verify(caseManagementService).addDynamicUserTask(eq(containerId),
-                                                         eq(caseId),
-                                                         eq(actionName),
-                                                         eq(actionDescription),
-                                                         eq(actionActors),
-                                                         eq(actionGroups),
-                                                         any());
+    @Test
+    public void testAddDynamicUserTaskAction() {
+        verifyDynamicActionAdded(DYNAMIC_USER_TASK,
+                                         null);
+
+        verify(caseManagementService).addDynamicUserTask(anyString(),
+                                                         anyString(),
+                                                         eq(taskName),
+                                                         eq(description),
+                                                         eq(actors),
+                                                         eq(groups),
+                                                         eq(null));
     }
 
     @Test
-    public void testAddDynamicActionInStage() {
-        String actionName = "dynAct-name";
-        String actionDescription = "dynAct-name";
-        String actionActors = "dynAct-actors";
-        String actionGroups = "dynAct-groups";
-        String stageId = "dynAct-groups";
-        setupCaseInstance(cis,
-                          serverTemplateId);
+    public void testAddDynamicUserTaskActionToStage() {
+        final String stageId = "stageId";
+        verifyDynamicActionAdded(DYNAMIC_USER_TASK,
+                                 stageId);
 
-        presenter.addDynamicUserTaskAction(actionName,
-                                           actionDescription,
-                                           actionActors,
-                                           actionGroups,
-                                           stageId);
-
-        verify(caseManagementService).addDynamicUserTaskToStage(eq(containerId),
-                                                                eq(caseId),
+        verify(caseManagementService).addDynamicUserTaskToStage(anyString(),
+                                                                anyString(),
                                                                 eq(stageId),
-                                                                eq(actionName),
-                                                                eq(actionDescription),
-                                                                eq(actionActors),
-                                                                eq(actionGroups),
-                                                                any());
+                                                                eq(taskName),
+                                                                eq(description),
+                                                                eq(actors),
+                                                                eq(groups),
+                                                                eq(null));
+    }
+
+    @Test
+    public void testAddDynamicSubProcessTaskAction() {
+        verifyDynamicActionAdded(DYNAMIC_SUBPROCESS_TASK,
+                                 null);
+
+        verify(caseManagementService).addDynamicSubProcess(anyString(),
+                                                           anyString(),
+                                                           eq(processDefinitionSummary.getId()),
+                                                           eq(null));
+    }
+
+    @Test
+    public void testAddDynamicSubProcessTaskActionToStage() {
+        final String stageId = "stageId";
+        verifyDynamicActionAdded(DYNAMIC_SUBPROCESS_TASK,
+                                 stageId);
+
+        verify(caseManagementService).addDynamicSubProcessToStage(anyString(),
+                                                                  anyString(),
+                                                                  eq(stageId),
+                                                                  eq(processDefinitionSummary.getId()),
+                                                                  eq(null));
+    }
+
+    private void verifyDynamicActionAdded(final CaseActionType actionType,
+                                          final String stageId) {
+        final CaseActionSummary caseActionSummary = createCaseActionSummary(CaseActionStatus.AVAILABLE);
+        caseActionSummary.setActionType(actionType);
+        when(caseActionItemViewMock.getValue()).thenReturn(caseActionSummary);
+
+        verifyAvailableActionIsSet(translationService.format(DYMANIC));
+
+        final ArgumentCaptor<CaseActionsPresenter.CaseActionAction> caseActionActionCaptor =
+                ArgumentCaptor.forClass(CaseActionsPresenter.CaseActionAction.class);
+        verify(caseActionItemViewMock).addAction(caseActionActionCaptor.capture());
+        caseActionActionCaptor.getValue().execute();
+
+        switch (actionType) {
+            case DYNAMIC_USER_TASK: {
+                when(newActionViewMock.getTaskName()).thenReturn(taskName);
+                when(newActionViewMock.getDescription()).thenReturn(description);
+                when(newActionViewMock.getActors()).thenReturn(actors);
+                when(newActionViewMock.getGroups()).thenReturn(groups);
+                when(newActionViewMock.getStageId()).thenReturn(stageId);
+
+                final ArgumentCaptor<Command> okCommandCaptor = ArgumentCaptor.forClass(Command.class);
+                verify(newActionViewMock).show(eq(caseActionSummary.getActionType()),
+                                               okCommandCaptor.capture());
+                okCommandCaptor.getValue().execute();
+
+                verify(presenter).addDynamicUserTaskAction(eq(taskName),
+                                                           eq(description),
+                                                           eq(actors),
+                                                           eq(groups),
+                                                           eq(stageId));
+                break;
+            }
+            case DYNAMIC_SUBPROCESS_TASK: {
+                final String processDefinitionName = "dynTask-processDefinitionName";
+                when(newActionViewMock.getProcessDefinitionName()).thenReturn(processDefinitionName);
+                when(newActionViewMock.getStageId()).thenReturn(stageId);
+                presenter.getProcessDefinitionSummaryMap().put(processDefinitionName,
+                                                               processDefinitionSummary);
+
+                final ArgumentCaptor<Command> okCommandCaptor = ArgumentCaptor.forClass(Command.class);
+                verify(newActionViewMock).show(eq(caseActionSummary.getActionType()),
+                                               okCommandCaptor.capture());
+                okCommandCaptor.getValue().execute();
+
+                verify(presenter).addDynamicSubprocessTaskAction(eq(processDefinitionName),
+                                                                 eq(stageId));
+                break;
+            }
+        }
     }
 
     @Test
