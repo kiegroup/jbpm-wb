@@ -15,29 +15,20 @@
  */
 package org.jbpm.workbench.pr.backend.server;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.dashbuilder.DataSetCore;
-import org.dashbuilder.dataset.DataSetLookup;
-import org.dashbuilder.dataset.DataSetLookupFactory;
-import org.dashbuilder.dataset.DataSetManager;
-import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
-import org.jbpm.workbench.pr.backend.server.DataSetDefsBootstrap;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.dashbuilder.dataset.def.SQLDataSetDef;
+import org.jbpm.workbench.ks.integration.KieServerDataSetProvider;
+import org.jbpm.workbench.ks.integration.event.QueryDefinitionLoaded;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.internal.identity.IdentityProvider;
+import org.kie.server.api.model.definition.QueryDefinition;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.PROCESS_INSTANCE_DATASET;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.PROCESS_INSTANCE_WITH_VARIABLES_DATASET;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -45,61 +36,50 @@ import static org.mockito.Mockito.*;
 public class DataSetDefsBootstrapTest {
 
     @Mock
-    IdentityProvider identityProvider;
-
-    @Spy
-    DataSetDefRegistry dataSetRegistry = DataSetCore.get().getDataSetDefRegistry();
-
-    @Spy
-    DataSetManager dataSetManager = DataSetCore.get().getDataSetManager();
+    DataSetDefRegistry dataSetRegistry;
 
     @InjectMocks
     DataSetDefsBootstrap dataSetsBootstrap;
 
-    List<String> deploymentIds = Arrays.asList("role1",
-                                               "role2");
+    @Test
+    public void testProcessInstanceDataSet() {
+        QueryDefinition qd = QueryDefinition.builder().name(PROCESS_INSTANCE_DATASET).expression("SELECT *").source("source").target("target").build();
+        dataSetsBootstrap.registerDataSetDefinitions(new QueryDefinitionLoaded(qd));
 
-    @Before
-    public void setUp() {
-        // The two lines below is Mockito's issue work-around:
-        // Can not use @_InjectMocks together with a @Spy annotation => https://github.com/mockito/mockito/issues/169
+        ArgumentCaptor<SQLDataSetDef> argument = ArgumentCaptor.forClass(SQLDataSetDef.class);
+        verify(dataSetRegistry).registerDataSetDef(argument.capture());
 
-        dataSetsBootstrap.registerDataSetDefinitions();
-//        when(deploymentRolesManager.getDeploymentsForUser(identityProvider)).thenReturn(deploymentIds);
+        SQLDataSetDef dataSetDef = argument.getValue();
+        assertEquals(PROCESS_INSTANCE_DATASET,
+                     dataSetDef.getUUID());
+        assertEquals("target-" + PROCESS_INSTANCE_DATASET,
+                     dataSetDef.getName());
+        assertEquals(KieServerDataSetProvider.TYPE,
+                     dataSetDef.getProvider());
+        assertEquals("SELECT *",
+                     dataSetDef.getDbSQL());
+        assertEquals(18,
+                     dataSetDef.getColumns().size());
     }
 
     @Test
-    public void registerDataSetDefsTest() {
-        ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
-        verify(dataSetRegistry,
-               times(2)).registerDataSetDef(argument.capture());
+    public void testProcessInstanceWithVariablesDataSet() {
+        QueryDefinition qd = QueryDefinition.builder().name(PROCESS_INSTANCE_WITH_VARIABLES_DATASET).expression("SELECT *").source("source").target("target").build();
+        dataSetsBootstrap.registerDataSetDefinitions(new QueryDefinitionLoaded(qd));
 
-        List<DataSetDef> dataSetDefList = argument.getAllValues();
-        assertEquals(dataSetDefList.size(),
-                     2);
-        assertEquals(dataSetDefList.get(0).getUUID(),
-                     PROCESS_INSTANCE_DATASET);
-        assertEquals(dataSetDefList.get(1).getUUID(),
-                     PROCESS_INSTANCE_WITH_VARIABLES_DATASET);
-    }
+        ArgumentCaptor<SQLDataSetDef> argument = ArgumentCaptor.forClass(SQLDataSetDef.class);
+        verify(dataSetRegistry).registerDataSetDef(argument.capture());
 
-    //TODO Needs redesign as data source is deployed to kie server
-    @Ignore
-    public void procInstancesPreprocessorTest() {
-        DataSetLookup lookup = DataSetLookupFactory.newDataSetLookupBuilder()
-                .dataset(PROCESS_INSTANCE_DATASET)
-                .buildLookup();
-
-        dataSetManager.lookupDataSet(lookup);
-        ArgumentCaptor<DataSetLookup> argument = ArgumentCaptor.forClass(DataSetLookup.class);
-
-//        verify(deploymentIdsPreprocessor).preprocess(lookup);
-        verify(dataSetManager).lookupDataSet(argument.capture());
-        assertEquals(argument.getValue(),
-                     DataSetLookupFactory.newDataSetLookupBuilder()
-                             .dataset(PROCESS_INSTANCE_DATASET)
-                             .filter(in(COLUMN_EXTERNAL_ID,
-                                        deploymentIds))
-                             .buildLookup());
+        SQLDataSetDef dataSetDef = argument.getValue();
+        assertEquals(PROCESS_INSTANCE_WITH_VARIABLES_DATASET,
+                     dataSetDef.getUUID());
+        assertEquals("target-" + PROCESS_INSTANCE_WITH_VARIABLES_DATASET,
+                     dataSetDef.getName());
+        assertEquals(KieServerDataSetProvider.TYPE,
+                     dataSetDef.getProvider());
+        assertEquals("SELECT *",
+                     dataSetDef.getDbSQL());
+        assertEquals(5,
+                     dataSetDef.getColumns().size());
     }
 }

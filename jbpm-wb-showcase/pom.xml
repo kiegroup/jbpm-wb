@@ -1557,6 +1557,13 @@
       <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.kie.server</groupId>
+      <artifactId>kie-server</artifactId>
+      <classifier>ee7</classifier>
+      <type>war</type>
+      <scope>test</scope>
+    </dependency>
 
   </dependencies>
 
@@ -1570,14 +1577,14 @@
         <artifactId>gwt-maven-plugin</artifactId>
         <configuration>
           <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
-          <extraJvmArgs>-Xms1g -Xmx5g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${jboss.home} -Derrai.dynamic_validation.enabled=true -Dorg.kie.demo=false -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true -Dorg.uberfire.async.executor.safemode=true</extraJvmArgs>
+          <extraJvmArgs>-Xms1g -Xmx5g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${jboss.home} -Derrai.dynamic_validation.enabled=true -Dorg.kie.demo=false -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true -Dorg.uberfire.async.executor.safemode=true -Derrai.dev.context=jbpm-wb-showcase</extraJvmArgs>
           <module>org.jbpm.workbench.FastCompilejBPMShowcase</module>
           <logLevel>INFO</logLevel>
           <noServer>false</noServer>
           <draftCompile>true</draftCompile>
           <server>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</server>
           <disableCastChecking>true</disableCastChecking>
-          <runTarget>jbpm-wb.html</runTarget>
+          <runTarget>/jbpm-wb-showcase/jbpm-wb.html</runTarget>
           <hostedWebapp>src/main/webapp</hostedWebapp>
           <compileSourcesArtifacts>
             <!-- Kie Server needed by Exec Server UI -->

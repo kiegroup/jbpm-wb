@@ -15,14 +15,13 @@
  */
 package org.jbpm.workbench.ht.backend.server;
 
-import java.util.List;
-
-import org.dashbuilder.dataset.def.DataColumnDef;
-import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.dashbuilder.dataset.def.SQLDataSetDef;
+import org.jbpm.workbench.ks.integration.KieServerDataSetProvider;
+import org.jbpm.workbench.ks.integration.event.QueryDefinitionLoaded;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.api.model.definition.QueryDefinition;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -36,77 +35,92 @@ import static org.mockito.Mockito.*;
 public class DataSetDefsBootstrapTest {
 
     @Mock
-    DataSetDefRegistry dataSetDefRegistryMock;
+    DataSetDefRegistry dataSetDefRegistry;
 
     @InjectMocks
     DataSetDefsBootstrap dataSetsBootstrap;
 
     @Test
-    public void registerDataSetDefinitionsTest() {
-        dataSetsBootstrap.registerDataSetDefinitions();
-        ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
-        verify(dataSetDefRegistryMock,
-               times(4)).registerDataSetDef(argument.capture());
+    public void testHumanTasksDataSet() {
+        QueryDefinition qd = QueryDefinition.builder().name(HUMAN_TASKS_DATASET).expression("SELECT *").source("source").target("target").build();
+        dataSetsBootstrap.registerDataSetDefinitions(new QueryDefinitionLoaded(qd));
 
-        List<DataSetDef> dsList = argument.getAllValues();
-        assertEquals(dsList.size(),
-                     4);
-        assertEquals(dsList.get(0).getUUID(),
-                     HUMAN_TASKS_DATASET);
-        assertEquals(dsList.get(1).getUUID(),
-                     HUMAN_TASKS_WITH_USER_DATASET);
-        assertEquals(dsList.get(2).getUUID(),
-                     HUMAN_TASKS_WITH_ADMIN_DATASET);
-        assertEquals(dsList.get(3).getUUID(),
-                     HUMAN_TASKS_WITH_VARIABLES_DATASET);
+        ArgumentCaptor<SQLDataSetDef> argument = ArgumentCaptor.forClass(SQLDataSetDef.class);
+        verify(dataSetDefRegistry).registerDataSetDef(argument.capture());
+
+        SQLDataSetDef dataSetDef = argument.getValue();
+        assertEquals(HUMAN_TASKS_DATASET,
+                     dataSetDef.getUUID());
+        assertEquals("target-" + HUMAN_TASKS_DATASET,
+                     dataSetDef.getName());
+        assertEquals(KieServerDataSetProvider.TYPE,
+                     dataSetDef.getProvider());
+        assertEquals("SELECT *",
+                     dataSetDef.getDbSQL());
+        assertEquals(19,
+                     dataSetDef.getColumns().size());
     }
 
     @Test
-    public void noOrderByPresentInDefinitionsSQLTest() {
-        dataSetsBootstrap.registerDataSetDefinitions();
-        ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
-        verify(dataSetDefRegistryMock,
-               times(4)).registerDataSetDef(argument.capture());
+    public void testHumanTasksWithUserDataSet() {
+        QueryDefinition qd = QueryDefinition.builder().name(HUMAN_TASKS_WITH_USER_DATASET).expression("SELECT *").source("source").target("target").build();
+        dataSetsBootstrap.registerDataSetDefinitions(new QueryDefinitionLoaded(qd));
 
-        List<DataSetDef> dsList = argument.getAllValues();
-        assertFalse(((SQLDataSetDef) dsList.get(0)).getDbSQL().contains("order by"));
-        assertFalse(((SQLDataSetDef) dsList.get(1)).getDbSQL().contains("order by"));
-        assertFalse(((SQLDataSetDef) dsList.get(2)).getDbSQL().contains("order by"));
-        assertFalse(((SQLDataSetDef) dsList.get(3)).getDbSQL().contains("order by"));
-    }
+        ArgumentCaptor<SQLDataSetDef> argument = ArgumentCaptor.forClass(SQLDataSetDef.class);
+        verify(dataSetDefRegistry).registerDataSetDef(argument.capture());
 
-    @Test
-    public void columnAliasNotPresentInHumanTaskWithUserDataSet() {
-        dataSetsBootstrap.registerDataSetDefinitions();
-        ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
-        verify(dataSetDefRegistryMock,
-               times(4)).registerDataSetDef(argument.capture());
-
-        List<DataSetDef> dsList = argument.getAllValues();
-
-        String strSQL = ((SQLDataSetDef) dsList.get(1)).getDbSQL();
-        String[] columnsStr = strSQL.substring(strSQL.indexOf("select") + 6,
-                                               strSQL.indexOf("from")).split(",");
-        for (String columnStr : columnsStr) {
-            final String[] split = columnStr.trim().split(" ");
-            assertEquals(1,
-                         split.length);
-        }
-    }
-
-    @Test
-    public void columnsAddedInHumanTaskWithAdminDataSet() {
-        dataSetsBootstrap.registerDataSetDefinitions();
-
-        ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
-        verify(dataSetDefRegistryMock,
-               times(4)).registerDataSetDef(argument.capture());
-
-        List<DataSetDef> dsList = argument.getAllValues();
-        DataSetDef humanTaskWithAdminDataSet =
-                dsList.stream().filter(a -> a.getUUID().equals(HUMAN_TASKS_WITH_ADMIN_DATASET)).findFirst().get();
-        List<DataColumnDef> dataSetColumns = humanTaskWithAdminDataSet.getColumns();
+        SQLDataSetDef dataSetDef = argument.getValue();
+        assertEquals(HUMAN_TASKS_WITH_USER_DATASET,
+                     dataSetDef.getUUID());
+        assertEquals("target-" + HUMAN_TASKS_WITH_USER_DATASET,
+                     dataSetDef.getName());
+        assertEquals(KieServerDataSetProvider.TYPE,
+                     dataSetDef.getProvider());
+        assertEquals("SELECT *",
+                     dataSetDef.getDbSQL());
         assertEquals(21,
-                     dataSetColumns.size());
+                     dataSetDef.getColumns().size());
+    }
+
+    @Test
+    public void testHumanTasksWithAdminDataSet() {
+        QueryDefinition qd = QueryDefinition.builder().name(HUMAN_TASKS_WITH_ADMIN_DATASET).expression("SELECT *").source("source").target("target").build();
+        dataSetsBootstrap.registerDataSetDefinitions(new QueryDefinitionLoaded(qd));
+
+        ArgumentCaptor<SQLDataSetDef> argument = ArgumentCaptor.forClass(SQLDataSetDef.class);
+        verify(dataSetDefRegistry).registerDataSetDef(argument.capture());
+
+        SQLDataSetDef dataSetDef = argument.getValue();
+        assertEquals(HUMAN_TASKS_WITH_ADMIN_DATASET,
+                     dataSetDef.getUUID());
+        assertEquals("target-" + HUMAN_TASKS_WITH_ADMIN_DATASET,
+                     dataSetDef.getName());
+        assertEquals(KieServerDataSetProvider.TYPE,
+                     dataSetDef.getProvider());
+        assertEquals("SELECT *",
+                     dataSetDef.getDbSQL());
+        assertEquals(21,
+                     dataSetDef.getColumns().size());
+    }
+
+    @Test
+    public void testHumanTasksWithVariablesDataSet() {
+        QueryDefinition qd = QueryDefinition.builder().name(HUMAN_TASKS_WITH_VARIABLES_DATASET).expression("SELECT *").source("source").target("target").build();
+        dataSetsBootstrap.registerDataSetDefinitions(new QueryDefinitionLoaded(qd));
+
+        ArgumentCaptor<SQLDataSetDef> argument = ArgumentCaptor.forClass(SQLDataSetDef.class);
+        verify(dataSetDefRegistry).registerDataSetDef(argument.capture());
+
+        SQLDataSetDef dataSetDef = argument.getValue();
+        assertEquals(HUMAN_TASKS_WITH_VARIABLES_DATASET,
+                     dataSetDef.getUUID());
+        assertEquals("target-" + HUMAN_TASKS_WITH_VARIABLES_DATASET,
+                     dataSetDef.getName());
+        assertEquals(KieServerDataSetProvider.TYPE,
+                     dataSetDef.getProvider());
+        assertEquals("SELECT *",
+                     dataSetDef.getDbSQL());
+        assertEquals(4,
+                     dataSetDef.getColumns().size());
     }
 }

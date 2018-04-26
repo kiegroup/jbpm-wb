@@ -15,105 +15,47 @@
  */
 package org.jbpm.dashboard.renderer.backend;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import javax.enterprise.event.Observes;
 
-import org.dashbuilder.dataset.def.DataSetDef;
-import org.dashbuilder.dataset.def.DataSetDefFactory;
-import org.dashbuilder.dataset.def.DataSetDefRegistry;
-import org.jbpm.workbench.ks.integration.KieServerDataSetProvider;
-import org.kie.server.api.KieServerConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.uberfire.commons.services.cdi.Startup;
+import org.jbpm.workbench.ks.integration.AbstractDataSetDefsBootstrap;
+import org.jbpm.workbench.ks.integration.event.QueryDefinitionLoaded;
 
 import static org.jbpm.dashboard.renderer.model.DashboardData.*;
 
-@Startup
 @ApplicationScoped
-public class DataSetDefsBootstrap {
+public class DataSetDefsBootstrap extends AbstractDataSetDefsBootstrap {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataSetDefsBootstrap.class);
-    private static final String JBPM_DATA_SOURCE = "${" + KieServerConstants.CFG_PERSISTANCE_DS + "}";
-
-    @Inject
-    DataSetDefRegistry dataSetDefRegistry;
-
-    @PostConstruct
-    protected void registerDataSetDefinitions() {
-        DataSetDef processMonitoringDef = DataSetDefFactory.newSQLDataSetDef()
-                .uuid(DATASET_PROCESS_INSTANCES)
-                .name("FILTERED_PROCESS-Processes monitoring")
-                .dataSource(JBPM_DATA_SOURCE)
-                .dbSQL("select " +
-                                    "log.processInstanceId, " +
-                                    "log.processId, " +
-                                    "log.start_date, " +
-                                    "log.end_date, " +
-                                    "log.status, " +
-                                    "log.duration, " +
-                                    "log.user_identity, " +
-                                    "log.processVersion, " +
-                                    "log.processName, " +
-                                    "log.externalId " +
-                               "from " +
-                                    "ProcessInstanceLog log",
-                       false)
-                .number(COLUMN_PROCESS_INSTANCE_ID)
-                .label(COLUMN_PROCESS_ID)
-                .date(COLUMN_PROCESS_START_DATE)
-                .date(COLUMN_PROCESS_END_DATE)
-                .number(COLUMN_PROCESS_STATUS)
-                .number(COLUMN_PROCESS_DURATION)
-                .label(COLUMN_PROCESS_USER_ID)
-                .label(COLUMN_PROCESS_VERSION)
-                .label(COLUMN_PROCESS_NAME)
-                .label(COLUMN_PROCESS_EXTERNAL_ID)
-                .buildDef();
-
-        DataSetDef taskMonitoringDef = DataSetDefFactory.newSQLDataSetDef()
-                .uuid(DATASET_HUMAN_TASKS)
-                .name("FILTERED_PROCESS-Tasks monitoring")
-                .dataSource(JBPM_DATA_SOURCE)
-                .dbSQL("select " +
-                                    "p.processName, " +
-                                    "p.externalId, " +
-                                    "t.taskId, " +
-                                    "t.taskName, " +
-                                    "t.status, " +
-                                    "t.createdDate, " +
-                                    "t.startDate, " +
-                                    "t.endDate, " +
-                                    "t.processInstanceId, " +
-                                    "t.userId, " +
-                                    "t.duration " +
-                               "from ProcessInstanceLog p " +
-                                    "inner join BAMTaskSummary t on (t.processInstanceId = p.processInstanceId) " +
-                                    "inner join (select min(pk) as pk from BAMTaskSummary group by taskId) d on t.pk = d.pk",
-                       true)
-                .label(COLUMN_PROCESS_NAME)
-                .label(COLUMN_PROCESS_EXTERNAL_ID)
-                .label(COLUMN_TASK_ID)
-                .label(COLUMN_TASK_NAME)
-                .label(COLUMN_TASK_STATUS)
-                .date(COLUMN_TASK_CREATED_DATE)
-                .date(COLUMN_TASK_START_DATE)
-                .date(COLUMN_TASK_END_DATE)
-                .number(COLUMN_PROCESS_INSTANCE_ID)
-                .label(COLUMN_TASK_OWNER_ID)
-                .number(COLUMN_TASK_DURATION)
-                .buildDef();
-
-        // Hide all these internal data set from end user view
-        processMonitoringDef.setPublic(false);
-        processMonitoringDef.setProvider(KieServerDataSetProvider.TYPE);
-        taskMonitoringDef.setPublic(false);
-        taskMonitoringDef.setProvider(KieServerDataSetProvider.TYPE);
-
-        // Register the data set definitions
-        dataSetDefRegistry.registerDataSetDef(processMonitoringDef);
-        dataSetDefRegistry.registerDataSetDef(taskMonitoringDef);
-        LOGGER.info("Process dashboard datasets registered");
+    public void registerDataSetDefinitions(@Observes QueryDefinitionLoaded event) {
+        if (event.getDefinition().getName().equals(DATASET_PROCESS_INSTANCES)) {
+            registerDataSetDefinition(event.getDefinition(),
+                                      builder ->
+                                              builder.number(COLUMN_PROCESS_INSTANCE_ID)
+                                                      .label(COLUMN_PROCESS_ID)
+                                                      .date(COLUMN_PROCESS_START_DATE)
+                                                      .date(COLUMN_PROCESS_END_DATE)
+                                                      .number(COLUMN_PROCESS_STATUS)
+                                                      .number(COLUMN_PROCESS_DURATION)
+                                                      .label(COLUMN_PROCESS_USER_ID)
+                                                      .label(COLUMN_PROCESS_VERSION)
+                                                      .label(COLUMN_PROCESS_NAME)
+                                                      .label(COLUMN_PROCESS_EXTERNAL_ID)
+            );
+        } else if (event.getDefinition().getName().equals(DATASET_HUMAN_TASKS)) {
+            registerDataSetDefinition(event.getDefinition(),
+                                      builder ->
+                                              builder.label(COLUMN_PROCESS_NAME)
+                                                      .label(COLUMN_PROCESS_EXTERNAL_ID)
+                                                      .label(COLUMN_TASK_ID)
+                                                      .label(COLUMN_TASK_NAME)
+                                                      .label(COLUMN_TASK_STATUS)
+                                                      .date(COLUMN_TASK_CREATED_DATE)
+                                                      .date(COLUMN_TASK_START_DATE)
+                                                      .date(COLUMN_TASK_END_DATE)
+                                                      .number(COLUMN_PROCESS_INSTANCE_ID)
+                                                      .label(COLUMN_TASK_OWNER_ID)
+                                                      .number(COLUMN_TASK_DURATION)
+            );
+        }
     }
 }
