@@ -15,179 +15,47 @@
  */
 package org.jbpm.workbench.ht.backend.server;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
+
+import org.dashbuilder.dataset.impl.SQLDataSetDefBuilderImpl;
+import org.jbpm.workbench.ks.integration.AbstractDataSetDefsBootstrap;
+import org.jbpm.workbench.ks.integration.event.QueryDefinitionLoaded;
+
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-import org.dashbuilder.dataset.def.DataSetDef;
-import org.dashbuilder.dataset.def.DataSetDefRegistry;
-import org.dashbuilder.dataset.impl.SQLDataSetDefBuilderImpl;
-import org.jbpm.workbench.ks.integration.KieServerDataSetProvider;
-import org.jbpm.workbench.ks.integration.RemoteDataSetDefBuilder;
-import org.kie.server.api.KieServerConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.uberfire.commons.services.cdi.Startup;
-
-@Startup
 @ApplicationScoped
-public class DataSetDefsBootstrap {
+public class DataSetDefsBootstrap extends AbstractDataSetDefsBootstrap {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataSetDefsBootstrap.class);
-    private static final String JBPM_DATA_SOURCE = "${" + KieServerConstants.CFG_PERSISTANCE_DS + "}";
-    private static final String SQL_SELECT_COMMON_COLS = "" + //See addBuilderCommonColumns()
-            "t.activationTime, " +
-            "t.actualOwner, " +
-            "t.createdBy, " +
-            "t.createdOn, " +
-            "t.deploymentId, " +
-            "t.description, " +
-            "t.dueDate, " +
-            "t.name, " +
-            "t.parentId, " +
-            "t.priority, " +
-            "t.processId, " +
-            "t.processInstanceId, " +
-            "t.processSessionId, " +
-            "t.status, " +
-            "t.taskId, " +
-            "t.workItemId, " +
-            "t.lastModificationDate, " +
-            "pil.correlationKey, " +
-            "pil.processInstanceDescription ";
-
-    @Inject
-    protected DataSetDefRegistry dataSetDefRegistry;
-
-    @PostConstruct
-    protected void registerDataSetDefinitions() {
-        SQLDataSetDefBuilderImpl builder = RemoteDataSetDefBuilder.get()
-                .uuid(HUMAN_TASKS_DATASET)
-                .name("Human tasks")
-                .dataSource(JBPM_DATA_SOURCE)
-                .queryTarget("CUSTOM")
-                .dbSQL("select " +
-                               SQL_SELECT_COMMON_COLS +
-                               "from " +
-                                    "AuditTaskImpl t " +
-                               "left join " +
-                                    "ProcessInstanceLog pil " +
-                               "on " +
-                                    "pil.id=t.processInstanceId"
-                        ,
-                       false);
-        builder = addBuilderCommonColumns(builder);
-        DataSetDef humanTasksDef = builder.buildDef();
-
-        builder = RemoteDataSetDefBuilder.get()
-                .uuid(HUMAN_TASKS_WITH_USER_DATASET)
-                .name("FILTERED_PO_TASK-Human tasks and users")
-                .dataSource(JBPM_DATA_SOURCE)
-                .queryTarget("FILTERED_PO_TASK")
-                .dbSQL("select " +
-                               SQL_SELECT_COMMON_COLS + ", " +
-                                    "oe.id, " +
-                                    "eo.entity_id " +
-                               "from " +
-                                    "AuditTaskImpl t " +
-                               "left join " +
-                                    "PeopleAssignments_PotOwners po " +
-                               "on " +
-                                    "t.taskId=po.task_id " +
-                               "left join " +
-                                    "OrganizationalEntity oe " +
-                               "on " +
-                                    "po.entity_id=oe.id " +
-                               "left join " +
-                                    "ProcessInstanceLog pil " +
-                               "on " +
-                                    "pil.id=t.processInstanceId " +
-                               "left join " +
-                                    "PeopleAssignments_ExclOwners eo " +
-                               "on " +
-                                    "t.taskId=eo.task_id"
-                        ,
-                       false);
-        builder = addBuilderCommonColumns(builder)
-                .label(COLUMN_ORGANIZATIONAL_ENTITY)
-                .label(COLUMN_EXCLUDED_OWNER);
-        DataSetDef humanTasksWithUserDef = builder.buildDef();
-
-        builder = RemoteDataSetDefBuilder.get()
-                .uuid(HUMAN_TASKS_WITH_ADMIN_DATASET)
-                .name("FILTERED_BA_TASK-Human tasks and admins")
-                .dataSource(JBPM_DATA_SOURCE)
-                .queryTarget("FILTERED_BA_TASK")
-                .dbSQL("select " +
-                               SQL_SELECT_COMMON_COLS + "," +
-                                    "oe.id, " +
-                               " (select COUNT(errInfo.id) " +
-                                "from " +
-                                    "ExecutionErrorInfo errInfo " +
-                                "where " +
-                                    "errInfo.activity_id = t.taskId and " +
-                                    "errInfo.process_inst_id = pil.processInstanceId and " +
-                                    "errInfo.error_ack = 0 and " +
-                                    "errInfo.error_type = \'Task\'" +
-                               ") as " + COLUMN_ERROR_COUNT + " " +
-                               "from " +
-                                    "AuditTaskImpl t  " +
-                               "left join " +
-                                    "ProcessInstanceLog pil " +
-                               "on " +
-                                    "pil.id = t.processInstanceId " +
-                               "left join " +
-                                    "PeopleAssignments_BAs ba " +
-                               "on " +
-                                    "t.taskId = ba.task_id " +
-                               "left join " +
-                                    "OrganizationalEntity oe " +
-                               "on " +
-                                    "ba.entity_id = oe.id"
-                        ,
-                       false);
-
-        builder = addBuilderCommonColumns(builder);
-        builder.label(COLUMN_ORGANIZATIONAL_ENTITY);
-        builder.number(COLUMN_ERROR_COUNT);
-        DataSetDef humanTaskWithAdminDef = builder.buildDef();
-
-        DataSetDef humanTasksWithUserDomainDef = RemoteDataSetDefBuilder.get()       //Add to this dataset TaskName? to apply with the specified filter
-                .uuid(HUMAN_TASKS_WITH_VARIABLES_DATASET)
-                .name("Domain Specific Task")
-                .dataSource(JBPM_DATA_SOURCE)
-                .dbSQL("select " +
-                                    "tvi.taskId, " +
-                                    "(select ati.name from AuditTaskImpl ati where ati.taskId = tvi.taskId) as \"" + COLUMN_TASK_VARIABLE_TASK_NAME + "\", " +
-                                    "tvi.name, " +
-                                    "tvi.value " +
-                               "from " +
-                                    "TaskVariableImpl tvi",
-                       false)
-                .number(COLUMN_TASK_VARIABLE_TASK_ID)
-                .label(COLUMN_TASK_VARIABLE_TASK_NAME)
-                .label(COLUMN_TASK_VARIABLE_NAME)
-                .label(COLUMN_TASK_VARIABLE_VALUE)
-                .buildDef();
-
-        // Hide all these internal data set from end user view
-        humanTasksDef.setPublic(false);
-        humanTasksDef.setProvider(KieServerDataSetProvider.TYPE);
-        humanTasksWithUserDef.setPublic(false);
-        humanTasksWithUserDef.setProvider(KieServerDataSetProvider.TYPE);
-        humanTaskWithAdminDef.setPublic(false);
-        humanTaskWithAdminDef.setProvider(KieServerDataSetProvider.TYPE);
-        humanTasksWithUserDomainDef.setPublic(false);
-        humanTasksWithUserDomainDef.setProvider(KieServerDataSetProvider.TYPE);
-
-        // Register the data set definitions
-        dataSetDefRegistry.registerDataSetDef(humanTasksDef);
-        dataSetDefRegistry.registerDataSetDef(humanTasksWithUserDef);
-        dataSetDefRegistry.registerDataSetDef(humanTaskWithAdminDef);
-        dataSetDefRegistry.registerDataSetDef(humanTasksWithUserDomainDef);
-        LOGGER.info("Human task datasets registered");
+    public void registerDataSetDefinitions(@Observes QueryDefinitionLoaded event) {
+        if (event.getDefinition().getName().equals(HUMAN_TASKS_DATASET)) {
+            registerDataSetDefinition(event.getDefinition(),
+                                      builder ->
+                                              addBuilderCommonColumns(builder)
+            );
+        } else if (event.getDefinition().getName().equals(HUMAN_TASKS_WITH_USER_DATASET)) {
+            registerDataSetDefinition(event.getDefinition(),
+                                      builder ->
+                                              addBuilderCommonColumns(builder)
+                                                      .label(COLUMN_ORGANIZATIONAL_ENTITY)
+                                                      .label(COLUMN_EXCLUDED_OWNER)
+            );
+        } else if (event.getDefinition().getName().equals(HUMAN_TASKS_WITH_ADMIN_DATASET)) {
+            registerDataSetDefinition(event.getDefinition(),
+                                      builder ->
+                                              addBuilderCommonColumns(builder)
+                                                      .label(COLUMN_ORGANIZATIONAL_ENTITY)
+                                                      .number(COLUMN_ERROR_COUNT)
+            );
+        } else if (event.getDefinition().getName().equals(HUMAN_TASKS_WITH_VARIABLES_DATASET)) {
+            registerDataSetDefinition(event.getDefinition(),
+                                      builder ->
+                                              builder.number(COLUMN_TASK_VARIABLE_TASK_ID)
+                                                      .label(COLUMN_TASK_VARIABLE_TASK_NAME)
+                                                      .label(COLUMN_TASK_VARIABLE_NAME)
+                                                      .label(COLUMN_TASK_VARIABLE_VALUE)
+            );
+        }
     }
 
     private SQLDataSetDefBuilderImpl addBuilderCommonColumns(SQLDataSetDefBuilderImpl builder) {

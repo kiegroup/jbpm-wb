@@ -16,28 +16,20 @@
 
 package org.jbpm.dashboard.renderer.backend;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.dashbuilder.DataSetCore;
-import org.dashbuilder.dataset.DataSetLookup;
-import org.dashbuilder.dataset.DataSetLookupFactory;
-import org.dashbuilder.dataset.DataSetManager;
-import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.dashbuilder.dataset.def.SQLDataSetDef;
+import org.jbpm.workbench.ks.integration.KieServerDataSetProvider;
+import org.jbpm.workbench.ks.integration.event.QueryDefinitionLoaded;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.internal.identity.IdentityProvider;
+import org.kie.server.api.model.definition.QueryDefinition;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.jbpm.dashboard.renderer.model.DashboardData.*;
+import static org.jbpm.dashboard.renderer.model.DashboardData.DATASET_HUMAN_TASKS;
+import static org.jbpm.dashboard.renderer.model.DashboardData.DATASET_PROCESS_INSTANCES;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -45,78 +37,50 @@ import static org.mockito.Mockito.*;
 public class DataSetDefsBootstrapTest {
 
     @Mock
-    IdentityProvider identityProvider;
-    @Spy
-    DataSetDefRegistry dataSetRegistry = DataSetCore.get().getDataSetDefRegistry();
-
-    @Spy
-    DataSetManager dataSetManager = DataSetCore.get().getDataSetManager();
+    DataSetDefRegistry dataSetRegistry;
 
     @InjectMocks
     DataSetDefsBootstrap dataSetsBootstrap;
 
-    List<String> deploymentIds = Arrays.asList("role1",
-                                               "role2");
+    @Test
+    public void testProcessInstancesDataSet() {
+        QueryDefinition qd = QueryDefinition.builder().name(DATASET_PROCESS_INSTANCES).expression("SELECT *").source("source").target("target").build();
+        dataSetsBootstrap.registerDataSetDefinitions(new QueryDefinitionLoaded(qd));
 
-    @Before
-    public void setUp() {
-        // The two lines below is Mockito's issue work-around:
-        // Can not use @_InjectMocks together with a @Spy annotation => https://github.com/mockito/mockito/issues/169
+        ArgumentCaptor<SQLDataSetDef> argument = ArgumentCaptor.forClass(SQLDataSetDef.class);
+        verify(dataSetRegistry).registerDataSetDef(argument.capture());
 
-        dataSetsBootstrap.registerDataSetDefinitions();
-//        when(deploymentRolesManager.getDeploymentsForUser(identityProvider)).thenReturn(deploymentIds);
+        SQLDataSetDef dataSetDef = argument.getValue();
+        assertEquals(DATASET_PROCESS_INSTANCES,
+                     dataSetDef.getUUID());
+        assertEquals("target-" + DATASET_PROCESS_INSTANCES,
+                     dataSetDef.getName());
+        assertEquals(KieServerDataSetProvider.TYPE,
+                     dataSetDef.getProvider());
+        assertEquals("SELECT *",
+                     dataSetDef.getDbSQL());
+        assertEquals(10,
+                     dataSetDef.getColumns().size());
     }
 
     @Test
-    public void registerDataSetDefsTest() {
-        ArgumentCaptor<DataSetDef> argument = ArgumentCaptor.forClass(DataSetDef.class);
-        verify(dataSetRegistry,
-               times(2)).registerDataSetDef(argument.capture());
+    public void testHumanTasksDataSet() {
+        QueryDefinition qd = QueryDefinition.builder().name(DATASET_HUMAN_TASKS).expression("SELECT *").source("source").target("target").build();
+        dataSetsBootstrap.registerDataSetDefinitions(new QueryDefinitionLoaded(qd));
 
-        List<DataSetDef> dataSetDefList = argument.getAllValues();
-        assertEquals(dataSetDefList.size(),
-                     2);
-        assertEquals(dataSetDefList.get(0).getUUID(),
-                     DATASET_PROCESS_INSTANCES);
-        assertEquals(dataSetDefList.get(1).getUUID(),
-                     DATASET_HUMAN_TASKS);
-    }
+        ArgumentCaptor<SQLDataSetDef> argument = ArgumentCaptor.forClass(SQLDataSetDef.class);
+        verify(dataSetRegistry).registerDataSetDef(argument.capture());
 
-    //TODO Needs redesign as data source is deployed to kie server
-    @Ignore
-    public void procInstancesPreprocessorTest() {
-        DataSetLookup lookup = DataSetLookupFactory.newDataSetLookupBuilder()
-                .dataset(DATASET_PROCESS_INSTANCES)
-                .buildLookup();
-
-        dataSetManager.lookupDataSet(lookup);
-        ArgumentCaptor<DataSetLookup> argument = ArgumentCaptor.forClass(DataSetLookup.class);
-
-        verify(dataSetManager).lookupDataSet(argument.capture());
-        assertEquals(argument.getValue(),
-                     DataSetLookupFactory.newDataSetLookupBuilder()
-                             .dataset(DATASET_PROCESS_INSTANCES)
-                             .filter(in(COLUMN_PROCESS_EXTERNAL_ID,
-                                        deploymentIds))
-                             .buildLookup());
-    }
-
-    //TODO Needs redesign as data source is deployed to kie server
-    @Ignore
-    public void tasksPreprocessorTest() {
-        DataSetLookup lookup = DataSetLookupFactory.newDataSetLookupBuilder()
-                .dataset(DATASET_HUMAN_TASKS)
-                .buildLookup();
-
-        dataSetManager.lookupDataSet(lookup);
-        ArgumentCaptor<DataSetLookup> argument = ArgumentCaptor.forClass(DataSetLookup.class);
-
-        verify(dataSetManager).lookupDataSet(argument.capture());
-        assertEquals(argument.getValue(),
-                     DataSetLookupFactory.newDataSetLookupBuilder()
-                             .dataset(DATASET_HUMAN_TASKS)
-                             .filter(in(COLUMN_PROCESS_EXTERNAL_ID,
-                                        deploymentIds))
-                             .buildLookup());
+        SQLDataSetDef dataSetDef = argument.getValue();
+        assertEquals(DATASET_HUMAN_TASKS,
+                     dataSetDef.getUUID());
+        assertEquals("target-" + DATASET_HUMAN_TASKS,
+                     dataSetDef.getName());
+        assertEquals(KieServerDataSetProvider.TYPE,
+                     dataSetDef.getProvider());
+        assertEquals("SELECT *",
+                     dataSetDef.getDbSQL());
+        assertEquals(11,
+                     dataSetDef.getColumns().size());
     }
 }
