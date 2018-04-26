@@ -24,9 +24,6 @@ import org.jboss.errai.databinding.client.api.Bindable;
 import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseActionType;
 
-import static org.jbpm.workbench.cm.util.CaseActionType.DYNAMIC_SUBPROCESS_TASK;
-import static org.jbpm.workbench.cm.util.CaseActionType.DYNAMIC_USER_TASK;
-
 @Bindable
 @Portable
 public class CaseActionSummary {
@@ -120,7 +117,11 @@ public class CaseActionSummary {
             return false;
         }
         CaseActionSummary that = (CaseActionSummary) o;
-        if (this.actionType == DYNAMIC_USER_TASK || this.actionType == DYNAMIC_SUBPROCESS_TASK) {
+        if (Objects.equals(actionStatus,
+                           that.getActionStatus()) == false) {
+            return false;
+        }
+        if (actionStatus == CaseActionStatus.AVAILABLE) {
             return Objects.equals(name,
                                   that.getName());
         } else {
