@@ -103,6 +103,8 @@ public interface Constants extends Messages {
 
     String Retries();
 
+    String RetriesRemaining();
+
     String Executions();
 
     String Status();
