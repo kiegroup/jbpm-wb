@@ -179,6 +179,8 @@ public class NewJobViewImpl implements NewJobPresenter.NewJobView,
 
     public DataGrid<RequestParameterSummary> myParametersGrid = new DataGrid<RequestParameterSummary>();
 
+    private boolean redrawParametersGrid;
+
     @PostConstruct
     public void init() {
         jobNameLabel.addRequiredIndicator();
@@ -220,6 +222,7 @@ public class NewJobViewImpl implements NewJobPresenter.NewJobView,
     public void show() {
         cleanForm();
         modal.show();
+        redrawParametersGrid = true;
     }
 
     protected void initDateTimePicker() {
@@ -279,7 +282,7 @@ public class NewJobViewImpl implements NewJobPresenter.NewJobView,
 
     @Override
     public void showBasicPane() {
-        addCSSClass(basicTab, 
+        addCSSClass(basicTab,
                     "active");
         addCSSClass(basicPane,
                     "active");
@@ -464,5 +467,14 @@ public class NewJobViewImpl implements NewJobPresenter.NewJobView,
     @EventHandler("new-job-parameter")
     public void onAddParameterClick(final @ForEvent("click") MouseEvent event) {
         addNewParameter();
+    }
+
+    // JBPM-6785: when the modal is shown force redraw to show empty table widget
+    @EventHandler("advanced-tab")
+    public void onAdvancedTabMouseUp(final @ForEvent("mouseup") MouseEvent event) {
+        if (redrawParametersGrid) {
+            myParametersGrid.redraw();
+            redrawParametersGrid = false;
+        }
     }
 }
