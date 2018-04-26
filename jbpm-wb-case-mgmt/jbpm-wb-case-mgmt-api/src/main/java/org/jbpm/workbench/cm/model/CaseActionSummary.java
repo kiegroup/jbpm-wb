@@ -32,7 +32,7 @@ public class CaseActionSummary {
     private String name;
     private String type;
     private Date createdOn;
-    private String stageId;
+    private CaseStageSummary stage;
     private String actualOwner;
     private CaseActionType actionType;
     private CaseActionStatus actionStatus;
@@ -76,12 +76,12 @@ public class CaseActionSummary {
         this.createdOn = createdOn;
     }
 
-    public String getStageId() {
-        return stageId;
+    public CaseStageSummary getStage() {
+        return stage;
     }
 
-    public void setStageId(String stageId) {
-        this.stageId = stageId;
+    public void setStage(CaseStageSummary stage) {
+        this.stage = stage;
     }
 
     public String getActualOwner() {
@@ -147,7 +147,7 @@ public class CaseActionSummary {
                 " name='" + name + '\'' +
                 " type='" + type + '\'' +
                 " createdOn='" + createdOn + '\'' +
-                " stageId='" + stageId + '\'' +
+                " stage='" + stage + '\'' +
                 " actualOwner='" + actualOwner + '\'' +
                 " actionType='" + actionType + '\'' +
                 " actionStatus='" + actionStatus + '\'' +
@@ -182,8 +182,8 @@ public class CaseActionSummary {
             return this;
         }
 
-        public Builder stageId(String stageId) {
-            caseActionSummary.setStageId(stageId);
+        public Builder stage(CaseStageSummary stage) {
+            caseActionSummary.setStage(stage);
             return this;
         }
 

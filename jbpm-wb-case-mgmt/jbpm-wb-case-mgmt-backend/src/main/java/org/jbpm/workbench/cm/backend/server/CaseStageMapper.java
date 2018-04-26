@@ -27,20 +27,20 @@ import static java.util.stream.Collectors.toList;
 public class CaseStageMapper implements Function<CaseStage, CaseStageSummary> {
 
     @Override
-    public CaseStageSummary apply(CaseStage stage) {
+    public CaseStageSummary apply(final CaseStage stage) {
         if (stage == null) {
             return null;
         }
 
-        return CaseStageSummary.builder()
+        final CaseStageSummary stageSummary = CaseStageSummary.builder()
                 .name(stage.getName())
                 .identifier(stage.getIdentifier())
                 .status(stage.getStatus())
-                .adHocFragments(
-                        ofNullable(stage.getAdHocFragments()).orElse(emptyList())
-                                .stream()
-                                .map(new CaseActionAdHocMapper(stage.getIdentifier()))
-                                .collect(toList()))
                 .build();
+        stageSummary.setAdHocActions(ofNullable(stage.getAdHocFragments()).orElse(emptyList())
+                                             .stream()
+                                             .map(new CaseActionAdHocMapper(stageSummary))
+                                             .collect(toList()));
+        return stageSummary;
     }
 }

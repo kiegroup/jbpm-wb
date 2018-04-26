@@ -234,10 +234,10 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
 
         switch (caseActionItemModel.getActionType()) {
             case AD_HOC_TASK: {
-                if (isNullOrEmpty(caseActionItemModel.getStageId())) {
+                if (caseActionItemModel.getStage() == null) {
                     caseActionItem.addActionInfo(translationService.format(AVAILABLE_IN) + ": " + translationService.format(CASE));
                 } else {
-                    caseActionItem.addActionInfo(translationService.format(AVAILABLE_IN) + ": " + caseActionItemModel.getStageId());
+                    caseActionItem.addActionInfo(translationService.format(AVAILABLE_IN) + ": " + caseActionItemModel.getStage().getName());
                 }
                 caseActionItem.addAction(new CaseActionsPresenter.CaseActionAction() {
                     @Override
@@ -247,11 +247,11 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
 
                     @Override
                     public void execute() {
-                        if (isNullOrEmpty(caseActionItemModel.getStageId())) {
+                        if (caseActionItemModel.getStage() == null) {
                             triggerAdHocAction(caseActionItemModel.getName());
                         } else {
                             triggerAdHocActionInStage(caseActionItemModel.getName(),
-                                                      caseActionItemModel.getStageId());
+                                                      caseActionItemModel.getStage().getIdentifier());
                         }
                     }
                 });

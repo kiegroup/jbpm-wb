@@ -20,14 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.jbpm.workbench.cm.model.CaseCommentSummary;
-import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
-import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
-import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
-import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
+import org.jbpm.workbench.cm.model.*;
 import org.jbpm.workbench.cm.util.Actions;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
-import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.util.CaseMilestoneSearchRequest;
 
 @Remote
@@ -107,9 +102,12 @@ public interface CaseManagementService {
                              String roleName,
                              String group);
 
-    List<CaseMilestoneSummary> getCaseMilestones(final String containerId,
-                                                 final String caseId,
-                                                 final CaseMilestoneSearchRequest request);
+    List<CaseMilestoneSummary> getCaseMilestones(String containerId,
+                                                 String caseId,
+                                                 CaseMilestoneSearchRequest request);
+
+    List<CaseStageSummary> getCaseStages(String containerId,
+                                         String caseId);
 
     Actions getCaseActions(String templateId,
                            String container,

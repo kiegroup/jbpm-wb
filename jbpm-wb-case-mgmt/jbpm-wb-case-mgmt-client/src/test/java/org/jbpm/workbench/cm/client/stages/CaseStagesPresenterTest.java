@@ -16,8 +16,11 @@
 
 package org.jbpm.workbench.cm.client.stages;
 
+import java.util.List;
+
 import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenterTest;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
+import org.jbpm.workbench.cm.model.CaseStageSummary;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,9 +29,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static java.util.Collections.singletonList;
-import static org.mockito.Mockito.*;
+import static java.util.Arrays.asList;
 import static org.jbpm.workbench.cm.util.CaseStageStatus.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseStagesPresenterTest extends AbstractCaseInstancePresenterTest {
@@ -54,13 +57,17 @@ public class CaseStagesPresenterTest extends AbstractCaseInstancePresenterTest {
 
     @Test
     public void testClearAndLoadCaseInstance() {
+        final List<CaseStageSummary> stages = asList(createCaseStageSummary(AVAILABLE.getStatus()),
+                                                     createCaseStageSummary(COMPLETED.getStatus()));
+        when(caseManagementService.getCaseStages(any(),
+                                                 any())).thenReturn(stages);
+
         final CaseInstanceSummary cis = newCaseInstanceSummary();
-        cis.setStages(singletonList(createCaseStageSummary(AVAILABLE.getStatus())));
         setupCaseInstance(cis,
                           serverTemplateId);
 
         verify(caseStagesView).removeAllStages();
-        verify(caseStagesView).setCaseStagesList(cis.getStages());
+        verify(caseStagesView).setCaseStagesList(stages);
         verify(caseStagesView).getCaseStageComponentList();
         verify(presenter).setStages();
         verifyNoMoreInteractions(caseStagesView);

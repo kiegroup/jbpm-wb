@@ -22,12 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.assertj.core.api.SoftAssertions;
-import org.jbpm.workbench.cm.model.CaseActionSummary;
-import org.jbpm.workbench.cm.model.CaseCommentSummary;
-import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
-import org.jbpm.workbench.cm.model.CaseInstanceSummary;
-import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
-import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
+import org.jbpm.workbench.cm.model.*;
 import org.jbpm.workbench.cm.util.Actions;
 import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
@@ -50,11 +45,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.jbpm.workbench.cm.backend.server.CaseActionMapperTest.assertCaseActionAdHocFragment;
-import static org.jbpm.workbench.cm.backend.server.CaseActionMapperTest.assertCaseActionNodeInstance;
+import static org.jbpm.workbench.cm.backend.server.CaseActionMapperTest.*;
 import static org.jbpm.workbench.cm.backend.server.CaseCommentMapperTest.assertCaseComment;
 import static org.jbpm.workbench.cm.backend.server.CaseDefinitionMapperTest.assertCaseDefinition;
 import static org.jbpm.workbench.cm.backend.server.CaseInstanceMapperTest.assertCaseInstance;
+import static org.jbpm.workbench.cm.backend.server.CaseInstanceMapperTest.assertCaseStages;
 import static org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyBoolean;
@@ -62,6 +57,7 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -495,6 +491,32 @@ public class RemoteCaseManagementServiceImplTest {
                      sortedMilestones.get(2).getIdentifier());
     }
 
+    @Test
+    public void testGetCaseStages() {
+        CaseStage stage1 = createTestCaseStage("stage1",
+                                               "stage1-name",
+                                               CaseStageStatus.COMPLETED.getStatus());
+        CaseStage stage2 = createTestCaseStage("stage2",
+                                               "stage2-name",
+                                               CaseStageStatus.ACTIVE.getStatus());
+
+        final List<CaseStage> caseStages = Arrays.asList(stage1,
+                                                         stage2);
+        when(clientMock.getStages(any(),
+                                  any(),
+                                  eq(false),
+                                  any(),
+                                  any())).thenReturn(caseStages);
+
+        final List<CaseStageSummary> stages = testedService.getCaseStages("containerId",
+                                                                          "caseId");
+        assertNotNull(stages);
+        assertEquals(2,
+                     stages.size());
+        assertCaseStages(caseStages,
+                         stages);
+    }
+
     private CaseDefinition createTestDefinition() {
         CaseDefinition definition = CaseDefinition.builder()
                 .id(caseDefinitionId)
@@ -683,10 +705,10 @@ public class RemoteCaseManagementServiceImplTest {
                                       actions.getAvailableActions().get(1));
         assertCaseActionAdHocFragment(cAHF6,
                                       actions.getAvailableActions().get(2));
-        assertCaseActionAdHocFragment(cAHF1_stage1,
-                                      actions.getAvailableActions().get(3));
-        assertCaseActionAdHocFragment(cAHF2_stage1,
-                                      actions.getAvailableActions().get(4));
+        assertCaseActionAdHocFragmentWithStage(cAHF1_stage1,
+                                               actions.getAvailableActions().get(3));
+        assertCaseActionAdHocFragmentWithStage(cAHF2_stage1,
+                                               actions.getAvailableActions().get(4));
 
         assertEquals(4,
                      actions.getInProgressAction().size());
@@ -820,14 +842,15 @@ public class RemoteCaseManagementServiceImplTest {
 
         assertEquals(4,
                      ahdocActions.size());
+
         assertCaseActionAdHocFragment(cAHF1,
                                       ahdocActions.get(0));
         assertCaseActionAdHocFragment(cAHF2,
                                       ahdocActions.get(1));
-        assertCaseActionAdHocFragment(cAHF1_stage1,
-                                      ahdocActions.get(2));
-        assertCaseActionAdHocFragment(cAHF2_stage1,
-                                      ahdocActions.get(3));
+        assertCaseActionAdHocFragmentWithStage(cAHF1_stage1,
+                                               ahdocActions.get(2));
+        assertCaseActionAdHocFragmentWithStage(cAHF2_stage1,
+                                               ahdocActions.get(3));
 
         verify(clientMock).getAdHocFragments(containerId,
                                              caseId);
