@@ -179,10 +179,10 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
     public void testSetAdHocActionInStage_statusAvailable() {
         final CaseActionSummary caseActionSummary = createCaseActionSummary(CaseActionStatus.AVAILABLE);
         caseActionSummary.setActionType(AD_HOC_TASK);
-        caseActionSummary.setStageId("Stage_Id");
+        caseActionSummary.setStage(CaseStageSummary.builder().name("Stage_Id").build());
         when(caseActionItemViewMock.getValue()).thenReturn(caseActionSummary);
 
-        verifyAvailableActionIsSet(translationService.format(AVAILABLE_IN) + ": " + caseActionSummary.getStageId());
+        verifyAvailableActionIsSet(translationService.format(AVAILABLE_IN) + ": Stage_Id");
     }
 
     @Test

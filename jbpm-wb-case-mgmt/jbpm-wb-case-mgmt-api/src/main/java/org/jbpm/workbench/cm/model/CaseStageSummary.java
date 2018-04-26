@@ -42,7 +42,7 @@ public class CaseStageSummary {
     }
 
     public String getName() {
-        return name;
+        return name == null || name.isEmpty() ? identifier : name;
     }
 
     public void setName(final String name) {

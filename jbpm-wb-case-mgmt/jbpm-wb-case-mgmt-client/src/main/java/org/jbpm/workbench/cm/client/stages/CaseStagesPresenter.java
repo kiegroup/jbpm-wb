@@ -45,8 +45,11 @@ public class CaseStagesPresenter extends AbstractCaseInstancePresenter<CaseStage
 
     @Override
     protected void loadCaseInstance(final CaseInstanceSummary cis) {
-        view.setCaseStagesList(cis.getStages());
-        setStages();
+        caseService.call((List<CaseStageSummary> stages) -> {
+            view.setCaseStagesList(stages);
+            setStages();
+        }).getCaseStages(containerId,
+                         caseId);
     }
 
     void setStages() {

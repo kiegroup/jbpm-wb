@@ -39,6 +39,7 @@ import org.kie.server.api.model.cases.CaseDefinition;
 import org.kie.server.api.model.cases.CaseFile;
 import org.kie.server.api.model.cases.CaseInstance;
 import org.kie.server.api.model.cases.CaseMilestone;
+import org.kie.server.api.model.cases.CaseStage;
 import org.kie.server.api.model.definition.ProcessDefinition;
 import org.kie.server.api.model.instance.NodeInstance;
 import org.kie.server.client.CaseServicesClient;
@@ -270,6 +271,18 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
+    public List<CaseStageSummary> getCaseStages(final String containerId,
+                                                final String caseId) {
+        final List<CaseStage> stages = client.getStages(containerId,
+                                                        caseId,
+                                                        false,
+                                                        0,
+                                                        PAGE_SIZE_UNLIMITED);
+
+        return stages.stream().map(new CaseStageMapper()).collect(toList());
+    }
+
+    @Override
     public Actions getCaseActions(String serverTemplateId,
                                   String container,
                                   String caseId,
@@ -352,7 +365,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
         return client.getAdHocFragments(containerId,
                                         caseId)
                 .stream()
-                .map(new CaseActionAdHocMapper(""))
+                .map(new CaseActionAdHocMapper())
                 .collect(toList());
     }
 
@@ -479,5 +492,4 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
             return NODE_TYPE_MILESTONE.equals(summary.getType());
         }
     }
-
 }
