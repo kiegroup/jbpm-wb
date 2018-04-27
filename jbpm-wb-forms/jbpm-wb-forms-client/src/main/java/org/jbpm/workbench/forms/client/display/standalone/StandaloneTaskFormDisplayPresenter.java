@@ -20,7 +20,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayProvider;
-import org.jbpm.workbench.forms.client.display.views.EmbeddedFormDisplayView;
+import org.jbpm.workbench.forms.client.display.views.display.EmbeddedFormDisplayer;
 import org.jbpm.workbench.forms.client.i18n.Constants;
 import org.jbpm.workbench.forms.display.api.HumanTaskDisplayerConfig;
 import org.jbpm.workbench.ht.model.TaskKey;
@@ -30,14 +30,13 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
-import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 
 @Dependent
-@WorkbenchScreen(identifier = "Standalone Task Form Display")
+@WorkbenchScreen(identifier = StandaloneTaskFormDisplayPresenter.SCREEN_ID)
 public class StandaloneTaskFormDisplayPresenter {
 
-    protected String placeOnClose;
+    public static final String SCREEN_ID = "Standalone Task Form Display";
 
     protected PlaceRequest place;
 
@@ -45,7 +44,7 @@ public class StandaloneTaskFormDisplayPresenter {
     private PlaceManager placeManager;
 
     @Inject
-    private EmbeddedFormDisplayView view;
+    private EmbeddedFormDisplayer displayer;
 
     @Inject
     private HumanTaskFormDisplayProvider humanTaskFormDisplayProvider;
@@ -57,7 +56,7 @@ public class StandaloneTaskFormDisplayPresenter {
 
     @WorkbenchPartView
     public IsWidget getView() {
-        return view.getView();
+        return displayer;
     }
 
     @OnStartup
@@ -68,34 +67,29 @@ public class StandaloneTaskFormDisplayPresenter {
     @OnOpen
     public void onOpen() {
 
-        placeOnClose = place.getParameter("onClose",
-                                          "none");
+        final String placeOnClose = place.getParameter(StandaloneConstants.ON_CLOSE_PARAM, null);
 
-        Long currentTaskId = Long.parseLong(place.getParameter("taskId",
-                                                               "-1"));
-        String opener = place.getParameter("opener",
-                                           null);
+        final String serverTemplate = place.getParameter(StandaloneConstants.SERVER_TEMPLATE_PARAM, null);
+        final String domainId = place.getParameter(StandaloneConstants.DOMAIN_ID_PARAM, null);
 
-        view.setOnCloseCommand(new Command() {
-            @Override
-            public void execute() {
-                if (!placeOnClose.equals("none")) {
-                    placeManager.closePlace(place);
-                    placeManager.forceClosePlace(placeOnClose);
-                } else {
-                    placeManager.closePlace(place);
-                }
+        final String taskId = place.getParameter(StandaloneConstants.TASK_ID_PARAM, null);
+
+        final String opener = place.getParameter(StandaloneConstants.OPENER_PARAM, null);
+
+        displayer.setOnCloseCommand(() -> {
+            if (null != placeOnClose) {
+                placeManager.closePlace(place);
+                placeManager.forceClosePlace(placeOnClose);
+            } else {
+                placeManager.closePlace(place);
             }
         });
 
-        if (currentTaskId != -1) {
-            TaskKey key = new TaskKey(null,
-                                      null,
-                                      currentTaskId);
+        if (null != taskId) {
+            TaskKey key = new TaskKey(serverTemplate, domainId, Long.decode(taskId));
             HumanTaskDisplayerConfig config = new HumanTaskDisplayerConfig(key);
             config.setFormOpener(opener);
-            humanTaskFormDisplayProvider.setup(config,
-                                               view);
+            humanTaskFormDisplayProvider.setup(config, displayer);
         }
     }
 }

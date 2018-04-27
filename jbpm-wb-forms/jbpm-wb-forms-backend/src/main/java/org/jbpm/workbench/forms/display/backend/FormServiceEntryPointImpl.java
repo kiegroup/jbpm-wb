@@ -20,22 +20,26 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.workbench.ks.integration.AbstractKieServerService;
+import org.jbpm.document.Document;
 import org.jbpm.workbench.forms.display.FormRenderingSettings;
+import org.jbpm.workbench.forms.display.api.TaskFormPermissionDeniedException;
 import org.jbpm.workbench.forms.service.providing.DefaultFormProvider;
 import org.jbpm.workbench.forms.service.providing.FormProvider;
 import org.jbpm.workbench.forms.service.providing.ProcessRenderingSettings;
 import org.jbpm.workbench.forms.service.providing.TaskRenderingSettings;
 import org.jbpm.workbench.forms.service.providing.model.TaskDefinition;
 import org.jbpm.workbench.forms.service.shared.FormServiceEntryPoint;
-import org.jbpm.document.Document;
+import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.kie.internal.task.api.ContentMarshallerContext;
 import org.kie.server.api.exception.KieServicesException;
+import org.kie.server.api.exception.KieServicesHttpException;
 import org.kie.server.api.model.definition.ProcessDefinition;
 import org.kie.server.api.model.definition.TaskInputsDefinition;
 import org.kie.server.api.model.definition.TaskOutputsDefinition;
@@ -133,12 +137,11 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
             taskInstance.setOutputIncluded(true);
         }
 
-        KieServicesClient kieServicesClient = getKieServicesClient(serverTemplateId,
-                                                                   domainId);
+        KieServicesClient kieServicesClient = getKieServicesClient(serverTemplateId, domainId);
 
         try {
-            String formContent = uiServicesClient.getTaskRawForm(domainId,
-                                                                 taskId);
+            String formContent = uiServicesClient.getTaskRawForm(domainId, taskId);
+
             TaskRenderingSettings settings = new TaskRenderingSettings(taskInstance,
                                                                        inputs,
                                                                        outputs,
@@ -152,12 +155,13 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
                     return template;
                 }
             }
-        } catch (KieServicesException e) {
-            logger.debug("Unable to find task form in remote server due to {}",
-                         e.getMessage());
+        } catch (KieServicesHttpException e) {
+            if(Response.Status.UNAUTHORIZED.getStatusCode() == e.getHttpCode() || Response.Status.FORBIDDEN.getStatusCode() == e.getHttpCode()) {
+                throw new TaskFormPermissionDeniedException();
+            }
+            throw e;
         } catch (Exception e) {
-            logger.debug("Unable to render task form due to {}",
-                         e.getMessage());
+            logger.debug("Unable to render form for task {} due to {}", taskId, e.getMessage());
         }
 
         return renderDefaultTaskForm(serverTemplateId,
@@ -172,19 +176,13 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
                                                         Map<String, Object> inputs,
                                                         Map<String, Object> outputs,
                                                         KieServicesClient kieServicesClient) {
-        try {
-            return defaultFormProvider.render(new TaskRenderingSettings(taskInstance,
-                                                                        inputs,
-                                                                        outputs,
-                                                                        serverTemplateId,
-                                                                        "",
-                                                                        new ContentMarshallerContext(null,
-                                                                                                     kieServicesClient.getClassLoader())));
-        } catch (Exception ex) {
-            logger.warn("Unable to generate default form for task '" + taskInstance.getName() + "': {}",
-                        ex.getMessage());
-        }
-        return null;
+        return defaultFormProvider.render(new TaskRenderingSettings(taskInstance,
+                                                                    inputs,
+                                                                    outputs,
+                                                                    serverTemplateId,
+                                                                    "",
+                                                                    new ContentMarshallerContext(null,
+                                                                                                 kieServicesClient.getClassLoader())));
     }
 
     @Override

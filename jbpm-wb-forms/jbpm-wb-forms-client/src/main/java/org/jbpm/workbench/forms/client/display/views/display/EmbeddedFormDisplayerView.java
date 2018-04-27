@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.forms.client.display.views;
+package org.jbpm.workbench.forms.client.display.views.display;
 
+import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.workbench.forms.client.display.GenericFormDisplayer;
-import org.jbpm.workbench.forms.display.FormRenderingSettings;
-import org.jbpm.workbench.common.service.ItemKey;
-import org.uberfire.mvp.Command;
 
-public interface FormDisplayerView {
+public interface EmbeddedFormDisplayerView extends IsWidget {
 
-    void display(GenericFormDisplayer<? extends ItemKey, ? extends FormRenderingSettings> display);
+    void display(GenericFormDisplayer displayer);
 
-    Command getOnCloseCommand();
-
-    void setOnCloseCommand(Command onCloseCommand);
-
-    GenericFormDisplayer getCurrentDisplayer();
-
-    void displayErrorMessage(String errorHeader, String errorMessage);
+    void showErrorMessage(String errorHeader, String errorMessage);
 }
