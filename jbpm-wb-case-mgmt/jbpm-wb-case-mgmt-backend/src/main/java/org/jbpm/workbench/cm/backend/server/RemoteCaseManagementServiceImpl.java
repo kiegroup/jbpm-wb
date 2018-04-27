@@ -20,18 +20,13 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.workbench.cm.model.CaseActionSummary;
-import org.jbpm.workbench.cm.model.CaseCommentSummary;
-import org.jbpm.workbench.cm.model.CaseDefinitionSummary;
-import org.jbpm.workbench.cm.model.CaseInstanceSummary;
-import org.jbpm.workbench.cm.model.CaseMilestoneSummary;
-import org.jbpm.workbench.cm.model.CaseRoleAssignmentSummary;
-import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
+import org.jbpm.workbench.cm.model.*;
 import org.jbpm.workbench.cm.service.CaseManagementService;
 import org.jbpm.workbench.cm.util.Actions;
 import org.jbpm.workbench.cm.util.CaseActionStatus;
@@ -50,9 +45,9 @@ import org.kie.server.client.CaseServicesClient;
 import org.kie.server.client.UserTaskServicesClient;
 
 import static java.util.Collections.singletonList;
+import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static java.util.Comparator.comparing;
 
 @Service
 @ApplicationScoped
@@ -62,6 +57,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     public static final String CASE_OWNER_ROLE = "owner";
     public static final List<String> NODE_TYPE_HUMAN_TASK = Arrays.asList("Human Task",
                                                                           "HumanTaskNode");
+    public static final String NODE_TYPE_MILESTONE = "MilestoneNode";
 
     @Inject
     private CaseServicesClient client;
@@ -278,15 +274,41 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                                   String container,
                                   String caseId,
                                   String userId) {
-        Actions actions = new Actions();
-        actions.setAvailableActions(getAdHocActions(serverTemplateId,
-                                                    container,
-                                                    caseId));
-        actions.setInProgressAction(getInProgressActions(container,
-                                                         caseId));
-        actions.setCompleteActions(getCompletedActions(container,
-                                                       caseId));
+        final Actions actions = new Actions();
+        final List<CaseActionSummary> adHocActions = getAdHocActions(serverTemplateId,
+                                                                     container,
+                                                                     caseId);
+        final List<CaseActionSummary> inProgressActions = getInProgressActions(container,
+                                                                               caseId);
+        final List<CaseActionSummary> completedActions = getCompletedActions(container,
+                                                                             caseId);
+        actions.setInProgressAction(inProgressActions);
+        actions.setCompleteActions(completedActions);
+        actions.setAvailableActions(
+                adHocActions.stream()
+                        .filter(action -> {
+                            if (new MilestoneNodePredicate().negate().test(action)) {
+                                return true;
+                            }
+                            if (findMilestone(inProgressActions,
+                                              action.getName())) {
+                                return false;
+                            }
+                            if (findMilestone(completedActions,
+                                              action.getName())) {
+                                return false;
+                            }
+                            return true;
+                        })
+                        .filter(action -> new HumanTaskNodePredicate().negate().test(action,
+                                                                                     inProgressActions))
+                        .collect(toList()));
         return actions;
+    }
+
+    protected boolean findMilestone(final List<CaseActionSummary> actions,
+                                    final String name) {
+        return actions.stream().filter(action -> name.equals(action.getName())).findAny().isPresent();
     }
 
     public List<CaseActionSummary> getInProgressActions(String containerId,
@@ -295,8 +317,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                                                                caseId,
                                                                0,
                                                                PAGE_SIZE_UNLIMITED);
-        
-        return activeNodes.stream()             
+        return activeNodes.stream()
                 .map(s -> new CaseActionNodeInstanceMapper(
                         (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
                                 userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
@@ -441,4 +462,22 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                                                                                              PAGE_SIZE_UNLIMITED);
         return processDefinitions.stream().map(new ProcessDefinitionMapper()).collect(toList());
     }
+
+    public static class HumanTaskNodePredicate implements BiPredicate<CaseActionSummary, List<CaseActionSummary>> {
+
+        @Override
+        public boolean test(final CaseActionSummary summary,
+                            final List<CaseActionSummary> actions) {
+            return NODE_TYPE_HUMAN_TASK.contains(summary.getType()) && actions.stream().filter(action -> action.getType().equals(summary.getType()) && action.getName().equals(summary.getName())).findAny().isPresent();
+        }
+    }
+
+    public static class MilestoneNodePredicate implements Predicate<CaseActionSummary> {
+
+        @Override
+        public boolean test(final CaseActionSummary summary) {
+            return NODE_TYPE_MILESTONE.equals(summary.getType());
+        }
+    }
+
 }
