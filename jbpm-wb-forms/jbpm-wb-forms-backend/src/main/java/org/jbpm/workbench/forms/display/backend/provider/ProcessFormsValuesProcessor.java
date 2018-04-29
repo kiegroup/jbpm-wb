@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -86,25 +87,31 @@ public class ProcessFormsValuesProcessor extends KieWorkbenchFormsValuesProcesso
     @Override
     protected Collection<FormDefinition> generateDefaultFormsForContext(ProcessRenderingSettings settings) {
 
-        List<ModelProperty> properties = settings.getProcessData().entrySet().stream().map(entry -> {
-            ModelProperty property = ModelPropertiesGenerator.createModelProperty(entry.getKey(),
-                                                                                  BPMNVariableUtils.getRealTypeForInput(entry.getValue()),
-                                                                                  settings.getMarshallerContext().getClassloader());
-
-
-            if(property.getTypeInfo().getClassName().equals(Object.class.getName())) {
-                property.getMetaData().addEntry(new FieldTypeEntry(TextAreaFieldType.NAME));
-            }
-
-            return property;
-        }).sorted((property1, property2) -> property1.getName().compareToIgnoreCase(property2.getName())).collect(Collectors.toList());
+        List<ModelProperty> properties = settings.getProcessData().entrySet().stream()
+                .map(entry -> generateModelProperty(entry.getKey(), entry.getValue(), settings))
+                .filter(modelProperty -> modelProperty != null)
+                .sorted((property1, property2) -> property1.getName().compareToIgnoreCase(property2.getName()))
+                .collect(Collectors.toList());
 
         BusinessProcessFormModel formModel = new BusinessProcessFormModel(settings.getProcess().getId(),
                                                                           settings.getProcess().getName(),
                                                                           properties);
 
-        return dynamicBPMNFormGenerator.generateProcessForms(formModel,
-                                                             settings.getMarshallerContext().getClassloader());
+        return dynamicBPMNFormGenerator.generateProcessForms(formModel, settings.getMarshallerContext().getClassloader());
+    }
+
+    private ModelProperty generateModelProperty(String name, String type, ProcessRenderingSettings settings) {
+        ModelProperty property = ModelPropertiesGenerator.createModelProperty(name,
+                                                                              BPMNVariableUtils.getRealTypeForInput(type),
+                                                                              settings.getMarshallerContext().getClassloader());
+
+        if (property != null && property.getTypeInfo().getClassName().equals(Object.class.getName())) {
+            if (property.getTypeInfo().isMultiple()) {
+                return null;
+            }
+            property.getMetaData().addEntry(new FieldTypeEntry(TextAreaFieldType.NAME));
+        }
+        return property;
     }
 
     @Override

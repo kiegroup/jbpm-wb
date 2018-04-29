@@ -16,13 +16,13 @@
 
 package org.jbpm.workbench.forms.display.backend.provider;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -109,53 +109,39 @@ public class TaskFormValuesProcessor extends KieWorkbenchFormsValuesProcessor<Ta
     }
 
     @Override
-    protected Collection<FormDefinition> generateDefaultFormsForContext(TaskRenderingSettings settings) {
-        List<ModelProperty> properties = new ArrayList<>();
+    protected Collection<FormDefinition> generateDefaultFormsForContext(final TaskRenderingSettings settings) {
 
         TaskDefinition task = settings.getTask();
 
         Map<String, String> taskData = new HashMap<>();
+
         taskData.putAll(task.getTaskInputDefinitions());
         taskData.putAll(task.getTaskOutputDefinitions());
 
-        taskData.forEach((name, type) -> {
-            // filter not needed variables
-            if (BPMNVariableUtils.isValidInputName(name)) {
-                ModelProperty property = ModelPropertiesGenerator.createModelProperty(name,
-                                                                                      BPMNVariableUtils.getRealTypeForInput(type),
-                                                                                      settings.getMarshallerContext().getClassloader());
-                if (task.getTaskInputDefinitions().containsKey(name) && !task.getTaskOutputDefinitions().containsKey(name)) {
-                    property.getMetaData().addEntry(new FieldReadOnlyEntry(true));
-                }
+        List<ModelProperty> properties = taskData.entrySet().stream()
+                .map(entry -> generateModelProperty(entry.getKey(), entry.getValue(), task, settings))
+                .filter(modelProperty -> modelProperty != null)
+                .sorted((property1, property2) -> {
+                    boolean variable1OnlyInput = task.getTaskInputDefinitions().containsKey(property1.getName()) && !task.getTaskOutputDefinitions().containsKey(property1.getName());
+                    boolean variable2OnlyInput = task.getTaskInputDefinitions().containsKey(property2.getName()) && !task.getTaskOutputDefinitions().containsKey(property2.getName());
 
-                if (property.getTypeInfo().getClassName().equals(Object.class.getName())) {
-                    property.getMetaData().addEntry(new FieldTypeEntry(TextAreaFieldType.NAME));
-                }
+                    if (variable1OnlyInput) {
+                        if (variable2OnlyInput) {
+                            return property1.getName().compareToIgnoreCase(property2.getName());
+                        } else {
+                            return -1;
+                        }
+                    }
 
-                properties.add(property);
-            }
-        });
+                    if (variable2OnlyInput) {
+                        return 1;
+                    }
 
-        TaskFormModel formModel = new TaskFormModel(task.getProcessId(),
-                                                    task.getFormName(),
-                                                    properties.stream().sorted((variable1, variable2) -> {
-                                                        boolean variable1OnlyInput = task.getTaskInputDefinitions().containsKey(variable1.getName()) && !task.getTaskOutputDefinitions().containsKey(variable1.getName());
-                                                        boolean variable2OnlyInput = task.getTaskInputDefinitions().containsKey(variable2.getName()) && !task.getTaskOutputDefinitions().containsKey(variable2.getName());
+                    return property1.getName().compareToIgnoreCase(property2.getName());
+                })
+                .collect(Collectors.toList());
 
-                                                        if (variable1OnlyInput) {
-                                                            if (variable2OnlyInput) {
-                                                                return variable1.getName().compareToIgnoreCase(variable2.getName());
-                                                            } else {
-                                                                return -1;
-                                                            }
-                                                        }
-
-                                                        if (variable2OnlyInput) {
-                                                            return 1;
-                                                        }
-
-                                                        return variable1.getName().compareToIgnoreCase(variable2.getName());
-                                                    }).collect(Collectors.toList()));
+        TaskFormModel formModel = new TaskFormModel(task.getProcessId(), task.getFormName(), properties);
 
         Collection<FormDefinition> forms = dynamicBPMNFormGenerator.generateTaskForms(formModel,
                                                                                       settings.getMarshallerContext().getClassloader());
@@ -176,6 +162,28 @@ public class TaskFormValuesProcessor extends KieWorkbenchFormsValuesProcessor<Ta
         }
 
         return forms;
+    }
+
+    private ModelProperty generateModelProperty(final String name, final String type, final TaskDefinition task, final TaskRenderingSettings settings) {
+        if (BPMNVariableUtils.isValidInputName(name)) {
+            ModelProperty property = ModelPropertiesGenerator.createModelProperty(name,
+                                                                                  BPMNVariableUtils.getRealTypeForInput(type),
+                                                                                  settings.getMarshallerContext().getClassloader());
+            if (property != null) {
+                if (task.getTaskInputDefinitions().containsKey(name) && !task.getTaskOutputDefinitions().containsKey(name)) {
+                    property.getMetaData().addEntry(new FieldReadOnlyEntry(true));
+                }
+
+                if (property.getTypeInfo().getClassName().equals(Object.class.getName())) {
+                    if (property.getTypeInfo().isMultiple()) {
+                        return null;
+                    }
+                    property.getMetaData().addEntry(new FieldTypeEntry(TextAreaFieldType.NAME));
+                }
+            }
+            return property;
+        }
+        return null;
     }
 
     @Override
