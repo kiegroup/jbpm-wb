@@ -321,6 +321,12 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
                 .collect(toList());
     }
 
+    @Override
+    public List<CaseStageSummary> getCaseStages(final String containerId,
+                                                final String caseId) {
+        return caseStageList;
+    }
+
     public List<CaseActionSummary> getAdHocFragments(String containerId,
                                                      String caseId) {
         return ofNullable(caseActionMap.get(caseId)).orElse(emptyList()).stream()

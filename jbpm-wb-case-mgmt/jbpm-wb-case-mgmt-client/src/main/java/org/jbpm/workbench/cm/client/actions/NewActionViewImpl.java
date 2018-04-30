@@ -152,8 +152,8 @@ public class NewActionViewImpl implements CaseActionsPresenter.NewActionView {
 
     @Override
     public void addStages(List<CaseStageSummary> activeStages) {
-        activeStages.forEach(activeStage -> stages.addOption(activeStage.getIdentifier(),
-                                                             activeStage.getName()));
+        activeStages.forEach(activeStage -> stages.addOption(activeStage.getName(),
+                                                             activeStage.getIdentifier()));
         stages.refresh();
     }
 
