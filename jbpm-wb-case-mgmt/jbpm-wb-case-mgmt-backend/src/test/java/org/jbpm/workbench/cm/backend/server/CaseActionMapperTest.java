@@ -19,6 +19,7 @@ package org.jbpm.workbench.cm.backend.server;
 import java.util.Date;
 
 import org.jbpm.workbench.cm.model.CaseActionSummary;
+import org.jbpm.workbench.cm.model.CaseStageSummary;
 import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseActionType;
 import org.junit.Test;
@@ -41,11 +42,17 @@ public class CaseActionMapperTest {
                      ccs.getName());
         assertEquals(cc.getType(),
                      ccs.getType());
-        assertNotNull(ccs.getStageId());
         assertEquals(CaseActionType.AD_HOC_TASK,
                      ccs.getActionType());
         assertEquals(CaseActionStatus.AVAILABLE,
                      ccs.getActionStatus());
+    }
+
+    public static void assertCaseActionAdHocFragmentWithStage(final CaseAdHocFragment cc,
+                                                              final CaseActionSummary ccs) {
+        assertCaseActionAdHocFragment(cc,
+                                      ccs);
+        assertNotNull(ccs.getStage());
     }
 
     public static void assertCaseActionNodeInstance(final NodeInstance nodeInstance,
@@ -71,15 +78,15 @@ public class CaseActionMapperTest {
                 .type("AdhocFragment-type")
                 .build();
 
-        final CaseActionSummary ccs = new CaseActionAdHocMapper(STAGE_ID).apply(cc);
-        assertCaseActionAdHocFragment(cc,
-                                      ccs);
+        final CaseActionSummary ccs = new CaseActionAdHocMapper(CaseStageSummary.builder().identifier(STAGE_ID).build()).apply(cc);
+        assertCaseActionAdHocFragmentWithStage(cc,
+                                               ccs);
     }
 
     @Test
     public void testCaseActionAdHocFragmentMapper_mapNull() {
         final CaseAdHocFragment cc = null;
-        final CaseActionSummary ccs = new CaseActionAdHocMapper(STAGE_ID).apply(cc);
+        final CaseActionSummary ccs = new CaseActionAdHocMapper().apply(cc);
         assertNull(ccs);
     }
 
@@ -106,8 +113,7 @@ public class CaseActionMapperTest {
     public void testCaseActionNodeInstanceMapper_mapNull() {
         final NodeInstance nodeInstance = null;
         final CaseActionSummary ccs = new CaseActionNodeInstanceMapper(HUMAN_TASK_OWNER,
-                                                                       CaseActionStatus.IN_PROGRESS)
-                .apply(nodeInstance);
+                                                                       CaseActionStatus.IN_PROGRESS).apply(nodeInstance);
 
         assertNull(ccs);
     }

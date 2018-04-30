@@ -56,8 +56,8 @@ public class CaseInstanceMapperTest {
                          cis.getStages());
     }
 
-    private static void assertCaseStages(final List<CaseStage> csl,
-                                         final List<CaseStageSummary> cssl) {
+    public static void assertCaseStages(final List<CaseStage> csl,
+                                        final List<CaseStageSummary> cssl) {
         assertNotNull(cssl);
         if (csl == null) {
             assertEquals(0,
@@ -102,8 +102,9 @@ public class CaseInstanceMapperTest {
                 caseActionSummary = casl.get(i);
                 assertEquals(caseActionSummary.getName(),
                              caseAdHocFragment.getName());
+                assertNotNull(caseActionSummary.getStage());
                 assertEquals(stageId,
-                             caseActionSummary.getStageId());
+                             caseActionSummary.getStage().getIdentifier());
                 assertEquals(CaseActionType.AD_HOC_TASK,
                              caseActionSummary.getActionType());
             }
