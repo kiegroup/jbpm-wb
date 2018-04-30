@@ -60,7 +60,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     public static final String COL_ID_SELECT = "Select";
     public static final String COL_ID_ACTIONS = "Actions";
-    public static final int ACTIONS_COLUMN_WIDTH = 120;
+    public static final int ACTIONS_COLUMN_WIDTH = 175;
     public static final int CHECK_COLUMN_WIDTH = 38;
     public static final int ERROR_COLUMN_WIDTH = 65;
 
