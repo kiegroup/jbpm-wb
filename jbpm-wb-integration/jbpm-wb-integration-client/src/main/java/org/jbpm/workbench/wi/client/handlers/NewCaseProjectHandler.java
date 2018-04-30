@@ -18,8 +18,9 @@ package org.jbpm.workbench.wi.client.handlers;
 
 import java.util.Collections;
 import java.util.List;
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.Callback;
@@ -34,13 +35,11 @@ import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.wi.casemgmt.service.CaseProjectService;
 import org.jbpm.workbench.wi.client.i18n.Constants;
 import org.kie.workbench.common.screens.library.api.preferences.LibraryPreferences;
+import org.kie.workbench.common.screens.library.client.screens.project.AddProjectPopUpPresenter;
 import org.kie.workbench.common.screens.projecteditor.client.resources.ProjectEditorResources;
-import org.kie.workbench.common.screens.projecteditor.client.wizard.NewWorkspaceProjectWizard;
-import org.kie.workbench.common.screens.projecteditor.client.wizard.POMBuilder;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
 import org.kie.workbench.common.widgets.client.handlers.NewWorkspaceProjectHandler;
 import org.uberfire.commons.data.Pair;
@@ -54,73 +53,36 @@ import org.uberfire.workbench.type.ResourceTypeDefinition;
 /**
  * Handler for the creation of new Projects
  */
-@Dependent
-public class NewCaseProjectHandler
-        implements NewWorkspaceProjectHandler {
+@ApplicationScoped
+public class NewCaseProjectHandler implements NewWorkspaceProjectHandler {
 
+    @Inject
+    private Event<WorkspaceProjectContextChangeEvent> projectContextChangeEventEvent;
+
+    @Inject
+    private LibraryPreferences libraryPreferences;
+
+    @Inject
+    private Caller<OrganizationalUnitService> ouService;
+
+    @Inject
     private WorkspaceProjectContext context;
-    private NewWorkspaceProjectWizard wizard;
+
+    @Inject
     private ProjectController projectController;
 
+    @Inject
+    private Instance<AddProjectPopUpPresenter> addProjectPopUpPresenterProvider;
+
     //We don't really need this for Packages but it's required by DefaultNewResourceHandler
+    @Inject
     private AnyResourceTypeDefinition resourceType;
 
     private Caller<CaseProjectService> caseProjectService;
+
     private Event<NotificationEvent> notification;
 
-    private boolean openEditorOnCreation = true;
     private org.uberfire.client.callbacks.Callback<WorkspaceProject> creationSuccessCallback;
-    org.uberfire.client.callbacks.Callback<WorkspaceProject> configureCaseProjectCallback = new org.uberfire.client.callbacks.Callback<WorkspaceProject>() {
-        @Override
-        public void callback(WorkspaceProject project) {
-            if (project != null) {
-                caseProjectService.call(new RemoteCallback<Void>() {
-                                            @Override
-                                            public void callback(Void aVoid) {
-                                                notification.fire(new NotificationEvent(Constants.INSTANCE.ConfigureProjectSuccess(project.getName()),
-                                                                                        NotificationEvent.NotificationType.SUCCESS));
-                                                if (creationSuccessCallback != null) {
-                                                    creationSuccessCallback.callback(project);
-                                                }
-                                            }
-                                        },
-                                        new DefaultErrorCallback() {
-                                            @Override
-                                            public boolean error(Message message,
-                                                                 Throwable throwable) {
-                                                notification.fire(new NotificationEvent(Constants.INSTANCE.ConfigureProjectFailure(project.getName()),
-                                                                                        NotificationEvent.NotificationType.ERROR));
-                                                return super.error(message,
-                                                                   throwable);
-                                            }
-                                        }).configureNewCaseProject(project);
-            }
-        }
-    };
-    private Event<WorkspaceProjectContextChangeEvent> projectContextChangeEventEvent;
-    private LibraryPreferences libraryPreferences;
-    private Caller<OrganizationalUnitService> ouService;
-
-    public NewCaseProjectHandler() {
-        //Zero argument constructor for CDI proxies
-    }
-
-    @Inject
-    public NewCaseProjectHandler(final WorkspaceProjectContext context,
-                                 final Event<WorkspaceProjectContextChangeEvent> projectContextChangeEventEvent,
-                                 final LibraryPreferences libraryPreferences,
-                                 final NewWorkspaceProjectWizard wizard,
-                                 final Caller<OrganizationalUnitService> ouService,
-                                 final ProjectController projectController,
-                                 final AnyResourceTypeDefinition resourceType) {
-        this.context = context;
-        this.projectContextChangeEventEvent = projectContextChangeEventEvent;
-        this.libraryPreferences = libraryPreferences;
-        this.ouService = ouService;
-        this.wizard = wizard;
-        this.projectController = projectController;
-        this.resourceType = resourceType;
-    }
 
     @Inject
     public void setCaseProjectService(Caller<CaseProjectService> caseProjectService) {
@@ -179,45 +141,55 @@ public class NewCaseProjectHandler
 
     @Override
     public Command getCommand(final NewResourcePresenter newResourcePresenter) {
-        return new Command() {
-            @Override
-            public void execute() {
-
-                if (!context.getActiveOrganizationalUnit().isPresent()) {
-                    ouService.call(new RemoteCallback<OrganizationalUnit>() {
-                        @Override
-                        public void callback(OrganizationalUnit organizationalUnit) {
-
-                            projectContextChangeEventEvent.fire(new WorkspaceProjectContextChangeEvent(organizationalUnit));
-
-                            init();
-                        }
-                    }).getOrganizationalUnit(libraryPreferences.getOrganizationalUnitPreferences().getName());
-                } else {
+        return () -> {
+            if (!context.getActiveOrganizationalUnit().isPresent()) {
+                ouService.call((OrganizationalUnit organizationalUnit) -> {
+                    projectContextChangeEventEvent.fire(new WorkspaceProjectContextChangeEvent(organizationalUnit));
                     init();
-                }
+                }).getOrganizationalUnit(libraryPreferences.getOrganizationalUnitPreferences().getName());
+            } else {
+                init();
             }
         };
     }
 
-    private void init() {
-        wizard.initialise(new POMBuilder().setModuleName("")
-                                  .setGroupId(context.getActiveOrganizationalUnit()
-                                                     .orElseThrow(() -> new IllegalStateException("Cannot initialize new case project without an active organizational unit."))
-                                                     .getDefaultGroupId())
-                                  .build());
-        wizard.start(configureCaseProjectCallback,
-                     openEditorOnCreation);
-    }
-
-    @Override
-    public void setCreationSuccessCallback(final org.uberfire.client.callbacks.Callback<WorkspaceProject> creationSuccessCallback) {
-        this.creationSuccessCallback = creationSuccessCallback;
+    protected void init() {
+        final AddProjectPopUpPresenter addCaseProjectPopUpPresenter = addProjectPopUpPresenterProvider.get();
+        addCaseProjectPopUpPresenter.setSuccessCallback((project) -> {
+            if (project != null) {
+                caseProjectService.call((Void) -> {
+                                            if (addCaseProjectPopUpPresenter.getProjectCreationSuccessCallback() != null) {
+                                                addCaseProjectPopUpPresenter.getProjectCreationSuccessCallback().execute(project);
+                                            }
+                                            if (creationSuccessCallback != null) {
+                                                creationSuccessCallback.callback(project);
+                                            }
+                                            notification.fire(new NotificationEvent(Constants.INSTANCE.ConfigureProjectSuccess(project.getName()),
+                                                                                    NotificationEvent.NotificationType.SUCCESS));
+                                            addProjectPopUpPresenterProvider.destroy(addCaseProjectPopUpPresenter);
+                                        },
+                                        new DefaultErrorCallback() {
+                                            @Override
+                                            public boolean error(Message message,
+                                                                 Throwable throwable) {
+                                                notification.fire(new NotificationEvent(Constants.INSTANCE.ConfigureProjectFailure(project.getName()),
+                                                                                        NotificationEvent.NotificationType.ERROR));
+                                                return super.error(message,
+                                                                   throwable);
+                                            }
+                                        }).configureNewCaseProject(project);
+            }
+        });
+        addCaseProjectPopUpPresenter.show();
     }
 
     @Override
     public void setOpenEditorOnCreation(final boolean openEditorOnCreation) {
-        this.openEditorOnCreation = openEditorOnCreation;
+    }
+
+    @Override
+    public void setCreationSuccessCallback(org.uberfire.client.callbacks.Callback<WorkspaceProject> creationSuccessCallback) {
+        this.creationSuccessCallback = creationSuccessCallback;
     }
 
     @Override
