@@ -9,26 +9,34 @@
         "name": "adhoc_stage1_1",
         "actionType": "AD_HOC_TASK",
         "actionStatus": "AVAILABLE",
-        "stageId": "Stage1"
+        "stage": {
+          "name": "Stage1",
+          "identifier": "_stage_1",
+          "status": "Active"
+        }
       },
       {
         "id": "101",
         "name": "adhoc_stage1_2",
         "actionType": "AD_HOC_TASK",
         "actionStatus": "AVAILABLE",
-        "stageId": "Stage1"
+        "stage": {
+          "name": "Stage1",
+          "identifier": "_stage_1",
+          "status": "Active"
+        }
       }
     ]
   },
   {
     "name": "Stage2",
-    "identifier": "Stage2",
+    "identifier": "_stage_2",
     "status": "Canceled",
     "adHocActions": []
   },
   {
     "name": "Stage3",
-    "identifier": "Stage3",
+    "identifier": "_stage_3",
     "status": "Active",
     "adHocActions": [
       {
@@ -36,32 +44,46 @@
         "name": "adhoc_stage3_1",
         "actionType": "AD_HOC_TASK",
         "actionStatus": "AVAILABLE",
-        "stageId": "Stage3"
+        "stage": {
+          "name": "Stage3",
+          "identifier": "_stage_3",
+          "status": "Active"
+        }
       },
       {
         "id": "301",
         "name": "adhoc_stage3_2",
         "actionType": "AD_HOC_TASK",
         "actionStatus": "AVAILABLE",
-        "stageId": "Stage3"
+        "stage": {
+          "name": "Stage3",
+          "identifier": "_stage_3",
+          "status": "Active"
+        }
       }
     ]
   },
   {
     "name": "Stage4",
-    "identifier": "Stage4",
+    "identifier": "_stage_4",
     "status": "Available",
     "adHocActions": []
   },
   {
     "name": "Stage5",
-    "identifier": "Stage5",
+    "identifier": "_stage_5",
     "status": "Available",
     "adHocActions": []
   },
   {
     "name": "Stage6",
-    "identifier": "Stage6",
+    "identifier": "_stage_6",
+    "status": "Available",
+    "adHocActions": []
+  },
+  {
+    "name": "",
+    "identifier": "_stage_7",
     "status": "Available",
     "adHocActions": []
   }
