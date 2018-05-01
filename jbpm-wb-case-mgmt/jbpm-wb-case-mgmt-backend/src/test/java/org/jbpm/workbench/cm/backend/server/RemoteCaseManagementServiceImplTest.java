@@ -235,9 +235,35 @@ public class RemoteCaseManagementServiceImplTest {
                                      caseFileCaptor.capture());
         final CaseFile caseFile = caseFileCaptor.getValue();
         assertEquals(owner,
-                     caseFile.getUserAssignments().get(CASE_OWNER_ROLE));
+                     caseFile.getUserAssignments().get(CASE_OWNER_ROLE)[0]);
         assertEquals(user,
-                     caseFile.getUserAssignments().get(role));
+                     caseFile.getUserAssignments().get(role)[0]);
+    }
+
+    @Test
+    public void testStartCaseInstanceWithMultipleAssignmentsToRole() {
+        final String owner = "userx";
+        final String role = "test";
+        final String user = "user1";
+        final String group = "group1";
+        final List<CaseRoleAssignmentSummary> roles = singletonList(CaseRoleAssignmentSummary.builder().name(role).users(singletonList(user)).groups(singletonList(group)).build());
+        testedService.startCaseInstance(serverTemplateId,
+                                        containerId,
+                                        caseDefinitionId,
+                                        owner,
+                                        roles);
+
+        final ArgumentCaptor<CaseFile> caseFileCaptor = ArgumentCaptor.forClass(CaseFile.class);
+        verify(clientMock).startCase(eq(containerId),
+                                     eq(caseDefinitionId),
+                                     caseFileCaptor.capture());
+        final CaseFile caseFile = caseFileCaptor.getValue();
+        assertEquals(owner,
+                     caseFile.getUserAssignments().get(CASE_OWNER_ROLE)[0]);
+        assertEquals(user,
+                     caseFile.getUserAssignments().get(role)[0]);
+        assertEquals(group,
+                     caseFile.getGroupAssignments().get(role)[0]);
     }
 
     @Test

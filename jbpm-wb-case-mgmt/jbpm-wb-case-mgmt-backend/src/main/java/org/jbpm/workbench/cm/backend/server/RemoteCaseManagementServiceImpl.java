@@ -48,7 +48,7 @@ import org.kie.server.client.UserTaskServicesClient;
 import static java.util.Collections.singletonList;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 @Service
 @ApplicationScoped
@@ -112,14 +112,13 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                                     final String owner,
                                     final List<CaseRoleAssignmentSummary> roleAssignments) {
         final CaseFile.Builder builder = CaseFile.builder();
+
+        final Map<String, String[]> groupRoles = roleAssignments.stream().filter(a -> a.getGroups().isEmpty() == false).collect(toMap(a -> a.getName(), a -> a.getGroups().toArray(new String[]{})));
+        final Map<String, String[]> userRoles = roleAssignments.stream().filter(a -> a.getUsers().isEmpty() == false).collect(toMap(a -> a.getName(), a -> a.getUsers().toArray(new String[]{})));
+        builder.groupAssignments(groupRoles);
+        builder.userAssignments(userRoles);
         builder.addUserAssignments(CASE_OWNER_ROLE,
                                    owner);
-        roleAssignments.forEach(a -> {
-            a.getGroups().forEach(g -> builder.addGroupAssignments(a.getName(),
-                                                                   g));
-            a.getUsers().forEach(u -> builder.addUserAssignments(a.getName(),
-                                                                 u));
-        });
         return client.startCase(containerId,
                                 caseDefinitionId,
                                 builder.build());
