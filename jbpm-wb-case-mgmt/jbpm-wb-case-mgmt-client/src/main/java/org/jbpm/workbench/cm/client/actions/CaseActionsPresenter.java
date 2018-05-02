@@ -31,6 +31,9 @@ import org.jbpm.workbench.cm.model.CaseActionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.jbpm.workbench.cm.model.CaseStageSummary;
 import org.jbpm.workbench.cm.model.ProcessDefinitionSummary;
+import org.jbpm.workbench.cm.predicate.HumanTaskNodePredicate;
+import org.jbpm.workbench.cm.predicate.MilestoneNodePredicate;
+import org.jbpm.workbench.cm.predicate.SubProcessNodePredicate;
 import org.jbpm.workbench.cm.util.Actions;
 import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseActionType;
@@ -209,7 +212,6 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
 
     void setAction(final CaseActionItemView caseActionItem) {
         final CaseActionSummary caseActionItemModel = caseActionItem.getValue();
-
         switch (caseActionItemModel.getActionStatus()) {
             case AVAILABLE: {
                 prepareAction(caseActionItem);
@@ -217,15 +219,34 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
             }
             case IN_PROGRESS: {
                 caseActionItem.addCreationDate();
+                final String nodeLabel = getNodeTypeLabel(caseActionItemModel);
                 final String actionOwner = caseActionItemModel.getActualOwner();
-                if (!isNullOrEmpty(actionOwner)) {
-                    caseActionItem.addActionOwner(actionOwner);
+                if (isNullOrEmpty(actionOwner) == false && isNullOrEmpty(nodeLabel) == false) {
+                    caseActionItem.addActionInfo(" ( " + nodeLabel + " - " + actionOwner + " ) ");
+                } else if (isNullOrEmpty(nodeLabel) == false) {
+                    caseActionItem.addActionInfo(" ( " + nodeLabel + " ) ");
                 }
                 break;
             }
             case COMPLETED: {
+                final String nodeLabel = getNodeTypeLabel(caseActionItemModel);
+                if(isNullOrEmpty(nodeLabel) == false){
+                    caseActionItem.addActionInfo(" ( " + nodeLabel + " ) ");
+                }
                 caseActionItem.addCreationDate();
             }
+        }
+    }
+
+    protected String getNodeTypeLabel(final CaseActionSummary action){
+        if(new HumanTaskNodePredicate().test(action.getType())){
+            return translationService.format(HUMAN_TASK);
+        } else if(new MilestoneNodePredicate().test(action.getType())){
+            return translationService.format(MILESTONE);
+        } else if(new SubProcessNodePredicate().test(action.getType())){
+            return translationService.format(SUB_PROCESS);
+        } else {
+            return null;
         }
     }
 

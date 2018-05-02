@@ -46,4 +46,12 @@ public class CaseActionSummaryTest {
         assertEquals(cas1,
                      cas2);
     }
+
+    @Test
+    public void testSameIdAndStatusDifferentTypeEquals() {
+        CaseActionSummary cas1 = CaseActionSummary.builder().name("test1").id(1l).actionStatus(CaseActionStatus.IN_PROGRESS).type("SubProcessNode").build();
+        CaseActionSummary cas2 = CaseActionSummary.builder().name("test1").id(1l).actionStatus(CaseActionStatus.IN_PROGRESS).type("HumanTaskNode").build();
+        assertNotEquals(cas1,
+                        cas2);
+    }
 }

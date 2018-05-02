@@ -22,7 +22,6 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import org.jboss.errai.security.shared.api.identity.User;
-
 import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenterTest;
 import org.jbpm.workbench.cm.model.CaseActionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
@@ -39,14 +38,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.verification.VerificationMode;
 import org.uberfire.mvp.Command;
 
-import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
-import static org.jbpm.workbench.cm.util.CaseActionType.*;
-import static org.jbpm.workbench.cm.util.CaseStageStatus.*;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
 import static java.util.Collections.singletonList;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
+import static org.jbpm.workbench.cm.predicate.HumanTaskNodePredicate.NODE_TYPE_HUMAN_TASK;
+import static org.jbpm.workbench.cm.predicate.MilestoneNodePredicate.NODE_TYPE_MILESTONE;
+import static org.jbpm.workbench.cm.predicate.SubProcessNodePredicate.NODE_TYPE_SUB_PROCESS;
+import static org.jbpm.workbench.cm.util.CaseActionType.*;
+import static org.jbpm.workbench.cm.util.CaseStageStatus.ACTIVE;
+import static org.jbpm.workbench.cm.util.CaseStageStatus.AVAILABLE;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
@@ -217,19 +221,20 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
     @Test
     public void testSetAction_statusInProgress() {
         final CaseActionSummary caseActionSummaryWithoutOwner = createCaseActionSummary(CaseActionStatus.IN_PROGRESS);
+        caseActionSummaryWithoutOwner.setType(NODE_TYPE_HUMAN_TASK);
         final CaseActionSummary caseActionSummaryWithOwner = createCaseActionSummary(CaseActionStatus.IN_PROGRESS);
         caseActionSummaryWithOwner.setActualOwner("owner");
+        caseActionSummaryWithOwner.setType(NODE_TYPE_HUMAN_TASK);
         when(caseActionItemViewMock.getValue()).thenReturn(caseActionSummaryWithoutOwner,
                                                            caseActionSummaryWithOwner);
 
         getPresenter().setAction(caseActionItemViewMock);
-        verify(caseActionItemViewMock,
-               never()).addActionOwner(anyString());
+        verify(caseActionItemViewMock).addActionInfo(" ( HumanTask ) ");
 
         getPresenter().setAction(caseActionItemViewMock);
         verify(caseActionItemViewMock,
                times(2)).addCreationDate();
-        verify(caseActionItemViewMock).addActionOwner("owner");
+        verify(caseActionItemViewMock).addActionInfo(" ( HumanTask - owner ) ");
         verify(presenter,
                never()).prepareAction(any(CaseActionItemView.class));
     }
@@ -237,15 +242,60 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
     @Test
     public void testSetAction_statusCompleted() {
         final CaseActionSummary caseActionSummary = createCaseActionSummary(CaseActionStatus.COMPLETED);
+        caseActionSummary.setType(NODE_TYPE_HUMAN_TASK);
         when(caseActionItemViewMock.getValue()).thenReturn(caseActionSummary);
 
         getPresenter().setAction(caseActionItemViewMock);
 
         verify(caseActionItemViewMock).addCreationDate();
-        verify(caseActionItemViewMock,
-               never()).addActionOwner(anyString());
+        verify(caseActionItemViewMock).addActionInfo(" ( HumanTask ) ");
         verify(presenter,
                never()).prepareAction(any(CaseActionItemView.class));
+    }
+
+    @Test
+    public void testSetAction_NodeTypes() {
+        assertActionInfo(NODE_TYPE_HUMAN_TASK,
+                         " ( HumanTask ) ");
+        assertActionInfo(NODE_TYPE_MILESTONE,
+                         " ( Milestone ) ");
+        assertActionInfo(NODE_TYPE_SUB_PROCESS,
+                         " ( SubProcess ) ");
+        assertActionInfo("RandomNode",
+                         null,
+                         CaseActionStatus.IN_PROGRESS,
+                         never());
+        assertActionInfo("RandomNode",
+                         null,
+                         CaseActionStatus.COMPLETED,
+                         never());
+    }
+
+    protected void assertActionInfo(final String nodeType,
+                                    final String text) {
+        assertActionInfo(nodeType,
+                         text,
+                         CaseActionStatus.IN_PROGRESS,
+                         times(1));
+        assertActionInfo(nodeType,
+                         text,
+                         CaseActionStatus.COMPLETED,
+                         times(1));
+    }
+
+    protected void assertActionInfo(final String nodeType,
+                                    final String text,
+                                    final CaseActionStatus status,
+                                    final VerificationMode mode) {
+        final CaseActionSummary caseActionSummary = createCaseActionSummary(status);
+        caseActionSummary.setType(nodeType);
+        when(caseActionItemViewMock.getValue()).thenReturn(caseActionSummary);
+
+        getPresenter().setAction(caseActionItemViewMock);
+
+        verify(caseActionItemViewMock,
+               mode).addActionInfo(text);
+        reset(caseActionItemViewMock);
     }
 
     private CaseActionSummary createCaseActionSummary(final CaseActionStatus status) {
