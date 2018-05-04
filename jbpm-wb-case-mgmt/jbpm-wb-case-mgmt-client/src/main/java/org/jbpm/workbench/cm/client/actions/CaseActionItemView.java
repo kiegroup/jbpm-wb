@@ -112,10 +112,6 @@ public class CaseActionItemView extends AbstractView<CaseActionsPresenter> imple
                        "hidden");
     }
 
-    public void addActionOwner(final String owner) {
-        actionInfo.setTextContent(" (" + owner + ") ");
-    }
-
     public void addActionInfo(final String text) {
         actionInfo.setTextContent(text);
     }
