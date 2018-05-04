@@ -18,11 +18,9 @@ package org.jbpm.workbench.ht.client.editors.taskdetailsmulti;
 import javax.enterprise.context.Dependent;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.shared.event.TabShowEvent;
 import org.gwtbootstrap3.client.shared.event.TabShowHandler;
@@ -34,8 +32,7 @@ import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 
 @Dependent
 public class TaskDetailsMultiViewImpl extends Composite
-        implements TaskDetailsMultiPresenter.TaskDetailsMultiView,
-                   RequiresResize {
+        implements TaskDetailsMultiPresenter.TaskDetailsMultiView {
 
     private static Binder uiBinder = GWT.create(Binder.class);
 
@@ -217,19 +214,6 @@ public class TaskDetailsMultiViewImpl extends Composite
         taskLogsPane.setVisible(true);
         taskLogsTab.setVisible(true);
         taskDetailsTab.showTab();
-    }
-
-    @Override
-    public void onResize() {
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-                if (genericFormDisplayPane != null) {
-                    final int height = getParent().getOffsetHeight() - navTabs.getOffsetHeight();
-                    genericFormDisplayPane.setHeight((height > 0 ? height : 0) + "px");
-                }
-            }
-        });
     }
 
     interface Binder
