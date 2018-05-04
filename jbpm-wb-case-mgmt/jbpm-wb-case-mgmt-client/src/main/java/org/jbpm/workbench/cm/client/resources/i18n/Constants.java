@@ -99,13 +99,13 @@ public interface Constants {
     String MILESTONES = "Milestones";
 
     @TranslationKey(defaultValue = "")
-    String MILESTONES_HAS_NOT_BEEN_COMPLETED = "MilestonHasNotBeenCompleted";
+    String MILESTONES_HAS_NOT_BEEN_COMPLETED = "MilestoneHasNotBeenCompleted";
 
     @TranslationKey(defaultValue = "")
-    String MILESTONES_HAS_BEEN_TERMINATED = "MilestonHasBeenTerminated";
+    String MILESTONES_HAS_BEEN_TERMINATED = "MilestoneHasBeenTerminated";
 
     @TranslationKey(defaultValue = "")
-    String MILESTONES_HAS_BEEN_COMPLETED = "MilestonHasBeenCompleted";
+    String MILESTONES_HAS_BEEN_COMPLETED = "MilestoneHasBeenCompleted";
 
     @TranslationKey(defaultValue = "")
     String CASE_STAGES = "CaseStages";
@@ -163,4 +163,13 @@ public interface Constants {
 
     @TranslationKey(defaultValue = "")
     String INVALID_ROLE_ASSIGNMENT = "InvalidRoleAssignment";
+
+    @TranslationKey(defaultValue = "")
+    String MILESTONE = "Milestone";
+
+    @TranslationKey(defaultValue = "")
+    String SUB_PROCESS = "SubProcess";
+
+    @TranslationKey(defaultValue = "")
+    String HUMAN_TASK = "HumanTask";
 }
