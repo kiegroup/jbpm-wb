@@ -31,7 +31,7 @@ import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.kie.workbench.common.screens.library.client.settings.util.list.ListItemView;
+import org.kie.workbench.common.widgets.client.widget.ListItemView;
 import org.kie.workbench.common.screens.library.client.settings.util.modal.Elemental2Modal;
 
 @Templated
