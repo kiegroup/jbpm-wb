@@ -26,8 +26,8 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
-import org.kie.workbench.common.screens.library.client.settings.util.list.ListItemPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.list.ListItemView;
+import org.kie.workbench.common.widgets.client.widget.ListItemPresenter;
+import org.kie.workbench.common.widgets.client.widget.ListItemView;
 
 @Dependent
 public class ObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Section<?>, ObjectItemPresenter.View> implements ObjectPresenter {
