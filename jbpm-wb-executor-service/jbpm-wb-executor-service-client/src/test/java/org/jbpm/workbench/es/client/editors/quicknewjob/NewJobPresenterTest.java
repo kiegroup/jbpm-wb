@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
-
 import org.assertj.core.api.SoftAssertions;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.model.RequestDataSetConstants;
@@ -165,12 +164,10 @@ public class NewJobPresenterTest {
     public void testScheduleJobFailure_unknownError() {
         final String genericErrorMessage = "Unknown error";
 
-        doAnswer(invocation -> {
-            throw new Exception(genericErrorMessage);
-        }).when(executorServicesMock).scheduleRequest(anyString(),
-                                                      anyString(),
-                                                      any(Date.class),
-                                                      any(Map.class));
+        doThrow(new RuntimeException(new RuntimeException(genericErrorMessage))).when(executorServicesMock).scheduleRequest(anyString(),
+                                                                                                                            anyString(),
+                                                                                                                            any(Date.class),
+                                                                                                                            any(Map.class));
         presenter.createJob(JOB_NAME,
                             new Date(),
                             JOB_TYPE,
