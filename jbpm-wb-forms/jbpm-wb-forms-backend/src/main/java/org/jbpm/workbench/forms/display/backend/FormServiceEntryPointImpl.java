@@ -159,7 +159,6 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
             if(Response.Status.UNAUTHORIZED.getStatusCode() == e.getHttpCode() || Response.Status.FORBIDDEN.getStatusCode() == e.getHttpCode()) {
                 throw new TaskFormPermissionDeniedException();
             }
-            throw e;
         } catch (Exception e) {
             logger.debug("Unable to render form for task {} due to {}", taskId, e.getMessage());
         }
