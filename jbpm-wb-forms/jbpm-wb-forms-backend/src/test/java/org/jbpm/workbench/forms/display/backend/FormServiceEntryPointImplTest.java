@@ -34,6 +34,8 @@ import org.jbpm.workbench.forms.display.backend.provider.ProcessFormsValuesProce
 import org.jbpm.workbench.forms.display.backend.provider.TaskFormValuesProcessor;
 import org.jbpm.workbench.forms.display.backend.provider.util.FormContentReader;
 import org.jbpm.workbench.forms.service.providing.FormProvider;
+import org.jbpm.workbench.forms.service.providing.ProcessRenderingSettings;
+import org.jbpm.workbench.forms.service.providing.TaskRenderingSettings;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -140,8 +142,7 @@ public class FormServiceEntryPointImplTest {
         kieWorkbenchFormsProvider = new KieWorkbenchFormsProvider(processValuesProcessor,
                                                                   taskValuesProcessor);
 
-        defaultProvider = new DefaultKieWorkbenchFormsProvider(processValuesProcessor,
-                                                               taskValuesProcessor);
+        defaultProvider = spy(new DefaultKieWorkbenchFormsProvider(processValuesProcessor, taskValuesProcessor));
 
         when(kieServicesClient.getClassLoader()).thenReturn(this.getClass().getClassLoader());
 
@@ -227,6 +228,8 @@ public class FormServiceEntryPointImplTest {
         verify(uiServicesClient).getProcessRawForm(anyString(),
                                                    anyString());
 
+        verify(defaultProvider, never()).render(any(ProcessRenderingSettings.class));
+
         checkRenderingSettings(settings);
     }
 
@@ -243,6 +246,8 @@ public class FormServiceEntryPointImplTest {
                times(2)).getClassLoader();
         verify(uiServicesClient).getProcessRawForm(anyString(),
                                                    anyString());
+
+        verify(defaultProvider).render(any(ProcessRenderingSettings.class));
 
         checkRenderingSettings(settings);
     }
@@ -266,6 +271,8 @@ public class FormServiceEntryPointImplTest {
         verify(uiServicesClient).getProcessRawForm(anyString(),
                                                    anyString());
 
+        verify(defaultProvider).render(any(ProcessRenderingSettings.class));
+
         checkRenderingSettings(settings);
     }
 
@@ -284,6 +291,8 @@ public class FormServiceEntryPointImplTest {
         verify(kieServicesClient).getClassLoader();
         verify(uiServicesClient).getProcessRawForm(anyString(),
                                                    anyString());
+
+        verify(defaultProvider).render(any(ProcessRenderingSettings.class));
 
         checkRenderingSettings(settings);
     }
@@ -309,6 +318,8 @@ public class FormServiceEntryPointImplTest {
         verify(uiServicesClient).getTaskRawForm(anyString(),
                                                 anyLong());
 
+        verify(defaultProvider, never()).render(any(TaskRenderingSettings.class));
+
         checkRenderingSettings(settings);
     }
 
@@ -325,8 +336,11 @@ public class FormServiceEntryPointImplTest {
                                                        anyBoolean());
         verify(kieServicesClient,
                times(2)).getClassLoader();
+
         verify(uiServicesClient).getTaskRawForm(anyString(),
                                                 anyLong());
+
+        verify(defaultProvider).render(any(TaskRenderingSettings.class));
 
         checkRenderingSettings(settings);
     }
@@ -347,8 +361,33 @@ public class FormServiceEntryPointImplTest {
                                                        anyBoolean());
         verify(kieServicesClient,
                times(2)).getClassLoader();
+
         verify(uiServicesClient).getTaskRawForm(anyString(),
                                                 anyLong());
+
+        checkRenderingSettings(settings);
+    }
+
+    @Test
+    public void testRenderTaskFormWithException() {
+        when(uiServicesClient.getTaskRawForm(anyString(), anyLong())).thenThrow(new RuntimeException("Unable to find form"));
+
+        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayTask("template",
+                                                                              "domain",
+                                                                              12);
+
+        verify(userTaskServicesClient).getTaskInstance(anyString(),
+                                                       anyLong(),
+                                                       anyBoolean(),
+                                                       anyBoolean(),
+                                                       anyBoolean());
+
+        verify(kieServicesClient).getClassLoader();
+
+        verify(uiServicesClient).getTaskRawForm(anyString(),
+                                                anyLong());
+
+        verify(defaultProvider).render(any(TaskRenderingSettings.class));
 
         checkRenderingSettings(settings);
     }
@@ -369,6 +408,8 @@ public class FormServiceEntryPointImplTest {
         verify(kieServicesClient).getClassLoader();
         verify(uiServicesClient).getTaskRawForm(anyString(),
                                                 anyLong());
+
+        verify(defaultProvider).render(any(TaskRenderingSettings.class));
 
         checkRenderingSettings(settings);
     }
