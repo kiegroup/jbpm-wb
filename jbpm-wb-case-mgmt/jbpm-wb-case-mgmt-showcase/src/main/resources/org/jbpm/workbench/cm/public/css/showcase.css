@@ -35,3 +35,8 @@ ul.nav.navbar-nav.navbar-primary.persistent-secondary {
 #mega-menu img.uf-brand-icon {
     height: auto;
 }
+
+#mega-menu .navbar-pf .navbar-header {
+    height: 58px;
+    min-width: 200px;
+}
