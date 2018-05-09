@@ -70,10 +70,8 @@ public class EmbeddedFormDisplayerViewImpl extends Composite implements Embedded
         formContainerRow.getStyle().setDisplay(Style.Display.BLOCK);
         formContainer.add(displayer.getContainer());
 
-        if (displayer.getOpener() == null) {
-            formFooterRow.getStyle().setDisplay(Style.Display.BLOCK);
-            formFooter.add(displayer.getFooter());
-        }
+        formFooterRow.getStyle().setDisplay(Style.Display.BLOCK);
+        formFooter.add(displayer.getFooter());
     }
 
     @Override

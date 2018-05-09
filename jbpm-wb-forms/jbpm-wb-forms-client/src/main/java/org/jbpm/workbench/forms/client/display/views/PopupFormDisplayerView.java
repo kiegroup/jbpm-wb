@@ -72,9 +72,9 @@ public class PopupFormDisplayerView extends BaseModal implements FormDisplayerVi
         body.clear();
         footer.clear();
         body.add(displayer.getContainer());
-        if (displayer.getOpener() == null) {
-            footer.add(displayer.getFooter());
-        }
+
+        footer.add(displayer.getFooter());
+
         initialized = true;
         show();
     }

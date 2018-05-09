@@ -17,12 +17,12 @@
 package org.jbpm.workbench.forms.client.display.process;
 
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
@@ -48,14 +48,12 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
-import org.jbpm.workbench.forms.display.FormDisplayerConfig;
-import org.jbpm.workbench.forms.display.FormRenderingSettings;
-import org.jbpm.workbench.forms.client.display.util.ActionRequest;
-import org.jbpm.workbench.forms.client.display.util.JSNIHelper;
 import org.jbpm.workbench.forms.client.display.api.StartProcessFormDisplayer;
 import org.jbpm.workbench.forms.client.i18n.Constants;
+import org.jbpm.workbench.forms.display.FormDisplayerConfig;
+import org.jbpm.workbench.forms.display.FormRenderingSettings;
 import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
+import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mvp.Command;
@@ -78,7 +76,6 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
     protected String deploymentId;
     protected String processDefId;
     protected String processName;
-    protected String opener;
     protected Long parentProcessInstanceId;
 
     @Inject
@@ -88,9 +85,6 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
     protected Event<NewProcessInstanceEvent> newProcessInstanceEvent;
 
     protected Caller<ProcessService> processService;
-
-    @Inject
-    protected JSNIHelper jsniHelper;
 
     @Inject
     protected Event<NotificationEvent> notificationEvent;
@@ -115,7 +109,6 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
         this.deploymentId = config.getKey().getDeploymentId();
         this.processDefId = config.getKey().getProcessId();
         this.renderingSettings = config.getRenderingSettings();
-        this.opener = config.getFormOpener();
         this.onClose = onClose;
         this.onRefresh = onRefreshCommand;
 
@@ -140,10 +133,6 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
         processName = config.getKey().getProcessDefName();
         FocusPanel wrapperFlowPanel = new FocusPanel();
         wrapperFlowPanel.setStyleName("wrapper form-actions");
-
-        if (opener != null) {
-            injectEventListener(AbstractStartProcessFormDisplayer.this);
-        }
 
         initDisplayer();
 
@@ -203,7 +192,6 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
         }});
 
         formContainer.add(accordion);
-
     }
 
     protected abstract void initDisplayer();
@@ -215,8 +203,6 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
                                  Throwable throwable) {
                 String notification = Constants.INSTANCE.UnexpectedError(throwable.getMessage());
                 errorPopup.showMessage(notification);
-                jsniHelper.notifyErrorMessage(opener,
-                                              notification);
                 return true;
             }
         };
@@ -255,8 +241,6 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
                                                                          processName,
                                                                          1));
                 final String message = Constants.INSTANCE.ProcessStarted(processInstanceId);
-                jsniHelper.notifySuccessMessage(opener,
-                                                message);
                 notificationEvent.fire(new NotificationEvent(message,
                                                              NotificationEvent.NotificationType.SUCCESS));
                 close();
@@ -290,7 +274,6 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
 
     protected void clearStatus() {
         renderingSettings = null;
-        opener = null;
         deploymentId = null;
         processDefId = null;
         processName = null;
@@ -301,36 +284,6 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
 
         onClose = null;
         onRefresh = null;
-    }
-
-    protected void eventListener(String origin,
-                                 String request) {
-        if (origin == null || !origin.endsWith("//" + opener)) {
-            return;
-        }
-
-        ActionRequest actionRequest = JsonUtils.safeEval(request);
-
-        if (ACTION_START_PROCESS.equals(actionRequest.getAction())) {
-            startProcessFromDisplayer();
-        }
-    }
-
-    private native void injectEventListener(AbstractStartProcessFormDisplayer fdp) /*-{
-        function postMessageListener(e) {
-            fdp.@org.jbpm.workbench.forms.client.display.process.AbstractStartProcessFormDisplayer::eventListener(Ljava/lang/String;Ljava/lang/String;)(e.origin, e.data);
-        }
-
-        if ($wnd.addEventListener) {
-            $wnd.addEventListener("message", postMessageListener, false);
-        } else {
-            $wnd.attachEvent("onmessage", postMessageListener, false);
-        }
-    }-*/;
-
-    @Override
-    public String getOpener() {
-        return opener;
     }
 
     protected String getCorrelationKey() {
