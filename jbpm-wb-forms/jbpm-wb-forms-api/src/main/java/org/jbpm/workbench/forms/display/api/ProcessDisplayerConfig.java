@@ -24,7 +24,6 @@ public class ProcessDisplayerConfig<S extends FormRenderingSettings> implements 
 
     private ProcessDefinitionKey key;
     private String processName;
-    private String formOpener;
     private S renderingSettings;
 
     public ProcessDisplayerConfig(ProcessDefinitionKey key,
@@ -51,12 +50,4 @@ public class ProcessDisplayerConfig<S extends FormRenderingSettings> implements 
         this.renderingSettings = renderingSettings;
     }
 
-    @Override
-    public String getFormOpener() {
-        return formOpener;
-    }
-
-    public void setFormOpener(String formOpener) {
-        this.formOpener = formOpener;
-    }
 }

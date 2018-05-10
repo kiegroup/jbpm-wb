@@ -20,7 +20,6 @@ import java.util.HashMap;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.forms.client.display.process.AbstractStartProcessFormDisplayer;
-import org.jbpm.workbench.forms.client.display.util.JSNIHelper;
 import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.junit.Before;
@@ -48,9 +47,6 @@ public abstract class AbstractStartProcessFormDisplayerTest {
 
     @Mock
     protected ProcessService processService;
-
-    @Mock
-    protected JSNIHelper jsniHelper;
 
     public abstract AbstractStartProcessFormDisplayer getStartProcessFormDisplayer();
 
