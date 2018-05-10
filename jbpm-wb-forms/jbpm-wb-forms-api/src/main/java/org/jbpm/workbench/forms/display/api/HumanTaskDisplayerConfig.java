@@ -23,7 +23,6 @@ import org.jbpm.workbench.ht.model.TaskKey;
 public class HumanTaskDisplayerConfig<S extends FormRenderingSettings> implements FormDisplayerConfig<TaskKey, S> {
 
     private TaskKey key;
-    private String formOpener;
     private S renderingSettings;
 
     public HumanTaskDisplayerConfig(TaskKey key) {
@@ -44,12 +43,4 @@ public class HumanTaskDisplayerConfig<S extends FormRenderingSettings> implement
         this.renderingSettings = renderingSettings;
     }
 
-    @Override
-    public String getFormOpener() {
-        return formOpener;
-    }
-
-    public void setFormOpener(String formOpener) {
-        this.formOpener = formOpener;
-    }
 }

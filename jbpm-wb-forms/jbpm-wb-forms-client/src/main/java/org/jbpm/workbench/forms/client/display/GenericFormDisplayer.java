@@ -40,6 +40,4 @@ public interface GenericFormDisplayer<T extends ItemKey, S extends FormRendering
     void addOnRefreshCallback(Command callback);
 
     void close();
-
-    String getOpener();
 }

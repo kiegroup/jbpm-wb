@@ -256,9 +256,9 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
 
         removeFooter(this);
         footer = new GenericModalFooter();
-        if (displayer.getOpener() == null) {
-            footer.add(displayer.getFooter());
-        }
+
+        footer.add(displayer.getFooter());
+
         add(footer);
 
         initialized = true;
