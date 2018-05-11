@@ -53,7 +53,7 @@ public class TaskLogsViewImpl extends Composite implements TaskLogsPresenter.Tas
         removeAllChildren(logTextArea);
         logs.forEach(log -> {
             HTMLElement li = getDocument().createElement("li");
-            li.setTextContent(SafeHtmlUtils.htmlEscape(log));
+            li.setInnerHTML(SafeHtmlUtils.htmlEscape(log));
             logTextArea.appendChild(li);
         });
     }
