@@ -18,6 +18,7 @@ package org.jbpm.console.ng.bd.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
@@ -33,6 +34,7 @@ import org.kie.api.runtime.process.WorkItemHandler;
 
 import org.uberfire.java.nio.file.Path;
 
+@ApplicationScoped
 public class VfsMVELWorkItemHandlerProducer implements WorkItemHandlerProducer {
 
     @Inject
