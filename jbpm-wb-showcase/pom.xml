@@ -1684,6 +1684,7 @@
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-backend</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-backend-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-patternfly</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-widgets-security-management</compileSourcesArtifact>
 
             <!-- jBPM WB -->
             <compileSourcesArtifact>org.jbpm:jbpm-wb-human-tasks-api</compileSourcesArtifact>
