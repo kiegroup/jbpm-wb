@@ -39,6 +39,7 @@ import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
@@ -62,8 +63,8 @@ import org.uberfire.workbench.model.menu.Menus;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
-import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
+import static org.jbpm.workbench.ht.util.TaskStatus.*;
 
 public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresenter.TaskListView> extends AbstractMultiGridPresenter<TaskSummary, V> {
 
@@ -72,6 +73,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     private Caller<TaskService> taskService;
 
     private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
+
+    protected TranslationService translationService;
 
     @Inject
     private ErrorPopupPresenter errorPopup;
@@ -312,8 +315,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     public void selectTask(final TaskSummary summary) {
         boolean logOnly = false;
-        if (TASK_STATUS_COMPLETED.equals(summary.getStatus()) ||
-                TASK_STATUS_EXITED.equals(summary.getStatus())) {
+        if (TASK_STATUS_COMPLETED.equals(summary.getTaskStatus()) ||
+                TASK_STATUS_EXITED.equals(summary.getTaskStatus())) {
             logOnly = true;
         }
         setupDetailBreadcrumb(constants.TaskBreadcrumb(summary.getId()));
@@ -392,14 +395,17 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     @Override
     public void setupDefaultActiveSearchFilters() {
-        final List<String> status = Arrays.asList(TASK_STATUS_READY,
-                                                  TASK_STATUS_IN_PROGRESS,
-                                                  TASK_STATUS_RESERVED);
+        final List<String> status = Arrays.asList(TASK_STATUS_READY.getIdentifier(),
+                                                  TASK_STATUS_IN_PROGRESS.getIdentifier(),
+                                                  TASK_STATUS_RESERVED.getIdentifier());
+        final List<String> statusLabels = Arrays.asList(translationService.format(TASK_STATUS_READY.getIdentifier()),
+                                                        translationService.format(TASK_STATUS_IN_PROGRESS.getIdentifier()),
+                                                        translationService.format(TASK_STATUS_RESERVED.getIdentifier()));
         addActiveFilter(in(COLUMN_STATUS,
                            status),
                         constants.Status(),
                         String.join(", ",
-                                    status),
+                                    statusLabels),
                         status,
                         v -> removeActiveFilter(in(COLUMN_STATUS,
                                                    status))
@@ -417,15 +423,15 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     protected abstract Predicate<TaskSummary> getResumeActionCondition();
 
     protected Predicate<TaskSummary> getCompleteActionCondition() {
-        return task -> task.getActualOwner() != null && task.getStatus().equals(TASK_STATUS_IN_PROGRESS);
+        return task -> task.getActualOwner() != null && TASK_STATUS_IN_PROGRESS.equals(task.getTaskStatus());
     }
 
     protected Predicate<TaskSummary> getClaimActionCondition() {
-        return task -> task.getStatus().equals(TASK_STATUS_READY);
+        return task -> TASK_STATUS_READY.equals(task.getTaskStatus());
     }
 
     protected Predicate<TaskSummary> getReleaseActionCondition() {
-        return task -> task.getStatus().equals(TASK_STATUS_RESERVED) || task.getStatus().equals(TASK_STATUS_IN_PROGRESS);
+        return task -> TASK_STATUS_RESERVED.equals(task.getTaskStatus()) || TASK_STATUS_IN_PROGRESS.equals(task.getTaskStatus());
     }
 
     protected Predicate<TaskSummary> getProcessInstanceCondition() {
@@ -436,6 +442,10 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
         void addDomainSpecifColumns(ListTable<TaskSummary> extendedPagedTable,
                                     Set<String> columns);
+    }
 
+    @Inject
+    public void setTranslationService(TranslationService translationService) {
+        this.translationService = translationService;
     }
 }

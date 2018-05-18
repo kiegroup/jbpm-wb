@@ -18,6 +18,7 @@ package org.jbpm.workbench.ht.client.editors.taskdetails;
 import java.util.Date;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
@@ -41,6 +42,9 @@ public class TaskDetailsPresenterTest {
     private TaskService taskService;
 
     @Mock
+    private TranslationService translationService;
+
+    @Mock
     private TaskDetailsPresenter.TaskDetailsView viewMock;
 
     @Mock
@@ -56,6 +60,7 @@ public class TaskDetailsPresenterTest {
         presenter = new TaskDetailsPresenter(viewMock,
                                              callerMock,
                                              taskRefreshedEvent);
+        presenter.setTranslationService(translationService);
     }
 
     @Test
@@ -66,6 +71,7 @@ public class TaskDetailsPresenterTest {
 
     @Test
     public void testSetTaskDetails_isForLog() {
+        when(translationService.format(any())).thenReturn("Completed");
         boolean isForLog = true;
         String status = "Completed";
         String description = "description";
@@ -91,6 +97,7 @@ public class TaskDetailsPresenterTest {
 
     @Test
     public void testSetTaskDetails_statusReady() {
+        when(translationService.format(any())).thenReturn("Completed");
         boolean isForLog = false;
         String status = "Completed";
         String description = "description";

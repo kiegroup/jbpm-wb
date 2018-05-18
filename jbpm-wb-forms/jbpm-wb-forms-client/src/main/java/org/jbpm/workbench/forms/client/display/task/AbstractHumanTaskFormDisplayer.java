@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.service.TaskService;
+import org.jbpm.workbench.ht.util.TaskStatus;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mvp.Command;
 
@@ -128,7 +129,7 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
                                  buttonsContainer.clear();
                                  taskName = task.getName();
                                  deploymentId = task.getDeploymentId();
-                                 if (task.getStatus().equals("Ready")) {
+                                 if (TaskStatus.TASK_STATUS_READY.equals(task.getTaskStatus())) {
                                      Button claimButton = new Button();
                                      claimButton.setType(ButtonType.PRIMARY);
                                      claimButton.setText(constants.Claim());
@@ -141,7 +142,7 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
                                      buttonsContainer.add(claimButton);
                                  }
 
-                                 if (task.getStatus().equals("Reserved") && task.getActualOwner().equals(identity.getIdentifier())) {
+                                 if (TaskStatus.TASK_STATUS_RESERVED.equals(task.getTaskStatus()) && task.getActualOwner().equals(identity.getIdentifier())) {
 
                                      Button releaseButton = new Button();
                                      releaseButton.setText(constants.Release());
@@ -163,7 +164,7 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
                                          }
                                      });
                                      buttonsContainer.add(startButton);
-                                 } else if (task.getStatus().equals("InProgress") && task.getActualOwner().equals(identity.getIdentifier())) {
+                                 } else if (TaskStatus.TASK_STATUS_IN_PROGRESS.equals(task.getTaskStatus()) && task.getActualOwner().equals(identity.getIdentifier())) {
                                      Button saveButton = new Button();
                                      saveButton.setText(constants.Save());
                                      saveButton.addClickHandler(new ClickHandler() {

@@ -17,24 +17,27 @@
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetLookupFactory;
 import org.dashbuilder.dataset.sort.SortOrder;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.filters.basic.BasicFiltersPresenter;
-import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.jbpm.workbench.common.client.util.TaskUtils.getStatusByType;
+import static org.jbpm.workbench.ht.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.COLUMN_STATUS;
 
 public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFiltersPresenter {
 
     private Constants constants = Constants.INSTANCE;
+
+    private TranslationService translationService;
 
     @Override
     protected String getAdvancedFilterPopupTitle() {
@@ -58,8 +61,9 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
                                                        false))
         );
 
-        final Map<String, String> status = getStatusByType(TaskUtils.TaskType.ALL).stream().sorted().collect(Collectors.toMap(Function.identity(),
-                                                                                                                              Function.identity()));
+        final Map<String, String> status =
+                getStatusByType(TaskType.ALL).stream().sorted().collect(Collectors.toMap(key -> key,
+                                                                                         value -> translationService.format(value)));
         view.addMultiSelectFilter(constants.Status(),
                                   status,
                                   f -> addSearchFilterList(COLUMN_STATUS,
@@ -119,4 +123,9 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
     }
 
     public abstract String getDataSetId();
+
+    @Inject
+    public void setTranslationService(TranslationService translationService) {
+        this.translationService = translationService;
+    }
 }

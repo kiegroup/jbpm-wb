@@ -24,6 +24,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.util.UTCDateBox;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
@@ -33,6 +34,9 @@ import org.jbpm.workbench.ht.service.TaskService;
 
 @Dependent
 public class TaskDetailsPresenter {
+
+    @Inject
+    private TranslationService translationService;
 
     @Inject
     protected Event<TaskRefreshedEvent> taskRefreshed;
@@ -128,7 +132,7 @@ public class TaskDetailsPresenter {
             setReadOnlyTaskDetail();
         }
 
-        setTaskDetails(event.getStatus(),
+        setTaskDetails(translationService.format(event.getStatus()),
                        event.getDescription(),
                        event.getActualOwner(),
                        event.getExpirationTime(),
@@ -140,7 +144,7 @@ public class TaskDetailsPresenter {
     public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {
         if (currentTaskId == event.getTaskId()) {
             taskService.call((TaskSummary task) -> {
-                setTaskDetails(task.getStatus(),
+                setTaskDetails(translationService.format(task.getStatus()),
                                task.getDescription(),
                                task.getActualOwner(),
                                task.getExpirationTime(),
@@ -151,6 +155,11 @@ public class TaskDetailsPresenter {
                        currentContainerId,
                        currentTaskId);
         }
+    }
+
+    @Inject
+    public void setTranslationService(TranslationService translationService) {
+        this.translationService = translationService;
     }
 
     public interface TaskDetailsView extends IsWidget {

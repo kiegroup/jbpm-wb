@@ -21,11 +21,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.view.client.CellPreviewEvent;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.ConditionalAction;
@@ -36,11 +39,14 @@ import org.jbpm.workbench.ht.model.TaskSummary;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
-import static org.jbpm.workbench.common.client.util.TaskUtils.TASK_STATUS_COMPLETED;
+
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
+import static org.jbpm.workbench.ht.util.TaskStatus.TASK_STATUS_COMPLETED;
 
 public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> extends AbstractMultiGridView<TaskSummary, P>
         implements AbstractTaskListPresenter.TaskListView<P> {
+
+    private TranslationService translationService;
 
     protected final Constants constants = Constants.INSTANCE;
 
@@ -57,7 +63,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
             @Override
             public String getStyleNames(TaskSummary row,
                                         int rowIndex) {
-                if (row.getStatus().equals(TASK_STATUS_COMPLETED)) {
+                if (TASK_STATUS_COMPLETED.equals(row.getTaskStatus())) {
                     return HumanTaskResources.INSTANCE.css().taskCompleted();
                 }
                 return null;
@@ -109,7 +115,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         ));
         columnMetas.add(new ColumnMeta<>(
                 createTextColumn(COLUMN_STATUS,
-                                 task -> task.getStatus()),
+                                 task -> translationService.format(task.getStatus())),
                 constants.Status()
         ));
         final Column<TaskSummary, String> createdOnColumn = createTextColumn(COLUMN_CREATED_ON,
@@ -280,5 +286,10 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     protected Column<TaskSummary, ?> initGenericColumn(final String key) {
         return createTextColumn(key,
                                 task -> task.getDomainDataValue(key));
+    }
+
+    @Inject
+    public void setTranslationService(TranslationService translationService) {
+        this.translationService = translationService;
     }
 }

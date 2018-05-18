@@ -22,12 +22,11 @@ import java.util.List;
 import java.util.function.Consumer;
 import javax.enterprise.context.Dependent;
 
-import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
-import static org.jbpm.workbench.common.client.util.TaskUtils.getStatusByType;
+import static org.jbpm.workbench.ht.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Dependent
@@ -67,7 +66,7 @@ public class TaskAdminListFilterSettingsManager extends AbstractTaskListFilterSe
                 createFilterSettings(HUMAN_TASKS_WITH_ADMIN_DATASET,
                                      COLUMN_CREATED_ON,
                                      builder -> {
-                                         final List<Comparable> status = new ArrayList<>(getStatusByType(TaskUtils.TaskType.ADMIN));
+                                         final List<Comparable> status = new ArrayList<>(getStatusByType(TaskType.ADMIN));
                                          builder.filter(COLUMN_STATUS,
                                                         equalsTo(COLUMN_STATUS,
                                                                  status));
