@@ -282,22 +282,8 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                                 v -> removeActiveFilter(equalsTo(COLUMN_STATUS,
                                                                  v))
                 );
-            } else {
-                setupDefaultActiveSearchFilters();
             }
         }
-    }
-
-    @Override
-    public void setupDefaultActiveSearchFilters() {
-        addActiveFilter(equalsTo(COLUMN_STATUS,
-                                 RequestStatus.RUNNING.name()),
-                        constants.Status(),
-                        constants.Running(),
-                        RequestStatus.RUNNING.name(),
-                        v -> removeActiveFilter(equalsTo(COLUMN_STATUS,
-                                                         v))
-        );
     }
 
     public void openProcessInstanceView(final String processInstanceId) {

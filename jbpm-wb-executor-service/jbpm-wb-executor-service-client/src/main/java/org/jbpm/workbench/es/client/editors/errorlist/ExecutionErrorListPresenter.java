@@ -241,8 +241,6 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
 
     @Override
     public void setupActiveSearchFilters() {
-        boolean isDefaultFilters = true;
-
         final Optional<String> processInstanceSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
         if (processInstanceSearch.isPresent()) {
             final String processInstanceId = processInstanceSearch.get();
@@ -254,7 +252,6 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                             v -> removeActiveFilter(equalsTo(COLUMN_PROCESS_INST_ID,
                                                              v))
             );
-            isDefaultFilters = false;
         }
 
         final Optional<String> taskIdSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_TASK_ID);
@@ -268,8 +265,6 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                             v -> removeActiveFilter(equalsTo(COLUMN_ACTIVITY_ID,
                                                              v))
             );
-
-            isDefaultFilters = false;
         }
 
         final Optional<String> errorTypeSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_ERROR_TYPE);
@@ -283,8 +278,6 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                             v -> removeActiveFilter(equalsTo(COLUMN_ERROR_TYPE,
                                                              v))
             );
-
-            isDefaultFilters = false;
         }
 
         final Optional<String> isErrorAckSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_IS_ERROR_ACK);
@@ -305,26 +298,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                     v -> removeActiveFilter(equalsTo(COLUMN_ERROR_ACK,
                                                      v))
             );
-
-            isDefaultFilters = false;
         }
-
-        if (isDefaultFilters) {
-            setupDefaultActiveSearchFilters();
-        }
-    }
-
-    @Override
-    public void setupDefaultActiveSearchFilters() {
-        addActiveFilter(
-                equalsTo(COLUMN_ERROR_ACK,
-                         "0"),
-                constants.Acknowledged(),
-                commonConstants.No(),
-                "0",
-                v -> removeActiveFilter(equalsTo(COLUMN_ERROR_ACK,
-                                                 v))
-        );
     }
 
     public void setExecutionErrorSelectedEvent(Event<ExecutionErrorSelectedEvent> executionErrorSelectedEvent) {

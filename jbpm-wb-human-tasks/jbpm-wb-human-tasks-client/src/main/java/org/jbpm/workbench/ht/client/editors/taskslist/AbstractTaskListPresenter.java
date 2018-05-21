@@ -17,7 +17,6 @@
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -384,26 +383,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         v -> removeActiveFilter(equalsTo(COLUMN_TASK_ID,
                                                          v))
                 );
-            } else {
-                super.setupActiveSearchFilters();
             }
         }
-    }
-
-    @Override
-    public void setupDefaultActiveSearchFilters() {
-        final List<String> status = Arrays.asList(TASK_STATUS_READY,
-                                                  TASK_STATUS_IN_PROGRESS,
-                                                  TASK_STATUS_RESERVED);
-        addActiveFilter(in(COLUMN_STATUS,
-                           status),
-                        constants.Status(),
-                        String.join(", ",
-                                    status),
-                        status,
-                        v -> removeActiveFilter(in(COLUMN_STATUS,
-                                                   status))
-        );
     }
 
     public void openProcessInstanceView(final String processInstanceId) {
