@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.common.client.util;
+package org.jbpm.workbench.ht.client.util;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.jbpm.workbench.ht.util.TaskStatus;
+
+import static org.jbpm.workbench.ht.util.TaskStatus.*;
 
 public class TaskUtils {
 
-    public static String TASK_STATUS_CREATED = "Created";
-    public static String TASK_STATUS_READY = "Ready";
-    public static String TASK_STATUS_RESERVED = "Reserved";
-    public static String TASK_STATUS_IN_PROGRESS = "InProgress";
-    public static String TASK_STATUS_SUSPENDED = "Suspended";
-    public static String TASK_STATUS_FAILED = "Failed";
-    public static String TASK_STATUS_ERROR = "Error";
-    public static String TASK_STATUS_EXITED = "Exited";
-    public static String TASK_STATUS_OBSOLETE = "Obsolete";
-    public static String TASK_STATUS_COMPLETED = "Completed";
-
-    public static List<String> getStatusByType(TaskType type) {
-        ImmutableList<String> status = null;
+    public static List<TaskStatus> getTaskStatusByType(TaskType type) {
+        ImmutableList<TaskStatus> status = null;
         switch (type) {
             case ACTIVE:
                 status = ImmutableList.of(TASK_STATUS_READY,
@@ -73,6 +66,10 @@ public class TaskUtils {
                 throw new IllegalStateException("Unrecognized view type '" + type + "'!");
         }
         return Lists.newArrayList(status);
+    }
+
+    public static List<String> getStatusByType(TaskType type) {
+        return getTaskStatusByType(type).stream().map(s -> s.getIdentifier()).collect(Collectors.toList());
     }
 
     public enum TaskType {

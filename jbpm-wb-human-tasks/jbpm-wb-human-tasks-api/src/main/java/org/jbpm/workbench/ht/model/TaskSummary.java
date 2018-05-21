@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Map;
 import org.jboss.errai.common.client.api.annotations.NonPortable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.workbench.common.model.GenericErrorSummary;
+import org.jbpm.workbench.ht.util.TaskStatus;
 
 @Portable
 public class TaskSummary extends GenericErrorSummary<Long> {
@@ -86,6 +87,10 @@ public class TaskSummary extends GenericErrorSummary<Long> {
 
     public String getStatus() {
         return status;
+    }
+
+    public TaskStatus getTaskStatus() {
+        return TaskStatus.fromStatus(status);
     }
 
     public void setStatus(String status) {
