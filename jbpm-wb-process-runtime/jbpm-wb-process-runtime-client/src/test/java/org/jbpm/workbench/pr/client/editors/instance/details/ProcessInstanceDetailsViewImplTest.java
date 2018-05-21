@@ -118,7 +118,6 @@ public class ProcessInstanceDetailsViewImplTest {
         verify(logsTab).setVisible(true);
         verify(diagramPane).setVisible(true);
         verify(diagramTab).setVisible(true);
-        verify(instanceDetailsTab).showTab();
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,6 +135,7 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
+        boolean refreshDetails = (event != null && event.getTaskId() != null && event.getTaskId().equals(taskId));
         taskId = event.getTaskId();
         serverTemplateId = event.getServerTemplateId();
         containerId = event.getContainerId();
@@ -163,6 +164,10 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
             view.setAdminTabVisible(true);
         } else {
             view.setAdminTabVisible(false);
+        }
+
+        if (!refreshDetails) {
+            view.resetTabs(event.isForLog());
         }
     }
 
@@ -255,6 +260,8 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
         void setAdminTabVisible(boolean value);
 
         void displayAllTabs();
+
+        void resetTabs(boolean onlyLogTab);
 
         void displayOnlyLogTab();
     }

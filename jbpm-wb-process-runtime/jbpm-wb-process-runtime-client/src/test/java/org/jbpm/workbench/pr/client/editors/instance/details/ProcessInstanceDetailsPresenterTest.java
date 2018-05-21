@@ -96,16 +96,18 @@ public class ProcessInstanceDetailsPresenterTest {
     @Test
     public void isForLogRemainsEnabledAfterRefresh() {
         //When task selected with logOnly
+        boolean isLogOnly = true;
         presenter.onProcessSelectionEvent(new ProcessInstanceSelectionEvent(PI_DEPLOYMENT_ID,
                                                                             PI_ID,
                                                                             PI_PROCESS_DEF_ID,
                                                                             PI_PROCESS_DEF_NAME,
                                                                             0,
-                                                                            true,
+                                                                            isLogOnly,
                                                                             SERVER_TEMPLATE_ID));
         //Then only tab log is displayed
         verify(view).displayOnlyLogTab();
         assertTrue(presenter.isForLog());
+        verify(view).resetTabs(isLogOnly);
 
         presenter.onRefresh();
         assertTrue(presenter.isForLog());
@@ -114,17 +116,20 @@ public class ProcessInstanceDetailsPresenterTest {
     @Test
     public void isForLogRemainsDisabledAfterRefresh() {
         //When task selected without logOnly
+        boolean isLogOnly = false;
         presenter.onProcessSelectionEvent(new ProcessInstanceSelectionEvent(PI_DEPLOYMENT_ID,
                                                                             PI_ID,
                                                                             PI_PROCESS_DEF_ID,
                                                                             PI_PROCESS_DEF_NAME,
                                                                             0,
-                                                                            false,
+                                                                            isLogOnly,
                                                                             SERVER_TEMPLATE_ID));
 
         //Then alltabs are displayed
         verify(view).displayAllTabs();
+        verify(view).resetTabs(isLogOnly);
         assertFalse(presenter.isForLog());
+
 
         presenter.onRefresh();
         assertFalse(presenter.isForLog());
@@ -251,5 +256,41 @@ public class ProcessInstanceDetailsPresenterTest {
     private void verifyNoMoreInteractionsWithSignalAbortActions() {
         verifyNoMoreInteractions(signalProcessInstanceAction);
         verifyNoMoreInteractions(abortProcessInstanceAction);
+    }
+
+    @Test
+    public void refreshTest() {
+        presenter.onProcessSelectionEvent(new ProcessInstanceSelectionEvent(PI_DEPLOYMENT_ID,
+                                                                            PI_ID,
+                                                                            PI_PROCESS_DEF_ID,
+                                                                            PI_PROCESS_DEF_NAME,
+                                                                            0,
+                                                                            false,
+                                                                            SERVER_TEMPLATE_ID));
+        verify(view).displayAllTabs();
+        verify(view).resetTabs(false);
+
+        presenter.onRefresh();
+
+        final ArgumentCaptor<ProcessInstanceSelectionEvent> processInstanceSelectionEventArgumentCaptor = ArgumentCaptor.forClass(ProcessInstanceSelectionEvent.class);
+        verify(processInstanceSelected).fire(processInstanceSelectionEventArgumentCaptor.capture());
+        assertEquals(PI_DEPLOYMENT_ID,
+                     processInstanceSelectionEventArgumentCaptor.getValue().getDeploymentId());
+        assertEquals(PI_ID,
+                     processInstanceSelectionEventArgumentCaptor.getValue().getProcessInstanceId());
+        assertEquals(PI_PROCESS_DEF_ID,
+                     processInstanceSelectionEventArgumentCaptor.getValue().getProcessDefId());
+        assertEquals(PI_PROCESS_DEF_NAME,
+                     processInstanceSelectionEventArgumentCaptor.getValue().getProcessDefName());
+        assertEquals(Integer.valueOf(0),
+                     processInstanceSelectionEventArgumentCaptor.getValue().getProcessInstanceStatus());
+        assertFalse(processInstanceSelectionEventArgumentCaptor.getValue().isForLog());
+        assertEquals(SERVER_TEMPLATE_ID,
+                     processInstanceSelectionEventArgumentCaptor.getValue().getServerTemplateId());
+
+        presenter.onProcessSelectionEvent(processInstanceSelectionEventArgumentCaptor.getValue());
+        verify(view,
+               times(2)).displayAllTabs();
+        verify(view).resetTabs(false);
     }
 }
