@@ -28,7 +28,7 @@ import org.uberfire.client.annotations.WorkbenchPartTitleDecoration;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.jbpm.workbench.common.client.util.TaskUtils.*;
+import static org.jbpm.workbench.ht.util.TaskStatus.*;
 
 @Dependent
 @WorkbenchScreen(identifier = PerspectiveIds.TASK_LIST_SCREEN)
@@ -70,12 +70,12 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
 
     @Override
     protected Predicate<TaskSummary> getSuspendActionCondition() {
-        return task -> TASK_STATUS_RESERVED.equals(task.getStatus()) || TASK_STATUS_IN_PROGRESS.equals(task.getStatus());
+        return task -> TASK_STATUS_RESERVED.equals(task.getTaskStatus()) || TASK_STATUS_IN_PROGRESS.equals(task.getTaskStatus());
     }
 
     @Override
     protected Predicate<TaskSummary> getResumeActionCondition() {
-        return task -> TASK_STATUS_SUSPENDED.equals(task.getStatus());
+        return task -> TASK_STATUS_SUSPENDED.equals(task.getTaskStatus());
     }
 
     @Override

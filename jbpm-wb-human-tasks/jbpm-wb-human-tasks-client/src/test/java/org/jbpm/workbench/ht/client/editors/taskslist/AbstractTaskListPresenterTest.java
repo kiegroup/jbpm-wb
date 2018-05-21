@@ -33,12 +33,12 @@ import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterAddEvent;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterRemoveEvent;
 import org.jbpm.workbench.common.client.list.ListTable;
-import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
@@ -61,8 +61,9 @@ import org.uberfire.mocks.EventSourceMock;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
-import static org.jbpm.workbench.common.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
+import static org.jbpm.workbench.ht.util.TaskStatus.*;
+import static org.jbpm.workbench.ht.client.util.TaskUtils.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -75,6 +76,9 @@ public abstract class AbstractTaskListPresenterTest {
 
     @Mock
     protected User identity;
+
+    @Mock
+    TranslationService translationServiceMock;
 
     @Mock
     protected TaskService taskService;
@@ -122,7 +126,7 @@ public abstract class AbstractTaskListPresenterTest {
 
     protected static void testTaskStatusCondition(Predicate<TaskSummary> predicate,
                                                   String... validStatutes) {
-        List<String> allStatus = TaskUtils.getStatusByType(TaskType.ALL);
+        List<String> allStatus = getStatusByType(TaskType.ALL);
         final List<String> validStatuses = Arrays.asList(validStatutes);
         allStatus.removeAll(validStatuses);
 
@@ -356,6 +360,10 @@ public abstract class AbstractTaskListPresenterTest {
 
     @Test
     public void testDefaultActiveSearchFilters() {
+        when(translationServiceMock.format(TASK_STATUS_READY.getIdentifier())).thenReturn("Ready");
+        when(translationServiceMock.format(TASK_STATUS_IN_PROGRESS.getIdentifier())).thenReturn("InProgress");
+        when(translationServiceMock.format(TASK_STATUS_RESERVED.getIdentifier())).thenReturn("Reserved");
+
         getPresenter().setupDefaultActiveSearchFilters();
 
         ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
@@ -365,9 +373,9 @@ public abstract class AbstractTaskListPresenterTest {
         assertNotNull(filterItem);
         assertEquals(Constants.INSTANCE.Status(),
                      filterItem.getKey());
-        assertEquals(Arrays.asList(TASK_STATUS_READY,
-                                   TASK_STATUS_IN_PROGRESS,
-                                   TASK_STATUS_RESERVED),
+        assertEquals(Arrays.asList(TASK_STATUS_READY.getIdentifier(),
+                                   TASK_STATUS_IN_PROGRESS.getIdentifier(),
+                                   TASK_STATUS_RESERVED.getIdentifier()),
                      filterItem.getValue());
         assertEquals("Status: Ready, InProgress, Reserved",
                      filterItem.getLabelValue());
@@ -375,22 +383,22 @@ public abstract class AbstractTaskListPresenterTest {
 
     @Test
     public void testCompleteActionCondition() {
-        assertTrue(getPresenter().getCompleteActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_IN_PROGRESS).build()));
-        assertFalse(getPresenter().getCompleteActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_READY).build()));
+        assertTrue(getPresenter().getCompleteActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_IN_PROGRESS.getIdentifier()).build()));
+        assertFalse(getPresenter().getCompleteActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_READY.getIdentifier()).build()));
     }
 
     @Test
     public void testClaimActionCondition() {
         testTaskStatusCondition(getPresenter().getClaimActionCondition(),
-                                TASK_STATUS_READY);
+                                TASK_STATUS_READY.getIdentifier());
     }
 
     @Test
     public void testReleaseActionCondition() {
-        assertTrue(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_RESERVED).build()));
-        assertTrue(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_IN_PROGRESS).build()));
-        assertFalse(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_COMPLETED).build()));
-        assertFalse(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_CREATED).build()));
+        assertTrue(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_RESERVED.getIdentifier()).build()));
+        assertTrue(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_IN_PROGRESS.getIdentifier()).build()));
+        assertFalse(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_COMPLETED.getIdentifier()).build()));
+        assertFalse(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_CREATED.getIdentifier()).build()));
     }
 
     @Test
@@ -420,7 +428,7 @@ public abstract class AbstractTaskListPresenterTest {
         TaskSummary taskSummary = TaskSummary.builder()
                 .id(TASK_ID)
                 .deploymentId(TASK_DEPLOYMENT_ID)
-                .status(TASK_STATUS_EXITED)
+                .status(TASK_STATUS_EXITED.getIdentifier())
                 .build();
 
         getPresenter().selectTask(taskSummary);
@@ -436,7 +444,7 @@ public abstract class AbstractTaskListPresenterTest {
         TaskSummary taskSummary = TaskSummary.builder()
                 .id(TASK_ID)
                 .deploymentId(TASK_DEPLOYMENT_ID)
-                .status(TASK_STATUS_READY)
+                .status(TASK_STATUS_READY.getIdentifier())
                 .build();
 
         getPresenter().selectTask(taskSummary);

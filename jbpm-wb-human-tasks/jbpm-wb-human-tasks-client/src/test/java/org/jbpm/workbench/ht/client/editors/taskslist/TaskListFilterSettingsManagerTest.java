@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.df.client.filter.SavedFilter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -48,6 +49,11 @@ public class TaskListFilterSettingsManagerTest extends AbstractTaskListFilterSet
     @Override
     public String getDataSetId() {
         return HUMAN_TASKS_WITH_USER_DATASET;
+    }
+
+    @Before
+    public void setup() {
+        super.setupMocks();
     }
 
     @Test

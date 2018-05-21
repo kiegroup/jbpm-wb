@@ -23,7 +23,6 @@ import java.util.Set;
 import com.google.gwt.user.cellview.client.RowStyles;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridViewTest;
 import org.jbpm.workbench.common.client.list.ListTable;
-import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.junit.Test;
@@ -32,6 +31,7 @@ import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.COL_ID_ACTIONS;
+import static org.jbpm.workbench.ht.util.TaskStatus.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.COLUMN_NAME;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -86,23 +86,23 @@ public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest
         verify(currentListGrid).setRowStyles(rowStylesApplied.capture());
 
         assertNull(rowStylesApplied.getValue().getStyleNames(TaskSummary.builder()
-                                                                     .status(TaskUtils.TASK_STATUS_READY)
+                                                                     .status(TASK_STATUS_READY.getIdentifier())
                                                                      .priority(1)
                                                                      .build(),
                                                              1));
         assertNull(rowStylesApplied.getValue().getStyleNames(TaskSummary.builder()
-                                                                     .status(TaskUtils.TASK_STATUS_READY)
+                                                                     .status(TASK_STATUS_READY.getIdentifier())
                                                                      .priority(3)
                                                                      .build(),
                                                              1));
         assertNull(rowStylesApplied.getValue().getStyleNames(TaskSummary.builder()
-                                                                     .status(TaskUtils.TASK_STATUS_READY)
+                                                                     .status(TASK_STATUS_READY.getIdentifier())
                                                                      .priority(10)
                                                                      .build(),
                                                              1));
         assertEquals(HumanTaskResources.INSTANCE.css().taskCompleted(),
                      rowStylesApplied.getValue().getStyleNames(TaskSummary.builder()
-                                                                       .status(TaskUtils.TASK_STATUS_COMPLETED)
+                                                                       .status(TASK_STATUS_COMPLETED.getIdentifier())
                                                                        .priority(10)
                                                                        .build(),
                                                                1));

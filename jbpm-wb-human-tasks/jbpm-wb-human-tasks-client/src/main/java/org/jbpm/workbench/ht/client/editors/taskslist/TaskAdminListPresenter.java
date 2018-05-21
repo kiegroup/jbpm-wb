@@ -21,11 +21,12 @@ import javax.inject.Inject;
 
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.ht.model.TaskSummary;
+import org.jbpm.workbench.ht.util.TaskStatus;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.jbpm.workbench.common.client.util.TaskUtils.*;
+import static org.jbpm.workbench.ht.util.TaskStatus.*;
 
 @Dependent
 @WorkbenchScreen(identifier = PerspectiveIds.TASK_ADMIN_LIST_SCREEN)
@@ -58,7 +59,7 @@ public class TaskAdminListPresenter extends AbstractTaskListPresenter<TaskAdminL
     @Override
     protected Predicate<TaskSummary> getSuspendActionCondition() {
         return task -> {
-            String taskStatus = task.getStatus();
+            TaskStatus taskStatus = task.getTaskStatus();
             return (taskStatus.equals(TASK_STATUS_RESERVED) ||
                     taskStatus.equals(TASK_STATUS_IN_PROGRESS) ||
                     taskStatus.equals(TASK_STATUS_READY));
@@ -67,6 +68,6 @@ public class TaskAdminListPresenter extends AbstractTaskListPresenter<TaskAdminL
 
     @Override
     protected Predicate<TaskSummary> getResumeActionCondition() {
-        return task -> TASK_STATUS_SUSPENDED.equals(task.getStatus());
+        return task -> TASK_STATUS_SUSPENDED.equals(task.getTaskStatus());
     }
 }

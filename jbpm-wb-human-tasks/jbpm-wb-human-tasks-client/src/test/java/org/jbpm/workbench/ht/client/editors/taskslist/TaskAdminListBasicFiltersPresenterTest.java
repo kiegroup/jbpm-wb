@@ -17,12 +17,15 @@
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.filters.basic.AbstractBasicFiltersPresenterTest;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -31,12 +34,21 @@ import static org.mockito.Mockito.*;
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskAdminListBasicFiltersPresenterTest extends AbstractBasicFiltersPresenterTest {
 
+    @Mock
+    TranslationService translationServiceMock;
+
     @InjectMocks
     TaskAdminListBasicFiltersPresenter presenter;
 
     @Override
     public TaskAdminListBasicFiltersPresenter getPresenter() {
         return presenter;
+    }
+
+    @Before
+    public void init() {
+        super.init();
+        when(translationServiceMock.format(anyString())).thenReturn("");
     }
 
     @Override
