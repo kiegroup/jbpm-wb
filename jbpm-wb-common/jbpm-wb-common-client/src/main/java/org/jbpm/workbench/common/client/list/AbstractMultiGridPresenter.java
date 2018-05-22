@@ -91,11 +91,7 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
         this.view = view;
     }
 
-    public void setupActiveSearchFilters() {
-        setupDefaultActiveSearchFilters();
-    }
-
-    public abstract void setupDefaultActiveSearchFilters();
+    public abstract void setupActiveSearchFilters();
 
     @PostConstruct
     public void init() {

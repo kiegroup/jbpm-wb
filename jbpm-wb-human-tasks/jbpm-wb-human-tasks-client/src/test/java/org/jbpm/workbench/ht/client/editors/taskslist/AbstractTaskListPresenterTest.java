@@ -355,25 +355,6 @@ public abstract class AbstractTaskListPresenterTest {
     }
 
     @Test
-    public void testDefaultActiveSearchFilters() {
-        getPresenter().setupDefaultActiveSearchFilters();
-
-        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
-        verify(viewMock).addActiveFilter(captor.capture());
-
-        final ActiveFilterItem filterItem = captor.getValue();
-        assertNotNull(filterItem);
-        assertEquals(Constants.INSTANCE.Status(),
-                     filterItem.getKey());
-        assertEquals(Arrays.asList(TASK_STATUS_READY,
-                                   TASK_STATUS_IN_PROGRESS,
-                                   TASK_STATUS_RESERVED),
-                     filterItem.getValue());
-        assertEquals("Status: Ready, InProgress, Reserved",
-                     filterItem.getLabelValue());
-    }
-
-    @Test
     public void testCompleteActionCondition() {
         assertTrue(getPresenter().getCompleteActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_IN_PROGRESS).build()));
         assertFalse(getPresenter().getCompleteActionCondition().test(TaskSummary.builder().actualOwner(identity.getIdentifier()).status(TASK_STATUS_READY).build()));
