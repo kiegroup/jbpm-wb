@@ -17,8 +17,10 @@
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -119,8 +121,13 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
                    constants.Suspended());
         view.addMultiSelectFilter(constants.State(),
                                   states,
-                                  f -> addSearchFilterList(COLUMN_STATUS,
-                                                           f));
+                                  f -> {
+                                      final List<Integer> values = f.getValue().stream().map(s -> Integer.valueOf(s)).collect(Collectors.toList());
+                                      final ColumnFilter columnFilter = in(COLUMN_STATUS,
+                                                                           values);
+                                      addSearchFilterList(f,
+                                                          columnFilter);
+        });
 
         final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
                 .dataset(PROCESS_INSTANCE_DATASET)
