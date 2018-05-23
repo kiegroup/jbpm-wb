@@ -28,6 +28,11 @@ public abstract class AbstractView<T> implements UberElement<T> {
     }
 
     protected native void tooltip(final HTMLElement e) /*-{
-        $wnd.jQuery(e).tooltip();
+        $wnd.jQuery(e)
+                .tooltip()
+                .on("click", function () {
+                    $wnd.jQuery(this).tooltip("hide");
+                })
+
     }-*/;
 }
