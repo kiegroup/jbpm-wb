@@ -31,7 +31,7 @@ import org.kie.workbench.common.screens.library.client.settings.SettingsSectionC
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
-import org.kie.workbench.common.screens.library.client.settings.util.list.ListPresenter;
+import org.kie.workbench.common.widgets.client.widget.ListPresenter;
 import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.uberfire.client.promise.Promises;
 
