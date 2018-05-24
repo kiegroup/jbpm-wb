@@ -327,6 +327,20 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
     }
 
     @Override
+    public void checkSelectFilter(final String label,
+                                  final String value) {
+        selectInputs.computeIfPresent(label,
+                                      (key, values) -> {
+                                          values.forEach(i -> {
+                                              if (i.getValue().equals(value) && i.getChecked() == false) {
+                                                  i.setChecked(true);
+                                              }
+                                          });
+                                          return values;
+                                      });
+    }
+
+    @Override
     public void clearSelectFilter(final String label) {
         selectInputs.computeIfPresent(label,
                                       (key, values) -> {

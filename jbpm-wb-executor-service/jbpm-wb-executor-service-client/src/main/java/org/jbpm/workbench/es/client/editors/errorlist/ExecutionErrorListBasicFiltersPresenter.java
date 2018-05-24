@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFiltersPresenter;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.util.ExecutionErrorType;
@@ -105,4 +106,9 @@ public class ExecutionErrorListBasicFiltersPresenter extends BasicFiltersPresent
                                                              f.getValue().getEndDate()))
         );
     }
+
+    @Override
+    protected void onActiveFilterAdded(ActiveFilterItem activeFilterItem) {
+    }
+
 }

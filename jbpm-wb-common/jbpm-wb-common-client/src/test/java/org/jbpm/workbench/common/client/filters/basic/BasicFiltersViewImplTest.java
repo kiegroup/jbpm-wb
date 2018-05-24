@@ -183,4 +183,25 @@ public class BasicFiltersViewImplTest {
         verify(input, times(2)).getChecked();
         verifyNoMoreInteractions(input);
     }
+
+    @Test
+    public void testCheckSelectFilter(){
+        final Input input1 = mock(Input.class);
+        when(input1.getChecked()).thenReturn(true);
+        when(input1.getValue()).thenReturn("1");
+        final Input input2 = mock(Input.class);
+        when(input2.getChecked()).thenReturn(false);
+        when(input2.getValue()).thenReturn("2");
+        view.getSelectInputs().put("label1",
+                                   Arrays.asList(
+                                           input1,
+                                           input2
+                                   ));
+
+        view.checkSelectFilter("label1", "1");
+        view.checkSelectFilter("label1", "2");
+
+        verify(input1, never()).setChecked(true);
+        verify(input2).setChecked(true);
+    }
 }
