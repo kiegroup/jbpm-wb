@@ -45,6 +45,9 @@ public interface BasicFiltersView extends IsElement {
 
     void clearSelectFilter(String label);
 
+    void checkSelectFilter(String label,
+                           String value);
+
     void clearAllSelectFilter();
 
     void addMultiSelectFilter(String label,

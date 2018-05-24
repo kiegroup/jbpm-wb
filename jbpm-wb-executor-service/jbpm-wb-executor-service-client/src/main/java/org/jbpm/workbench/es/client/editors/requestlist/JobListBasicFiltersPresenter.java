@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetLookupFactory;
 import org.dashbuilder.dataset.sort.SortOrder;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFiltersPresenter;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.util.RequestStatus;
@@ -124,5 +125,13 @@ public class JobListBasicFiltersPresenter extends BasicFiltersPresenter {
                                                              f.getValue().getStartDate(),
                                                              f.getValue().getEndDate()))
         );
+    }
+
+    @Override
+    protected void onActiveFilterAdded(ActiveFilterItem activeFilterItem) {
+        if (activeFilterItem.getKey().equals(constants.Status())) {
+            view.checkSelectFilter(constants.Status(),
+                                   activeFilterItem.getValue().toString());
+        }
     }
 }

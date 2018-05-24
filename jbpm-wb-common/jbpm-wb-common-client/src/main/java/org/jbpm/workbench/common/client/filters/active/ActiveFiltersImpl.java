@@ -34,6 +34,9 @@ public class ActiveFiltersImpl implements ActiveFilters {
     @Inject
     Event<ClearAllActiveFiltersEvent> clearAllActiveFiltersEvent;
 
+    @Inject
+    Event<ActiveFilterItemAddedEvent> activeFilterItemAddedEvent;
+
     private BiConsumer<String, Consumer<String>> filterNameCallback;
 
     @PostConstruct
@@ -69,6 +72,7 @@ public class ActiveFiltersImpl implements ActiveFilters {
     @Override
     public <T extends Object> void addActiveFilter(final ActiveFilterItem<T> filter) {
         view.addActiveFilter(filter);
+        activeFilterItemAddedEvent.fire(new ActiveFilterItemAddedEvent(filter));
     }
 
     @Override
