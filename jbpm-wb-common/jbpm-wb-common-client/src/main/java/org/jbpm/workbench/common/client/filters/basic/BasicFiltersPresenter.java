@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItemAddedEvent;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItemRemovedEvent;
 import org.jbpm.workbench.common.client.filters.active.ClearAllActiveFiltersEvent;
 import org.jbpm.workbench.common.client.filters.saved.SavedFilterSelectedEvent;
@@ -139,6 +140,12 @@ public abstract class BasicFiltersPresenter {
     }
 
     protected abstract String getAdvancedFilterPopupTitle();
+
+    protected abstract void onActiveFilterAdded(final ActiveFilterItem activeFilterItem);
+
+    public void onActiveFilterAddedEvent(@Observes final ActiveFilterItemAddedEvent event) {
+        onActiveFilterAdded(event.getActiveFilterItem());
+    }
 
     public void onRemoveActiveFilter(@Observes final ActiveFilterItemRemovedEvent event) {
         view.clearSelectFilter(event.getActiveFilterItem().getKey());

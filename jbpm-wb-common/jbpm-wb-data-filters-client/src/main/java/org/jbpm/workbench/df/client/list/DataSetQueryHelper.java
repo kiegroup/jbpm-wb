@@ -19,7 +19,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
 import org.dashbuilder.common.client.StringUtils;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
@@ -102,7 +101,6 @@ public class DataSetQueryHelper {
             );
         } catch (Exception e) {
             callback.onError(new ClientRuntimeError(e.getMessage()));
-            GWT.log("DataSetQueryHelper: lookuDataserError" + e.getMessage());
         }
     }
 

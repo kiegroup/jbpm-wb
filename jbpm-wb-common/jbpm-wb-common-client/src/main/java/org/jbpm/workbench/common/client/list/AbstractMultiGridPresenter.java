@@ -127,7 +127,7 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
 
     protected void onSavedFilterSelectedEvent(@Observes final SavedFilterSelectedEvent event) {
         filterSettingsManager.getFilterSettings(event.getSavedFilter().getKey(),
-                                                filter -> addActiverFilters(filter));
+                                                filter -> addActiveFilters(filter));
     }
 
     protected void setFilterSettings(final FilterSettings filter,
@@ -137,7 +137,7 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
                            readyCallback);
     }
 
-    protected void addActiverFilters(final FilterSettings filter) {
+    protected void addActiveFilters(final FilterSettings filter) {
         view.removeAllActiveFilters();
         setFilterSettings(filter,
                           table -> {

@@ -28,6 +28,7 @@ import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetLookupFactory;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFiltersPresenter;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.kie.api.runtime.process.ProcessInstance;
@@ -162,4 +163,12 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
                                                              f.getValue().getEndDate()))
         );
     }
+
+    @Override
+    protected void onActiveFilterAdded(ActiveFilterItem activeFilterItem) {
+        if(activeFilterItem.getKey().equals(constants.State())){
+            view.checkSelectFilter(constants.State(), activeFilterItem.getValue().toString());
+        }
+    }
+
 }
