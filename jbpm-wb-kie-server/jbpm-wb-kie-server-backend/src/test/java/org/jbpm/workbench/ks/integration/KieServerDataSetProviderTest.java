@@ -15,18 +15,6 @@
  */
 package org.jbpm.workbench.ks.integration;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.OR;
-import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,12 +23,14 @@ import java.util.Map;
 import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.DataColumn;
 import org.dashbuilder.dataset.DataSetLookup;
+import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.group.ColumnGroup;
 import org.dashbuilder.dataset.group.DataSetGroup;
 import org.dashbuilder.dataset.group.DateIntervalType;
+import org.dashbuilder.dataset.group.GroupFunction;
 import org.dashbuilder.dataset.group.GroupStrategy;
 import org.dashbuilder.dataset.group.Interval;
 import org.dashbuilder.dataset.impl.DataSetImpl;
@@ -57,6 +47,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import static org.dashbuilder.dataset.filter.FilterFactory.OR;
+import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KieServerDataSetProviderTest {
@@ -342,5 +341,31 @@ public class KieServerDataSetProviderTest {
         verify(dataSetDef, times(1)).getServerTemplateId(); 
         assertNotNull(adopted.getOperationList());
         assertEquals(1, adopted.getOperationList().size());
+    }
+
+    @Test
+    public void testGroupFunctionColumnType() {
+        for (ColumnType type :
+                ColumnType.values()) {
+            assertGroupFuntionColumnType(type,
+                                         type == ColumnType.DATE ? ColumnType.LABEL : type);
+        }
+    }
+
+    protected void assertGroupFuntionColumnType(final ColumnType source,
+                                                final ColumnType expected) {
+        final DataSetDef def = new DataSetDef();
+        def.addColumn("columnId",
+                      source);
+        final ColumnGroup columnGroup = new ColumnGroup("sourceId",
+                                                        "columnId");
+        final GroupFunction groupFunction = new GroupFunction("sourceId",
+                                                              "columnId",
+                                                              null);
+
+        assertEquals(expected,
+                     kieServerDataSetProvider.getGroupFunctionColumnType(def,
+                                                                         columnGroup,
+                                                                         groupFunction));
     }
 }
