@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetLookupFactory;
 import org.dashbuilder.dataset.sort.SortOrder;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFiltersPresenter;
 import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
@@ -119,4 +121,14 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
     }
 
     public abstract String getDataSetId();
+
+    @Override
+    protected void onActiveFilterAdded(final ActiveFilterItem activeFilterItem) {
+        if (activeFilterItem.getKey().equals(constants.Status()) && activeFilterItem.getValue() instanceof List) {
+            final List<String> values = (List<String>) activeFilterItem.getValue();
+            values.forEach(v -> view.checkSelectFilter(constants.Status(),
+                                                       v));
+        }
+    }
+
 }

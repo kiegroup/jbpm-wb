@@ -441,6 +441,8 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     @Override
     public void setupActiveSearchFilters() {
+        boolean hasSearchParam = false;
+
         final Optional<String> processDefinitionSearch = getSearchParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID);
         if (processDefinitionSearch.isPresent()) {
             final String processDefinitionId = processDefinitionSearch.get();
@@ -452,6 +454,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                             v -> removeActiveFilter(equalsTo(COLUMN_PROCESS_ID,
                                                              v))
             );
+            hasSearchParam = true;
         }
 
         final Optional<String> processInstanceSearch = getSearchParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
@@ -465,7 +468,24 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                             v -> removeActiveFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
                                                              v))
             );
+            hasSearchParam = true;
         }
+
+        if (!hasSearchParam) {
+            setupDefaultActiveSearchFilters();
+        }
+    }
+
+    @Override
+    public void setupDefaultActiveSearchFilters() {
+        addActiveFilter(equalsTo(COLUMN_STATUS,
+                                 String.valueOf(ProcessInstance.STATE_ACTIVE)),
+                        constants.State(),
+                        constants.Active(),
+                        String.valueOf(ProcessInstance.STATE_ACTIVE),
+                        v -> removeActiveFilter(equalsTo(COLUMN_STATUS,
+                                                         v))
+        );
     }
 
     public void openJobsView(final String pid) {

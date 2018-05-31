@@ -19,6 +19,7 @@ package org.jbpm.workbench.common.client.filters.basic;
 import javax.enterprise.event.Event;
 
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItemAddedEvent;
 import org.jbpm.workbench.common.client.filters.active.ActiveFiltersImpl;
 import org.jbpm.workbench.common.client.filters.active.ActiveFiltersView;
 import org.jbpm.workbench.common.client.filters.active.ClearAllActiveFiltersEvent;
@@ -45,12 +46,16 @@ public class ActiveFiltersImplTest {
     @Spy
     Event<ClearAllActiveFiltersEvent> clearAllActiveFiltersEvent = new EventSourceMock<>();
 
+    @Spy
+    Event<ActiveFilterItemAddedEvent> activeFilterItemAddedEvent = new EventSourceMock<>();
+
     @InjectMocks
     ActiveFiltersImpl activeFilters;
 
     @Before
     public void setup() {
         doNothing().when(clearAllActiveFiltersEvent).fire(any());
+        doNothing().when(activeFilterItemAddedEvent).fire(any());
     }
 
     @Test
@@ -81,6 +86,7 @@ public class ActiveFiltersImplTest {
         activeFilters.addActiveFilter(filter);
 
         verify(view).addActiveFilter(filter);
+        verify(activeFilterItemAddedEvent).fire(any());
     }
 
     @Test

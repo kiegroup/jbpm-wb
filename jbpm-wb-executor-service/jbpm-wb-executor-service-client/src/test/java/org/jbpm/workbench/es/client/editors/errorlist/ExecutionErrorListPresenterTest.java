@@ -274,6 +274,23 @@ public class ExecutionErrorListPresenterTest {
     }
 
     @Test
+    public void testDefaultActiveSearchFilters() {
+        presenter.setupDefaultActiveSearchFilters();
+
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        final ActiveFilterItem filterItem = captor.getValue();
+        assertNotNull(filterItem);
+        assertEquals(Constants.INSTANCE.Acknowledged(),
+                     filterItem.getKey());
+        assertEquals("0",
+                     filterItem.getValue());
+        assertEquals(Constants.INSTANCE.Acknowledged() + ": " + commonConstants.No(),
+                     filterItem.getLabelValue());
+    }
+
+    @Test
     public void testActiveSearchFilters() {
         final PlaceRequest place = mock(PlaceRequest.class);
         when(place.getParameter(anyString(),
@@ -282,7 +299,17 @@ public class ExecutionErrorListPresenterTest {
 
         presenter.setupActiveSearchFilters();
 
-        verify(viewMock, never()).addActiveFilter(any());
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        final ActiveFilterItem filterItem = captor.getValue();
+        assertNotNull(filterItem);
+        assertEquals(Constants.INSTANCE.Acknowledged(),
+                     filterItem.getKey());
+        assertEquals("0",
+                     filterItem.getValue());
+        assertEquals(Constants.INSTANCE.Acknowledged() + ": " + commonConstants.No(),
+                     filterItem.getLabelValue());
     }
 
     @Test

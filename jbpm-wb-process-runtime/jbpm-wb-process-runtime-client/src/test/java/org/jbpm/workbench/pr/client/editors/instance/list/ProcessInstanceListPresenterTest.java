@@ -544,6 +544,23 @@ public class ProcessInstanceListPresenterTest {
     }
 
     @Test
+    public void testDefaultActiveSearchFilters() {
+        presenter.setupDefaultActiveSearchFilters();
+
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(Constants.INSTANCE.State(),
+                     captor.getValue().getKey());
+        assertEquals(Constants.INSTANCE.State() + ": " + Constants.INSTANCE.Active(),
+                     captor.getValue().getLabelValue());
+        assertEquals(String.valueOf(ProcessInstance.STATE_ACTIVE),
+                     (captor.getValue().getValue()));
+    }
+
+    @Test
     public void testActiveSearchFilters() {
         final PlaceRequest place = mock(PlaceRequest.class);
         when(place.getParameter(anyString(),
@@ -552,7 +569,17 @@ public class ProcessInstanceListPresenterTest {
 
         presenter.setupActiveSearchFilters();
 
-        verify(viewMock, never()).addActiveFilter(any());
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        assertEquals(1,
+                     captor.getAllValues().size());
+        assertEquals(Constants.INSTANCE.State(),
+                     captor.getValue().getKey());
+        assertEquals(Constants.INSTANCE.State() + ": " + Constants.INSTANCE.Active(),
+                     captor.getValue().getLabelValue());
+        assertEquals(String.valueOf(ProcessInstance.STATE_ACTIVE),
+                     (captor.getValue().getValue()));
     }
 
     @Test

@@ -54,9 +54,8 @@ import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.workbench.events.NotificationEvent;
 
-public abstract class AbstractMultiGridView<T extends GenericSummary, V extends AbstractMultiGridPresenter>
-        extends Composite implements MultiGridView<T, V>,
-                                     RequiresResize {
+public abstract class AbstractMultiGridView<T extends GenericSummary, V extends AbstractMultiGridPresenter> extends Composite implements MultiGridView<T, V>,
+                                                                                                                                         RequiresResize {
 
     public static final String COL_ID_SELECT = "Select";
     public static final String COL_ID_ACTIONS = "Actions";
