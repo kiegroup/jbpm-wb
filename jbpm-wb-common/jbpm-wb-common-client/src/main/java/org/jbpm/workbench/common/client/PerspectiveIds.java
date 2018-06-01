@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,12 @@ public interface PerspectiveIds extends org.kie.workbench.common.workbench.clien
     String PROCESS_INSTANCE_LIST_BASIC_FILTERS_SCREEN = "ProcessInstanceListBasicFiltersScreen";
     String TASK_ADMIN_LIST_BASIC_FILTERS_SCREEN = "TaskAdminListBasicFiltersScreen";
     String TASK_LIST_BASIC_FILTERS_SCREEN = "TaskListBasicFiltersScreen";
+
+    String JOB_LIST_ADVANCED_FILTERS_SCREEN = "JobListAdvancedFiltersScreen";
+    String EXECUTION_ERROR_LIST_ADVANCED_FILTERS_SCREEN = "ErrorListAdvancedFiltersScreen";
+    String PROCESS_INSTANCE_LIST_ADVANCED_FILTERS_SCREEN = "ProcessInstanceListAdvancedFiltersScreen";
+    String TASK_ADMIN_LIST_ADVANCED_FILTERS_SCREEN = "TaskAdminListAdvancedFiltersScreen";
+    String TASK_LIST_ADVANCED_FILTERS_SCREEN = "TaskListAdvancedFiltersScreen";
 
     String JOB_LIST_SAVED_FILTERS_SCREEN = "JobListSavedFiltersScreen";
     String EXECUTION_ERROR_LIST_SAVED_FILTERS_SCREEN = "ExecutionErrorListSavedFiltersScreen";

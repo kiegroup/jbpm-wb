@@ -48,7 +48,6 @@ import org.uberfire.client.views.pfly.widgets.JQueryProducer;
 import org.uberfire.client.views.pfly.widgets.Moment;
 import org.uberfire.client.views.pfly.widgets.Popover;
 import org.uberfire.client.views.pfly.widgets.Select;
-import org.uberfire.mvp.Command;
 
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
 import static org.jboss.errai.common.client.dom.Window.getDocument;
@@ -92,14 +91,8 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
     Button refineApply;
 
     @Inject
-    @DataField("advanced-filters")
-    Button advancedFilters;
-
-    @Inject
     @DataField("form")
     Form form;
-
-    private Command advancedFiltersCallback;
 
     @Inject
     private JQueryProducer.JQuery<Popover> jQueryPopover;
@@ -130,12 +123,6 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
 
         refineApply.setTextContent(constants.Apply());
 
-        advancedFilters.setTextContent(constants.AdvancedFilters());
-    }
-
-    @Override
-    public void setAdvancedFiltersCallback(final Command callback) {
-        this.advancedFiltersCallback = callback;
     }
 
     private String getInputStringHelpHtml() {
@@ -581,13 +568,6 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
                     break;
                 }
             }
-        }
-    }
-
-    @EventHandler("advanced-filters")
-    public void onAdvancedFiltersClick(@ForEvent("click") Event e) {
-        if (advancedFiltersCallback != null) {
-            advancedFiltersCallback.execute();
         }
     }
 

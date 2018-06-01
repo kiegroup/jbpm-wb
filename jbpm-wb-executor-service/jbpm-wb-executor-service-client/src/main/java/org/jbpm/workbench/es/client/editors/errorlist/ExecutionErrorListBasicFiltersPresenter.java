@@ -19,7 +19,6 @@ package org.jbpm.workbench.es.client.editors.errorlist;
 import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFiltersPresenter;
@@ -32,20 +31,10 @@ import static org.jbpm.workbench.common.client.PerspectiveIds.EXECUTION_ERROR_LI
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 
 @ApplicationScoped
-@WorkbenchScreen(identifier = EXECUTION_ERROR_LIST_BASIC_FILTERS_SCREEN)
+@WorkbenchScreen(identifier = EXECUTION_ERROR_LIST_BASIC_FILTERS_SCREEN,  preferredWidth = 500)
 public class ExecutionErrorListBasicFiltersPresenter extends BasicFiltersPresenter {
 
     private Constants constants = Constants.INSTANCE;
-
-    @Override
-    protected String getAdvancedFilterPopupTitle() {
-        return constants.New_ErrorList();
-    }
-
-    @Inject
-    public void setFilterSettingsManager(final ExecutionErrorListFilterSettingsManager filterSettingsManager) {
-        super.setFilterSettingsManager(filterSettingsManager);
-    }
 
     @Override
     public void loadFilters() {

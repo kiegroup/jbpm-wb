@@ -148,4 +148,6 @@ public interface Constants extends Messages {
 
     String FilterWithSameNameAlreadyExists();
 
+    String SavedFilterCorrectlyWithName(String filterName);
+
 }

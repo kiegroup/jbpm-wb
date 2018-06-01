@@ -88,4 +88,6 @@ public interface FiltersConstants extends Messages {
     String Filter_parameters();
 
     String PleaseDefineAtLeastColumnFilter();
+
+    String Save();
 }

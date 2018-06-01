@@ -24,11 +24,8 @@ import org.dashbuilder.dataset.DataSetLookup;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.util.DateRange;
-import org.uberfire.mvp.Command;
 
 public interface BasicFiltersView extends IsElement {
-
-    void setAdvancedFiltersCallback(Command callback);
 
     void addTextFilter(String label,
                        String placeholder,

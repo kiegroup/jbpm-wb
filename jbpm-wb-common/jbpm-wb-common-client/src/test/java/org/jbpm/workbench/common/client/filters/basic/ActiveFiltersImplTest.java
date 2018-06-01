@@ -18,6 +18,7 @@ package org.jbpm.workbench.common.client.filters.basic;
 
 import javax.enterprise.event.Event;
 
+import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItemAddedEvent;
 import org.jbpm.workbench.common.client.filters.active.ActiveFiltersImpl;
@@ -29,15 +30,15 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.ParameterizedCommand;
+import org.uberfire.workbench.events.NotificationEvent;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(GwtMockitoTestRunner.class)
 public class ActiveFiltersImplTest {
 
     @Mock
@@ -49,6 +50,9 @@ public class ActiveFiltersImplTest {
     @Spy
     Event<ActiveFilterItemAddedEvent> activeFilterItemAddedEvent = new EventSourceMock<>();
 
+    @Spy
+    Event<NotificationEvent> notificationEvent = new EventSourceMock<>();
+
     @InjectMocks
     ActiveFiltersImpl activeFilters;
 
@@ -56,6 +60,7 @@ public class ActiveFiltersImplTest {
     public void setup() {
         doNothing().when(clearAllActiveFiltersEvent).fire(any());
         doNothing().when(activeFilterItemAddedEvent).fire(any());
+        doNothing().when(notificationEvent).fire(any());
     }
 
     @Test

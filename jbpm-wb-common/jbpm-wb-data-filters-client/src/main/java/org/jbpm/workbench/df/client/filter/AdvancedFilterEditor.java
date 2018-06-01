@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
@@ -34,18 +35,16 @@ import org.dashbuilder.dataset.client.DataSetMetadataCallback;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.displayer.client.widgets.filter.DataSetFilterEditor;
+import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
-import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.jbpm.workbench.df.client.i18n.FiltersConstants;
-import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
-import org.uberfire.ext.widgets.common.client.common.popups.footers.GenericModalFooter;
 
 @ApplicationScoped
-public class FilterEditorPopup extends BaseModal {
+public class AdvancedFilterEditor extends Composite {
 
     private static Binder uiBinder = GWT.create(Binder.class);
 
@@ -63,6 +62,9 @@ public class FilterEditorPopup extends BaseModal {
 
     @UiField
     public FormGroup errorMessagesGroup;
+
+    @UiField
+    public Button okButton;
 
     protected FilterSettings filterSettings;
 
@@ -83,26 +85,14 @@ public class FilterEditorPopup extends BaseModal {
     DataSetFilterEditor filterEditor;
 
     @Inject
-    public FilterEditorPopup(DataSetClientServices dataSetClientServices) {
-
+    public AdvancedFilterEditor(DataSetClientServices dataSetClientServices) {
+        initWidget(uiBinder.createAndBindUi(this));
         this.dataSetClientServices = dataSetClientServices;
-        setBody(uiBinder.createAndBindUi(FilterEditorPopup.this));
-
-        final GenericModalFooter footer = new GenericModalFooter();
-        footer.addButton(FiltersConstants.INSTANCE.ok(),
-                         () -> ok(),
-                         IconType.PLUS,
-                         ButtonType.PRIMARY);
-        footer.addButton(FiltersConstants.INSTANCE.cancel(),
-                         () -> hide(),
-                         IconType.ERASER,
-                         ButtonType.DEFAULT);
-
-        add(footer);
-        setWidth(500 + "px");
+        okButton.setType(ButtonType.PRIMARY);
+        okButton.addClickHandler(event -> ok());
     }
 
-    public void show(final FilterSettings settings,
+    public void init(final FilterSettings settings,
                      final Consumer<FilterSettings> editorListener) {
         clean();
         filtersControlPanel.add(filterEditor.asWidget());
@@ -111,8 +101,14 @@ public class FilterEditorPopup extends BaseModal {
         if (settings.getDataSet() == null && settings.getDataSetLookup() != null) {
             fetchDataSetLookup();
         }
+    }
 
-        super.show();
+    public void reset(final FilterSettings settings) {
+        clean();
+        filterSettings = settings;
+        if (settings.getDataSet() == null && settings.getDataSetLookup() != null) {
+            fetchDataSetLookup();
+        }
     }
 
     protected void ok() {
@@ -257,7 +253,7 @@ public class FilterEditorPopup extends BaseModal {
         this.editorListener = editorListener;
     }
 
-    interface Binder extends UiBinder<Widget, FilterEditorPopup> {
+    interface Binder extends UiBinder<Widget, AdvancedFilterEditor> {
 
     }
 }
