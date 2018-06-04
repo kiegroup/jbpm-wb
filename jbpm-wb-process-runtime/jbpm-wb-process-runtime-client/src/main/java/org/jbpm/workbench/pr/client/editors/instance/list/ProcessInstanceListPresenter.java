@@ -479,10 +479,10 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     @Override
     public void setupDefaultActiveSearchFilters() {
         addActiveFilter(equalsTo(COLUMN_STATUS,
-                                 String.valueOf(ProcessInstance.STATE_ACTIVE)),
+                                 ProcessInstance.STATE_ACTIVE),
                         constants.State(),
                         constants.Active(),
-                        String.valueOf(ProcessInstance.STATE_ACTIVE),
+                        ProcessInstance.STATE_ACTIVE,
                         v -> removeActiveFilter(equalsTo(COLUMN_STATUS,
                                                          v))
         );

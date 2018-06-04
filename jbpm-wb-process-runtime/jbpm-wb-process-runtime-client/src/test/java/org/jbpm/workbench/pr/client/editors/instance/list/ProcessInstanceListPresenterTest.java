@@ -556,7 +556,7 @@ public class ProcessInstanceListPresenterTest {
                      captor.getValue().getKey());
         assertEquals(Constants.INSTANCE.State() + ": " + Constants.INSTANCE.Active(),
                      captor.getValue().getLabelValue());
-        assertEquals(String.valueOf(ProcessInstance.STATE_ACTIVE),
+        assertEquals(ProcessInstance.STATE_ACTIVE,
                      (captor.getValue().getValue()));
     }
 
@@ -578,7 +578,7 @@ public class ProcessInstanceListPresenterTest {
                      captor.getValue().getKey());
         assertEquals(Constants.INSTANCE.State() + ": " + Constants.INSTANCE.Active(),
                      captor.getValue().getLabelValue());
-        assertEquals(String.valueOf(ProcessInstance.STATE_ACTIVE),
+        assertEquals(ProcessInstance.STATE_ACTIVE,
                      (captor.getValue().getValue()));
     }
 

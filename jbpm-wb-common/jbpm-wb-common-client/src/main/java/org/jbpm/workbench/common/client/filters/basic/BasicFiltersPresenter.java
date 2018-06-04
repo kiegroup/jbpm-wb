@@ -101,6 +101,12 @@ public abstract class BasicFiltersPresenter {
                                        final ActiveFilterItem<List<String>> filter) {
         final ColumnFilter columnFilter = in(columnId,
                                              filter.getValue());
+        addSearchFilterList(filter,
+                            columnFilter);
+    }
+
+    protected void addSearchFilterList(final ActiveFilterItem<List<String>> filter,
+                                       final ColumnFilter columnFilter) {
         if (filter.getValue().isEmpty()) {
             removeSearchFilter(filter,
                                columnFilter);
