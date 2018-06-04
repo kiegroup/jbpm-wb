@@ -139,8 +139,12 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements Process
     }
 
     @Override
-    public void selectInstanceDetailsTab() {
-        instanceDetailsTab.showTab();
+    public void resetTabs(boolean onlyLogTab) {
+        if (onlyLogTab) {
+            instanceDetailsTab.showTab();
+        } else {
+            ((TabListItem) navTabs.getWidget(0)).showTab();
+        }
     }
 
     @Override
@@ -151,7 +155,6 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements Process
         for (Widget active : tabContent) {
             active.setVisible(true);
         }
-        ((TabListItem) navTabs.getWidget(0)).showTab();
     }
 
     @Override
@@ -170,7 +173,6 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements Process
 
         diagramPane.setVisible(true);
         diagramTab.setVisible(true);
-        instanceDetailsTab.showTab();
     }
 
     interface Binder extends UiBinder<Widget, ProcessInstanceDetailsViewImpl> {

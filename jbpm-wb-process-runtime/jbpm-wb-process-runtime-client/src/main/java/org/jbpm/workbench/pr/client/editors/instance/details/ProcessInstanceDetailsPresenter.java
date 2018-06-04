@@ -164,6 +164,7 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
     }
 
     public void onProcessSelectionEvent(@Observes ProcessInstanceSelectionEvent event) {
+        boolean refreshDetails = (event != null && event.getProcessInstanceId() != null && event.getProcessInstanceId().equals(processInstanceId));
 
         deploymentId = event.getDeploymentId();
         processId = event.getProcessDefId();
@@ -187,7 +188,9 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
             view.displayAllTabs();
         }
         setSignalAbortActionsVisible(signalAbortVisible);
-        view.selectInstanceDetailsTab();
+        if (!refreshDetails) {
+            view.resetTabs(event.isForLog());
+        }
     }
 
     @Override
@@ -279,10 +282,10 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
 
     public interface ProcessInstanceDetailsView extends UberView<ProcessInstanceDetailsPresenter> {
 
-        void selectInstanceDetailsTab();
-
         void displayAllTabs();
 
         void displayOnlyLogTab();
+
+        void resetTabs(boolean onlyLogTab);
     }
 }
