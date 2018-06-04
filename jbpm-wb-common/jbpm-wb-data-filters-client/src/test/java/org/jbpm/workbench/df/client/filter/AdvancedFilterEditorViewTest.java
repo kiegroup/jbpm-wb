@@ -41,7 +41,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 @WithClassesToStub({Text.class})
-public class FilterEditorPopupTest {
+public class AdvancedFilterEditorViewTest {
 
     @Mock
     FilterSettings tableDisplayerSettings;
@@ -65,19 +65,19 @@ public class FilterEditorPopupTest {
     private FormGroup tableNameControlGroup;
 
     @InjectMocks
-    private FilterEditorPopup filterEditorPopup;
+    private AdvancedFilterEditor advancedFilterEditorView;
 
     @Before
     public void setupMocks() {
-        filterEditorPopup.setFilterSettings(tableDisplayerSettings);
-        filterEditorPopup.setFilterEditor(filterEditor);
+        advancedFilterEditorView.setFilterSettings(tableDisplayerSettings);
+        advancedFilterEditorView.setFilterEditor(filterEditor);
     }
 
     @Test
     public void testEmptyFilterName_shouldCauseValidationError() {
         when(tableNameText.getText()).thenReturn(""); // Return empty string
 
-        boolean isValid = filterEditorPopup.validateForm();
+        boolean isValid = advancedFilterEditorView.validateForm();
         assertFalse("Form with an empty filter name should be rejected",
                     isValid);
 
@@ -97,8 +97,8 @@ public class FilterEditorPopupTest {
         when(tableDisplayerSettings.getDataSetLookup()).thenReturn(previousLookup);
         when(filterEditor.getFilter()).thenReturn(filter);
 
-        filterEditorPopup.setEditorListener(editorListener);
-        filterEditorPopup.ok();
+        advancedFilterEditorView.setEditorListener(editorListener);
+        advancedFilterEditorView.ok();
 
         verify(filterEditor,
                times(3)).getFilter();

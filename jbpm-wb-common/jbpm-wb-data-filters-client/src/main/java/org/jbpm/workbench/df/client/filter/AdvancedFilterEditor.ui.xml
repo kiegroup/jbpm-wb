@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ Copyright 2017 Red Hat, Inc. and/or its affiliates.
+  ~ Copyright 2018 Red Hat, Inc. and/or its affiliates.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
              xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 
   <ui:with field="i18n" type="org.jbpm.workbench.df.client.i18n.FiltersConstants"/>
-  <b:Container fluid="true">
+  <b:Container fluid="true" paddingTop="20" paddingLeft="20">
     <b:Row>
       <b:Column size="MD_12">
         <b:Form type="HORIZONTAL">
@@ -54,6 +54,17 @@
         <b:FormGroup ui:field="errorMessagesGroup">
           <b:HelpBlock ui:field="errorMessages"/>
         </b:FormGroup>
+      </b:Column>
+    </b:Row>
+    <b:Row>
+      <b:Column size="MD_2" offset="MD_10">
+        <b:Form type="HORIZONTAL">
+          <b:FieldSet>
+            <b:FormGroup>
+                <b:Button ui:field="okButton" text="{i18n.Save}"/>
+            </b:FormGroup>
+          </b:FieldSet>
+        </b:Form>
       </b:Column>
     </b:Row>
   </b:Container>

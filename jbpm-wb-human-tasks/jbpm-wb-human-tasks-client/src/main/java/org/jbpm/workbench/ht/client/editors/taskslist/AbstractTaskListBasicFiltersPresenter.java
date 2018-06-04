@@ -41,11 +41,6 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
     private TranslationService translationService;
 
     @Override
-    protected String getAdvancedFilterPopupTitle() {
-        return constants.New_FilteredList();
-    }
-
-    @Override
     public void loadFilters() {
         view.addNumericFilter(constants.Id(),
                               constants.FilterByTaskId(),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,8 @@ public abstract class AbstractPerspective {
     protected UberfireDocks uberfireDocks;
 
     protected UberfireDock basicFiltersDock;
+
+    protected UberfireDock advancedFiltersDock;
 
     protected UberfireDock savedFiltersDock;
 
@@ -96,6 +98,9 @@ public abstract class AbstractPerspective {
             uberfireDocks.show(UberfireDockPosition.WEST,
                                getPerspectiveId());
         }
+        if(event.getPlace().getIdentifier().equals(getAdvancedFiltersScreenId())){
+            uberfireDocks.close(advancedFiltersDock);
+        }
     }
 
     protected void setupDocks() {
@@ -107,6 +112,16 @@ public abstract class AbstractPerspective {
                                                 getPerspectiveId()).withSize(400).withLabel(Constants.INSTANCE.Filters());
             uberfireDocks.add(basicFiltersDock);
         }
+
+        final String advancedFiltersScreenId = getAdvancedFiltersScreenId();
+        if (advancedFiltersScreenId != null) {
+            advancedFiltersDock = new UberfireDock(UberfireDockPosition.WEST,
+                                                   IconType.PLUS_SQUARE_O.toString(),
+                                                   new DefaultPlaceRequest(advancedFiltersScreenId),
+                                                   getPerspectiveId()).withSize(500).withLabel(Constants.INSTANCE.AdvancedFilters());
+            uberfireDocks.add(advancedFiltersDock);
+        }
+
         final String savedFiltersScreenId = getSavedFiltersScreenId();
         if (savedFiltersScreenId != null) {
             savedFiltersDock = new UberfireDock(UberfireDockPosition.WEST,
@@ -120,6 +135,8 @@ public abstract class AbstractPerspective {
     public abstract String getPerspectiveId();
 
     public abstract String getBasicFiltersScreenId();
+
+    public abstract String getAdvancedFiltersScreenId();
 
     public abstract String getSavedFiltersScreenId();
 

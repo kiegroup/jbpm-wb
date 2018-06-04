@@ -19,7 +19,6 @@ package org.jbpm.workbench.es.client.editors.requestlist;
 import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetLookupFactory;
@@ -39,16 +38,6 @@ import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 public class JobListBasicFiltersPresenter extends BasicFiltersPresenter {
 
     private Constants constants = Constants.INSTANCE;
-
-    @Override
-    protected String getAdvancedFilterPopupTitle() {
-        return constants.New_JobList();
-    }
-
-    @Inject
-    public void setFilterSettingsManager(final JobListFilterSettingsManager filterSettingsManager) {
-        super.setFilterSettingsManager(filterSettingsManager);
-    }
 
     @Override
     public void loadFilters() {

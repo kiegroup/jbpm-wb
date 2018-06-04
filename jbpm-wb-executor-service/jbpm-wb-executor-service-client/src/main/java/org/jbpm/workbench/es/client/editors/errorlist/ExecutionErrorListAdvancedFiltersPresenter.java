@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.ht.client.editors.taskslist;
+package org.jbpm.workbench.es.client.editors.errorlist;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
+import org.jbpm.workbench.common.client.filters.advanced.AdvancedFiltersPresenter;
 import org.uberfire.client.annotations.WorkbenchScreen;
 
-import static org.jbpm.workbench.common.client.PerspectiveIds.TASK_LIST_BASIC_FILTERS_SCREEN;
-import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_USER_DATASET;
+import static org.jbpm.workbench.common.client.PerspectiveIds.EXECUTION_ERROR_LIST_ADVANCED_FILTERS_SCREEN;
 
 @ApplicationScoped
-@WorkbenchScreen(identifier = TASK_LIST_BASIC_FILTERS_SCREEN)
-public class TaskListBasicFiltersPresenter extends AbstractTaskListBasicFiltersPresenter {
+@WorkbenchScreen(identifier = EXECUTION_ERROR_LIST_ADVANCED_FILTERS_SCREEN)
+public class ExecutionErrorListAdvancedFiltersPresenter extends AdvancedFiltersPresenter {
+
+    @Inject
+    public void setFilterSettingsManager(final ExecutionErrorListFilterSettingsManager filterSettingsManager) {
+        super.setFilterSettingsManager(filterSettingsManager);
+    }
 
     @Override
-    public String getDataSetId() {
-        return HUMAN_TASKS_WITH_USER_DATASET;
+    public String getAdvancedFiltersEditorScreenId (){
+        return EXECUTION_ERROR_LIST_ADVANCED_FILTERS_SCREEN;
     }
 
 }

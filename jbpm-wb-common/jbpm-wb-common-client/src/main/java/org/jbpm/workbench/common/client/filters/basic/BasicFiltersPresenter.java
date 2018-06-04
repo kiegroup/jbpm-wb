@@ -30,9 +30,6 @@ import org.jbpm.workbench.common.client.filters.active.ActiveFilterItemRemovedEv
 import org.jbpm.workbench.common.client.filters.active.ClearAllActiveFiltersEvent;
 import org.jbpm.workbench.common.client.filters.saved.SavedFilterSelectedEvent;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
-import org.jbpm.workbench.df.client.filter.FilterEditorPopup;
-import org.jbpm.workbench.df.client.filter.FilterSettingsManager;
-import org.jbpm.workbench.df.client.filter.SavedFilter;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.lifecycle.OnOpen;
@@ -46,19 +43,11 @@ public abstract class BasicFiltersPresenter {
     @Inject
     protected BasicFiltersView view;
 
-    protected FilterSettingsManager filterSettingsManager;
-
     @Inject
     protected Event<BasicFilterAddEvent> basicFilterAddEvent;
 
     @Inject
     protected Event<BasicFilterRemoveEvent> basicFilterRemoveEvent;
-
-    @Inject
-    private FilterEditorPopup filterEditorPopup;
-
-    @Inject
-    private Event<SavedFilterSelectedEvent> savedFilterSelectedEvent;
 
     @WorkbenchPartView
     public IsElement getView() {
@@ -72,7 +61,6 @@ public abstract class BasicFiltersPresenter {
 
     @PostConstruct
     public void init() {
-        view.setAdvancedFiltersCallback(() -> showAdvancedFilters());
         loadFilters();
     }
 
@@ -86,10 +74,6 @@ public abstract class BasicFiltersPresenter {
     }
 
     public abstract void loadFilters();
-
-    public void setFilterSettingsManager(final FilterSettingsManager filterSettingsManager) {
-        this.filterSettingsManager = filterSettingsManager;
-    }
 
     protected void addSearchFilter(final ActiveFilterItem filter,
                                    final ColumnFilter columnFilter) {
@@ -122,24 +106,6 @@ public abstract class BasicFiltersPresenter {
                                                                columnFilter));
     }
 
-    protected void showAdvancedFilters() {
-        filterEditorPopup.setTitle(getAdvancedFilterPopupTitle());
-        filterEditorPopup.show(filterSettingsManager.createFilterSettingsPrototype(),
-                               filterSettings ->
-                                       filterSettingsManager.saveFilterIntoPreferences(filterSettings,
-                                                                                       state -> {
-                                                                                           if (state) {
-                                                                                               filterEditorPopup.hide();
-                                                                                               savedFilterSelectedEvent.fire(new SavedFilterSelectedEvent(new SavedFilter(filterSettings.getKey(),
-                                                                                                                                                                          filterSettings.getTableName())));
-                                                                                           } else {
-                                                                                               filterEditorPopup.setTableNameError(Constants.INSTANCE.FilterWithSameNameAlreadyExists());
-                                                                                           }
-                                                                                       })
-        );
-    }
-
-    protected abstract String getAdvancedFilterPopupTitle();
 
     protected abstract void onActiveFilterAdded(final ActiveFilterItem activeFilterItem);
 

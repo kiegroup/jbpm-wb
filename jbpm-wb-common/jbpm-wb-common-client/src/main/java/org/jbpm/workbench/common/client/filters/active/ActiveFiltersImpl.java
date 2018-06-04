@@ -24,6 +24,8 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import elemental2.dom.HTMLElement;
+import org.jbpm.workbench.common.client.resources.i18n.Constants;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 public class ActiveFiltersImpl implements ActiveFilters {
@@ -37,6 +39,9 @@ public class ActiveFiltersImpl implements ActiveFilters {
     @Inject
     Event<ActiveFilterItemAddedEvent> activeFilterItemAddedEvent;
 
+    @Inject
+    Event<NotificationEvent> notification;
+
     private BiConsumer<String, Consumer<String>> filterNameCallback;
 
     @PostConstruct
@@ -47,6 +52,7 @@ public class ActiveFiltersImpl implements ActiveFilters {
                                           error -> {
                                               if (error == null) {
                                                   view.closeSaveFilter();
+                                                  displayNotification(Constants.INSTANCE.SavedFilterCorrectlyWithName(name));
                                               } else {
                                                   view.setSaveFilterErrorMessage(error);
                                               }
@@ -84,5 +90,10 @@ public class ActiveFiltersImpl implements ActiveFilters {
     public void removeAllActiveFilters() {
         view.removeAllActiveFilters(false);
         clearAllActiveFiltersEvent.fire(new ClearAllActiveFiltersEvent());
+    }
+
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text,
+                                                NotificationEvent.NotificationType.SUCCESS));
     }
 }

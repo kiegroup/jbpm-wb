@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetLookupFactory;
@@ -43,16 +42,6 @@ import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresenter {
 
     private Constants constants = Constants.INSTANCE;
-
-    @Override
-    protected String getAdvancedFilterPopupTitle() {
-        return constants.New_Process_InstanceList();
-    }
-
-    @Inject
-    public void setFilterSettingsManager(final ProcessInstanceListFilterSettingsManager filterSettingsManager) {
-        super.setFilterSettingsManager(filterSettingsManager);
-    }
 
     @Override
     public void loadFilters() {

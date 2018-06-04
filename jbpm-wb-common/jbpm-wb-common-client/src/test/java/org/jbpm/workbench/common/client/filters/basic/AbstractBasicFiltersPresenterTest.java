@@ -16,26 +16,18 @@
 
 package org.jbpm.workbench.common.client.filters.basic;
 
-import java.util.function.Consumer;
 import javax.enterprise.event.Event;
 
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
-import org.jbpm.workbench.common.client.filters.saved.SavedFilterSelectedEvent;
-import org.jbpm.workbench.df.client.filter.FilterEditorPopup;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
-import org.jbpm.workbench.df.client.filter.FilterSettingsManager;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.uberfire.mocks.EventSourceMock;
-import org.uberfire.mvp.Command;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 public abstract class AbstractBasicFiltersPresenterTest {
@@ -43,20 +35,11 @@ public abstract class AbstractBasicFiltersPresenterTest {
     @Mock
     BasicFiltersView view;
 
-    @Mock
-    FilterEditorPopup filterEditorPopup;
-
-    @Mock
-    FilterSettingsManager filterSettingsManager;
-
     @Spy
     Event<BasicFilterAddEvent> activeFilters = new EventSourceMock<>();
 
     @Spy
     Event<BasicFilterRemoveEvent> basicFilterRemoveEvent = new EventSourceMock<>();
-
-    @Spy
-    Event<SavedFilterSelectedEvent> savedFilterSelectedEvent = new EventSourceMock<>();
 
     public abstract BasicFiltersPresenter getPresenter();
 
@@ -66,58 +49,8 @@ public abstract class AbstractBasicFiltersPresenterTest {
 
     @Before
     public void init() {
-        doNothing().when(savedFilterSelectedEvent).fire(any());
         doNothing().when(activeFilters).fire(any());
         doNothing().when(basicFilterRemoveEvent).fire(any());
-    }
-
-    @Test
-    public void testSaveAdvancedFiltersCallback() {
-        doAnswer(invocation -> {
-            Command callback = (Command) invocation.getArguments()[0];
-            callback.execute();
-            return null;
-        }).when(view).setAdvancedFiltersCallback(any());
-
-        getPresenter().init();
-
-        verify(filterEditorPopup).setTitle(any());
-        ArgumentCaptor<Consumer> captor = ArgumentCaptor.forClass(Consumer.class);
-        verify(filterEditorPopup).show(any(),
-                                       captor.capture());
-        final FilterSettings filterSettings = new FilterSettings();
-        captor.getValue().accept(filterSettings);
-
-        verify(filterSettingsManager).saveFilterIntoPreferences(eq(filterSettings),
-                                                                captor.capture());
-        captor.getValue().accept(true);
-
-        verify(filterEditorPopup).hide();
-        verify(savedFilterSelectedEvent).fire(any());
-    }
-
-    @Test
-    public void testSaveInvalidAdvancedFiltersCallback() {
-        doAnswer(invocation -> {
-            Command callback = (Command) invocation.getArguments()[0];
-            callback.execute();
-            return null;
-        }).when(view).setAdvancedFiltersCallback(any());
-
-        getPresenter().init();
-
-        verify(filterEditorPopup).setTitle(any());
-        ArgumentCaptor<Consumer> captor = ArgumentCaptor.forClass(Consumer.class);
-        verify(filterEditorPopup).show(any(),
-                                       captor.capture());
-        final FilterSettings filterSettings = new FilterSettings();
-        captor.getValue().accept(filterSettings);
-
-        verify(filterSettingsManager).saveFilterIntoPreferences(eq(filterSettings),
-                                                                captor.capture());
-        captor.getValue().accept(false);
-
-        verify(filterEditorPopup).setTableNameError(any());
     }
 
     @Test
