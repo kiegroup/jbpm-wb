@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.assertj.core.api.SoftAssertions;
 import org.jbpm.workbench.cm.model.*;
+import org.jbpm.workbench.cm.predicate.MilestoneNodePredicate;
 import org.jbpm.workbench.cm.util.Actions;
 import org.jbpm.workbench.cm.util.CaseActionStatus;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
@@ -51,6 +52,9 @@ import static org.jbpm.workbench.cm.backend.server.CaseDefinitionMapperTest.asse
 import static org.jbpm.workbench.cm.backend.server.CaseInstanceMapperTest.assertCaseInstance;
 import static org.jbpm.workbench.cm.backend.server.CaseInstanceMapperTest.assertCaseStages;
 import static org.jbpm.workbench.cm.backend.server.RemoteCaseManagementServiceImpl.*;
+import static org.jbpm.workbench.cm.predicate.HumanTaskNodePredicate.NODE_TYPE_HUMAN_TASK;
+import static org.jbpm.workbench.cm.predicate.HumanTaskNodePredicate.NODE_TYPE_LIST_HUMAN_TASK;
+import static org.jbpm.workbench.cm.predicate.MilestoneNodePredicate.NODE_TYPE_MILESTONE;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
@@ -859,7 +863,7 @@ public class RemoteCaseManagementServiceImplTest {
     @Test
     public void getCompletedActionsTest_withUserTasks() {
         final NodeInstance nodeInstance = createTestNodeInstance("completedNode",
-                                                                 NODE_TYPE_HUMAN_TASK.get(0),
+                                                                 NODE_TYPE_HUMAN_TASK,
                                                                  1L);
         final TaskInstance taskInstance = TaskInstance.builder().actualOwner("owner").build();
         when(clientMock.getCompletedNodes(containerId,
@@ -903,24 +907,24 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void testMilestoneNodePredicate() {
-        assertFalse(new RemoteCaseManagementServiceImpl.MilestoneNodePredicate().test(CaseActionSummary.builder().type(NODE_TYPE_HUMAN_TASK.get(0)).build()));
-        assertTrue(new RemoteCaseManagementServiceImpl.MilestoneNodePredicate().test(CaseActionSummary.builder().type(NODE_TYPE_MILESTONE).build()));
+        assertFalse(new MilestoneNodePredicate().test(CaseActionSummary.builder().type(NODE_TYPE_HUMAN_TASK).build().getType()));
+        assertTrue(new MilestoneNodePredicate().test(CaseActionSummary.builder().type(NODE_TYPE_MILESTONE).build().getType()));
     }
 
     @Test
     public void testHumanTaskNodePredicate() {
         final String taskName = "Task Name";
         final List<CaseActionSummary> actions = Arrays.asList(
-                CaseActionSummary.builder().type(NODE_TYPE_HUMAN_TASK.get(0)).name(taskName).build(),
-                CaseActionSummary.builder().type(NODE_TYPE_HUMAN_TASK.get(1)).name(taskName).build()
+                CaseActionSummary.builder().type(NODE_TYPE_LIST_HUMAN_TASK.get(0)).name(taskName).build(),
+                CaseActionSummary.builder().type(NODE_TYPE_LIST_HUMAN_TASK.get(1)).name(taskName).build()
         );
-        assertTrue(new RemoteCaseManagementServiceImpl.HumanTaskNodePredicate().test(CaseActionSummary.builder().type(NODE_TYPE_HUMAN_TASK.get(0)).name(taskName).build(),
-                                                                                     actions));
-        assertTrue(new RemoteCaseManagementServiceImpl.HumanTaskNodePredicate().test(CaseActionSummary.builder().type(NODE_TYPE_HUMAN_TASK.get(1)).name(taskName).build(),
-                                                                                     actions));
-        assertFalse(new RemoteCaseManagementServiceImpl.HumanTaskNodePredicate().test(CaseActionSummary.builder().type(NODE_TYPE_HUMAN_TASK.get(0)).name("Task Name 2").build(),
-                                                                                      actions));
-        assertFalse(new RemoteCaseManagementServiceImpl.HumanTaskNodePredicate().test(CaseActionSummary.builder().type(NODE_TYPE_MILESTONE).name(taskName).build(),
-                                                                                      actions));
+        assertTrue(new InProgressHumanTaskPredicate().test(CaseActionSummary.builder().type(NODE_TYPE_LIST_HUMAN_TASK.get(0)).name(taskName).build(),
+                                                           actions));
+        assertTrue(new InProgressHumanTaskPredicate().test(CaseActionSummary.builder().type(NODE_TYPE_LIST_HUMAN_TASK.get(1)).name(taskName).build(),
+                                                           actions));
+        assertFalse(new InProgressHumanTaskPredicate().test(CaseActionSummary.builder().type(NODE_TYPE_LIST_HUMAN_TASK.get(0)).name("Task Name 2").build(),
+                                                            actions));
+        assertFalse(new InProgressHumanTaskPredicate().test(CaseActionSummary.builder().type(NODE_TYPE_MILESTONE).name(taskName).build(),
+                                                            actions));
     }
 }

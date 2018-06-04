@@ -16,17 +16,17 @@
 
 package org.jbpm.workbench.cm.backend.server;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.workbench.cm.model.*;
+import org.jbpm.workbench.cm.predicate.HumanTaskNodePredicate;
+import org.jbpm.workbench.cm.predicate.MilestoneNodePredicate;
 import org.jbpm.workbench.cm.service.CaseManagementService;
 import org.jbpm.workbench.cm.util.Actions;
 import org.jbpm.workbench.cm.util.CaseActionStatus;
@@ -56,9 +56,6 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
 
     public static final int PAGE_SIZE_UNLIMITED = Integer.MAX_VALUE;
     public static final String CASE_OWNER_ROLE = "owner";
-    public static final List<String> NODE_TYPE_HUMAN_TASK = Arrays.asList("Human Task",
-                                                                          "HumanTaskNode");
-    public static final String NODE_TYPE_MILESTONE = "MilestoneNode";
 
     @Inject
     private CaseServicesClient client;
@@ -300,7 +297,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
         actions.setAvailableActions(
                 adHocActions.stream()
                         .filter(action -> {
-                            if (new MilestoneNodePredicate().negate().test(action)) {
+                            if (new MilestoneNodePredicate().negate().test(action.getType())) {
                                 return true;
                             }
                             if (findMilestone(inProgressActions,
@@ -313,8 +310,8 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                             }
                             return true;
                         })
-                        .filter(action -> new HumanTaskNodePredicate().negate().test(action,
-                                                                                     inProgressActions))
+                        .filter(action -> new InProgressHumanTaskPredicate().negate().test(action,
+                                                                                           inProgressActions))
                         .collect(toList()));
         return actions;
     }
@@ -332,7 +329,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                                                                PAGE_SIZE_UNLIMITED);
         return activeNodes.stream()
                 .map(s -> new CaseActionNodeInstanceMapper(
-                        (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
+                        (new HumanTaskNodePredicate().test(s.getNodeType()) ?
                                 userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
                                 ""),
                         CaseActionStatus.IN_PROGRESS).apply(s))
@@ -353,7 +350,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                                                                caseId);
         return activeNodes.stream()
                 .map(s -> new CaseActionNodeInstanceMapper(
-                        (NODE_TYPE_HUMAN_TASK.contains(s.getNodeType()) ?
+                        (new HumanTaskNodePredicate().test(s.getNodeType()) ?
                                 userTaskServicesClient.findTaskByWorkItemId(s.getWorkItemId()).getActualOwner() :
                                 ""),
                         CaseActionStatus.COMPLETED).apply(s))
@@ -476,20 +473,13 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
         return processDefinitions.stream().map(new ProcessDefinitionMapper()).collect(toList());
     }
 
-    public static class HumanTaskNodePredicate implements BiPredicate<CaseActionSummary, List<CaseActionSummary>> {
+    public static class InProgressHumanTaskPredicate implements BiPredicate<CaseActionSummary, List<CaseActionSummary>> {
 
         @Override
         public boolean test(final CaseActionSummary summary,
                             final List<CaseActionSummary> actions) {
-            return NODE_TYPE_HUMAN_TASK.contains(summary.getType()) && actions.stream().filter(action -> action.getType().equals(summary.getType()) && action.getName().equals(summary.getName())).findAny().isPresent();
+            return new HumanTaskNodePredicate().test(summary.getType()) && actions.stream().filter(action -> action.getType().equals(summary.getType()) && action.getName().equals(summary.getName())).findAny().isPresent();
         }
     }
 
-    public static class MilestoneNodePredicate implements Predicate<CaseActionSummary> {
-
-        @Override
-        public boolean test(final CaseActionSummary summary) {
-            return NODE_TYPE_MILESTONE.equals(summary.getType());
-        }
-    }
 }

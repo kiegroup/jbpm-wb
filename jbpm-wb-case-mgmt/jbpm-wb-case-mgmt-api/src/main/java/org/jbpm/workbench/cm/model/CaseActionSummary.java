@@ -126,7 +126,8 @@ public class CaseActionSummary {
                                   that.getName());
         } else {
             return Objects.equals(id,
-                                  that.getId());
+                                  that.getId()) && Objects.equals(type,
+                                                                  that.getType());
         }
     }
 
