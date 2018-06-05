@@ -25,6 +25,7 @@ import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.df.client.events.SavedFilterAddedEvent;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
@@ -42,6 +43,9 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public abstract class AbstractTaskListFilterSettingsManagerTest {
+
+    @Mock
+    TranslationService translationServiceMock;
 
     @Mock
     protected User identity;

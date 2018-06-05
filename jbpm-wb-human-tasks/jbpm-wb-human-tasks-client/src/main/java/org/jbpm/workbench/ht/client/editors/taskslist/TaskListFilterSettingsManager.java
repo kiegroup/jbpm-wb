@@ -24,13 +24,12 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.workbench.common.client.util.TaskUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.SavedFilter;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
-import static org.jbpm.workbench.common.client.util.TaskUtils.getStatusByType;
+import static org.jbpm.workbench.ht.client.util.TaskUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Dependent
@@ -95,7 +94,9 @@ public class TaskListFilterSettingsManager extends AbstractTaskListFilterSetting
                 createFilterSettings(HUMAN_TASKS_WITH_USER_DATASET,
                                      COLUMN_CREATED_ON,
                                      builder -> {
-                                         final List<Comparable> status = new ArrayList<>(getStatusByType(TaskUtils.TaskType.ACTIVE));
+
+                                         final List<Comparable> status = new ArrayList<>(getStatusByType(TaskType.ACTIVE));
+
                                          builder.filter(COLUMN_STATUS,
                                                         equalsTo(COLUMN_STATUS,
                                                                  status));
@@ -110,7 +111,7 @@ public class TaskListFilterSettingsManager extends AbstractTaskListFilterSetting
                 createFilterSettings(HUMAN_TASKS_DATASET,
                                      COLUMN_CREATED_ON,
                                      builder -> {
-                                         final List<Comparable> names = new ArrayList<>(getStatusByType(TaskUtils.TaskType.PERSONAL));
+                                         final List<Comparable> names = new ArrayList<>(getStatusByType(TaskType.PERSONAL));
                                          builder.filter(equalsTo(COLUMN_STATUS,
                                                                  names));
                                          builder.filter(equalsTo(COLUMN_ACTUAL_OWNER,
@@ -125,7 +126,7 @@ public class TaskListFilterSettingsManager extends AbstractTaskListFilterSetting
                 createFilterSettings(HUMAN_TASKS_WITH_USER_DATASET,
                                      COLUMN_CREATED_ON,
                                      builder -> {
-                                         final List<Comparable> names = new ArrayList<>(getStatusByType(TaskUtils.TaskType.GROUP));
+                                         final List<Comparable> names = new ArrayList<>(getStatusByType(TaskType.GROUP));
                                          builder.filter(COLUMN_STATUS,
                                                         equalsTo(COLUMN_STATUS,
                                                                  names));

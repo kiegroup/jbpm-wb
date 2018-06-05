@@ -29,8 +29,7 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.Commands;
 
-import static org.jbpm.workbench.common.client.util.TaskUtils.*;
-import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_USER_DATASET;
+import static org.jbpm.workbench.ht.util.TaskStatus.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -71,20 +70,20 @@ public class TaskListPresenterTest extends AbstractTaskListPresenterTest {
     @Test
     public void testSuspendActionCondition() {
         testTaskStatusCondition(getPresenter().getSuspendActionCondition(),
-                                TASK_STATUS_RESERVED,
-                                TASK_STATUS_IN_PROGRESS);
+                                TASK_STATUS_RESERVED.getIdentifier(),
+                                TASK_STATUS_IN_PROGRESS.getIdentifier());
     }
 
     @Test
     public void testResumeActionCondition() {
         testTaskStatusCondition(getPresenter().getResumeActionCondition(),
-                                TASK_STATUS_SUSPENDED);
+                                TASK_STATUS_SUSPENDED.getIdentifier());
     }
 
     @Test
     public void userShouldNotBeAbleToReleaseTasksOwnedByOthers() {
-        assertFalse(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner("userx").status(TASK_STATUS_RESERVED).build()));
-        assertFalse(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner("userx").status(TASK_STATUS_IN_PROGRESS).build()));
+        assertFalse(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner("userx").status(TASK_STATUS_RESERVED.getIdentifier()).build()));
+        assertFalse(getPresenter().getReleaseActionCondition().test(TaskSummary.builder().actualOwner("userx").status(TASK_STATUS_IN_PROGRESS.getIdentifier()).build()));
     }
 
     @Test
