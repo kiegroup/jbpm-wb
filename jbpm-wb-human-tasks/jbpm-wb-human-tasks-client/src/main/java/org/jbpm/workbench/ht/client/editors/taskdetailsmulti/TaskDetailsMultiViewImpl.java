@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -190,6 +190,15 @@ public class TaskDetailsMultiViewImpl extends Composite
     }
 
     @Override
+    public void resetTabs(boolean onlyLogTab) {
+        if (onlyLogTab) {
+            taskDetailsTab.showTab();
+        } else {
+            ((TabListItem) navTabs.getWidget(0)).showTab();
+        }
+    }
+
+    @Override
     public void displayAllTabs() {
         for (Widget active : navTabs) {
             active.setVisible(true);
@@ -197,7 +206,6 @@ public class TaskDetailsMultiViewImpl extends Composite
         for (Widget active : tabContent) {
             active.setVisible(true);
         }
-        ((TabListItem) navTabs.getWidget(0)).showTab();
     }
 
     @Override
@@ -213,7 +221,6 @@ public class TaskDetailsMultiViewImpl extends Composite
 
         taskLogsPane.setVisible(true);
         taskLogsTab.setVisible(true);
-        taskDetailsTab.showTab();
     }
 
     interface Binder

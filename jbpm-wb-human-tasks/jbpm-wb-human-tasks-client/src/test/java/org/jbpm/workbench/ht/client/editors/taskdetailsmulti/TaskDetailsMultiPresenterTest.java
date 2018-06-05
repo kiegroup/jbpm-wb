@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,6 +109,7 @@ public class TaskDetailsMultiPresenterTest {
         //Then only tab log is displayed
         verify(view).displayOnlyLogTab();
         verify(view).setAdminTabVisible(false);
+        verify(view).resetTabs(true);
         verify(taskFormPresenter,
                never()).getTaskFormView();
         assertFalse(presenter.isForAdmin());
@@ -122,16 +123,18 @@ public class TaskDetailsMultiPresenterTest {
     @Test
     public void isForLogRemainsDisabledAfterRefresh() {
         //When task selected without logOnly
+        boolean logOnly = false;
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(null,
                                                               null,
                                                               TASK_ID,
                                                               TASK_NAME,
                                                               false,
-                                                              false));
+                                                              logOnly));
 
         //Then alltabs are displayed
         verify(view).displayAllTabs();
         verify(view).setAdminTabVisible(false);
+        verify(view).resetTabs(logOnly);
         assertFalse(presenter.isForAdmin());
         assertFalse(presenter.isForLog());
         verify(taskFormPresenter,
@@ -177,6 +180,9 @@ public class TaskDetailsMultiPresenterTest {
                                                               taskSummary.getPriority(),
                                                               taskSummary.getProcessInstanceId(),
                                                               taskSummary.getProcessId()));
+        verify(view).displayAllTabs();
+        verify(view).resetTabs(false);
+
         presenter.onRefresh();
 
         verify(taskServiceMock).getTask(eq(serverTemplateId),
@@ -207,5 +213,10 @@ public class TaskDetailsMultiPresenterTest {
                      taskSelectionEventArgumentCaptor.getValue().getProcessInstanceId());
         assertEquals(taskSummary.getProcessId(),
                      taskSelectionEventArgumentCaptor.getValue().getProcessId());
+
+        presenter.onTaskSelectionEvent(taskSelectionEventArgumentCaptor.getValue());
+        verify(view,
+               times(2)).displayAllTabs();
+        verify(view).resetTabs(false);
     }
 }
