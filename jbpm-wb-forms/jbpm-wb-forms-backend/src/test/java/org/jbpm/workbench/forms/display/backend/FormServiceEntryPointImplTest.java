@@ -52,18 +52,20 @@ import org.kie.server.client.UIServicesClient;
 import org.kie.server.client.UserTaskServicesClient;
 import org.kie.soup.project.datamodel.commons.util.RawMVELEvaluator;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.BackendFormRenderingContextManagerImpl;
-import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.FormValuesProcessorImpl;
-import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.fieldProcessors.MultipleSubFormFieldValueProcessor;
-import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.fieldProcessors.SubFormFieldValueProcessor;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.FieldValueMarshaller;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.FieldValueMarshallerRegistry;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.TextAreaFormFieldValueMarshaller;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.models.MultipleSubFormFieldValueMarshaller;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.models.SubFormFieldValueMarshaller;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.time.DateMultipleInputFieldValueMarshaller;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.time.DateMultipleSelectorFieldValueMarshaller;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.time.LocalDateFieldValueMarshaller;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.validation.impl.ContextModelConstraintsExtractorImpl;
-import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.FieldValueProcessor;
-import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.FormValuesProcessor;
 import org.kie.workbench.common.forms.fields.test.TestFieldManager;
 import org.kie.workbench.common.forms.fields.test.TestMetaDataEntryManager;
 import org.kie.workbench.common.forms.jbpm.server.service.formGeneration.impl.runtime.BPMNRuntimeFormGeneratorService;
 import org.kie.workbench.common.forms.jbpm.server.service.impl.DynamicBPMNFormGeneratorImpl;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
-import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.kie.workbench.common.forms.services.backend.serialization.FormDefinitionSerializer;
 import org.kie.workbench.common.forms.services.backend.serialization.impl.FieldSerializer;
 import org.kie.workbench.common.forms.services.backend.serialization.impl.FormDefinitionSerializerImpl;
@@ -71,8 +73,19 @@ import org.kie.workbench.common.forms.services.backend.serialization.impl.FormMo
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FormServiceEntryPointImplTest {
@@ -96,7 +109,7 @@ public class FormServiceEntryPointImplTest {
     @Mock
     private KieServicesClient kieServicesClient;
 
-    private FormValuesProcessor formValuesProcessor;
+    private FieldValueMarshallerRegistry registry;
 
     private DynamicBPMNFormGenerator dynamicBPMNFormGenerator;
 
@@ -110,18 +123,27 @@ public class FormServiceEntryPointImplTest {
 
     @Before
     public void init() {
-        List<FieldValueProcessor> processors = Arrays.asList(new SubFormFieldValueProcessor(),
-                                                             new MultipleSubFormFieldValueProcessor());
+        SubFormFieldValueMarshaller subFormFieldValueMarshaller = new SubFormFieldValueMarshaller();
+        MultipleSubFormFieldValueMarshaller multipleSubFormFieldValueMarshaller = new MultipleSubFormFieldValueMarshaller();
 
-        Instance<FieldValueProcessor<? extends FieldDefinition, ?, ?>> fieldValueProcessors = mock(Instance.class);
-        when(fieldValueProcessors.iterator()).then(proc -> processors.iterator());
+        List<FieldValueMarshaller> marshallers = Arrays.asList(subFormFieldValueMarshaller,
+                                                               multipleSubFormFieldValueMarshaller,
+                                                               new DateMultipleInputFieldValueMarshaller(),
+                                                               new DateMultipleSelectorFieldValueMarshaller(),
+                                                               new LocalDateFieldValueMarshaller(),
+                                                               new TextAreaFormFieldValueMarshaller());
 
-        formValuesProcessor = new FormValuesProcessorImpl(fieldValueProcessors);
+        Instance<FieldValueMarshaller> marshallersInstance = mock(Instance.class);
 
-        Instance<FormProvider<? extends FormRenderingSettings>> instance = mock(Instance.class);
+        when(marshallersInstance.iterator()).then(proc -> marshallers.iterator());
 
-        backendFormRenderingContextManager = new BackendFormRenderingContextManagerImpl(formValuesProcessor,
-                                                                                        new ContextModelConstraintsExtractorImpl());
+        registry = new FieldValueMarshallerRegistry(marshallersInstance);
+
+        subFormFieldValueMarshaller.setRegistry(registry);
+
+        multipleSubFormFieldValueMarshaller.setRegistry(registry);
+
+        backendFormRenderingContextManager = new BackendFormRenderingContextManagerImpl(registry, new ContextModelConstraintsExtractorImpl());
 
         runtimeFormGeneratorService = new BPMNRuntimeFormGeneratorService(new TestFieldManager(),
                                                                           new RawMVELEvaluator());
@@ -146,10 +168,11 @@ public class FormServiceEntryPointImplTest {
 
         when(kieServicesClient.getClassLoader()).thenReturn(this.getClass().getClassLoader());
 
+        Instance<FormProvider<? extends FormRenderingSettings>> instance = mock(Instance.class);
+
         when(instance.iterator()).then(result -> Arrays.asList(kieWorkbenchFormsProvider).iterator());
 
-        serviceEntryPoint = new FormServiceEntryPointImpl(instance,
-                                                          defaultProvider) {
+        serviceEntryPoint = new FormServiceEntryPointImpl(instance, defaultProvider) {
 
             @Override
             protected <T> T getClient(String serverTemplateId,
