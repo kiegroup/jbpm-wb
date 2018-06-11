@@ -166,6 +166,11 @@ public class CaseInstanceListSearchViewImpl extends AbstractView<CaseInstanceLis
                      true);
     }
 
+    @EventHandler("refresh-case-list")
+    public void onRefreshCaseClick(final @ForEvent("click") MouseEvent event) {
+        presenter.refreshData();
+    }
+
     private void onSortChange(final HTMLElement toHide,
                               final HTMLElement toShow,
                               final Boolean sortByAsc) {
