@@ -27,7 +27,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
 
-import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.*;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.COLUMN_CORRELATION_KEY;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.COLUMN_DURATION;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.COLUMN_END;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.COLUMN_EXTERNAL_ID;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.COLUMN_IDENTITY;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.COLUMN_OUTCOME;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.COLUMN_PARENT_PROCESS_INSTANCE_ID;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.COLUMN_PROCESS_ID;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.COLUMN_PROCESS_INSTANCE_DESCRIPTION;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.COLUMN_PROCESS_INSTANCE_ID;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.COLUMN_PROCESS_NAME;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.COLUMN_PROCESS_VERSION;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.COLUMN_START;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.COLUMN_STATUS;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.PROCESS_INSTANCE_DATASET;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.PROCESS_INSTANCE_ID;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.PROCESS_INSTANCE_WITH_VARIABLES_DATASET;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.PROCESS_NAME;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.VARIABLE_ID;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.VARIABLE_NAME;
+import static org.jbpm.console.ng.pr.model.ProcessInstanceDataSetConstants.VARIABLE_VALUE;
 
 @Startup
 @ApplicationScoped
@@ -69,6 +89,7 @@ public class DataSetDefsBootstrap {
                 .buildDef();
 
 
+        
         DataSetDef processWithVariablesDef = DataSetDefFactory.newSQLDataSetDef()
                 .uuid(PROCESS_INSTANCE_WITH_VARIABLES_DATASET)
                 .name("Domain Specific Process Instances")
@@ -81,12 +102,11 @@ public class DataSetDefsBootstrap {
                             "vil.value " +
                         "from VariableInstanceLog vil " +
                         "where " +
-                            "vil.id = " +
+                            "vil.id in " +
                                 "(select MAX(v.id) " +
                                 "from VariableInstanceLog v " +
-                                "where " +
-                                "v.variableId = vil.variableId and " +
-                                "v.processInstanceId = vil.processInstanceId)" , false )
+                                "group by v.variableId, v.processInstanceId" +
+                                ")" , false )
                 .number(PROCESS_INSTANCE_ID)
                 .label(PROCESS_NAME)
                 .number(VARIABLE_ID)
