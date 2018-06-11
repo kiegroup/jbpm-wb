@@ -120,10 +120,15 @@
       <artifactId>uberfire-nio2-api</artifactId>
     </dependency>
 
-    <!-- include case mgmt api so it's model classes can be used within processes/cases in authoring -->
+    <!-- include case mgmt api and cmmn so it's model classes and parsers can be used within processes/cases in authoring -->
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-case-mgmt-api</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-case-mgmt-cmmn</artifactId>
       <scope>runtime</scope>
     </dependency>
 
