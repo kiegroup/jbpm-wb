@@ -36,6 +36,7 @@ import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
+import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
@@ -50,12 +51,17 @@ import org.jbpm.workbench.df.client.filter.FilterSettingsManager;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
+import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.server.api.model.KieContainerStatus;
+import org.kie.server.controller.api.model.spec.ContainerSpec;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
+import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -67,6 +73,7 @@ import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
+import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.Commands;
 import org.uberfire.mvp.PlaceRequest;
@@ -77,6 +84,7 @@ import org.uberfire.workbench.model.ActivityResourceType;
 import static java.util.Arrays.asList;
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
+import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
@@ -148,6 +156,17 @@ public class ProcessInstanceListPresenterTest {
 
     @Mock
     private FilterSettingsManager filterSettingsManager;
+
+    @Mock
+    ContainerSpec containerSpecMock;
+
+    @Mock
+    EventSourceMock<ProcessInstanceSelectionEvent> processInstanceSelectionEvent = new EventSourceMock<>();
+
+    @Mock
+    SpecManagementService specManagementService;
+
+    Caller<SpecManagementService> specManagementServiceCaller;
 
     @InjectMocks
     private ProcessInstanceListPresenter presenter;
@@ -234,6 +253,12 @@ public class ProcessInstanceListPresenterTest {
         commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
 
         presenter.setProcessService(remoteProcessServiceCaller);
+        specManagementServiceCaller = new CallerMock<SpecManagementService>(specManagementService);
+
+        ServerTemplate serverTemplateMock = mock(ServerTemplate.class);
+
+        when(specManagementService.getServerTemplate(anyString())).thenReturn(serverTemplateMock);
+        when(serverTemplateMock.getContainerSpec(anyString())).thenReturn(containerSpecMock);
     }
 
     @Test
@@ -850,4 +875,38 @@ public class ProcessInstanceListPresenterTest {
         verify(filterSettings).removeColumnFilter(columnFilter);
     }
 
+    @Test
+    public void testSelectProcessInstanceWhenContainerStarted() {
+
+        when(containerSpecMock.getStatus()).thenReturn(KieContainerStatus.STARTED);
+
+        presenter.setSpecManagementService(specManagementServiceCaller);
+        presenter.setProcessInstanceSelectedEvent(processInstanceSelectionEvent);
+
+        ProcessInstanceSummary okProcInst = new ProcessInstanceSummary();
+        presenter.selectProcessInstance(okProcInst);
+
+        verify(processInstanceSelectionEvent).fire(any(ProcessInstanceSelectionEvent.class));
+        verify(placeManager).goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
+        verify(viewMock,
+               never()).displayNotification(anyString());
+    }
+
+    @Test
+    public void testSelectProcessInstanceWhenContainerStopped() {
+
+        when(containerSpecMock.getStatus()).thenReturn(KieContainerStatus.STOPPED);
+
+        presenter.setSpecManagementService(specManagementServiceCaller);
+        presenter.setProcessInstanceSelectedEvent(processInstanceSelectionEvent);
+
+        ProcessInstanceSummary okProcInst = new ProcessInstanceSummary();
+        presenter.selectProcessInstance(okProcInst);
+
+        verify(processInstanceSelectionEvent,
+               never()).fire(any(ProcessInstanceSelectionEvent.class));
+        verify(placeManager,
+               never()).goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
+        verify(viewMock).displayNotification(anyString());
+    }
 }

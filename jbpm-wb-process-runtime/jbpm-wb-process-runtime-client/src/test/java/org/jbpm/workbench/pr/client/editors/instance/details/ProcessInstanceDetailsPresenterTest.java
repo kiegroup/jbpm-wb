@@ -18,6 +18,7 @@ package org.jbpm.workbench.pr.client.editors.instance.details;
 import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
@@ -27,6 +28,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.server.api.model.KieContainerStatus;
+import org.kie.server.controller.api.model.spec.ContainerSpec;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
+import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -79,17 +84,34 @@ public class ProcessInstanceDetailsPresenterTest {
     @Mock
     PrimaryActionMenuBuilder abortProcessInstanceAction;
 
+    @Mock
+    ContainerSpec containerSpecMock;
+
+    @Mock
+    ServerTemplate serverTemplateMock;
+
+    @Mock
+    SpecManagementService specManagementService;
+
+    Caller<SpecManagementService> specManagementServiceCaller;
+
     @InjectMocks
     private ProcessInstanceDetailsPresenter presenter;
 
     @Before
     public void setupMocks() {
+        specManagementServiceCaller = new CallerMock<>(specManagementService);
+        presenter.setSpecManagementService(specManagementServiceCaller);
+        when(specManagementService.getServerTemplate(anyString())).thenReturn(serverTemplateMock);
+        when(serverTemplateMock.getContainerSpec(anyString())).thenReturn(containerSpecMock);
+        when(containerSpecMock.getStatus()).thenReturn(KieContainerStatus.STARTED);
+
         doNothing().when(changeTitleWidgetEvent).fire(any(ChangeTitleWidgetEvent.class));
         doNothing().when(processInstanceSelected).fire(any(ProcessInstanceSelectionEvent.class));
         doNothing().when(processInstancesUpdatedEvent).fire(any(ProcessInstancesUpdateEvent.class));
         presenter.setSignalProcessInstanceAction(signalProcessInstanceAction);
         presenter.setAbortProcessInstanceAction(abortProcessInstanceAction);
-        remoteProcessServiceCaller = new CallerMock<ProcessService>(processService);
+        remoteProcessServiceCaller = new CallerMock<>(processService);
         presenter.setProcessService(remoteProcessServiceCaller);
     }
 
@@ -129,7 +151,6 @@ public class ProcessInstanceDetailsPresenterTest {
         verify(view).displayAllTabs();
         verify(view).resetTabs(isLogOnly);
         assertFalse(presenter.isForLog());
-
 
         presenter.onRefresh();
         assertFalse(presenter.isForLog());
@@ -260,6 +281,8 @@ public class ProcessInstanceDetailsPresenterTest {
 
     @Test
     public void refreshTest() {
+        when(containerSpecMock.getStatus()).thenReturn(KieContainerStatus.STARTED);
+
         presenter.onProcessSelectionEvent(new ProcessInstanceSelectionEvent(PI_DEPLOYMENT_ID,
                                                                             PI_ID,
                                                                             PI_PROCESS_DEF_ID,
@@ -292,5 +315,23 @@ public class ProcessInstanceDetailsPresenterTest {
         verify(view,
                times(2)).displayAllTabs();
         verify(view).resetTabs(false);
+    }
+
+    @Test
+    public void refreshWhenContainerStoppedTest() {
+        when(containerSpecMock.getStatus()).thenReturn(KieContainerStatus.STOPPED);
+        presenter.onProcessSelectionEvent(new ProcessInstanceSelectionEvent(PI_DEPLOYMENT_ID,
+                                                                            PI_ID,
+                                                                            PI_PROCESS_DEF_ID,
+                                                                            PI_PROCESS_DEF_NAME,
+                                                                            0,
+                                                                            false,
+                                                                            SERVER_TEMPLATE_ID));
+        verify(view).displayAllTabs();
+        verify(view).resetTabs(false);
+
+        presenter.onRefresh();
+        verify(view).displayNotification(anyString());
+        verifyNoMoreInteractions(processInstanceSelected);
     }
 }

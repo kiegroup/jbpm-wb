@@ -248,4 +248,6 @@ public interface Constants extends Messages {
     String TaskListCouldNotBeLoaded();
     
     String Errors();
+
+    String TaskDetailsNotAvailableContainerNotStarted(String containerId);
 }

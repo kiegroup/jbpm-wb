@@ -15,13 +15,13 @@
     "query-name": "processesMonitoring",
     "query-source": "${org.kie.server.persistence.ds}",
     "query-expression": "select log.processInstanceId, log.processId, log.start_date, log.end_date, log.status, log.duration, log.user_identity, log.processVersion, log.processName, log.externalId from ProcessInstanceLog log",
-    "query-target": "FILTERED_PROCESS"
+    "query-target": "CUSTOM"
   },
   {
     "query-name": "tasksMonitoring",
     "query-source": "${org.kie.server.persistence.ds}",
     "query-expression": "select p.processName, p.externalId, t.taskId, t.taskName, t.status, t.createdDate, t.startDate, t.endDate, t.processInstanceId, t.userId, t.duration from ProcessInstanceLog p inner join BAMTaskSummary t on (t.processInstanceId = p.processInstanceId) inner join (select min(pk) as pk from BAMTaskSummary group by taskId) d on t.pk = d.pk",
-    "query-target": "FILTERED_PROCESS"
+    "query-target": "CUSTOM"
   },
   {
     "query-name": "jbpmRequestList",

@@ -16,6 +16,8 @@
 package org.jbpm.workbench.ht.client.editors.taskdetailsmulti;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -29,6 +31,7 @@ import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.gwtbootstrap3.client.ui.TabPane;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 public class TaskDetailsMultiViewImpl extends Composite
@@ -69,6 +72,9 @@ public class TaskDetailsMultiViewImpl extends Composite
     private TabPane taskLogsPane;
 
     private TabListItem taskLogsTab;
+
+    @Inject
+    private Event<NotificationEvent> notification;
 
     @Override
     public void init(final TaskDetailsMultiPresenter presenter) {
@@ -221,6 +227,11 @@ public class TaskDetailsMultiViewImpl extends Composite
 
         taskLogsPane.setVisible(true);
         taskLogsTab.setVisible(true);
+    }
+
+    @Override
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     interface Binder

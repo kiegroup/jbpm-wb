@@ -17,6 +17,7 @@
 package org.jbpm.dashboard.renderer.client.panel;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
@@ -31,6 +32,7 @@ import org.dashbuilder.displayer.client.DisplayerCoordinator;
 import org.dashbuilder.displayer.client.DisplayerLocator;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
+import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.ks.integration.ConsoleDataSetLookup;
@@ -38,12 +40,14 @@ import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardI18n;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
+import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.events.ClosePlaceEvent;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.Commands;
+import org.uberfire.workbench.events.NotificationEvent;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -64,13 +68,31 @@ public abstract class AbstractDashboard {
     protected ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
 
     UberfireBreadcrumbs breadcrumbs;
+    protected Caller<SpecManagementService> specManagementService;
+
+    protected Event<NotificationEvent> notificationEvent;
+
 
     private PerspectiveManager perspectiveManager;
 
     private String detailScreenId;
 
+    @Inject
+    public void setSpecManagementService(final Caller<SpecManagementService> specManagementService) {
+        this.specManagementService = specManagementService;
+    }
+
+    @Inject
+    public void setNotificationEvent(final Event<NotificationEvent> notificationEvent) {
+        this.notificationEvent = notificationEvent;
+    }
+
     public String getPerspectiveId() {
         return perspectiveManager.getCurrentPerspective().getIdentifier();
+    }
+
+    protected void displayNotification(String message) {
+        notificationEvent.fire(new NotificationEvent(message));
     }
 
     public AbstractDashboard() {

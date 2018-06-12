@@ -36,6 +36,9 @@ import org.jbpm.workbench.forms.display.api.HumanTaskDisplayerConfig;
 import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayProvider;
 import org.jbpm.workbench.ht.model.TaskKey;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
+import org.kie.server.api.model.KieContainerStatus;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
+import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -53,6 +56,8 @@ import static org.jbpm.workbench.common.client.PerspectiveIds.TASK_DETAILS_SCREE
 @Dependent
 @WorkbenchScreen(identifier = TASK_DETAILS_SCREEN)
 public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
+
+    private Constants constants = Constants.INSTANCE;
 
     private Caller<TaskService> taskDataService;
 
@@ -82,6 +87,8 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
 
     @Inject
     private TaskAdminPresenter taskAdminPresenter;
+
+    protected Caller<SpecManagementService> specManagementService;
 
     @Inject
     private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
@@ -177,23 +184,34 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
 
     @Override
     public void onRefresh() {
-        taskDataService.call((TaskSummary taskSummary) -> {
-            taskSelected.fire(new TaskSelectionEvent(serverTemplateId,
-                                                     taskSummary.getDeploymentId(),
-                                                     taskSummary.getId(),
-                                                     taskSummary.getName(),
-                                                     isForAdmin(),
-                                                     isForLog(),
-                                                     taskSummary.getDescription(),
-                                                     taskSummary.getExpirationTime(),
-                                                     taskSummary.getStatus(),
-                                                     taskSummary.getActualOwner(),
-                                                     taskSummary.getPriority(),
-                                                     taskSummary.getProcessInstanceId(),
-                                                     taskSummary.getProcessId()));
-        }).getTask(serverTemplateId,
-                   containerId,
-                   taskId);
+        specManagementService.call((ServerTemplate serverTemplate) -> {
+            if (serverTemplate != null &&
+                    serverTemplate.getContainerSpec(containerId) != null &&
+                    serverTemplate.getContainerSpec(containerId).getStatus().equals(KieContainerStatus.STARTED)) {
+                taskDataService.call((TaskSummary taskSummary) -> {
+                    if (taskSummary != null) {
+                        taskSelected.fire(new TaskSelectionEvent(serverTemplateId,
+                                                                 taskSummary.getDeploymentId(),
+                                                                 taskSummary.getId(),
+                                                                 taskSummary.getName(),
+                                                                 isForAdmin(),
+                                                                 isForLog(),
+                                                                 taskSummary.getDescription(),
+                                                                 taskSummary.getExpirationTime(),
+                                                                 taskSummary.getStatus(),
+                                                                 taskSummary.getActualOwner(),
+                                                                 taskSummary.getPriority(),
+                                                                 taskSummary.getProcessInstanceId(),
+                                                                 taskSummary.getProcessId()));
+                    }
+                }).getTask(serverTemplateId,
+                           containerId,
+                           taskId);
+            } else {
+                view.displayNotification(constants.TaskDetailsNotAvailableContainerNotStarted(containerId));
+            }
+        }).getServerTemplate(serverTemplateId);
+
 
     }
 
@@ -254,6 +272,11 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
         this.taskDataService = taskDataService;
     }
 
+    @Inject
+    public void setSpecManagementService(final Caller<SpecManagementService> specManagementService) {
+        this.specManagementService = specManagementService;
+    }
+
     public interface TaskDetailsMultiView
             extends UberView<TaskDetailsMultiPresenter> {
 
@@ -264,5 +287,8 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
         void resetTabs(boolean onlyLogTab);
 
         void displayOnlyLogTab();
+
+        void displayNotification(String text);
+
     }
 }

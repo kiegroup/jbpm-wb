@@ -43,6 +43,9 @@ import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
+import org.kie.server.api.model.KieContainerStatus;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
+import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -74,6 +77,8 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
     @Inject
     private Caller<ProcessRuntimeDataService> processRuntimeDataService;
+
+    protected Caller<SpecManagementService> specManagementService;
 
     protected AuthorizationManager authorizationManager;
 
@@ -217,17 +222,26 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     }
 
     public void refreshNewProcessInstance(@Observes NewProcessInstanceEvent newProcessInstance) {
-        setupDetailBreadcrumb(placeManager,
-                              commonConstants.Manage_Process_Definitions(),
-                              constants.ProcessInstanceBreadcrumb(newProcessInstance.getNewProcessInstanceId()),
-                              PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
-        placeManager.goTo(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
-        processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getDeploymentId(),
-                                                                       newProcessInstance.getNewProcessInstanceId(),
-                                                                       newProcessInstance.getNewProcessDefId(),
-                                                                       newProcessInstance.getProcessDefName(),
-                                                                       newProcessInstance.getNewProcessInstanceStatus(),
-                                                                       newProcessInstance.getServerTemplateId()));
+        specManagementService.call((ServerTemplate serverTemplate) -> {
+            if (serverTemplate != null &&
+                    serverTemplate.getContainerSpec(newProcessInstance.getDeploymentId()) != null &&
+                    serverTemplate.getContainerSpec(newProcessInstance.getDeploymentId()).getStatus().equals(KieContainerStatus.STARTED)) {
+
+                setupDetailBreadcrumb(placeManager,
+                                      commonConstants.Manage_Process_Definitions(),
+                                      constants.ProcessInstanceBreadcrumb(newProcessInstance.getNewProcessInstanceId()),
+                                      PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
+                placeManager.goTo(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
+                processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getDeploymentId(),
+                                                                               newProcessInstance.getNewProcessInstanceId(),
+                                                                               newProcessInstance.getNewProcessDefId(),
+                                                                               newProcessInstance.getProcessDefName(),
+                                                                               newProcessInstance.getNewProcessInstanceStatus(),
+                                                                               newProcessInstance.getServerTemplateId()));
+            } else {
+                view.displayNotification(constants.ProcessDetailsNotAvailableContainerNotStarted(newProcessInstance.getDeploymentId()));
+            }
+        }).getServerTemplate(newProcessInstance.getServerTemplateId());
     }
 
     public Predicate<ProcessSummary> getViewProcessInstanceActionCondition() {
@@ -255,6 +269,11 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     @Inject
     public void setProcessRuntimeDataService(final Caller<ProcessRuntimeDataService> processRuntimeDataService) {
         this.processRuntimeDataService = processRuntimeDataService;
+    }
+
+    @Inject
+    public void setSpecManagementService(final Caller<SpecManagementService> specManagementService) {
+        this.specManagementService = specManagementService;
     }
 
     public interface ProcessDefinitionListView extends ListView<ProcessSummary, ProcessDefinitionListPresenter> {
