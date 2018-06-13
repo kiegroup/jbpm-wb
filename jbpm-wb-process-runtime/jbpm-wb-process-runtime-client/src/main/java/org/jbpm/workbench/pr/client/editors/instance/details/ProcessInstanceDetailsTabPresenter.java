@@ -23,7 +23,6 @@ import javax.inject.Inject;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
@@ -84,72 +83,68 @@ public class ProcessInstanceDetailsTabPresenter {
         view.setStateText("");
         view.setCurrentActivitiesListBox("");
 
-        processRuntimeDataService.call(new RemoteCallback<ProcessInstanceSummary>() {
-            @Override
-            public void callback(final ProcessInstanceSummary process) {
-                view.setProcessDefinitionIdText(process.getProcessId());
-                view.setProcessVersionText(process.getProcessVersion());
-                view.setProcessDeploymentText(process.getDeploymentId());
-                view.setCorrelationKeyText(process.getCorrelationKey());
-                if (process.getParentId() > 0) {
-                    view.setParentProcessInstanceIdText(process.getParentId().toString());
-                } else {
-                    view.setParentProcessInstanceIdText(constants.No_Parent_Process_Instance());
-                }
-
-                String statusStr = constants.Unknown();
-                switch (process.getState()) {
-                    case ProcessInstance.STATE_ACTIVE:
-                        statusStr = constants.Active();
-                        break;
-                    case ProcessInstance.STATE_ABORTED:
-                        statusStr = constants.Aborted();
-                        break;
-                    case ProcessInstance.STATE_COMPLETED:
-                        statusStr = constants.Completed();
-                        break;
-                    case ProcessInstance.STATE_PENDING:
-                        statusStr = constants.Pending();
-                        break;
-                    case ProcessInstance.STATE_SUSPENDED:
-                        statusStr = constants.Suspended();
-                        break;
-                    default:
-                        break;
-                }
-                view.setStateText(statusStr);
-                
-                String slaComplianceStr = mapSlaCompliance(process);
-                view.setSlaComplianceText(slaComplianceStr);
-
-                if (process.getActiveTasks() != null && !process.getActiveTasks().isEmpty()) {
-                    SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-
-                    for (UserTaskSummary uts : process.getActiveTasks()) {
-                        safeHtmlBuilder.appendEscapedLines(uts.getName() + " (" + uts.getStatus() + ")  " + constants.Owner() + ": " + uts.getOwner() + " \n");
+        processRuntimeDataService.call(
+                (final ProcessInstanceSummary process) -> {
+                    view.setProcessDefinitionIdText(process.getProcessId());
+                    view.setProcessVersionText(process.getProcessVersion());
+                    view.setProcessDeploymentText(process.getDeploymentId());
+                    view.setCorrelationKeyText(process.getCorrelationKey());
+                    if (process.getParentId() > 0) {
+                        view.setParentProcessInstanceIdText(process.getParentId().toString());
+                    } else {
+                        view.setParentProcessInstanceIdText(constants.No_Parent_Process_Instance());
                     }
-                    view.setActiveTasksListBox(safeHtmlBuilder.toSafeHtml().asString());
-                }
-                
-            }
-        }).getProcessInstance(serverTemplateId,
-                              new ProcessInstanceKey(serverTemplateId,
-                                                     deploymentId,
-                                                     Long.parseLong(processId)));
 
-        processRuntimeDataService.call(new RemoteCallback<List<NodeInstanceSummary>>() {
-            @Override
-            public void callback(final List<NodeInstanceSummary> details) {
-                final SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-                for (NodeInstanceSummary nis : details) {
-                    safeHtmlBuilder.appendEscapedLines(nis.getTimestamp() + ": "
-                                                               + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType() + ") \n");
+                    String statusStr = constants.Unknown();
+                    switch (process.getState()) {
+                        case ProcessInstance.STATE_ACTIVE:
+                            statusStr = constants.Active();
+                            break;
+                        case ProcessInstance.STATE_ABORTED:
+                            statusStr = constants.Aborted();
+                            break;
+                        case ProcessInstance.STATE_COMPLETED:
+                            statusStr = constants.Completed();
+                            break;
+                        case ProcessInstance.STATE_PENDING:
+                            statusStr = constants.Pending();
+                            break;
+                        case ProcessInstance.STATE_SUSPENDED:
+                            statusStr = constants.Suspended();
+                            break;
+                        default:
+                            break;
+                    }
+                    view.setStateText(statusStr);
+
+                    String slaComplianceStr = mapSlaCompliance(process);
+                    view.setSlaComplianceText(slaComplianceStr);
+
+                    if (process.getActiveTasks() != null && !process.getActiveTasks().isEmpty()) {
+                        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+
+                        for (UserTaskSummary uts : process.getActiveTasks()) {
+                            safeHtmlBuilder.appendEscapedLines(uts.getName() + " (" + uts.getStatus() + ")  " + constants.Owner() + ": " + uts.getOwner() + " \n");
+                        }
+                        view.setActiveTasksListBox(safeHtmlBuilder.toSafeHtml().asString());
+                    }
+                }).getProcessInstance(serverTemplateId,
+                                      new ProcessInstanceKey(serverTemplateId,
+                                                             deploymentId,
+                                                             Long.parseLong(processId)));
+
+        processRuntimeDataService.call(
+                (final List<NodeInstanceSummary> details) -> {
+                    final SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+                    for (NodeInstanceSummary nis : details) {
+                        safeHtmlBuilder.appendEscapedLines(nis.getTimestamp() + ": "
+                                                                   + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType() + ") \n");
+                    }
+                    view.setCurrentActivitiesListBox(safeHtmlBuilder.toSafeHtml().asString());
                 }
-                view.setCurrentActivitiesListBox(safeHtmlBuilder.toSafeHtml().asString());
-            }
-        }).getProcessInstanceActiveNodes(serverTemplateId,
-                                         deploymentId,
-                                         Long.parseLong(processId));
+        ).getProcessInstanceActiveNodes(serverTemplateId,
+                                        deploymentId,
+                                        Long.parseLong(processId));
     }
 
     protected String mapSlaCompliance(ProcessInstanceSummary process) {
@@ -193,7 +188,7 @@ public class ProcessInstanceDetailsTabPresenter {
         void setCorrelationKeyText(String value);
 
         void setParentProcessInstanceIdText(String value);
-        
+
         void setSlaComplianceText(String value);
     }
 }
