@@ -38,6 +38,10 @@ import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.api.model.KieContainerStatus;
+import org.kie.server.controller.api.model.spec.ContainerSpec;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
+import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.mvp.PerspectiveActivity;
@@ -71,9 +75,6 @@ public class TaskDashboardTest extends AbstractDashboardTest {
     Caller<TaskService> taskServiceCaller;
 
     @Mock
-    Event<NotificationEvent> notificationEvent;
-
-    @Mock
     DisplayerListener totalMetricListener;
 
     @Mock
@@ -81,6 +82,20 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Mock
     UberfireBreadcrumbs uberfireBreadcrumbsMock;
+
+    @Mock
+    ContainerSpec containerSpecMock;
+
+    @Mock
+    ServerTemplate serverTemplateMock;
+
+    @Mock
+    Event<NotificationEvent> notificationEvent;
+
+    @Mock
+    SpecManagementService specManagementService;
+
+    Caller<SpecManagementService> specManagementServiceCaller;
 
     TaskDashboard presenter;
     DataSet dataSet;
@@ -130,6 +145,12 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         when(perspectiveManagerMock.getCurrentPerspective()).thenReturn(mock(PerspectiveActivity.class));
         presenter.setPerspectiveManager(perspectiveManagerMock);
         presenter.setUberfireBreadcrumbs(uberfireBreadcrumbsMock);
+
+        specManagementServiceCaller = new CallerMock<>(specManagementService);
+        presenter.setSpecManagementService(specManagementServiceCaller);
+        presenter.setNotificationEvent(notificationEvent);
+        when(specManagementService.getServerTemplate(anyString())).thenReturn(serverTemplateMock);
+        when(serverTemplateMock.getContainerSpec(anyString())).thenReturn(containerSpecMock);
 
         presenter.init();
     }
@@ -557,7 +578,8 @@ public class TaskDashboardTest extends AbstractDashboardTest {
     }
 
     @Test
-    public void testOpenInstanceDetails() {
+    public void testOpenInstanceDetailsWhenContainerStarted() {
+        when(containerSpecMock.getStatus()).thenReturn(KieContainerStatus.STARTED);
         when(taskService.getTask(anyString(),
                                  anyString(),
                                  anyLong())).thenReturn(mock(TaskSummary.class));
@@ -568,6 +590,22 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
         verify(taskSelectionEvent).fire(any(TaskSelectionEvent.class));
         verify(placeManager).goTo(TASK_DETAILS_SCREEN);
+    }
+
+    @Test
+    public void testOpenInstanceDetailsWhenContainerStopped() {
+        when(containerSpecMock.getStatus()).thenReturn(KieContainerStatus.STOPPED);
+        when(taskService.getTask(anyString(),
+                                 anyString(),
+                                 anyLong())).thenReturn(mock(TaskSummary.class));
+        when(placeManager.getStatus(TASK_DETAILS_SCREEN)).thenReturn(PlaceStatus.CLOSE);
+        TableDisplayer tableDisplayer = presenter.getTasksTable();
+        tableDisplayer.selectCell(COLUMN_TASK_ID,
+                                  0);
+
+        verifyNoMoreInteractions(taskSelectionEvent);
+        verifyNoMoreInteractions(placeManager);
+        verify(notificationEvent).fire(any(NotificationEvent.class));
     }
 
     @Test

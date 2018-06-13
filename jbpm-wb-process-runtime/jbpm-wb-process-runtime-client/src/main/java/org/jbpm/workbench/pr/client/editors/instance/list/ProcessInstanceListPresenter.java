@@ -55,6 +55,9 @@ import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.server.api.model.KieContainerStatus;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
+import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
@@ -91,8 +94,19 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     private Caller<ProcessService> processService;
 
+    protected Caller<SpecManagementService> specManagementService;
+
+    protected Event<ProcessInstanceSelectionEvent> processInstanceSelectionEvent;
+
     @Inject
-    private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
+    public void setSpecManagementService(final Caller<SpecManagementService> specManagementService) {
+        this.specManagementService = specManagementService;
+    }
+
+    @Inject
+    public void setProcessInstanceSelectedEvent(final Event<ProcessInstanceSelectionEvent> processInstanceSelectionEvent) {
+        this.processInstanceSelectionEvent = processInstanceSelectionEvent;
+    }
 
     @Override
     public void createListBreadcrumb() {
@@ -413,14 +427,22 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     }
 
     public void selectProcessInstance(final ProcessInstanceSummary summary) {
-        setupDetailBreadcrumb(constants.ProcessInstanceBreadcrumb(summary.getProcessInstanceId()));
-        placeManager.goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
-        processInstanceSelected.fire(new ProcessInstanceSelectionEvent(summary.getDeploymentId(),
-                                                                       summary.getProcessInstanceId(),
-                                                                       summary.getProcessId(),
-                                                                       summary.getProcessName(),
-                                                                       summary.getState(),
-                                                                       getSelectedServerTemplate()));
+        specManagementService.call((ServerTemplate serverTemplate) -> {
+            if (serverTemplate != null &&
+                    serverTemplate.getContainerSpec(summary.getDeploymentId()) != null &&
+                    serverTemplate.getContainerSpec(summary.getDeploymentId()).getStatus().equals(KieContainerStatus.STARTED)) {
+                setupDetailBreadcrumb(constants.ProcessInstanceBreadcrumb(summary.getProcessInstanceId()));
+                placeManager.goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
+                processInstanceSelectionEvent.fire(new ProcessInstanceSelectionEvent(summary.getDeploymentId(),
+                                                                                     summary.getProcessInstanceId(),
+                                                                                     summary.getProcessId(),
+                                                                                     summary.getProcessName(),
+                                                                                     summary.getState(),
+                                                                                     getSelectedServerTemplate()));
+            } else {
+                view.displayNotification(constants.ProcessDetailsNotAvailableContainerNotStarted(summary.getDeploymentId()));
+            }
+        }).getServerTemplate(getSelectedServerTemplate());
     }
 
     public void formClosed(@Observes BeforeClosePlaceEvent closed) {
