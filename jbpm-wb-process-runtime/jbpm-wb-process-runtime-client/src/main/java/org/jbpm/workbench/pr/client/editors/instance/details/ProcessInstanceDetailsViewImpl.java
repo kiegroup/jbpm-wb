@@ -16,6 +16,8 @@
 package org.jbpm.workbench.pr.client.editors.instance.details;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -29,6 +31,7 @@ import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.gwtbootstrap3.client.ui.TabPane;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 public class ProcessInstanceDetailsViewImpl extends Composite implements ProcessInstanceDetailsPresenter.ProcessInstanceDetailsView {
@@ -64,6 +67,9 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements Process
     private TabPane diagramPane;
 
     private ProcessInstanceDetailsPresenter presenter;
+
+    @Inject
+    private Event<NotificationEvent> notification;
 
     @Override
     public void init(final ProcessInstanceDetailsPresenter presenter) {
@@ -173,6 +179,11 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements Process
 
         diagramPane.setVisible(true);
         diagramTab.setVisible(true);
+    }
+
+    @Override
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
     }
 
     interface Binder extends UiBinder<Widget, ProcessInstanceDetailsViewImpl> {
