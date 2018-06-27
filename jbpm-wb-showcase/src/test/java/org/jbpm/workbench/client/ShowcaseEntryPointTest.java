@@ -80,7 +80,7 @@ public class ShowcaseEntryPointTest {
                                                         identity,
                                                         adminPageHelper,
                                                         menusHelper,
-                                                        menuBar));
+                                                        menuBar, null));
         mockMenuHelper();
         mockConstants();
         IocTestingUtils.mockIocManager(iocManager);
