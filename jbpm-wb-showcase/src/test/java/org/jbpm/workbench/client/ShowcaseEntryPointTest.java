@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.workbench.client.admin.DefaultAdminPageHelper;
+import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.kie.workbench.common.workbench.client.menu.DefaultWorkbenchFeaturesMenusHelper;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -68,6 +69,9 @@ public class ShowcaseEntryPointTest {
     @Mock
     private WorkbenchMegaMenuPresenter menuBar;
 
+    @Mock
+    private DefaultWorkbenchErrorCallback defaultWorkbenchErrorCallback;
+
     private ShowcaseEntryPoint showcaseEntryPoint;
 
     @Before
@@ -80,7 +84,8 @@ public class ShowcaseEntryPointTest {
                                                         identity,
                                                         adminPageHelper,
                                                         menusHelper,
-                                                        menuBar, null));
+                                                        menuBar,
+                                                        defaultWorkbenchErrorCallback));
         mockMenuHelper();
         mockConstants();
         IocTestingUtils.mockIocManager(iocManager);
