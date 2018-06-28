@@ -284,7 +284,7 @@ public class ExecutionErrorListPresenterTest {
         assertNotNull(filterItem);
         assertEquals(Constants.INSTANCE.Acknowledged(),
                      filterItem.getKey());
-        assertEquals("0",
+        assertEquals(0,
                      filterItem.getValue());
         assertEquals(Constants.INSTANCE.Acknowledged() + ": " + commonConstants.No(),
                      filterItem.getLabelValue());
@@ -306,7 +306,7 @@ public class ExecutionErrorListPresenterTest {
         assertNotNull(filterItem);
         assertEquals(Constants.INSTANCE.Acknowledged(),
                      filterItem.getKey());
-        assertEquals("0",
+        assertEquals(0,
                      filterItem.getValue());
         assertEquals(Constants.INSTANCE.Acknowledged() + ": " + commonConstants.No(),
                      filterItem.getLabelValue());
@@ -329,7 +329,7 @@ public class ExecutionErrorListPresenterTest {
         assertNotNull(filterItem);
         assertEquals(Constants.INSTANCE.Process_Instance_Id(),
                      filterItem.getKey());
-        assertEquals(processInstanceId,
+        assertEquals(1,
                      filterItem.getValue());
         assertEquals(Constants.INSTANCE.Process_Instance_Id() + ": " + processInstanceId,
                      filterItem.getLabelValue());
