@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -149,13 +150,14 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
                     placeholder,
                     refineSelect.getOptions().getLength() > 1,
                     input -> input.setType("text"),
+                    v -> v,
                     callback);
     }
 
     @Override
     public void addNumericFilter(final String label,
                                  final String placeholder,
-                                 final Consumer<ActiveFilterItem<String>> callback) {
+                                 final Consumer<ActiveFilterItem<Integer>> callback) {
 
         createFilterOption(label);
 
@@ -170,6 +172,7 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
                                                getNumericInputListener(),
                                                false);
                     },
+                    v -> Integer.valueOf(v),
                     callback);
     }
 
@@ -505,11 +508,12 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
         filterList.appendChild(heading);
     }
 
-    private void createInput(final String label,
-                             final String placeholder,
-                             final Boolean hidden,
-                             final Consumer<Input> customizeCallback,
-                             final Consumer<ActiveFilterItem<String>> callback) {
+    private <T extends Object> void createInput(final String label,
+                                                final String placeholder,
+                                                final Boolean hidden,
+                                                final Consumer<Input> customizeCallback,
+                                                final Function<String, T> valueMapper,
+                                                final Consumer<ActiveFilterItem<T>> callback) {
         final Input input = (Input) getDocument().createElement("input");
         customizeCallback.accept(input);
         input.setAttribute("placeholder",
@@ -529,7 +533,7 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
                 addActiveFilter(label,
                                 input.getValue(),
                                 null,
-                                input.getValue(),
+                                valueMapper.apply(input.getValue()),
                                 callback);
                 input.setValue("");
             }

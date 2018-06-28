@@ -33,7 +33,7 @@ public interface BasicFiltersView extends IsElement {
 
     void addNumericFilter(String label,
                           String placeholder,
-                          Consumer<ActiveFilterItem<String>> callback);
+                          Consumer<ActiveFilterItem<Integer>> callback);
 
     void addDateRangeFilter(String label,
                             String placeholder,

@@ -263,10 +263,10 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
             final String processInstId = processInstIdSearch.get();
             addActiveFilter(
                     equalsTo(COLUMN_PROCESS_INSTANCE_ID,
-                             processInstId),
+                             Integer.valueOf(processInstId)),
                     constants.Process_Instance_Id(),
                     processInstId,
-                    processInstId,
+                    Integer.valueOf(processInstId),
                     v -> removeActiveFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
                                                      v))
             );
@@ -275,10 +275,10 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
             if (jobSearch.isPresent()) {
                 final String jobId = jobSearch.get();
                 addActiveFilter(equalsTo(COLUMN_ID,
-                                         jobId),
+                                         Integer.valueOf(jobId)),
                                 constants.JobId(),
                                 jobId,
-                                jobId,
+                                Integer.valueOf(jobId),
                                 v -> removeActiveFilter(equalsTo(COLUMN_STATUS,
                                                                  v))
                 );

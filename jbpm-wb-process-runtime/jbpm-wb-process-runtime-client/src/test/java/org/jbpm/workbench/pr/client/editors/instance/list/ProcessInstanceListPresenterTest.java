@@ -651,7 +651,7 @@ public class ProcessInstanceListPresenterTest {
                      captor.getValue().getKey());
         assertEquals(Constants.INSTANCE.Id() + ": " + processInstanceId,
                      captor.getValue().getLabelValue());
-        assertEquals(processInstanceId,
+        assertEquals(1,
                      (captor.getValue().getValue()));
     }
 
