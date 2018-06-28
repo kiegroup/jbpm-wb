@@ -83,8 +83,8 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
     private Span startedAt;
 
     @Inject
-    @DataField("complete")
-    private Button complete;
+    @DataField("cancel")
+    private Button cancel;
 
     @Inject
     @DataField("kebab")
@@ -118,7 +118,7 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
                         "label-success");
             removeCSSClass(this.status,
                            "label-default");
-            removeCSSClass(this.complete,
+            removeCSSClass(this.cancel,
                            "hidden");
             removeCSSClass(this.kebab,
                            "hidden");
@@ -130,8 +130,8 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
         return row;
     }
 
-    @EventHandler("complete")
-    public void onCompleteClick(final @ForEvent("click") MouseEvent event) {
+    @EventHandler("cancel")
+    public void onCancelClick(final @ForEvent("click") MouseEvent event) {
         executeOnlyIfActive((c) -> presenter.cancelCaseInstance(c));
     }
 
