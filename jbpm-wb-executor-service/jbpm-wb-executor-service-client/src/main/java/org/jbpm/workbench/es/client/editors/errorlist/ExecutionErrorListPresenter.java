@@ -247,10 +247,10 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         if (processInstanceSearch.isPresent()) {
             final String processInstanceId = processInstanceSearch.get();
             addActiveFilter(equalsTo(COLUMN_PROCESS_INST_ID,
-                                     processInstanceId),
+                                     Integer.valueOf(processInstanceId)),
                             constants.Process_Instance_Id(),
                             processInstanceId,
-                            processInstanceId,
+                            Integer.valueOf(processInstanceId),
                             v -> removeActiveFilter(equalsTo(COLUMN_PROCESS_INST_ID,
                                                              v))
             );
@@ -261,10 +261,10 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         if (taskIdSearch.isPresent()) {
             final String taskId = taskIdSearch.get();
             addActiveFilter(equalsTo(COLUMN_ACTIVITY_ID,
-                                     taskId),
+                                     Integer.valueOf(taskId)),
                             constants.Task(),
                             taskId,
-                            taskId,
+                            Integer.valueOf(taskId),
                             v -> removeActiveFilter(equalsTo(COLUMN_ACTIVITY_ID,
                                                              v))
             );
@@ -290,7 +290,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
         final Optional<String> isErrorAckSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_IS_ERROR_ACK);
         if (isErrorAckSearch.isPresent()) {
             final boolean isErrorAck = isErrorAckSearch.get().equalsIgnoreCase(Boolean.toString(true));
-            String errorAckValue = (isErrorAck ? "1" : "0");
+            Integer errorAckValue = (isErrorAck ? 1 : 0);
             String valueLabel = (isErrorAck ?
                     commonConstants.Yes()
                     :
@@ -318,10 +318,10 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     public void setupDefaultActiveSearchFilters() {
         addActiveFilter(
                 equalsTo(COLUMN_ERROR_ACK,
-                         "0"),
+                         0),
                 constants.Acknowledged(),
                 commonConstants.No(),
-                "0",
+                0,
                 v -> removeActiveFilter(equalsTo(COLUMN_ERROR_ACK,
                                                  v))
         );

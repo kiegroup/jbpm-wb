@@ -83,7 +83,7 @@ public class ExecutionErrorListBasicFiltersPresenter extends BasicFiltersPresent
                              acks,
                              f -> addSearchFilter(f,
                                                   equalsTo(COLUMN_ERROR_ACK,
-                                                           f.getValue()))
+                                                           Integer.valueOf(f.getValue())))
         );
 
         view.addDateRangeFilter(this.constants.ErrorDate(),

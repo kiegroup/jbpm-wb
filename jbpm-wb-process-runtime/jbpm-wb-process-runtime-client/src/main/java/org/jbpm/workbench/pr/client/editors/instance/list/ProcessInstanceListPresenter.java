@@ -483,10 +483,10 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         if (processInstanceSearch.isPresent()) {
             final String processInstanceId = processInstanceSearch.get();
             addActiveFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
-                                     processInstanceId),
+                                     Integer.valueOf(processInstanceId)),
                             constants.Id(),
                             processInstanceId,
-                            processInstanceId,
+                            Integer.valueOf(processInstanceId),
                             v -> removeActiveFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
                                                              v))
             );
