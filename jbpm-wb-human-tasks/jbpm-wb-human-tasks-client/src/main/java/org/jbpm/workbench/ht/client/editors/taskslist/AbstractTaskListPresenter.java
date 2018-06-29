@@ -367,10 +367,10 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
             final String processInstId = processInstIdSearch.get();
             addActiveFilter(
                     equalsTo(COLUMN_PROCESS_INSTANCE_ID,
-                             processInstId),
+                             Integer.valueOf(processInstId)),
                     constants.Process_Instance_Id(),
                     processInstId,
-                    processInstId,
+                    Integer.valueOf(processInstId),
                     v -> removeActiveFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
                                                      v))
             );
@@ -380,10 +380,10 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                 final String taskId = taskIdSearch.get();
                 addActiveFilter(
                         equalsTo(COLUMN_TASK_ID,
-                                 taskId),
+                                 Integer.valueOf(taskId)),
                         constants.Task(),
                         taskId,
-                        taskId,
+                        Integer.valueOf(taskId),
                         v -> removeActiveFilter(equalsTo(COLUMN_TASK_ID,
                                                          v))
                 );
