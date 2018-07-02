@@ -34,6 +34,7 @@ import org.kie.soup.project.datamodel.commons.util.RawMVELEvaluator;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.BackendFormRenderingContextManagerImpl;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.FieldValueMarshaller;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.FieldValueMarshallerRegistry;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.FieldValueMarshallerRegistryImpl;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.TextAreaFormFieldValueMarshaller;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.models.MultipleSubFormFieldValueMarshaller;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.models.SubFormFieldValueMarshaller;
@@ -113,11 +114,11 @@ public abstract class AbstractFormsValuesProcessorWithWrongTypesTest<PROCESSOR e
                                                                new LocalDateFieldValueMarshaller(),
                                                                new TextAreaFormFieldValueMarshaller());
 
-        Instance<FieldValueMarshaller> marshallersInstance = mock(Instance.class);
+        Instance<FieldValueMarshaller<?, ?, ?>> marshallersInstance = mock(Instance.class);
 
         when(marshallersInstance.iterator()).then(proc -> marshallers.iterator());
 
-        registry = new FieldValueMarshallerRegistry(marshallersInstance);
+        registry = new FieldValueMarshallerRegistryImpl(marshallersInstance);
 
         subFormFieldValueMarshaller.setRegistry(registry);
 
