@@ -120,7 +120,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     public void initColumns(ExtendedPagedTable extendedPagedTable) {
         Column processNameColumn = initProcessNameColumn();
         Column versionColumn = initVersionColumn();
-        Column projectColumn = initProjectColumn();
+        Column deploymentColumn = initDeploymentColumn();
         ColumnMeta<ProcessSummary> actionsColumnMeta = initActionsColumn();
 
         List<ColumnMeta<ProcessSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessSummary>>();
@@ -128,8 +128,8 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
                                          constants.Name()));
         columnMetas.add(new ColumnMeta<>(versionColumn,
                                          constants.Version()));
-        columnMetas.add(new ColumnMeta<>(projectColumn,
-                                         constants.Project()));
+        columnMetas.add(new ColumnMeta<>(deploymentColumn,
+                                         constants.Deployment_Name()));
         columnMetas.add(actionsColumnMeta);
 
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumnMeta.getColumn());
@@ -166,16 +166,16 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         return versionColumn;
     }
 
-    private Column initProjectColumn() {
-        Column<ProcessSummary, String> projectColumn = new Column<ProcessSummary, String>(new TextCell()) {
+    private Column initDeploymentColumn() {
+        Column<ProcessSummary, String> deploymentColumn = new Column<ProcessSummary, String>(new TextCell()) {
             @Override
             public String getValue(ProcessSummary object) {
                 return object.getDeploymentId();
             }
         };
-        projectColumn.setSortable(true);
-        projectColumn.setDataStoreName(COL_ID_PROJECT);
-        return projectColumn;
+        deploymentColumn.setSortable(true);
+        deploymentColumn.setDataStoreName(COL_ID_PROJECT);
+        return deploymentColumn;
     }
 
     private ColumnMeta<ProcessSummary> initActionsColumn() {
