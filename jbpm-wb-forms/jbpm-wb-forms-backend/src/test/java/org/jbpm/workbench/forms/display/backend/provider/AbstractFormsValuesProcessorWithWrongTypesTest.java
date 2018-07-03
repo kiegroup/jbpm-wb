@@ -24,7 +24,6 @@ import java.util.Map;
 import javax.enterprise.inject.Instance;
 
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.Condition;
 import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
 import org.jbpm.workbench.forms.service.providing.RenderingSettings;
@@ -33,13 +32,17 @@ import org.junit.Test;
 import org.kie.internal.task.api.ContentMarshallerContext;
 import org.kie.soup.project.datamodel.commons.util.RawMVELEvaluator;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.BackendFormRenderingContextManagerImpl;
-import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.FormValuesProcessorImpl;
-import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.fieldProcessors.MultipleSubFormFieldValueProcessor;
-import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.fieldProcessors.SubFormFieldValueProcessor;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.FieldValueMarshaller;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.FieldValueMarshallerRegistry;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.FieldValueMarshallerRegistryImpl;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.TextAreaFormFieldValueMarshaller;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.models.MultipleSubFormFieldValueMarshaller;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.models.SubFormFieldValueMarshaller;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.time.DateMultipleInputFieldValueMarshaller;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.time.DateMultipleSelectorFieldValueMarshaller;
+import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.time.LocalDateFieldValueMarshaller;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.validation.impl.ContextModelConstraintsExtractorImpl;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
-import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.FieldValueProcessor;
-import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.FormValuesProcessor;
 import org.kie.workbench.common.forms.dynamic.service.shared.impl.MapModelRenderingContext;
 import org.kie.workbench.common.forms.fields.test.TestFieldManager;
 import org.kie.workbench.common.forms.fields.test.TestMetaDataEntryManager;
@@ -78,7 +81,7 @@ public abstract class AbstractFormsValuesProcessorWithWrongTypesTest<PROCESSOR e
     @Mock
     ContentMarshallerContext marshallerContext;
 
-    FormValuesProcessor formValuesProcessor;
+    private FieldValueMarshallerRegistry registry;
 
     DynamicBPMNFormGenerator dynamicBPMNFormGenerator;
 
@@ -101,25 +104,33 @@ public abstract class AbstractFormsValuesProcessorWithWrongTypesTest<PROCESSOR e
         variables.put(ERROR, WorkItemHandlerRuntimeException.class.getName());
         variables.put(WRONG_TYPE, "an unexpected and obviously wrong java type");
 
-        List<FieldValueProcessor> processors = Arrays.asList(new SubFormFieldValueProcessor(),
-                                                             new MultipleSubFormFieldValueProcessor());
+        SubFormFieldValueMarshaller subFormFieldValueMarshaller = new SubFormFieldValueMarshaller();
+        MultipleSubFormFieldValueMarshaller multipleSubFormFieldValueMarshaller = new MultipleSubFormFieldValueMarshaller();
 
-        Instance<FieldValueProcessor<? extends FieldDefinition, ?, ?>> fieldValueProcessors = mock(Instance.class);
-        when(fieldValueProcessors.iterator()).then(proc -> processors.iterator());
+        List<FieldValueMarshaller> marshallers = Arrays.asList(subFormFieldValueMarshaller,
+                                                               multipleSubFormFieldValueMarshaller,
+                                                               new DateMultipleInputFieldValueMarshaller(),
+                                                               new DateMultipleSelectorFieldValueMarshaller(),
+                                                               new LocalDateFieldValueMarshaller(),
+                                                               new TextAreaFormFieldValueMarshaller());
 
-        formValuesProcessor = new FormValuesProcessorImpl(fieldValueProcessors);
+        Instance<FieldValueMarshaller<?, ?, ?>> marshallersInstance = mock(Instance.class);
 
-        backendFormRenderingContextManager = new BackendFormRenderingContextManagerImpl(formValuesProcessor,
-                                                                                        new ContextModelConstraintsExtractorImpl());
+        when(marshallersInstance.iterator()).then(proc -> marshallers.iterator());
 
-        runtimeFormGeneratorService = new BPMNRuntimeFormGeneratorService(new TestFieldManager(),
-                                                                          new RawMVELEvaluator());
+        registry = new FieldValueMarshallerRegistryImpl(marshallersInstance);
+
+        subFormFieldValueMarshaller.setRegistry(registry);
+
+        multipleSubFormFieldValueMarshaller.setRegistry(registry);
+
+        backendFormRenderingContextManager = new BackendFormRenderingContextManagerImpl(registry, new ContextModelConstraintsExtractorImpl());
+
+        runtimeFormGeneratorService = new BPMNRuntimeFormGeneratorService(new TestFieldManager(), new RawMVELEvaluator());
 
         dynamicBPMNFormGenerator = new DynamicBPMNFormGeneratorImpl(runtimeFormGeneratorService);
 
-        processor = getProcessorInstance(new FormDefinitionSerializerImpl(new FieldSerializer(),
-                                                                          new FormModelSerializer(),
-                                                                          new TestMetaDataEntryManager()),
+        processor = getProcessorInstance(new FormDefinitionSerializerImpl(new FieldSerializer(), new FormModelSerializer(), new TestMetaDataEntryManager()),
                                          backendFormRenderingContextManager,
                                          dynamicBPMNFormGenerator);
 
@@ -181,11 +192,11 @@ public abstract class AbstractFormsValuesProcessorWithWrongTypesTest<PROCESSOR e
                 .isNotNull()
                 .hasFieldOrPropertyWithValue("dragTypeName", "org.uberfire.ext.plugin.client.perspective.editor.layout.editor.HTMLLayoutDragComponent");
 
-       String headerContent = formHeader.getProperties().get(HTML_PARAM);
+        String headerContent = formHeader.getProperties().get(HTML_PARAM);
 
-       Assertions.assertThat(headerContent)
-               .isNotNull()
-               .contains(HEADER);
+        Assertions.assertThat(headerContent)
+                .isNotNull()
+                .contains(HEADER);
     }
 
     abstract SETTINGS getRenderingSettingsWithoutForms();
