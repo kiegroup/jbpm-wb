@@ -16,11 +16,11 @@
 package org.jbpm.workbench.ht.client.editors.taskdetails;
 
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.gwtbootstrap3.client.ui.html.Paragraph;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
-import org.jbpm.workbench.common.client.util.UTCDateBox;
-import org.jbpm.workbench.common.client.util.UTCTimeBox;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -38,10 +38,19 @@ public class TaskDetailsViewImplTest {
     public Select taskPriorityListBox;
 
     @Mock
-    public UTCDateBox dueDate;
+    public FlowPanel dateRangePickerInput;
 
-    @Mock
-    public UTCTimeBox dueDateTime;
+    @Mock(name = "taskStatusText")
+    public Paragraph taskStatusText;
+
+    @Mock(name = "processInstanceIdText")
+    public Paragraph processInstanceIdText;
+
+    @Mock(name = "processIdText")
+    public Paragraph processIdText;
+
+    @Mock(name = "dueDateText")
+    public Paragraph dueDateText;
 
     @Mock
     public Button updateTaskButton;
@@ -52,13 +61,11 @@ public class TaskDetailsViewImplTest {
     @Test
     public void disableFieldsTest() {
         view.setDueDateEnabled(false);
-        verify(dueDate).setEnabled(false);
+        verify(dateRangePickerInput).setVisible(false);
+        verify(dueDateText).setVisible(true);
 
         view.setTaskDescriptionEnabled(false);
         verify(taskDescriptionTextArea).setEnabled(false);
-
-        view.setDueDateTimeEnabled(false);
-        verify(dueDateTime).setEnabled(false);
 
         view.setTaskPriorityEnabled(false);
         verify(taskPriorityListBox).setEnabled(false);

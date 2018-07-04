@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.ht.client.editors.taskdetails;
 
+import java.util.Date;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -24,19 +25,24 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.html.Paragraph;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
+import org.jboss.errai.common.client.ui.ElementWrapperWidget;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.workbench.common.client.util.UTCDateBox;
-import org.jbpm.workbench.common.client.util.UTCTimeBox;
+import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
+import org.uberfire.client.views.pfly.widgets.DateRangePicker;
+import org.uberfire.client.views.pfly.widgets.DateRangePickerOptions;
 import org.uberfire.workbench.events.NotificationEvent;
 
+import static org.uberfire.client.views.pfly.widgets.Moment.Builder.moment;
 
 @Dependent
 @Templated(value = "TaskDetailsViewImpl.html")
@@ -49,7 +55,7 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     public Paragraph userText;
 
     @Inject
-    @DataField
+    @DataField("taskStatusText")
     public Paragraph taskStatusText;
 
     @Inject
@@ -61,20 +67,12 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     public Select taskPriorityListBox;
 
     @Inject
-    @DataField
+    @DataField("processInstanceIdText")
     public Paragraph processInstanceIdText;
 
     @Inject
-    @DataField
+    @DataField("processIdText")
     public Paragraph processIdText;
-
-    @Inject
-    @DataField
-    public UTCDateBox dueDate;
-
-    @Inject
-    @DataField
-    public UTCTimeBox dueDateTime;
 
     @Inject
     @DataField
@@ -107,6 +105,21 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @Inject
     @DataField
     public FormLabel processIdLabel;
+
+    @Inject
+    @DataField("date-filters-input")
+    public FlowPanel dateRangePickerInput;
+
+    @Inject
+    @DataField("dueDateText")
+    public Paragraph dueDateText;
+
+    @Inject
+    private ManagedInstance<DateRangePicker> dateRangePickerProvider;
+
+    private DateRangePicker dateRangePicker;
+
+    private Date selectedDate;
 
     private TaskDetailsPresenter presenter;
 
@@ -141,14 +154,51 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
 
         updateTaskButton.setText(constants.Update());
 
-        dueDate.getDateBox().setContainer(this);
+        setDueDateEnabled(true);
+        initDateTimePicker();
+
+    }
+
+    protected void initDateTimePicker() {
+        this.dateRangePicker = dateRangePickerProvider.get();
+        dateRangePicker.getElement().setReadOnly(true);
+        dateRangePicker.getElement().setAttribute("placeholder",
+                                                  Constants.INSTANCE.Due_On());
+        dateRangePicker.getElement().getClassList().add("form-control");
+        setupDateTimePicker();
+        dateRangePickerInput.add(ElementWrapperWidget.getWidget(dateRangePicker.getElement()));
+    }
+
+    protected void setupDateTimePicker() {
+        final DateRangePickerOptions options = getDateRangePickerOptions();
+        dateRangePicker.setup(options,
+                              (start, end, label) -> {
+                                  selectedDate = start.milliseconds(0).asDate();
+                                  dateRangePicker.getElement().setAttribute("placeholder",
+                                                                            DateUtils.getDateTimeStr(selectedDate));
+                              });
+    }
+
+    protected DateRangePickerOptions getDateRangePickerOptions() {
+        final DateRangePickerOptions options = DateRangePickerOptions.create();
+        options.setAutoUpdateInput(false);
+        options.setAutoApply(true);
+        options.setTimePicker(true);
+        options.setTimePickerIncrement(1);
+        options.setSingleDatePicker(true);
+        options.setMinDate(moment());
+        options.setParentEl("[data-field='modal']");
+        if (selectedDate != null) {
+            options.setStartDate(moment(selectedDate.getTime()));
+        }
+
+        return options;
     }
 
     @EventHandler("updateTaskButton")
     public void updateTaskButton(ClickEvent e) {
-
         presenter.updateTask(taskDescriptionTextArea.getText(),
-                             dueDate.getValue() != null && dueDateTime.getValue() != null ? UTCDateBox.utc2date(dueDate.getValue() + dueDateTime.getValue()) : null,
+                             selectedDate != null ? selectedDate : null,
                              Integer.valueOf(taskPriorityListBox.getValue()));
     }
 
@@ -158,14 +208,15 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     }
 
     @Override
-    public void setDueDate(final Long date) {
-        dueDate.setValue(date);
+    public void setSelectedDate(final Date date) {
+        if (date != null) {
+            selectedDate = date;
+            setupDateTimePicker();
+            dateRangePicker.getElement().setAttribute("placeholder",
+                                                      DateUtils.getDateTimeStr(selectedDate));
+        }
     }
 
-    @Override
-    public void setDueDateTime(final Long time) {
-        dueDateTime.setValue(time);
-    }
 
     @Override
     public void setUser(final String user) {
@@ -189,12 +240,9 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
 
     @Override
     public void setDueDateEnabled(final Boolean enabled) {
-        dueDate.setEnabled(enabled);
-    }
-
-    @Override
-    public void setDueDateTimeEnabled(final Boolean enabled) {
-        dueDateTime.setEnabled(enabled);
+        dateRangePickerInput.setVisible(enabled);
+        dueDateText.setVisible(!enabled);
+        dueDateText.setText(DateUtils.getDateTimeStr(selectedDate));
     }
 
     @Override
