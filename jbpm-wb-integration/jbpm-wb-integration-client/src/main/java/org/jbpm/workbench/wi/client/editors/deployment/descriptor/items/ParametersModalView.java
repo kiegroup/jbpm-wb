@@ -32,7 +32,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.kie.workbench.common.widgets.client.widget.ListItemView;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.Elemental2Modal;
+import org.uberfire.ext.editor.commons.client.file.popups.elemental2.Elemental2Modal;
 
 @Templated
 public class ParametersModalView implements Elemental2Modal.View<ParametersModal> {

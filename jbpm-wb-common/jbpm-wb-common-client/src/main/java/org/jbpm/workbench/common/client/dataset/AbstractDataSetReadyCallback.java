@@ -63,8 +63,7 @@ public abstract class AbstractDataSetReadyCallback implements DataSetReadyCallba
     @Override
     public boolean onError(final ClientRuntimeError error) {
         view.hideBusyIndicator();
-        errorCallback.error(null,
-                            error.getThrowable());
+        errorCallback.error(error.getThrowable());
         GWT.log("DataSet with UUID [ " + UUID + " ] error: ",
                 error.getThrowable());
         return false;
