@@ -25,7 +25,7 @@ import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.wi.dd.model.Parameter;
 import org.kie.workbench.common.widgets.client.widget.ListItemPresenter;
 import org.kie.workbench.common.widgets.client.widget.ListPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.Elemental2Modal;
+import org.uberfire.ext.editor.commons.client.file.popups.elemental2.Elemental2Modal;
 
 @Dependent
 public class ParametersModal extends Elemental2Modal<ParametersModalView> {
