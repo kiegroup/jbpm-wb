@@ -21,6 +21,7 @@ import javax.annotation.PostConstruct;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
 import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
+import org.uberfire.client.views.pfly.sys.PatternFlyBootstrapper;
 
 @EntryPoint
 @Bundle("resources/i18n/Constants.properties")
@@ -29,5 +30,6 @@ public class HumanTaskEntryPoint {
     @PostConstruct
     public void init() {
         HumanTaskResources.INSTANCE.css().ensureInjected();
+        PatternFlyBootstrapper.ensureBootstrapDateRangePickerIsAvailable();
     }
 }
