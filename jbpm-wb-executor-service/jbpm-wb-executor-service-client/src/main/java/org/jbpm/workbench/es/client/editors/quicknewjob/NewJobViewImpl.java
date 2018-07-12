@@ -24,12 +24,14 @@ import javax.inject.Inject;
 
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.view.client.ListDataProvider;
+import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
@@ -201,7 +203,11 @@ public class NewJobViewImpl implements NewJobPresenter.NewJobView,
         initGridColumns();
         initDateTimePicker();
 
+        Button button = GWT.create(Button.class);
+        button.setText(Constants.INSTANCE.Add_Parameter());
+        button.addClickHandler(e -> addNewParameter());
         advancedContent.add(myParametersGrid);
+        advancedContent.add(button);
         inlineNotification.setType(InlineNotification.InlineNotificationType.DANGER);
     }
 
@@ -462,11 +468,6 @@ public class NewJobViewImpl implements NewJobPresenter.NewJobView,
     @EventHandler("close")
     public void onCloseClick(final @ForEvent("click") MouseEvent event) {
         hide();
-    }
-
-    @EventHandler("new-job-parameter")
-    public void onAddParameterClick(final @ForEvent("click") MouseEvent event) {
-        addNewParameter();
     }
 
     // JBPM-6785: when the modal is shown force redraw to show empty table widget
