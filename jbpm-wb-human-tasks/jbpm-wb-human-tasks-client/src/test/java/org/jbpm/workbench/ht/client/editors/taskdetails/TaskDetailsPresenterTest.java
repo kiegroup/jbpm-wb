@@ -87,8 +87,8 @@ public class TaskDetailsPresenterTest {
                                                                 priority);
         presenter.onTaskSelectionEvent(event);
 
-        verify(viewMock).setDueDate(any());
-        verify(viewMock).setDueDateTime(any());
+        verify(viewMock).setSelectedDate(expirationTime);
+
         verifySetTaskDetails(actualOwner,
                              status,
                              String.valueOf(priority));
@@ -113,8 +113,8 @@ public class TaskDetailsPresenterTest {
                                                                 priority);
         presenter.onTaskSelectionEvent(event);
 
-        verify(viewMock).setDueDate(any());
-        verify(viewMock).setDueDateTime(any());
+        verify(viewMock).setSelectedDate(expirationTime);
+
         verifySetTaskDetails(actualOwner,
                              status,
                              String.valueOf(priority));
@@ -175,8 +175,6 @@ public class TaskDetailsPresenterTest {
                times(i)).setTaskDescriptionEnabled(false);
         verify(viewMock,
                times(i)).setDueDateEnabled(false);
-        verify(viewMock,
-               times(i)).setDueDateTimeEnabled(false);
         verify(viewMock,
                times(i)).setTaskPriorityEnabled(false);
         verify(viewMock,

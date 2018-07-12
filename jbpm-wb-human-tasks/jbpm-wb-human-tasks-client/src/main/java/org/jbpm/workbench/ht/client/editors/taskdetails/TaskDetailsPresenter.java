@@ -25,7 +25,6 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
-import org.jbpm.workbench.common.client.util.UTCDateBox;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
@@ -98,11 +97,7 @@ public class TaskDetailsPresenter {
                                   Long processInstanceId,
                                   String processId) {
         view.setTaskDescription(description);
-        final Long date = UTCDateBox.date2utc(expirationTime);
-        if (date != null) {
-            view.setDueDate(date);
-            view.setDueDateTime(date);
-        }
+        view.setSelectedDate(expirationTime);
         view.setUser(actualOwner);
         view.setTaskStatus(status);
         view.setTaskPriority(priority);
@@ -119,7 +114,6 @@ public class TaskDetailsPresenter {
     public void setReadOnlyTaskDetail() {
         view.setTaskDescriptionEnabled(false);
         view.setDueDateEnabled(false);
-        view.setDueDateTimeEnabled(false);
         view.setTaskPriorityEnabled(false);
         view.setUpdateTaskVisible(false);
     }
@@ -170,13 +164,9 @@ public class TaskDetailsPresenter {
 
         void setTaskDescriptionEnabled(Boolean enabled);
 
-        void setDueDate(Long date);
+        void setSelectedDate(Date date);
 
         void setDueDateEnabled(Boolean enabled);
-
-        void setDueDateTime(Long time);
-
-        void setDueDateTimeEnabled(Boolean enabled);
 
         void setUser(String user);
 
