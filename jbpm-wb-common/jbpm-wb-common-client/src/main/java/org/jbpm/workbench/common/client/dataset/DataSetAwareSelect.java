@@ -118,8 +118,7 @@ public class DataSetAwareSelect {
                                                     }
                                                 });
         } catch (Exception ex) {
-            new DefaultWorkbenchErrorCallback().error(null,
-                                                      ex);
+            new DefaultWorkbenchErrorCallback().error(ex);
         }
     }
 
