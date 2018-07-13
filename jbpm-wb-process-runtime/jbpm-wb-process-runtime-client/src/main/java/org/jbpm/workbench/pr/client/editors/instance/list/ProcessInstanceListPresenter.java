@@ -142,7 +142,8 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                                                 i);
 
                     for (ProcessInstanceSummary pis : myProcessInstancesFromDataSet) {
-                        if (pis.getProcessInstanceId().equals(processInstanceId)) {
+                        String initiator = pis.getInitiator();
+                        if (pis.getProcessInstanceId().equals(processInstanceId) && !filterInitiator(variableName, variableValue, initiator)) {
                             pis.addDomainData(variableName,
                                               variableValue);
                             columns.add(variableName);
@@ -158,6 +159,10 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                      lastPage);
             }
         };
+    }
+
+    protected boolean filterInitiator(String variableName, String variableValue, String initiator) {
+        return variableName.equals("initiator") && variableValue.equals(initiator);
     }
 
     @Override

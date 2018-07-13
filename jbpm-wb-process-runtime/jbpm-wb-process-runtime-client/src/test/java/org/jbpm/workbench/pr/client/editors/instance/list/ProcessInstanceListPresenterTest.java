@@ -909,4 +909,18 @@ public class ProcessInstanceListPresenterTest {
                never()).goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
         verify(viewMock).displayNotification(anyString());
     }
+
+    @Test
+    public void testFilterInitiator(){
+        String variableNameWithInitiator = "initiator";
+        String variableValueWithInitiator = "initiator people";
+
+        String variableNameWithoutInitiator = "noinitiator";
+        String variableValueWithoutInitiator = "other people";
+
+        assertEquals(true, presenter.filterInitiator(variableNameWithInitiator, variableValueWithInitiator, variableValueWithInitiator));
+        assertEquals(false, presenter.filterInitiator(variableNameWithoutInitiator, variableValueWithoutInitiator, variableValueWithoutInitiator));
+        assertEquals(false, presenter.filterInitiator(variableNameWithInitiator, variableValueWithInitiator, variableValueWithoutInitiator));
+        assertEquals(false, presenter.filterInitiator(variableNameWithoutInitiator, variableValueWithoutInitiator, variableValueWithInitiator));
+    }
 }
