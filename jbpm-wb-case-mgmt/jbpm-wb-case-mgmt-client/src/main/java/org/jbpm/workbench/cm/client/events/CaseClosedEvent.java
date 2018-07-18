@@ -16,17 +16,17 @@
 
 package org.jbpm.workbench.cm.client.events;
 
-public class CaseDestroyEvent extends AbstractCaseEvent {
+public class CaseClosedEvent extends AbstractCaseEvent {
 
-    public CaseDestroyEvent() {
+    public CaseClosedEvent() {
     }
 
-    public CaseDestroyEvent(final String caseId) {
+    public CaseClosedEvent(final String caseId) {
         super(caseId);
     }
 
     @Override
     public String toString() {
-        return "CaseDestroyEvent{} " + super.toString();
+        return "CaseClosedEvent{} " + super.toString();
     }
 }

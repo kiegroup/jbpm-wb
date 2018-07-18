@@ -82,12 +82,12 @@ public class CaseOverviewViewImpl implements CaseOverviewPresenter.CaseOverviewV
     Span caseOwner;
 
     @Inject
-    @DataField("case-destroy")
-    Anchor destroyCase;
+    @DataField("case-close")
+    Button closeCase;
 
     @Inject
     @DataField("case-cancel")
-    Button cancelCase;
+    Anchor cancelCase;
 
     @Inject
     @DataField("backToList")
@@ -192,10 +192,10 @@ public class CaseOverviewViewImpl implements CaseOverviewPresenter.CaseOverviewV
         caseOwner.setTextContent(owner);
     }
 
-    @EventHandler("case-destroy")
+    @EventHandler("case-close")
     @SuppressWarnings("unsued")
-    public void onDestroyClick(@ForEvent("click") final Event event) {
-        presenter.destroyCaseInstance();
+    public void onCloseClick(@ForEvent("click") final Event event) {
+        presenter.closeCaseInstance();
     }
 
     @EventHandler("case-cancel")

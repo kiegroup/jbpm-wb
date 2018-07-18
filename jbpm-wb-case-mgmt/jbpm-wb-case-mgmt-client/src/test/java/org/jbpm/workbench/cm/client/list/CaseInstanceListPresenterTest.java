@@ -95,11 +95,11 @@ public class CaseInstanceListPresenterTest {
     public void testDestroyCaseInstance() {
         final CaseInstanceSummary cis = caseInstanceSummaryList.remove(0);
 
-        presenter.destroyCaseInstance(cis);
+        presenter.closeCaseInstance(cis);
 
-        verify(caseManagementService).destroyCaseInstance(null,
-                                                          cis.getContainerId(),
-                                                          cis.getCaseId());
+        verify(caseManagementService).closeCaseInstance(null,
+                                                        cis.getContainerId(),
+                                                        cis.getCaseId());
         verify(caseManagementService).getCaseInstances(any(CaseInstanceSearchRequest.class));
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
         verify(view).setCaseInstanceList(captor.capture());

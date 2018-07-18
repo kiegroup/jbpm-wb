@@ -24,7 +24,7 @@ import org.jbpm.workbench.cm.client.actions.CaseActionsPresenter;
 import org.jbpm.workbench.cm.client.comments.CaseCommentsPresenter;
 import org.jbpm.workbench.cm.client.details.CaseDetailsPresenter;
 import org.jbpm.workbench.cm.client.events.CaseCancelEvent;
-import org.jbpm.workbench.cm.client.events.CaseDestroyEvent;
+import org.jbpm.workbench.cm.client.events.CaseClosedEvent;
 import org.jbpm.workbench.cm.client.events.CaseRefreshEvent;
 import org.jbpm.workbench.cm.client.milestones.CaseMilestoneListPresenter;
 import org.jbpm.workbench.cm.client.perspectives.CaseInstanceListPerspective;
@@ -51,7 +51,7 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
 
     private Event<CaseCancelEvent> caseCancelEvent;
 
-    private Event<CaseDestroyEvent> caseDestroyEvent;
+    private Event<CaseClosedEvent> caseDestroyEvent;
 
     private Event<CaseRefreshEvent> caseRefreshEvent;
 
@@ -105,15 +105,15 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
                              caseId);
     }
 
-    protected void destroyCaseInstance() {
+    protected void closeCaseInstance() {
         caseService.call(
                 e -> {
-                    caseDestroyEvent.fire(new CaseDestroyEvent(caseId));
+                    caseDestroyEvent.fire(new CaseClosedEvent(caseId));
                     backToList();
                 }
-        ).destroyCaseInstance(serverTemplateId,
-                              containerId,
-                              caseId);
+        ).closeCaseInstance(serverTemplateId,
+                            containerId,
+                            caseId);
     }
 
     protected void backToList() {
@@ -126,7 +126,7 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
     }
 
     @Inject
-    public void setCaseDestroyEvent(final Event<CaseDestroyEvent> caseDestroyEvent) {
+    public void setCaseDestroyEvent(final Event<CaseClosedEvent> caseDestroyEvent) {
         this.caseDestroyEvent = caseDestroyEvent;
     }
 
