@@ -77,7 +77,7 @@ public class ExecutionErrorListFilterSettingsManager extends FilterSettingsManag
                 createFilterSettings(EXECUTION_ERROR_LIST_DATASET,
                                      COLUMN_ERROR_DATE,
                                      builder -> builder.filter(equalsTo(COLUMN_ERROR_ACK,
-                                                                        "0")),
+                                                                        0)),
                                      TAB_NEW,
                                      constants.New(),
                                      constants.UnacknowledgedErrors()),
@@ -86,7 +86,7 @@ public class ExecutionErrorListFilterSettingsManager extends FilterSettingsManag
                 createFilterSettings(EXECUTION_ERROR_LIST_DATASET,
                                      COLUMN_ERROR_DATE,
                                      builder -> builder.filter(equalsTo(COLUMN_ERROR_ACK,
-                                                                        "1")),
+                                                                        1)),
                                      TAB_ACK,
                                      constants.Acknowledged(),
                                      constants.AcknowledgedErrors())

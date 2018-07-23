@@ -20,7 +20,10 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsJSONMarshaller;
 import org.jbpm.workbench.df.client.filter.SavedFilter;
 import org.jbpm.workbench.es.client.i18n.Constants;
@@ -33,6 +36,7 @@ import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.mocks.CallerMock;
 
+import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.COLUMN_ERROR_ACK;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -72,5 +76,18 @@ public class ExecutionErrorListFilterSettingsManagerTest {
                                                 callback);
 
         verify(userPreferencesService).saveUserPreferences(store);
+    }
+
+    @Test
+    public void testInitDefaultFilters() {
+        final List<FilterSettings> settings = manager.initDefaultFilters();
+        assertNotNull(settings);
+        assertEquals(2,
+                     settings.size());
+        final ColumnFilter columnFilter = settings.get(0).getDataSetLookup().getFirstFilterOp().getColumnFilterList().get(0);
+        assertEquals(COLUMN_ERROR_ACK,
+                     columnFilter.getColumnId());
+        assertTrue(columnFilter instanceof CoreFunctionFilter);
+        assertTrue(((CoreFunctionFilter) columnFilter).getParameters().get(0) instanceof Integer);
     }
 }
