@@ -180,11 +180,11 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     }
 
     @Override
-    public void destroyCaseInstance(final String serverTemplateId,
-                                    final String containerId,
-                                    final String caseId) {
+    public void closeCaseInstance(final String serverTemplateId,
+                                  final String containerId,
+                                  final String caseId) {
         executeOnCaseInstance(caseId,
-                              c -> c.setStatus(CaseStatus.CANCELLED));
+                              c -> c.setStatus(CaseStatus.CLOSED));
     }
 
     @Override

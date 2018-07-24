@@ -102,12 +102,12 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
                              caseInstanceSummary.getCaseId());
     }
 
-    protected void destroyCaseInstance(final CaseInstanceSummary caseInstanceSummary) {
+    protected void closeCaseInstance(final CaseInstanceSummary caseInstanceSummary) {
         caseService.call(
                 e -> refreshData()
-        ).destroyCaseInstance(null,
-                              caseInstanceSummary.getContainerId(),
-                              caseInstanceSummary.getCaseId());
+        ).closeCaseInstance(null,
+                            caseInstanceSummary.getContainerId(),
+                            caseInstanceSummary.getCaseId());
     }
 
     public void onCaseCreatedEvent(@Observes CaseCreatedEvent event) {

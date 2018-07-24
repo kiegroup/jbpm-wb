@@ -256,9 +256,9 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void testDestroyCaseInstance() {
-        testedService.destroyCaseInstance(serverTemplateId,
-                                          containerId,
-                                          caseId);
+        testedService.closeCaseInstance(serverTemplateId,
+                                        containerId,
+                                        caseId);
 
         verify(clientMock).destroyCaseInstance(containerId,
                                                caseId);

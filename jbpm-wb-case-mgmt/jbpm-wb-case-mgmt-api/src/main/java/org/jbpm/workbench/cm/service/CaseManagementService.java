@@ -50,9 +50,9 @@ public interface CaseManagementService {
                             String containerId,
                             String caseId);
 
-    void destroyCaseInstance(String serverTemplateId,
-                             String containerId,
-                             String caseId);
+    void closeCaseInstance(String serverTemplateId,
+                           String containerId,
+                           String caseId);
 
     List<CaseCommentSummary> getComments(String serverTemplateId,
                                          String containerId,

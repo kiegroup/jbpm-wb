@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.TakesValue;
 import org.jboss.errai.common.client.api.IsElement;
+import org.jboss.errai.common.client.dom.Anchor;
 import org.jboss.errai.common.client.dom.Button;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
@@ -84,7 +85,12 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
 
     @Inject
     @DataField("cancel")
-    private Button cancel;
+    @SuppressWarnings("unused")
+    private Anchor cancel;
+
+    @Inject
+    @DataField("close")
+    private Button close;
 
     @Inject
     @DataField("kebab")
@@ -118,7 +124,7 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
                         "label-success");
             removeCSSClass(this.status,
                            "label-default");
-            removeCSSClass(this.cancel,
+            removeCSSClass(this.close,
                            "hidden");
             removeCSSClass(this.kebab,
                            "hidden");
@@ -137,7 +143,7 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
 
     @EventHandler("close")
     public void onCloseClick(final @ForEvent("click") MouseEvent event) {
-        executeOnlyIfActive((c) -> presenter.destroyCaseInstance(c));
+        executeOnlyIfActive((c) -> presenter.closeCaseInstance(c));
     }
 
     @EventHandler("case-details")

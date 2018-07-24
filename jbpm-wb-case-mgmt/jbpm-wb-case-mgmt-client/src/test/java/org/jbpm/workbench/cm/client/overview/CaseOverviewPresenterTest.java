@@ -17,7 +17,7 @@
 package org.jbpm.workbench.cm.client.overview;
 
 import org.jbpm.workbench.cm.client.events.CaseCancelEvent;
-import org.jbpm.workbench.cm.client.events.CaseDestroyEvent;
+import org.jbpm.workbench.cm.client.events.CaseClosedEvent;
 import org.jbpm.workbench.cm.client.events.CaseRefreshEvent;
 import org.jbpm.workbench.cm.client.perspectives.CaseInstanceListPerspective;
 import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenterTest;
@@ -50,7 +50,7 @@ public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest
     EventSourceMock<CaseCancelEvent> caseCancelEvent;
 
     @Mock
-    EventSourceMock<CaseDestroyEvent> caseDestroyEvent;
+    EventSourceMock<CaseClosedEvent> caseDestroyEvent;
 
     @Mock
     EventSourceMock<CaseRefreshEvent> caseRefreshEvent;
@@ -142,15 +142,15 @@ public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest
     }
 
     @Test
-    public void testDestroyCaseInstance() {
+    public void testCloseCaseInstance() {
         final CaseInstanceSummary cis = setupCaseInstance(serverTemplateId);
 
-        presenter.destroyCaseInstance();
+        presenter.closeCaseInstance();
 
-        verify(caseManagementService).destroyCaseInstance(serverTemplateId,
-                                                          cis.getContainerId(),
-                                                          cis.getCaseId());
-        final ArgumentCaptor<CaseDestroyEvent> captor = ArgumentCaptor.forClass(CaseDestroyEvent.class);
+        verify(caseManagementService).closeCaseInstance(serverTemplateId,
+                                                        cis.getContainerId(),
+                                                        cis.getCaseId());
+        final ArgumentCaptor<CaseClosedEvent> captor = ArgumentCaptor.forClass(CaseClosedEvent.class);
         verify(caseDestroyEvent).fire(captor.capture());
         assertEquals(cis.getCaseId(),
                      captor.getValue().getCaseId());
