@@ -20,12 +20,15 @@ import com.google.common.collect.ImmutableList;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.marshallingstrategies.DeploymentsMarshallingStrategiesPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.workitemhandlers.DeploymentsWorkItemHandlersPresenter.WorkItemHandlersListPresenter;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.model.Parameter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.screens.library.client.settings.util.modal.doublevalue.AddDoubleValueModal;
 import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -35,6 +38,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.function.BiConsumer;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NamedObjectItemPresenterTest {
@@ -47,14 +53,18 @@ public class NamedObjectItemPresenterTest {
 
     @Mock
     private KieEnumSelectElement<Resolver> resolversSelect;
-
+    
+    @Mock
+    private AddDoubleValueModal doubleValueModal;
+    
     private NamedObjectItemPresenter namedObjectItemPresenter;
 
     @Before
     public void before() {
         namedObjectItemPresenter = spy(new NamedObjectItemPresenter(view,
                                                                     parametersModal,
-                                                                    resolversSelect));
+                                                                    resolversSelect,
+                                                                    doubleValueModal));
     }
 
     @Test
@@ -95,6 +105,25 @@ public class NamedObjectItemPresenterTest {
         namedObjectItemPresenter.signalParameterAddedOrRemoved();
 
         verify(view).setParametersCount(eq(1));
+        verify(parentPresenter).fireChangeEvent();
+    }
+
+    @Test
+    public void testOpenEditModal() {
+        final ItemObjectModel model = new ItemObjectModel("Name", "Value", "mvel", ImmutableList.of(new Parameter("Foo", "Bar")));
+        final DeploymentsSectionPresenter parentPresenter = mock(DeploymentsSectionPresenter.class);
+        final WorkItemHandlersListPresenter listPresenter = mock(WorkItemHandlersListPresenter.class);
+
+        namedObjectItemPresenter.setupSectionConfig("header", "nameKey", "vauleKey", model, parentPresenter);
+        namedObjectItemPresenter.setListPresenter(listPresenter);
+
+        namedObjectItemPresenter.openEditModal();
+
+        ArgumentCaptor<BiConsumer> captor = ArgumentCaptor.forClass(BiConsumer.class);
+        verify(doubleValueModal).show(captor.capture(), any(), any());
+        captor.getValue().accept("Name", "Value");
+
+        verify(listPresenter).add(model);
         verify(parentPresenter).fireChangeEvent();
     }
 }

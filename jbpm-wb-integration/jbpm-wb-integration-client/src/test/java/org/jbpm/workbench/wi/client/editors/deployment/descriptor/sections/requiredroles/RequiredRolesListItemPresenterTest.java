@@ -20,25 +20,34 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requi
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+
+import java.util.function.Consumer;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RequiredRolesListItemPresenterTest {
 
     @Mock
     private RequiredRolesListItemPresenter.View view;
+    
+    @Mock
+    private AddSingleValueModal singleValueModal;
 
     private RequiredRolesListItemPresenter requiredRolesListItemPresenter;
 
     @Before
     public void before() {
-        requiredRolesListItemPresenter = spy(new RequiredRolesListItemPresenter(view));
+        requiredRolesListItemPresenter = spy(new RequiredRolesListItemPresenter(view,
+                                                                                singleValueModal));
     }
 
     @Test
@@ -60,5 +69,24 @@ public class RequiredRolesListItemPresenterTest {
 
         verify(listPresenter).remove(eq(requiredRolesListItemPresenter));
         verify(parentPresenter).fireChangeEvent();
+    }
+
+    @Test
+    public void testOpenRequiredRoleModal() {
+        final DeploymentsRequiredRolesPresenter parentPresenter = mock(DeploymentsRequiredRolesPresenter.class);
+        final RemoteableClassListPresenter listPresenter = mock(RemoteableClassListPresenter.class);
+
+        requiredRolesListItemPresenter.parentPresenter = parentPresenter;
+        requiredRolesListItemPresenter.setListPresenter(listPresenter);
+
+        requiredRolesListItemPresenter.openRequiredRoleModal();
+
+        ArgumentCaptor<Consumer> captor = ArgumentCaptor.forClass(Consumer.class);
+        verify(singleValueModal).show(captor.capture(), any());
+        captor.getValue().accept("Value");
+
+        verify(listPresenter).add("Value");
+        verify(parentPresenter).fireChangeEvent();
+        verify(singleValueModal).show(any(), any());
     }
 }

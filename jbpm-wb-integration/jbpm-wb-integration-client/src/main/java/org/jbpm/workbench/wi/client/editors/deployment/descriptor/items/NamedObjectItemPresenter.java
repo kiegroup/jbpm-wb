@@ -21,38 +21,50 @@ import java.util.ArrayList;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import elemental2.dom.Element;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
+import org.kie.workbench.common.screens.library.client.settings.util.modal.doublevalue.AddDoubleValueModal;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
 import org.kie.workbench.common.widgets.client.widget.ListItemPresenter;
 import org.kie.workbench.common.widgets.client.widget.ListItemView;
+
+import elemental2.dom.Element;
 
 @Dependent
 public class NamedObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Section<?>, NamedObjectItemPresenter.View> implements ObjectPresenter {
 
     private final ParametersModal parametersModal;
     private final KieEnumSelectElement<Resolver> resolversSelect;
-
+    private final AddDoubleValueModal doubleValueModal;
+    
     ItemObjectModel model;
     Section<?> parentPresenter;
-
     @Inject
     public NamedObjectItemPresenter(final View view,
                                     final ParametersModal parametersModal,
-                                    final KieEnumSelectElement<Resolver> resolversSelect) {
+                                    final KieEnumSelectElement<Resolver> resolversSelect,
+                                    final AddDoubleValueModal doubleValueModal) {
         super(view);
         this.parametersModal = parametersModal;
         this.resolversSelect = resolversSelect;
+        this.doubleValueModal = doubleValueModal;
     }
 
+    public NamedObjectItemPresenter setupSectionConfig(final String headerKey,
+                                         final String nameKey,
+                                         final String valueKey,
+                                         final ItemObjectModel model,
+                                         final Section<?> parentPresenter) {
+        doubleValueModal.setup(headerKey, nameKey, valueKey);
+        return setup(model, parentPresenter);
+    }
+    
     @Override
     public NamedObjectItemPresenter setup(final ItemObjectModel model,
                                           final Section<?> parentPresenter) {
         this.model = model;
         this.parentPresenter = parentPresenter;
-
         if (model.getParameters() == null) {
             model.setParameters(new ArrayList<>());
         }
@@ -102,6 +114,18 @@ public class NamedObjectItemPresenter extends ListItemPresenter<ItemObjectModel,
         fireChangeEvent();
     }
 
+    public void openEditModal() {
+        doubleValueModal.show((n, v) -> {
+                                  view.setName(n);
+                                  model.setName(n);
+                                  view.setValue(v);
+                                  model.setValue(v);
+                                  fireChangeEvent();
+                              },
+                              model.getName(),
+                              model.getValue());
+    }
+    
     public interface View extends ListItemView<NamedObjectItemPresenter> {
 
         Element getResolversContainer();

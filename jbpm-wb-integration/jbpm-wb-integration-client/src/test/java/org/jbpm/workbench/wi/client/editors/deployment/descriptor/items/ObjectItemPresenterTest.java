@@ -19,14 +19,16 @@ package org.jbpm.workbench.wi.client.editors.deployment.descriptor.items;
 import com.google.common.collect.ImmutableList;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.marshallingstrategies.DeploymentsMarshallingStrategiesPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.marshallingstrategies.DeploymentsMarshallingStrategiesPresenter.MarshallingStrategiesListPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.taskeventlisteners.DeploymentsTaskEventListenersPresenter.TaskEventListenersListPresenter;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.model.Parameter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -36,6 +38,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.function.Consumer;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ObjectItemPresenterTest {
@@ -49,13 +54,17 @@ public class ObjectItemPresenterTest {
     @Mock
     private KieEnumSelectElement<Resolver> resolversSelect;
 
+    @Mock
+    private AddSingleValueModal singleValueModal;
+    
     private ObjectItemPresenter objectItemPresenter;
 
     @Before
     public void before() {
         objectItemPresenter = spy(new ObjectItemPresenter(view,
                                                           parametersModal,
-                                                          resolversSelect));
+                                                          resolversSelect,
+                                                          singleValueModal));
     }
 
     @Test
@@ -95,6 +104,23 @@ public class ObjectItemPresenterTest {
         objectItemPresenter.signalParameterAddedOrRemoved();
 
         verify(view).setParametersCount(eq(1));
+        verify(parentPresenter).fireChangeEvent();
+    }
+
+    @Test
+    public void testOpenEditModal() {
+        final ItemObjectModel model = new ItemObjectModel(null, "Value", "reflection", ImmutableList.of(new Parameter("Foo", "Bar")));
+        final DeploymentsSectionPresenter parentPresenter = mock(DeploymentsSectionPresenter.class);
+        final TaskEventListenersListPresenter listPresenter = mock(TaskEventListenersListPresenter.class);
+        objectItemPresenter.setupSectionConfig(model, parentPresenter, "Value", "reflection");
+        objectItemPresenter.setListPresenter(listPresenter);
+
+        objectItemPresenter.openEditModal();
+        ArgumentCaptor<Consumer> captor = ArgumentCaptor.forClass(Consumer.class);
+        verify(singleValueModal).show(captor.capture(), any());
+        captor.getValue().accept("Value");
+
+        verify(listPresenter).add(model);
         verify(parentPresenter).fireChangeEvent();
     }
 }
