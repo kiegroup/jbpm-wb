@@ -104,4 +104,5 @@ public class DeploymentsRemoteableClassesPresenter extends Section<DeploymentDes
             super(itemPresenters);
         }
     }
+
 }

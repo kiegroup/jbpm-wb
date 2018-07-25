@@ -23,7 +23,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import elemental2.promise.Promise;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ItemObjectModelFactory;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.NamedObjectItemPresenter;
@@ -31,12 +30,14 @@ import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
+import org.kie.workbench.common.screens.library.client.settings.util.modal.doublevalue.AddDoubleValueModal;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionListPresenter;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
-import org.kie.workbench.common.widgets.client.widget.ListPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.doublevalue.AddDoubleValueModal;
 import org.uberfire.client.promise.Promises;
+
+import elemental2.promise.Promise;
 
 @Dependent
 public class DeploymentsWorkItemHandlersPresenter extends Section<DeploymentDescriptorModel> {
@@ -79,7 +80,9 @@ public class DeploymentsWorkItemHandlersPresenter extends Section<DeploymentDesc
         workItemHandlersListPresenter.setup(
                 view.getWorkItemHandlersTable(),
                 model.getWorkItemHandlers(),
-                (workItemHandler, presenter) -> presenter.setup(workItemHandler, this));
+                (workItemHandler, presenter) -> presenter.setup(workItemHandler, this),
+                null,
+                addWorkItemHandlerModal);
 
         return promises.resolve();
     }
@@ -104,11 +107,12 @@ public class DeploymentsWorkItemHandlersPresenter extends Section<DeploymentDesc
     }
 
     @Dependent
-    public static class WorkItemHandlersListPresenter extends ListPresenter<ItemObjectModel, NamedObjectItemPresenter> {
+    public static class WorkItemHandlersListPresenter extends SectionListPresenter<ItemObjectModel, NamedObjectItemPresenter> {
 
         @Inject
         public WorkItemHandlersListPresenter(final ManagedInstance<NamedObjectItemPresenter> itemPresenters) {
             super(itemPresenters);
         }
     }
+
 }

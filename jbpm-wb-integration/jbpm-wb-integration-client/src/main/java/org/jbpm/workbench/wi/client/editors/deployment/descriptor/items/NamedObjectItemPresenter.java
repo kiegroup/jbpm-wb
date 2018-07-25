@@ -17,27 +17,29 @@
 package org.jbpm.workbench.wi.client.editors.deployment.descriptor.items;
 
 import java.util.ArrayList;
+import java.util.function.BiConsumer;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import elemental2.dom.Element;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionListItemPresenter;
 import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
-import org.kie.workbench.common.widgets.client.widget.ListItemPresenter;
 import org.kie.workbench.common.widgets.client.widget.ListItemView;
 
+import elemental2.dom.Element;
+
 @Dependent
-public class NamedObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Section<?>, NamedObjectItemPresenter.View> implements ObjectPresenter {
+public class NamedObjectItemPresenter extends SectionListItemPresenter<ItemObjectModel, Section<?>, NamedObjectItemPresenter.View> implements ObjectPresenter {
 
     private final ParametersModal parametersModal;
     private final KieEnumSelectElement<Resolver> resolversSelect;
-
+    
     ItemObjectModel model;
     Section<?> parentPresenter;
-
+    
     @Inject
     public NamedObjectItemPresenter(final View view,
                                     final ParametersModal parametersModal,
@@ -52,7 +54,6 @@ public class NamedObjectItemPresenter extends ListItemPresenter<ItemObjectModel,
                                           final Section<?> parentPresenter) {
         this.model = model;
         this.parentPresenter = parentPresenter;
-
         if (model.getParameters() == null) {
             model.setParameters(new ArrayList<>());
         }
@@ -102,6 +103,23 @@ public class NamedObjectItemPresenter extends ListItemPresenter<ItemObjectModel,
         fireChangeEvent();
     }
 
+    public void openEditModal(final String name,final String value) {
+        ItemObjectModel itemObjectModel = new ItemObjectModel();
+        itemObjectModel.setParameters(model.getParameters());
+        itemObjectModel.setResolver(model.getResolver());
+        
+        BiConsumer<String,String> removeConsumer = (n,v) -> {
+            super.remove();
+        };
+        
+        BiConsumer<String,String> editConsumer = removeConsumer.andThen( (n,v) ->{
+            itemObjectModel.setName(n);
+            itemObjectModel.setValue(v);
+            this.getSectionListPresenter().add(itemObjectModel);
+            fireChangeEvent();
+        });
+        this.getSectionListPresenter().showDoubleValueEditModal(name,value, editConsumer);
+    }
     public interface View extends ListItemView<NamedObjectItemPresenter> {
 
         Element getResolversContainer();
