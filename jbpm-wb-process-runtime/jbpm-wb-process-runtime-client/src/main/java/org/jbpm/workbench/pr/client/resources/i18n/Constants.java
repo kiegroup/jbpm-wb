@@ -151,8 +151,6 @@ public interface Constants extends Messages {
 
     String Diagram();
 
-    String Bulk_Actions();
-
     String Options();
 
     String Definition_Details();

@@ -145,12 +145,6 @@ public interface Constants extends Messages {
 
     String Requeue();
 
-    String New_JobList();
-
-    String CancelJob();
-
-    String RequeueJob();
-
     String RequestScheduled(Long requestId);
 
     String RequestCanceled(Long requestId);
@@ -176,8 +170,6 @@ public interface Constants extends Messages {
     String ExecutionErrorAcknowledged(String executionErrorId);
 
     String ExecutionErrorBreadcrumb(String errorId);
-
-    String New_ErrorList();
 
     String Ack();
 
@@ -209,8 +201,6 @@ public interface Constants extends Messages {
 
     String No_Execution_Errors_Found();
 
-    String Bulk_Actions();
-
     String Bulk_Ack();
 
     String Bulk_Ack_confirm();
@@ -238,4 +228,36 @@ public interface Constants extends Messages {
     String ViewTask();
 
     String RequestRequeued(Long requestId);
+
+    String Cancel_Job();
+
+    String Cancel_Job_Sure();
+
+    String Cancel_Job_Confirmation();
+
+    String Requeue_Job();
+
+    String Requeue_Job_Sure();
+
+    String Requeue_Job_Confirmation();
+
+    String Bulk_Cancel_jobs();
+
+    String Cancel_Jobs();
+
+    String Cancel_Jobs_Sure();
+
+    String Cancel_Jobs_Confirmation();
+
+    String Job_Can_Not_Be_Cancelled(Long jobId);
+
+    String Bulk_Requeue_jobs();
+
+    String Requeue_Jobs();
+
+    String Requeue_Jobs_Sure();
+
+    String Requeue_Jobs_Confirmation();
+
+    String Job_Can_Not_Be_Requeued(Long jobId);
 }

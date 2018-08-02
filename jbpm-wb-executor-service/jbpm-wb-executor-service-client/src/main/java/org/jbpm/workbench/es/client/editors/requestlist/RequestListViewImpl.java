@@ -22,18 +22,23 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.Window;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.ConditionalAction;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.client.util.JobStatusConverter;
 import org.jbpm.workbench.es.model.RequestSummary;
+import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
+import org.uberfire.mvp.Command;
 
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 
@@ -47,9 +52,13 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     @Inject
     private JobStatusConverter jobStatusConverter;
 
+    @Inject
+    private ConfirmPopup confirmPopup;
+
     @Override
     public List<String> getInitColumns() {
-        return Arrays.asList(COLUMN_ID,
+        return Arrays.asList(COL_ID_SELECT,
+                             COLUMN_ID,
                              COLUMN_BUSINESSKEY,
                              COLUMN_COMMANDNAME,
                              COL_ID_ACTIONS);
@@ -57,17 +66,21 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
 
     @Override
     public List<String> getBannedColumns() {
-        return Arrays.asList(COLUMN_ID,
+        return Arrays.asList(COL_ID_SELECT,
+                             COLUMN_ID,
                              COLUMN_COMMANDNAME,
                              COL_ID_ACTIONS);
     }
 
     @Override
     public void initColumns(final ListTable extendedPagedTable) {
+        final ColumnMeta checkColumnMeta = initChecksColumn(extendedPagedTable);
         ColumnMeta<RequestSummary> actionsColumnMeta = initActionsColumn();
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumnMeta.getColumn());
+        extendedPagedTable.addSelectionIgnoreColumn(checkColumnMeta.getColumn());
 
         final List<ColumnMeta<RequestSummary>> columnMetas = new ArrayList<ColumnMeta<RequestSummary>>();
+        columnMetas.add(checkColumnMeta);
         columnMetas.add(new ColumnMeta<>(createNumberColumn(COLUMN_ID,
                                                             req -> req.getJobId()),
                                          constants.Id()));
@@ -99,6 +112,9 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
         columnMetas.add(actionsColumnMeta);
 
         extendedPagedTable.addColumns(columnMetas);
+        extendedPagedTable.setColumnWidth(checkColumnMeta.getColumn(),
+                                          CHECK_COLUMN_WIDTH,
+                                          Style.Unit.PX);
         extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
                                           ACTIONS_COLUMN_WIDTH,
                                           Style.Unit.PX);
@@ -109,6 +125,15 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     public void initSelectionModel(ListTable<RequestSummary> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption(constants.No_Jobs_Found());
         extendedPagedTable.setSelectionCallback((job) -> presenter.selectJob(job));
+        initBulkActions(extendedPagedTable);
+    }
+
+    @Override
+    public List<AnchorListItem> getBulkActionsItems(ExtendedPagedTable<RequestSummary> extendedPagedTable) {
+        List<AnchorListItem> bulkActionsItems = new ArrayList<>();
+        bulkActionsItems.add(getBulkCancel(extendedPagedTable));
+        bulkActionsItems.add(getBulkRequeue(extendedPagedTable));
+        return bulkActionsItems;
     }
 
     @Override
@@ -118,10 +143,13 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                 new ConditionalAction<>(
                         constants.Cancel(),
                         job -> {
-                            if (Window.confirm(constants.CancelJob())) {
-                                presenter.cancelRequest(job.getDeploymentId(),
-                                                        job.getJobId());
-                            }
+                            confirmPopup.show(constants.Cancel_Job_Confirmation(),
+                                              constants.Cancel_Job(),
+                                              constants.Cancel_Job_Sure(),
+                                              () -> {
+                                                  presenter.cancelRequest(job.getDeploymentId(),
+                                                                          job.getJobId());
+                                              });
                         },
                         presenter.getCancelActionCondition(),
                         false),
@@ -129,10 +157,13 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                 new ConditionalAction<>(
                         constants.Requeue(),
                         job -> {
-                            if (Window.confirm(constants.RequeueJob())) {
-                                presenter.requeueRequest(job.getDeploymentId(),
-                                                         job.getJobId());
-                            }
+                            confirmPopup.show(constants.Requeue_Job_Confirmation(),
+                                              constants.Requeue_Job(),
+                                              constants.Requeue_Job_Sure(),
+                                              () -> {
+                                                  presenter.requeueRequest(job.getDeploymentId(),
+                                                                           job.getJobId());
+                                              });
                         },
                         presenter.getRequeueActionCondition(),
                         false),
@@ -145,4 +176,48 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                         presenter.getViewProcessActionCondition(),
                         true));
     }
+
+    protected AnchorListItem getBulkCancel(final ExtendedPagedTable<RequestSummary> extendedPagedTable) {
+        final AnchorListItem bulkAbortNavLink = GWT.create(AnchorListItem.class);
+        bulkAbortNavLink.setText(constants.Bulk_Cancel_jobs());
+        bulkAbortNavLink.setIcon(IconType.TIMES_CIRCLE_O);
+
+        bulkAbortNavLink.setIconFixedWidth(true);
+        bulkAbortNavLink.addClickHandler(event -> confirmPopup.show(constants.Cancel_Jobs_Confirmation(),
+                                                                    constants.Cancel_Jobs(),
+                                                                    constants.Cancel_Jobs_Sure(),
+                                                                    getCancelCommand(extendedPagedTable))
+        );
+
+        return bulkAbortNavLink;
+    }
+
+    protected AnchorListItem getBulkRequeue(final ExtendedPagedTable<RequestSummary> extendedPagedTable) {
+        final AnchorListItem bulkAbortNavLink = GWT.create(AnchorListItem.class);
+        bulkAbortNavLink.setText(constants.Bulk_Requeue_jobs());
+        bulkAbortNavLink.setIcon(IconType.HISTORY);
+
+        bulkAbortNavLink.setIconFixedWidth(true);
+        bulkAbortNavLink.addClickHandler(event -> confirmPopup.show(constants.Requeue_Jobs_Confirmation(),
+                                                                    constants.Requeue_Jobs(),
+                                                                    constants.Requeue_Jobs_Sure(),
+                                                                    getRequeueCommand(extendedPagedTable))
+        );
+        return bulkAbortNavLink;
+    }
+
+    protected Command getCancelCommand(final ExtendedPagedTable<RequestSummary> extendedPagedTable) {
+        return () -> {
+            presenter.bulkCancel(extendedPagedTable.getSelectedItems());
+            extendedPagedTable.deselectAllItems();
+        };
+    }
+
+    protected Command getRequeueCommand(final ExtendedPagedTable<RequestSummary> extendedPagedTable) {
+        return () -> {
+            presenter.bulkRequeue(extendedPagedTable.getSelectedItems());
+            extendedPagedTable.deselectAllItems();
+        };
+    }
+
 }

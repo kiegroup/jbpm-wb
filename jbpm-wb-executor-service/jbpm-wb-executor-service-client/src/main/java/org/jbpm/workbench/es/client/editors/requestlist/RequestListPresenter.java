@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import javax.inject.Inject;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
@@ -194,28 +193,24 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
 
     public void cancelRequest(final String deploymentId,
                               final Long requestId) {
-        executorServices.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void nothing) {
-                view.displayNotification(constants.RequestCanceled(requestId));
-                requestChangedEvent.fire(new RequestChangedEvent(requestId));
-            }
-        }).cancelRequest(getSelectedServerTemplate(),
-                         deploymentId,
-                         requestId);
+        executorServices.call(
+                (Void nothing) -> {
+                    view.displayNotification(constants.RequestCanceled(requestId));
+                    requestChangedEvent.fire(new RequestChangedEvent(requestId));
+                }).cancelRequest(getSelectedServerTemplate(),
+                                 deploymentId,
+                                 requestId);
     }
 
     public void requeueRequest(final String deploymentId,
                                final Long requestId) {
-        executorServices.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void nothing) {
-                view.displayNotification(constants.RequestRequeued(requestId));
-                requestChangedEvent.fire(new RequestChangedEvent(requestId));
-            }
-        }).requeueRequest(getSelectedServerTemplate(),
-                          deploymentId,
-                          requestId);
+        executorServices.call(
+                (Void nothing) -> {
+                    view.displayNotification(constants.RequestRequeued(requestId));
+                    requestChangedEvent.fire(new RequestChangedEvent(requestId));
+                }).requeueRequest(getSelectedServerTemplate(),
+                                  deploymentId,
+                                  requestId);
     }
 
     protected Command getNewJobCommand() {
@@ -328,6 +323,36 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     private Predicate<RequestSummary> getActionConditionFromStatusList(RequestStatus[] statusList) {
         return value -> Arrays.stream(statusList).anyMatch(
                 s -> s.equals(value.getStatus()));
+    }
+
+    public void bulkCancel(List<RequestSummary> jobsSelected) {
+        if (jobsSelected == null || jobsSelected.isEmpty()) {
+            return;
+        }
+        for (RequestSummary selected : jobsSelected) {
+            if (!getCancelActionCondition().test(selected)) {
+                view.displayNotification(constants.Job_Can_Not_Be_Cancelled(selected.getJobId()));
+                continue;
+            } else {
+                cancelRequest(selected.getDeploymentId(),
+                              selected.getJobId());
+            }
+        }
+    }
+
+    public void bulkRequeue(List<RequestSummary> jobsSelected) {
+        if (jobsSelected == null || jobsSelected.isEmpty()) {
+            return;
+        }
+        for (RequestSummary selected : jobsSelected) {
+            if (!getRequeueActionCondition().test(selected)) {
+                view.displayNotification(constants.Job_Can_Not_Be_Requeued(selected.getJobId()));
+                continue;
+            } else {
+                requeueRequest(selected.getDeploymentId(),
+                               selected.getJobId());
+            }
+        }
     }
 
     public interface RequestListView extends MultiGridView<RequestSummary, RequestListPresenter> {

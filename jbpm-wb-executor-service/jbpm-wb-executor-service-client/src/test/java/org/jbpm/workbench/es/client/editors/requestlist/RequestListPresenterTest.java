@@ -15,8 +15,10 @@
  */
 package org.jbpm.workbench.es.client.editors.requestlist;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Random;
 
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
@@ -514,4 +516,88 @@ public class RequestListPresenterTest {
         verify(viewMock).removeActiveFilter(filter);
         verify(filterSettings).removeColumnFilter(columnFilter);
     }
+
+    @Test
+    public void bulkCancelJobsDependingOnStatusTest() {
+        final String serverTemplateTest = "serverTemplateTest";
+        presenter.setSelectedServerTemplate(serverTemplateTest);
+        String deploymentId = "deploymentId";
+        String key = "key";
+        Long jobId_1 = new Random().nextLong();
+        Long jobId_2 = jobId_1 + 1;
+        Long jobId_3 = jobId_2 + 1;
+
+        ArrayList<RequestSummary> requestSummaries = new ArrayList<>();
+        requestSummaries.add(createRequestSummary(jobId_1,
+                                                  key,
+                                                  deploymentId,
+                                                  RequestStatus.QUEUED));
+        requestSummaries.add(createRequestSummary(jobId_2,
+                                                  key,
+                                                  deploymentId,
+                                                  RequestStatus.RUNNING));
+        requestSummaries.add(createRequestSummary(jobId_3,
+                                                  key,
+                                                  deploymentId,
+                                                  RequestStatus.ERROR));
+
+        presenter.bulkCancel(requestSummaries);
+
+        verify(executorServiceMock).cancelRequest(anyString(),
+                                                  anyString(),
+                                                  eq(jobId_1));
+        verify(executorServiceMock).cancelRequest(anyString(),
+                                                  anyString(),
+                                                  eq(jobId_2));
+        verify(executorServiceMock,
+               never()).cancelRequest(anyString(),
+                                      anyString(),
+                                      eq(jobId_3));
+        verify(viewMock).displayNotification(Constants.INSTANCE.RequestCanceled(jobId_1));
+        verify(viewMock).displayNotification(Constants.INSTANCE.RequestCanceled(jobId_2));
+        verify(viewMock).displayNotification(Constants.INSTANCE.Job_Can_Not_Be_Cancelled(jobId_3));
+    }
+
+    @Test
+    public void bulkRequeueJobsDependingOnStatusTest() {
+        final String serverTemplateTest = "serverTemplateTest";
+        presenter.setSelectedServerTemplate(serverTemplateTest);
+        String deploymentId = "deploymentId";
+        String key = "key";
+        Long jobId_1 = new Random().nextLong();
+        Long jobId_2 = jobId_1 + 1;
+        Long jobId_3 = jobId_2 + 1;
+
+        ArrayList<RequestSummary> requestSummaries = new ArrayList<>();
+        requestSummaries.add(createRequestSummary(jobId_1,
+                                                  key,
+                                                  deploymentId,
+                                                  RequestStatus.ERROR));
+        requestSummaries.add(createRequestSummary(jobId_2,
+                                                  key,
+                                                  deploymentId,
+                                                  RequestStatus.RUNNING));
+        requestSummaries.add(createRequestSummary(jobId_3,
+                                                  key,
+                                                  deploymentId,
+                                                  RequestStatus.QUEUED));
+
+        presenter.bulkRequeue(requestSummaries);
+
+        verify(executorServiceMock).requeueRequest(anyString(),
+                                                   anyString(),
+                                                   eq(jobId_1));
+        verify(executorServiceMock).requeueRequest(anyString(),
+                                                   anyString(),
+                                                   eq(jobId_2));
+        verify(executorServiceMock,
+               never()).requeueRequest(anyString(),
+                                       anyString(),
+                                       eq(jobId_3));
+        verify(viewMock).displayNotification(Constants.INSTANCE.RequestRequeued(jobId_1));
+        verify(viewMock).displayNotification(Constants.INSTANCE.RequestRequeued(jobId_2));
+        verify(viewMock).displayNotification(Constants.INSTANCE.Job_Can_Not_Be_Requeued(jobId_3));
+    }
+
+
 }

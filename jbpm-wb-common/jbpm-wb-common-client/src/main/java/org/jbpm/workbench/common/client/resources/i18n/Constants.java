@@ -150,4 +150,5 @@ public interface Constants extends Messages {
 
     String SavedFilterCorrectlyWithName(String filterName);
 
+    String Bulk_Actions();
 }
