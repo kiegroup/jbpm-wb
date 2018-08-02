@@ -28,12 +28,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.cellview.client.Column;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.ButtonGroup;
-import org.gwtbootstrap3.client.ui.DropDownMenu;
 import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.client.ui.constants.Styles;
-import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
@@ -92,6 +87,14 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         extendedPagedTable.setEmptyTableCaption(constants.No_Process_Instances_Found());
         extendedPagedTable.setSelectionCallback((pis) -> presenter.selectProcessInstance(pis));
         initBulkActions(extendedPagedTable);
+    }
+
+    @Override
+    public List<AnchorListItem> getBulkActionsItems(ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
+        List<AnchorListItem> bulkActionsItems = new ArrayList<>();
+        bulkActionsItems.add(getBulkAbort(extendedPagedTable));
+        bulkActionsItems.add(getBulkSignal(extendedPagedTable));
+        return bulkActionsItems;
     }
 
     @Override
@@ -245,30 +248,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         genericColumn.setDataStoreName(key);
 
         return genericColumn;
-    }
-
-    private void initBulkActions(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
-        extendedPagedTable.getRightActionsToolbar().clear();
-
-        final ButtonGroup bulkActions = GWT.create(ButtonGroup.class);
-
-        final Button bulkButton = GWT.create(Button.class);
-        bulkButton.setText(constants.Bulk_Actions());
-        bulkButton.setDataToggle(Toggle.DROPDOWN);
-        bulkButton.setEnabled(false);
-        bulkButton.getElement().getStyle().setMarginRight(5,
-                                                          Style.Unit.PX);
-        bulkActions.add(bulkButton);
-
-        final DropDownMenu bulkDropDown = GWT.create(DropDownMenu.class);
-        bulkDropDown.addStyleName(Styles.DROPDOWN_MENU + "-right");
-        bulkDropDown.getElement().getStyle().setMarginRight(5,
-                                                            Style.Unit.PX);
-        bulkDropDown.add(getBulkAbort(extendedPagedTable));
-        bulkDropDown.add(getBulkSignal(extendedPagedTable));
-        bulkActions.add(bulkDropDown);
-
-        extendedPagedTable.getRightActionsToolbar().add(bulkActions);
     }
 
     protected AnchorListItem getBulkAbort(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable){

@@ -27,12 +27,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.cellview.client.Column;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.ButtonGroup;
-import org.gwtbootstrap3.client.ui.DropDownMenu;
 import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.gwtbootstrap3.client.ui.constants.Styles;
-import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
@@ -93,26 +88,16 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
         initBulkActions(extendedPagedTable);
     }
 
-    private void initBulkActions(final ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable) {
-        extendedPagedTable.getRightActionsToolbar().clear();
+    @Override
+    public List<AnchorListItem> getBulkActionsItems(ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable) {
+        List<AnchorListItem> bulkActionsItems = new ArrayList<>();
+        bulkActionsItems.add(getBulkAck(extendedPagedTable));
+        return bulkActionsItems;
+    }
 
+    protected AnchorListItem getBulkAck(final ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable) {
         final AnchorListItem bulkAckNavLink = GWT.create(AnchorListItem.class);
         bulkAckNavLink.setText(constants.Bulk_Ack());
-
-        final ButtonGroup bulkActions = GWT.create(ButtonGroup.class);
-        final Button bulkButton = GWT.create(Button.class);
-        bulkButton.setText(constants.Bulk_Actions());
-        bulkButton.setDataToggle(Toggle.DROPDOWN);
-        bulkButton.getElement().getStyle().setMarginRight(5,
-                                                          Style.Unit.PX);
-        bulkButton.setEnabled(false);
-        bulkActions.add(bulkButton);
-        final DropDownMenu bulkDropDown = GWT.create(DropDownMenu.class);
-        bulkDropDown.addStyleName(Styles.DROPDOWN_MENU + "-right");
-        bulkDropDown.getElement().getStyle().setMarginRight(5,
-                                                            Style.Unit.PX);
-        bulkDropDown.add(bulkAckNavLink);
-        bulkActions.add(bulkDropDown);
         bulkAckNavLink.setIcon(IconType.BAN);
         bulkAckNavLink.setIconFixedWidth(true);
         bulkAckNavLink.addClickHandler((ClickEvent event) -> {
@@ -124,8 +109,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                                   extendedPagedTable.deselectAllItems();
                               });
         });
-
-        extendedPagedTable.getRightActionsToolbar().add(bulkActions);
+        return bulkAckNavLink;
     }
 
     @Override

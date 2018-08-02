@@ -15,6 +15,7 @@
  */
 package org.jbpm.workbench.common.client.list;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -26,6 +27,8 @@ import com.google.common.collect.Iterables;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.cellview.client.TextHeader;
@@ -35,6 +38,12 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
 import elemental2.dom.HTMLDivElement;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.ButtonGroup;
+import org.gwtbootstrap3.client.ui.DropDownMenu;
+import org.gwtbootstrap3.client.ui.constants.Styles;
+import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
@@ -186,6 +195,36 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         column.setSortable(true);
         column.setDataStoreName(columnId);
         return column;
+    }
+
+    protected void initBulkActions(final ExtendedPagedTable<T> extendedPagedTable) {
+        extendedPagedTable.getRightActionsToolbar().clear();
+
+        final ButtonGroup bulkActions = GWT.create(ButtonGroup.class);
+
+        final Button bulkButton = GWT.create(Button.class);
+        bulkButton.setText(Constants.INSTANCE.Bulk_Actions());
+        bulkButton.setDataToggle(Toggle.DROPDOWN);
+        bulkButton.setEnabled(false);
+        bulkButton.getElement().getStyle().setMarginRight(5,
+                                                          Style.Unit.PX);
+        bulkActions.add(bulkButton);
+
+        final DropDownMenu bulkDropDown = GWT.create(DropDownMenu.class);
+        bulkDropDown.addStyleName(Styles.DROPDOWN_MENU + "-right");
+        bulkDropDown.getElement().getStyle().setMarginRight(5,
+                                                            Style.Unit.PX);
+        for (AnchorListItem item : getBulkActionsItems(extendedPagedTable)) {
+            bulkDropDown.add(item);
+        }
+
+        bulkActions.add(bulkDropDown);
+
+        extendedPagedTable.getRightActionsToolbar().add(bulkActions);
+    }
+
+    protected List<AnchorListItem> getBulkActionsItems(ExtendedPagedTable<T> extendedPagedTable) {
+        return Collections.emptyList();
     }
 
     public Column<T, Number> createNumberColumn(final String columnId,

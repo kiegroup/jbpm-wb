@@ -28,6 +28,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 
+import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.COL_ID_SELECT;
 import static org.jbpm.workbench.es.client.editors.requestlist.RequestListViewImpl.COL_ID_ACTIONS;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 
@@ -53,7 +54,8 @@ public class RequestListViewImplTest extends AbstractMultiGridViewTest<RequestSu
 
     @Override
     public List<String> getExpectedInitialColumns() {
-        return Arrays.asList(COLUMN_ID,
+        return Arrays.asList(COL_ID_SELECT,
+                             COLUMN_ID,
                              COLUMN_BUSINESSKEY,
                              COLUMN_COMMANDNAME,
                              COL_ID_ACTIONS);
@@ -61,13 +63,14 @@ public class RequestListViewImplTest extends AbstractMultiGridViewTest<RequestSu
 
     @Override
     public List<String> getExpectedBannedColumns() {
-        return Arrays.asList(COLUMN_ID,
+        return Arrays.asList(COL_ID_SELECT,
+                             COLUMN_ID,
                              COLUMN_COMMANDNAME,
                              COL_ID_ACTIONS);
     }
 
     @Override
     public Integer getExpectedNumberOfColumns() {
-        return 9;
+        return 10;
     }
 }

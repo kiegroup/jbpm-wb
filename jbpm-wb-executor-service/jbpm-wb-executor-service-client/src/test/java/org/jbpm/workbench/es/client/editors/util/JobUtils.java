@@ -42,6 +42,16 @@ public class JobUtils {
     public static RequestSummary createRequestSummary(Long jobId,
                                                       String businessKey,
                                                       RequestStatus status) {
+        return createRequestSummary(jobId,
+                                    businessKey,
+                                    "evaluation.1.0.1",
+                                    status);
+    }
+
+    public static RequestSummary createRequestSummary(Long jobId,
+                                                      String businessKey,
+                                                      String deploymentId,
+                                                      RequestStatus status) {
         return new RequestSummary(jobId,
                                   new Date(),
                                   status,
@@ -53,7 +63,7 @@ public class JobUtils {
                                   "testProcessName",
                                   PROCESS_INSTANCE_ID,
                                   "testProcessInstanceDescription",
-                                  "evaluation.1.0.1");
+                                  deploymentId);
     }
 
     public static ErrorSummary createErrorSummary() {
