@@ -30,10 +30,6 @@ import org.jbpm.workbench.ht.service.TaskService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.server.api.model.KieContainerStatus;
-import org.kie.server.controller.api.model.spec.ContainerSpec;
-import org.kie.server.controller.api.model.spec.ServerTemplate;
-import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -83,17 +79,6 @@ public class TaskDetailsMultiPresenterTest {
     @SuppressWarnings("unused")
     private TaskDetailsPresenter taskDetailsPresenter;
 
-    @Mock
-    ContainerSpec containerSpecMock;
-
-    @Mock
-    ServerTemplate serverTemplateMock;
-
-    @Mock
-    SpecManagementService specManagementService;
-
-    Caller<SpecManagementService> specManagementServiceCaller;
-
     @InjectMocks
     private TaskDetailsMultiPresenter presenter;
 
@@ -109,12 +94,6 @@ public class TaskDetailsMultiPresenterTest {
         when(taskFormViewMock.getDisplayerView()).thenReturn(formDisplayerViewMock);
         doNothing().when(changeTitleWidgetEvent).fire(any(ChangeTitleWidgetEvent.class));
         doNothing().when(taskSelectionEvent).fire(any(TaskSelectionEvent.class));
-
-        specManagementServiceCaller = new CallerMock<>(specManagementService);
-        presenter.setSpecManagementService(specManagementServiceCaller);
-        when(specManagementService.getServerTemplate(anyString())).thenReturn(serverTemplateMock);
-        when(serverTemplateMock.getContainerSpec(anyString())).thenReturn(containerSpecMock);
-        when(containerSpecMock.getStatus()).thenReturn(KieContainerStatus.STARTED);
     }
 
     @Test
@@ -242,45 +221,29 @@ public class TaskDetailsMultiPresenterTest {
     }
 
     @Test
-    public void refreshWithContainerStoppedTest() {
-        when(containerSpecMock.getStatus()).thenReturn(KieContainerStatus.STOPPED);
+    public void refreshWithUnableTaskDetailsTest() {
         Long taskId = 1L;
         String containerId = "container1.2";
         String serverTemplateId = "serverTemplateId";
-        TaskSummary taskSummary =
-                TaskSummary.builder()
-                        .deploymentId(containerId)
-                        .id(taskId)
-                        .name("name")
-                        .description("description")
-                        .expirationTime(new Date())
-                        .status("Completed")
-                        .actualOwner("Rob")
-                        .priority(5)
-                        .processInstanceId(2L)
-                        .processId("Evaluation")
-                        .build();
-
         when(taskServiceMock.getTask(serverTemplateId,
                                      containerId,
-                                     taskId)).thenReturn(taskSummary);
+                                     taskId)).thenReturn(null);
+
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(serverTemplateId,
-                                                              taskSummary.getDeploymentId(),
-                                                              taskSummary.getId(),
-                                                              taskSummary.getName(),
+                                                              containerId,
+                                                              taskId,
+                                                              "task",
                                                               false,
-                                                              false,
-                                                              taskSummary.getDescription(),
-                                                              taskSummary.getExpirationTime(),
-                                                              taskSummary.getStatus(),
-                                                              taskSummary.getActualOwner(),
-                                                              taskSummary.getPriority(),
-                                                              taskSummary.getProcessInstanceId(),
-                                                              taskSummary.getProcessId()));
+                                                              false));
         verify(view).displayAllTabs();
         verify(view).resetTabs(false);
 
         presenter.onRefresh();
+
+        verify(taskServiceMock).getTask(eq(serverTemplateId),
+                                        eq(containerId),
+                                        eq(taskId));
+
         verify(view).displayNotification(anyString());
         verifyNoMoreInteractions(taskSelectionEvent);
     }

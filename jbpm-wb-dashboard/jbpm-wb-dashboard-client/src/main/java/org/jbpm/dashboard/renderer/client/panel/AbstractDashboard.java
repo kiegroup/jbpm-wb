@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import org.dashbuilder.displayer.client.DisplayerCoordinator;
 import org.dashbuilder.displayer.client.DisplayerLocator;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
-import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.ks.integration.ConsoleDataSetLookup;
@@ -40,7 +39,6 @@ import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
 import org.jbpm.dashboard.renderer.client.panel.i18n.DashboardI18n;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
-import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.events.ClosePlaceEvent;
@@ -68,19 +66,12 @@ public abstract class AbstractDashboard {
     protected ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
 
     UberfireBreadcrumbs breadcrumbs;
-    protected Caller<SpecManagementService> specManagementService;
 
     protected Event<NotificationEvent> notificationEvent;
-
 
     private PerspectiveManager perspectiveManager;
 
     private String detailScreenId;
-
-    @Inject
-    public void setSpecManagementService(final Caller<SpecManagementService> specManagementService) {
-        this.specManagementService = specManagementService;
-    }
 
     @Inject
     public void setNotificationEvent(final Event<NotificationEvent> notificationEvent) {

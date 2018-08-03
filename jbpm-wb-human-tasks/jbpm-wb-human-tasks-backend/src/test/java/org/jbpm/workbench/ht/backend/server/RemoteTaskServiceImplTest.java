@@ -16,24 +16,31 @@
 package org.jbpm.workbench.ht.backend.server;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
 import org.jbpm.workbench.ht.model.TaskEventSummary;
+import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.ks.integration.KieServerIntegration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.internal.identity.IdentityProvider;
+import org.kie.server.api.model.definition.TaskQueryFilterSpec;
 import org.kie.server.api.model.instance.TaskEventInstance;
+import org.kie.server.api.model.instance.TaskInstance;
 import org.kie.server.client.KieServicesClient;
+import org.kie.server.client.QueryServicesClient;
 import org.kie.server.client.UserTaskServicesClient;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static java.lang.String.format;
+import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_DATASET;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -54,6 +61,9 @@ public class RemoteTaskServiceImplTest {
     @Mock
     UserTaskServicesClient userTaskServicesClient;
 
+    @Mock
+    private QueryServicesClient queryServicesClient;
+
     @InjectMocks
     private RemoteTaskServiceImpl remoteTaskService;
 
@@ -62,6 +72,7 @@ public class RemoteTaskServiceImplTest {
         when(identityProvider.getName()).thenReturn(CURRENT_USER);
         when(kieServerIntegration.getServerClient(anyString())).thenReturn(kieServicesClient);
         when(kieServicesClient.getServicesClient(UserTaskServicesClient.class)).thenReturn(userTaskServicesClient);
+        when(kieServicesClient.getServicesClient(QueryServicesClient.class)).thenReturn(queryServicesClient);
     }
 
     @Test
@@ -151,5 +162,67 @@ public class RemoteTaskServiceImplTest {
                                                    CURRENT_USER,
                                                    userId);
         verify(kieServerIntegration).getServerClient(serverTemplateId);
+    }
+
+    @Test
+    public void getTask_ReturnsSingleTaskTest() {
+        final String containerId = "containerId";
+        final long taskId = 1l;
+        final String taskName = "taskName";
+        final String serverTemplateId = "serverTemplateId";
+        when(queryServicesClient.findHumanTasksWithFilters(anyString(),
+                                                           any(TaskQueryFilterSpec.class),
+                                                           anyInt(),
+                                                           anyInt())).thenReturn(Arrays.asList(TaskInstance.builder().id(taskId).name(taskName).build()));
+        TaskSummary taskSummary = remoteTaskService.getTask(serverTemplateId,
+                                                            containerId,
+                                                            taskId);
+        verify(queryServicesClient).findHumanTasksWithFilters(eq(HUMAN_TASKS_DATASET),
+                                                              any(TaskQueryFilterSpec.class),
+                                                              eq(0),
+                                                              anyInt());
+        assertNotNull(taskSummary);
+        assertTrue(taskId == taskSummary.getId());
+        assertEquals(taskName,
+                     taskSummary.getName());
+    }
+
+    @Test
+    public void getTask_ReturnsMultipleTasksTest() {
+        final String taskName = "taskName";
+        final long taskId = 1l;
+        final String serverTemplateId = "serverTemplateId";
+        when(queryServicesClient.findHumanTasksWithFilters(anyString(),
+                                                           any(TaskQueryFilterSpec.class),
+                                                           anyInt(),
+                                                           anyInt())).thenReturn(Arrays.asList(TaskInstance.builder().id(taskId).name(taskName).build(),
+                                                                                               TaskInstance.builder().id(taskId).name(taskName).build()));
+        TaskSummary taskSummary = remoteTaskService.getTask(serverTemplateId,
+                                                            "containerId",
+                                                            taskId);
+        verify(queryServicesClient).findHumanTasksWithFilters(eq(HUMAN_TASKS_DATASET),
+                                                              any(TaskQueryFilterSpec.class),
+                                                              eq(0),
+                                                              anyInt());
+        assertNull(taskSummary);
+    }
+
+    @Test
+    public void getTask_ReturnsNoneTasksTest() {
+        final String taskName = "taskName";
+        final long taskId = 1l;
+        final String serverTemplateId = "serverTemplateId";
+        when(queryServicesClient.findHumanTasksWithFilters(anyString(),
+                                                           any(TaskQueryFilterSpec.class),
+                                                           anyInt(),
+                                                           anyInt())).thenReturn(new ArrayList<TaskInstance>());
+        TaskSummary taskSummary = remoteTaskService.getTask(serverTemplateId,
+                                                            "containerId",
+                                                            taskId);
+        verify(queryServicesClient).findHumanTasksWithFilters(eq(HUMAN_TASKS_DATASET),
+                                                              any(TaskQueryFilterSpec.class),
+                                                              eq(0),
+                                                              anyInt());
+        assertNull(taskSummary);
     }
 }

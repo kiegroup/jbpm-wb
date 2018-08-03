@@ -45,30 +45,31 @@ public class ProcessDiagramPresenter {
         this.processImageService = processImageService;
     }
 
-    public void onProcessInstanceSelectionEvent(@Observes ProcessInstanceSelectionEvent event) {
+    public void onProcessInstanceSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
         String containerId = event.getDeploymentId();
         Long processInstanceId = event.getProcessInstanceId();
         String serverTemplateId = event.getServerTemplateId();
 
-        if (processInstanceId != null) {
-            processImageService.call((String svgContent) -> displayImage(svgContent)).getProcessInstanceDiagram(serverTemplateId,
-                                                                                                                containerId,
-                                                                                                                processInstanceId);
-        }
+        processImageService.call((String svgContent) -> displayImage(svgContent,
+                                                                     containerId)).getProcessInstanceDiagram(serverTemplateId,
+                                                                                                             containerId,
+                                                                                                             processInstanceId);
     }
 
     public void onProcessSelectionEvent(@Observes final ProcessDefSelectionEvent event) {
         String containerId = event.getDeploymentId();
         String serverTemplateId = event.getServerTemplateId();
         String processId = event.getProcessId();
-        processImageService.call((String svgContent) -> displayImage(svgContent)).getProcessDiagram(serverTemplateId,
-                                                                                                    containerId,
-                                                                                                    processId);
+        processImageService.call((String svgContent) -> displayImage(svgContent,
+                                                                     containerId)).getProcessDiagram(serverTemplateId,
+                                                                                                     containerId,
+                                                                                                     processId);
     }
 
-    protected void displayImage(final String svgContent) {
+    protected void displayImage(final String svgContent,
+                                String containerId) {
         if (svgContent == null || svgContent.isEmpty()) {
-            view.displayMessage(constants.Process_Diagram_Not_Found());
+            view.displayMessage(constants.Process_Diagram_Not_FoundContainerShouldBeAvailable(containerId));
         } else {
             view.displayImage(svgContent);
         }

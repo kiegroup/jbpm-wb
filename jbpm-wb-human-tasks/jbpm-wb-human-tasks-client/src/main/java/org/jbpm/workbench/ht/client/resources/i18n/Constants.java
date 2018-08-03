@@ -249,5 +249,8 @@ public interface Constants extends Messages {
     
     String Errors();
 
-    String TaskDetailsNotAvailableContainerNotStarted(String containerId);
+    String TaskDetailsNotAvailableContainerNotStartedOrUnreacheable(String containerId);
+
+    String TaskDetailsNotAvailable();
+
 }

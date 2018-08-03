@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,10 +58,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.server.api.model.KieContainerStatus;
-import org.kie.server.controller.api.model.spec.ContainerSpec;
-import org.kie.server.controller.api.model.spec.ServerTemplate;
-import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -158,15 +154,7 @@ public class ProcessInstanceListPresenterTest {
     private FilterSettingsManager filterSettingsManager;
 
     @Mock
-    ContainerSpec containerSpecMock;
-
-    @Mock
     EventSourceMock<ProcessInstanceSelectionEvent> processInstanceSelectionEvent = new EventSourceMock<>();
-
-    @Mock
-    SpecManagementService specManagementService;
-
-    Caller<SpecManagementService> specManagementServiceCaller;
 
     @InjectMocks
     private ProcessInstanceListPresenter presenter;
@@ -253,12 +241,6 @@ public class ProcessInstanceListPresenterTest {
         commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
 
         presenter.setProcessService(remoteProcessServiceCaller);
-        specManagementServiceCaller = new CallerMock<SpecManagementService>(specManagementService);
-
-        ServerTemplate serverTemplateMock = mock(ServerTemplate.class);
-
-        when(specManagementService.getServerTemplate(anyString())).thenReturn(serverTemplateMock);
-        when(serverTemplateMock.getContainerSpec(anyString())).thenReturn(containerSpecMock);
     }
 
     @Test
@@ -876,38 +858,17 @@ public class ProcessInstanceListPresenterTest {
     }
 
     @Test
-    public void testSelectProcessInstanceWhenContainerStarted() {
-
-        when(containerSpecMock.getStatus()).thenReturn(KieContainerStatus.STARTED);
-
-        presenter.setSpecManagementService(specManagementServiceCaller);
+    public void testSelectProcessInstance() {
         presenter.setProcessInstanceSelectedEvent(processInstanceSelectionEvent);
 
         ProcessInstanceSummary okProcInst = new ProcessInstanceSummary();
         presenter.selectProcessInstance(okProcInst);
 
-        verify(processInstanceSelectionEvent).fire(any(ProcessInstanceSelectionEvent.class));
+        ArgumentCaptor<ProcessInstanceSelectionEvent> argument = ArgumentCaptor.forClass(ProcessInstanceSelectionEvent.class);
+        verify(processInstanceSelectionEvent).fire(argument.capture());
         verify(placeManager).goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
         verify(viewMock,
                never()).displayNotification(anyString());
-    }
-
-    @Test
-    public void testSelectProcessInstanceWhenContainerStopped() {
-
-        when(containerSpecMock.getStatus()).thenReturn(KieContainerStatus.STOPPED);
-
-        presenter.setSpecManagementService(specManagementServiceCaller);
-        presenter.setProcessInstanceSelectedEvent(processInstanceSelectionEvent);
-
-        ProcessInstanceSummary okProcInst = new ProcessInstanceSummary();
-        presenter.selectProcessInstance(okProcInst);
-
-        verify(processInstanceSelectionEvent,
-               never()).fire(any(ProcessInstanceSelectionEvent.class));
-        verify(placeManager,
-               never()).goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
-        verify(viewMock).displayNotification(anyString());
     }
 
     @Test

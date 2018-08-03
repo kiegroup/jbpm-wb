@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,6 @@ import org.jbpm.workbench.common.events.ServerTemplateSelected;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
 import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
-import org.kie.server.api.model.KieContainerStatus;
-import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -339,29 +337,19 @@ public class ProcessDashboard extends AbstractDashboard {
         Integer processInstanceStatus = Double.valueOf(ds.getValueAt(rowIndex,
                                                                      COLUMN_PROCESS_STATUS).toString()).intValue();
 
-        specManagementService.call((ServerTemplate serverTemplate) -> {
-            if (serverTemplate != null &&
-                    serverTemplate.getContainerSpec(deploymentId) != null &&
-                    serverTemplate.getContainerSpec(deploymentId).getStatus().equals(KieContainerStatus.STARTED)) {
-                openProcessDetailsScreen();
-                setupDetailBreadcrumb(i18n.processDashboardName(),
-                                      i18n.ProcessInstanceBreadcrumb(processInstanceId),
-                                      PROCESS_INSTANCE_DETAILS_SCREEN);
+        openProcessDetailsScreen();
+        setupDetailBreadcrumb(i18n.processDashboardName(),
+                              i18n.ProcessInstanceBreadcrumb(processInstanceId),
+                              PROCESS_INSTANCE_DETAILS_SCREEN);
 
-                instanceSelectionEvent.fire(new ProcessInstanceSelectionEvent(
-                        deploymentId,
-                        processInstanceId,
-                        processDefId,
-                        processDefName,
-                        processInstanceStatus,
-                        true,
-                        serverTemplateSelectorMenuBuilder.getSelectedServerTemplate()));
-            } else {
-                displayNotification(i18n.processDetailsNotAvailableContainerNotStarted(deploymentId));
-                tableRedraw();
-            }
-        }).getServerTemplate(serverTemplateSelectorMenuBuilder.getSelectedServerTemplate());
-
+        instanceSelectionEvent.fire(new ProcessInstanceSelectionEvent(
+                deploymentId,
+                processInstanceId,
+                processDefId,
+                processDefName,
+                processInstanceStatus,
+                true,
+                serverTemplateSelectorMenuBuilder.getSelectedServerTemplate()));
     }
 
     public void showDashboard() {

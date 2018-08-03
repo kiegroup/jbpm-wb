@@ -37,7 +37,6 @@ import org.dashbuilder.dataset.filter.CoreFunctionType;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
@@ -55,9 +54,6 @@ import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.server.api.model.KieContainerStatus;
-import org.kie.server.controller.api.model.spec.ServerTemplate;
-import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
@@ -94,14 +90,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     private Caller<ProcessService> processService;
 
-    protected Caller<SpecManagementService> specManagementService;
-
     protected Event<ProcessInstanceSelectionEvent> processInstanceSelectionEvent;
-
-    @Inject
-    public void setSpecManagementService(final Caller<SpecManagementService> specManagementService) {
-        this.specManagementService = specManagementService;
-    }
 
     @Inject
     public void setProcessInstanceSelectedEvent(final Event<ProcessInstanceSelectionEvent> processInstanceSelectionEvent) {
@@ -143,7 +132,9 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
                     for (ProcessInstanceSummary pis : myProcessInstancesFromDataSet) {
                         String initiator = pis.getInitiator();
-                        if (pis.getProcessInstanceId().equals(processInstanceId) && !filterInitiator(variableName, variableValue, initiator)) {
+                        if (pis.getProcessInstanceId().equals(processInstanceId) && !filterInitiator(variableName,
+                                                                                                     variableValue,
+                                                                                                     initiator)) {
                             pis.addDomainData(variableName,
                                               variableValue);
                             columns.add(variableName);
@@ -161,7 +152,9 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         };
     }
 
-    protected boolean filterInitiator(String variableName, String variableValue, String initiator) {
+    protected boolean filterInitiator(String variableName,
+                                      String variableValue,
+                                      String initiator) {
         return variableName.equals("initiator") && variableValue.equals(initiator);
     }
 
@@ -313,37 +306,27 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         );
     }
 
-    public void newInstanceCreated(@Observes NewProcessInstanceEvent pi) {
+    public void newInstanceCreated(@Observes final NewProcessInstanceEvent pi) {
         refreshGrid();
     }
 
-    public void newInstanceCreated(@Observes ProcessInstancesUpdateEvent pis) {
+    public void newInstanceCreated(@Observes final ProcessInstancesUpdateEvent pis) {
         refreshGrid();
     }
 
     public void abortProcessInstance(String containerId,
                                      long processInstanceId) {
         view.displayNotification(constants.Aborting_Process_Instance(processInstanceId));
-        processService.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void v) {
-                refreshGrid();
-            }
-        }).abortProcessInstance(getSelectedServerTemplate(),
-                                containerId,
-                                processInstanceId);
+        processService.call((Void v) -> refreshGrid()).abortProcessInstance(getSelectedServerTemplate(),
+                                                                            containerId,
+                                                                            processInstanceId);
     }
 
     public void abortProcessInstances(List<String> containers,
                                       List<Long> processInstanceIds) {
-        processService.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void v) {
-                refreshGrid();
-            }
-        }).abortProcessInstances(getSelectedServerTemplate(),
-                                 containers,
-                                 processInstanceIds);
+        processService.call((Void v) -> refreshGrid()).abortProcessInstances(getSelectedServerTemplate(),
+                                                                             containers,
+                                                                             processInstanceIds);
     }
 
     public void bulkSignal(List<ProcessInstanceSummary> processInstances) {
@@ -432,22 +415,14 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     }
 
     public void selectProcessInstance(final ProcessInstanceSummary summary) {
-        specManagementService.call((ServerTemplate serverTemplate) -> {
-            if (serverTemplate != null &&
-                    serverTemplate.getContainerSpec(summary.getDeploymentId()) != null &&
-                    serverTemplate.getContainerSpec(summary.getDeploymentId()).getStatus().equals(KieContainerStatus.STARTED)) {
-                setupDetailBreadcrumb(constants.ProcessInstanceBreadcrumb(summary.getProcessInstanceId()));
-                placeManager.goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
-                processInstanceSelectionEvent.fire(new ProcessInstanceSelectionEvent(summary.getDeploymentId(),
-                                                                                     summary.getProcessInstanceId(),
-                                                                                     summary.getProcessId(),
-                                                                                     summary.getProcessName(),
-                                                                                     summary.getState(),
-                                                                                     getSelectedServerTemplate()));
-            } else {
-                view.displayNotification(constants.ProcessDetailsNotAvailableContainerNotStarted(summary.getDeploymentId()));
-            }
-        }).getServerTemplate(getSelectedServerTemplate());
+        setupDetailBreadcrumb(constants.ProcessInstanceBreadcrumb(summary.getProcessInstanceId()));
+        placeManager.goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
+        processInstanceSelectionEvent.fire(new ProcessInstanceSelectionEvent(summary.getDeploymentId(),
+                                                                             summary.getProcessInstanceId(),
+                                                                             summary.getProcessId(),
+                                                                             summary.getProcessName(),
+                                                                             summary.getState(),
+                                                                             getSelectedServerTemplate()));
     }
 
     public void formClosed(@Observes BeforeClosePlaceEvent closed) {

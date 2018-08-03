@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,11 @@ import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.jbpm.workbench.common.model.QueryFilter;
 import org.jbpm.workbench.pr.service.ProcessVariablesService;
+import org.kie.server.api.exception.KieServicesHttpException;
 import org.kie.server.api.model.definition.VariablesDefinition;
 import org.kie.server.api.model.instance.VariableInstance;
 import org.kie.server.client.ProcessServicesClient;
+import org.kie.server.client.QueryServicesClient;
 import org.uberfire.paging.PageResponse;
 
 @Service
@@ -67,7 +69,7 @@ public class RemoteProcessVariablesServiceImpl extends AbstractKieServerService 
         return response;
     }
 
-    private List<ProcessVariableSummary> getProcessVariables(QueryFilter filter) {
+    protected List<ProcessVariableSummary> getProcessVariables(QueryFilter filter) {
         Long processInstanceId = null;
         String processId = "";
         String deploymentId = "";
@@ -80,16 +82,20 @@ public class RemoteProcessVariablesServiceImpl extends AbstractKieServerService 
         }
 
         Map<String, String> properties = new HashMap<String, String>();
-
+        QueryServicesClient queryServicesClient = getClient(serverTemplateId,
+                                                            QueryServicesClient.class);
         ProcessServicesClient processClient = getClient(serverTemplateId,
                                                         ProcessServicesClient.class);
+        try {
+            //try to add all the process definitions available variables if it is available
+            VariablesDefinition vars = processClient.getProcessVariableDefinitions(deploymentId,
+                                                                                   processId);
+            properties.putAll(vars.getVariables());
+        } catch (KieServicesHttpException kieException) {
+            // It that vars can not be retrieve only the ones with associated value will be returned
+        }
 
-        VariablesDefinition vars = processClient.getProcessVariableDefinitions(deploymentId,
-                                                                               processId);
-        properties.putAll(vars.getVariables());
-
-        List<VariableInstance> variables = processClient.findVariablesCurrentState(deploymentId,
-                                                                                   processInstanceId);
+        List<VariableInstance> variables = queryServicesClient.findVariablesCurrentState(processInstanceId);
 
         Collection<ProcessVariableSummary> processVariables = VariableHelper.adaptCollection(variables,
                                                                                              properties,
@@ -114,10 +120,9 @@ public class RemoteProcessVariablesServiceImpl extends AbstractKieServerService 
                                                            String deploymentId,
                                                            Long processInstanceId,
                                                            String variableName) {
-        ProcessServicesClient processClient = getClient(serverTemplateId,
-                                                        ProcessServicesClient.class);
-        List<VariableInstance> variables = processClient.findVariableHistory(deploymentId,
-                                                                             processInstanceId,
+        QueryServicesClient processClient = getClient(serverTemplateId,
+                                                        QueryServicesClient.class);
+        List<VariableInstance> variables = processClient.findVariableHistory(processInstanceId,
                                                                              variableName,
                                                                              0,
                                                                              100);

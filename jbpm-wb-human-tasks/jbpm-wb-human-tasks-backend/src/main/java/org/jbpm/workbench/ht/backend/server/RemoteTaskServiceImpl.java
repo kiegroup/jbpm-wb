@@ -31,13 +31,18 @@ import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.kie.internal.identity.IdentityProvider;
 import org.kie.server.api.exception.KieServicesHttpException;
+import org.kie.server.api.model.definition.TaskField;
+import org.kie.server.api.model.definition.TaskQueryFilterSpec;
 import org.kie.server.api.model.instance.TaskComment;
 import org.kie.server.api.model.instance.TaskEventInstance;
 import org.kie.server.api.model.instance.TaskInstance;
+import org.kie.server.api.util.TaskQueryFilterSpecBuilder;
+import org.kie.server.client.QueryServicesClient;
 import org.kie.server.client.UserTaskServicesClient;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
+import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_DATASET;
 
 @Service
 @ApplicationScoped
@@ -56,19 +61,19 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
             return null;
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId,
-                                                  UserTaskServicesClient.class);
-        try {
-            TaskInstance task = client.getTaskInstance(containerId,
-                                                       taskId);
-            return new TaskSummaryMapper().apply(task);
-        } catch (KieServicesHttpException kieException) {
-            if (kieException.getHttpCode() == NOT_FOUND_ERROR_CODE) {
-                return null;
-            } else {
-                throw kieException;
-            }
+        QueryServicesClient queryServicesClient = getClient(serverTemplateId,
+                                                            QueryServicesClient.class);
+        TaskQueryFilterSpec filterSpec = new TaskQueryFilterSpecBuilder().equalsTo(TaskField.TASKID,
+                                                                                   taskId).get();
+
+        final List<TaskInstance> tasks = queryServicesClient.findHumanTasksWithFilters(HUMAN_TASKS_DATASET,
+                                                                                       filterSpec,
+                                                                                       0,
+                                                                                       Integer.MAX_VALUE);
+        if (tasks != null && tasks.size() == 1) {
+            return new TaskSummaryMapper().apply(tasks.get(0));
         }
+        return null;
     }
 
     @Override

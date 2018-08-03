@@ -35,9 +35,6 @@ import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.server.api.model.KieContainerStatus;
-import org.kie.server.controller.api.model.spec.ServerTemplate;
-import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -98,8 +95,6 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
 
     @Inject
     private RuntimeLogPresenter runtimeLogPresenter;
-
-    protected Caller<SpecManagementService> specManagementService;
 
     private String selectedDeploymentId = "";
 
@@ -168,7 +163,7 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
         this.forLog = isForLog;
     }
 
-    public void onProcessSelectionEvent(@Observes ProcessInstanceSelectionEvent event) {
+    public void onProcessSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
         boolean refreshDetails = (event != null && event.getProcessInstanceId() != null && event.getProcessInstanceId().equals(processInstanceId));
 
         deploymentId = event.getDeploymentId();
@@ -200,22 +195,13 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
 
     @Override
     public void onRefresh() {
-        specManagementService.call((ServerTemplate serverTemplate) -> {
-            if (serverTemplate != null &&
-                    serverTemplate.getContainerSpec(selectedDeploymentId) != null &&
-                    serverTemplate.getContainerSpec(selectedDeploymentId).getStatus().equals(KieContainerStatus.STARTED)) {
-
-                processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedDeploymentId,
+        processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedDeploymentId,
                                                                        processInstanceId,
                                                                        processId,
                                                                        selectedProcessDefName,
                                                                        selectedProcessInstanceStatus,
                                                                        isForLog(),
                                                                        serverTemplateId));
-            } else {
-                view.displayNotification(constants.ProcessDetailsNotAvailableContainerNotStarted(selectedDeploymentId));
-            }
-        }).getServerTemplate(serverTemplateId);
     }
 
     public void signalProcessInstance() {
@@ -292,11 +278,6 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
 
     public IsWidget getProcessDiagramView() {
         return processDiagramPresenter.getView();
-    }
-
-    @Inject
-    public void setSpecManagementService(final Caller<SpecManagementService> specManagementService) {
-        this.specManagementService = specManagementService;
     }
 
     public interface ProcessInstanceDetailsView extends UberView<ProcessInstanceDetailsPresenter> {

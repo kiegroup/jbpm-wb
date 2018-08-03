@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import org.dashbuilder.displayer.client.AbstractDisplayer;
 import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.displayer.client.DisplayerListener;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
-import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.dashboard.renderer.client.panel.DashboardKpis;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.dashboard.renderer.client.panel.AbstractDashboard;
@@ -34,24 +33,18 @@ import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.server.api.model.KieContainerStatus;
-import org.kie.server.controller.api.model.spec.ContainerSpec;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
-import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PerspectiveManager;
-import org.uberfire.client.mvp.PlaceStatus;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
-import org.uberfire.mocks.CallerMock;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import static org.dashbuilder.dataset.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 import static org.jbpm.dashboard.renderer.model.DashboardData.*;
-import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProcessDashboardTest extends AbstractDashboardTest {
@@ -75,18 +68,10 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
     UberfireBreadcrumbs uberfireBreadcrumbsMock;
 
     @Mock
-    ContainerSpec containerSpecMock;
-
-    @Mock
     ServerTemplate serverTemplateMock;
 
     @Mock
     Event<NotificationEvent> notificationEvent;
-
-    @Mock
-    SpecManagementService specManagementService;
-
-    Caller<SpecManagementService> specManagementServiceCaller;
 
     ProcessDashboard presenter;
     DataSet dataSet;
@@ -120,7 +105,6 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
     @Before
     public void init() throws Exception {
         super.init();
-        specManagementServiceCaller = new CallerMock<SpecManagementService>(specManagementService);
         presenter = new ProcessDashboard(view,
                                          processBreadCrumb,
                                          clientServices,
@@ -129,11 +113,8 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
                                          placeManager,
                                          instanceSelectionEvent,
                                          serverTemplateSelectorMenuBuilder);
-        presenter.setSpecManagementService(specManagementServiceCaller);
         presenter.setNotificationEvent(notificationEvent);
         when(perspectiveManagerMock.getCurrentPerspective()).thenReturn(mock(PerspectiveActivity.class));
-        when(specManagementService.getServerTemplate(anyString())).thenReturn(serverTemplateMock);
-        when(serverTemplateMock.getContainerSpec(anyString())).thenReturn(containerSpecMock);
         presenter.setPerspectiveManager(perspectiveManagerMock);
         presenter.setUberfireBreadcrumbs(uberfireBreadcrumbsMock);
         presenter.init();
@@ -497,29 +478,6 @@ public class ProcessDashboardTest extends AbstractDashboardTest {
                                     {"4.00", "org.jbpm.test", "1", "Process B", "user2", "2.00", "1", "01/01/19 12:00", "01/02/19 10:00", "100,000.00"}
                             },
                             0);
-    }
-
-    @Test
-    public void testOpenInstanceDetailsWhenContainerStarted() {
-        when(placeManager.getStatus(PROCESS_INSTANCE_DETAILS_SCREEN)).thenReturn(PlaceStatus.CLOSE);
-        when(containerSpecMock.getStatus()).thenReturn(KieContainerStatus.STARTED);
-        presenter.tableCellSelected(COLUMN_PROCESS_INSTANCE_ID,
-                                    3);
-        verify(instanceSelectionEvent).fire(any(ProcessInstanceSelectionEvent.class));
-        verify(placeManager).goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
-    }
-
-    @Test
-    public void testOpenInstanceDetailsWhenContainerStopped() {
-        when(placeManager.getStatus(PROCESS_INSTANCE_DETAILS_SCREEN)).thenReturn(PlaceStatus.CLOSE);
-        when(containerSpecMock.getStatus()).thenReturn(KieContainerStatus.STOPPED);
-        presenter.tableCellSelected(COLUMN_PROCESS_INSTANCE_ID,
-                                    3);
-        verify(instanceSelectionEvent,
-               never()).fire(any(ProcessInstanceSelectionEvent.class));
-        verify(placeManager,
-               never()).goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
-        verify(notificationEvent).fire(any(NotificationEvent.class));
     }
 
     @Test

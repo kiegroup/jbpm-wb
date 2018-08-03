@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,8 +85,7 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         final ProcessInstance processInstanceSpy = spy(ProcessInstance.builder()
                                                                .activeUserTasks(taskSummaryListSpy)
                                                                .build());
-        when(processServicesClient.getProcessInstance(containerId,
-                                                      processInstanceId)).thenReturn(processInstanceSpy);
+        when(queryServicesClient.findProcessInstanceById(processInstanceId)).thenReturn(processInstanceSpy);
         service.getProcessInstance(serverTemplateId,
                                    new ProcessInstanceKey(serverTemplateId,
                                                           containerId,
@@ -115,18 +114,16 @@ public class RemoteProcessRuntimeDataServiceImplTest {
     private void verifyCurrentActivities(Long processInstanceId) {
         final NodeInstance nodeInstanceMock = mock(NodeInstance.class);
         final List<NodeInstance> nodeInstanceList = singletonList(nodeInstanceMock);
-        when(processServicesClient.findActiveNodeInstances(containerId,
-                                                           processInstanceId,
-                                                           0,
-                                                           Integer.MAX_VALUE)).thenReturn(nodeInstanceList);
+        when(queryServicesClient.findActiveNodeInstances(processInstanceId,
+                                                         0,
+                                                         Integer.MAX_VALUE)).thenReturn(nodeInstanceList);
         when(nodeInstanceMock.getDate()).thenReturn(new Date());
         service.getProcessInstanceActiveNodes(serverTemplateId,
                                               containerId,
                                               processInstanceId);
-        verify(processServicesClient).findActiveNodeInstances(containerId,
-                                                              processInstanceId,
-                                                              0,
-                                                              Integer.MAX_VALUE);
+        verify(queryServicesClient).findActiveNodeInstances(processInstanceId,
+                                                            0,
+                                                            Integer.MAX_VALUE);
         verify(nodeInstanceMock).getDate();
         verify(nodeInstanceMock).getId();
         verify(nodeInstanceMock).getName();
@@ -259,10 +256,9 @@ public class RemoteProcessRuntimeDataServiceImplTest {
                 .completed(false)
                 .build();
 
-        when(processServicesClient.findNodeInstances(containerId,
-                                                     processInstanceId,
-                                                     0,
-                                                     Integer.MAX_VALUE))
+        when(queryServicesClient.findNodeInstances(processInstanceId,
+                                                   0,
+                                                   Integer.MAX_VALUE))
                 .thenReturn(Arrays.asList(nodeInstance1,
                                           nodeInstance2));
 

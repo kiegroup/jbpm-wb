@@ -47,8 +47,6 @@ import org.jbpm.workbench.common.events.ServerTemplateSelected;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
-import org.kie.server.api.model.KieContainerStatus;
-import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -388,12 +386,6 @@ public class TaskDashboard extends AbstractDashboard {
     public void tableCellSelected(String columnId,
                                   int rowIndex) {
         final DataSet ds = tasksTable.getDataSetHandler().getLastDataSet();
-        final String status = ds.getValueAt(rowIndex,
-                                            COLUMN_TASK_STATUS).toString();
-        if (TASK_STATUS_EXITED.equalsIgnoreCase(status) || TASK_STATUS_COMPLETED.equals(status)) {
-            displayNotification(i18n.taskDetailsNotAvailable());
-            return;
-        }
 
         final Long taskId = Double.valueOf(ds.getValueAt(rowIndex,
                                                          COLUMN_TASK_ID).toString()).longValue();
@@ -402,36 +394,38 @@ public class TaskDashboard extends AbstractDashboard {
 
         final String serverTemplateId = serverTemplateSelectorMenuBuilder.getSelectedServerTemplate();
 
-        specManagementService.call((ServerTemplate serverTemplate) -> {
-            if (serverTemplate != null &&
-                    serverTemplate.getContainerSpec(deploymentId) != null &&
-                    serverTemplate.getContainerSpec(deploymentId).getStatus().equals(KieContainerStatus.STARTED)) {
-                taskDataService.call((TaskSummary taskSummary) -> {
-                    openTaskDetailsScreen();
-                    setupDetailBreadcrumb(i18n.taskDashboardName(),
-                                          i18n.TaskBreadcrumb(taskId),
-                                          TASK_DETAILS_SCREEN);
-                    taskSelectionEvent.fire(new TaskSelectionEvent(serverTemplateId,
-                                                                   taskSummary.getDeploymentId(),
-                                                                   taskSummary.getId(),
-                                                                   taskSummary.getName(),
-                                                                   false,
-                                                                   true,
-                                                                   taskSummary.getDescription(),
-                                                                   taskSummary.getExpirationTime(),
-                                                                   taskSummary.getStatus(),
-                                                                   taskSummary.getActualOwner(),
-                                                                   taskSummary.getPriority(),
-                                                                   taskSummary.getProcessInstanceId(),
-                                                                   taskSummary.getProcessId()));
+        taskDataService.call(
+                (TaskSummary taskSummary) -> {
+                    if (taskSummary != null) {
+                        openTaskDetailsScreen();
+                        setupDetailBreadcrumb(i18n.taskDashboardName(),
+                                              i18n.TaskBreadcrumb(taskId),
+                                              TASK_DETAILS_SCREEN);
+                        taskSelectionEvent.fire(new TaskSelectionEvent(serverTemplateId,
+                                                                       taskSummary.getDeploymentId(),
+                                                                       taskSummary.getId(),
+                                                                       taskSummary.getName(),
+                                                                       false,
+                                                                       true,
+                                                                       taskSummary.getDescription(),
+                                                                       taskSummary.getExpirationTime(),
+                                                                       taskSummary.getStatus(),
+                                                                       taskSummary.getActualOwner(),
+                                                                       taskSummary.getPriority(),
+                                                                       taskSummary.getProcessInstanceId(),
+                                                                       taskSummary.getProcessId()));
+                    } else {
+                        displayNotification(i18n.taskDetailsNotAvailable());
+                        tableRedraw();
+                    }
+                },
+                (message, throwable) -> {
+                    displayNotification(i18n.taskDetailsNotAvailableContainerNotStartedOrUnreacheable(deploymentId));
+                    tableRedraw();
+                    return false;
                 }).getTask(serverTemplateId,
                            deploymentId,
                            taskId);
-            } else {
-                displayNotification(i18n.taskDetailsNotAvailableContainerNotStarted(deploymentId));
-                tableRedraw();
-            }
-        }).getServerTemplate(serverTemplateSelectorMenuBuilder.getSelectedServerTemplate());
     }
 
     public void showDashboard() {

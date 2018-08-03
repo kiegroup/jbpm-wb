@@ -79,8 +79,6 @@ public interface DashboardI18n {
 
     String processStatusSuspended();
 
-    String processDetailsNotAvailableContainerNotStarted(String containerId);
-
     String totalProcesses();
 
     String pendingProcesses();
@@ -237,7 +235,7 @@ public interface DashboardI18n {
 
     String taskDetailsNotAvailable();
 
-    String taskDetailsNotAvailableContainerNotStarted(String containerId);
+    String taskDetailsNotAvailableContainerNotStartedOrUnreacheable(String containerId);
 
     String displayerNotFound(String name);
 

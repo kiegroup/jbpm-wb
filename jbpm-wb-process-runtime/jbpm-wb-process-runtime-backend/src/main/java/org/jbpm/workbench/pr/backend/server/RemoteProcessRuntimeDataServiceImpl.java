@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,11 +53,10 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
             return null;
         }
 
-        ProcessServicesClient queryServicesClient = getClient(serverTemplateId,
-                                                              ProcessServicesClient.class);
+        QueryServicesClient queryServicesClient = getClient(serverTemplateId,
+                                                            QueryServicesClient.class);
 
-        ProcessInstance processInstance = queryServicesClient.getProcessInstance(processInstanceKey.getDeploymentId(),
-                                                                                 processInstanceKey.getProcessInstanceId());
+        ProcessInstance processInstance = queryServicesClient.findProcessInstanceById(processInstanceKey.getProcessInstanceId());
 
         return build(processInstance);
     }
@@ -71,13 +70,12 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
         }
 
         List<NodeInstanceSummary> instances = new ArrayList<NodeInstanceSummary>();
-        ProcessServicesClient processServicesClient = getClient(serverTemplateId,
-                                                                ProcessServicesClient.class);
+        QueryServicesClient queryServicesClient = getClient(serverTemplateId,
+                                                            QueryServicesClient.class);
 
-        List<NodeInstance> nodeInstances = processServicesClient.findActiveNodeInstances(deploymentId,
-                                                                                         processInstanceId,
-                                                                                         0,
-                                                                                         Integer.MAX_VALUE);
+        List<NodeInstance> nodeInstances = queryServicesClient.findActiveNodeInstances(processInstanceId,
+                                                                                       0,
+                                                                                       Integer.MAX_VALUE);
 
         for (NodeInstance instance : nodeInstances) {
             NodeInstanceSummary summary = new NodeInstanceSummary(instance.getId(),
@@ -103,11 +101,9 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
             return emptyList();
         }
 
-        ProcessServicesClient processServicesClient = getClient(serverTemplateId,
-                                                                ProcessServicesClient.class);
-
-        List<NodeInstance> processInstanceHistory = processServicesClient.findNodeInstances(deploymentId,
-                                                                                            processInstanceId,
+        QueryServicesClient queryServicesClient = getClient(serverTemplateId,
+                                                            QueryServicesClient.class);
+        List<NodeInstance> processInstanceHistory = queryServicesClient.findNodeInstances(processInstanceId,
                                                                                             0,
                                                                                             Integer.MAX_VALUE);
 
