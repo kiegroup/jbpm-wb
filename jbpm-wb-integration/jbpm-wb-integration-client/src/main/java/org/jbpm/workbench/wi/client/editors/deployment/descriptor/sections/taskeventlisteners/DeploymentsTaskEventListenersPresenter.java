@@ -107,13 +107,9 @@ public class DeploymentsTaskEventListenersPresenter extends Section<DeploymentDe
     @Dependent
     public static class TaskEventListenersListPresenter extends SectionListPresenter<ItemObjectModel, ObjectItemPresenter> {
 
-        private final ItemObjectModelFactory itemObjectModelFactory;
-        
         @Inject
-        public TaskEventListenersListPresenter(final ManagedInstance<ObjectItemPresenter> itemPresenters ,final ItemObjectModelFactory itemObjectModelFactory) {
+        public TaskEventListenersListPresenter(final ManagedInstance<ObjectItemPresenter> itemPresenters ) {
             super(itemPresenters);
-            this.itemObjectModelFactory = itemObjectModelFactory;
         }
     }
-
 }

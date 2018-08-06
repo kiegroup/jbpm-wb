@@ -64,7 +64,7 @@ public class ObjectItemView implements ObjectItemPresenter.View,
     
     @EventHandler("edit-button")
     public void onEditButtonClicked(final ClickEvent ignore) {
-        presenter.openEditModal(value.textContent);;
+        presenter.openEditModal();;
     }
 
     private ObjectItemPresenter presenter;

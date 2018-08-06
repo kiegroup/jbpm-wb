@@ -112,7 +112,5 @@ public class DeploymentsEventListenersPresenter extends Section<DeploymentDescri
         public EventListenersListPresenter(final ManagedInstance<ObjectItemPresenter> itemPresenters) {
             super(itemPresenters);
         }
-
     }
-
 }

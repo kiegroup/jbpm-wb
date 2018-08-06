@@ -25,6 +25,7 @@ import org.jbpm.workbench.wi.dd.model.Parameter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionListPresenter;
 import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -49,6 +50,9 @@ public class NamedObjectItemPresenterTest {
     private KieEnumSelectElement<Resolver> resolversSelect;
 
     private NamedObjectItemPresenter namedObjectItemPresenter;
+    
+    @Mock
+    private ItemObjectModel model;
 
     @Before
     public void before() {
@@ -96,5 +100,17 @@ public class NamedObjectItemPresenterTest {
 
         verify(view).setParametersCount(eq(1));
         verify(parentPresenter).fireChangeEvent();
+    }
+    
+    @Test
+    public void testOpenEditModal() {
+        final ItemObjectModel model = new ItemObjectModel("Name", "Value", "mvel", ImmutableList.of(new Parameter("Foo", "Bar")));
+        final DeploymentsSectionPresenter parentPresenter = mock(DeploymentsSectionPresenter.class);
+        namedObjectItemPresenter.setup(model, parentPresenter);
+        final SectionListPresenter<ItemObjectModel, NamedObjectItemPresenter> listPresenter = mock(SectionListPresenter.class);
+        namedObjectItemPresenter.setListPresenter(listPresenter);
+        namedObjectItemPresenter.openEditModal(any(), any());
+        verify(namedObjectItemPresenter).getSectionListPresenter();
+        verify(listPresenter).showDoubleValueEditModal(any(), any(), any());
     }
 }

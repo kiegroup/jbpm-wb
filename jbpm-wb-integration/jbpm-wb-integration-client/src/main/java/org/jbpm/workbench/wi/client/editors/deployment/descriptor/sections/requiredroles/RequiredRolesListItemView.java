@@ -58,7 +58,7 @@ public class RequiredRolesListItemView implements RequiredRolesListItemPresenter
     
     @EventHandler("edit-button")
     public void onEditButtonClicked(final ClickEvent ignore) {
-        presenter.openRequiredRoleModal(role.textContent);
+        presenter.openRequiredRoleModal();
     }
 
     @Override

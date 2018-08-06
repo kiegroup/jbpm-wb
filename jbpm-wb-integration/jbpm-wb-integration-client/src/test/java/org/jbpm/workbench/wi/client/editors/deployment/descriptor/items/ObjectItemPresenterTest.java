@@ -19,13 +19,13 @@ package org.jbpm.workbench.wi.client.editors.deployment.descriptor.items;
 import com.google.common.collect.ImmutableList;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.DeploymentsSectionPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.marshallingstrategies.DeploymentsMarshallingStrategiesPresenter;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.marshallingstrategies.DeploymentsMarshallingStrategiesPresenter.MarshallingStrategiesListPresenter;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.model.Parameter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionListPresenter;
 import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -96,5 +96,17 @@ public class ObjectItemPresenterTest {
 
         verify(view).setParametersCount(eq(1));
         verify(parentPresenter).fireChangeEvent();
+    }
+    
+    @Test
+    public void testOpenEditModal() {
+        final ItemObjectModel model = new ItemObjectModel(null, "Value", "reflection", ImmutableList.of(new Parameter("Foo", "Bar")));
+        final DeploymentsSectionPresenter parentPresenter = mock(DeploymentsSectionPresenter.class);
+        objectItemPresenter.setup(model, parentPresenter);
+        final SectionListPresenter<ItemObjectModel, ObjectItemPresenter> listPresenter = mock(SectionListPresenter.class);
+        objectItemPresenter.setListPresenter(listPresenter);
+        objectItemPresenter.openEditModal(any());
+        verify(objectItemPresenter).getSectionListPresenter();
+        verify(listPresenter).showSingleValueEditModal(any(), any());
     }
 }

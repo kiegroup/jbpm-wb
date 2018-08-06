@@ -81,7 +81,7 @@ public class NamedObjectItemView implements NamedObjectItemPresenter.View,
     
     @EventHandler("edit-button")
     public void onEditButtonClicked(final ClickEvent ignore) {
-        presenter.openEditModal(name.textContent, value.textContent);;
+        presenter.openEditModal();;
     }
 
     @EventHandler("parameters-link")

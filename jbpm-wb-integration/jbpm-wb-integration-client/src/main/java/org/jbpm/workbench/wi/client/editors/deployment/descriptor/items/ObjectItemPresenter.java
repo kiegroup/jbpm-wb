@@ -104,7 +104,7 @@ public class ObjectItemPresenter extends SectionListItemPresenter<ItemObjectMode
         fireChangeEvent();
     }
 
-    public void openEditModal(final String value) {
+    public void openEditModal() {
         ItemObjectModel itemObjectModel = new ItemObjectModel();
         itemObjectModel.setParameters(model.getParameters());
         itemObjectModel.setResolver(model.getResolver());
@@ -116,7 +116,7 @@ public class ObjectItemPresenter extends SectionListItemPresenter<ItemObjectMode
             this.getSectionListPresenter().add(itemObjectModel);
             fireChangeEvent();
         });
-        getSectionListPresenter().showSingleValueEditModal( value ,editConsumer );
+        getSectionListPresenter().showSingleValueEditModal( model.getValue() ,editConsumer );
     }
     
     public interface View extends ListItemView<ObjectItemPresenter> {

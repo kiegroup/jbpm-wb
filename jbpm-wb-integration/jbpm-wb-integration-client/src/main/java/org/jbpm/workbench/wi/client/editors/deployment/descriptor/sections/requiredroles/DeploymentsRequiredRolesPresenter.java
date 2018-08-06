@@ -84,11 +84,6 @@ public class DeploymentsRequiredRolesPresenter extends Section<DeploymentDescrip
         addRequiredRoleModal.show(this::addRequiredRole);
     }
 
-    public void openModfiyRequireRoleModal(final String role) {
-//        addRequiredRoleModal.getView().setValue(role);
-//        addRequiredRoleModal.showEditModel(this::addRequiredRole);
-    }
-    
     void addRequiredRole(final String role) {
         requiredRolesListPresenter.add(role);
         fireChangeEvent();
@@ -112,5 +107,4 @@ public class DeploymentsRequiredRolesPresenter extends Section<DeploymentDescrip
             super(itemPresenters);
         }
     }
-
 }

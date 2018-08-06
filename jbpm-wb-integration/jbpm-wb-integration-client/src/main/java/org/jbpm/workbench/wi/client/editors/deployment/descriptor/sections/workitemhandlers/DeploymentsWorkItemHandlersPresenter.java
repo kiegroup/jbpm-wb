@@ -114,5 +114,4 @@ public class DeploymentsWorkItemHandlersPresenter extends Section<DeploymentDesc
             super(itemPresenters);
         }
     }
-
 }

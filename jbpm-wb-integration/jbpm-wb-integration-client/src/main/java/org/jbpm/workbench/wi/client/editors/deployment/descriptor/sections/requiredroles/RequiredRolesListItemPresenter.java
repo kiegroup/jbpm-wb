@@ -64,7 +64,7 @@ public class RequiredRolesListItemPresenter extends SectionListItemPresenter<Str
         void setRole(final String role);
     }
     
-    public void openRequiredRoleModal(final String role) {
+    public void openRequiredRoleModal() {
         Consumer<String> removeConsumer = v ->{
             super.remove();
         };

@@ -103,7 +103,7 @@ public class NamedObjectItemPresenter extends SectionListItemPresenter<ItemObjec
         fireChangeEvent();
     }
 
-    public void openEditModal(final String name,final String value) {
+    public void openEditModal() {
         ItemObjectModel itemObjectModel = new ItemObjectModel();
         itemObjectModel.setParameters(model.getParameters());
         itemObjectModel.setResolver(model.getResolver());
@@ -118,7 +118,7 @@ public class NamedObjectItemPresenter extends SectionListItemPresenter<ItemObjec
             this.getSectionListPresenter().add(itemObjectModel);
             fireChangeEvent();
         });
-        this.getSectionListPresenter().showDoubleValueEditModal(name,value, editConsumer);
+        this.getSectionListPresenter().showDoubleValueEditModal(model.getName(),model.getValue(), editConsumer);
     }
     public interface View extends ListItemView<NamedObjectItemPresenter> {
 
