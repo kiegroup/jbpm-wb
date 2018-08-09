@@ -147,9 +147,9 @@ public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest
 
         presenter.closeCaseInstance();
 
-        verify(caseManagementService).closeCaseInstance(serverTemplateId,
-                                                        cis.getContainerId(),
-                                                        cis.getCaseId());
+        verify(caseManagementService).closeCaseInstance(cis.getContainerId(),
+                                                        cis.getCaseId(),
+                                                        null);
         final ArgumentCaptor<CaseClosedEvent> captor = ArgumentCaptor.forClass(CaseClosedEvent.class);
         verify(caseDestroyEvent).fire(captor.capture());
         assertEquals(cis.getCaseId(),

@@ -92,14 +92,14 @@ public class CaseInstanceListPresenterTest {
     }
 
     @Test
-    public void testDestroyCaseInstance() {
+    public void testCloseCaseInstance() {
         final CaseInstanceSummary cis = caseInstanceSummaryList.remove(0);
 
         presenter.closeCaseInstance(cis);
 
-        verify(caseManagementService).closeCaseInstance(null,
-                                                        cis.getContainerId(),
-                                                        cis.getCaseId());
+        verify(caseManagementService).closeCaseInstance(cis.getContainerId(),
+                                                        cis.getCaseId(),
+                                                        null);
         verify(caseManagementService).getCaseInstances(any(CaseInstanceSearchRequest.class));
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
         verify(view).setCaseInstanceList(captor.capture());
