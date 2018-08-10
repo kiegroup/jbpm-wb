@@ -59,7 +59,7 @@ public class ProcessDiagramPresenterTest {
         presenter.onProcessSelectionEvent(new ProcessDefSelectionEvent());
 
         verify(view,
-               times(2)).displayMessage(Constants.INSTANCE.Process_Diagram_Not_Found());
+               times(2)).displayMessage(Constants.INSTANCE.Process_Diagram_Not_FoundContainerShouldBeAvailable(anyString()));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class ProcessDiagramPresenterTest {
         presenter.onProcessSelectionEvent(new ProcessDefSelectionEvent());
 
         verify(view,
-               never()).displayMessage(Constants.INSTANCE.Process_Diagram_Not_Found());
+               never()).displayMessage(Constants.INSTANCE.Process_Diagram_Not_FoundContainerShouldBeAvailable(anyString()));
         verify(view).displayImage(svgContent);
     }
 
@@ -97,7 +97,7 @@ public class ProcessDiagramPresenterTest {
                                                                                     null));
 
         verify(view,
-               times(2)).displayMessage(Constants.INSTANCE.Process_Diagram_Not_Found());
+               times(2)).displayMessage(Constants.INSTANCE.Process_Diagram_Not_FoundContainerShouldBeAvailable(anyString()));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class ProcessDiagramPresenterTest {
                                                                                     null));
 
         verify(view,
-               never()).displayMessage(Constants.INSTANCE.Process_Diagram_Not_Found());
+               never()).displayMessage(Constants.INSTANCE.Process_Diagram_Not_FoundContainerShouldBeAvailable(anyString()));
         verify(view).displayImage(svgContent);
     }
 }

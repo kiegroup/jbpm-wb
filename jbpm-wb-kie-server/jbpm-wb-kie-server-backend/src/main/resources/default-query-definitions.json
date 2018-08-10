@@ -3,7 +3,7 @@
     "query-name": "jbpmProcessInstances",
     "query-source": "${org.kie.server.persistence.ds}",
     "query-expression": "select log.processInstanceId, log.processId, log.start_date, log.end_date, log.status, log.parentProcessInstanceId, log.outcome, log.duration, log.user_identity, log.processVersion, log.processName, log.correlationKey, log.externalId, log.processInstanceDescription, log.sla_due_date, log.slaCompliance, COALESCE(info.lastModificationDate, log.end_date) as lastModificationDate, (select COUNT(errInfo.id) from ExecutionErrorInfo errInfo where errInfo.process_inst_id=log.processInstanceId and errInfo.error_ack=0) as errorCount from ProcessInstanceLog log left join ProcessInstanceInfo info on info.InstanceId=log.processInstanceId",
-    "query-target": "FILTERED_PROCESS"
+    "query-target": "CUSTOM"
   },
   {
     "query-name": "jbpmProcessInstancesWithVariables",

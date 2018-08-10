@@ -281,7 +281,5 @@ public interface Constants extends Messages {
     
     String SlaDueDate();
 
-    String Process_Diagram_Not_Found();
-
-    String ProcessDetailsNotAvailableContainerNotStarted(String containerId);
+    String Process_Diagram_Not_FoundContainerShouldBeAvailable(String container);
 }

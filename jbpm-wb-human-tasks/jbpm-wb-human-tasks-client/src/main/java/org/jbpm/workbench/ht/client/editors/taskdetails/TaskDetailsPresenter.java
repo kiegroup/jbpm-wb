@@ -137,17 +137,24 @@ public class TaskDetailsPresenter {
 
     public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {
         if (currentTaskId == event.getTaskId()) {
-            taskService.call((TaskSummary task) -> {
-                setTaskDetails(translationService.format(task.getStatus()),
-                               task.getDescription(),
-                               task.getActualOwner(),
-                               task.getExpirationTime(),
-                               String.valueOf(task.getPriority()),
-                               task.getProcessInstanceId(),
-                               task.getProcessId());
-            }).getTask(currentServerTemplateId,
-                       currentContainerId,
-                       currentTaskId);
+            taskService.call(
+                    (TaskSummary task) -> {
+                        if (task != null) {
+                            setTaskDetails(translationService.format(task.getStatus()),
+                                           task.getDescription(),
+                                           task.getActualOwner(),
+                                           task.getExpirationTime(),
+                                           String.valueOf(task.getPriority()),
+                                           task.getProcessInstanceId(),
+                                           task.getProcessId());
+                        }
+                    },
+                    (message, throwable) -> {
+                        view.displayNotification(constants.TaskDetailsNotAvailableContainerNotStartedOrUnreacheable(event.getDeploymentId()));
+                        return false;
+                    }).getTask(currentServerTemplateId,
+                               currentContainerId,
+                               currentTaskId);
         }
     }
 

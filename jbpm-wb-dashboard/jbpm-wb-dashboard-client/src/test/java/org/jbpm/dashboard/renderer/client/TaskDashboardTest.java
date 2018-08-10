@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,10 +38,7 @@ import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.server.api.model.KieContainerStatus;
-import org.kie.server.controller.api.model.spec.ContainerSpec;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
-import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.mvp.PerspectiveActivity;
@@ -84,18 +81,10 @@ public class TaskDashboardTest extends AbstractDashboardTest {
     UberfireBreadcrumbs uberfireBreadcrumbsMock;
 
     @Mock
-    ContainerSpec containerSpecMock;
-
-    @Mock
     ServerTemplate serverTemplateMock;
 
     @Mock
     Event<NotificationEvent> notificationEvent;
-
-    @Mock
-    SpecManagementService specManagementService;
-
-    Caller<SpecManagementService> specManagementServiceCaller;
 
     TaskDashboard presenter;
     DataSet dataSet;
@@ -146,12 +135,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
         presenter.setPerspectiveManager(perspectiveManagerMock);
         presenter.setUberfireBreadcrumbs(uberfireBreadcrumbsMock);
 
-        specManagementServiceCaller = new CallerMock<>(specManagementService);
-        presenter.setSpecManagementService(specManagementServiceCaller);
         presenter.setNotificationEvent(notificationEvent);
-        when(specManagementService.getServerTemplate(anyString())).thenReturn(serverTemplateMock);
-        when(serverTemplateMock.getContainerSpec(anyString())).thenReturn(containerSpecMock);
-
         presenter.init();
     }
 
@@ -536,50 +520,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
     }
 
     @Test
-    public void testTaskInstanceNoDetailsStatusExited() {
-        when(taskService.getTask(anyString(),
-                                 anyString(),
-                                 anyLong())).thenReturn(mock(TaskSummary.class));
-        when(placeManager.getStatus(TASK_DETAILS_SCREEN)).thenReturn(PlaceStatus.CLOSE);
-        TableDisplayer tableDisplayer = presenter.getTasksTable();
-        tableDisplayer.selectCell(COLUMN_TASK_ID,
-                                  3);
-        DataSet currentDataSet = presenter.getTasksTable().getDataSetHandler().getLastDataSet();
-
-        assertEquals(TASK_STATUS_EXITED,
-                     currentDataSet.getValueAt(0,
-                                               COLUMN_TASK_STATUS));
-        verify(notificationEvent).fire(any(NotificationEvent.class));
-        verify(taskSelectionEvent,
-               never()).fire(any(TaskSelectionEvent.class));
-        verify(placeManager,
-               never()).goTo(TASK_DETAILS_SCREEN);
-    }
-
-    @Test
-    public void testTaskInstanceNoDetailsStatusComplete() {
-        when(taskService.getTask(anyString(),
-                                 anyString(),
-                                 anyLong())).thenReturn(mock(TaskSummary.class));
-        when(placeManager.getStatus(TASK_DETAILS_SCREEN)).thenReturn(PlaceStatus.CLOSE);
-        TableDisplayer tableDisplayer = presenter.getTasksTable();
-        tableDisplayer.selectCell(COLUMN_TASK_ID,
-                                  2);
-        DataSet currentDataSet = presenter.getTasksTable().getDataSetHandler().getLastDataSet();
-
-        assertEquals(TASK_STATUS_COMPLETED,
-                     currentDataSet.getValueAt(0,
-                                               COLUMN_TASK_STATUS));
-        verify(notificationEvent).fire(any(NotificationEvent.class));
-        verify(taskSelectionEvent,
-               never()).fire(any(TaskSelectionEvent.class));
-        verify(placeManager,
-               never()).goTo(TASK_DETAILS_SCREEN);
-    }
-
-    @Test
-    public void testOpenInstanceDetailsWhenContainerStarted() {
-        when(containerSpecMock.getStatus()).thenReturn(KieContainerStatus.STARTED);
+    public void testOpenInstanceDetails() {
         when(taskService.getTask(anyString(),
                                  anyString(),
                                  anyLong())).thenReturn(mock(TaskSummary.class));
@@ -593,11 +534,10 @@ public class TaskDashboardTest extends AbstractDashboardTest {
     }
 
     @Test
-    public void testOpenInstanceDetailsWhenContainerStopped() {
-        when(containerSpecMock.getStatus()).thenReturn(KieContainerStatus.STOPPED);
+    public void testOpenInstanceUnavailableDetails() {
         when(taskService.getTask(anyString(),
                                  anyString(),
-                                 anyLong())).thenReturn(mock(TaskSummary.class));
+                                 anyLong())).thenReturn(null);
         when(placeManager.getStatus(TASK_DETAILS_SCREEN)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
         tableDisplayer.selectCell(COLUMN_TASK_ID,
