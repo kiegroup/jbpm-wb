@@ -131,11 +131,13 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public void closeCaseInstance(final String serverTemplateId,
-                                  final String containerId,
-                                  final String caseId) {
-        client.destroyCaseInstance(containerId,
-                                   caseId);
+    public void closeCaseInstance(final String containerId,
+                                  final String caseId,
+                                  final String comment) {
+        client.closeCaseInstance(containerId,
+                                 caseId,
+                                 comment);
+
     }
 
     @Override

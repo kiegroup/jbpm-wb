@@ -51,7 +51,7 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
 
     private Event<CaseCancelEvent> caseCancelEvent;
 
-    private Event<CaseClosedEvent> caseDestroyEvent;
+    private Event<CaseClosedEvent> caseClosedEvent;
 
     private Event<CaseRefreshEvent> caseRefreshEvent;
 
@@ -108,12 +108,12 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
     protected void closeCaseInstance() {
         caseService.call(
                 e -> {
-                    caseDestroyEvent.fire(new CaseClosedEvent(caseId));
+                    caseClosedEvent.fire(new CaseClosedEvent(caseId));
                     backToList();
                 }
-        ).closeCaseInstance(serverTemplateId,
-                            containerId,
-                            caseId);
+        ).closeCaseInstance(containerId,
+                            caseId,
+                            null);
     }
 
     protected void backToList() {
@@ -126,8 +126,8 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
     }
 
     @Inject
-    public void setCaseDestroyEvent(final Event<CaseClosedEvent> caseDestroyEvent) {
-        this.caseDestroyEvent = caseDestroyEvent;
+    public void setCaseDestroyEvent(final Event<CaseClosedEvent> caseClosedEvent) {
+        this.caseClosedEvent = caseClosedEvent;
     }
 
     @Inject
