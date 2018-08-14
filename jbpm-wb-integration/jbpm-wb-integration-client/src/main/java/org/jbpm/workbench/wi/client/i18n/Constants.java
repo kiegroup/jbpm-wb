@@ -152,4 +152,8 @@ public interface Constants extends Messages {
     String CaseAppProvisioningFailed();
 
     String CaseAppName();
+
+    String CMMNFileTypeDescription();
+
+    String CMMNFileTypeShortName();
 }
