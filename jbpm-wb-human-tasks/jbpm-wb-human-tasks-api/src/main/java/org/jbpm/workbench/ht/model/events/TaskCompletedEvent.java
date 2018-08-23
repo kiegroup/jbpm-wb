@@ -16,60 +16,24 @@
 
 package org.jbpm.workbench.ht.model.events;
 
-import java.io.Serializable;
-
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class TaskCompletedEvent implements Serializable {
-
-    private String serverTemplateId;
-    private String deploymentId;
-    private long taskId;
-    private String taskName;
-
-    public TaskCompletedEvent(long taskId,
-                              String taskName) {
-        this.taskId = taskId;
-        this.taskName = taskName;
-    }
-
-    public TaskCompletedEvent(long taskId) {
-        this.taskId = taskId;
-    }
-
-    public TaskCompletedEvent(String serverTemplateId,
-                              String deploymentId,
-                              long taskId) {
-        this.serverTemplateId = serverTemplateId;
-        this.deploymentId = deploymentId;
-        this.taskId = taskId;
-    }
+public class TaskCompletedEvent extends AbstractTaskEvent {
 
     public TaskCompletedEvent() {
     }
 
-    public long getTaskId() {
-        return taskId;
+    public TaskCompletedEvent(String serverTemplateId,
+                              String deploymentId,
+                              Long taskId) {
+        super(serverTemplateId,
+              deploymentId,
+              taskId);
     }
 
-    public void setTaskId(long taskId) {
-        this.taskId = taskId;
-    }
-
-    public String getTaskName() {
-        return taskName;
-    }
-
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
-    }
-
-    public String getServerTemplateId() {
-        return serverTemplateId;
-    }
-
-    public String getDeploymentId() {
-        return deploymentId;
+    @Override
+    public String toString() {
+        return "TaskCompletedEvent{} " + super.toString();
     }
 }

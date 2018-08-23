@@ -24,6 +24,8 @@ import java.util.List;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenter;
+import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenterTest;
 import org.jbpm.workbench.ht.model.TaskEventSummary;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
@@ -40,7 +42,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class TaskLogsPresenterTest {
+public class TaskLogsPresenterTest extends AbstractTaskPresenterTest {
 
     private static final Long TASK_ID = 1L;
 
@@ -53,6 +55,11 @@ public class TaskLogsPresenterTest {
     private TaskLogsPresenter.TaskLogsView taskLogsView;
 
     private TaskLogsPresenter presenter;
+
+    @Override
+    public AbstractTaskPresenter getPresenter() {
+        return presenter;
+    }
 
     @Before
     public void setupMocks() {
@@ -67,7 +74,9 @@ public class TaskLogsPresenterTest {
     @Test
     public void logsUpdatedWhenTaskSelected() {
         //When task selected
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_ID));
+        presenter.onTaskSelectionEvent(new TaskSelectionEvent("",
+                                                              "",
+                                                              TASK_ID));
 
         //Logs retrieved and text area refreshed
         verify(taskService).getTaskEvents(anyString(),
@@ -80,10 +89,14 @@ public class TaskLogsPresenterTest {
     @Test
     public void logsUpdatedWhenTaskRefreshed() {
         //When task selected
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_ID));
+        presenter.onTaskSelectionEvent(new TaskSelectionEvent("",
+                                                              "",
+                                                              TASK_ID));
 
         //When task refreshed
-        presenter.onTaskRefreshedEvent(new TaskRefreshedEvent(TASK_ID));
+        presenter.onTaskRefreshedEvent(new TaskRefreshedEvent("",
+                                                              "",
+                                                              TASK_ID));
 
         //Logs retrieved and text area refreshed
         verify(taskService,
@@ -97,10 +110,14 @@ public class TaskLogsPresenterTest {
     @Test
     public void logsNotUpdatedWhenDifferentTaskRefreshed() {
         //When task selected
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_ID));
+        presenter.onTaskSelectionEvent(new TaskSelectionEvent("",
+                                                              "",
+                                                              TASK_ID));
 
         //When task refreshed
-        presenter.onTaskRefreshedEvent(new TaskRefreshedEvent(TASK_ID + 1));
+        presenter.onTaskRefreshedEvent(new TaskRefreshedEvent("",
+                                                              "",
+                                                              TASK_ID + 1));
 
         //Logs retrieved and text area refreshed
         verify(taskService).getTaskEvents(anyString(),
@@ -118,7 +135,9 @@ public class TaskLogsPresenterTest {
                                        eq(TASK_ID)))
                 .thenReturn(eventSummaries);
 
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(TASK_ID));
+        presenter.onTaskSelectionEvent(new TaskSelectionEvent("",
+                                                              "",
+                                                              TASK_ID));
 
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
         verify(taskLogsView,

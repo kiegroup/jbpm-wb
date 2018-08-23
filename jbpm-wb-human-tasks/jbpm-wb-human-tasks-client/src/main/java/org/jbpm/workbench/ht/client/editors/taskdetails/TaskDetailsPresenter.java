@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
@@ -32,7 +33,7 @@ import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 
 @Dependent
-public class TaskDetailsPresenter {
+public class TaskDetailsPresenter extends AbstractTaskPresenter {
 
     @Inject
     private TranslationService translationService;
@@ -40,18 +41,12 @@ public class TaskDetailsPresenter {
     @Inject
     protected Event<TaskRefreshedEvent> taskRefreshed;
 
-    TaskDetailsView view;
+    protected TaskDetailsView view;
 
     private Constants constants = Constants.INSTANCE;
 
     @Inject
     private Caller<TaskService> taskService;
-
-    private long currentTaskId = 0;
-
-    private String currentServerTemplateId;
-
-    private String currentContainerId;
 
     @Inject
     public TaskDetailsPresenter(TaskDetailsView view,
@@ -75,14 +70,16 @@ public class TaskDetailsPresenter {
                            final Date dueDate,
                            final int priority) {
 
-        if (currentTaskId > 0) {
+        if (getTaskId() != null) {
 
             taskService.call((Void) -> {
-                view.displayNotification(constants.TaskDetailsUpdatedForTaskId(currentTaskId));
-                taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
-            }).updateTask(currentServerTemplateId,
-                          currentContainerId,
-                          currentTaskId,
+                view.displayNotification(constants.TaskDetailsUpdatedForTaskId(getTaskId()));
+                taskRefreshed.fire(new TaskRefreshedEvent(getServerTemplateId(),
+                                                          getContainerId(),
+                                                          getTaskId()));
+            }).updateTask(getServerTemplateId(),
+                          getContainerId(),
+                          getTaskId(),
                           priority,
                           taskDescription,
                           dueDate);
@@ -119,9 +116,7 @@ public class TaskDetailsPresenter {
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
-        this.currentTaskId = event.getTaskId();
-        this.currentServerTemplateId = event.getServerTemplateId();
-        this.currentContainerId = event.getContainerId();
+        setSelectedTask(event);
         if (event.isForLog()) {
             setReadOnlyTaskDetail();
         }
@@ -136,7 +131,7 @@ public class TaskDetailsPresenter {
     }
 
     public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {
-        if (currentTaskId == event.getTaskId()) {
+        if (isSameTaskFromEvent().test(event)) {
             taskService.call(
                     (TaskSummary task) -> {
                         if (task != null) {
@@ -148,13 +143,9 @@ public class TaskDetailsPresenter {
                                            task.getProcessInstanceId(),
                                            task.getProcessId());
                         }
-                    },
-                    (message, throwable) -> {
-                        view.displayNotification(constants.TaskDetailsNotAvailableContainerNotStartedOrUnreacheable(event.getDeploymentId()));
-                        return false;
-                    }).getTask(currentServerTemplateId,
-                               currentContainerId,
-                               currentTaskId);
+                    }).getTask(getServerTemplateId(),
+                               getContainerId(),
+                               getTaskId());
         }
     }
 

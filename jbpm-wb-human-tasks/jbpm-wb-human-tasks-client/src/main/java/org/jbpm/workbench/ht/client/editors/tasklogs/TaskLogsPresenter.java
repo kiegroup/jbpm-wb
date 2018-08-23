@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.common.client.util.DateUtils;
+import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenter;
 import org.jbpm.workbench.ht.model.TaskEventSummary;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
@@ -33,17 +34,11 @@ import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 @Dependent
-public class TaskLogsPresenter {
+public class TaskLogsPresenter extends AbstractTaskPresenter {
 
     private TaskLogsView view;
 
     private Caller<TaskService> taskService;
-
-    private long currentTaskId = 0;
-
-    private String serverTemplateId;
-
-    private String containerId;
 
     @Inject
     public TaskLogsPresenter(final TaskLogsView view,
@@ -71,20 +66,18 @@ public class TaskLogsPresenter {
                         return timeStamp + ": Task " + tes.getType() + " (" + additionalDetail + ")";
                     }
                 }
-        ).getTaskEvents(serverTemplateId,
-                        containerId,
-                        currentTaskId);
+        ).getTaskEvents(getServerTemplateId(),
+                        getContainerId(),
+                        getTaskId());
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
-        this.currentTaskId = event.getTaskId();
-        this.containerId = event.getContainerId();
-        this.serverTemplateId = event.getServerTemplateId();
+        setSelectedTask(event);
         refreshLogs();
     }
 
     public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {
-        if (currentTaskId == event.getTaskId()) {
+        if (isSameTaskFromEvent().test(event)) {
             refreshLogs();
         }
     }

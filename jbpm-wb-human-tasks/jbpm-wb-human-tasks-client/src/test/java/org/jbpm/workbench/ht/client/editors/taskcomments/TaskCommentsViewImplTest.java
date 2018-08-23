@@ -15,6 +15,7 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskcomments;
 
+import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
@@ -47,11 +48,12 @@ public class TaskCommentsViewImplTest {
     private TaskCommentsViewImpl view;
 
     @Mock
-    private TaskCommentsPresenter presenterMock;
+    private TaskCommentsPresenter presenter;
 
     @Before
     public void setupMocks() {
-        when(presenterMock.getDataProvider()).thenReturn(dataProviderMock);
+        when(presenter.getDataProvider()).thenReturn(dataProviderMock);
+        when(pagedTableMock.getColumnSortList()).thenReturn(new ColumnSortList());
     }
 
     @Test
@@ -66,7 +68,7 @@ public class TaskCommentsViewImplTest {
         }).when(pagedTableMock).addColumn(any(Column.class),
                                           anyString());
 
-        view.init(presenterMock);
+        view.init(presenter);
 
         verify(pagedTableMock,
                times(4)).addColumn(any(Column.class),
@@ -76,10 +78,10 @@ public class TaskCommentsViewImplTest {
         inOrder.verify(pagedTableMock).addColumn(any(Column.class),
                                                  eq(Constants.INSTANCE.Added_By()));
         inOrder.verify(pagedTableMock).addColumn(any(Column.class),
-                                                 eq(Constants.INSTANCE.At()));
+                                                 eq(Constants.INSTANCE.Added_At()));
         inOrder.verify(pagedTableMock).addColumn(any(Column.class),
                                                  eq(Constants.INSTANCE.Comment()));
         inOrder.verify(pagedTableMock).addColumn(any(Column.class),
-                                                 eq(""));
+                                                 eq(Constants.INSTANCE.Actions()));
     }
 }

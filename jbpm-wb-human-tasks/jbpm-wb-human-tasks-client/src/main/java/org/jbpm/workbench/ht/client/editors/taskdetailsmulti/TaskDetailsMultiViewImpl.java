@@ -225,6 +225,9 @@ public class TaskDetailsMultiViewImpl extends Composite
         taskDetailsPane.setVisible(true);
         taskDetailsTab.setVisible(true);
 
+        taskCommentsPane.setVisible(true);
+        taskCommentsTab.setVisible(true);
+
         taskLogsPane.setVisible(true);
         taskLogsTab.setVisible(true);
     }

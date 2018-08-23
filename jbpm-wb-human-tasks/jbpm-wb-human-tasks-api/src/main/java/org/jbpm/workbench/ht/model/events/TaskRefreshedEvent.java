@@ -16,60 +16,24 @@
 
 package org.jbpm.workbench.ht.model.events;
 
-import java.io.Serializable;
-
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class TaskRefreshedEvent implements Serializable {
-
-    private String serverTemplateId;
-    private String deploymentId;
-    private Long taskId;
-    private String taskName;
-
-    public TaskRefreshedEvent(long taskId,
-                              String taskName) {
-        this.taskId = taskId;
-        this.taskName = taskName;
-    }
-
-    public TaskRefreshedEvent(long taskId) {
-        this.taskId = taskId;
-    }
+public class TaskRefreshedEvent extends AbstractTaskEvent {
 
     public TaskRefreshedEvent(String serverTemplateId,
                               String deploymentId,
                               Long taskId) {
-        this.serverTemplateId = serverTemplateId;
-        this.deploymentId = deploymentId;
-        this.taskId = taskId;
+        super(serverTemplateId,
+              deploymentId,
+              taskId);
     }
 
     public TaskRefreshedEvent() {
     }
 
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(long taskId) {
-        this.taskId = taskId;
-    }
-
-    public String getTaskName() {
-        return taskName;
-    }
-
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
-    }
-
-    public String getServerTemplateId() {
-        return serverTemplateId;
-    }
-
-    public String getDeploymentId() {
-        return deploymentId;
+    @Override
+    public String toString() {
+        return "TaskRefreshedEvent{} " + super.toString();
     }
 }

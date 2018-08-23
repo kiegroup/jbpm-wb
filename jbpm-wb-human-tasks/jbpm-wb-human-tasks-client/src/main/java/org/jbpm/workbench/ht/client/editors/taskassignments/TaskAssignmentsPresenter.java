@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskAssignmentSummary;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
@@ -37,21 +38,17 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 @Dependent
-public class TaskAssignmentsPresenter {
+public class TaskAssignmentsPresenter extends AbstractTaskPresenter {
 
     private Constants constants = Constants.INSTANCE;
     private TaskAssignmentsView view;
     private Caller<TaskService> taskService;
     private Event<TaskRefreshedEvent> taskRefreshed;
-    private long currentTaskId = 0;
-    private String serverTemplateId;
-    private String containerId;
+
     @Inject
-    public TaskAssignmentsPresenter(
-            TaskAssignmentsView view,
-            Caller<TaskService> taskService,
-            Event<TaskRefreshedEvent> taskRefreshed
-    ) {
+    public TaskAssignmentsPresenter(TaskAssignmentsView view,
+                                    Caller<TaskService> taskService,
+                                    Event<TaskRefreshedEvent> taskRefreshed) {
         this.view = view;
         this.taskService = taskService;
         this.taskRefreshed = taskRefreshed;
@@ -78,7 +75,9 @@ public class TaskAssignmentsPresenter {
                         view.displayNotification(constants.TaskSuccessfullyDelegated());
                         view.setDelegateButtonActive(false);
                         view.setHelpText(constants.DelegationSuccessfully());
-                        taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
+                        taskRefreshed.fire(new TaskRefreshedEvent(getServerTemplateId(),
+                                                                  getContainerId(),
+                                                                  getTaskId()));
                         refreshTaskPotentialOwners();
                     }
                 },
@@ -93,14 +92,14 @@ public class TaskAssignmentsPresenter {
                                            throwable);
                     }
                 }
-        ).delegate(serverTemplateId,
-                   containerId,
-                   currentTaskId,
+        ).delegate(getServerTemplateId(),
+                   getContainerId(),
+                   getTaskId(),
                    entity);
     }
 
     public void refreshTaskPotentialOwners() {
-        if (currentTaskId != 0) {
+        if (getTaskId() != null) {
             view.enableDelegateButton(false);
             view.enableUserOrGroupInput(false);
             view.setPotentialOwnersInfo(emptyList());
@@ -116,25 +115,23 @@ public class TaskAssignmentsPresenter {
                         view.enableUserOrGroupInput(response.isDelegationAllowed());
                     }
                 }
-            }).getTaskAssignmentDetails(serverTemplateId,
-                                        containerId,
-                                        currentTaskId);
+            }).getTaskAssignmentDetails(getServerTemplateId(),
+                                        getContainerId(),
+                                        getTaskId());
         }
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
         if (!event.isForLog()) {
-            this.currentTaskId = event.getTaskId();
-            serverTemplateId = event.getServerTemplateId();
-            containerId = event.getContainerId();
+            setSelectedTask(event);
             view.setHelpText("");
             view.clearUserOrGroupInput();
             refreshTaskPotentialOwners();
         }
     }
 
-    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
-        if (currentTaskId == event.getTaskId()) {
+    public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {
+        if (isSameTaskFromEvent().test(event)) {
             refreshTaskPotentialOwners();
         }
     }

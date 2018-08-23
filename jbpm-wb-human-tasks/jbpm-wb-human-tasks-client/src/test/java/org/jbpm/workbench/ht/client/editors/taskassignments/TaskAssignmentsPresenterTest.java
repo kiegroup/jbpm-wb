@@ -21,6 +21,8 @@ import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenter;
+import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenterTest;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskAssignmentSummary;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
@@ -40,7 +42,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class TaskAssignmentsPresenterTest {
+public class TaskAssignmentsPresenterTest extends AbstractTaskPresenterTest {
 
     private static final String CURRENT_USER = "Jan";
     private static final String OTHER_USER = "OTHER_USER";
@@ -55,6 +57,11 @@ public class TaskAssignmentsPresenterTest {
 
     //Thing under test
     private TaskAssignmentsPresenter presenter;
+
+    @Override
+    public AbstractTaskPresenter getPresenter() {
+        return presenter;
+    }
 
     @Before
     public void initMocks() {

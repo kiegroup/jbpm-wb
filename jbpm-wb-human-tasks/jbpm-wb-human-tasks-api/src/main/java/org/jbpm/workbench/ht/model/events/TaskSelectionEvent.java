@@ -16,18 +16,13 @@
 
 package org.jbpm.workbench.ht.model.events;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class TaskSelectionEvent implements Serializable {
+public class TaskSelectionEvent extends AbstractTaskEvent {
 
-    private String serverTemplateId;
-    private String containerId;
-    private Long taskId;
-    private String taskName;
     private Boolean forAdmin;
     private Boolean forLog;
 
@@ -42,18 +37,12 @@ public class TaskSelectionEvent implements Serializable {
     public TaskSelectionEvent() {
     }
 
-    public TaskSelectionEvent(Long taskId) {
-        this.taskId = taskId;
-    }
-
     public TaskSelectionEvent(String serverTemplateId,
                               String containerId,
-                              Long taskId,
-                              String taskName) {
-        this.serverTemplateId = serverTemplateId;
-        this.containerId = containerId;
-        this.taskId = taskId;
-        this.taskName = taskName;
+                              Long taskId) {
+        super(serverTemplateId,
+              containerId,
+              taskId);
     }
 
     public TaskSelectionEvent(String serverTemplateId,
@@ -62,10 +51,10 @@ public class TaskSelectionEvent implements Serializable {
                               String taskName,
                               Boolean forAdmin,
                               Boolean forLog) {
-        this.serverTemplateId = serverTemplateId;
-        this.containerId = containerId;
-        this.taskId = taskId;
-        this.taskName = taskName;
+        super(serverTemplateId,
+              containerId,
+              taskId,
+              taskName);
         this.forAdmin = forAdmin;
         this.forLog = forLog;
     }
@@ -83,10 +72,10 @@ public class TaskSelectionEvent implements Serializable {
                               Integer priority,
                               Long processInstanceId,
                               String processId) {
-        this.serverTemplateId = serverTemplateId;
-        this.containerId = containerId;
-        this.taskId = taskId;
-        this.taskName = taskName;
+        super(serverTemplateId,
+              containerId,
+              taskId,
+              taskName);
         this.forAdmin = forAdmin;
         this.forLog = forLog;
         this.description = description;
@@ -126,14 +115,6 @@ public class TaskSelectionEvent implements Serializable {
         return processId;
     }
 
-    public String getTaskName() {
-        return taskName;
-    }
-
-    public Long getTaskId() {
-        return taskId;
-    }
-
     public Boolean isForAdmin() {
         return forAdmin;
     }
@@ -142,11 +123,18 @@ public class TaskSelectionEvent implements Serializable {
         return forLog;
     }
 
-    public String getServerTemplateId() {
-        return serverTemplateId;
-    }
-
-    public String getContainerId() {
-        return containerId;
+    @Override
+    public String toString() {
+        return "TaskSelectionEvent{" +
+                "forAdmin=" + forAdmin +
+                ", forLog=" + forLog +
+                ", description='" + description + '\'' +
+                ", expirationTime=" + expirationTime +
+                ", actualOwner='" + actualOwner + '\'' +
+                ", status='" + status + '\'' +
+                ", priority=" + priority +
+                ", processInstanceId=" + processInstanceId +
+                ", processId='" + processId + '\'' +
+                "} " + super.toString();
     }
 }

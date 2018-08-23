@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskAssignmentSummary;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
@@ -37,7 +38,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 @Dependent
-public class TaskAdminPresenter {
+public class TaskAdminPresenter extends AbstractTaskPresenter {
 
     @Inject
     protected Caller<TaskService> taskService;
@@ -49,12 +50,6 @@ public class TaskAdminPresenter {
 
     @Inject
     private User identity;
-
-    private long currentTaskId = 0;
-
-    private String serverTemplateId;
-
-    private String containerId;
 
     @Inject
     private Event<TaskRefreshedEvent> taskRefreshed;
@@ -79,19 +74,21 @@ public class TaskAdminPresenter {
     public void forwardTask(final String entity) {
         taskService.call(nothing -> {
             notification.fire(new NotificationEvent(constants.TaskSuccessfullyForwarded()));
-            taskRefreshed.fire(new TaskRefreshedEvent(currentTaskId));
+            taskRefreshed.fire(new TaskRefreshedEvent(getServerTemplateId(),
+                                                      getContainerId(),
+                                                      getTaskId()));
             refreshTaskPotentialOwners();
-        }).forward(serverTemplateId,
-                   containerId,
-                   currentTaskId,
+        }).forward(getServerTemplateId(),
+                   getContainerId(),
+                   getTaskId(),
                    entity);
     }
 
     public void reminder() {
         taskService.call(ts -> notification.fire(new NotificationEvent(constants.ReminderSentTo(identity.getIdentifier()))))
-                .executeReminderForTask(serverTemplateId,
-                                        containerId,
-                                        currentTaskId,
+                .executeReminderForTask(getServerTemplateId(),
+                                        getContainerId(),
+                                        getTaskId(),
                                         identity.getIdentifier());
     }
 
@@ -123,22 +120,20 @@ public class TaskAdminPresenter {
                                  view.setActualOwnerText(ts.getActualOwner());
                              }
                          }
-        ).getTaskAssignmentDetails(serverTemplateId,
-                                   containerId,
-                                   currentTaskId);
+        ).getTaskAssignmentDetails(getServerTemplateId(),
+                                   getContainerId(),
+                                   getTaskId());
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
         if (!event.isForLog()) {
-            this.currentTaskId = event.getTaskId();
-            serverTemplateId = event.getServerTemplateId();
-            containerId = event.getContainerId();
+            setSelectedTask(event);
             refreshTaskPotentialOwners();
         }
     }
 
-    public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {
-        if (currentTaskId == event.getTaskId()) {
+    public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {
+        if (isSameTaskFromEvent().test(event)) {
             refreshTaskPotentialOwners();
         }
     }

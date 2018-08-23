@@ -20,10 +20,12 @@ import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayProvider;
 import org.jbpm.workbench.forms.client.display.views.FormDisplayerView;
+import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenter;
+import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenterTest;
 import org.jbpm.workbench.ht.client.editors.taskdetails.TaskDetailsPresenter;
 import org.jbpm.workbench.ht.client.editors.taskform.TaskFormPresenter;
-import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayProvider;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
@@ -38,12 +40,11 @@ import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import static org.junit.Assert.*;
-
 @RunWith(GwtMockitoTestRunner.class)
-public class TaskDetailsMultiPresenterTest {
+public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
 
     private static final Long TASK_ID = 1L;
     private static final String TASK_NAME = "taskName";
@@ -82,6 +83,11 @@ public class TaskDetailsMultiPresenterTest {
     @InjectMocks
     private TaskDetailsMultiPresenter presenter;
 
+    @Override
+    public AbstractTaskPresenter getPresenter() {
+        return presenter;
+    }
+
     @Before
     public void setupMocks() {
         taskService = new CallerMock<>(taskServiceMock);
@@ -99,8 +105,8 @@ public class TaskDetailsMultiPresenterTest {
     @Test
     public void isForLogRemainsEnabledAfterRefresh() {
         //When task selected with logOnly
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(null,
-                                                              null,
+        presenter.onTaskSelectionEvent(new TaskSelectionEvent("",
+                                                              "",
                                                               TASK_ID,
                                                               TASK_NAME,
                                                               false,
@@ -124,8 +130,8 @@ public class TaskDetailsMultiPresenterTest {
     public void isForLogRemainsDisabledAfterRefresh() {
         //When task selected without logOnly
         boolean logOnly = false;
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(null,
-                                                              null,
+        presenter.onTaskSelectionEvent(new TaskSelectionEvent("",
+                                                              "",
                                                               TASK_ID,
                                                               TASK_NAME,
                                                               false,
@@ -182,6 +188,7 @@ public class TaskDetailsMultiPresenterTest {
                                                               taskSummary.getProcessId()));
         verify(view).displayAllTabs();
         verify(view).resetTabs(false);
+        verify(view).setAdminTabVisible(false);
 
         presenter.onRefresh();
 
@@ -218,6 +225,8 @@ public class TaskDetailsMultiPresenterTest {
         verify(view,
                times(2)).displayAllTabs();
         verify(view).resetTabs(false);
+        verify(view,
+               times(2)).setAdminTabVisible(false);
     }
 
     @Test
