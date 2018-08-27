@@ -79,7 +79,11 @@ public class DeploymentsEnvironmentEntriesPresenter extends Section<DeploymentDe
         environmentEntriesPresenters.setup(
                 view.getEnvironmentEntriesTable(),
                 model.getEnvironmentEntries(),
-                (environmentEntry, presenter) -> presenter.setup(environmentEntry, this));
+                (environmentEntry, presenter) -> presenter.setupSectionConfig(LibraryConstants.EditEnvironmentEntry,
+                                                                              LibraryConstants.Name,
+                                                                              LibraryConstants.Value,
+                                                                              environmentEntry,
+                                                                              this));
 
         return promises.resolve();
     }

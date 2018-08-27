@@ -109,9 +109,11 @@ public class ObjectItemPresenterTest {
 
     @Test
     public void testOpenEditModal() {
-        final ItemObjectModel model = new ItemObjectModel(null, "Value", "reflection", ImmutableList.of(new Parameter("Foo", "Bar")));
+        final ItemObjectModel model = mock(ItemObjectModel.class);
         final DeploymentsSectionPresenter parentPresenter = mock(DeploymentsSectionPresenter.class);
         final TaskEventListenersListPresenter listPresenter = mock(TaskEventListenersListPresenter.class);
+        when(model.getResolver()).thenReturn("REFLECTION");
+
         objectItemPresenter.setupSectionConfig(model, parentPresenter, "Value", "reflection");
         objectItemPresenter.setListPresenter(listPresenter);
 
@@ -120,7 +122,8 @@ public class ObjectItemPresenterTest {
         verify(singleValueModal).show(captor.capture(), any());
         captor.getValue().accept("Value");
 
-        verify(listPresenter).add(model);
+        verify(model).setValue("Value");
+        verify(view).setValue("Value");
         verify(parentPresenter).fireChangeEvent();
     }
 }

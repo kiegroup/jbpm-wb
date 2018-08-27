@@ -79,7 +79,11 @@ public class DeploymentsConfigurationPresenter extends Section<DeploymentDescrip
         configurationPresenters.setup(
                 view.getConfigurationsTable(),
                 model.getConfiguration(),
-                (global, presenter) -> presenter.setup(global, this));
+                (global, presenter) -> presenter.setupSectionConfig(LibraryConstants.EditConfiguration,
+                                                                    LibraryConstants.Name,
+                                                                    LibraryConstants.Value,
+                                                                    global,
+                                                                    this));
 
         return promises.resolve();
     }

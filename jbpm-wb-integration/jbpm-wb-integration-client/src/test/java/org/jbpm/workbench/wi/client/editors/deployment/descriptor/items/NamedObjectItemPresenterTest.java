@@ -110,10 +110,11 @@ public class NamedObjectItemPresenterTest {
 
     @Test
     public void testOpenEditModal() {
-        final ItemObjectModel model = new ItemObjectModel("Name", "Value", "mvel", ImmutableList.of(new Parameter("Foo", "Bar")));
+        final ItemObjectModel model = mock(ItemObjectModel.class);
         final DeploymentsSectionPresenter parentPresenter = mock(DeploymentsSectionPresenter.class);
         final WorkItemHandlersListPresenter listPresenter = mock(WorkItemHandlersListPresenter.class);
 
+        when(model.getResolver()).thenReturn("REFLECTION");
         namedObjectItemPresenter.setupSectionConfig("header", "nameKey", "vauleKey", model, parentPresenter);
         namedObjectItemPresenter.setListPresenter(listPresenter);
 
@@ -121,9 +122,12 @@ public class NamedObjectItemPresenterTest {
 
         ArgumentCaptor<BiConsumer> captor = ArgumentCaptor.forClass(BiConsumer.class);
         verify(doubleValueModal).show(captor.capture(), any(), any());
-        captor.getValue().accept("Name", "Value");
+        captor.getValue().accept("name", "value");
 
-        verify(listPresenter).add(model);
+        verify(model).setValue("value");
+        verify(model).setName("name");
+        verify(model).setValue("value");
+        verify(model).setName("name");
         verify(parentPresenter).fireChangeEvent();
     }
 }
