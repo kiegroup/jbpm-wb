@@ -32,8 +32,9 @@ import org.kie.server.api.model.KieContainerStatus;
 import org.kie.server.api.model.ReleaseId;
 import org.kie.server.controller.api.model.events.ServerTemplateUpdated;
 import org.kie.server.controller.api.model.spec.ContainerSpec;
-import org.kie.workbench.common.screens.examples.model.ExampleProject;
+import org.kie.workbench.common.screens.examples.model.ImportProject;
 import org.kie.workbench.common.screens.examples.service.ExamplesService;
+import org.kie.workbench.common.screens.examples.service.ProjectImportService;
 import org.kie.workbench.common.screens.library.api.LibraryService;
 import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.slf4j.Logger;
@@ -46,14 +47,27 @@ public class CaseDemoProvisioningService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CaseDemoProvisioningService.class);
 
-    @Inject
     private LibraryService libraryService;
 
-    @Inject
+    private ProjectImportService projectImportService;
     private BuildService buildService;
 
-    @Inject
     private SpecManagementService specManagementService;
+
+    public CaseDemoProvisioningService() {
+    }
+
+    @Inject
+    public CaseDemoProvisioningService(final LibraryService libraryService,
+                                       final ProjectImportService projectImportService,
+                                       final BuildService buildService,
+                                       final SpecManagementService specManagementService) {
+
+        this.libraryService = libraryService;
+        this.projectImportService = projectImportService;
+        this.buildService = buildService;
+        this.specManagementService = specManagementService;
+    }
 
     private AtomicBoolean deployToServerTemplate = new AtomicBoolean(false);
 
@@ -62,11 +76,11 @@ public class CaseDemoProvisioningService {
     @PostConstruct
     public void init() {
         if ("true".equalsIgnoreCase(System.getProperty(ExamplesService.EXAMPLES_SYSTEM_PROPERTY))) {
-            final Set<ExampleProject> projects = libraryService.getExampleProjects();
+            final Set<ImportProject> projects = libraryService.getExampleProjects();
             projects.stream().filter(p -> "itorders".equals(p.getName())).findFirst().ifPresent(p -> {
                 LOGGER.info("Importing IT Orders case management demo project...");
-                newProject = libraryService.importProject(libraryService.getDefaultOrganizationalUnit(),
-                                                          p);
+                newProject = projectImportService.importProject(libraryService.getDefaultOrganizationalUnit(),
+                                                                p);
                 LOGGER.info("Building It Orders case management demo project...");
                 final BuildResults results = buildService.buildAndDeploy(newProject.getMainModule());
                 LOGGER.debug("It Orders project build errors: {}",
