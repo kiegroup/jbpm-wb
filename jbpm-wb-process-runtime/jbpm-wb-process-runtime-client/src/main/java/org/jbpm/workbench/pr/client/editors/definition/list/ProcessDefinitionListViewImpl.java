@@ -40,8 +40,10 @@ import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.ConditionalAction;
 import org.jbpm.workbench.common.client.util.ConditionalKebabActionCell;
+import org.jbpm.workbench.common.preferences.ManagePreferences;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessSummary;
+import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
@@ -56,6 +58,9 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     public static final String COL_ID_ACTIONS = "Actions";
 
     private Constants constants = Constants.INSTANCE;
+
+    @Inject
+    protected ManagePreferences preferences;
 
     @Inject
     protected ManagedInstance<ConditionalKebabActionCell> conditionalKebabActionCell;
@@ -75,45 +80,51 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         initColumns.add(COL_ID_PROCESSVERSION);
         initColumns.add(COL_ID_PROJECT);
         initColumns.add(COL_ID_ACTIONS);
-        super.init(presenter,
-                   new GridGlobalPreferences("ProcessDefinitionsGrid",
-                                             initColumns,
-                                             bannedColumns));
 
-        selectionModel = new NoSelectionModel<ProcessSummary>();
-        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
-            @Override
-            public void onSelectionChange(SelectionChangeEvent event) {
-                selectedItem = selectionModel.getLastSelectedObject();
+        preferences.load(preferences -> {
+                             final GridGlobalPreferences globalPreferences = new GridGlobalPreferences("ProcessDefinitionsGrid",
+                                                                                                       initColumns,
+                                                                                                       bannedColumns);
+                             globalPreferences.setPageSize(preferences.getItemsPerPage());
+                             super.init(presenter,
+                                        globalPreferences);
 
-                presenter.selectProcessDefinition(selectedItem);
-            }
-        });
-        final ExtendedPagedTable<ProcessSummary> extendedPagedTable = getListGrid();
-        noActionColumnManager = DefaultSelectionEventManager
-                .createCustomManager(new DefaultSelectionEventManager.EventTranslator<ProcessSummary>() {
+                             selectionModel = new NoSelectionModel<ProcessSummary>();
+                             selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+                                 @Override
+                                 public void onSelectionChange(SelectionChangeEvent event) {
+                                     selectedItem = selectionModel.getLastSelectedObject();
 
-                    @Override
-                    public boolean clearCurrentSelection(CellPreviewEvent<ProcessSummary> event) {
-                        return false;
-                    }
+                                     presenter.selectProcessDefinition(selectedItem);
+                                 }
+                             });
+                             final ExtendedPagedTable<ProcessSummary> extendedPagedTable = getListGrid();
+                             noActionColumnManager = DefaultSelectionEventManager
+                                     .createCustomManager(new DefaultSelectionEventManager.EventTranslator<ProcessSummary>() {
 
-                    @Override
-                    public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<ProcessSummary> event) {
-                        DefaultSelectionEventManager.SelectAction ret = DefaultSelectionEventManager.SelectAction.DEFAULT;
-                        NativeEvent nativeEvent = event.getNativeEvent();
-                        if (BrowserEvents.CLICK.equals(nativeEvent.getType()) &&
-                                // Ignore if the event didn't occur in the correct column.
-                                extendedPagedTable.isSelectionIgnoreColumn(event.getColumn())) {
-                            ret = DefaultSelectionEventManager.SelectAction.IGNORE;
-                        }
-                        return ret;
-                    }
-                });
+                                         @Override
+                                         public boolean clearCurrentSelection(CellPreviewEvent<ProcessSummary> event) {
+                                             return false;
+                                         }
 
-        listGrid.setSelectionModel(selectionModel,
-                                   noActionColumnManager);
-        listGrid.setEmptyTableCaption(constants.No_Process_Definitions_Found());
+                                         @Override
+                                         public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<ProcessSummary> event) {
+                                             DefaultSelectionEventManager.SelectAction ret = DefaultSelectionEventManager.SelectAction.DEFAULT;
+                                             NativeEvent nativeEvent = event.getNativeEvent();
+                                             if (BrowserEvents.CLICK.equals(nativeEvent.getType()) &&
+                                                     // Ignore if the event didn't occur in the correct column.
+                                                     extendedPagedTable.isSelectionIgnoreColumn(event.getColumn())) {
+                                                 ret = DefaultSelectionEventManager.SelectAction.IGNORE;
+                                             }
+                                             return ret;
+                                         }
+                                     });
+
+                             listGrid.setSelectionModel(selectionModel,
+                                                        noActionColumnManager);
+                             listGrid.setEmptyTableCaption(constants.No_Process_Definitions_Found());
+                         },
+                         error -> new DefaultWorkbenchErrorCallback().error(error));
     }
 
     @Override

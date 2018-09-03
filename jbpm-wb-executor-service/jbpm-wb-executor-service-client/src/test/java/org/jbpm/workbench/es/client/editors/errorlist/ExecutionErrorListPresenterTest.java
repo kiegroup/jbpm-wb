@@ -457,7 +457,7 @@ public class ExecutionErrorListPresenterTest {
                         .processInstanceId(processInstanceId)
                         .build();
         presenter.setExecutionErrorSelectedEvent(executionErrorSelectedEventMock);
-        presenter.selectExecutionError(errorSummary);
+        presenter.selectSummaryItem(errorSummary);
         final ArgumentCaptor<ExecutionErrorSelectedEvent> captor = ArgumentCaptor.forClass(ExecutionErrorSelectedEvent.class);
         verify(executionErrorSelectedEventMock).fire(captor.capture());
         assertEquals(deploymentId,

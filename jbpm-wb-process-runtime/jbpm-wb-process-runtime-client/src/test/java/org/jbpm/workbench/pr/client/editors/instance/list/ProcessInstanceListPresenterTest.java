@@ -862,7 +862,7 @@ public class ProcessInstanceListPresenterTest {
         presenter.setProcessInstanceSelectedEvent(processInstanceSelectionEvent);
 
         ProcessInstanceSummary okProcInst = new ProcessInstanceSummary();
-        presenter.selectProcessInstance(okProcInst);
+        presenter.selectSummaryItem(okProcInst);
 
         ArgumentCaptor<ProcessInstanceSelectionEvent> argument = ArgumentCaptor.forClass(ProcessInstanceSelectionEvent.class);
         verify(processInstanceSelectionEvent).fire(argument.capture());

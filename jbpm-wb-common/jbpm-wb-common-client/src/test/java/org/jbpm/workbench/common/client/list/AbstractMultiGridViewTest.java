@@ -17,12 +17,14 @@ package org.jbpm.workbench.common.client.list;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.view.client.AsyncDataProvider;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.common.client.util.ConditionalKebabActionCell;
 import org.jbpm.workbench.common.model.GenericSummary;
+import org.jbpm.workbench.common.preferences.ManagePreferences;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +41,7 @@ import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mocks.CallerMock;
+import org.uberfire.mvp.ParameterizedCommand;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -63,6 +66,9 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
     protected GridPreferencesStore gridPreferencesStore;
 
     @Mock
+    protected ManagePreferences preferences;
+
+    @Mock
     protected ManagedInstance<ConditionalKebabActionCell> conditionalKebabActionCell;
 
     protected abstract AbstractMultiGridView getView();
@@ -77,12 +83,13 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
 
     @Before
     public void setupMocks() {
-        userPreferencesService = new CallerMock<UserPreferencesService>(userPreferencesServiceMock);
+        userPreferencesService = new CallerMock<>(userPreferencesServiceMock);
         getView().setUserPreferencesService(userPreferencesService);
         when(getPresenter().getDataProvider()).thenReturn(dataProviderMock);
         when(userPreferencesServiceMock.loadUserPreferences(anyString(),
                                                             eq(UserPreferencesType.GRIDPREFERENCES))).thenReturn(new GridPreferencesStore(new GridGlobalPreferences()));
         when(conditionalKebabActionCell.get()).thenReturn(mock(ConditionalKebabActionCell.class));
+        doNothing().when(getView()).addNewTableToColumn(any());
     }
 
     @Test
@@ -170,5 +177,20 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
         inOrder.verify(currentListGrid).setColumnWidth(any(),
                                                        anyDouble(),
                                                        any());
+    }
+
+    @Test
+    public void testGlobalPreferences() {
+        doAnswer((InvocationOnMock inv) -> {
+            ((ParameterizedCommand<ManagePreferences>) inv.getArguments()[0]).execute(new ManagePreferences().defaultValue(new ManagePreferences()));
+            return null;
+        }).when(preferences).load(any(ParameterizedCommand.class),
+                                  any(ParameterizedCommand.class));
+
+        Consumer<ListTable> consumer = table -> assertEquals(ManagePreferences.DEFAULT_PAGINATION_OPTION.intValue(),
+                                                             table.getGridPreferencesStore().getPageSizePreferences());
+
+        getView().loadListTable("key",
+                                consumer);
     }
 }

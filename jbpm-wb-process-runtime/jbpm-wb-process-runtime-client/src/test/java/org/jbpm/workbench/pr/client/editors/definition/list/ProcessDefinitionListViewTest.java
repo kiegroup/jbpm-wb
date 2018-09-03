@@ -22,14 +22,21 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.util.ConditionalKebabActionCell;
+import org.jbpm.workbench.common.preferences.ManagePreferences;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
+import org.uberfire.mocks.CallerMock;
+import org.uberfire.mvp.ParameterizedCommand;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -38,20 +45,32 @@ import static org.mockito.Mockito.*;
 public class ProcessDefinitionListViewTest {
 
     @Mock
-    protected ExtendedPagedTable currentListGrid;
+    ExtendedPagedTable currentListGrid;
 
     @Mock
     ManagedInstance<ConditionalKebabActionCell> conditionalKebabActionCell;
 
     @Mock
+    ManagePreferences preferences;
+
+    CallerMock<UserPreferencesService> userPreferencesService;
+
+    @Mock
+    UserPreferencesService userPreferencesServiceMock;
+
+    @Mock
     ProcessDefinitionListPresenter presenter;
 
     @InjectMocks
-    private ProcessDefinitionListViewImpl view;
+    @Spy
+    ProcessDefinitionListViewImpl view;
 
     @Before
     public void setup() {
         when(conditionalKebabActionCell.get()).thenReturn(mock(ConditionalKebabActionCell.class));
+        userPreferencesService = new CallerMock<>(userPreferencesServiceMock);
+        view.setPreferencesService(userPreferencesService);
+        doNothing().when(view).addNewTableToColumn(any());
     }
 
     @Test
@@ -71,5 +90,22 @@ public class ProcessDefinitionListViewTest {
         view.initColumns(currentListGrid);
 
         verify(currentListGrid).addColumns(anyList());
+    }
+
+    @Test
+    public void testGlobalPreferences() {
+        doAnswer((InvocationOnMock inv) -> {
+            ((ParameterizedCommand<ManagePreferences>) inv.getArguments()[0]).execute(new ManagePreferences().defaultValue(new ManagePreferences()));
+            return null;
+        }).when(preferences).load(any(ParameterizedCommand.class),
+                                  any(ParameterizedCommand.class));
+
+        view.init(presenter);
+
+        ArgumentCaptor<GridGlobalPreferences> captor = ArgumentCaptor.forClass(GridGlobalPreferences.class);
+        verify(view).createListGrid(captor.capture());
+        assertNotNull(captor.getValue());
+        assertEquals(ManagePreferences.DEFAULT_PAGINATION_OPTION.intValue(),
+                     captor.getValue().getPageSize());
     }
 }

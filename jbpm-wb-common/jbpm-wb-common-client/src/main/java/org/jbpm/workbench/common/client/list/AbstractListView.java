@@ -15,6 +15,9 @@
  */
 package org.jbpm.workbench.common.client.list;
 
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
@@ -33,9 +36,6 @@ import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 import org.uberfire.workbench.events.NotificationEvent;
-
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 
 /**
  * @param <T>
@@ -67,7 +67,6 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
     @DataField("column")
     protected HTMLDivElement column;
 
-    @Inject
     private Caller<UserPreferencesService> preferencesService;
 
     public void init(final V presenter,
@@ -81,7 +80,6 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
 
             @Override
             public void callback(GridPreferencesStore preferencesStore) {
-                listGrid.setPreferencesService(preferencesService);
                 if (preferencesStore == null) {
                     listGrid.setGridPreferencesStore(new GridPreferencesStore(preferences));
                 } else {
@@ -89,11 +87,17 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
                 }
                 initColumns(listGrid);
                 listGrid.loadPageSizePreferences();
-                new Elemental2DomUtil().appendWidgetToElement(column, listGrid);
+                listGrid.setPreferencesService(preferencesService);
+                addNewTableToColumn(listGrid);
                 presenter.addDataDisplay(listGrid);
             }
         }).loadUserPreferences(preferences.getKey(),
                                UserPreferencesType.GRIDPREFERENCES);
+    }
+
+    public void addNewTableToColumn(final ExtendedPagedTable<T> newPagedTable) {
+        new Elemental2DomUtil().appendWidgetToElement(column,
+                                                      newPagedTable);
     }
 
     protected ExtendedPagedTable<T> createListGrid(final GridGlobalPreferences preferences) {
@@ -126,4 +130,9 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
      *  DataGrid columns and how they must be initialized
      */
     public abstract void initColumns(ExtendedPagedTable<T> extendedPagedTable);
+
+    @Inject
+    public void setPreferencesService(Caller<UserPreferencesService> preferencesService) {
+        this.preferencesService = preferencesService;
+    }
 }
