@@ -42,7 +42,6 @@ import org.jbpm.workbench.forms.display.FormDisplayerConfig;
 import org.jbpm.workbench.forms.display.FormRenderingSettings;
 import org.jbpm.workbench.ht.model.TaskKey;
 import org.jbpm.workbench.ht.model.TaskSummary;
-import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.ht.util.TaskStatus;
@@ -70,9 +69,6 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
 
     @Inject
     protected Event<TaskRefreshedEvent> taskRefreshed;
-
-    @Inject
-    protected Event<TaskCompletedEvent> taskCompleted;
 
     @Inject
     protected User identity;
@@ -299,12 +295,7 @@ public abstract class AbstractHumanTaskFormDisplayer<S extends FormRenderingSett
     }
 
     protected RemoteCallback<Void> getCompleteTaskRemoteCallback() {
-        return nothing -> {
-            taskCompleted.fire(new TaskCompletedEvent(serverTemplateId,
-                                                      deploymentId,
-                                                      taskId));
-            close();
-        };
+        return nothing -> close();
     }
 
     protected ErrorCallback<Message> getUnexpectedErrorCallback() {

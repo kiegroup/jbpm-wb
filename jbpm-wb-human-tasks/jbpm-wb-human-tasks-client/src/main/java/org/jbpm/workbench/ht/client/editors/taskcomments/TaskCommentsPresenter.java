@@ -17,6 +17,7 @@ package org.jbpm.workbench.ht.client.editors.taskcomments;
 
 import java.util.Date;
 import java.util.List;
+import java.util.function.Predicate;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
@@ -25,30 +26,37 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
+import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.security.shared.api.identity.User;
+import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.CommentSummary;
+import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.uberfire.client.mvp.UberView;
 
 @Dependent
-public class TaskCommentsPresenter {
+public class TaskCommentsPresenter extends AbstractTaskPresenter {
 
     private final TaskCommentsView view;
     private final Caller<TaskService> taskService;
     private final ListDataProvider<CommentSummary> dataProvider = new ListDataProvider<CommentSummary>();
     private Constants constants = Constants.INSTANCE;
-    private long currentTaskId = 0;
-    private String serverTemplateId;
-    private String containerId;
+    private User identity;
+    private boolean forLog = false;
+    private boolean forAdmin = false;
+
     @Inject
     public TaskCommentsPresenter(TaskCommentsView view,
-                                 Caller<TaskService> taskService) {
+                                 Caller<TaskService> taskService,
+                                 User identity) {
         this.view = view;
         this.taskService = taskService;
+        this.identity = identity;
     }
 
     @PostConstruct
@@ -65,21 +73,28 @@ public class TaskCommentsPresenter {
     }
 
     public void refreshComments() {
-        taskService.call(
-                new RemoteCallback<List<CommentSummary>>() {
-                    @Override
-                    public void callback(List<CommentSummary> comments) {
-                        dataProvider.getList().clear();
-                        dataProvider.getList().addAll(comments);
-                        view.redrawDataGrid();
-                    }
-                }
-        ).getTaskComments(serverTemplateId,
-                          containerId,
-                          currentTaskId);
+        taskService.call((List<CommentSummary> comments) -> {
+                             dataProvider.getList().clear();
+                             dataProvider.getList().addAll(comments);
+                             view.redrawDataGrid();
+                         },
+                         (Message message, Throwable throwable) -> {
+                             if (throwable.getMessage().contains("cannot find container")) {
+                                 view.setErrorMessage(constants.TaskCommentsNotAvailable(getContainerId()));
+                                 return false;
+                             } else {
+                                 return true;
+                             }
+                         }).getTaskComments(getServerTemplateId(),
+                                            getContainerId(),
+                                            getTaskId());
     }
 
     public void addTaskComment(final String text) {
+        if (forLog) {
+            return;
+        }
+
         if ("".equals(text.trim())) {
             view.displayNotification(constants.CommentCannotBeEmpty());
         } else {
@@ -98,9 +113,9 @@ public class TaskCommentsPresenter {
                         view.clearCommentInput();
                     }
                 }
-        ).addTaskComment(serverTemplateId,
-                         containerId,
-                         currentTaskId,
+        ).addTaskComment(getServerTemplateId(),
+                         getContainerId(),
+                         getTaskId(),
                          text,
                          addedOn);
     }
@@ -115,9 +130,9 @@ public class TaskCommentsPresenter {
                         view.displayNotification(constants.CommentDeleted());
                     }
                 }
-        ).deleteTaskComment(serverTemplateId,
-                            containerId,
-                            currentTaskId,
+        ).deleteTaskComment(getServerTemplateId(),
+                            getContainerId(),
+                            getTaskId(),
                             commentId);
     }
 
@@ -126,16 +141,27 @@ public class TaskCommentsPresenter {
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
-        if (!event.isForLog()) {
-            currentTaskId = event.getTaskId();
-            serverTemplateId = event.getServerTemplateId();
-            containerId = event.getContainerId();
+        setSelectedTask(event);
+        forAdmin = event.isForAdmin();
+        forLog = event.isForLog();
+        view.newCommentsEnabled(forLog == false);
+        refreshComments();
+    }
+
+    public Predicate<CommentSummary> getDeleteCondition() {
+        return c -> forLog == false && (forAdmin || c.getAddedBy().equals(identity.getIdentifier()));
+    }
+
+    public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {
+        if (isSameTaskFromEvent().test(event)) {
             refreshComments();
         }
     }
 
-    public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {
-        if (currentTaskId == event.getTaskId()) {
+    public void onTaskCompletedEvent(@Observes final TaskCompletedEvent event) {
+        if (isSameTaskFromEvent().test(event) && forLog == false) {
+            forLog = true;
+            view.newCommentsEnabled(false);
             refreshComments();
         }
     }
@@ -147,5 +173,9 @@ public class TaskCommentsPresenter {
         void redrawDataGrid();
 
         void displayNotification(String text);
+
+        void newCommentsEnabled(Boolean enabled);
+
+        void setErrorMessage(String message);
     }
 }

@@ -109,7 +109,7 @@ public interface Constants extends Messages {
 
     String Comment();
 
-    String At();
+    String Added_At();
 
     String Added_By();
 
@@ -249,7 +249,7 @@ public interface Constants extends Messages {
     
     String Errors();
 
-    String TaskDetailsNotAvailableContainerNotStartedOrUnreacheable(String containerId);
+    String TaskCommentsNotAvailable(String containerId);
 
     String TaskDetailsNotAvailable();
 

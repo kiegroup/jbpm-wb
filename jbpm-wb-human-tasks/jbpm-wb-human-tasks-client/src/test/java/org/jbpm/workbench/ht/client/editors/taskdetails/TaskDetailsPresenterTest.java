@@ -19,6 +19,8 @@ import java.util.Date;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenter;
+import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenterTest;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
@@ -34,7 +36,7 @@ import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class TaskDetailsPresenterTest {
+public class TaskDetailsPresenterTest extends AbstractTaskPresenterTest {
 
     private CallerMock<TaskService> callerMock;
 
@@ -51,6 +53,11 @@ public class TaskDetailsPresenterTest {
     private EventSourceMock<TaskRefreshedEvent> taskRefreshedEvent;
 
     private TaskDetailsPresenter presenter;
+
+    @Override
+    public AbstractTaskPresenter getPresenter() {
+        return presenter;
+    }
 
     @Before
     public void setup() {

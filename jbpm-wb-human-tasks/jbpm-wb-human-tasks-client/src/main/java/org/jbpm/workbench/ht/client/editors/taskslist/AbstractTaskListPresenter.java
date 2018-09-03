@@ -50,10 +50,12 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
+import org.jbpm.workbench.ht.model.events.AbstractTaskEvent;
 import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
+import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.mvp.PlaceRequest;
@@ -81,6 +83,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     @Inject
     private Event<TaskSelectionEvent> taskSelected;
+
+    private TaskSummary selectedTask = null;
 
     public abstract void setupDetailBreadcrumb(String detailLabel);
 
@@ -323,6 +327,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         placeManager.goTo(PerspectiveIds.TASK_DETAILS_SCREEN);
         fireTaskSelectionEvent(summary,
                                logOnly);
+        selectedTask = summary;
     }
 
     private void fireTaskSelectionEvent(TaskSummary summary,
@@ -346,8 +351,21 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         refreshGrid();
     }
 
+    public void onTaskDetailsClosed(@Observes BeforeClosePlaceEvent closed) {
+        if (PerspectiveIds.TASK_DETAILS_SCREEN.equals(closed.getPlace().getIdentifier())) {
+            selectedTask = null;
+        }
+    }
+
     public void onTaskCompletedEvent(@Observes TaskCompletedEvent event) {
-        refreshGrid();
+        //Need to filter events only for a related task that was selected.
+        if(isSameTaskFromEvent().test(event)){
+            refreshGrid();
+        }
+    }
+
+    protected Predicate<AbstractTaskEvent> isSameTaskFromEvent() {
+        return e -> selectedTask != null && e.getServerTemplateId().equals(getSelectedServerTemplate()) && e.getContainerId().equals(selectedTask.getDeploymentId()) && e.getTaskId().equals(selectedTask.getId());
     }
 
     @Inject
@@ -447,5 +465,9 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     @Inject
     public void setTranslationService(TranslationService translationService) {
         this.translationService = translationService;
+    }
+
+    protected TaskSummary getSelectedTask() {
+        return selectedTask;
     }
 }

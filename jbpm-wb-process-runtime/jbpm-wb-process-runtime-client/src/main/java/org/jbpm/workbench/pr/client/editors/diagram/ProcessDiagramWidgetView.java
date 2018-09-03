@@ -23,7 +23,7 @@ import javax.inject.Named;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RequiresResize;
 import elemental2.dom.HTMLDivElement;
-import elemental2.dom.HTMLHeadingElement;
+import elemental2.dom.HTMLElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
@@ -39,14 +39,19 @@ public class ProcessDiagramWidgetView extends Composite implements ProcessDiagra
 
     @Inject
     @DataField("message")
-    @Named("h4")
-    HTMLHeadingElement heading;
+    @Named("span")
+    HTMLElement heading;
+
+    @Inject
+    @DataField
+    HTMLDivElement alert;
 
     public void displayImage(final String svgContent) {
         processDiagramDiv.innerHTML = svgContent;
     }
 
     public void displayMessage(final String message) {
+        alert.classList.remove("hidden");
         heading.textContent = message;
     }
 

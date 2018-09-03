@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
+import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenter;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.ht.client.editors.taskadmin.TaskAdminPresenter;
@@ -52,7 +53,7 @@ import static org.jbpm.workbench.common.client.PerspectiveIds.TASK_DETAILS_SCREE
 
 @Dependent
 @WorkbenchScreen(identifier = TASK_DETAILS_SCREEN)
-public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRefresh {
+public class TaskDetailsMultiPresenter extends AbstractTaskPresenter implements RefreshMenuBuilder.SupportsRefresh {
 
     private Constants constants = Constants.INSTANCE;
 
@@ -93,12 +94,6 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
 
     private PlaceRequest place;
 
-    private Long taskId;
-
-    private String serverTemplateId = "";
-
-    private String containerId = "";
-
     private String processId = "";
 
     private boolean forLog = false;
@@ -137,35 +132,32 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
-        boolean refreshDetails = (event != null && event.getTaskId() != null && event.getTaskId().equals(taskId));
-        taskId = event.getTaskId();
-        serverTemplateId = event.getServerTemplateId();
-        containerId = event.getContainerId();
+        boolean refreshDetails = isSameTaskFromEvent().test(event);
+        setSelectedTask(event);
         processId = event.getTaskName();
 
         if (!event.isForLog()) {
             taskFormPresenter.getTaskFormView().getDisplayerView().setOnCloseCommand(() -> closeDetails());
-            taskFormDisplayProvider.setup(new HumanTaskDisplayerConfig(new TaskKey(serverTemplateId,
-                                                                                   containerId,
-                                                                                   taskId)),
+            taskFormDisplayProvider.setup(new HumanTaskDisplayerConfig(new TaskKey(getServerTemplateId(),
+                                                                                   getContainerId(),
+                                                                                   getTaskId())),
                                           taskFormPresenter.getTaskFormView().getDisplayerView());
         }
         setIsForLog(event.isForLog());
         setIsForAdmin(event.isForAdmin());
 
         changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place,
-                                                               String.valueOf(taskId) + " - " + processId));
+                                                               String.valueOf(getTaskId()) + " - " + processId));
 
+        view.setAdminTabVisible(false);
         if (isForLog()) {
             view.displayOnlyLogTab();
             disableTaskDetailsEdition();
         } else {
             view.displayAllTabs();
-        }
-        if (isForAdmin()) {
-            view.setAdminTabVisible(true);
-        } else {
-            view.setAdminTabVisible(false);
+            if (isForAdmin()) {
+                view.setAdminTabVisible(true);
+            }
         }
 
         if (!refreshDetails) {
@@ -182,7 +174,7 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
         taskDataService.call(
                 (TaskSummary taskSummary) -> {
                     if (taskSummary != null) {
-                        taskSelected.fire(new TaskSelectionEvent(serverTemplateId,
+                        taskSelected.fire(new TaskSelectionEvent(getServerTemplateId(),
                                                                  taskSummary.getDeploymentId(),
                                                                  taskSummary.getId(),
                                                                  taskSummary.getName(),
@@ -198,13 +190,9 @@ public class TaskDetailsMultiPresenter implements RefreshMenuBuilder.SupportsRef
                     } else {
                         view.displayNotification(constants.TaskDetailsNotAvailable());
                     }
-                },
-                (message, throwable) -> {
-                    view.displayNotification(constants.TaskDetailsNotAvailableContainerNotStartedOrUnreacheable(containerId));
-                    return false;
-                }).getTask(serverTemplateId,
-                           containerId,
-                           taskId);
+                }).getTask(getServerTemplateId(),
+                           getContainerId(),
+                           getTaskId());
     }
 
     @WorkbenchMenu

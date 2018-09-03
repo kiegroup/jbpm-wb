@@ -18,13 +18,14 @@ package org.jbpm.workbench.ht.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class CommentSummary implements Serializable {
 
-    private long id;
+    private Long id;
 
     private String text;
 
@@ -32,7 +33,7 @@ public class CommentSummary implements Serializable {
 
     private Date addedAt;
 
-    public CommentSummary(long id,
+    public CommentSummary(Long id,
                           String text,
                           String addedBy,
                           Date addedAt) {
@@ -53,11 +54,11 @@ public class CommentSummary implements Serializable {
     public CommentSummary() {
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -87,6 +88,34 @@ public class CommentSummary implements Serializable {
 
     @Override
     public String toString() {
-        return "CommentSummary{" + "id=" + id + ", text=" + text + ", addedBy=" + addedBy + ", addedAt=" + addedAt + '}';
+        return "CommentSummary{" +
+                "id=" + id +
+                ", text='" + text + '\'' +
+                ", addedBy='" + addedBy + '\'' +
+                ", addedAt=" + addedAt +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        CommentSummary that = (CommentSummary) o;
+        return Objects.equals(id,
+                              that.id);
+    }
+
+    @Override
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = ~~result;
+        return result;
     }
 }

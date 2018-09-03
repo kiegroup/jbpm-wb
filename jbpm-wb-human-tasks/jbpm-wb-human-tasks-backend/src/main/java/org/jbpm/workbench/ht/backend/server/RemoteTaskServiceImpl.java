@@ -16,10 +16,12 @@
 
 package org.jbpm.workbench.ht.backend.server;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
@@ -27,22 +29,18 @@ import org.jbpm.workbench.ht.model.CommentSummary;
 import org.jbpm.workbench.ht.model.TaskAssignmentSummary;
 import org.jbpm.workbench.ht.model.TaskEventSummary;
 import org.jbpm.workbench.ht.model.TaskSummary;
+import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.kie.internal.identity.IdentityProvider;
 import org.kie.server.api.exception.KieServicesHttpException;
-import org.kie.server.api.model.definition.TaskField;
-import org.kie.server.api.model.definition.TaskQueryFilterSpec;
 import org.kie.server.api.model.instance.TaskComment;
 import org.kie.server.api.model.instance.TaskEventInstance;
 import org.kie.server.api.model.instance.TaskInstance;
-import org.kie.server.api.util.TaskQueryFilterSpecBuilder;
-import org.kie.server.client.QueryServicesClient;
 import org.kie.server.client.UserTaskServicesClient;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_DATASET;
 
 @Service
 @ApplicationScoped
@@ -53,6 +51,9 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
     @Inject
     private IdentityProvider identityProvider;
 
+    @Inject
+    private Event<TaskCompletedEvent> taskCompletedEvent;
+
     @Override
     public TaskSummary getTask(String serverTemplateId,
                                String containerId,
@@ -61,19 +62,19 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
             return null;
         }
 
-        QueryServicesClient queryServicesClient = getClient(serverTemplateId,
-                                                            QueryServicesClient.class);
-        TaskQueryFilterSpec filterSpec = new TaskQueryFilterSpecBuilder().equalsTo(TaskField.TASKID,
-                                                                                   taskId).get();
-
-        final List<TaskInstance> tasks = queryServicesClient.findHumanTasksWithFilters(HUMAN_TASKS_DATASET,
-                                                                                       filterSpec,
-                                                                                       0,
-                                                                                       Integer.MAX_VALUE);
-        if (tasks != null && tasks.size() == 1) {
-            return new TaskSummaryMapper().apply(tasks.get(0));
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
+        try {
+            //Although in the UserTaskServicesClient, this method does not validate the running container
+            TaskInstance task = client.findTaskById(taskId);
+            return new TaskSummaryMapper().apply(task);
+        } catch (KieServicesHttpException kieException) {
+            if (kieException.getHttpCode() == NOT_FOUND_ERROR_CODE) {
+                return null;
+            } else {
+                throw kieException;
+            }
         }
-        return null;
     }
 
     @Override
@@ -150,10 +151,10 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
     }
 
     @Override
-    public void completeTask(String serverTemplateId,
-                             String containerId,
-                             Long taskId,
-                             Map<String, Object> output) {
+    public void completeTask(final String serverTemplateId,
+                             final String containerId,
+                             final Long taskId,
+                             final Map<String, Object> output) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return;
         }
@@ -165,6 +166,9 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
                             taskId,
                             identityProvider.getName(),
                             output);
+        taskCompletedEvent.fire(new TaskCompletedEvent(serverTemplateId,
+                                                       containerId,
+                                                       taskId));
     }
 
     @Override
@@ -267,7 +271,7 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
         try {
             List<TaskComment> comments = client.getTaskCommentsByTaskId(containerId,
                                                                         taskId);
-            return comments.stream().map(c -> build(c)).collect(toList());
+            return comments.stream().map(c -> build(c)).sorted(Comparator.comparing(CommentSummary::getAddedAt).reversed()).collect(toList());
         } catch (KieServicesHttpException kieException) {
             if (kieException.getHttpCode() == NOT_FOUND_ERROR_CODE) {
                 return emptyList();

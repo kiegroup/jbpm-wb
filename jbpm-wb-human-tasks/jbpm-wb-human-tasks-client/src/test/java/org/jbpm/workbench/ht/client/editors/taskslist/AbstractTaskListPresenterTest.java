@@ -43,6 +43,7 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
+import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.junit.Before;
@@ -55,15 +56,18 @@ import org.mockito.stubbing.Answer;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
+import static org.jbpm.workbench.ht.client.util.TaskUtils.TaskType;
+import static org.jbpm.workbench.ht.client.util.TaskUtils.getStatusByType;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 import static org.jbpm.workbench.ht.util.TaskStatus.*;
-import static org.jbpm.workbench.ht.client.util.TaskUtils.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -437,6 +441,7 @@ public abstract class AbstractTaskListPresenterTest {
         final ArgumentCaptor<TaskSelectionEvent> captor = ArgumentCaptor.forClass(TaskSelectionEvent.class);
         verify(taskSelected).fire(captor.capture());
         assertTrue(captor.getValue().isForLog());
+        assertEquals(taskSummary, getPresenter().getSelectedTask());
     }
 
     @Test
@@ -453,6 +458,7 @@ public abstract class AbstractTaskListPresenterTest {
         final ArgumentCaptor<TaskSelectionEvent> captor = ArgumentCaptor.forClass(TaskSelectionEvent.class);
         verify(taskSelected).fire(captor.capture());
         assertFalse(captor.getValue().isForLog());
+        assertEquals(taskSummary, getPresenter().getSelectedTask());
     }
 
     @Test
@@ -483,5 +489,93 @@ public abstract class AbstractTaskListPresenterTest {
 
         verify(viewMock).removeActiveFilter(filter);
         verify(filterSettings).removeColumnFilter(columnFilter);
+    }
+
+    @Test
+    public void testTaskIsSameFromEvent() {
+        final String serverTemplateId = "serverTemplateId";
+
+        assertFalse(getPresenter().isSameTaskFromEvent().test(new TaskCompletedEvent(serverTemplateId,
+                                                                                    TASK_DEPLOYMENT_ID,
+                                                                                    TASK_ID)));
+
+        TaskSummary taskSummary = TaskSummary.builder()
+                .id(TASK_ID)
+                .deploymentId(TASK_DEPLOYMENT_ID)
+                .status(TASK_STATUS_READY.getIdentifier())
+                .build();
+
+
+        getPresenter().setSelectedServerTemplate(serverTemplateId);
+        getPresenter().selectTask(taskSummary);
+
+        assertTrue(getPresenter().isSameTaskFromEvent().test(new TaskCompletedEvent(serverTemplateId,
+                                                                                    TASK_DEPLOYMENT_ID,
+                                                                                    TASK_ID)));
+
+        assertFalse(getPresenter().isSameTaskFromEvent().test(new TaskCompletedEvent(serverTemplateId,
+                                                                                     TASK_DEPLOYMENT_ID,
+                                                                                     2l)));
+        assertFalse(getPresenter().isSameTaskFromEvent().test(new TaskCompletedEvent("anotherServerTemplateId",
+                                                                                     TASK_DEPLOYMENT_ID,
+                                                                                     TASK_ID)));
+        assertFalse(getPresenter().isSameTaskFromEvent().test(new TaskCompletedEvent(serverTemplateId,
+                                                                                     "anotherContainerId",
+                                                                                     TASK_ID)));
+    }
+
+    @Test
+    public void testOnTaskCompletedEvent() {
+        TaskSummary taskSummary = TaskSummary.builder()
+                .id(TASK_ID)
+                .deploymentId(TASK_DEPLOYMENT_ID)
+                .status(TASK_STATUS_READY.getIdentifier())
+                .build();
+
+        final String serverTemplateId = "serverTemplateId";
+        getPresenter().setSelectedServerTemplate(serverTemplateId);
+        getPresenter().selectTask(taskSummary);
+
+        getPresenter().onTaskCompletedEvent(new TaskCompletedEvent(serverTemplateId,
+                                                                   TASK_DEPLOYMENT_ID,
+                                                                   TASK_ID));
+
+        getPresenter().onTaskCompletedEvent(new TaskCompletedEvent(serverTemplateId,
+                                                                   TASK_DEPLOYMENT_ID,
+                                                                   2l));
+
+        //Refreshed 2 times only, one for server template and only one task event
+        verify(extendedPagedTable,
+               times(2)).setVisibleRangeAndClearData(any(),
+                                                     eq(true));
+    }
+
+    protected static BeforeClosePlaceEvent newCloseEventMock(String placeId) {
+        final BeforeClosePlaceEvent event = mock(BeforeClosePlaceEvent.class);
+        when(event.getPlace()).thenReturn(new DefaultPlaceRequest(placeId));
+        return event;
+    }
+
+    @Test
+    public void testOnTaskDetailsClosed() {
+        TaskSummary taskSummary = TaskSummary.builder()
+                .id(TASK_ID)
+                .deploymentId(TASK_DEPLOYMENT_ID)
+                .status(TASK_STATUS_EXITED.getIdentifier())
+                .build();
+
+        getPresenter().selectTask(taskSummary);
+
+        assertEquals(taskSummary,
+                     getPresenter().getSelectedTask());
+
+        getPresenter().onTaskDetailsClosed(newCloseEventMock(PerspectiveIds.TASK_ADMIN_LIST_SCREEN));
+
+        assertEquals(taskSummary,
+                     getPresenter().getSelectedTask());
+
+        getPresenter().onTaskDetailsClosed(newCloseEventMock(PerspectiveIds.TASK_DETAILS_SCREEN));
+
+        assertNull(getPresenter().getSelectedTask());
     }
 }

@@ -22,6 +22,7 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ActionCell.Delegate;
@@ -31,12 +32,15 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
+import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.TextArea;
@@ -63,20 +67,37 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
     protected static final String COL_ID_ACTIONS = "Actions";
     private static final int COMMENTS_PER_PAGE = 10;
 
-    @Inject
     @DataField
-    public TextArea newTaskCommentTextArea;
+    PagedTable<CommentSummary> commentsListGrid = new PagedTable<>(COMMENTS_PER_PAGE);
 
     @Inject
     @DataField
-    public FormLabel newTaskCommentLabel = GWT.create(FormLabel.class);
+    TextArea newTaskCommentTextArea;
 
     @Inject
     @DataField
-    public Button addCommentButton = GWT.create(Button.class);
+    FormLabel newTaskCommentLabel = GWT.create(FormLabel.class);
 
+    @Inject
     @DataField
-    public PagedTable<CommentSummary> commentsListGrid = new PagedTable<CommentSummary>(COMMENTS_PER_PAGE);
+    Button addCommentButton = GWT.create(Button.class);
+
+    @Inject
+    @DataField
+    HTMLDivElement form;
+
+    @Inject
+    @Named("span")
+    @DataField
+    HTMLElement message;
+
+    @Inject
+    @DataField
+    HTMLDivElement alert;
+
+    @Inject
+    @DataField
+    HTMLDivElement listContainer;
 
     private Constants constants = GWT.create(Constants.class);
 
@@ -116,7 +137,7 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
                                                                                                     bannedColumns)));
         commentsListGrid.setEmptyTableCaption(constants.No_Comments_For_This_Task());
         // Attach a column sort handler to the ListDataProvider to sort the list.
-        sortHandler = new ListHandler<CommentSummary>(presenter.getDataProvider().getList());
+        sortHandler = new ListHandler<>(presenter.getDataProvider().getList());
         commentsListGrid.addColumnSortHandler(sortHandler);
         initTableColumns();
         presenter.addDataDisplay(commentsListGrid);
@@ -159,15 +180,9 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
         addedAtColumn.setDataStoreName(COL_ADDEDAT);
         addedAtColumn.setDefaultSortAscending(true);
         commentsListGrid.addColumn(addedAtColumn,
-                                   constants.At());
+                                   constants.Added_At());
         sortHandler.setComparator(addedAtColumn,
-                                  new Comparator<CommentSummary>() {
-                                      @Override
-                                      public int compare(CommentSummary o1,
-                                                         CommentSummary o2) {
-                                          return o1.getAddedAt().compareTo(o2.getAddedAt());
-                                      }
-                                  });
+                                  Comparator.comparing(CommentSummary::getAddedAt).reversed());
 
         // comment text
         Column<CommentSummary, String> commentTextColumn = new Column<CommentSummary, String>(new TextCell()) {
@@ -202,7 +217,33 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
         actionsColumn.setSortable(false);
         actionsColumn.setDataStoreName(COL_ID_ACTIONS);
         commentsListGrid.addColumn(actionsColumn,
-                                   "");
+                                   constants.Actions());
+        commentsListGrid.setColumnWidth(addedByColumn,
+                                        150,
+                                        Style.Unit.PX);
+        commentsListGrid.setColumnWidth(addedAtColumn,
+                                        150,
+                                        Style.Unit.PX);
+        commentsListGrid.setColumnWidth(actionsColumn,
+                                        120,
+                                        Style.Unit.PX);
+        commentsListGrid.getColumnSortList().push(addedAtColumn);
+    }
+
+    @Override
+    public void setErrorMessage(final String message) {
+        this.alert.classList.remove("hidden");
+        this.listContainer.classList.add("hidden");
+        this.message.textContent = message;
+    }
+
+    @Override
+    public void newCommentsEnabled(final Boolean enabled) {
+        if (enabled) {
+            form.classList.remove("hidden");
+        } else {
+            form.classList.add("hidden");
+        }
     }
 
     private class DeleteCommentActionHasCell implements HasCell<CommentSummary, CommentSummary> {
@@ -218,12 +259,15 @@ public class TaskCommentsViewImpl extends Composite implements TaskCommentsPrese
                                    CommentSummary value,
                                    SafeHtmlBuilder sb) {
 
-                    SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                    mysb.appendHtmlConstant(new SimplePanel(new Button(constants.Delete()) {{
-                        setSize(ButtonSize.SMALL);
-                        setType(ButtonType.DANGER);
-                    }}).getElement().getInnerHTML());
-                    sb.append(mysb.toSafeHtml());
+                    if (presenter.getDeleteCondition().test(value)) {
+                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
+                        final Button button = GWT.create(Button.class);
+                        button.setText(constants.Delete());
+                        button.setSize(ButtonSize.SMALL);
+                        button.setType(ButtonType.DANGER);
+                        mysb.appendHtmlConstant(new SimplePanel(button).getElement().getInnerHTML());
+                        sb.append(mysb.toSafeHtml());
+                    }
                 }
             };
         }
