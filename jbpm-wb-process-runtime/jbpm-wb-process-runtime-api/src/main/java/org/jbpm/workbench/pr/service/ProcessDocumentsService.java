@@ -24,6 +24,4 @@ import org.jbpm.workbench.pr.model.DocumentSummary;
 @Remote
 public interface ProcessDocumentsService extends GenericServiceEntryPoint<DocumentKey, DocumentSummary> {
 
-    String getDocumentLink(String serverTemplateId,
-                           String documentIdentifier);
 }

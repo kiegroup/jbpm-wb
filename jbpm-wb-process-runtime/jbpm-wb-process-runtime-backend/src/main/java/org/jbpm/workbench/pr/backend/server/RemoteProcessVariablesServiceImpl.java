@@ -43,15 +43,11 @@ public class RemoteProcessVariablesServiceImpl extends AbstractKieServerService 
     public PageResponse<ProcessVariableSummary> getData(QueryFilter filter) {
         PageResponse<ProcessVariableSummary> response = new PageResponse<ProcessVariableSummary>();
         List<ProcessVariableSummary> processVariablesSums = getProcessVariables(filter);
+
         response.setStartRowIndex(filter.getOffset());
-        response.setTotalRowSize(processVariablesSums.size() - 1);
-        if (processVariablesSums.size() > filter.getCount()) {
-            response.setTotalRowSizeExact(false);
-        } else {
-            response.setTotalRowSizeExact(true);
-        }
-        response.setTotalRowSizeExact(true);
         response.setTotalRowSize(processVariablesSums.size());
+        response.setTotalRowSizeExact(true);
+
         if (!processVariablesSums.isEmpty()) {
             if (processVariablesSums.size() > (filter.getCount() + filter.getOffset())) {
                 response.setPageRowList(new ArrayList<ProcessVariableSummary>(processVariablesSums.subList(filter.getOffset(),

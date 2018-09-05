@@ -47,7 +47,6 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
               gridPreferences,
               true,
               false,
-              false,
               false);
 
         dataGrid.addColumnSortHandler(new AsyncHandler(dataGrid));
