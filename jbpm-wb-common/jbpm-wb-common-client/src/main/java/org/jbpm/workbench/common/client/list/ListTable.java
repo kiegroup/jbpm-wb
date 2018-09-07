@@ -33,6 +33,8 @@ public class ListTable<T extends GenericSummary> extends ExtendedPagedTable<T> i
         this.addDataGridStyles("kie-datatable",
                                "kie-datatable");
         this.dataGrid.setStriped(false);
+        super.setPageSizesSelectorDropup(true,
+                                         false);
     }
 
     @Override
