@@ -28,7 +28,6 @@ import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.document.Document;
 import org.jbpm.document.service.impl.util.DocumentDownloadLinkGenerator;
 import org.jbpm.workbench.common.model.QueryFilter;
-import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.jbpm.workbench.pr.model.DocumentSummary;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.jbpm.workbench.pr.service.ProcessDocumentsService;
@@ -39,9 +38,10 @@ import org.uberfire.paging.PageResponse;
 
 @Service
 @ApplicationScoped
-public class RemoteProcessDocumentsServiceImpl extends AbstractKieServerService implements ProcessDocumentsService {
+public class RemoteProcessDocumentsServiceImpl implements ProcessDocumentsService {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteProcessDocumentsServiceImpl.class);
+    protected static final String JBPM_DOCUMENT = "org.jbpm.document.Document";
 
     @Inject
     private ProcessVariablesService processVariablesService;
@@ -52,8 +52,6 @@ public class RemoteProcessDocumentsServiceImpl extends AbstractKieServerService 
         List<DocumentSummary> documents = getDocuments(filter);
 
         response.setStartRowIndex(filter.getOffset());
-        response.setTotalRowSize(documents.size() - 1);
-
         response.setTotalRowSizeExact(true);
         response.setTotalRowSize(documents.size());
 
@@ -82,7 +80,7 @@ public class RemoteProcessDocumentsServiceImpl extends AbstractKieServerService 
         SimpleDateFormat sdf = new SimpleDateFormat(Document.DOCUMENT_DATE_PATTERN);
         List<DocumentSummary> documents = new ArrayList<DocumentSummary>();
         for (ProcessVariableSummary pv : processVariables) {
-            if ("org.jbpm.document.Document".equals(pv.getType()) &&
+            if (JBPM_DOCUMENT.equals(pv.getType()) &&
                     pv.getNewValue() != null && !pv.getNewValue().isEmpty()) {
                 String[] values = pv.getNewValue().split(Document.PROPERTIES_SEPARATOR);
                 if (values.length == 4) {
@@ -104,9 +102,4 @@ public class RemoteProcessDocumentsServiceImpl extends AbstractKieServerService 
         return documents;
     }
 
-    @Override
-    public String getDocumentLink(final String serverTemplateId,
-                                  final String documentIdentifier) {
-        return "jbpm/documents?templateid=" + serverTemplateId + "&docid=" + documentIdentifier;
-    }
 }

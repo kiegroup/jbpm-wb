@@ -16,11 +16,12 @@
 
 package org.jbpm.workbench.pr.backend.server;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.IntStream;
 
+import org.jbpm.workbench.common.model.PortableQueryFilter;
 import org.jbpm.workbench.common.model.QueryFilter;
 import org.jbpm.workbench.ks.integration.KieServerIntegration;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
@@ -33,12 +34,14 @@ import org.kie.server.api.model.instance.VariableInstance;
 import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.ProcessServicesClient;
 import org.kie.server.client.QueryServicesClient;
-import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.paging.PageResponse;
 
-import static org.junit.Assert.assertEquals;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -60,20 +63,17 @@ public class RemoteProcessVariablesServiceImplTest {
 
     private QueryFilter queryFilter;
 
-    @Mock
-    ServerTemplate serverTemplateMock;
-
     @InjectMocks
     private RemoteProcessVariablesServiceImpl processVariablesService;
 
     @Before
     public void setup() {
         final KieServicesClient kieServicesClient = mock(KieServicesClient.class);
-        when(kieServerIntegration.getServerClient(anyString())).thenReturn(kieServicesClient);
+        when(kieServerIntegration.getServerClient(any())).thenReturn(kieServicesClient);
         when(kieServicesClient.getServicesClient(QueryServicesClient.class)).thenReturn(queryServicesClient);
         when(kieServicesClient.getServicesClient(ProcessServicesClient.class)).thenReturn(processServicesClient);
 
-        HashMap params = new HashMap();
+        HashMap<String, Object> params = new HashMap<>();
         params.put("serverTemplateId",
                    serverTemplateId);
         params.put("deploymentId",
@@ -82,8 +82,14 @@ public class RemoteProcessVariablesServiceImplTest {
                    processInstanceId);
         params.put("processDefId",
                    processId);
-        queryFilter = mock(QueryFilter.class);
-        when(queryFilter.getParams()).thenReturn(params);
+        queryFilter = new PortableQueryFilter(0,
+                                              10,
+                                              false,
+                                              "",
+                                              "",
+                                              false,
+                                              null,
+                                              params);
     }
 
     @Test
@@ -91,7 +97,6 @@ public class RemoteProcessVariablesServiceImplTest {
         String var1 = "var1";
         String var1_value = "valueVar1";
         String var2 = "var2";
-        VariablesDefinition variablesDefinition = mock(VariablesDefinition.class);
 
         HashMap processDefVars = new HashMap();
         processDefVars.put(var1,
@@ -99,16 +104,17 @@ public class RemoteProcessVariablesServiceImplTest {
         processDefVars.put(var2,
                            "");
 
-        VariableInstance variableInstace =
+        VariablesDefinition variablesDefinition = new VariablesDefinition(processDefVars);
+
+        VariableInstance variableInstance =
                 VariableInstance.builder()
                         .name(var1)
                         .value(var1_value)
                         .processInstanceId(Long.valueOf(processInstanceId))
                         .date(new Date())
                         .build();
-        when(queryServicesClient.findVariablesCurrentState(anyLong())).thenReturn(Arrays.asList(variableInstace));
+        when(queryServicesClient.findVariablesCurrentState(any())).thenReturn(singletonList(variableInstance));
 
-        when(variablesDefinition.getVariables()).thenReturn(processDefVars);
         when(processServicesClient.getProcessVariableDefinitions(containerId,
                                                                  processId)).thenReturn(variablesDefinition);
 
@@ -135,7 +141,7 @@ public class RemoteProcessVariablesServiceImplTest {
         String var1 = "var1";
         String var1_value = "valueVar1";
 
-        VariableInstance variableInstace =
+        VariableInstance variableInstance =
                 VariableInstance.builder()
                         .name(var1)
                         .value(var1_value)
@@ -144,7 +150,7 @@ public class RemoteProcessVariablesServiceImplTest {
                         .build();
         when(processServicesClient.getProcessVariableDefinitions(containerId,
                                                                  processId)).thenThrow(new KieServicesHttpException());
-        when(queryServicesClient.findVariablesCurrentState(anyLong())).thenReturn(Arrays.asList(variableInstace));
+        when(queryServicesClient.findVariablesCurrentState(any())).thenReturn(singletonList(variableInstance));
 
         List<ProcessVariableSummary> processInstanceVariables = processVariablesService.getProcessVariables(queryFilter);
 
@@ -157,5 +163,60 @@ public class RemoteProcessVariablesServiceImplTest {
                      processInstanceVariables.get(0).getName());
         assertEquals(var1_value,
                      processInstanceVariables.get(0).getNewValue());
+    }
+
+    @Test
+    public void testGetData() {
+        String var1 = "var1";
+        String var1_value = "valueVar1";
+        VariablesDefinition variablesDefinition = new VariablesDefinition(singletonMap("var1",
+                                                                                       ""));
+
+        when(processServicesClient.getProcessVariableDefinitions(containerId,
+                                                                 processId)).thenReturn(variablesDefinition);
+
+        VariableInstance variableInstance =
+                VariableInstance.builder()
+                        .name(var1)
+                        .value(var1_value)
+                        .processInstanceId(Long.valueOf(processInstanceId))
+                        .date(new Date())
+                        .build();
+
+        when(queryServicesClient.findVariablesCurrentState(any())).thenReturn(singletonList(variableInstance));
+
+        final PageResponse<ProcessVariableSummary> response = processVariablesService.getData(queryFilter);
+
+        assertEquals(1,
+                     response.getTotalRowSize());
+        assertEquals(0,
+                     response.getStartRowIndex());
+        assertTrue(response.isTotalRowSizeExact());
+        assertTrue(response.isFirstPage());
+        assertTrue(response.isLastPage());
+    }
+
+    @Test
+    public void testGetDataPaginated() {
+        int totalItems = 12;
+
+        final HashMap<String, String> variables = new HashMap<>();
+        IntStream.range(0,
+                        totalItems).forEach(i -> variables.put("var_" + i,
+                                                               ""));
+        VariablesDefinition variablesDefinition = new VariablesDefinition(variables);
+
+        when(processServicesClient.getProcessVariableDefinitions(containerId,
+                                                                 processId)).thenReturn(variablesDefinition);
+
+        final PageResponse<ProcessVariableSummary> response = processVariablesService.getData(queryFilter);
+
+        assertEquals(totalItems,
+                     response.getTotalRowSize());
+        assertEquals(0,
+                     response.getStartRowIndex());
+        assertTrue(response.isTotalRowSizeExact());
+        assertTrue(response.isFirstPage());
+        assertFalse(response.isLastPage());
     }
 }

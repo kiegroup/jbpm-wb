@@ -22,7 +22,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.view.client.Range;
@@ -30,12 +29,12 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.workbench.common.client.list.ListView;
-import org.jbpm.workbench.pr.model.ProcessVariableSummary;
-import org.jbpm.workbench.common.model.PortableQueryFilter;
 import org.jbpm.workbench.common.client.list.AbstractListPresenter;
+import org.jbpm.workbench.common.client.list.ListView;
+import org.jbpm.workbench.common.model.PortableQueryFilter;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
+import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.jbpm.workbench.pr.service.ProcessVariablesService;
 import org.uberfire.ext.widgets.common.client.callbacks.HasBusyIndicatorDefaultErrorCallback;
 import org.uberfire.mvp.ParameterizedCommand;
@@ -61,10 +60,8 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
     private String serverTemplateId;
 
     @Inject
-    public ProcessVariableListPresenter(
-            final ProcessVariableListView view,
-            final Caller<ProcessVariablesService> variablesServices
-    ) {
+    public ProcessVariableListPresenter(final ProcessVariableListView view,
+                                        final Caller<ProcessVariablesService> variablesServices) {
         this.view = view;
         this.variablesServices = variablesServices;
     }
@@ -168,7 +165,6 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
                                                             Throwable throwable) {
                                            view.hideBusyIndicator();
                                            view.displayNotification(constants.ErrorRetrievingProcessVariables(throwable.getMessage()));
-                                           GWT.log(throwable.toString());
                                            return true;
                                        }
                                    }).getData(currentFilter);
