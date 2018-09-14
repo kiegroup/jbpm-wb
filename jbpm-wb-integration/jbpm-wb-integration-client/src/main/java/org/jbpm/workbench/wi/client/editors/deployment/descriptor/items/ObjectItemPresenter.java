@@ -82,6 +82,11 @@ public class ObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Sect
         fireChangeEvent();
     }
 
+    public void onValueChange(final String value){
+        model.setValue(value);
+        fireChangeEvent();
+    }
+
     @Override
     public void fireChangeEvent() {
         parentPresenter.fireChangeEvent();

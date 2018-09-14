@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.doublevalue.AddDoubleValueModal;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.promise.Promises;
@@ -52,9 +51,6 @@ public class DeploymentsEnvironmentEntriesPresenterTest {
     private DeploymentsEnvironmentEntriesPresenter.EnvironmentEntriesListPresenter environmentEntriesListPresenter;
 
     @Mock
-    private AddDoubleValueModal addEnvironmentEntryModal;
-
-    @Mock
     private ItemObjectModelFactory itemObjectModelFactory;
 
     private Promises promises = new SyncPromises();
@@ -68,7 +64,6 @@ public class DeploymentsEnvironmentEntriesPresenterTest {
                                                                       promises,
                                                                       view,
                                                                       environmentEntriesListPresenter,
-                                                                      addEnvironmentEntryModal,
                                                                       itemObjectModelFactory));
     }
 
@@ -79,20 +74,13 @@ public class DeploymentsEnvironmentEntriesPresenterTest {
         presenter.setup(model);
 
         assertNotNull(model.getEnvironmentEntries());
-        verify(addEnvironmentEntryModal).setup(any(), any(), any());
         verify(environmentEntriesListPresenter).setup(any(), eq(model.getEnvironmentEntries()), any());
     }
 
     @Test
-    public void testOpenModal() {
-        presenter.openNewEnvironmentEntryModal();
-        verify(addEnvironmentEntryModal).show(any());
-    }
-
-    @Test
-    public void testAdd() {
-        presenter.addEnvironmentEntry("Name", "Value");
-        verify(environmentEntriesListPresenter).add(any());
+    public void testAddNewEnvironmentEntry() {
+        presenter.addNewEnvironmentEntry();
+        verify(environmentEntriesListPresenter).add(itemObjectModelFactory.newItemObjectModel("",""));
         verify(presenter).fireChangeEvent();
     }
 }

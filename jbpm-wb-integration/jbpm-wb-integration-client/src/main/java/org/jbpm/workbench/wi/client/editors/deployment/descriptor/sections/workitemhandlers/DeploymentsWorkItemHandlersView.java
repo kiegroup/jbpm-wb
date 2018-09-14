@@ -56,7 +56,7 @@ public class DeploymentsWorkItemHandlersView implements SectionView<DeploymentsW
 
     @EventHandler("add-work-item-handler-button")
     public void onAddWorkItemHandlerButtonClicked(final ClickEvent ignore) {
-        presenter.openNewWorkItemHandlerModal();
+        presenter.addNewWorkItemHandler();
     }
 
     public Element getWorkItemHandlersTable() {

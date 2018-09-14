@@ -56,7 +56,7 @@ public class DeploymentsRemoteableClassesView implements SectionView<Deployments
 
     @EventHandler("add-remoteable-class-button")
     public void onAddRequiredRoleButtonClicked(final ClickEvent ignore) {
-        presenter.openNewRemoteableClassModal();
+        presenter.addNewRemoteableClass();
     }
 
     public Element getRemoteableClassesTable() {

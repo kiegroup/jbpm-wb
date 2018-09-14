@@ -29,13 +29,11 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ItemObje
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ObjectItemPresenter;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
-import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
 import org.kie.workbench.common.widgets.client.widget.ListPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.uberfire.client.promise.Promises;
 
 @Dependent
@@ -43,7 +41,6 @@ public class DeploymentsMarshallingStrategiesPresenter extends Section<Deploymen
 
     private final DeploymentsMarshallingStrategiesView view;
     private final MarshallingStrategiesListPresenter marshallingStrategyPresenters;
-    private final AddSingleValueModal addMarshallingStrategyModal;
     private final ItemObjectModelFactory itemObjectModelFactory;
 
     @Inject
@@ -52,13 +49,11 @@ public class DeploymentsMarshallingStrategiesPresenter extends Section<Deploymen
                                                      final Promises promises,
                                                      final DeploymentsMarshallingStrategiesView view,
                                                      final MarshallingStrategiesListPresenter marshallingStrategyPresenters,
-                                                     final AddSingleValueModal addMarshallingStrategyModal,
                                                      final ItemObjectModelFactory itemObjectModelFactory) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
         this.view = view;
         this.marshallingStrategyPresenters = marshallingStrategyPresenters;
-        this.addMarshallingStrategyModal = addMarshallingStrategyModal;
         this.itemObjectModelFactory = itemObjectModelFactory;
     }
 
@@ -69,7 +64,6 @@ public class DeploymentsMarshallingStrategiesPresenter extends Section<Deploymen
 
     @Override
     public Promise<Void> setup(final DeploymentDescriptorModel model) {
-        addMarshallingStrategyModal.setup(LibraryConstants.AddMarshallingStrategy, LibraryConstants.Id);
 
         if (model.getMarshallingStrategies() == null) {
             model.setMarshallingStrategies(new ArrayList<>());
@@ -83,12 +77,8 @@ public class DeploymentsMarshallingStrategiesPresenter extends Section<Deploymen
         return promises.resolve();
     }
 
-    public void openNewMarshallingStrategyModal() {
-        addMarshallingStrategyModal.show(this::addMarshallingStrategy);
-    }
-
-    void addMarshallingStrategy(final String name) {
-        marshallingStrategyPresenters.add(itemObjectModelFactory.newItemObjectModel(name));
+    public void addNewMarshallingStrategy() {
+        marshallingStrategyPresenters.add(itemObjectModelFactory.newItemObjectModel(""));
         fireChangeEvent();
     }
 

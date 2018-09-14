@@ -56,7 +56,7 @@ public class DeploymentsEventListenersView implements SectionView<DeploymentsEve
 
     @EventHandler("add-event-listener-button")
     public void onAddEventListenerButtonClicked(final ClickEvent ignore) {
-        presenter.openNewEventListenerModal();
+        presenter.addNewEventListener();
     }
 
     public Element getEventListenersTable() {

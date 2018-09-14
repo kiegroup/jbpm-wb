@@ -52,9 +52,6 @@ public class DeploymentsConfigurationPresenterTest {
     private DeploymentsConfigurationPresenter.ConfigurationsListPresenter configurationsListPresenter;
 
     @Mock
-    private AddDoubleValueModal addConfigurationModal;
-
-    @Mock
     private ItemObjectModelFactory itemObjectModelFactory;
 
     private Promises promises = new SyncPromises();
@@ -68,7 +65,6 @@ public class DeploymentsConfigurationPresenterTest {
                                                                    promises,
                                                                    view,
                                                                    configurationsListPresenter,
-                                                                   addConfigurationModal,
                                                                    itemObjectModelFactory));
     }
 
@@ -79,20 +75,12 @@ public class DeploymentsConfigurationPresenterTest {
         presenter.setup(model);
 
         assertNotNull(model.getConfiguration());
-        verify(addConfigurationModal).setup(any(), any(), any());
         verify(configurationsListPresenter).setup(any(), eq(model.getConfiguration()), any());
     }
 
-    @Test
-    public void testOpenModal() {
-        presenter.openNewConfigurationModal();
-        verify(addConfigurationModal).show(any());
-    }
-
-    @Test
-    public void testAdd() {
-        presenter.addConfiguration("Name", "Value");
-        verify(configurationsListPresenter).add(any());
+    public void testAddNewConfiguration() {
+        presenter.addNewConfiguration();
+        verify(configurationsListPresenter).add(itemObjectModelFactory.newItemObjectModel("",""));
         verify(presenter).fireChangeEvent();
     }
 }

@@ -56,7 +56,7 @@ public class DeploymentsGlobalsView implements SectionView<DeploymentsGlobalsPre
 
     @EventHandler("add-global-button")
     public void onAddGlobalButtonClicked(final ClickEvent ignore) {
-        presenter.openNewGlobalModal();
+        presenter.addNewGlobal();
     }
 
     public Element getGlobalsTable() {

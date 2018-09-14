@@ -20,6 +20,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -35,6 +37,7 @@ import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.model.Parameter;
+import org.kie.workbench.common.services.shared.kmodule.SingleValueItemObjectModel;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
 import org.jbpm.workbench.wi.dd.validation.DeploymentDescriptorValidationMessage;
 import org.kie.internal.runtime.conf.AuditMode;
@@ -315,10 +318,10 @@ public class DDEditorServiceImpl
         ddModel.setConfiguration(processNamedObjectModel(configuration));
 
         // required roles
-        ddModel.setRequiredRoles(originDD.getRequiredRoles());
+        ddModel.setRequiredRoles(originDD.getRequiredRoles().stream().map( r -> new SingleValueItemObjectModel(r)).collect(Collectors.toList()));
 
         // remoteable classes
-        ddModel.setRemotableClasses(originDD.getClasses());
+        ddModel.setRemotableClasses(originDD.getClasses().stream().map( c -> new SingleValueItemObjectModel(c)).collect(Collectors.toList()));
 
         ddModel.setLimitSerializationClasses(originDD.getLimitSerializationClasses());
 
@@ -370,10 +373,10 @@ public class DDEditorServiceImpl
         updated.getBuilder().setConfiguration(processToNamedObjectModel(configuration));
 
         // required roles
-        updated.getBuilder().setRequiredRoles(model.getRequiredRoles());
+        updated.getBuilder().setRequiredRoles(model.getRequiredRoles().stream().map( r -> r.getValue()).collect(Collectors.toList()));
 
         // remoteable classes
-        updated.getBuilder().setClasses(model.getRemotableClasses());
+        updated.getBuilder().setClasses(model.getRemotableClasses().stream().map( c -> c.getValue()).collect(Collectors.toList()));
 
         return updated;
     }

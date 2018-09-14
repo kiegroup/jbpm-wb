@@ -20,13 +20,14 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
+import org.kie.workbench.common.services.shared.kmodule.SingleValueItemObjectModel;
 import org.kie.workbench.common.widgets.client.widget.ListItemPresenter;
 import org.kie.workbench.common.widgets.client.widget.ListItemView;
 
 @Dependent
-public class RequiredRolesListItemPresenter extends ListItemPresenter<String, DeploymentsRequiredRolesPresenter, RequiredRolesListItemPresenter.View> {
+public class RequiredRolesListItemPresenter extends ListItemPresenter<SingleValueItemObjectModel, DeploymentsRequiredRolesPresenter, RequiredRolesListItemPresenter.View> {
 
-    private String role;
+    private SingleValueItemObjectModel roleModel;
     DeploymentsRequiredRolesPresenter parentPresenter;
 
     @Inject
@@ -35,13 +36,13 @@ public class RequiredRolesListItemPresenter extends ListItemPresenter<String, De
     }
 
     @Override
-    public RequiredRolesListItemPresenter setup(final String role,
+    public RequiredRolesListItemPresenter setup(final SingleValueItemObjectModel role,
                                                 final DeploymentsRequiredRolesPresenter parentPresenter) {
-        this.role = role;
+        this.roleModel = role;
         this.parentPresenter = parentPresenter;
 
         view.init(this);
-        view.setRole(role);
+        view.setRole(role.getValue());
 
         return this;
     }
@@ -52,9 +53,14 @@ public class RequiredRolesListItemPresenter extends ListItemPresenter<String, De
         parentPresenter.fireChangeEvent();
     }
 
+    public void onRoleChange(final String role){
+        roleModel.setValue(role);
+        parentPresenter.fireChangeEvent();
+    }
+
     @Override
-    public String getObject() {
-        return role;
+    public SingleValueItemObjectModel getObject() {
+        return roleModel;
     }
 
     public interface View extends ListItemView<RequiredRolesListItemPresenter>,
