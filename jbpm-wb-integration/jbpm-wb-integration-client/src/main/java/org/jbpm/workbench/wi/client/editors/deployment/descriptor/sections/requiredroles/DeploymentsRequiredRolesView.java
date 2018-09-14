@@ -56,7 +56,7 @@ public class DeploymentsRequiredRolesView implements SectionView<DeploymentsRequ
 
     @EventHandler("add-required-role-button")
     public void onAddRequiredRoleButtonClicked(final ClickEvent ignore) {
-        presenter.openNewRequiredRoleModal();
+        presenter.addNewRequiredRole();
     }
 
     public Element getRequiredRolesTable() {

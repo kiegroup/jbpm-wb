@@ -56,7 +56,7 @@ public class DeploymentsEnvironmentEntriesView implements SectionView<Deployment
 
     @EventHandler("add-environment-entry-button")
     public void onAddEnvironmentEntryButtonClicked(final ClickEvent ignore) {
-        presenter.openNewEnvironmentEntryModal();
+        presenter.addNewEnvironmentEntry();
     }
 
     public Element getEnvironmentEntriesTable() {

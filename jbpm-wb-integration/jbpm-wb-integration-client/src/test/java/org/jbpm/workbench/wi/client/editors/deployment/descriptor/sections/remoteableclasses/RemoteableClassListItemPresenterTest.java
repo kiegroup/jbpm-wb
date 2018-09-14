@@ -17,6 +17,7 @@
 package org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.remoteableclasses;
 
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.remoteableclasses.DeploymentsRemoteableClassesPresenter.RemoteableClassesListPresenter;
+import org.kie.workbench.common.services.shared.kmodule.SingleValueItemObjectModel;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +44,7 @@ public class RemoteableClassListItemPresenterTest {
 
     @Test
     public void testSetup() {
-        remoteableClassListItemPresenter.setup("Class", mock(DeploymentsRemoteableClassesPresenter.class));
+        remoteableClassListItemPresenter.setup(new SingleValueItemObjectModel("Class"), mock(DeploymentsRemoteableClassesPresenter.class));
         verify(view).init(eq(remoteableClassListItemPresenter));
         verify(view).setClass(eq("Class"));
     }

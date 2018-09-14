@@ -16,7 +16,8 @@
 
 package org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles;
 
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles.DeploymentsRequiredRolesPresenter.RemoteableClassListPresenter;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles.DeploymentsRequiredRolesPresenter.RequiredRolesListPresenter;
+import org.kie.workbench.common.services.shared.kmodule.SingleValueItemObjectModel;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +44,7 @@ public class RequiredRolesListItemPresenterTest {
 
     @Test
     public void testSetup() {
-        requiredRolesListItemPresenter.setup("Role", mock(DeploymentsRequiredRolesPresenter.class));
+        requiredRolesListItemPresenter.setup(new SingleValueItemObjectModel("Role"), mock(DeploymentsRequiredRolesPresenter.class));
         verify(view).init(eq(requiredRolesListItemPresenter));
         verify(view).setRole(eq("Role"));
     }
@@ -51,7 +52,7 @@ public class RequiredRolesListItemPresenterTest {
     @Test
     public void testRemove() {
         final DeploymentsRequiredRolesPresenter parentPresenter = mock(DeploymentsRequiredRolesPresenter.class);
-        final RemoteableClassListPresenter listPresenter = mock(RemoteableClassListPresenter.class);
+        final RequiredRolesListPresenter listPresenter = mock(RequiredRolesListPresenter.class);
 
         requiredRolesListItemPresenter.parentPresenter = parentPresenter;
         requiredRolesListItemPresenter.setListPresenter(listPresenter);

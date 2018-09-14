@@ -26,13 +26,12 @@ import javax.inject.Inject;
 import elemental2.promise.Promise;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
-import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
+import org.kie.workbench.common.services.shared.kmodule.SingleValueItemObjectModel;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
 import org.kie.workbench.common.widgets.client.widget.ListPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.uberfire.client.promise.Promises;
 
 @Dependent
@@ -40,20 +39,17 @@ public class DeploymentsRemoteableClassesPresenter extends Section<DeploymentDes
 
     private final DeploymentsRemoteableClassesView view;
     private final RemoteableClassesListPresenter remoteableClassesListPresenter;
-    private final AddSingleValueModal addRemoteableClassModal;
 
     @Inject
     public DeploymentsRemoteableClassesPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
                                                  final MenuItem<DeploymentDescriptorModel> menuItem,
                                                  final Promises promises,
                                                  final DeploymentsRemoteableClassesView view,
-                                                 final RemoteableClassesListPresenter remoteableClassesListPresenter,
-                                                 final AddSingleValueModal addRemoteableClassModal) {
+                                                 final RemoteableClassesListPresenter remoteableClassesListPresenter) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
         this.view = view;
         this.remoteableClassesListPresenter = remoteableClassesListPresenter;
-        this.addRemoteableClassModal = addRemoteableClassModal;
     }
 
     @PostConstruct
@@ -63,7 +59,6 @@ public class DeploymentsRemoteableClassesPresenter extends Section<DeploymentDes
 
     @Override
     public Promise<Void> setup(final DeploymentDescriptorModel model) {
-        addRemoteableClassModal.setup(LibraryConstants.AddRemoteableClass, LibraryConstants.Class);
 
         if (model.getRemotableClasses() == null) {
             model.setRemotableClasses(new ArrayList<>());
@@ -77,12 +72,8 @@ public class DeploymentsRemoteableClassesPresenter extends Section<DeploymentDes
         return promises.resolve();
     }
 
-    public void openNewRemoteableClassModal() {
-        addRemoteableClassModal.show(this::addRemoteableClass);
-    }
-
-    void addRemoteableClass(final String role) {
-        remoteableClassesListPresenter.add(role);
+    public void addNewRemoteableClass() {
+        remoteableClassesListPresenter.add(new SingleValueItemObjectModel(""));
         fireChangeEvent();
     }
 
@@ -97,7 +88,7 @@ public class DeploymentsRemoteableClassesPresenter extends Section<DeploymentDes
     }
 
     @Dependent
-    public static class RemoteableClassesListPresenter extends ListPresenter<String, RemoteableClassListItemPresenter> {
+    public static class RemoteableClassesListPresenter extends ListPresenter<SingleValueItemObjectModel, RemoteableClassListItemPresenter> {
 
         @Inject
         public RemoteableClassesListPresenter(final ManagedInstance<RemoteableClassListItemPresenter> itemPresenters) {

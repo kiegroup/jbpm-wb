@@ -26,34 +26,30 @@ import javax.inject.Inject;
 import elemental2.promise.Promise;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
-import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
+import org.kie.workbench.common.services.shared.kmodule.SingleValueItemObjectModel;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
 import org.kie.workbench.common.widgets.client.widget.ListPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.uberfire.client.promise.Promises;
 
 @Dependent
 public class DeploymentsRequiredRolesPresenter extends Section<DeploymentDescriptorModel> {
 
     private DeploymentsRequiredRolesView view;
-    private RemoteableClassListPresenter requiredRolesListPresenter;
-    private AddSingleValueModal addRequiredRoleModal;
+    private RequiredRolesListPresenter requiredRolesListPresenter;
 
     @Inject
     public DeploymentsRequiredRolesPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
                                              final MenuItem<DeploymentDescriptorModel> menuItem,
                                              final Promises promises,
                                              final DeploymentsRequiredRolesView view,
-                                             final RemoteableClassListPresenter requiredRolesListPresenter,
-                                             final AddSingleValueModal addRequiredRoleModal) {
+                                             final RequiredRolesListPresenter requiredRolesListPresenter){
 
         super(settingsSectionChangeEvent, menuItem, promises);
         this.view = view;
         this.requiredRolesListPresenter = requiredRolesListPresenter;
-        this.addRequiredRoleModal = addRequiredRoleModal;
     }
 
     @PostConstruct
@@ -63,7 +59,6 @@ public class DeploymentsRequiredRolesPresenter extends Section<DeploymentDescrip
 
     @Override
     public Promise<Void> setup(final DeploymentDescriptorModel model) {
-        addRequiredRoleModal.setup(LibraryConstants.AddRequiredRole, LibraryConstants.Role);
 
         if (model.getRequiredRoles() == null) {
             model.setRequiredRoles(new ArrayList<>());
@@ -77,12 +72,8 @@ public class DeploymentsRequiredRolesPresenter extends Section<DeploymentDescrip
         return promises.resolve();
     }
 
-    public void openNewRequiredRoleModal() {
-        addRequiredRoleModal.show(this::addRequiredRole);
-    }
-
-    void addRequiredRole(final String role) {
-        requiredRolesListPresenter.add(role);
+    public void addNewRequiredRole() {
+        requiredRolesListPresenter.add(new SingleValueItemObjectModel(""));
         fireChangeEvent();
     }
 
@@ -97,10 +88,10 @@ public class DeploymentsRequiredRolesPresenter extends Section<DeploymentDescrip
     }
 
     @Dependent
-    public static class RemoteableClassListPresenter extends ListPresenter<String, RequiredRolesListItemPresenter> {
+    public static class RequiredRolesListPresenter extends ListPresenter<SingleValueItemObjectModel, RequiredRolesListItemPresenter> {
 
         @Inject
-        public RemoteableClassListPresenter(final ManagedInstance<RequiredRolesListItemPresenter> itemPresenters) {
+        public RequiredRolesListPresenter(final ManagedInstance<RequiredRolesListItemPresenter> itemPresenters) {
             super(itemPresenters);
         }
     }

@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.promise.Promises;
@@ -51,9 +50,6 @@ public class DeploymentsEventListenersPresenterTest {
     private DeploymentsEventListenersPresenter.EventListenersListPresenter eventListenersListPresenter;
 
     @Mock
-    private AddSingleValueModal addEventListenerModal;
-
-    @Mock
     private ItemObjectModelFactory itemObjectModelFactory;
 
     private Promises promises = new SyncPromises();
@@ -67,7 +63,6 @@ public class DeploymentsEventListenersPresenterTest {
                                                                     promises,
                                                                     view,
                                                                     eventListenersListPresenter,
-                                                                    addEventListenerModal,
                                                                     itemObjectModelFactory));
     }
 
@@ -78,20 +73,13 @@ public class DeploymentsEventListenersPresenterTest {
         presenter.setup(model);
 
         assertNotNull(model.getEventListeners());
-        verify(addEventListenerModal).setup(any(), any());
         verify(eventListenersListPresenter).setup(any(), any(), any());
     }
 
     @Test
-    public void testOpenModal() {
-        presenter.openNewEventListenerModal();
-        verify(addEventListenerModal).show(any());
-    }
-
-    @Test
-    public void testAdd() {
-        presenter.addEventListener("Name");
-        verify(eventListenersListPresenter).add(any());
+    public void testAddNewEventListener() {
+        presenter.addNewEventListener();
+        verify(eventListenersListPresenter).add(itemObjectModelFactory.newItemObjectModel(""));
         verify(presenter).fireChangeEvent();
     }
 }

@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.doublevalue.AddDoubleValueModal;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.promise.Promises;
@@ -53,9 +52,6 @@ public class DeploymentsGlobalsPresenterTest {
     private GlobalsListPresenter globalPresenters;
 
     @Mock
-    private AddDoubleValueModal addGlobalModal;
-
-    @Mock
     private ItemObjectModelFactory itemObjectModelFactor;
 
     private Promises promises = new SyncPromises();
@@ -69,7 +65,6 @@ public class DeploymentsGlobalsPresenterTest {
                                                          promises,
                                                          view,
                                                          globalPresenters,
-                                                         addGlobalModal,
                                                          itemObjectModelFactor));
     }
 
@@ -80,20 +75,14 @@ public class DeploymentsGlobalsPresenterTest {
         presenter.setup(model);
 
         assertNotNull(model.getGlobals());
-        verify(addGlobalModal).setup(any(), any(), any());
         verify(globalPresenters).setup(any(), eq(model.getGlobals()), any());
     }
 
-    @Test
-    public void testOpenNewGlobalModal() {
-        presenter.openNewGlobalModal();
-        verify(addGlobalModal).show(any());
-    }
 
     @Test
-    public void testAddGlobal() {
-        presenter.addGlobal("Name", "Value");
-        verify(globalPresenters).add(any());
+    public void testAddNewGlobal() {
+        presenter.addNewGlobal();
+        verify(globalPresenters).add(itemObjectModelFactor.newItemObjectModel("",""));
         verify(presenter).fireChangeEvent();
     }
 }
