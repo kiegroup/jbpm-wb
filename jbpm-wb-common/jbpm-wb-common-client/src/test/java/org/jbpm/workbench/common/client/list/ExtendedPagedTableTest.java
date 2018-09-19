@@ -83,10 +83,20 @@ public class ExtendedPagedTableTest {
 
     @Test
     public void testSelectAllItems() {
+        testSelectAll(0);
+    }
+
+    @Test
+    public void testSelectAllItemsFromNextPage() {
+        testSelectAll(5);
+    }
+
+    protected void testSelectAll(int offset) {
         final Column column = mock(Column.class);
         final FieldUpdater updater = mock(FieldUpdater.class);
         when(column.getFieldUpdater()).thenReturn(updater);
         when(dataGrid.getColumn(0)).thenReturn(column);
+        when(table.pager.getPageStart()).thenReturn(offset);
         GenericSummary gs = mock(GenericSummary.class);
         when(dataGrid.getVisibleItem(0)).thenReturn(gs);
         when(dataGrid.getVisibleItem(1)).thenReturn(gs);
@@ -94,11 +104,11 @@ public class ExtendedPagedTableTest {
 
         table.selectAllItems();
 
-        verify(updater).update(0, gs, true);
-        verify(updater).update(1, gs, true);
+        verify(updater).update(offset + 0, gs, true);
+        verify(updater).update(offset + 1, gs, true);
 
-        verify(dataGrid).redrawRow(0);
-        verify(dataGrid).redrawRow(1);
+        verify(dataGrid).redrawRow(offset + 0);
+        verify(dataGrid).redrawRow(offset + 1);
     }
 
     @Test
