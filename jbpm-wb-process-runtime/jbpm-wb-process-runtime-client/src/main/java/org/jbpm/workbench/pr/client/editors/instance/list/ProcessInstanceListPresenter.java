@@ -15,11 +15,7 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -322,11 +318,9 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                                                             processInstanceId);
     }
 
-    public void abortProcessInstances(List<String> containers,
-                                      List<Long> processInstanceIds) {
+    public void abortProcessInstances(Map<String, List<Long>> containerInstances) {
         processService.call((Void v) -> refreshGrid()).abortProcessInstances(getSelectedServerTemplate(),
-                                                                             containers,
-                                                                             processInstanceIds);
+                                                                             containerInstances);
     }
 
     public void bulkSignal(List<ProcessInstanceSummary> processInstances) {
@@ -367,20 +361,18 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         if (processInstances == null || processInstances.isEmpty()) {
             return;
         }
-        final List<Long> ids = new ArrayList<Long>();
-        final List<String> containers = new ArrayList<String>();
+
+        final Map<String, List<Long>> containerInstances = new HashMap<>();
         for (ProcessInstanceSummary selected : processInstances) {
             if (selected.getState() != ProcessInstance.STATE_ACTIVE) {
                 view.displayNotification(constants.Aborting_Process_Instance_Not_Allowed(selected.getId()));
                 continue;
             }
-            ids.add(selected.getProcessInstanceId());
-            containers.add(selected.getDeploymentId());
+            containerInstances.computeIfAbsent(selected.getDeploymentId(), key -> new ArrayList<>()).add(selected.getProcessInstanceId());
             view.displayNotification(constants.Aborting_Process_Instance(selected.getId()));
         }
-        if (ids.size() > 0) {
-            abortProcessInstances(containers,
-                                  ids);
+        if (containerInstances.size() > 0) {
+            abortProcessInstances(containerInstances);
         }
     }
 

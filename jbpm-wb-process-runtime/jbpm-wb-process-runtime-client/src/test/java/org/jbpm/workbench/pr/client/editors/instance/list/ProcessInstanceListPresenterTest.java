@@ -15,12 +15,7 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 import com.google.common.collect.Lists;
@@ -36,7 +31,6 @@ import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
-import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
@@ -78,14 +72,16 @@ import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.workbench.model.ActivityResourceType;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonMap;
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
-import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN;
-import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
-import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
+import static org.jbpm.workbench.common.client.PerspectiveIds.*;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.junit.Assert.*;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.*;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.EXECUTION_ERRORS;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.JOBS;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.TASKS;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.TASKS_ADMIN;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -297,56 +293,48 @@ public class ProcessInstanceListPresenterTest {
     @Test
     public void abortProcessInstancesTest() {
         final Random random = new Random();
-        final List<String> containers = new ArrayList<String>();
-        containers.add("container");
 
-        final List<Long> pIds = new ArrayList<Long>();
-        pIds.add(random.nextLong());
-        pIds.add(random.nextLong());
-        pIds.add(random.nextLong());
+        final Map<String, List<Long>> containerInstance = singletonMap("container",
+                                                                       Arrays.asList(random.nextLong(),
+                                                                                     random.nextLong(),
+                                                                                     random.nextLong()));
 
-        presenter.abortProcessInstances(containers,
-                                        pIds);
+        presenter.abortProcessInstances(containerInstance);
 
         verify(processService).abortProcessInstances(anyString(),
-                                                     eq(containers),
-                                                     eq(pIds));
+                                                     eq(containerInstance));
     }
 
     @Test
     public void bulkAbortProcessInstancesTest() {
-        final List<Long> pIds = new ArrayList<Long>();
-        final List<String> containers = new ArrayList<String>();
+        final Map<String, List<Long>> containerInstance = new HashMap<>();
         for (ProcessInstanceSummary summary : processInstanceSummaries) {
-            pIds.add(summary.getProcessInstanceId());
-            containers.add(summary.getDeploymentId());
+            containerInstance.computeIfAbsent(summary.getDeploymentId(),
+                                              key -> new ArrayList<>()).add(summary.getProcessInstanceId());
         }
 
         presenter.bulkAbort(processInstanceSummaries);
 
         verify(processService).abortProcessInstances(anyString(),
-                                                     eq(containers),
-                                                     eq(pIds));
+                                                     eq(containerInstance));
     }
 
     @Test
     public void bulkAbortProcessInstancesStateTest() {
         processInstanceSummaries.add(createProcessInstanceSummary(new Random().nextLong(),
                                                                   ProcessInstance.STATE_ABORTED));
-        final List<Long> pIds = new ArrayList<Long>();
-        final List<String> containers = new ArrayList<String>();
+        final Map<String, List<Long>> containerInstance = new HashMap<>();
         for (ProcessInstanceSummary summary : processInstanceSummaries) {
             if (summary.getState() == ProcessInstance.STATE_ACTIVE) {
-                pIds.add(summary.getProcessInstanceId());
-                containers.add(summary.getDeploymentId());
+                containerInstance.computeIfAbsent(summary.getDeploymentId(),
+                                                  key -> new ArrayList<>()).add(summary.getProcessInstanceId());
             }
         }
 
         presenter.bulkAbort(processInstanceSummaries);
 
         verify(processService).abortProcessInstances(anyString(),
-                                                     eq(containers),
-                                                     eq(pIds));
+                                                     eq(containerInstance));
     }
 
     @Test

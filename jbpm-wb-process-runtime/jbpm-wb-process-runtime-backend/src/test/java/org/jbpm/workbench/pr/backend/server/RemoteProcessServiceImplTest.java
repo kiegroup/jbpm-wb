@@ -16,6 +16,12 @@
 
 package org.jbpm.workbench.pr.backend.server;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.jbpm.workbench.ks.integration.KieServerIntegration;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,11 +32,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
@@ -54,6 +57,7 @@ public class RemoteProcessServiceImplTest {
         processServicesClientMock = mock(ProcessServicesClient.class);
         when(kieServerIntegration.getServerClient(eq(SERVER_TEMPLATE_ID),
                                                   anyString())).thenReturn(kieServicesClientMock);
+        when(kieServerIntegration.getServerClient(eq(SERVER_TEMPLATE_ID))).thenReturn(kieServicesClientMock);
         when(kieServicesClientMock.getServicesClient(ProcessServicesClient.class)).thenReturn(processServicesClientMock);
     }
 
@@ -61,12 +65,13 @@ public class RemoteProcessServiceImplTest {
     public void bulkAbortProcessInstancesTest_singleProcessInstance() {
         final String containerId = "containerId";
         final Long processInstanceId = 1L;
+        final Map<String, List<Long>> containerInstance = singletonMap(containerId,
+                                                                       Arrays.asList(processInstanceId));
 
         remoteProcessService.abortProcessInstances(SERVER_TEMPLATE_ID,
-                                                   singletonList(containerId),
-                                                   singletonList(processInstanceId));
+                                                   containerInstance);
         verify(processServicesClientMock).abortProcessInstances(containerId,
-                                                                singletonList(processInstanceId));
+                                                                Arrays.asList(processInstanceId));
     }
 
     @Test
@@ -74,29 +79,31 @@ public class RemoteProcessServiceImplTest {
         final String containerId = "containerId";
         final List<Long> processInstanceIds = new ArrayList<>(Arrays.asList(1L,
                                                                             2L));
+        final Map<String, List<Long>> containerInstance = singletonMap("containerId",
+                                                                       Arrays.asList(1L,
+                                                                                     2L));
 
         remoteProcessService.abortProcessInstances(SERVER_TEMPLATE_ID,
-                                                   new ArrayList<>(Arrays.asList(containerId,
-                                                                                 containerId)),
-                                                   processInstanceIds);
+                                                   containerInstance);
         verify(processServicesClientMock).abortProcessInstances(containerId,
                                                                 processInstanceIds);
     }
 
     @Test
     public void bulkAbortProcessInstancesTest_multipleProcessInstancesMultipleContainers() {
-        final List<String> containerIds = new ArrayList<>(Arrays.asList("containerId_1",
-                                                                        "containerId_2"));
-        final List<Long> processInstanceIds = new ArrayList<>(Arrays.asList(1L,
-                                                                            2L));
+        final Map<String, List<Long>> containerInstance = new HashMap<>();
+        containerInstance.put("containerId_1",
+                              Arrays.asList(1L));
+        containerInstance.put("containerId_2",
+                              Arrays.asList(2L));
 
         remoteProcessService.abortProcessInstances(SERVER_TEMPLATE_ID,
-                                                   containerIds,
-                                                   processInstanceIds);
-        verify(processServicesClientMock).abortProcessInstance(containerIds.get(0),
-                                                               processInstanceIds.get(0));
-        verify(processServicesClientMock).abortProcessInstance(containerIds.get(1),
-                                                               processInstanceIds.get(1));
+                                                   containerInstance);
+
+        verify(processServicesClientMock).abortProcessInstances("containerId_1",
+                                                                Arrays.asList(1L));
+        verify(processServicesClientMock).abortProcessInstances("containerId_2",
+                                                                Arrays.asList(2L));
         verifyNoMoreInteractions(processServicesClientMock);
     }
 
