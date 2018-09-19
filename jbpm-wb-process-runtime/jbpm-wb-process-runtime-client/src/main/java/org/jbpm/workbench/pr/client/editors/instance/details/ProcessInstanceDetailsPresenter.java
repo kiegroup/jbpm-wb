@@ -27,7 +27,7 @@ import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramPresenter;
 import org.jbpm.workbench.pr.client.editors.documents.list.ProcessDocumentListPresenter;
-import org.jbpm.workbench.pr.client.editors.instance.log.RuntimeLogPresenter;
+import org.jbpm.workbench.pr.client.editors.instance.log.ProcessInstanceLogPresenter;
 import org.jbpm.workbench.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
 import org.jbpm.workbench.pr.client.editors.variables.list.ProcessVariableListPresenter;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
@@ -94,7 +94,7 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
     private ProcessDocumentListPresenter documentListPresenter;
 
     @Inject
-    private RuntimeLogPresenter runtimeLogPresenter;
+    private ProcessInstanceLogPresenter processInstanceLogPresenter;
 
     private String selectedDeploymentId = "";
 
@@ -273,7 +273,7 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
     }
 
     public IsWidget getLogsView() {
-        return runtimeLogPresenter.getWidget();
+        return processInstanceLogPresenter.getWidget();
     }
 
     public IsWidget getProcessDiagramView() {

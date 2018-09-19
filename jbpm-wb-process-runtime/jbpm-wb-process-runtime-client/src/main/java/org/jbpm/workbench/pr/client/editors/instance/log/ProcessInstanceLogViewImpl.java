@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,9 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
 
 @Dependent
-@Templated(value = "RuntimeLogViewImpl.html")
-public class RuntimeLogViewImpl extends Composite
-        implements RuntimeLogPresenter.RuntimeLogView {
+@Templated(value = "ProcessInstanceLogViewImpl.html")
+public class ProcessInstanceLogViewImpl extends Composite
+        implements ProcessInstanceLogPresenter.ProcessInstanceLogView {
 
     // Can't inject this because many uberfire widgets extend it.
     @DataField
@@ -60,7 +60,7 @@ public class RuntimeLogViewImpl extends Composite
     @DataField
     public Button showDescLogButton;
 
-    private RuntimeLogPresenter presenter;
+    private ProcessInstanceLogPresenter presenter;
 
     private LogOrder logOrder = LogOrder.ASC;
 
@@ -69,7 +69,7 @@ public class RuntimeLogViewImpl extends Composite
     private Constants constants = Constants.INSTANCE;
 
     @Override
-    public void init(final RuntimeLogPresenter presenter) {
+    public void init(final ProcessInstanceLogPresenter presenter) {
         this.presenter = presenter;
 
         this.setFilters(showBusinessLogButton,

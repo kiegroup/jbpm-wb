@@ -24,7 +24,6 @@ import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessSummary;
-import org.jbpm.workbench.pr.model.RuntimeLogSummary;
 import org.jbpm.workbench.pr.model.TaskDefSummary;
 
 @Remote
@@ -36,10 +35,6 @@ public interface ProcessRuntimeDataService {
     List<NodeInstanceSummary> getProcessInstanceActiveNodes(String serverTemplateId,
                                                             String deploymentId,
                                                             Long processInstanceId);
-
-    List<RuntimeLogSummary> getProcessInstanceLogs(String serverTemplateId,
-                                                   String deploymentId,
-                                                   Long processInstanceId);
 
     List<ProcessSummary> getProcesses(String serverTemplateId,
                                       Integer page,

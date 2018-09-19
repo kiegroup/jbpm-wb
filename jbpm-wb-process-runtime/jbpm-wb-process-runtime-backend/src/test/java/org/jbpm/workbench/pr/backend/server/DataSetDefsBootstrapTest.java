@@ -29,6 +29,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.PROCESS_INSTANCE_DATASET;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.PROCESS_INSTANCE_WITH_VARIABLES_DATASET;
+import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.PROCESS_INSTANCE_LOGS_DATASET;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -80,6 +81,27 @@ public class DataSetDefsBootstrapTest {
         assertEquals("SELECT *",
                      dataSetDef.getDbSQL());
         assertEquals(5,
+                     dataSetDef.getColumns().size());
+    }
+
+    @Test
+    public void testProcessInstanceLogsDataSet() {
+        QueryDefinition qd = QueryDefinition.builder().name(PROCESS_INSTANCE_LOGS_DATASET).expression("SELECT *").source("source").target("target").build();
+        dataSetsBootstrap.registerDataSetDefinitions(new QueryDefinitionLoaded(qd));
+
+        ArgumentCaptor<SQLDataSetDef> argument = ArgumentCaptor.forClass(SQLDataSetDef.class);
+        verify(dataSetRegistry).registerDataSetDef(argument.capture());
+
+        SQLDataSetDef dataSetDef = argument.getValue();
+        assertEquals(PROCESS_INSTANCE_LOGS_DATASET,
+                     dataSetDef.getUUID());
+        assertEquals("target-" + PROCESS_INSTANCE_LOGS_DATASET,
+                     dataSetDef.getName());
+        assertEquals(KieServerDataSetProvider.TYPE,
+                     dataSetDef.getProvider());
+        assertEquals("SELECT *",
+                     dataSetDef.getDbSQL());
+        assertEquals(14,
                      dataSetDef.getColumns().size());
     }
 }
