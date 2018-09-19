@@ -112,6 +112,7 @@ public class RemoteDataSetBasicAttributesWorkflow extends DataSetBasicAttributes
             editHandler.lookupDataSet(new DataSetReadyCallback() {
                 @Override
                 public void callback(final DataSet dataSet) {
+                    getDataSetDef().setColumns(dataSet.getDefinition().getColumns());
                     testDataSetCallback.onSuccess(dataSet);
                 }
 
