@@ -27,7 +27,6 @@ import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessSummary;
-import org.jbpm.workbench.pr.model.RuntimeLogSummary;
 import org.jbpm.workbench.pr.model.TaskDefSummary;
 import org.jbpm.workbench.pr.model.UserTaskSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
@@ -91,23 +90,6 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
         }
 
         return instances;
-    }
-
-    @Override
-    public List<RuntimeLogSummary> getProcessInstanceLogs(String serverTemplateId,
-                                                          String deploymentId,
-                                                          Long processInstanceId) {
-        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
-            return emptyList();
-        }
-
-        QueryServicesClient queryServicesClient = getClient(serverTemplateId,
-                                                            QueryServicesClient.class);
-        List<NodeInstance> processInstanceHistory = queryServicesClient.findNodeInstances(processInstanceId,
-                                                                                            0,
-                                                                                            Integer.MAX_VALUE);
-
-        return processInstanceHistory.stream().map(new RuntimeLogSummaryMapper()).collect(toList());
     }
 
     @Override

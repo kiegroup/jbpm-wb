@@ -26,7 +26,7 @@ import org.jbpm.workbench.ks.integration.KieServerIntegration;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessSummary;
-import org.jbpm.workbench.pr.model.RuntimeLogSummary;
+import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;
 import org.junit.Test;
@@ -234,55 +234,4 @@ public class RemoteProcessRuntimeDataServiceImplTest {
                              summary);
     }
 
-    @Test
-    public void getProcessInstanceLogsTest() {
-
-        final Long processInstanceId = 1L;
-        NodeInstance nodeInstance1 = NodeInstance.builder()
-                .processInstanceId(processInstanceId)
-                .date(new Date())
-                .id(2L)
-                .name("Test_task")
-                .nodeType("HumanTaskNode")
-                .completed(false)
-                .build();
-
-        NodeInstance nodeInstance2 = NodeInstance.builder()
-                .processInstanceId(processInstanceId)
-                .id(3L)
-                .date(new Date())
-                .name("")
-                .nodeType("StartNode")
-                .completed(false)
-                .build();
-
-        when(queryServicesClient.findNodeInstances(processInstanceId,
-                                                   0,
-                                                   Integer.MAX_VALUE))
-                .thenReturn(Arrays.asList(nodeInstance1,
-                                          nodeInstance2));
-
-        List<RuntimeLogSummary> logs = service.getProcessInstanceLogs(serverTemplateId,
-                                                                      containerId,
-                                                                      processInstanceId);
-
-        assertEquals(2,
-                     logs.size());
-        assertRuntimeLogNodeInstance(nodeInstance1,
-                                     logs.get(0));
-        assertRuntimeLogNodeInstance(nodeInstance2,
-                                     logs.get(1));
-    }
-
-    private void assertRuntimeLogNodeInstance(NodeInstance node,
-                                              RuntimeLogSummary log) {
-        assertEquals(Long.valueOf(node.getId()),
-                     Long.valueOf(log.getId()));
-        assertEquals(node.getNodeType(),
-                     log.getNodeType());
-        assertEquals(node.getName(),
-                     log.getNodeName());
-        assertEquals(node.getCompleted(),
-                     log.isCompleted());
-    }
 }

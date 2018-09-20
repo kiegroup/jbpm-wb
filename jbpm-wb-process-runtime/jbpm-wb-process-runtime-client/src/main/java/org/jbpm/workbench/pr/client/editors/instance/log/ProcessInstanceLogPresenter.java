@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.log;
 
-import java.util.Collections;
+import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
@@ -28,20 +29,26 @@ import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.IsWidget;
-import org.jboss.errai.common.client.api.Caller;
+import org.dashbuilder.common.client.error.ClientRuntimeError;
+import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.client.DataSetReadyCallback;
 
+import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.workbench.common.client.util.DateUtils;
+import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
-import org.jbpm.workbench.pr.model.RuntimeLogSummary;
+import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
 import org.jbpm.workbench.pr.client.util.LogUtils.LogOrder;
 import org.jbpm.workbench.pr.client.util.LogUtils.LogType;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
-import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
+import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 
 import static java.util.stream.Collectors.toList;
+import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.*;
 
 @Dependent
-public class RuntimeLogPresenter {
+public class ProcessInstanceLogPresenter {
 
     public static final LogTemplates LOG_TEMPLATES = GWT.create(LogTemplates.class);
     public static String NODE_HUMAN_TASK = "HumanTaskNode";
@@ -49,14 +56,31 @@ public class RuntimeLogPresenter {
     public static String NODE_END = "EndNode";
 
     private Constants constants = Constants.INSTANCE;
-    private Long processInstanceId;
     private String processName;
     private String serverTemplateId;
-    private String deploymentId;
+
     @Inject
-    private RuntimeLogView view;
+    private ProcessInstanceLogView view;
+
+    int pageSize = Integer.MAX_VALUE;
+    int startRange = 0;
+
+    protected DataSetQueryHelper dataSetQueryHelper;
+
+    protected ProcessInstanceLogFilterSettingsManager filterSettingsManager;
+
     @Inject
-    private Caller<ProcessRuntimeDataService> processRuntimeDataService;
+    protected ErrorPopupPresenter errorPopup;
+
+    @Inject
+    public void setDataSetQueryHelper(final DataSetQueryHelper dataSetQueryHelper) {
+        this.dataSetQueryHelper = dataSetQueryHelper;
+    }
+
+    @Inject
+    public void setFilterSettingsManager(final ProcessInstanceLogFilterSettingsManager filterSettingsManager) {
+        this.filterSettingsManager = filterSettingsManager;
+    }
 
     @PostConstruct
     public void init() {
@@ -65,10 +89,6 @@ public class RuntimeLogPresenter {
 
     public IsWidget getWidget() {
         return view;
-    }
-
-    public void setProcessInstanceId(Long processInstanceId) {
-        this.processInstanceId = processInstanceId;
     }
 
     public String getProcessName() {
@@ -83,31 +103,57 @@ public class RuntimeLogPresenter {
         this.serverTemplateId = serverTemplateId;
     }
 
-    public void setDeploymentId(String deploymentId) {
-        this.deploymentId = deploymentId;
-    }
-
     public void refreshProcessInstanceData(final LogOrder logOrder,
                                            final LogType logType) {
-        processRuntimeDataService.call((List<RuntimeLogSummary> logs) -> {
-            if (logOrder == LogOrder.ASC) {
-                Collections.reverse(logs);
-            }
+        try {
+            final FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
+            currentTableSettings.setServerTemplateId(this.serverTemplateId);
+            currentTableSettings.setTablePageSize(pageSize);
+            dataSetQueryHelper.setLastOrderedColumn(COLUMN_LOG_DATE);
+            dataSetQueryHelper.setLastSortOrder(logOrder.equals(LogOrder.ASC) ? SortOrder.ASCENDING : SortOrder.DESCENDING);
 
-            List<String> logsLine = logs.stream()
-                    .map(rls -> getLogLine(rls,
-                                           logType))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .collect(toList());
+            dataSetQueryHelper.setCurrentTableSettings(currentTableSettings);
+            dataSetQueryHelper.setDataSetHandler(currentTableSettings);
+            dataSetQueryHelper.lookupDataSet(
+                    startRange,
+                    new DataSetReadyCallback() {
+                        @Override
+                        public void callback(DataSet dataSet) {
+                            if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(currentTableSettings.getKey())) {
+                                List<ProcessInstanceLogSummary> logs = new ArrayList<ProcessInstanceLogSummary>();
+                                for (int i = 0; i < dataSet.getRowCount(); i++) {
+                                    logs.add(new ProcessInstanceLogSummaryDataSetMapper().apply(dataSet,
+                                                                                                i));
+                                }
+                                List<String> logsLines = logs.stream()
+                                        .map(rls -> getLogLine(rls,
+                                                               logType))
+                                        .filter(Optional::isPresent)
+                                        .map(Optional::get)
+                                        .collect(toList());
 
-            view.setLogs(logsLine);
-        }).getProcessInstanceLogs(serverTemplateId,
-                                  deploymentId,
-                                  processInstanceId);
+                                view.setLogs(logsLines);
+                            }
+                        }
+
+                        @Override
+                        public void notFound() {
+                            errorPopup.showMessage(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.DataSetNotFound(currentTableSettings.getDataSet().getUUID()));
+                        }
+
+                        @Override
+                        public boolean onError(ClientRuntimeError error) {
+                            errorPopup.showMessage(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.DataSetError(currentTableSettings.getDataSet().getUUID(),
+                                                                                                                                   error.getMessage()));
+                            return false;
+                        }
+                    });
+        } catch (Exception e) {
+            errorPopup.showMessage(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.UnexpectedError(e.getMessage()));
+        }
     }
 
-    protected Optional<String> getLogLine(RuntimeLogSummary logSummary,
+    protected Optional<String> getLogLine(ProcessInstanceLogSummary logSummary,
                                           LogType logType) {
         if (LogType.TECHNICAL.equals(logType)) {
             String agent = constants.System();
@@ -118,7 +164,7 @@ public class RuntimeLogPresenter {
 
             return Optional.of(LOG_TEMPLATES.getTechLog(DateUtils.getDateTimeStr(logSummary.getDate()),
                                                         logSummary.getNodeType(),
-                                                        SafeHtmlUtils.fromString(logSummary.getNodeName()),
+                                                        SafeHtmlUtils.fromString(logSummary.getName()),
                                                         (logSummary.isCompleted() ? " " + constants.Completed() : ""),
                                                         agent).asString());
         } else {
@@ -127,7 +173,7 @@ public class RuntimeLogPresenter {
             if (NODE_HUMAN_TASK.equals(logSummary.getNodeType())) {
                 return Optional.of(LOG_TEMPLATES.getBusinessLog(prettyTime,
                                                                 constants.Task(),
-                                                                SafeHtmlUtils.fromString(logSummary.getNodeName()),
+                                                                SafeHtmlUtils.fromString(logSummary.getName()),
                                                                 (logSummary.isCompleted() ? constants.WasCompleted() : constants.WasStarted())).asString());
             } else if (NODE_START.equals(logSummary.getNodeType()) && !logSummary.isCompleted()) {
                 return Optional.of(LOG_TEMPLATES.getBusinessLog(
@@ -147,25 +193,20 @@ public class RuntimeLogPresenter {
     }
 
     public void onProcessInstanceSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
-        setProcessInstanceId(event.getProcessInstanceId());
         setProcessName(event.getProcessDefName());
         setServerTemplateId(event.getServerTemplateId());
-        setDeploymentId(event.getDeploymentId());
 
         view.setActiveLogOrderButton(LogOrder.ASC);
         view.setActiveLogTypeButton(LogType.BUSINESS);
+
+        dataSetQueryHelper.setCurrentTableSettings(filterSettingsManager.createDefaultFilterSettingsPrototype(event.getProcessInstanceId()));
         refreshProcessInstanceData(LogOrder.ASC,
                                    LogType.BUSINESS);
     }
 
-    @Inject
-    public void setProcessRuntimeDataService(final Caller<ProcessRuntimeDataService> processRuntimeDataService) {
-        this.processRuntimeDataService = processRuntimeDataService;
-    }
+    public interface ProcessInstanceLogView extends IsWidget {
 
-    public interface RuntimeLogView extends IsWidget {
-
-        void init(final RuntimeLogPresenter presenter);
+        void init(final ProcessInstanceLogPresenter presenter);
 
         void setActiveLogTypeButton(LogType logType);
 

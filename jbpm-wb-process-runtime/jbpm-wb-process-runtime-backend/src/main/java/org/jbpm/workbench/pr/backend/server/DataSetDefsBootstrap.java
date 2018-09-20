@@ -21,7 +21,9 @@ import javax.enterprise.event.Observes;
 import org.jbpm.workbench.ks.integration.AbstractDataSetDefsBootstrap;
 import org.jbpm.workbench.ks.integration.event.QueryDefinitionLoaded;
 
+
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
+import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.*;
 
 @ApplicationScoped
 public class DataSetDefsBootstrap extends AbstractDataSetDefsBootstrap {
@@ -57,6 +59,24 @@ public class DataSetDefsBootstrap extends AbstractDataSetDefsBootstrap {
                                                       .number(VARIABLE_ID)
                                                       .label(VARIABLE_NAME)
                                                       .label(VARIABLE_VALUE)
+            );
+        } else if (event.getDefinition().getName().equals(PROCESS_INSTANCE_LOGS_DATASET)) {
+            registerDataSetDefinition(event.getDefinition(),
+                                      builder ->
+                                              builder.number(COLUMN_LOG_ID)
+                                                      .label(COLUMN_LOG_NODE_ID)
+                                                      .label(COLUMN_LOG_NODE_NAME)
+                                                      .label(COLUMN_LOG_NODE_TYPE)
+                                                      .label(COLUMN_LOG_DEPLOYMENT_ID)
+                                                      .number(COLUMN_LOG_PROCESS_INSTANCE_ID)
+                                                      .date(COLUMN_LOG_DATE)
+                                                      .label(COLUMN_LOG_CONNECTION)
+                                                      .number(COLUMN_LOG_TYPE)
+                                                      .number(COLUMN_LOG_WORK_ITEM_ID)
+                                                      .number(COLUMN_LOG_REFERENCE_ID)
+                                                      .label(COLUMN_LOG_NODE_CONTAINER_ID)
+                                                      .date(COLUMN_LOG_SLA_DUE_DATE)
+                                                      .number(COLUMN_LOG_SLA_COMPLIANCE)
             );
         }
     }
