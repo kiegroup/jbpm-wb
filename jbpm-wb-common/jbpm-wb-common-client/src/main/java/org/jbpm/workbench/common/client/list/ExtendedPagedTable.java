@@ -142,10 +142,11 @@ public class ExtendedPagedTable<T extends GenericSummary> extends PagedTable<T> 
                                         final T object,
                                         final Boolean value) {
         final Column<T, Boolean> column = (Column<T, Boolean>) this.dataGrid.getColumn(0);
-        column.getFieldUpdater().update(row,
+        final int index = row + getPageStart();
+        column.getFieldUpdater().update(index,
                                         object,
                                         value);
-        dataGrid.redrawRow(row);
+        dataGrid.redrawRow(index);
     }
 
     public boolean isAllItemsSelected() {
