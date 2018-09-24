@@ -71,7 +71,6 @@ public class NewCaseProjectHandler implements NewWorkspaceProjectHandler {
     @Inject
     private ProjectController projectController;
 
-    @Inject
     private Instance<AddProjectPopUpPresenter> addProjectPopUpPresenterProvider;
 
     //We don't really need this for Packages but it's required by DefaultNewResourceHandler
@@ -92,6 +91,11 @@ public class NewCaseProjectHandler implements NewWorkspaceProjectHandler {
     @Inject
     public void setNotification(Event<NotificationEvent> notification) {
         this.notification = notification;
+    }
+
+    @Inject
+    public void setAddProjectPopUpPresenterProvider(Instance<AddProjectPopUpPresenter> addProjectPopUpPresenterProvider) {
+        this.addProjectPopUpPresenterProvider = addProjectPopUpPresenterProvider;
     }
 
     @Override
