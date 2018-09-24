@@ -51,8 +51,10 @@ public class NewCaseProjectHandlerTest {
     @Spy
     Event<NotificationEvent> notification = new EventSourceMock<>();
 
-    @Spy
-    Instance<AddProjectPopUpPresenter> addProjectPopUpPresenterProvider = new MockInstanceImpl<>();
+    @Mock
+    AddProjectPopUpPresenter addProjectPopUpPresenter;
+
+    Instance<AddProjectPopUpPresenter> addProjectPopUpPresenterProvider;
 
     @InjectMocks
     NewCaseProjectHandler newCaseProjectHandler;
@@ -60,31 +62,32 @@ public class NewCaseProjectHandlerTest {
     @Before
     public void setup() {
         caseProjectServiceCaller = new CallerMock<>(caseProjectService);
+        addProjectPopUpPresenterProvider = spy(new MockInstanceImpl<>(addProjectPopUpPresenter));
 
+        newCaseProjectHandler.setAddProjectPopUpPresenterProvider(addProjectPopUpPresenterProvider);
         newCaseProjectHandler.setCaseProjectService(caseProjectServiceCaller);
         newCaseProjectHandler.setNotification(notification);
         doNothing().when(notification).fire(any());
+
     }
 
     @Test
     public void testNewCaseProject() {
         final WorkspaceProject project = mock(WorkspaceProject.class);
         final ParameterizedCommand<WorkspaceProject> creationSuccessCallback = mock(ParameterizedCommand.class);
-        AddProjectPopUpPresenter addProjectPopUpPresenterMock = mock(AddProjectPopUpPresenter.class);
-        when(addProjectPopUpPresenterProvider.get()).thenReturn(addProjectPopUpPresenterMock);
-        when(addProjectPopUpPresenterMock.getProjectCreationSuccessCallback()).thenReturn(creationSuccessCallback);
+        when(addProjectPopUpPresenter.getProjectCreationSuccessCallback()).thenReturn(creationSuccessCallback);
         doAnswer(invocation -> {
             ((ParameterizedCommand<WorkspaceProject>) invocation.getArguments()[0]).execute(project);
             return null;
-        }).when(addProjectPopUpPresenterMock).setSuccessCallback(any());
+        }).when(addProjectPopUpPresenter).setSuccessCallback(any());
 
         final Callback successCallback = mock(Callback.class);
         newCaseProjectHandler.setCreationSuccessCallback(successCallback);
 
         newCaseProjectHandler.init();
 
-        verify(addProjectPopUpPresenterMock).setSuccessCallback(any());
-        verify(addProjectPopUpPresenterMock).show();
+        verify(addProjectPopUpPresenter).setSuccessCallback(any());
+        verify(addProjectPopUpPresenter).show();
 
         verify(caseProjectService).configureNewCaseProject(project);
 
@@ -93,6 +96,6 @@ public class NewCaseProjectHandlerTest {
 
         verify(notification).fire(any());
 
-        verify(addProjectPopUpPresenterProvider).destroy(addProjectPopUpPresenterMock);
+        verify(addProjectPopUpPresenterProvider).destroy(addProjectPopUpPresenter);
     }
 }
