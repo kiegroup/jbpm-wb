@@ -11,7 +11,7 @@
   <includeBaseDirectory>false</includeBaseDirectory>
 
   <componentDescriptors>
-    <componentDescriptor>src/main/assembly/component-wildfly-11-eap-7-common.xml</componentDescriptor>
+    <componentDescriptor>src/main/assembly/component-wildfly-14-eap-7-common.xml</componentDescriptor>
   </componentDescriptors>
 
 </assembly>
