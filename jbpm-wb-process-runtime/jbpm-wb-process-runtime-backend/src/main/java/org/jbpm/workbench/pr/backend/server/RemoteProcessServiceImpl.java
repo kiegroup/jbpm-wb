@@ -46,23 +46,13 @@ public class RemoteProcessServiceImpl extends AbstractKieServerService implement
 
     @Override
     public void abortProcessInstances(String serverTemplateId,
-                                      List<String> containers,
-                                      List<Long> processInstanceId) {
-        if (new HashSet<String>(containers).size() == 1) {
-            ProcessServicesClient client = getClient(serverTemplateId,
-                                                     containers.get(0),
-                                                     ProcessServicesClient.class);
-            client.abortProcessInstances(containers.get(0),
-                                         processInstanceId);
-        } else {
-            for (int i = 0; i < processInstanceId.size(); i++) {
-                ProcessServicesClient client = getClient(serverTemplateId,
-                                                         containers.get(i),
-                                                         ProcessServicesClient.class);
-                client.abortProcessInstance(containers.get(i),
-                                            processInstanceId.get(i));
-            }
-        }
+                                      Map<String, List<Long>> containerInstances) {
+        ProcessServicesClient client = getClient(serverTemplateId,
+                                                 ProcessServicesClient.class);
+        containerInstances.forEach((container, instances) ->
+                                           client.abortProcessInstances(container,
+                                                                        instances)
+        );
     }
 
     @Override

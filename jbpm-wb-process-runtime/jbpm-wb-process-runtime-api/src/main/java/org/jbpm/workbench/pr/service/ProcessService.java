@@ -29,8 +29,7 @@ public interface ProcessService {
                               Long processInstanceId);
 
     void abortProcessInstances(String serverTemplateId,
-                               List<String> containers,
-                               List<Long> processInstanceId);
+                               Map<String, List<Long>> containerInstances);
 
     Long startProcess(String serverTemplateId,
                       String containerId,
