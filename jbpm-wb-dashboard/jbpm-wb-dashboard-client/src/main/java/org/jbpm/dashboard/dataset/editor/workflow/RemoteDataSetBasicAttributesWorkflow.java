@@ -102,7 +102,7 @@ public class RemoteDataSetBasicAttributesWorkflow extends DataSetBasicAttributes
         final DataSetLookup lookup = DataSetFactory.newDataSetLookupBuilder()
                 .dataset(dataSetDef.getUUID())
                 .rowOffset(0)
-                .rowNumber(6)
+                .rowNumber(10)
                 .buildLookup();
 
         try {
