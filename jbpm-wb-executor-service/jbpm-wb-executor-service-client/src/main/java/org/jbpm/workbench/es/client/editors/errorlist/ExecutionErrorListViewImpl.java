@@ -18,6 +18,7 @@ package org.jbpm.workbench.es.client.editors.errorlist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -82,17 +83,13 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
     }
 
     @Override
-    public void initSelectionModel(final ListTable<ExecutionErrorSummary> extendedPagedTable) {
-        extendedPagedTable.setEmptyTableCaption(constants.No_Execution_Errors_Found());
-        extendedPagedTable.setSelectionCallback((error) -> presenter.selectExecutionError(error));
-        initBulkActions(extendedPagedTable);
+    public String getEmptyTableCaption() {
+        return constants.No_Execution_Errors_Found();
     }
 
     @Override
     public List<AnchorListItem> getBulkActionsItems(ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable) {
-        List<AnchorListItem> bulkActionsItems = new ArrayList<>();
-        bulkActionsItems.add(getBulkAck(extendedPagedTable));
-        return bulkActionsItems;
+        return Collections.singletonList(getBulkAck(extendedPagedTable));
     }
 
     protected AnchorListItem getBulkAck(final ExtendedPagedTable<ExecutionErrorSummary> extendedPagedTable) {

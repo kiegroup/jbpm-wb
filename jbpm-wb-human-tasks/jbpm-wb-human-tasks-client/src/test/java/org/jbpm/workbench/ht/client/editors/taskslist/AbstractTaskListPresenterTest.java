@@ -435,7 +435,7 @@ public abstract class AbstractTaskListPresenterTest {
                 .status(TASK_STATUS_EXITED.getIdentifier())
                 .build();
 
-        getPresenter().selectTask(taskSummary);
+        getPresenter().selectSummaryItem(taskSummary);
 
         verify(placeManager).goTo(PerspectiveIds.TASK_DETAILS_SCREEN);
         final ArgumentCaptor<TaskSelectionEvent> captor = ArgumentCaptor.forClass(TaskSelectionEvent.class);
@@ -452,7 +452,7 @@ public abstract class AbstractTaskListPresenterTest {
                 .status(TASK_STATUS_READY.getIdentifier())
                 .build();
 
-        getPresenter().selectTask(taskSummary);
+        getPresenter().selectSummaryItem(taskSummary);
 
         verify(placeManager).goTo(PerspectiveIds.TASK_DETAILS_SCREEN);
         final ArgumentCaptor<TaskSelectionEvent> captor = ArgumentCaptor.forClass(TaskSelectionEvent.class);
@@ -507,7 +507,7 @@ public abstract class AbstractTaskListPresenterTest {
 
 
         getPresenter().setSelectedServerTemplate(serverTemplateId);
-        getPresenter().selectTask(taskSummary);
+        getPresenter().selectSummaryItem(taskSummary);
 
         assertTrue(getPresenter().isSameTaskFromEvent().test(new TaskCompletedEvent(serverTemplateId,
                                                                                     TASK_DEPLOYMENT_ID,
@@ -534,7 +534,7 @@ public abstract class AbstractTaskListPresenterTest {
 
         final String serverTemplateId = "serverTemplateId";
         getPresenter().setSelectedServerTemplate(serverTemplateId);
-        getPresenter().selectTask(taskSummary);
+        getPresenter().selectSummaryItem(taskSummary);
 
         getPresenter().onTaskCompletedEvent(new TaskCompletedEvent(serverTemplateId,
                                                                    TASK_DEPLOYMENT_ID,
@@ -564,7 +564,7 @@ public abstract class AbstractTaskListPresenterTest {
                 .status(TASK_STATUS_EXITED.getIdentifier())
                 .build();
 
-        getPresenter().selectTask(taskSummary);
+        getPresenter().selectSummaryItem(taskSummary);
 
         assertEquals(taskSummary,
                      getPresenter().getSelectedTask());

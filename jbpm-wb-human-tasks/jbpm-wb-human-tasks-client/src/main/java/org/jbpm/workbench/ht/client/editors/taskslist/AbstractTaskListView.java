@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-
 import javax.inject.Inject;
 
 import com.google.gwt.dom.client.BrowserEvents;
@@ -39,7 +38,6 @@ import org.jbpm.workbench.ht.model.TaskSummary;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
-
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 import static org.jbpm.workbench.ht.util.TaskStatus.TASK_STATUS_COMPLETED;
 
@@ -57,21 +55,20 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     }
 
     @Override
+    public String getEmptyTableCaption() {
+        return constants.No_Tasks_Found();
+    }
+
+    @Override
     public void initSelectionModel(final ListTable<TaskSummary> extendedPagedTable) {
-        final RowStyles selectedStyles = new RowStyles<TaskSummary>() {
-
-            @Override
-            public String getStyleNames(TaskSummary row,
-                                        int rowIndex) {
-                if (TASK_STATUS_COMPLETED.equals(row.getTaskStatus())) {
-                    return HumanTaskResources.INSTANCE.css().taskCompleted();
-                }
-                return null;
+        super.initSelectionModel(extendedPagedTable);
+        final RowStyles<TaskSummary> selectedStyles = (TaskSummary row,
+                                                       int rowIndex) -> {
+            if (TASK_STATUS_COMPLETED.equals(row.getTaskStatus())) {
+                return HumanTaskResources.INSTANCE.css().taskCompleted();
             }
+            return null;
         };
-
-        extendedPagedTable.setEmptyTableCaption(constants.No_Tasks_Found());
-        extendedPagedTable.setSelectionCallback((task) -> presenter.selectTask(task));
         extendedPagedTable.setRowStyles(selectedStyles);
     }
 

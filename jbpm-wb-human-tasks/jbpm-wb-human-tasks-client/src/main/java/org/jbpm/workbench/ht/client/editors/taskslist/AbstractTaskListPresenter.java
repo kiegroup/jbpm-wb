@@ -317,7 +317,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                 .build();
     }
 
-    public void selectTask(final TaskSummary summary) {
+    @Override
+    public void selectSummaryItem(final TaskSummary summary) {
         boolean logOnly = false;
         if (TASK_STATUS_COMPLETED.equals(summary.getTaskStatus()) ||
                 TASK_STATUS_EXITED.equals(summary.getTaskStatus())) {

@@ -122,10 +122,8 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     }
 
     @Override
-    public void initSelectionModel(ListTable<RequestSummary> extendedPagedTable) {
-        extendedPagedTable.setEmptyTableCaption(constants.No_Jobs_Found());
-        extendedPagedTable.setSelectionCallback((job) -> presenter.selectJob(job));
-        initBulkActions(extendedPagedTable);
+    public String getEmptyTableCaption() {
+        return constants.No_Jobs_Found();
     }
 
     @Override

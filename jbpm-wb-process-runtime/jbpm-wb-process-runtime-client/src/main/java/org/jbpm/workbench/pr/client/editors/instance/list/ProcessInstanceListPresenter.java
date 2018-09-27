@@ -406,7 +406,8 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         placeManager.goTo(placeRequestImpl);
     }
 
-    public void selectProcessInstance(final ProcessInstanceSummary summary) {
+    @Override
+    public void selectSummaryItem(final ProcessInstanceSummary summary) {
         setupDetailBreadcrumb(constants.ProcessInstanceBreadcrumb(summary.getProcessInstanceId()));
         placeManager.goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
         processInstanceSelectionEvent.fire(new ProcessInstanceSelectionEvent(summary.getDeploymentId(),

@@ -54,6 +54,8 @@ import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.client.util.ConditionalAction;
 import org.jbpm.workbench.common.client.util.ConditionalKebabActionCell;
 import org.jbpm.workbench.common.model.GenericSummary;
+import org.jbpm.workbench.common.preferences.ManagePreferences;
+import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
@@ -80,6 +82,9 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     @Inject
     protected PlaceManager placeManager;
+
+    @Inject
+    protected ManagePreferences preferences;
 
     protected Caller<UserPreferencesService> userPreferencesService;
 
@@ -128,31 +133,49 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     @Override
     public void loadListTable(final String key,
                               final Consumer<ListTable<T>> readyCallback) {
-        final GridGlobalPreferences pref = new GridGlobalPreferences(key,
-                                                                     getInitColumns(),
-                                                                     getBannedColumns());
-        final ListTable<T> newListGrid = new ListTable<T>(pref);
-        newListGrid.setShowLastPagerButton(false);
-        newListGrid.setShowFastFordwardPagerButton(false);
-        newListGrid.setPreferencesService(userPreferencesService);
-        userPreferencesService.call((GridPreferencesStore preferencesStore) -> {
-            if (preferencesStore == null) {
-                newListGrid.setGridPreferencesStore(new GridPreferencesStore(pref));
-            } else {
-                newListGrid.setGridPreferencesStore(preferencesStore);
-            }
-            initColumns(newListGrid);
+        preferences.load(preferences -> {
+            final GridGlobalPreferences pref = new GridGlobalPreferences(key,
+                                                                         getInitColumns(),
+                                                                         getBannedColumns());
+            pref.setPageSize(preferences.getItemsPerPage());
+            final ListTable<T> newListGrid = new ListTable<>(pref);
+            newListGrid.setShowLastPagerButton(false);
+            newListGrid.setShowFastFordwardPagerButton(false);
             initSelectionModel(newListGrid);
-            newListGrid.loadPageSizePreferences();
-            if (column.childNodes.length == 1) {
-                column.removeChild(column.firstChild);
-            }
-            new Elemental2DomUtil().appendWidgetToElement(column,
-                                                          newListGrid);
-            listTable = newListGrid;
-            readyCallback.accept(listTable);
-        }).loadUserPreferences(key,
-                               UserPreferencesType.GRIDPREFERENCES);
+
+            userPreferencesService.call((GridPreferencesStore preferencesStore) -> {
+                if (preferencesStore == null) {
+                    newListGrid.setGridPreferencesStore(new GridPreferencesStore(pref));
+                } else {
+                    newListGrid.setGridPreferencesStore(preferencesStore);
+                }
+
+                initColumns(newListGrid);
+
+                newListGrid.loadPageSizePreferences();
+                newListGrid.setPreferencesService(userPreferencesService);
+
+                addNewTableToColumn(newListGrid);
+
+                listTable = newListGrid;
+                readyCallback.accept(listTable);
+            }).loadUserPreferences(key,
+                                   UserPreferencesType.GRIDPREFERENCES);
+
+        }, error -> new DefaultWorkbenchErrorCallback().error(error));
+
+    }
+
+    protected void addNewTableToColumn(final ListTable<T> newListGrid) {
+        if (column.childNodes.length == 1) {
+            column.removeChild(column.firstChild);
+        }
+        new Elemental2DomUtil().appendWidgetToElement(column,
+                                                      newListGrid);
+    }
+
+    protected Column initGenericColumn(final String key){
+        return null;
     }
 
     public void showBusyIndicator(final String message) {
@@ -173,7 +196,13 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
      */
     public abstract void initColumns(ListTable<T> extendedPagedTable);
 
-    public abstract void initSelectionModel(ListTable<T> extendedPagedTable);
+    public void initSelectionModel(final ListTable<T> extendedPagedTable) {
+        extendedPagedTable.setEmptyTableCaption(getEmptyTableCaption());
+        extendedPagedTable.setSelectionCallback((s) -> presenter.selectSummaryItem(s));
+        initBulkActions(extendedPagedTable);
+    }
+
+    public abstract String getEmptyTableCaption();
 
     public abstract List<String> getInitColumns();
 

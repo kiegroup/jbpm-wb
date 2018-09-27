@@ -357,7 +357,7 @@ public class RequestListPresenterTest {
     @Test
     public void testJobSelectionWithDetailsClosed() {
         RequestSummary job = createRequestSummary();
-        presenter.selectJob(job);
+        presenter.selectSummaryItem(job);
 
         verify(placeManager).goTo(PerspectiveIds.JOB_DETAILS_SCREEN);
         final ArgumentCaptor<JobSelectedEvent> captor = ArgumentCaptor.forClass(JobSelectedEvent.class);
@@ -373,7 +373,7 @@ public class RequestListPresenterTest {
     @Test
     public void testJobSelectionWithDetailsOpen() {
         RequestSummary job = createRequestSummary();
-        presenter.selectJob(job);
+        presenter.selectSummaryItem(job);
 
         verify(placeManager,
                never()).goTo(any(PlaceRequest.class));

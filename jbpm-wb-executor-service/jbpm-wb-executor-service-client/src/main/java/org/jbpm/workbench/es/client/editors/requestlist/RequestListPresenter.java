@@ -236,8 +236,8 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                 .build();
     }
 
-    public void selectJob(final RequestSummary job) {
-
+    @Override
+    public void selectSummaryItem(final RequestSummary job) {
         if (job.getStatus() != null) {
             setupDetailBreadcrumb(constants.JobBreadcrumb(job.getId()));
             placeManager.goTo(PerspectiveIds.JOB_DETAILS_SCREEN);

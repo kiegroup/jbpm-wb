@@ -221,7 +221,8 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                 .build();
     }
 
-    public void selectExecutionError(final ExecutionErrorSummary summary) {
+    @Override
+    public void selectSummaryItem(final ExecutionErrorSummary summary) {
         setupDetailBreadcrumb(constants.ExecutionErrorBreadcrumb(ExecutionErrorDetailsPresenter.getErrorDetailTitle(summary)));
         placeManager.goTo(PerspectiveIds.EXECUTION_ERROR_DETAILS_SCREEN);
         executionErrorSelectedEvent.fire(new ExecutionErrorSelectedEvent(getSelectedServerTemplate(),

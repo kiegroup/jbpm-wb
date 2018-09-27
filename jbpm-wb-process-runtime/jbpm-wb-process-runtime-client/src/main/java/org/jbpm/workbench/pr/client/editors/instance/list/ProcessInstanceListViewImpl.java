@@ -23,7 +23,6 @@ import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.cellview.client.Column;
@@ -83,10 +82,8 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     }
 
     @Override
-    public void initSelectionModel(final ListTable<ProcessInstanceSummary> extendedPagedTable) {
-        extendedPagedTable.setEmptyTableCaption(constants.No_Process_Instances_Found());
-        extendedPagedTable.setSelectionCallback((pis) -> presenter.selectProcessInstance(pis));
-        initBulkActions(extendedPagedTable);
+    public String getEmptyTableCaption() {
+        return constants.No_Process_Instances_Found();
     }
 
     @Override
@@ -236,18 +233,9 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         extendedPagedTable.addColumns(columnMetas);
     }
 
-    private Column initGenericColumn(final String key) {
-
-        Column<ProcessInstanceSummary, String> genericColumn = new Column<ProcessInstanceSummary, String>(new TextCell()) {
-            @Override
-            public String getValue(ProcessInstanceSummary object) {
-                return object.getDomainDataValue(key);
-            }
-        };
-        genericColumn.setSortable(true);
-        genericColumn.setDataStoreName(key);
-
-        return genericColumn;
+    protected Column initGenericColumn(final String key) {
+        return createTextColumn(key,
+                                instance -> instance.getDomainDataValue(key));
     }
 
     protected AnchorListItem getBulkAbort(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable){

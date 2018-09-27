@@ -179,6 +179,8 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
         }
     }
 
+    protected abstract void selectSummaryItem(final T summary);
+
     protected abstract DataSetReadyCallback getDataSetReadyCallback(final Integer startRange,
                                                                     final FilterSettings tableSettings);
 
