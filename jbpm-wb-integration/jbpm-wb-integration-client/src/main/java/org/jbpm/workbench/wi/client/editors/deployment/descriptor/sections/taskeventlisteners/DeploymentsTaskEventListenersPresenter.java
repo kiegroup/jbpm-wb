@@ -78,7 +78,10 @@ public class DeploymentsTaskEventListenersPresenter extends Section<DeploymentDe
         taskEventListenerPresenters.setup(
                 view.getTaskEventListenersTable(),
                 model.getTaskEventListeners(),
-                (eventListener, presenter) -> presenter.setup(eventListener, this));
+                (eventListener, presenter) -> presenter.setupSectionConfig(eventListener,
+                                                                           this,
+                                                                           LibraryConstants.EditEventListener,
+                                                                           LibraryConstants.Id));
 
         return promises.resolve();
     }

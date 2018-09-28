@@ -21,19 +21,22 @@ import java.util.ArrayList;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import elemental2.dom.Element;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
+import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
 import org.kie.workbench.common.widgets.client.widget.ListItemPresenter;
 import org.kie.workbench.common.widgets.client.widget.ListItemView;
+
+import elemental2.dom.Element;
 
 @Dependent
 public class ObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Section<?>, ObjectItemPresenter.View> implements ObjectPresenter {
 
     private final ParametersModal parametersModal;
     private final KieEnumSelectElement<Resolver> resolversSelect;
+    private final AddSingleValueModal singleValueModal;
 
     ItemObjectModel model;
     Section<?> parentPresenter;
@@ -41,12 +44,23 @@ public class ObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Sect
     @Inject
     public ObjectItemPresenter(final View view,
                                final ParametersModal parametersModal,
-                               final KieEnumSelectElement<Resolver> resolversSelect) {
+                               final KieEnumSelectElement<Resolver> resolversSelect,
+                               final AddSingleValueModal singleValueModal) {
         super(view);
         this.parametersModal = parametersModal;
         this.resolversSelect = resolversSelect;
+        this.singleValueModal = singleValueModal;
     }
 
+    public ObjectItemPresenter setupSectionConfig(final ItemObjectModel model,
+                                    final Section<?> parentPresenter,
+                                    final String header,
+                                    final String valueKey) {
+        
+        singleValueModal.setup(header, valueKey);
+        return setup(model, parentPresenter);
+    }
+    
     @Override
     public ObjectItemPresenter setup(final ItemObjectModel model,
                                      final Section<?> parentPresenter) {
@@ -102,6 +116,15 @@ public class ObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Sect
         fireChangeEvent();
     }
 
+    public void openEditModal() {
+        singleValueModal.show(v -> {
+                                  model.setValue(v);
+                                  view.setValue(v);
+                                  fireChangeEvent();
+                              },
+                              model.getValue());
+    }
+    
     public interface View extends ListItemView<ObjectItemPresenter> {
 
         Element getResolversContainer();

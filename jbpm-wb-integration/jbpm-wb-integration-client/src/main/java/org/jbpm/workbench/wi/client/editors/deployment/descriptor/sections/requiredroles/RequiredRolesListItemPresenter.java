@@ -20,6 +20,8 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
+import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
+import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.kie.workbench.common.widgets.client.widget.ListItemPresenter;
 import org.kie.workbench.common.widgets.client.widget.ListItemView;
 
@@ -28,21 +30,24 @@ public class RequiredRolesListItemPresenter extends ListItemPresenter<String, De
 
     private String role;
     DeploymentsRequiredRolesPresenter parentPresenter;
-
+    private final AddSingleValueModal singleValueModal; 
+    
     @Inject
-    public RequiredRolesListItemPresenter(final View view) {
+    public RequiredRolesListItemPresenter(final View view, 
+                                          final AddSingleValueModal singleValueModal) {
         super(view);
+        this.singleValueModal = singleValueModal;
     }
 
     @Override
     public RequiredRolesListItemPresenter setup(final String role,
                                                 final DeploymentsRequiredRolesPresenter parentPresenter) {
+        singleValueModal.setup(LibraryConstants.EditRequiredRole, LibraryConstants.Role);
         this.role = role;
         this.parentPresenter = parentPresenter;
 
         view.init(this);
         view.setRole(role);
-
         return this;
     }
 
@@ -61,5 +66,14 @@ public class RequiredRolesListItemPresenter extends ListItemPresenter<String, De
                                   IsElement {
 
         void setRole(final String role);
+    }
+
+    public void openRequiredRoleModal() {
+        singleValueModal.show(v -> {
+                                  super.remove();
+                                  this.getListPresenter().add(v);
+                                  parentPresenter.fireChangeEvent();
+                              },
+                              role);
     }
 }

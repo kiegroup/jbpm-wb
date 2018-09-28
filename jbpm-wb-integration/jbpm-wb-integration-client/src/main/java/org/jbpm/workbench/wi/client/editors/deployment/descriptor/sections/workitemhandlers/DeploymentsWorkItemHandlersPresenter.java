@@ -79,7 +79,11 @@ public class DeploymentsWorkItemHandlersPresenter extends Section<DeploymentDesc
         workItemHandlersListPresenter.setup(
                 view.getWorkItemHandlersTable(),
                 model.getWorkItemHandlers(),
-                (workItemHandler, presenter) -> presenter.setup(workItemHandler, this));
+                (workItemHandler, presenter) -> presenter.setupSectionConfig(LibraryConstants.EditWorkItemHandler, 
+                                                                             LibraryConstants.Name, 
+                                                                             LibraryConstants.Value, 
+                                                                             workItemHandler, 
+                                                                             this));
 
         return promises.resolve();
     }

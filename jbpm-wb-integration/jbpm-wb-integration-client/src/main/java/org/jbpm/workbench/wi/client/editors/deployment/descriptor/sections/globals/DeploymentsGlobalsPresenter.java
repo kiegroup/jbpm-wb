@@ -79,7 +79,11 @@ public class DeploymentsGlobalsPresenter extends Section<DeploymentDescriptorMod
         globalPresenters.setup(
                 view.getGlobalsTable(),
                 model.getGlobals(),
-                (global, presenter) -> presenter.setup(global, this));
+                (global, presenter) -> presenter.setupSectionConfig(LibraryConstants.EditGlobal,
+                                                                    LibraryConstants.Name,
+                                                                    LibraryConstants.Value,
+                                                                    global,
+                                                                    this));
 
         return promises.resolve();
     }
