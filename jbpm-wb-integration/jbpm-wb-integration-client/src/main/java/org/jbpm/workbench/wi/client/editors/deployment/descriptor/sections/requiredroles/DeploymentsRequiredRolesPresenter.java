@@ -23,17 +23,18 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import elemental2.promise.Promise;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
+import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionListPresenter;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
-import org.kie.workbench.common.widgets.client.widget.ListPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.uberfire.client.promise.Promises;
+
+import elemental2.promise.Promise;
 
 @Dependent
 public class DeploymentsRequiredRolesPresenter extends Section<DeploymentDescriptorModel> {
@@ -72,7 +73,9 @@ public class DeploymentsRequiredRolesPresenter extends Section<DeploymentDescrip
         requiredRolesListPresenter.setup(
                 view.getRequiredRolesTable(),
                 model.getRequiredRoles(),
-                (requiredRole, presenter) -> presenter.setup(requiredRole, this));
+                (requiredRole, presenter) -> presenter.setup(requiredRole, this),
+                addRequiredRoleModal,
+                null);
 
         return promises.resolve();
     }
@@ -97,7 +100,7 @@ public class DeploymentsRequiredRolesPresenter extends Section<DeploymentDescrip
     }
 
     @Dependent
-    public static class RemoteableClassListPresenter extends ListPresenter<String, RequiredRolesListItemPresenter> {
+    public static class RemoteableClassListPresenter extends SectionListPresenter<String, RequiredRolesListItemPresenter> {
 
         @Inject
         public RemoteableClassListPresenter(final ManagedInstance<RequiredRolesListItemPresenter> itemPresenters) {

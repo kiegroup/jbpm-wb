@@ -23,7 +23,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import elemental2.promise.Promise;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ItemObjectModelFactory;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ObjectItemPresenter;
@@ -31,12 +30,14 @@ import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
+import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionListPresenter;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
-import org.kie.workbench.common.widgets.client.widget.ListPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.uberfire.client.promise.Promises;
+
+import elemental2.promise.Promise;
 
 @Dependent
 public class DeploymentsEventListenersPresenter extends Section<DeploymentDescriptorModel> {
@@ -78,7 +79,9 @@ public class DeploymentsEventListenersPresenter extends Section<DeploymentDescri
         eventListenerPresenters.setup(
                 view.getEventListenersTable(),
                 model.getEventListeners(),
-                (eventListener, presenter) -> presenter.setup(eventListener, this));
+                (eventListener, presenter) -> presenter.setup(eventListener, this),
+                addEventListenerModal,
+                null);
 
         return promises.resolve();
     }
@@ -103,7 +106,7 @@ public class DeploymentsEventListenersPresenter extends Section<DeploymentDescri
     }
 
     @Dependent
-    public static class EventListenersListPresenter extends ListPresenter<ItemObjectModel, ObjectItemPresenter> {
+    public static class EventListenersListPresenter extends SectionListPresenter<ItemObjectModel, ObjectItemPresenter> {
 
         @Inject
         public EventListenersListPresenter(final ManagedInstance<ObjectItemPresenter> itemPresenters) {

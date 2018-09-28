@@ -34,9 +34,9 @@ import org.kie.workbench.common.screens.library.client.settings.SettingsSectionC
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
-import org.kie.workbench.common.widgets.client.widget.ListPresenter;
 import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.uberfire.client.promise.Promises;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionListPresenter;
 
 @Dependent
 public class DeploymentsTaskEventListenersPresenter extends Section<DeploymentDescriptorModel> {
@@ -78,7 +78,9 @@ public class DeploymentsTaskEventListenersPresenter extends Section<DeploymentDe
         taskEventListenerPresenters.setup(
                 view.getTaskEventListenersTable(),
                 model.getTaskEventListeners(),
-                (eventListener, presenter) -> presenter.setup(eventListener, this));
+                (eventListener, presenter) -> presenter.setup(eventListener, this),
+                addTaskEventListenerModal,
+                null);
 
         return promises.resolve();
     }
@@ -103,10 +105,10 @@ public class DeploymentsTaskEventListenersPresenter extends Section<DeploymentDe
     }
 
     @Dependent
-    public static class TaskEventListenersListPresenter extends ListPresenter<ItemObjectModel, ObjectItemPresenter> {
+    public static class TaskEventListenersListPresenter extends SectionListPresenter<ItemObjectModel, ObjectItemPresenter> {
 
         @Inject
-        public TaskEventListenersListPresenter(final ManagedInstance<ObjectItemPresenter> itemPresenters) {
+        public TaskEventListenersListPresenter(final ManagedInstance<ObjectItemPresenter> itemPresenters ) {
             super(itemPresenters);
         }
     }

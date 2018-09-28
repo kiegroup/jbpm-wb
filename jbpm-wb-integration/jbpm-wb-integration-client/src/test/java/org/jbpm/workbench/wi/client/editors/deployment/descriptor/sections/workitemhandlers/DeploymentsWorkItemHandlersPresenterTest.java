@@ -81,7 +81,7 @@ public class DeploymentsWorkItemHandlersPresenterTest {
 
         assertNotNull(model.getWorkItemHandlers());
         verify(addWorkItemHandlerModal).setup(any(), any(), any());
-        verify(workItemHandlersListPresenter).setup(any(), eq(model.getWorkItemHandlers()), any());
+        verify(workItemHandlersListPresenter).setup(any(), eq(model.getWorkItemHandlers()), any() ,any(), any());
     }
 
     @Test

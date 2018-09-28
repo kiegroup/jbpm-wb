@@ -74,7 +74,7 @@ public class DeploymentsRequiredRolesPresenterTest {
 
         assertNotNull(model.getRequiredRoles());
         verify(addRequiredRoleModal).setup(any(), any());
-        verify(requiredRolesListPresenter).setup(any(), any(), any());
+        verify(requiredRolesListPresenter).setup(any(), any(), any(),any(),any());
     }
 
     @Test

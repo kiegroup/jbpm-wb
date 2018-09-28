@@ -39,6 +39,11 @@ public class RequiredRolesListItemView implements RequiredRolesListItemPresenter
     @SuppressWarnings("PMD.UnusedPrivateField")
     private HTMLAnchorElement removeButton;
 
+    @Inject
+    @DataField("edit-button")
+    @SuppressWarnings("PMD.UnusedPrivateField")
+    private HTMLAnchorElement modifyButton;
+    
     private RequiredRolesListItemPresenter presenter;
 
     @Override
@@ -49,6 +54,11 @@ public class RequiredRolesListItemView implements RequiredRolesListItemPresenter
     @EventHandler("remove-button")
     public void onRemoveButtonClicked(final ClickEvent ignore) {
         presenter.remove();
+    }
+    
+    @EventHandler("edit-button")
+    public void onEditButtonClicked(final ClickEvent ignore) {
+        presenter.openRequiredRoleModal();
     }
 
     @Override

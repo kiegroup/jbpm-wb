@@ -79,7 +79,7 @@ public class DeploymentsTaskEventListenersPresenterTest {
 
         assertNotNull(model.getTaskEventListeners());
         verify(addTaskEventListenerModal).setup(any(), any());
-        verify(taskEventListenersListPresenter).setup(any(), any(), any());
+        verify(taskEventListenersListPresenter).setup(any(), any(), any(), any(), any());
     }
 
     @Test

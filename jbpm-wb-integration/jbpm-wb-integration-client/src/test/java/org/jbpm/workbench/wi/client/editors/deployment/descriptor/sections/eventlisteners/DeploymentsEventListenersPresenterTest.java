@@ -79,7 +79,7 @@ public class DeploymentsEventListenersPresenterTest {
 
         assertNotNull(model.getEventListeners());
         verify(addEventListenerModal).setup(any(), any());
-        verify(eventListenersListPresenter).setup(any(), any(), any());
+        verify(eventListenersListPresenter).setup(any(), any(), any(), any(), any());
     }
 
     @Test

@@ -17,20 +17,22 @@
 package org.jbpm.workbench.wi.client.editors.deployment.descriptor.items;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import elemental2.dom.Element;
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionListItemPresenter;
 import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
-import org.kie.workbench.common.widgets.client.widget.ListItemPresenter;
 import org.kie.workbench.common.widgets.client.widget.ListItemView;
 
+import elemental2.dom.Element;
+
 @Dependent
-public class ObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Section<?>, ObjectItemPresenter.View> implements ObjectPresenter {
+public class ObjectItemPresenter extends SectionListItemPresenter<ItemObjectModel, Section<?>, ObjectItemPresenter.View> implements ObjectPresenter {
 
     private final ParametersModal parametersModal;
     private final KieEnumSelectElement<Resolver> resolversSelect;
@@ -102,6 +104,21 @@ public class ObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Sect
         fireChangeEvent();
     }
 
+    public void openEditModal() {
+        ItemObjectModel itemObjectModel = new ItemObjectModel();
+        itemObjectModel.setParameters(model.getParameters());
+        itemObjectModel.setResolver(model.getResolver());
+        Consumer<String> removeConsumer = e -> {
+            super.remove();
+        };
+        Consumer<String> editConsumer = removeConsumer.andThen(v->{
+            itemObjectModel.setValue(v);
+            this.getSectionListPresenter().add(itemObjectModel);
+            fireChangeEvent();
+        });
+        getSectionListPresenter().showSingleValueEditModal( model.getValue() ,editConsumer );
+    }
+    
     public interface View extends ListItemView<ObjectItemPresenter> {
 
         Element getResolversContainer();

@@ -61,6 +61,11 @@ public class NamedObjectItemView implements NamedObjectItemPresenter.View,
     @DataField("remove-button")
     @SuppressWarnings("PMD.UnusedPrivateField")
     private HTMLAnchorElement removeButton;
+    
+    @Inject
+    @DataField("edit-button")
+    @SuppressWarnings("PMD.UnusedPrivateField")
+    private HTMLAnchorElement editButton;
 
     private NamedObjectItemPresenter presenter;
 
@@ -72,6 +77,11 @@ public class NamedObjectItemView implements NamedObjectItemPresenter.View,
     @EventHandler("remove-button")
     public void onRemoveButtonClicked(final ClickEvent ignore) {
         presenter.remove();
+    }
+    
+    @EventHandler("edit-button")
+    public void onEditButtonClicked(final ClickEvent ignore) {
+        presenter.openEditModal();;
     }
 
     @EventHandler("parameters-link")

@@ -56,6 +56,16 @@ public class ObjectItemView implements ObjectItemPresenter.View,
     @DataField("remove-button")
     @SuppressWarnings("PMD.UnusedPrivateField")
     private HTMLAnchorElement removeButton;
+    
+    @Inject
+    @DataField("edit-button")
+    @SuppressWarnings("PMD.UnusedPrivateField")
+    private HTMLAnchorElement editButton;
+    
+    @EventHandler("edit-button")
+    public void onEditButtonClicked(final ClickEvent ignore) {
+        presenter.openEditModal();;
+    }
 
     private ObjectItemPresenter presenter;
 
