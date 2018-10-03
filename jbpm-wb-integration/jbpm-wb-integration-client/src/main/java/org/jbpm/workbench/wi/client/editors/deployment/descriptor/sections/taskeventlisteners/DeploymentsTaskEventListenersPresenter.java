@@ -29,13 +29,11 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ItemObje
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ObjectItemPresenter;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
-import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
 import org.kie.workbench.common.widgets.client.widget.ListPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.uberfire.client.promise.Promises;
 
 @Dependent
@@ -43,7 +41,6 @@ public class DeploymentsTaskEventListenersPresenter extends Section<DeploymentDe
 
     private final DeploymentsTaskEventListenersView view;
     private final TaskEventListenersListPresenter taskEventListenerPresenters;
-    private final AddSingleValueModal addTaskEventListenerModal;
     private final ItemObjectModelFactory itemObjectModelFactory;
 
     @Inject
@@ -52,13 +49,11 @@ public class DeploymentsTaskEventListenersPresenter extends Section<DeploymentDe
                                                   final Promises promises,
                                                   final DeploymentsTaskEventListenersView view,
                                                   final TaskEventListenersListPresenter taskEventListenerPresenters,
-                                                  final AddSingleValueModal addTaskEventListenerModal,
                                                   final ItemObjectModelFactory itemObjectModelFactory) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
         this.view = view;
         this.taskEventListenerPresenters = taskEventListenerPresenters;
-        this.addTaskEventListenerModal = addTaskEventListenerModal;
         this.itemObjectModelFactory = itemObjectModelFactory;
     }
 
@@ -69,7 +64,6 @@ public class DeploymentsTaskEventListenersPresenter extends Section<DeploymentDe
 
     @Override
     public Promise<Void> setup(final DeploymentDescriptorModel model) {
-        addTaskEventListenerModal.setup(LibraryConstants.AddEventListener, LibraryConstants.Id);
 
         if (model.getTaskEventListeners() == null) {
             model.setTaskEventListeners(new ArrayList<>());
@@ -83,12 +77,8 @@ public class DeploymentsTaskEventListenersPresenter extends Section<DeploymentDe
         return promises.resolve();
     }
 
-    public void openNewTaskEventListenerModal() {
-        addTaskEventListenerModal.show(this::addTaskEventListener);
-    }
-
-    void addTaskEventListener(final String name) {
-        taskEventListenerPresenters.add(itemObjectModelFactory.newItemObjectModel(name));
+    public void addNewTaskEventListener() {
+        taskEventListenerPresenters.add(itemObjectModelFactory.newItemObjectModel(""));
         fireChangeEvent();
     }
 

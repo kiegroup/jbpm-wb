@@ -29,13 +29,11 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ItemObje
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.NamedObjectItemPresenter;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
-import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
 import org.kie.workbench.common.widgets.client.widget.ListPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.doublevalue.AddDoubleValueModal;
 import org.uberfire.client.promise.Promises;
 
 @Dependent
@@ -43,7 +41,6 @@ public class DeploymentsConfigurationPresenter extends Section<DeploymentDescrip
 
     private final DeploymentsConfigurationView view;
     private final ConfigurationsListPresenter configurationPresenters;
-    private final AddDoubleValueModal addConfigurationModal;
     private final ItemObjectModelFactory itemObjectModelFactory;
 
     @Inject
@@ -52,13 +49,11 @@ public class DeploymentsConfigurationPresenter extends Section<DeploymentDescrip
                                              final Promises promises,
                                              final DeploymentsConfigurationView view,
                                              final ConfigurationsListPresenter configurationPresenters,
-                                             final AddDoubleValueModal addConfigurationModal,
                                              final ItemObjectModelFactory itemObjectModelFactory) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
         this.view = view;
         this.configurationPresenters = configurationPresenters;
-        this.addConfigurationModal = addConfigurationModal;
         this.itemObjectModelFactory = itemObjectModelFactory;
     }
 
@@ -69,8 +64,6 @@ public class DeploymentsConfigurationPresenter extends Section<DeploymentDescrip
 
     @Override
     public Promise<Void> setup(final DeploymentDescriptorModel model) {
-
-        addConfigurationModal.setup(LibraryConstants.AddConfiguration, LibraryConstants.Name, LibraryConstants.Value);
 
         if (model.getConfiguration() == null) {
             model.setConfiguration(new ArrayList<>());
@@ -84,12 +77,8 @@ public class DeploymentsConfigurationPresenter extends Section<DeploymentDescrip
         return promises.resolve();
     }
 
-    public void openNewConfigurationModal() {
-        addConfigurationModal.show(this::addConfiguration);
-    }
-
-    void addConfiguration(final String name, final String value) {
-        configurationPresenters.add(itemObjectModelFactory.newItemObjectModel(name, value));
+    public void addNewConfiguration() {
+        configurationPresenters.add(itemObjectModelFactory.newItemObjectModel("", ""));
         fireChangeEvent();
     }
 

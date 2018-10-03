@@ -29,13 +29,11 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ItemObje
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.NamedObjectItemPresenter;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
-import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
 import org.kie.workbench.common.widgets.client.widget.ListPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.doublevalue.AddDoubleValueModal;
 import org.uberfire.client.promise.Promises;
 
 @Dependent
@@ -43,7 +41,6 @@ public class DeploymentsWorkItemHandlersPresenter extends Section<DeploymentDesc
 
     private final DeploymentsWorkItemHandlersView view;
     private final WorkItemHandlersListPresenter workItemHandlersListPresenter;
-    private final AddDoubleValueModal addWorkItemHandlerModal;
     private final ItemObjectModelFactory itemObjectModelFactory;
 
     @Inject
@@ -52,13 +49,11 @@ public class DeploymentsWorkItemHandlersPresenter extends Section<DeploymentDesc
                                                 final Promises promises,
                                                 final DeploymentsWorkItemHandlersView view,
                                                 final WorkItemHandlersListPresenter workItemHandlersListPresenter,
-                                                final AddDoubleValueModal addWorkItemHandlerModal,
                                                 final ItemObjectModelFactory itemObjectModelFactory) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
         this.view = view;
         this.workItemHandlersListPresenter = workItemHandlersListPresenter;
-        this.addWorkItemHandlerModal = addWorkItemHandlerModal;
         this.itemObjectModelFactory = itemObjectModelFactory;
     }
 
@@ -69,8 +64,6 @@ public class DeploymentsWorkItemHandlersPresenter extends Section<DeploymentDesc
 
     @Override
     public Promise<Void> setup(final DeploymentDescriptorModel model) {
-
-        addWorkItemHandlerModal.setup(LibraryConstants.AddWorkItemHandler, LibraryConstants.Name, LibraryConstants.Value);
 
         if (model.getWorkItemHandlers() == null) {
             model.setWorkItemHandlers(new ArrayList<>());
@@ -84,12 +77,8 @@ public class DeploymentsWorkItemHandlersPresenter extends Section<DeploymentDesc
         return promises.resolve();
     }
 
-    public void openNewWorkItemHandlerModal() {
-        addWorkItemHandlerModal.show(this::addWorkItemHandler);
-    }
-
-    void addWorkItemHandler(final String name, final String value) {
-        workItemHandlersListPresenter.add(itemObjectModelFactory.newItemObjectModel(name, value));
+    public void addNewWorkItemHandler() {
+        workItemHandlersListPresenter.add(itemObjectModelFactory.newItemObjectModel("", ""));
         fireChangeEvent();
     }
 

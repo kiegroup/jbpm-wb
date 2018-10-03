@@ -20,13 +20,14 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
+import org.kie.workbench.common.services.shared.kmodule.SingleValueItemObjectModel;
 import org.kie.workbench.common.widgets.client.widget.ListItemPresenter;
 import org.kie.workbench.common.widgets.client.widget.ListItemView;
 
 @Dependent
-public class RemoteableClassListItemPresenter extends ListItemPresenter<String, DeploymentsRemoteableClassesPresenter, RemoteableClassListItemPresenter.View> {
+public class RemoteableClassListItemPresenter extends ListItemPresenter<SingleValueItemObjectModel, DeploymentsRemoteableClassesPresenter, RemoteableClassListItemPresenter.View> {
 
-    private String role;
+    private SingleValueItemObjectModel remoteableClass;
 
     DeploymentsRemoteableClassesPresenter parentPresenter;
 
@@ -36,13 +37,13 @@ public class RemoteableClassListItemPresenter extends ListItemPresenter<String, 
     }
 
     @Override
-    public RemoteableClassListItemPresenter setup(final String role,
+    public RemoteableClassListItemPresenter setup(final SingleValueItemObjectModel remoteableClass,
                                                   final DeploymentsRemoteableClassesPresenter parentPresenter) {
-        this.role = role;
+        this.remoteableClass = remoteableClass;
         this.parentPresenter = parentPresenter;
 
         view.init(this);
-        view.setClass(role);
+        view.setClass(remoteableClass.getValue());
 
         return this;
     }
@@ -53,9 +54,14 @@ public class RemoteableClassListItemPresenter extends ListItemPresenter<String, 
         parentPresenter.fireChangeEvent();
     }
 
+    public void onClassNameChange(final String className){
+        this.remoteableClass.setValue(className);
+        parentPresenter.fireChangeEvent();
+    }
+
     @Override
-    public String getObject() {
-        return role;
+    public SingleValueItemObjectModel getObject() {
+        return remoteableClass;
     }
 
     public interface View extends ListItemView<RemoteableClassListItemPresenter>,

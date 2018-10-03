@@ -29,13 +29,11 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ItemObje
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.NamedObjectItemPresenter;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
-import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
 import org.kie.workbench.common.widgets.client.widget.ListPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.doublevalue.AddDoubleValueModal;
 import org.uberfire.client.promise.Promises;
 
 @Dependent
@@ -43,7 +41,6 @@ public class DeploymentsGlobalsPresenter extends Section<DeploymentDescriptorMod
 
     private final DeploymentsGlobalsView view;
     private final GlobalsListPresenter globalPresenters;
-    private final AddDoubleValueModal addGlobalModal;
     private final ItemObjectModelFactory itemObjectModelFactory;
 
     @Inject
@@ -52,13 +49,11 @@ public class DeploymentsGlobalsPresenter extends Section<DeploymentDescriptorMod
                                        final Promises promises,
                                        final DeploymentsGlobalsView view,
                                        final GlobalsListPresenter globalPresenters,
-                                       final AddDoubleValueModal addGlobalModal,
                                        final ItemObjectModelFactory itemObjectModelFactory) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
         this.view = view;
         this.globalPresenters = globalPresenters;
-        this.addGlobalModal = addGlobalModal;
         this.itemObjectModelFactory = itemObjectModelFactory;
     }
 
@@ -69,8 +64,6 @@ public class DeploymentsGlobalsPresenter extends Section<DeploymentDescriptorMod
 
     @Override
     public Promise<Void> setup(final DeploymentDescriptorModel model) {
-
-        addGlobalModal.setup(LibraryConstants.AddGlobal, LibraryConstants.Name, LibraryConstants.Value);
 
         if (model.getGlobals() == null) {
             model.setGlobals(new ArrayList<>());
@@ -84,12 +77,8 @@ public class DeploymentsGlobalsPresenter extends Section<DeploymentDescriptorMod
         return promises.resolve();
     }
 
-    public void openNewGlobalModal() {
-        addGlobalModal.show(this::addGlobal);
-    }
-
-    void addGlobal(final String name, final String value) {
-        globalPresenters.add(itemObjectModelFactory.newItemObjectModel(name, value));
+    public void addNewGlobal() {
+        globalPresenters.add(itemObjectModelFactory.newItemObjectModel("", ""));
         fireChangeEvent();
     }
 

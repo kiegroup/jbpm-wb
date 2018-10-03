@@ -56,7 +56,7 @@ public class DeploymentsConfigurationView implements SectionView<DeploymentsConf
 
     @EventHandler("add-configuration-button")
     public void onAddConfigurationButtonClicked(final ClickEvent ignore) {
-        presenter.openNewConfigurationModal();
+        presenter.addNewConfiguration();
     }
 
     public Element getConfigurationsTable() {

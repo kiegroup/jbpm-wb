@@ -17,12 +17,12 @@
 package org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles;
 
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
+import org.kie.workbench.common.services.shared.kmodule.SingleValueItemObjectModel;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.promise.Promises;
@@ -31,6 +31,7 @@ import org.uberfire.promise.SyncPromises;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -47,10 +48,7 @@ public class DeploymentsRequiredRolesPresenterTest {
     private DeploymentsRequiredRolesView view;
 
     @Mock
-    private DeploymentsRequiredRolesPresenter.RemoteableClassListPresenter requiredRolesListPresenter;
-
-    @Mock
-    private AddSingleValueModal addRequiredRoleModal;
+    private DeploymentsRequiredRolesPresenter.RequiredRolesListPresenter requiredRolesListPresenter;
 
     private Promises promises = new SyncPromises();
 
@@ -62,8 +60,7 @@ public class DeploymentsRequiredRolesPresenterTest {
                                                                    menuItem,
                                                                    promises,
                                                                    view,
-                                                                   requiredRolesListPresenter,
-                                                                   addRequiredRoleModal));
+                                                                   requiredRolesListPresenter));
     }
 
     @Test
@@ -73,20 +70,13 @@ public class DeploymentsRequiredRolesPresenterTest {
         presenter.setup(model);
 
         assertNotNull(model.getRequiredRoles());
-        verify(addRequiredRoleModal).setup(any(), any());
         verify(requiredRolesListPresenter).setup(any(), any(), any());
     }
 
     @Test
-    public void testOpenModal() {
-        presenter.openNewRequiredRoleModal();
-        verify(addRequiredRoleModal).show(any());
-    }
-
-    @Test
     public void testAdd() {
-        presenter.addRequiredRole("Name");
-        verify(requiredRolesListPresenter).add(any());
+        presenter.addNewRequiredRole();
+        verify(requiredRolesListPresenter).add(eq(new SingleValueItemObjectModel("")));
         verify(presenter).fireChangeEvent();
     }
 }

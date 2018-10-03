@@ -21,12 +21,15 @@ import javax.inject.Named;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import elemental2.dom.Element;
+import elemental2.dom.Event;
 import elemental2.dom.HTMLAnchorElement;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
+import elemental2.dom.HTMLInputElement;
 import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 @Templated("#root")
@@ -34,14 +37,12 @@ public class NamedObjectItemView implements NamedObjectItemPresenter.View,
                                             IsElement {
 
     @Inject
-    @Named("span")
     @DataField("name")
-    private HTMLElement name;
+    private HTMLInputElement name;
 
     @Inject
-    @Named("span")
     @DataField("value")
-    private HTMLElement value;
+    private HTMLInputElement value;
 
     @Inject
     @DataField("resolvers")
@@ -81,12 +82,12 @@ public class NamedObjectItemView implements NamedObjectItemPresenter.View,
 
     @Override
     public void setName(final String name) {
-        this.name.textContent = name;
+        this.name.value = name;
     }
 
     @Override
     public void setValue(final String value) {
-        this.value.textContent = value;
+        this.value.value = value;
     }
 
     @Override
@@ -97,5 +98,15 @@ public class NamedObjectItemView implements NamedObjectItemPresenter.View,
     @Override
     public Element getResolversContainer() {
         return resolversContainer;
+    }
+
+    @EventHandler("value")
+    public void onValueChange(final @ForEvent("change") Event event) {
+        presenter.onValueChange(value.value);
+    }
+
+    @EventHandler("name")
+    public void onNameChange(final @ForEvent("change") Event event) {
+        presenter.onNameChange(name.value);
     }
 }

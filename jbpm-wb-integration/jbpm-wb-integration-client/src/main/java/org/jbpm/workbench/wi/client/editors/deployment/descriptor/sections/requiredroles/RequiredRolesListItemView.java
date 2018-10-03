@@ -17,22 +17,22 @@
 package org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.requiredroles;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import elemental2.dom.Event;
 import elemental2.dom.HTMLAnchorElement;
-import elemental2.dom.HTMLElement;
+import elemental2.dom.HTMLInputElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 @Templated("#root")
 public class RequiredRolesListItemView implements RequiredRolesListItemPresenter.View {
 
     @Inject
-    @Named("span")
     @DataField("role")
-    private HTMLElement role;
+    private HTMLInputElement role;
 
     @Inject
     @DataField("remove-button")
@@ -53,6 +53,11 @@ public class RequiredRolesListItemView implements RequiredRolesListItemPresenter
 
     @Override
     public void setRole(final String role) {
-        this.role.textContent = role;
+        this.role.value = role;
+    }
+
+    @EventHandler("role")
+    public void onRoleChange(final @ForEvent("change") Event event) {
+        presenter.onRoleChange(role.value);
     }
 }
