@@ -16,144 +16,94 @@
 
 package org.jbpm.workbench.pr.client.editors.instance.log;
 
+
 import java.util.List;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.ListItem;
-import org.gwtbootstrap3.client.ui.html.Div;
-import org.gwtbootstrap3.client.ui.html.UnorderedList;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.workbench.pr.client.resources.i18n.Constants;
-import org.jbpm.workbench.pr.client.util.LogUtils.LogOrder;
-import org.jbpm.workbench.pr.client.util.LogUtils.LogType;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Composite;
+import org.jboss.errai.common.client.dom.Div;
+import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.MouseEvent;
+import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.databinding.client.components.ListComponent;
+import org.jboss.errai.ui.shared.api.annotations.AutoBound;
+import org.jboss.errai.ui.shared.api.annotations.Bound;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.ForEvent;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.workbench.common.client.util.AbstractView;
+
+import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
+
+import static org.jboss.errai.common.client.dom.DOMUtil.addCSSClass;
+import static org.jboss.errai.common.client.dom.DOMUtil.removeCSSClass;
 
 @Dependent
-@Templated(value = "ProcessInstanceLogViewImpl.html")
-public class ProcessInstanceLogViewImpl extends Composite
+@Templated(value = "ProcessInstanceLogViewImpl.html", stylesheet = "/org/jbpm/workbench/common/client/resources/css/kie-manage.less")
+public class ProcessInstanceLogViewImpl extends AbstractView<ProcessInstanceLogPresenter>
         implements ProcessInstanceLogPresenter.ProcessInstanceLogView {
 
-    // Can't inject this because many uberfire widgets extend it.
-    @DataField
-    public Div logTextArea = new Div();
+    @Inject
+    @DataField("logs_container")
+    private Div logsContainer;
 
     @Inject
-    @DataField
-    public Button showBusinessLogButton;
+    @DataField("load-div")
+    Div loadDiv;
 
     @Inject
-    @DataField
-    public Button showTechnicalLogButton;
+    @DataField("load-more-logs")
+    @SuppressWarnings("PMD.UnusedPrivateField")
+    private Button loadMoreLogs;
 
     @Inject
-    @DataField
-    public Button showAscLogButton;
+    @Bound
+    @DataField("logs-list")
+    @SuppressWarnings("unused")
+    private ListComponent<ProcessInstanceLogSummary, ProcessInstanceLogItemView> logs;
 
     @Inject
-    @DataField
-    public Button showDescLogButton;
+    @AutoBound
+    private DataBinder<List<ProcessInstanceLogSummary>> logsList;
 
-    private ProcessInstanceLogPresenter presenter;
-
-    private LogOrder logOrder = LogOrder.ASC;
-
-    private LogType logType = LogType.BUSINESS;
-
-    private Constants constants = Constants.INSTANCE;
+    @Inject
+    @DataField("empty-list-item")
+    private Div emptyContainer;
 
     @Override
     public void init(final ProcessInstanceLogPresenter presenter) {
-        this.presenter = presenter;
-
-        this.setFilters(showBusinessLogButton,
-                        constants.Business_Log(),
-                        LogType.BUSINESS);
-        this.setFilters(showTechnicalLogButton,
-                        constants.Technical_Log(),
-                        LogType.TECHNICAL);
-        this.setOrder(showAscLogButton,
-                      constants.Asc_Log_Order(),
-                      LogOrder.ASC);
-        this.setOrder(showDescLogButton,
-                      constants.Desc_Log_Order(),
-                      LogOrder.DESC);
-    }
-
-    private void setFilters(Button button,
-                            String description,
-                            final LogType logType) {
-        button.setText(description);
-        button.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                setActiveLogTypeButton(logType);
-                getInstanceData();
-            }
-        });
-    }
-
-    private void setOrder(Button button,
-                          String description,
-                          final LogOrder logOrder) {
-        button.setText(description);
-        button.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                setActiveLogOrderButton(logOrder);
-                getInstanceData();
-            }
-        });
-    }
-
-    public void getInstanceData() {
-        presenter.refreshProcessInstanceData(logOrder,
-                                             logType);
+        super.init(presenter);
+        logs.addComponentCreationHandler(v -> v.init(presenter));
     }
 
     @Override
-    public void setLogs(final List<String> logs) {
-        logTextArea.clear();
-        final UnorderedList list = new UnorderedList() {{
-            addStyleName("list-unstyled");
-        }};
-        for (String log : logs) {
-            list.add(new ListItem(log));
-        }
-        logTextArea.add(list);
-    }
-
-    public void setActiveLogTypeButton(LogType logType) {
-        this.logType = logType;
-        switch (logType) {
-            case TECHNICAL:
-                showTechnicalLogButton.setActive(true);
-                showBusinessLogButton.setActive(false);
-                break;
-            case BUSINESS:
-                showBusinessLogButton.setActive(true);
-                showTechnicalLogButton.setActive(false);
-                break;
+    public void setLogsList(final List<ProcessInstanceLogSummary> processInstanceLogSummaries) {
+        logsList.setModel(processInstanceLogSummaries);
+        if (processInstanceLogSummaries.isEmpty()) {
+            removeCSSClass(emptyContainer,
+                           "hidden");
+        } else {
+            addCSSClass(emptyContainer,
+                        "hidden");
         }
     }
 
-    public void setActiveLogOrderButton(LogOrder logOrder) {
-        this.logOrder = logOrder;
-        switch (logOrder) {
-            case ASC:
-                showAscLogButton.setActive(true);
-                showDescLogButton.setActive(false);
-                break;
-            case DESC:
-                showDescLogButton.setActive(true);
-                showAscLogButton.setActive(false);
-                break;
-        }
+    @Override
+    public void hideLoadButton(boolean hidden) {
+        loadDiv.setHidden(hidden);
+    }
+
+    @EventHandler("load-more-logs")
+    public void loadMoreProcessInstanceLogs(final @ForEvent("click") MouseEvent event) {
+        presenter.loadMoreProcessInstanceLogs();
+    }
+
+    @Override
+    public HTMLElement getElement() {
+        return logsContainer;
     }
 }

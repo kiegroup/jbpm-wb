@@ -19,8 +19,10 @@ import java.util.Date;
 
 import org.jboss.errai.common.client.api.annotations.NonPortable;
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jboss.errai.databinding.client.api.Bindable;
 import org.jbpm.workbench.common.model.GenericSummary;
 
+@Bindable
 @Portable
 public class ProcessInstanceLogSummary extends GenericSummary<Long> {
 

@@ -81,6 +81,12 @@ public final class FilterSettingsBuilderHelper {
                                   sortOrder);
     }
 
+    public void sortBy(String defaultColumnId,
+                       SortOrder sortOrder) {
+        builder.sort(defaultColumnId,
+                     sortOrder);
+    }
+
     public void key(final String key) {
         builder.key(key);
     }

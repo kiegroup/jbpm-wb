@@ -16,9 +16,11 @@
 
 package org.jbpm.workbench.pr.client.editors.instance.log;
 
+import java.util.HashMap;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 
+import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsManagerImpl;
 
@@ -40,19 +42,32 @@ public class ProcessInstanceLogFilterSettingsManager extends FilterSettingsManag
     @Override
     public FilterSettings createFilterSettingsPrototype() {
         return createFilterSettings(PROCESS_INSTANCE_LOGS_DATASET,
-                                    COLUMN_LOG_DATE,
+                                    getSortByMap(),
                                     null);
     }
 
     public FilterSettings createDefaultFilterSettingsPrototype(Long processInstanceId) {
         final FilterSettings filterSettings = createFilterSettings(PROCESS_INSTANCE_LOGS_DATASET,
-                                                                   COLUMN_LOG_DATE,
+                                                                   getSortByMap(),
                                                                    builder -> {
                                                                        builder.filter(equalsTo(COLUMN_LOG_PROCESS_INSTANCE_ID,
                                                                                                processInstanceId));
-                                                                   });
+                                                                   }
+        );
+        filterSettings.setTableDefaultSortColumnId("");
         filterSettings.setKey(getDefaultFilterSettingsKey());
         return filterSettings;
+    }
+
+    private HashMap<String, SortOrder> getSortByMap() {
+        HashMap<String, SortOrder> multipleSortBy = new HashMap<>();
+        multipleSortBy.put(COLUMN_LOG_DATE,
+                           SortOrder.DESCENDING);
+        multipleSortBy.put(COLUMN_LOG_ID,
+                           SortOrder.ASCENDING);
+        multipleSortBy.put(COLUMN_LOG_TYPE,
+                           SortOrder.DESCENDING);
+        return multipleSortBy;
     }
 
     @Override

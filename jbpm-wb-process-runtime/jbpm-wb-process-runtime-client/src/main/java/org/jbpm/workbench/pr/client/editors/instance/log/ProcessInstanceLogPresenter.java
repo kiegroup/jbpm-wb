@@ -18,52 +18,52 @@ package org.jbpm.workbench.pr.client.editors.instance.log;
 import java.util.ArrayList;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.safehtml.client.SafeHtmlTemplates;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 
-import org.dashbuilder.dataset.sort.SortOrder;
-import org.jbpm.workbench.common.client.util.DateUtils;
+import org.jboss.errai.common.client.ui.ElementWrapperWidget;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
-import org.jbpm.workbench.pr.client.resources.i18n.Constants;
-import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
-import org.jbpm.workbench.pr.client.util.LogUtils.LogOrder;
-import org.jbpm.workbench.pr.client.util.LogUtils.LogType;
-import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
-import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 
-import static java.util.stream.Collectors.toList;
-import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.*;
+import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
+import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
+
+import org.uberfire.client.mvp.UberElement;
+import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 
 @Dependent
 public class ProcessInstanceLogPresenter {
 
-    public static final LogTemplates LOG_TEMPLATES = GWT.create(LogTemplates.class);
-    public static String NODE_HUMAN_TASK = "HumanTaskNode";
-    public static String NODE_START = "StartNode";
-    public static String NODE_END = "EndNode";
+    public static final int PAGE_SIZE = 10;
 
-    private Constants constants = Constants.INSTANCE;
-    private String processName;
     private String serverTemplateId;
 
     @Inject
     private ProcessInstanceLogView view;
 
-    int pageSize = Integer.MAX_VALUE;
-    int startRange = 0;
+    int currentPage = 0;
+
+    List<ProcessInstanceLogSummary> visibleLogs = new ArrayList<ProcessInstanceLogSummary>();
+
+    public int getPageSize() {
+        return PAGE_SIZE;
+    }
+
+    public void setCurrentPage(int i) {
+        this.currentPage = i;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
 
     protected DataSetQueryHelper dataSetQueryHelper;
 
@@ -88,34 +88,22 @@ public class ProcessInstanceLogPresenter {
     }
 
     public IsWidget getWidget() {
-        return view;
-    }
-
-    public String getProcessName() {
-        return processName;
-    }
-
-    public void setProcessName(String processName) {
-        this.processName = processName;
+        return ElementWrapperWidget.getWidget(view.getElement());
     }
 
     public void setServerTemplateId(String serverTemplateId) {
         this.serverTemplateId = serverTemplateId;
     }
 
-    public void refreshProcessInstanceData(final LogOrder logOrder,
-                                           final LogType logType) {
+    public void loadProcessInstanceLogs() {
         try {
             final FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
             currentTableSettings.setServerTemplateId(this.serverTemplateId);
-            currentTableSettings.setTablePageSize(pageSize);
-            dataSetQueryHelper.setLastOrderedColumn(COLUMN_LOG_DATE);
-            dataSetQueryHelper.setLastSortOrder(logOrder.equals(LogOrder.ASC) ? SortOrder.ASCENDING : SortOrder.DESCENDING);
-
+            currentTableSettings.setTablePageSize(PAGE_SIZE);
             dataSetQueryHelper.setCurrentTableSettings(currentTableSettings);
             dataSetQueryHelper.setDataSetHandler(currentTableSettings);
             dataSetQueryHelper.lookupDataSet(
-                    startRange,
+                    currentPage * getPageSize(),
                     new DataSetReadyCallback() {
                         @Override
                         public void callback(DataSet dataSet) {
@@ -125,14 +113,9 @@ public class ProcessInstanceLogPresenter {
                                     logs.add(new ProcessInstanceLogSummaryDataSetMapper().apply(dataSet,
                                                                                                 i));
                                 }
-                                List<String> logsLines = logs.stream()
-                                        .map(rls -> getLogLine(rls,
-                                                               logType))
-                                        .filter(Optional::isPresent)
-                                        .map(Optional::get)
-                                        .collect(toList());
-
-                                view.setLogs(logsLines);
+                                visibleLogs.addAll(logs);
+                                view.hideLoadButton(logs.size() < PAGE_SIZE);
+                                view.setLogsList(visibleLogs.stream().collect(Collectors.toList()));
                             }
                         }
 
@@ -153,81 +136,27 @@ public class ProcessInstanceLogPresenter {
         }
     }
 
-    protected Optional<String> getLogLine(ProcessInstanceLogSummary logSummary,
-                                          LogType logType) {
-        if (LogType.TECHNICAL.equals(logType)) {
-            String agent = constants.System();
-            if ((NODE_HUMAN_TASK.equals(logSummary.getNodeType()) && logSummary.isCompleted()) ||
-                    (NODE_START.equals(logSummary.getNodeType()) && !logSummary.isCompleted())) {
-                agent = constants.Human();
-            }
+    public void loadMoreProcessInstanceLogs() {
+        setCurrentPage(currentPage + 1);
+        loadProcessInstanceLogs();
+    }
 
-            return Optional.of(LOG_TEMPLATES.getTechLog(DateUtils.getDateTimeStr(logSummary.getDate()),
-                                                        logSummary.getNodeType(),
-                                                        SafeHtmlUtils.fromString(logSummary.getName()),
-                                                        (logSummary.isCompleted() ? " " + constants.Completed() : ""),
-                                                        agent).asString());
-        } else {
-            String prettyTime = DateUtils.getPrettyTime(logSummary.getDate());
-
-            if (NODE_HUMAN_TASK.equals(logSummary.getNodeType())) {
-                return Optional.of(LOG_TEMPLATES.getBusinessLog(prettyTime,
-                                                                constants.Task(),
-                                                                SafeHtmlUtils.fromString(logSummary.getName()),
-                                                                (logSummary.isCompleted() ? constants.WasCompleted() : constants.WasStarted())).asString());
-            } else if (NODE_START.equals(logSummary.getNodeType()) && !logSummary.isCompleted()) {
-                return Optional.of(LOG_TEMPLATES.getBusinessLog(
-                        prettyTime,
-                        constants.Process(),
-                        SafeHtmlUtils.fromString(getProcessName()),
-                        constants.WasStarted()).asString());
-            } else if (NODE_END.equals(logSummary.getNodeType()) && logSummary.isCompleted()) {
-                return Optional.of(LOG_TEMPLATES.getBusinessLog(
-                        prettyTime,
-                        constants.Process(),
-                        SafeHtmlUtils.fromString(getProcessName()),
-                        constants.WasCompleted()).asString());
-            }
-        }
-        return Optional.empty();
+    public void resetLogsList() {
+        currentPage = 0;
+        visibleLogs = new ArrayList<>();
     }
 
     public void onProcessInstanceSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
-        setProcessName(event.getProcessDefName());
-        setServerTemplateId(event.getServerTemplateId());
-
-        view.setActiveLogOrderButton(LogOrder.ASC);
-        view.setActiveLogTypeButton(LogType.BUSINESS);
-
+        this.serverTemplateId = event.getServerTemplateId();
+        resetLogsList();
         dataSetQueryHelper.setCurrentTableSettings(filterSettingsManager.createDefaultFilterSettingsPrototype(event.getProcessInstanceId()));
-        refreshProcessInstanceData(LogOrder.ASC,
-                                   LogType.BUSINESS);
+        loadProcessInstanceLogs();
     }
 
-    public interface ProcessInstanceLogView extends IsWidget {
+    public interface ProcessInstanceLogView extends UberElement<ProcessInstanceLogPresenter> {
 
-        void init(final ProcessInstanceLogPresenter presenter);
+        void setLogsList(final List<ProcessInstanceLogSummary> processInstanceLogSummaries);
 
-        void setActiveLogTypeButton(LogType logType);
-
-        void setActiveLogOrderButton(LogOrder logOrder);
-
-        void setLogs(List<String> logs);
-    }
-
-    public interface LogTemplates extends SafeHtmlTemplates {
-
-        @SafeHtmlTemplates.Template("{0}: {1} '{2}' {3}")
-        SafeHtml getBusinessLog(String time,
-                                String logType,
-                                SafeHtml logName,
-                                String completed);
-
-        @SafeHtmlTemplates.Template("{0}: {1} ({2}){3} - {4}")
-        SafeHtml getTechLog(String time,
-                            String logType,
-                            SafeHtml logName,
-                            String completed,
-                            String agent);
+        void hideLoadButton(boolean hidden);
     }
 }
