@@ -29,13 +29,11 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ItemObje
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.NamedObjectItemPresenter;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
-import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
 import org.kie.workbench.common.widgets.client.widget.ListPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.doublevalue.AddDoubleValueModal;
 import org.uberfire.client.promise.Promises;
 
 @Dependent
@@ -43,7 +41,6 @@ public class DeploymentsEnvironmentEntriesPresenter extends Section<DeploymentDe
 
     private final DeploymentsEnvironmentEntriesView view;
     private final EnvironmentEntriesListPresenter environmentEntriesPresenters;
-    private final AddDoubleValueModal addEnvironmentEntryModal;
     private final ItemObjectModelFactory itemObjectModelFactory;
 
     @Inject
@@ -52,13 +49,11 @@ public class DeploymentsEnvironmentEntriesPresenter extends Section<DeploymentDe
                                                   final Promises promises,
                                                   final DeploymentsEnvironmentEntriesView view,
                                                   final EnvironmentEntriesListPresenter environmentEntriesPresenters,
-                                                  final AddDoubleValueModal addEnvironmentEntryModal,
                                                   final ItemObjectModelFactory itemObjectModelFactory) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
         this.view = view;
         this.environmentEntriesPresenters = environmentEntriesPresenters;
-        this.addEnvironmentEntryModal = addEnvironmentEntryModal;
         this.itemObjectModelFactory = itemObjectModelFactory;
     }
 
@@ -69,8 +64,6 @@ public class DeploymentsEnvironmentEntriesPresenter extends Section<DeploymentDe
 
     @Override
     public Promise<Void> setup(final DeploymentDescriptorModel model) {
-
-        addEnvironmentEntryModal.setup(LibraryConstants.AddEnvironmentEntry, LibraryConstants.Name, LibraryConstants.Value);
 
         if (model.getEnvironmentEntries() == null) {
             model.setEnvironmentEntries(new ArrayList<>());
@@ -84,12 +77,8 @@ public class DeploymentsEnvironmentEntriesPresenter extends Section<DeploymentDe
         return promises.resolve();
     }
 
-    public void openNewEnvironmentEntryModal() {
-        addEnvironmentEntryModal.show(this::addEnvironmentEntry);
-    }
-
-    void addEnvironmentEntry(final String name, final String value) {
-        environmentEntriesPresenters.add(itemObjectModelFactory.newItemObjectModel(name, value));
+    public void addNewEnvironmentEntry() {
+        environmentEntriesPresenters.add(itemObjectModelFactory.newItemObjectModel("", ""));
         fireChangeEvent();
     }
 

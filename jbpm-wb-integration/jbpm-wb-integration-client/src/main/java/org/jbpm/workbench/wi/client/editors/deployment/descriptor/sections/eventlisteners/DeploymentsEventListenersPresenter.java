@@ -29,13 +29,11 @@ import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ItemObje
 import org.jbpm.workbench.wi.client.editors.deployment.descriptor.items.ObjectItemPresenter;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
-import org.kie.workbench.common.screens.library.client.resources.i18n.LibraryConstants;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
 import org.kie.workbench.common.widgets.client.widget.ListPresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.uberfire.client.promise.Promises;
 
 @Dependent
@@ -43,7 +41,6 @@ public class DeploymentsEventListenersPresenter extends Section<DeploymentDescri
 
     private final DeploymentsEventListenersView view;
     private final EventListenersListPresenter eventListenerPresenters;
-    private final AddSingleValueModal addEventListenerModal;
     private final ItemObjectModelFactory itemObjectModelFactory;
 
     @Inject
@@ -52,13 +49,11 @@ public class DeploymentsEventListenersPresenter extends Section<DeploymentDescri
                                               final Promises promises,
                                               final DeploymentsEventListenersView view,
                                               final EventListenersListPresenter eventListenerPresenters,
-                                              final AddSingleValueModal addEventListenerModal,
                                               final ItemObjectModelFactory itemObjectModelFactory) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
         this.view = view;
         this.eventListenerPresenters = eventListenerPresenters;
-        this.addEventListenerModal = addEventListenerModal;
         this.itemObjectModelFactory = itemObjectModelFactory;
     }
 
@@ -69,7 +64,6 @@ public class DeploymentsEventListenersPresenter extends Section<DeploymentDescri
 
     @Override
     public Promise<Void> setup(final DeploymentDescriptorModel model) {
-        addEventListenerModal.setup(LibraryConstants.AddEventListener, LibraryConstants.Id);
 
         if (model.getEventListeners() == null) {
             model.setEventListeners(new ArrayList<>());
@@ -83,12 +77,8 @@ public class DeploymentsEventListenersPresenter extends Section<DeploymentDescri
         return promises.resolve();
     }
 
-    public void openNewEventListenerModal() {
-        addEventListenerModal.show(this::addEventListener);
-    }
-
-    void addEventListener(final String name) {
-        eventListenerPresenters.add(itemObjectModelFactory.newItemObjectModel(name));
+    public void addNewEventListener() {
+        eventListenerPresenters.add(itemObjectModelFactory.newItemObjectModel(""));
         fireChangeEvent();
     }
 

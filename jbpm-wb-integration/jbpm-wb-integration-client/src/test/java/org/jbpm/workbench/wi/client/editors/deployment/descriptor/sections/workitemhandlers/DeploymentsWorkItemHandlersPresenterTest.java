@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.doublevalue.AddDoubleValueModal;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.promise.Promises;
@@ -53,9 +52,6 @@ public class DeploymentsWorkItemHandlersPresenterTest {
     private WorkItemHandlersListPresenter workItemHandlersListPresenter;
 
     @Mock
-    private AddDoubleValueModal addWorkItemHandlerModal;
-
-    @Mock
     private ItemObjectModelFactory itemObjectModelFactory;
 
     private Promises promises = new SyncPromises();
@@ -69,7 +65,6 @@ public class DeploymentsWorkItemHandlersPresenterTest {
                                                                       promises,
                                                                       view,
                                                                       workItemHandlersListPresenter,
-                                                                      addWorkItemHandlerModal,
                                                                       itemObjectModelFactory));
     }
 
@@ -80,20 +75,13 @@ public class DeploymentsWorkItemHandlersPresenterTest {
         presenter.setup(model);
 
         assertNotNull(model.getWorkItemHandlers());
-        verify(addWorkItemHandlerModal).setup(any(), any(), any());
         verify(workItemHandlersListPresenter).setup(any(), eq(model.getWorkItemHandlers()), any());
     }
 
     @Test
-    public void testOpenModal() {
-        presenter.openNewWorkItemHandlerModal();
-        verify(addWorkItemHandlerModal).show(any());
-    }
-
-    @Test
-    public void testAdd() {
-        presenter.addWorkItemHandler("Name", "Value");
-        verify(workItemHandlersListPresenter).add(any());
+    public void testAddNewWorkItemHandler() {
+        presenter.addNewWorkItemHandler();
+        verify(workItemHandlersListPresenter).add(itemObjectModelFactory.newItemObjectModel("",""));
         verify(presenter).fireChangeEvent();
     }
 }

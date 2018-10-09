@@ -16,8 +16,9 @@
 
 package org.jbpm.workbench.wi.dd.model;
 
+import java.util.ArrayList;
 import java.util.List;
-
+import org.kie.workbench.common.services.shared.kmodule.SingleValueItemObjectModel;
 import org.guvnor.common.services.shared.metadata.model.Overview;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
@@ -48,9 +49,9 @@ public class DeploymentDescriptorModel {
 
     private List<ItemObjectModel> configuration;
 
-    private List<String> requiredRoles;
+    private List<SingleValueItemObjectModel> requiredRoles = new ArrayList<SingleValueItemObjectModel>();
 
-    private List<String> remotableClasses;
+    private List<SingleValueItemObjectModel> remotableClasses = new ArrayList<SingleValueItemObjectModel>();
 
     private Boolean limitSerializationClasses;
 
@@ -150,19 +151,19 @@ public class DeploymentDescriptorModel {
         this.configuration = configuration;
     }
 
-    public List<String> getRequiredRoles() {
+    public List<SingleValueItemObjectModel> getRequiredRoles() {
         return requiredRoles;
     }
 
-    public void setRequiredRoles(List<String> requiredRoles) {
+    public void setRequiredRoles(List<SingleValueItemObjectModel> requiredRoles) {
         this.requiredRoles = requiredRoles;
     }
 
-    public List<String> getRemotableClasses() {
+    public List<SingleValueItemObjectModel> getRemotableClasses() {
         return remotableClasses;
     }
 
-    public void setRemotableClasses(List<String> remotableClasses) {
+    public void setRemotableClasses(List<SingleValueItemObjectModel> remotableClasses) {
         this.remotableClasses = remotableClasses;
     }
 

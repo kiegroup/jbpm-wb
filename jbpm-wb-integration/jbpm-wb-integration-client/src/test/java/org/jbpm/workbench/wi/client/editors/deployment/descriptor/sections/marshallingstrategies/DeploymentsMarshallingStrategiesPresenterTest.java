@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.promise.Promises;
@@ -51,9 +50,6 @@ public class DeploymentsMarshallingStrategiesPresenterTest {
     private DeploymentsMarshallingStrategiesPresenter.MarshallingStrategiesListPresenter marshallingStrategiesListPresenter;
 
     @Mock
-    private AddSingleValueModal addMarshallingStrategyModal;
-
-    @Mock
     private ItemObjectModelFactory itemObjectModelFactory;
 
     private Promises promises = new SyncPromises();
@@ -67,7 +63,6 @@ public class DeploymentsMarshallingStrategiesPresenterTest {
                                                                            promises,
                                                                            view,
                                                                            marshallingStrategiesListPresenter,
-                                                                           addMarshallingStrategyModal,
                                                                            itemObjectModelFactory));
     }
 
@@ -78,20 +73,13 @@ public class DeploymentsMarshallingStrategiesPresenterTest {
         presenter.setup(model);
 
         assertNotNull(model.getMarshallingStrategies());
-        verify(addMarshallingStrategyModal).setup(any(), any());
         verify(marshallingStrategiesListPresenter).setup(any(), any(), any());
     }
 
     @Test
-    public void testOpenModal() {
-        presenter.openNewMarshallingStrategyModal();
-        verify(addMarshallingStrategyModal).show(any());
-    }
-
-    @Test
-    public void testAdd() {
-        presenter.addMarshallingStrategy("Name");
-        verify(marshallingStrategiesListPresenter).add(any());
+    public void testAddMarshallingStrategy() {
+        presenter.addNewMarshallingStrategy();
+        verify(marshallingStrategiesListPresenter).add(itemObjectModelFactory.newItemObjectModel(""));
         verify(presenter).fireChangeEvent();
     }
 }

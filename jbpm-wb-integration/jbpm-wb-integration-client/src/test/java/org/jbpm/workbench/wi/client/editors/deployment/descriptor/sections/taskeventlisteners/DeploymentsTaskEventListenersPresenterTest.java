@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
-import org.kie.workbench.common.screens.library.client.settings.util.modal.single.AddSingleValueModal;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.client.promise.Promises;
@@ -51,9 +50,6 @@ public class DeploymentsTaskEventListenersPresenterTest {
     private DeploymentsTaskEventListenersPresenter.TaskEventListenersListPresenter taskEventListenersListPresenter;
 
     @Mock
-    private AddSingleValueModal addTaskEventListenerModal;
-
-    @Mock
     private ItemObjectModelFactory itemObjectModelFactory;
 
     private Promises promises = new SyncPromises();
@@ -67,7 +63,6 @@ public class DeploymentsTaskEventListenersPresenterTest {
                                                                         promises,
                                                                         view,
                                                                         taskEventListenersListPresenter,
-                                                                        addTaskEventListenerModal,
                                                                         itemObjectModelFactory));
     }
 
@@ -78,20 +73,12 @@ public class DeploymentsTaskEventListenersPresenterTest {
         presenter.setup(model);
 
         assertNotNull(model.getTaskEventListeners());
-        verify(addTaskEventListenerModal).setup(any(), any());
         verify(taskEventListenersListPresenter).setup(any(), any(), any());
     }
 
-    @Test
-    public void testOpenModal() {
-        presenter.openNewTaskEventListenerModal();
-        verify(addTaskEventListenerModal).show(any());
-    }
-
-    @Test
-    public void testAdd() {
-        presenter.addTaskEventListener("Name");
-        verify(taskEventListenersListPresenter).add(any());
+    public void testAddNewTaskEventListener() {
+        presenter.addNewTaskEventListener();
+        verify(taskEventListenersListPresenter).add(itemObjectModelFactory.newItemObjectModel(""));
         verify(presenter).fireChangeEvent();
     }
 }

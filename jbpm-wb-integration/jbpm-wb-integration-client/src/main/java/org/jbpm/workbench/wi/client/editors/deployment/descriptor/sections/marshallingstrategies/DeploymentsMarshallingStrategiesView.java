@@ -56,7 +56,7 @@ public class DeploymentsMarshallingStrategiesView implements SectionView<Deploym
 
     @EventHandler("add-marshalling-strategy-button")
     public void onAddMarshallingStrategyButtonClicked(final ClickEvent ignore) {
-        presenter.openNewMarshallingStrategyModal();
+        presenter.addNewMarshallingStrategy();
     }
 
     public Element getMarshallingStrategiesTable() {

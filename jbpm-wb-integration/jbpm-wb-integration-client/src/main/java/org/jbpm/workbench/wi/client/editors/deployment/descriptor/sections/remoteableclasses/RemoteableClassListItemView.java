@@ -17,22 +17,22 @@
 package org.jbpm.workbench.wi.client.editors.deployment.descriptor.sections.remoteableclasses;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import elemental2.dom.Event;
 import elemental2.dom.HTMLAnchorElement;
-import elemental2.dom.HTMLElement;
+import elemental2.dom.HTMLInputElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 @Templated("#root")
 public class RemoteableClassListItemView implements RemoteableClassListItemPresenter.View {
 
     @Inject
-    @Named("span")
     @DataField("class")
-    private HTMLElement clazz;
+    private HTMLInputElement remoteableClass;
 
     @Inject
     @DataField("remove-button")
@@ -52,7 +52,12 @@ public class RemoteableClassListItemView implements RemoteableClassListItemPrese
     }
 
     @Override
-    public void setClass(final String role) {
-        this.clazz.textContent = role;
+    public void setClass(final String remoteableClass) {
+        this.remoteableClass.value = remoteableClass;
+    }
+
+    @EventHandler("class")
+    public void onClassNameChange(final @ForEvent("change") Event event) {
+        presenter.onClassNameChange(remoteableClass.value);
     }
 }

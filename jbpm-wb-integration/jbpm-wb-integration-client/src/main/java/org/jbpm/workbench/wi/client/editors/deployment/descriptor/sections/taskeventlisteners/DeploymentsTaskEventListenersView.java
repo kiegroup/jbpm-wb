@@ -56,7 +56,7 @@ public class DeploymentsTaskEventListenersView implements SectionView<Deployment
 
     @EventHandler("add-task-event-listener-button")
     public void onAddTaskEventListenerButtonClicked(final ClickEvent ignore) {
-        presenter.openNewTaskEventListenerModal();
+        presenter.addNewTaskEventListener();
     }
 
     public Element getTaskEventListenersTable() {
