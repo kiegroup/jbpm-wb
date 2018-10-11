@@ -27,6 +27,7 @@
   <inherits name="org.uberfire.client.views.PatternFlyTheme"/>
   <inherits name="org.uberfire.preferences.UberfirePreferencesAPI"/>
   <inherits name="org.uberfire.preferences.UberfirePreferencesClient"/>
+  <inherits name="org.uberfire.ssh.UberfireSSHAPI"/>
   <inherits name="org.kie.soup.project.datamodel.ProjectDataModelAPI"/>
   <inherits name="org.kie.soup.project.datamodel.commons.ProjectDataModelCommons"/>
   <!-- Experimental -->
