@@ -1,18 +1,16 @@
-<div class="row" style="padding-top: 20px;">
+<div data-field="logs_container" class="row" style="padding-top: 20px;">
     <div class="col-md-12">
-        <div class="form-horizontal">
-            <fieldset>
-                <div class="btn-group" role="group">
-                    <button class="btn btn-default btn-sm active" data-field="showBusinessLogButton"></button>
-                    <button class="btn btn-default btn-sm" data-field="showTechnicalLogButton"></button>
+        <div class="manage">
+            <div class="list-group kie-timeline kie-timeline--dotted-line" data-field="logs-list"></div>
+            <div data-field="empty-list-item">
+                <div href="" class="card-pf-link-with-icon"><span class="pficon pficon-info"></span>
+                    <span data-i18n-key="logs"></span>
                 </div>
-                <div class="btn-group" role="group">
-                    <button class="btn btn-default btn-sm active" data-field="showAscLogButton"></button>
-                    <button class="btn btn-default btn-sm" data-field="showDescLogButton"></button>
-                </div>
-            </fieldset>
+            </div>
+            <br>
+            <div id="load-more" data-field="load-div" style="text-align: left; padding-top: 10px;">
+                <button type="button" class="btn btn-default" data-field="load-more-logs" data-i18n-key="LoadMore"></button>
+            </div>
         </div>
-
-        <div data-field="logTextArea" id="logTextArea" style="padding-top: 15px;"></div>
     </div>
 </div>

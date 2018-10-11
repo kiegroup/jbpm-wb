@@ -18,18 +18,13 @@ package org.jbpm.workbench.pr.client.editors.instance.log;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
-import org.dashbuilder.dataset.sort.SortOrder;
-import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
-import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.client.util.LogUtils;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
@@ -49,7 +44,6 @@ import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.COL
 import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.COLUMN_LOG_NODE_TYPE;
 import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.COLUMN_LOG_TYPE;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -81,38 +75,42 @@ public class ProcessInstanceLogPresenterTest {
     private String datasetUID = "jbpmProcessInstanceLogs";
 
     private Date logDate = new Date();
-    private String prettyTime = "";
-    private String techTime;
+
+    private Long[] pilIds = new Long[4];
+    private String[] pilNodeType = new String[4];
+    private String[] pilNodeNames = new String[4];
+    private Boolean[] pilCompleted = new Boolean[4];
 
     @Before
     public void setup() {
+        pilIds[0] = 1L;
+        pilIds[1] = 1L + 1;
+        pilIds[2] = 1L + 2;
+        pilIds[3] = 1l + 3;
 
-        techTime = DateUtils.getDateTimeStr(logDate);
-        defineDatasetAnswer(0,
-                            1L,
-                            logDate,
-                            "",
-                            ProcessInstanceLogPresenter.NODE_START,
-                            false);
+        pilNodeNames[0] = "";
+        pilNodeNames[1] = testTask;
+        pilNodeNames[2] = "";
+        pilNodeNames[3] = "";
 
-        defineDatasetAnswer(1,
-                            1L + 1,
-                            logDate,
-                            testTask,
-                            ProcessInstanceLogPresenter.NODE_HUMAN_TASK,
-                            false);
-        defineDatasetAnswer(2,
-                            1L + 2,
-                            logDate,
-                            "",
-                            ProcessInstanceLogPresenter.NODE_END,
-                            true);
-        defineDatasetAnswer(3,
-                            1L + 3,
-                            logDate,
-                            "",
-                            "Split",
-                            false);
+        pilNodeType[0] = LogUtils.NODE_START;
+        pilNodeType[1] = LogUtils.NODE_HUMAN_TASK;
+        pilNodeType[2] = LogUtils.NODE_END;
+        pilNodeType[3] = "Split";
+
+        pilCompleted[0] = false;
+        pilCompleted[1] = false;
+        pilCompleted[2] = true;
+        pilCompleted[3] = false;
+
+        for (int i = 0; i < pilIds.length; i++) {
+            defineDatasetAnswer(i,
+                                pilIds[i],
+                                logDate,
+                                pilNodeNames[i],
+                                pilNodeType[i],
+                                pilCompleted[i]);
+        }
 
         when(dataSet.getRowCount()).thenReturn(4);
         when(dataSet.getUUID()).thenReturn(datasetUID);
@@ -132,364 +130,24 @@ public class ProcessInstanceLogPresenterTest {
         when(filterSettingsManager.createDefaultFilterSettingsPrototype(anyLong())).thenReturn(currentFilterSettings);
         when(currentFilterSettings.getKey()).thenReturn("key");
         when(currentFilterSettings.getDataSet()).thenReturn(dataSet);
-        presenter.setProcessName(processName);
     }
 
-    @Test
-    public void addTechLogLineTest() {
-
-        Optional<String> logLine = presenter.getLogLine(createProcessInstanceLogSummary(1L,
-                                                                                        logDate,
-                                                                                        "",
-                                                                                        ProcessInstanceLogPresenter.NODE_START,
-                                                                                        false),
-                                                        LogUtils.LogType.TECHNICAL);
-        assertEquals(getTechLogCall(techTime,
-                                    "StartNode",
-                                    "",
-                                    false,
-                                    true),
-                     logLine.get());
-
-        logLine = presenter.getLogLine(createProcessInstanceLogSummary(1L,
-                                                                       logDate,
-                                                                       "",
-                                                                       ProcessInstanceLogPresenter.NODE_START,
-                                                                       true),
-                                       LogUtils.LogType.TECHNICAL);
-        assertEquals(getTechLogCall(techTime,
-                                    "StartNode",
-                                    "",
-                                    true,
-                                    false),
-                     logLine.get());
-
-        logLine = presenter.getLogLine(createProcessInstanceLogSummary(1L,
-                                                                       logDate,
-                                                                       "testTask",
-                                                                       ProcessInstanceLogPresenter.NODE_HUMAN_TASK,
-                                                                       false),
-                                       LogUtils.LogType.TECHNICAL);
-        assertEquals(getTechLogCall(techTime,
-                                    "HumanTaskNode",
-                                    testTask,
-                                    false,
-                                    false),
-                     logLine.get());
-
-        logLine = presenter.getLogLine(createProcessInstanceLogSummary(1L,
-                                                                       logDate,
-                                                                       "testTask",
-                                                                       ProcessInstanceLogPresenter.NODE_HUMAN_TASK,
-                                                                       true),
-                                       LogUtils.LogType.TECHNICAL);
-        assertEquals(getTechLogCall(techTime,
-                                    "HumanTaskNode",
-                                    testTask,
-                                    true,
-                                    true),
-                     logLine.get());
-
-        logLine = presenter.getLogLine(createProcessInstanceLogSummary(1L,
-                                                                       logDate,
-                                                                       "",
-                                                                       ProcessInstanceLogPresenter.NODE_END,
-                                                                       false),
-                                       LogUtils.LogType.TECHNICAL);
-
-        assertEquals(getTechLogCall(techTime,
-                                    "EndNode",
-                                    "",
-                                    false,
-                                    false),
-                     logLine.get());
-
-        logLine = presenter.getLogLine(createProcessInstanceLogSummary(1L,
-                                                                       logDate,
-                                                                       "",
-                                                                       ProcessInstanceLogPresenter.NODE_END,
-                                                                       true),
-                                       LogUtils.LogType.TECHNICAL);
-
-        assertEquals(getTechLogCall(techTime,
-                                    "EndNode",
-                                    "",
-                                    true,
-                                    false),
-                     logLine.get());
-
-        logLine = presenter.getLogLine(createProcessInstanceLogSummary(1L,
-                                                                       logDate,
-                                                                       "",
-                                                                       "Split",
-                                                                       false),
-                                       LogUtils.LogType.TECHNICAL);
-
-        assertEquals(getTechLogCall(techTime,
-                                    "Split",
-                                    "",
-                                    false,
-                                    false),
-                     logLine.get());
-
-        logLine = presenter.getLogLine(createProcessInstanceLogSummary(1L,
-                                                                       logDate,
-                                                                       "",
-                                                                       "Split",
-                                                                       true),
-                                       LogUtils.LogType.TECHNICAL);
-
-        assertEquals(getTechLogCall(techTime,
-                                    "Split",
-                                    "",
-                                    true,
-                                    false),
-                     logLine.get());
-    }
-
-    @Test
-    public void addBusinessLoglineTest() {
-
-        presenter.setProcessName(processName);
-        Optional<String> logLine = presenter.getLogLine(createProcessInstanceLogSummary(1L,
-                                                                                        logDate,
-                                                                                        "",
-                                                                                        ProcessInstanceLogPresenter.NODE_START,
-                                                                                        false),
-                                                        LogUtils.LogType.BUSINESS);
-        assertEquals(getBusinessLogCall(prettyTime,
-                                        Constants.INSTANCE.Process(),
-                                        processName,
-                                        Constants.INSTANCE.WasStarted()),
-                     logLine.get());
-
-        logLine = presenter.getLogLine(createProcessInstanceLogSummary(1L,
-                                                                       logDate,
-                                                                       "",
-                                                                       ProcessInstanceLogPresenter.NODE_START,
-                                                                       true),
-                                       LogUtils.LogType.BUSINESS);
-        assertEquals(Optional.empty(),
-                     logLine);
-
-        logLine = presenter.getLogLine(createProcessInstanceLogSummary(1L,
-                                                                       logDate,
-                                                                       "testTask",
-                                                                       ProcessInstanceLogPresenter.NODE_HUMAN_TASK,
-                                                                       false),
-                                       LogUtils.LogType.BUSINESS);
-        assertEquals(getBusinessLogCall(prettyTime,
-                                        Constants.INSTANCE.Task(),
-                                        testTask,
-                                        Constants.INSTANCE.WasStarted()),
-                     logLine.get());
-        logLine = presenter.getLogLine(createProcessInstanceLogSummary(1L,
-                                                                       logDate,
-                                                                       "testTask",
-                                                                       ProcessInstanceLogPresenter.NODE_HUMAN_TASK,
-                                                                       true),
-                                       LogUtils.LogType.BUSINESS);
-
-        assertEquals(getBusinessLogCall(prettyTime,
-                                        Constants.INSTANCE.Task(),
-                                        testTask,
-                                        Constants.INSTANCE.WasCompleted()),
-                     logLine.get());
-
-        logLine = presenter.getLogLine(createProcessInstanceLogSummary(1L,
-                                                                       logDate,
-                                                                       "",
-                                                                       ProcessInstanceLogPresenter.NODE_END,
-                                                                       false),
-                                       LogUtils.LogType.BUSINESS);
-        assertEquals(Optional.empty(),
-                     logLine);
-        logLine = presenter.getLogLine(createProcessInstanceLogSummary(1L,
-                                                                       logDate,
-                                                                       "",
-                                                                       ProcessInstanceLogPresenter.NODE_END,
-                                                                       true),
-                                       LogUtils.LogType.BUSINESS);
-        assertEquals(getBusinessLogCall(prettyTime,
-                                        Constants.INSTANCE.Process(),
-                                        processName,
-                                        Constants.INSTANCE.WasCompleted()),
-                     logLine.get());
-
-        logLine = presenter.getLogLine(createProcessInstanceLogSummary(1L,
-                                                                       logDate,
-                                                                       "",
-                                                                       "Split",
-                                                                       false),
-                                       LogUtils.LogType.BUSINESS);
-
-        assertEquals(Optional.empty(),
-                     logLine);
-
-        logLine = presenter.getLogLine(createProcessInstanceLogSummary(1L,
-                                                                       logDate,
-                                                                       "",
-                                                                       "Split",
-                                                                       true),
-                                       LogUtils.LogType.BUSINESS);
-
-        assertEquals(Optional.empty(),
-                     logLine);
-    }
-
-    @Test
-    public void refreshProcessInstanceDataAscTechTest() {
-        presenter.refreshProcessInstanceData(LogUtils.LogOrder.ASC,
-                                             LogUtils.LogType.TECHNICAL);
-
-        verify(dataSetQueryHelper).setLastSortOrder(SortOrder.ASCENDING);
-        verify(dataSetQueryHelper).setLastOrderedColumn(COLUMN_LOG_DATE);
-        ArgumentCaptor<List> argumentDESC = ArgumentCaptor.forClass(List.class);
-        verify(view).setLogs(argumentDESC.capture());
-
-        assertEquals(4,
-                     argumentDESC.getValue().size());
-        assertEquals(getTechLogCall(techTime,
-                                    "StartNode",
-                                    "",
-                                    false,
-                                    true),
-                     argumentDESC.getValue().get(0));
-        assertEquals(getTechLogCall(techTime,
-                                    "HumanTaskNode",
-                                    testTask,
-                                    false,
-                                    false),
-                     argumentDESC.getValue().get(1));
-        assertEquals(getTechLogCall(techTime,
-                                    "EndNode",
-                                    "",
-                                    true,
-                                    false),
-                     argumentDESC.getValue().get(2));
-        assertEquals(getTechLogCall(techTime,
-                                    "Split",
-                                    "",
-                                    false,
-                                    false),
-                     argumentDESC.getValue().get(3));
-    }
-
-    @Test
-    public void refreshProcessInstanceDataDescTechTest() {
-        presenter.refreshProcessInstanceData(LogUtils.LogOrder.DESC,
-                                             LogUtils.LogType.TECHNICAL);
-        verify(dataSetQueryHelper).setLastSortOrder(SortOrder.DESCENDING);
-        verify(dataSetQueryHelper).setLastOrderedColumn(COLUMN_LOG_DATE);
-        ArgumentCaptor<List> argumentDESC = ArgumentCaptor.forClass(List.class);
-        verify(view).setLogs(argumentDESC.capture());
-        assertEquals(4,
-                     argumentDESC.getValue().size());
-        assertEquals(getTechLogCall(techTime,
-                                    "StartNode",
-                                    "",
-                                    false,
-                                    true),
-                     argumentDESC.getValue().get(0));
-        assertEquals(getTechLogCall(techTime,
-                                    "HumanTaskNode",
-                                    testTask,
-                                    false,
-                                    false),
-                     argumentDESC.getValue().get(1));
-        assertEquals(getTechLogCall(techTime,
-                                    "EndNode",
-                                    "",
-                                    true,
-                                    false),
-                     argumentDESC.getValue().get(2));
-        assertEquals(getTechLogCall(techTime,
-                                    "Split",
-                                    "",
-                                    false,
-                                    false),
-                     argumentDESC.getValue().get(3));
-    }
-
-    @Test
-    public void refreshProcessInstanceDataAscBusinessTest() {
-        presenter.refreshProcessInstanceData(LogUtils.LogOrder.ASC,
-                                             LogUtils.LogType.BUSINESS);
-
-        verify(dataSetQueryHelper).setLastSortOrder(SortOrder.ASCENDING);
-        verify(dataSetQueryHelper).setLastOrderedColumn(COLUMN_LOG_DATE);
-        ArgumentCaptor<List> argumentDESC = ArgumentCaptor.forClass(List.class);
-        verify(view).setLogs(argumentDESC.capture());
-
-        assertEquals(3,
-                     argumentDESC.getValue().size());
-
-        assertEquals(getBusinessLogCall(prettyTime,
-                                        Constants.INSTANCE.Process(),
-                                        processName,
-                                        Constants.INSTANCE.WasStarted()),
-                     argumentDESC.getValue().get(0));
-
-        assertEquals(getBusinessLogCall(prettyTime,
-                                        Constants.INSTANCE.Task(),
-                                        testTask,
-                                        Constants.INSTANCE.WasStarted()),
-                     argumentDESC.getValue().get(1));
-        assertEquals(getBusinessLogCall(prettyTime,
-                                        Constants.INSTANCE.Process(),
-                                        processName,
-                                        Constants.INSTANCE.WasCompleted()),
-                     argumentDESC.getValue().get(2));
-    }
-
-    @Test
-    public void refreshProcessInstanceDataDescBusinessTest() {
-        presenter.refreshProcessInstanceData(LogUtils.LogOrder.DESC,
-                                             LogUtils.LogType.BUSINESS);
-
-        verify(dataSetQueryHelper).setLastSortOrder(SortOrder.DESCENDING);
-        verify(dataSetQueryHelper).setLastOrderedColumn(COLUMN_LOG_DATE);
-        ArgumentCaptor<List> argumentDESC = ArgumentCaptor.forClass(List.class);
-        verify(view).setLogs(argumentDESC.capture());
-        assertEquals(3,
-                     argumentDESC.getValue().size());
-        assertEquals(getBusinessLogCall(prettyTime,
-                                        Constants.INSTANCE.Process(),
-                                        processName,
-                                        Constants.INSTANCE.WasStarted()),
-                     argumentDESC.getValue().get(0));
-        assertEquals(getBusinessLogCall(prettyTime,
-                                        Constants.INSTANCE.Task(),
-                                        testTask,
-                                        Constants.INSTANCE.WasStarted()),
-                     argumentDESC.getValue().get(1));
-        assertEquals(getBusinessLogCall(prettyTime,
-                                        Constants.INSTANCE.Process(),
-                                        processName,
-                                        Constants.INSTANCE.WasCompleted()),
-                     argumentDESC.getValue().get(2));
-    }
-
-    private String getBusinessLogCall(String time,
-                                      String logType,
-                                      String logName,
-                                      String completed) {
-        return ProcessInstanceLogPresenter.LOG_TEMPLATES.getBusinessLog(time,
-                                                                        logType,
-                                                                        SafeHtmlUtils.fromString(logName),
-                                                                        completed).asString();
-    }
-
-    private String getTechLogCall(String time,
-                                  String logType,
-                                  String logName,
-                                  boolean completed,
-                                  boolean human) {
-        return ProcessInstanceLogPresenter.LOG_TEMPLATES.getTechLog(time,
-                                                                    logType,
-                                                                    SafeHtmlUtils.fromString(logName),
-                                                                    (completed ? " " + Constants.INSTANCE.Completed() : ""),
-                                                                    (human ? Constants.INSTANCE.Human() : Constants.INSTANCE.System())).asString();
+    private void assertProcessInstanceLogContent(Long id,
+                                                 Date date,
+                                                 String nodeName,
+                                                 String nodeType,
+                                                 boolean completed,
+                                                 ProcessInstanceLogSummary processInstanceLogSummaryDest) {
+        assertEquals(id,
+                     processInstanceLogSummaryDest.getId());
+        assertEquals(date,
+                     processInstanceLogSummaryDest.getDate());
+        assertEquals(nodeName,
+                     processInstanceLogSummaryDest.getName());
+        assertEquals(nodeType,
+                     processInstanceLogSummaryDest.getNodeType());
+        assertEquals(completed,
+                     processInstanceLogSummaryDest.isCompleted());
     }
 
     public void defineDatasetAnswer(int position,
@@ -510,19 +168,6 @@ public class ProcessInstanceLogPresenterTest {
                                 COLUMN_LOG_TYPE)).thenReturn((completed ? 1 : 0));
     }
 
-    private ProcessInstanceLogSummary createProcessInstanceLogSummary(Long id,
-                                                                      Date date,
-                                                                      String nodeName,
-                                                                      String nodeType,
-                                                                      boolean completed) {
-        return ProcessInstanceLogSummary.builder()
-                .id(id)
-                .date(date)
-                .name(nodeName)
-                .nodeType(nodeType)
-                .completed(completed).build();
-    }
-
     @Test
     public void datasetLookupNotFoundTest() {
         doAnswer(new Answer() {
@@ -534,8 +179,7 @@ public class ProcessInstanceLogPresenterTest {
             }
         }).when(dataSetQueryHelper).lookupDataSet(anyInt(),
                                                   any(DataSetReadyCallback.class));
-        presenter.refreshProcessInstanceData(LogUtils.LogOrder.ASC,
-                                             LogUtils.LogType.TECHNICAL);
+        presenter.loadProcessInstanceLogs();
         verify(errorPopup).showMessage(eq(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.DataSetNotFound(datasetUID)));
     }
 
@@ -550,8 +194,7 @@ public class ProcessInstanceLogPresenterTest {
             }
         }).when(dataSetQueryHelper).lookupDataSet(anyInt(),
                                                   any(DataSetReadyCallback.class));
-        presenter.refreshProcessInstanceData(LogUtils.LogOrder.ASC,
-                                             LogUtils.LogType.TECHNICAL);
+        presenter.loadProcessInstanceLogs();
         verify(errorPopup).showMessage(eq(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.DataSetError(datasetUID,
                                                                                                                           errorMessage)));
     }
@@ -572,19 +215,54 @@ public class ProcessInstanceLogPresenterTest {
                                                                                     processInstanceStatus,
                                                                                     serverTemplateId));
 
-        verify(view).setActiveLogOrderButton(LogUtils.LogOrder.ASC);
-        verify(view).setActiveLogTypeButton(LogUtils.LogType.BUSINESS);
         verify(filterSettingsManager).createDefaultFilterSettingsPrototype(eq(processInstanceId));
         verify(dataSetQueryHelper,
                times(2)).setCurrentTableSettings(filterSettingsManager.createDefaultFilterSettingsPrototype(processInstanceId));
 
         dataSetQueryHelper.setCurrentTableSettings(filterSettingsManager.createDefaultFilterSettingsPrototype(processInstanceId));
 
-        verify(dataSetQueryHelper).setLastSortOrder(SortOrder.ASCENDING);
-        verify(dataSetQueryHelper).setLastOrderedColumn(COLUMN_LOG_DATE);
         ArgumentCaptor<List> argumentDESC = ArgumentCaptor.forClass(List.class);
-        verify(view).setLogs(argumentDESC.capture());
-        assertEquals(3,
+        verify(view).setLogsList(argumentDESC.capture());
+        assertEquals(4,
                      argumentDESC.getValue().size());
+
+        for (int i = 0; i < argumentDESC.getValue().size(); i++) {
+            assertProcessInstanceLogContent(pilIds[i],
+                                            logDate,
+                                            pilNodeNames[i],
+                                            pilNodeType[i],
+                                            pilCompleted[i],
+                                            (ProcessInstanceLogSummary) argumentDESC.getValue().get(i));
+        }
     }
+
+    @Test
+    public void testLoadMoreProcessInstanceLogs() {
+        presenter.setCurrentPage(0);
+        presenter.loadProcessInstanceLogs();
+        assertEquals(0,
+                     presenter.getCurrentPage());
+        verify(dataSetQueryHelper).lookupDataSet(eq(presenter.getPageSize() * presenter.getCurrentPage()),
+                                                 any());
+        ArgumentCaptor<List> argumentDESC = ArgumentCaptor.forClass(List.class);
+        verify(view).setLogsList(argumentDESC.capture());
+        assertEquals(4,
+                     argumentDESC.getValue().size());
+        verify(view).hideLoadButton(true);
+
+        presenter.loadMoreProcessInstanceLogs();
+
+        assertEquals(1,
+                     presenter.getCurrentPage());
+        verify(dataSetQueryHelper).lookupDataSet(eq(presenter.getPageSize() * presenter.getCurrentPage()),
+                                                 any());
+        verify(view,
+               times(2)).setLogsList(argumentDESC.capture());
+        assertEquals(8,
+                     argumentDESC.getValue().size());
+
+        verify(view,
+               times(2)).setLogsList(anyList());
+    }
+
 }

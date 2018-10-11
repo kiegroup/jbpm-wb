@@ -253,7 +253,7 @@ public interface Constants extends Messages {
 
     String ResourceCouldNotBeLoaded(String resource);
 
-    String Task();
+    String Task_(String name);
 
     String Process();
 
@@ -263,7 +263,11 @@ public interface Constants extends Messages {
 
     String WasStarted();
 
+    String NodeWasEntered(String name);
+
     String WasCompleted();
+
+    String NodeWasLeft(String nodeName);
 
     String Process_SLA_Compliance();
     
@@ -282,4 +286,10 @@ public interface Constants extends Messages {
     String SlaDueDate();
 
     String Process_Diagram_Not_FoundContainerShouldBeAvailable(String container);
+
+    String LoadMore();
+
+    String Human_Task();
+
+    String System_Task();
 }

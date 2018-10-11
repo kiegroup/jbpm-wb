@@ -14,16 +14,25 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.pr.client.util;
+package org.jbpm.workbench.common.client.util;
 
-public class LogUtils {
+import org.jboss.errai.common.client.dom.HTMLElement;
+import org.uberfire.client.mvp.UberElement;
 
-    public static String NODE_HUMAN_TASK = "HumanTaskNode";
-    public static String NODE_START = "StartNode";
-    public static String NODE_END = "EndNode";
+public abstract class AbstractView<T> implements UberElement<T> {
 
-    public enum LogOrder {
-        DESC,
-        ASC
+    protected T presenter;
+
+    public void init(T presenter) {
+        this.presenter = presenter;
     }
+
+    protected native void tooltip(final HTMLElement e) /*-{
+        $wnd.jQuery(e)
+                .tooltip()
+                .on("click", function () {
+                    $wnd.jQuery(this).tooltip("hide");
+                })
+
+    }-*/;
 }

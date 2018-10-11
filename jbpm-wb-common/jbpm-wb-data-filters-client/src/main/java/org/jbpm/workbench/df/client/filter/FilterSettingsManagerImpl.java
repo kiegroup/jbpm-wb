@@ -19,6 +19,7 @@ package org.jbpm.workbench.df.client.filter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -223,6 +224,28 @@ public abstract class FilterSettingsManagerImpl implements FilterSettingsManager
     protected FilterSettings createFilterSettings(final String dataSetId,
                                                   final String columnSortId,
                                                   final Consumer<FilterSettingsBuilderHelper> consumer) {
+
+        return createFilterSettings(dataSetId,
+                                    consumer,
+                                    builder -> {
+                                        builder.tableOrderEnabled(true);
+                                        builder.tableOrderDefault(columnSortId,
+                                                                  SortOrder.DESCENDING);
+                                    });
+    }
+
+    protected FilterSettings createFilterSettings(final String dataSetId,
+                                                  final Map<String, SortOrder> sortbyMap,
+                                                  final Consumer<FilterSettingsBuilderHelper> consumer) {
+        return createFilterSettings(dataSetId,
+                                    consumer,
+                                    builder -> sortbyMap.forEach((colId, sortOrder) -> builder.sortBy(colId,
+                                                                                                      sortOrder)));
+    }
+
+    private FilterSettings createFilterSettings(final String dataSetId,
+                                                final Consumer<FilterSettingsBuilderHelper> consumer,
+                                                final Consumer<FilterSettingsBuilderHelper> consumerSorting) {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
@@ -233,8 +256,10 @@ public abstract class FilterSettingsManagerImpl implements FilterSettingsManager
                          true,
                          true);
         builder.tableOrderEnabled(true);
-        builder.tableOrderDefault(columnSortId,
-                                  SortOrder.DESCENDING);
+
+        if (consumerSorting != null) {
+            consumerSorting.accept(builder);
+        }
 
         if (consumer != null) {
             consumer.accept(builder);
