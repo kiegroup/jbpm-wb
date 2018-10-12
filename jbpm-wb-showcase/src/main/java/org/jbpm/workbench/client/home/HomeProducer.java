@@ -19,6 +19,7 @@ package org.jbpm.workbench.client.home;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.kie.workbench.common.profile.api.preferences.ProfilePreferences;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.client.i18n.HomeConstants;
 import org.kie.workbench.common.screens.home.model.HomeModel;
@@ -38,7 +39,7 @@ public class HomeProducer implements HomeModelProvider {
     @Inject
     private TranslationService translationService;
 
-    public HomeModel get() {
+    public HomeModel get(ProfilePreferences profilePreferences) {
         final HomeModel model = new HomeModel(translationService.format(HomeConstants.Heading),
                                               translationService.format(HomeConstants.SubHeading),
                                               "images/home_bg.jpg");
