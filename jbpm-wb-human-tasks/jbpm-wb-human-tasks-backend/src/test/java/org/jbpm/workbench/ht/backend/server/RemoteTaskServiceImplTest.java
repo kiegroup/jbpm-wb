@@ -221,4 +221,33 @@ public class RemoteTaskServiceImplTest {
         assertEquals(serverTemplateId,
                      event.getServerTemplateId());
     }
+
+    @Test
+    public void getTaskByWorkItem_ReturnsSingleTaskTest() {
+        final String containerId = "containerId";
+        final long workItemId = 1l;
+        final String taskName = "taskName";
+        final String serverTemplateId = "serverTemplateId";
+        when(userTaskServicesClient.findTaskByWorkItemId(any())).thenReturn(TaskInstance.builder().id(workItemId).name(taskName).build());
+        TaskSummary taskSummary = remoteTaskService.getTaskByWorkItemId(serverTemplateId,
+                                                                        containerId,
+                                                                        workItemId);
+        verify(userTaskServicesClient).findTaskByWorkItemId(workItemId);
+        assertNotNull(taskSummary);
+        assertTrue(workItemId == taskSummary.getId());
+        assertEquals(taskName,
+                     taskSummary.getName());
+    }
+
+    @Test
+    public void getTaskByWorkItemId_ReturnsNoneTasksTest() {
+        final long workItemId = 1l;
+        final String serverTemplateId = "serverTemplateId";
+        when(userTaskServicesClient.findTaskByWorkItemId(any())).thenReturn(null);
+        TaskSummary taskSummary = remoteTaskService.getTaskByWorkItemId(serverTemplateId,
+                                                                        "containerId",
+                                                                        workItemId);
+        verify(userTaskServicesClient).findTaskByWorkItemId(workItemId);
+        assertNull(taskSummary);
+    }
 }

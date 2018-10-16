@@ -23,8 +23,11 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
+import org.jbpm.workbench.ht.model.TaskSummary;
+import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.pr.client.util.LogUtils;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
@@ -37,6 +40,7 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
+import org.uberfire.mocks.CallerMock;
 
 import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.COLUMN_LOG_DATE;
 import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.COLUMN_LOG_ID;
@@ -66,6 +70,11 @@ public class ProcessInstanceLogPresenterTest {
 
     @Mock
     private DataSet dataSet;
+
+    @Mock
+    TaskService taskServiceMock;
+
+    Caller<TaskService> taskService;
 
     @InjectMocks
     ProcessInstanceLogPresenter presenter;
@@ -130,6 +139,9 @@ public class ProcessInstanceLogPresenterTest {
         when(filterSettingsManager.createDefaultFilterSettingsPrototype(anyLong())).thenReturn(currentFilterSettings);
         when(currentFilterSettings.getKey()).thenReturn("key");
         when(currentFilterSettings.getDataSet()).thenReturn(dataSet);
+
+        taskService = new CallerMock<>(taskServiceMock);
+        presenter.setTaskService(taskService);
     }
 
     private void assertProcessInstanceLogContent(Long id,
@@ -264,5 +276,34 @@ public class ProcessInstanceLogPresenterTest {
         verify(view,
                times(2)).setLogsList(anyList());
     }
+
+    @Test
+    public void testLoadTaskDetails() {
+        Long workItemId = 1L;
+        String containerId = "deploymentId";
+        String serverTemplateId = "server-template-id";
+
+        TaskSummary task = TaskSummary.builder().id(workItemId).actualOwner("owner").createdOn(new Date()).description("description").build();
+        ProcessInstanceLogHumanTaskView humanTaskView = mock(ProcessInstanceLogHumanTaskView.class);
+        when(taskServiceMock.getTaskByWorkItemId(serverTemplateId,
+                                                 containerId,
+                                                 workItemId)).thenReturn(task);
+
+        ProcessInstanceSelectionEvent selectionEventMock = mock(ProcessInstanceSelectionEvent.class);
+        when(selectionEventMock.getDeploymentId()).thenReturn(containerId);
+        when(selectionEventMock.getServerTemplateId()).thenReturn(serverTemplateId);
+
+        presenter.onProcessInstanceSelectionEvent(selectionEventMock);
+        presenter.loadTaskDetails(workItemId,
+                                  logDate,
+                                  humanTaskView);
+
+        verify(taskServiceMock).getTaskByWorkItemId(serverTemplateId,
+                                                    containerId,
+                                                    workItemId);
+        verify(humanTaskView).setDetailsData(task,
+                                             logDate);
+    }
+
 
 }
