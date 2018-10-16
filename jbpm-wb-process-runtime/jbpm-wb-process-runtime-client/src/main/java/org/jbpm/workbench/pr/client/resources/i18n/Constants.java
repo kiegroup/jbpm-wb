@@ -292,4 +292,15 @@ public interface Constants extends Messages {
     String Human_Task();
 
     String System_Task();
+
+    String NotClaimed();
+
+    String CreatedOn();
+
+    String Description();
+
+    String UpdatedOn();
+
+    String CreatedBy();
+
 }

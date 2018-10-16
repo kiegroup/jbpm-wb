@@ -21,12 +21,16 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.TakesValue;
 import org.jboss.errai.common.client.api.IsElement;
+import org.jboss.errai.common.client.dom.Anchor;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.MouseEvent;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import org.jbpm.workbench.common.client.util.AbstractView;
@@ -64,8 +68,23 @@ public class ProcessInstanceLogItemView extends AbstractView<ProcessInstanceLogP
     Span logCompleted;
 
     @Inject
+    @DataField("detailsPanelDiv")
+    Div detailsPanelDiv;
+
+    @Inject
+    @DataField("detailsLink")
+    Anchor detailsLink;
+
+    @Inject
+    @DataField("detailsInfoDiv")
+    Div detailsInfoDiv;
+
+    @Inject
     @AutoBound
     private DataBinder<ProcessInstanceLogSummary> logSummary;
+
+    @Inject
+    ProcessInstanceLogHumanTaskView humanTaskView;
 
     @PostConstruct
     public void init() {
@@ -110,6 +129,13 @@ public class ProcessInstanceLogItemView extends AbstractView<ProcessInstanceLogP
         }
         logIcon.setClassName(iconClass);
         nodeTypeDesc.setTextContent(getLogTitle(model));
+
+        if (!LogUtils.NODE_HUMAN_TASK.equals(model.getNodeType())) {
+            detailsPanelDiv.setHidden(true);
+        } else {
+            setDetailsPanelAttributes(model);
+            detailsPanelDiv.setHidden(false);
+        }
     }
 
     private String getLogTitle(ProcessInstanceLogSummary logsum) {
@@ -117,5 +143,23 @@ public class ProcessInstanceLogItemView extends AbstractView<ProcessInstanceLogP
             return constants.Task_(logsum.getName());
         }
         return logsum.getNodeType();
+    }
+
+    private void setDetailsPanelAttributes(ProcessInstanceLogSummary model) {
+        String panelId = model.getId().toString() + model.getDate().getTime();
+        detailsLink.setAttribute("href",
+                                 "#" + panelId);
+        detailsInfoDiv.setId(panelId);
+    }
+
+    @EventHandler("detailsLink")
+    public void loadProcessInstanceLogsDetails(final @ForEvent("click") MouseEvent event) {
+        if (!detailsInfoDiv.hasChildNodes()
+                && LogUtils.NODE_HUMAN_TASK.equals(logSummary.getModel().getNodeType())) {
+            presenter.loadTaskDetails(logSummary.getModel().getWorkItemId(),
+                                      logSummary.getModel().getDate(),
+                                      humanTaskView);
+            detailsInfoDiv.appendChild(humanTaskView.getElement());
+        }
     }
 }

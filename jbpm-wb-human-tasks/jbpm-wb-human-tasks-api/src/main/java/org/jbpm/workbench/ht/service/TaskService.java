@@ -107,4 +107,8 @@ public interface TaskService {
                                 String containerId,
                                 Long taskId,
                                 String fromUser);
+
+    TaskSummary getTaskByWorkItemId(String serverTemplateId,
+                                    String containerId,
+                                    Long workItemId);
 }

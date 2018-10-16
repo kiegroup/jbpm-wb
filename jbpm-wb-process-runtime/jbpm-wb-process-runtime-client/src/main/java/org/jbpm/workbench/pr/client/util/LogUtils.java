@@ -22,8 +22,4 @@ public class LogUtils {
     public static String NODE_START = "StartNode";
     public static String NODE_END = "EndNode";
 
-    public enum LogOrder {
-        DESC,
-        ASC
-    }
 }

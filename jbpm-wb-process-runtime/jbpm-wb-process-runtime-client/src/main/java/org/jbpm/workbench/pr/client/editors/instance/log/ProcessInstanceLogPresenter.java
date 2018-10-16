@@ -17,6 +17,7 @@ package org.jbpm.workbench.pr.client.editors.instance.log;
 
 import java.util.ArrayList;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -29,10 +30,13 @@ import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 
+import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 
+import org.jbpm.workbench.ht.model.TaskSummary;
+import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 
@@ -44,11 +48,13 @@ public class ProcessInstanceLogPresenter {
 
     public static final int PAGE_SIZE = 10;
 
-    private String serverTemplateId;
-
     @Inject
     private ProcessInstanceLogView view;
 
+    private Caller<TaskService> taskService;
+
+    private String serverTemplateId;
+    private String containerId;
     int currentPage = 0;
 
     List<ProcessInstanceLogSummary> visibleLogs = new ArrayList<ProcessInstanceLogSummary>();
@@ -146,11 +152,29 @@ public class ProcessInstanceLogPresenter {
         visibleLogs = new ArrayList<>();
     }
 
+    public void loadTaskDetails(Long workItemId,
+                                final Date logDate,
+                                ProcessInstanceLogHumanTaskView humanTaskView) {
+        taskService.call(
+                (TaskSummary task) -> {
+                    humanTaskView.setDetailsData(task,
+                                                 logDate);
+                }).getTaskByWorkItemId(serverTemplateId,
+                                       containerId,
+                                       workItemId);
+    }
+
     public void onProcessInstanceSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
         this.serverTemplateId = event.getServerTemplateId();
+        this.containerId = event.getDeploymentId();
         resetLogsList();
         dataSetQueryHelper.setCurrentTableSettings(filterSettingsManager.createDefaultFilterSettingsPrototype(event.getProcessInstanceId()));
         loadProcessInstanceLogs();
+    }
+
+    @Inject
+    public void setTaskService(Caller<TaskService> taskService) {
+        this.taskService = taskService;
     }
 
     public interface ProcessInstanceLogView extends UberElement<ProcessInstanceLogPresenter> {

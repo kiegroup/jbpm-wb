@@ -9,6 +9,16 @@
                 <div class="list-group-item-text kie-timeline-list-group-item-text">
                     <div><em><span data-field="logTime"/></em></div>
                     <div><strong><span data-field="nodeTypeDesc"/></strong> <span data-field="logCompleted"/></div>
+                    <div class="panel-group panel-group--timeline" data-field="detailsPanelDiv">
+                        <div class="panel panel--timeline">
+                            <div class="panel-heading panel-heading--timeline">
+                                <div class="panel-title panel-title--timeline">
+                                    <a data-toggle="collapse" data-field="detailsLink" data-parent="#accordion-markup" role="button" data-i18n-key="Details" class="collapsed"></a>
+                                </div>
+                            </div>
+                            <div data-field="detailsInfoDiv" class="panel-collapse collapse"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

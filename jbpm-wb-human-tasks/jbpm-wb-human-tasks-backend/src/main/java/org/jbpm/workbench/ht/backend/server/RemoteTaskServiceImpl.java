@@ -396,4 +396,27 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
 
         return summary;
     }
+
+    @Override
+    public TaskSummary getTaskByWorkItemId(String serverTemplateId,
+                                           String containerId,
+                                           Long workItemId) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return null;
+        }
+
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
+        try {
+            //Although in the UserTaskServicesClient, this method does not validate the running container
+            TaskInstance task = client.findTaskByWorkItemId(workItemId);
+            return new TaskSummaryMapper().apply(task);
+        } catch (KieServicesHttpException kieException) {
+            if (kieException.getHttpCode() == NOT_FOUND_ERROR_CODE) {
+                return null;
+            } else {
+                throw kieException;
+            }
+        }
+    }
 }
