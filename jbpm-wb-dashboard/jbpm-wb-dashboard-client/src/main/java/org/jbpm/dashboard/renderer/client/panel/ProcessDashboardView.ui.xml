@@ -33,6 +33,10 @@
       margin-bottom: 20px;
     }
 
+    .processTable {
+      margin-bottom: 60px;
+    }
+
   </ui:style>
 
   <b:Container fluid="true">
@@ -94,7 +98,7 @@
         </b:Container>
 
         <!-- Instances table -->
-        <g:FlowPanel ui:field="instancesPanel" visible="false">
+        <g:FlowPanel ui:field="instancesPanel" visible="false" addStyleNames="{style.processTable}" >
           <d:Displayer ui:field="processesTable"/>
         </g:FlowPanel>
 

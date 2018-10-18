@@ -16,17 +16,11 @@
 package org.jbpm.workbench.common.client.list;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.user.client.ui.RequiresResize;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 
 public class ListTable<T extends GenericSummary> extends ExtendedPagedTable<T> implements RequiresResize {
-
-    public static final int ROW_HEIGHT_PX = 47;
-
-    private int tableHeaderOffset = HEIGHT_OFFSET_PX;
 
     public ListTable(GridGlobalPreferences gridPreferences) {
         super(gridPreferences);
@@ -35,20 +29,6 @@ public class ListTable<T extends GenericSummary> extends ExtendedPagedTable<T> i
         this.dataGrid.setStriped(false);
         super.setPageSizesSelectorDropup(true,
                                          false);
-    }
-
-    @Override
-    protected void setTableHeight() {
-        final NodeList<Element> byTagName = dataGrid.getElement().getFirstChildElement().getElementsByTagName("table");
-        if (byTagName.getLength() > 0) {
-            final Element element = byTagName.getItem(0);
-            if (element.getOffsetHeight() > 0) {
-                tableHeaderOffset = element.getOffsetHeight() + 1;
-            }
-        }
-        int base = dataGrid.getRowCount() - dataGrid.getVisibleRange().getStart();
-        int height = ((base <= 0 ? 1 : base) * ROW_HEIGHT_PX) + tableHeaderOffset;
-        this.dataGrid.setHeight(height + "px");
     }
 
     @Override
