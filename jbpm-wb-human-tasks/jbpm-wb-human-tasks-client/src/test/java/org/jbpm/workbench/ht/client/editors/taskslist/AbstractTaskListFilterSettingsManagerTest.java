@@ -38,6 +38,7 @@ import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 
+import static java.util.Collections.singletonList;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -89,13 +90,14 @@ public abstract class AbstractTaskListFilterSettingsManagerTest {
 
     @Test
     public void getVariablesTableSettingsTest() {
-        FilterSettings filterSettings = getFilterSettingsManager().getVariablesFilterSettings("Test");
+        FilterSettings filterSettings = getFilterSettingsManager().getVariablesFilterSettings(singletonList(1l));
         List<DataSetOp> ops = filterSettings.getDataSetLookup().getOperationList();
         for (DataSetOp op : ops) {
             if (op.getType().equals(DataSetOpType.FILTER)) {
                 List<ColumnFilter> columnFilters = ((DataSetFilter) op).getColumnFilterList();
                 for (ColumnFilter columnFilter : columnFilters) {
-                    assertTrue((columnFilter).toString().contains(COLUMN_TASK_VARIABLE_TASK_NAME + " = Test"));
+                    assertEquals(COLUMN_TASK_VARIABLE_TASK_ID, columnFilter.getColumnId());
+                    assertEquals(COLUMN_TASK_VARIABLE_TASK_ID + " in 1", columnFilter.toString());
                 }
             }
         }

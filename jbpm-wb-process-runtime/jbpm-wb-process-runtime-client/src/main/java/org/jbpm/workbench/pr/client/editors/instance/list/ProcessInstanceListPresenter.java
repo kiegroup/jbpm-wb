@@ -17,6 +17,7 @@ package org.jbpm.workbench.pr.client.editors.instance.list;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -179,7 +180,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                     final String filterValue = isFilteredByProcessId(tableSettings.getDataSetLookup().getOperationList());
                     if (filterValue != null) {
                         getDomainSpecifDataForProcessInstances(startRange,
-                                                               filterValue,
+                                                               myProcessInstancesFromDataSet,
                                                                lastPage);
                     } else {
                         updateDataOnCallback(myProcessInstancesFromDataSet,
@@ -231,10 +232,11 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         return null;
     }
 
-    public void getDomainSpecifDataForProcessInstances(final int startRange,
-                                                       String filterValue,
-                                                       boolean lastPage) {
-        FilterSettings variablesTableSettings = filterSettingsManager.getVariablesFilterSettings(filterValue);
+    public void getDomainSpecifDataForProcessInstances(final Integer startRange,
+                                                       final List<ProcessInstanceSummary> instancesFromDataSet,
+                                                       final Boolean lastPage) {
+        List<Long> processIds = instancesFromDataSet.stream().map(t -> t.getId()).collect(Collectors.toList());
+        FilterSettings variablesTableSettings = filterSettingsManager.getVariablesFilterSettings(processIds);
         variablesTableSettings.setServerTemplateId(getSelectedServerTemplate());
         variablesTableSettings.setTablePageSize(-1);
 

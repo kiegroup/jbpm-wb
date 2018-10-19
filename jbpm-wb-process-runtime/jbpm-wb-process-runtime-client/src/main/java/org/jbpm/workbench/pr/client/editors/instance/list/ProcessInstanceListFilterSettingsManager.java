@@ -28,6 +28,7 @@ import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.kie.api.runtime.process.ProcessInstance;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.dashbuilder.dataset.filter.FilterFactory.in;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
 @Dependent
@@ -84,13 +85,13 @@ public class ProcessInstanceListFilterSettingsManager extends FilterSettingsMana
     }
 
     @Override
-    public FilterSettings getVariablesFilterSettings(final String name) {
+    public FilterSettings getVariablesFilterSettings(final List<Long> processIds) {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
         builder.dataset(PROCESS_INSTANCE_WITH_VARIABLES_DATASET);
-        builder.filter(equalsTo(PROCESS_NAME,
-                                name));
+        builder.filter(in(PROCESS_INSTANCE_ID,
+                          processIds));
 
         builder.setColumn(PROCESS_INSTANCE_ID,
                           "processInstanceId");

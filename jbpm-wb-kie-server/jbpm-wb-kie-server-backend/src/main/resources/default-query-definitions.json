@@ -56,7 +56,7 @@
   {
     "query-name": "jbpmHumanTasksWithVariables",
     "query-source": "${org.kie.server.persistence.ds}",
-    "query-expression": "select tvi.taskId, (select ati.name from AuditTaskImpl ati where ati.taskId = tvi.taskId) as \"TASKNAME\", tvi.name, tvi.value from TaskVariableImpl tvi",
+    "query-expression": "select tvi.taskId, tvi.name, tvi.value from TaskVariableImpl tvi",
     "query-target": "CUSTOM"
   },
   {
