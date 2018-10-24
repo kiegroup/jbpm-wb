@@ -16,16 +16,17 @@
 
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.dashbuilder.dataset.sort.SortOrder;
-import org.jbpm.workbench.df.client.filter.FilterSettingsManagerImpl;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsBuilderHelper;
+import org.jbpm.workbench.df.client.filter.FilterSettingsManagerImpl;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 
-import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.dashbuilder.dataset.filter.FilterFactory.in;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 public abstract class AbstractTaskListFilterSettingsManager extends FilterSettingsManagerImpl {
@@ -79,13 +80,13 @@ public abstract class AbstractTaskListFilterSettingsManager extends FilterSettin
     }
 
     @Override
-    public FilterSettings getVariablesFilterSettings(final String taskName) {
+    public FilterSettings getVariablesFilterSettings(final List<Long> taskIds) {
         FilterSettingsBuilderHelper builder = FilterSettingsBuilderHelper.init();
         builder.initBuilder();
 
         builder.dataset(HUMAN_TASKS_WITH_VARIABLES_DATASET);
-        builder.filter(equalsTo(COLUMN_TASK_VARIABLE_TASK_NAME,
-                                taskName));
+        builder.filter(in(COLUMN_TASK_VARIABLE_TASK_ID,
+                          taskIds));
 
         builder.filterOn(true,
                          true,

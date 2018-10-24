@@ -51,7 +51,6 @@ public class DataSetDefsBootstrap extends AbstractDataSetDefsBootstrap {
             registerDataSetDefinition(event.getDefinition(),
                                       builder ->
                                               builder.number(COLUMN_TASK_VARIABLE_TASK_ID)
-                                                      .label(COLUMN_TASK_VARIABLE_TASK_NAME)
                                                       .label(COLUMN_TASK_VARIABLE_NAME)
                                                       .label(COLUMN_TASK_VARIABLE_VALUE)
             );

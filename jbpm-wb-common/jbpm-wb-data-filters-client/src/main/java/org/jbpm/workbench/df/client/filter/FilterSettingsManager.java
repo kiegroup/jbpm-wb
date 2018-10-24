@@ -37,7 +37,7 @@ public interface FilterSettingsManager {
 
     void resetDefaultSavedFilters(Consumer<List<SavedFilter>> savedFiltersConsumer);
 
-    default FilterSettings getVariablesFilterSettings(String name) {
+    default FilterSettings getVariablesFilterSettings(List<Long> ids) {
         return null;
     }
 }

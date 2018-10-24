@@ -120,7 +120,7 @@ public class DataSetDefsBootstrapTest {
                      dataSetDef.getProvider());
         assertEquals("SELECT *",
                      dataSetDef.getDbSQL());
-        assertEquals(4,
+        assertEquals(3,
                      dataSetDef.getColumns().size());
     }
 }

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -131,7 +132,6 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                     String filterValue = isFilteredByTaskName(ops); //Add here the check to add the domain data columns taskName?
                     if (filterValue != null) {
                         getDomainSpecifDataForTasks(startRange,
-                                                    filterValue,
                                                     myTasksFromDataSet,
                                                     lastPageExactCount);
                     } else {
@@ -185,11 +185,11 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     }
 
     public void getDomainSpecifDataForTasks(final Integer startRange,
-                                            final String filterValue,
-                                            final List<TaskSummary> myTasksFromDataSet,
+                                            final List<TaskSummary> tasksFromDataSet,
                                             final Boolean lastPageExactCount) {
 
-        FilterSettings variablesTableSettings = filterSettingsManager.getVariablesFilterSettings(filterValue);
+        List<Long> taskIds = tasksFromDataSet.stream().map(t -> t.getId()).collect(Collectors.toList());
+        FilterSettings variablesTableSettings = filterSettingsManager.getVariablesFilterSettings(taskIds);
         variablesTableSettings.setTablePageSize(-1);
         variablesTableSettings.setServerTemplateId(getSelectedServerTemplate());
 
@@ -197,20 +197,9 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         dataSetQueryHelperDomainSpecific.setCurrentTableSettings(variablesTableSettings);
         dataSetQueryHelperDomainSpecific.setLastOrderedColumn(COLUMN_TASK_ID);
         dataSetQueryHelperDomainSpecific.setLastSortOrder(SortOrder.ASCENDING);
-
-        List<Comparable> tasksIds = new ArrayList<Comparable>();
-        for (TaskSummary task : myTasksFromDataSet) {
-            tasksIds.add(task.getId());
-        }
-        DataSetFilter filter = new DataSetFilter();
-        ColumnFilter filter1 = equalsTo(COLUMN_TASK_VARIABLE_TASK_ID,
-                                        tasksIds);
-        filter.addFilterColumn(filter1);
-        variablesTableSettings.getDataSetLookup().addOperation(filter);
-
         dataSetQueryHelperDomainSpecific.lookupDataSet(0,
                                                        createDataSetDomainSpecificCallback(startRange,
-                                                                                           myTasksFromDataSet,
+                                                                                           tasksFromDataSet,
                                                                                            variablesTableSettings,
                                                                                            lastPageExactCount));
     }
@@ -236,7 +225,6 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         String variableValue = getColumnStringValue(dataSet,
                                                                     COLUMN_TASK_VARIABLE_VALUE,
                                                                     i);
-
                         for (TaskSummary task : instances) {
                             if (task.getId().equals(taskId)) {
                                 task.addDomainData(variableName,

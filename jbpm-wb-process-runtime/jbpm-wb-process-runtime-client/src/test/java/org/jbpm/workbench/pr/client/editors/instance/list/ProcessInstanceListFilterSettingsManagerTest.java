@@ -43,6 +43,7 @@ import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.mocks.CallerMock;
 
+import static java.util.Collections.singletonList;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -92,8 +93,8 @@ public class ProcessInstanceListFilterSettingsManagerTest {
      */
     @Test
     public void testVariablesFilterSettings() {
-        final String processName = "some_process_name";
-        final FilterSettings settings = manager.getVariablesFilterSettings(processName);
+        final List<Long> processIds = singletonList(1l);
+        final FilterSettings settings = manager.getVariablesFilterSettings(processIds);
 
         assertNotNull(settings.getDataSetLookup());
         final DataSetLookup dataSetLookup = settings.getDataSetLookup();
@@ -122,14 +123,14 @@ public class ProcessInstanceListFilterSettingsManagerTest {
         assertEquals(1,
                      firstFilterOp.getColumnFilterList().size());
         final ColumnFilter columnFilter = firstFilterOp.getColumnFilterList().get(0);
-        assertEquals(PROCESS_NAME,
+        assertEquals(PROCESS_INSTANCE_ID,
                      columnFilter.getColumnId());
         assertTrue(columnFilter instanceof CoreFunctionFilter);
-        assertEquals(CoreFunctionType.EQUALS_TO,
+        assertEquals(CoreFunctionType.IN,
                      ((CoreFunctionFilter) columnFilter).getType());
         assertEquals(1,
                      ((CoreFunctionFilter) columnFilter).getParameters().size());
-        assertEquals(processName,
+        assertEquals(processIds.get(0),
                      ((CoreFunctionFilter) columnFilter).getParameters().get(0));
 
         final DataSetGroup groupOp = dataSetLookup.getLastGroupOp();

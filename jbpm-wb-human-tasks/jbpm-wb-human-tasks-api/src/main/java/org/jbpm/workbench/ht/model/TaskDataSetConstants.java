@@ -45,7 +45,6 @@ public final class TaskDataSetConstants {
     public static final String COLUMN_EXCLUDED_OWNER = "entity_id";
 
     public static final String COLUMN_TASK_VARIABLE_TASK_ID = "taskId";
-    public static final String COLUMN_TASK_VARIABLE_TASK_NAME = "TASKNAME";
     public static final String COLUMN_TASK_VARIABLE_NAME = "name";
     public static final String COLUMN_TASK_VARIABLE_VALUE = "value";
 
