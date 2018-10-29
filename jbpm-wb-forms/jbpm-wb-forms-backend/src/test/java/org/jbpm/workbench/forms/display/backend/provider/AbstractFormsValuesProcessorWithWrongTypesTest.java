@@ -44,6 +44,9 @@ import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.validation.impl.ContextModelConstraintsExtractorImpl;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
 import org.kie.workbench.common.forms.dynamic.service.shared.impl.MapModelRenderingContext;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.integerBox.definition.IntegerBoxFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.lists.input.impl.StringMultipleInputFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.definition.TextBoxFieldDefinition;
 import org.kie.workbench.common.forms.fields.test.TestFieldManager;
 import org.kie.workbench.common.forms.fields.test.TestMetaDataEntryManager;
 import org.kie.workbench.common.forms.jbpm.server.service.formGeneration.impl.runtime.BPMNRuntimeFormGeneratorService;
@@ -159,28 +162,30 @@ public abstract class AbstractFormsValuesProcessorWithWrongTypesTest<PROCESSOR e
 
         assertNotNull(formDefinition);
 
-        assertEquals(2, formDefinition.getFields().size());
+        assertEquals(3, formDefinition.getFields().size());
 
-        FieldDefinition idFieldDefinition = formDefinition.getFieldByBinding(ID);
-
-        Assertions.assertThat(idFieldDefinition)
+        Assertions.assertThat(formDefinition.getFieldByBinding(ID))
                 .isNotNull()
                 .hasFieldOrPropertyWithValue("name", ID)
                 .hasFieldOrPropertyWithValue("binding", ID)
-                .hasFieldOrPropertyWithValue("standaloneClassName", Long.class.getName());
+                .hasFieldOrPropertyWithValue("standaloneClassName", Long.class.getName())
+                .isInstanceOf(IntegerBoxFieldDefinition.class);
 
-        FieldDefinition nameFieldDefinition = formDefinition.getFieldByBinding(NAME);
-
-        Assertions.assertThat(nameFieldDefinition)
+        Assertions.assertThat(formDefinition.getFieldByBinding(NAME))
                 .isNotNull()
                 .hasFieldOrPropertyWithValue("name", NAME)
                 .hasFieldOrPropertyWithValue("binding", NAME)
-                .hasFieldOrPropertyWithValue("standaloneClassName", String.class.getName());
-
-        Assertions.assertThat(formDefinition.getFieldByBinding(ERROR))
-                .isNull();
+                .hasFieldOrPropertyWithValue("standaloneClassName", String.class.getName())
+                .isInstanceOf(TextBoxFieldDefinition.class);
 
         Assertions.assertThat(formDefinition.getFieldByBinding(LIST))
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("name", LIST)
+                .hasFieldOrPropertyWithValue("binding", LIST)
+                .hasFieldOrPropertyWithValue("standaloneClassName", Object.class.getName())
+                .isInstanceOf(StringMultipleInputFieldDefinition.class);
+
+        Assertions.assertThat(formDefinition.getFieldByBinding(ERROR))
                 .isNull();
 
         Assertions.assertThat(formDefinition.getFieldByBinding(WRONG_TYPE))

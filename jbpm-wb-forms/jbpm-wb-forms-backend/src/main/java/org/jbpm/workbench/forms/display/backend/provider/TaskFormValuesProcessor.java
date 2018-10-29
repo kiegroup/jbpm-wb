@@ -31,15 +31,11 @@ import org.jbpm.workbench.forms.service.providing.model.TaskDefinition;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContext;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
 import org.kie.workbench.common.forms.dynamic.service.shared.RenderMode;
-import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textArea.type.TextAreaFieldType;
 import org.kie.workbench.common.forms.jbpm.model.authoring.task.TaskFormModel;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.DynamicBPMNFormGenerator;
 import org.kie.workbench.common.forms.jbpm.service.bpmn.util.BPMNVariableUtils;
 import org.kie.workbench.common.forms.model.FormDefinition;
 import org.kie.workbench.common.forms.model.ModelProperty;
-import org.kie.workbench.common.forms.model.impl.meta.entries.FieldReadOnlyEntry;
-import org.kie.workbench.common.forms.model.impl.meta.entries.FieldTypeEntry;
-import org.kie.workbench.common.forms.service.backend.util.ModelPropertiesGenerator;
 import org.kie.workbench.common.forms.services.backend.serialization.FormDefinitionSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -166,22 +162,10 @@ public class TaskFormValuesProcessor extends KieWorkbenchFormsValuesProcessor<Ta
 
     private ModelProperty generateModelProperty(final String name, final String type, final TaskDefinition task, final TaskRenderingSettings settings) {
         if (BPMNVariableUtils.isValidInputName(name)) {
-            ModelProperty property = ModelPropertiesGenerator.createModelProperty(name,
-                                                                                  BPMNVariableUtils.getRealTypeForInput(type),
-                                                                                  settings.getMarshallerContext().getClassloader());
-            if (property != null) {
-                if (task.getTaskInputDefinitions().containsKey(name) && !task.getTaskOutputDefinitions().containsKey(name)) {
-                    property.getMetaData().addEntry(new FieldReadOnlyEntry(true));
-                }
 
-                if (property.getTypeInfo().getClassName().equals(Object.class.getName())) {
-                    if (property.getTypeInfo().isMultiple()) {
-                        return null;
-                    }
-                    property.getMetaData().addEntry(new FieldTypeEntry(TextAreaFieldType.NAME));
-                }
-            }
-            return property;
+            boolean readOnly = task.getTaskInputDefinitions().containsKey(name) && !task.getTaskOutputDefinitions().containsKey(name);
+
+            return BPMNVariableUtils.generateVariableProperty(name, type, readOnly, settings.getMarshallerContext().getClassloader());
         }
         return null;
     }
