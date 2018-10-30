@@ -279,6 +279,22 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- Experimental Deps -->
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-experimental-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-experimental-backend</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-experimental-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- UF Security management provider for Wildfly / EAP. -->
     <dependency>
       <groupId>org.uberfire</groupId>
@@ -1759,6 +1775,10 @@
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-renderer-google</compileSourcesArtifact>
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-renderer-default</compileSourcesArtifact>
             <compileSourcesArtifact>org.dashbuilder:dashbuilder-navigation-api</compileSourcesArtifact>
+
+            <!-- Experimental Deps -->
+            <compileSourcesArtifact>org.uberfire:uberfire-experimental-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-experimental-client</compileSourcesArtifact>
 
             <!-- jBPM Designer -->
             <compileSourcesArtifact>org.jbpm:jbpm-designer-api</compileSourcesArtifact>

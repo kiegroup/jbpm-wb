@@ -364,6 +364,22 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- Experimental Deps -->
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-experimental-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-experimental-backend</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-experimental-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Logs -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -528,6 +544,10 @@
               <!-- Dashbuilder -->
               <compileSourcesArtifact>org.kie.soup:kie-soup-json</compileSourcesArtifact>
               <compileSourcesArtifact>org.kie.soup:kie-soup-dataset-api</compileSourcesArtifact>
+
+              <!-- Experimental Deps -->
+              <compileSourcesArtifact>org.uberfire:uberfire-experimental-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.uberfire:uberfire-experimental-client</compileSourcesArtifact>
 
               <!-- jBPM Case Management -->
               <compileSourcesArtifact>org.jbpm:jbpm-wb-case-mgmt-api</compileSourcesArtifact>

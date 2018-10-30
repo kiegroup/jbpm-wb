@@ -29,6 +29,8 @@
   <inherits name="org.uberfire.preferences.UberfirePreferencesClient"/>
   <inherits name="org.kie.soup.project.datamodel.ProjectDataModelAPI"/>
   <inherits name="org.kie.soup.project.datamodel.commons.ProjectDataModelCommons"/>
+  <!-- Experimental -->
+  <inherits name="org.uberfire.experimental.UberfireExperimentalClient"/>
 
   <!-- Kie Server -->
   <inherits name="org.kie.server.api.KieServerAPI"/>
