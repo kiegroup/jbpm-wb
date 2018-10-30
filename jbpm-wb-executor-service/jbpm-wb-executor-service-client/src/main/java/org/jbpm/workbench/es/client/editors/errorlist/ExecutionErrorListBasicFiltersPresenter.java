@@ -37,6 +37,11 @@ public class ExecutionErrorListBasicFiltersPresenter extends BasicFiltersPresent
     private Constants constants = Constants.INSTANCE;
 
     @Override
+    public String getDataSetId() {
+        return EXECUTION_ERROR_LIST_DATASET;
+    }
+
+    @Override
     public void loadFilters() {
         view.addNumericFilter(constants.Process_Instance_Id(),
                               constants.FilterByProcessInstanceId(),

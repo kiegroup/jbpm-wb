@@ -1,16 +1,22 @@
-<div data-field="logs_container" class="row" style="padding-top: 20px;">
-    <div class="col-md-12">
-        <div class="manage">
+<div class="row manage" style="padding-top: 20px;">
+    <div class="col-md-3">
+        <div data-field="logFilters"></div>
+        <div class="tab-content" style="padding: 20px;">
+            <button class="btn btn-default" data-field="reset-filters" type="button" data-i18n-key="Reset"></button>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="hidden" data-field="active-filters"></div>
+        <div data-field="column"></div>
             <div class="list-group kie-timeline kie-timeline--dotted-line" id="accordion-markup" data-field="logs-list"></div>
             <div data-field="empty-list-item">
                 <div href="" class="card-pf-link-with-icon"><span class="pficon pficon-info"></span>
-                    <span data-i18n-key="logs"></span>
+                    <span data-i18n-key="No_Process_Instance_Logs_Found"></span>
                 </div>
             </div>
             <br>
             <div id="load-more" data-field="load-div" style="text-align: left; padding-top: 10px;">
                 <button type="button" class="btn btn-default" data-field="load-more-logs" data-i18n-key="LoadMore"></button>
             </div>
-        </div>
     </div>
 </div>

@@ -60,4 +60,6 @@ public interface BasicFiltersView extends IsElement {
                                 String textColumnId,
                                 String valueColumnId,
                                 Consumer<ActiveFilterItem<String>> callback);
+
+    void hideFilterBySection();
 }

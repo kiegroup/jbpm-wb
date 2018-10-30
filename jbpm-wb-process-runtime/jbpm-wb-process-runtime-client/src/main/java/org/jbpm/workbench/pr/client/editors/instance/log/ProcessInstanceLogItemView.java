@@ -109,8 +109,8 @@ public class ProcessInstanceLogItemView extends AbstractView<ProcessInstanceLogP
 
         String agent = constants.System();
 
-        if (LogUtils.NODE_HUMAN_TASK.equals(model.getNodeType()) ||
-                (LogUtils.NODE_START.equals(model.getNodeType()) && !model.isCompleted())) {
+        if (LogUtils.NODE_TYPE_HUMAN_TASK.equals(model.getNodeType()) ||
+                (LogUtils.NODE_TYPE_START.equals(model.getNodeType()) && !model.isCompleted())) {
             iconClass += " fa fa-user";
             agent = constants.Human();
             tooltip(logIcon);
@@ -130,7 +130,7 @@ public class ProcessInstanceLogItemView extends AbstractView<ProcessInstanceLogP
         logIcon.setClassName(iconClass);
         nodeTypeDesc.setTextContent(getLogTitle(model));
 
-        if (!LogUtils.NODE_HUMAN_TASK.equals(model.getNodeType())) {
+        if (!LogUtils.NODE_TYPE_HUMAN_TASK.equals(model.getNodeType())) {
             detailsPanelDiv.setHidden(true);
         } else {
             setDetailsPanelAttributes(model);
@@ -139,8 +139,12 @@ public class ProcessInstanceLogItemView extends AbstractView<ProcessInstanceLogP
     }
 
     private String getLogTitle(ProcessInstanceLogSummary logsum) {
-        if (LogUtils.NODE_HUMAN_TASK.equals(logsum.getNodeType())) {
+        if (LogUtils.NODE_TYPE_HUMAN_TASK.equals(logsum.getNodeType())) {
             return constants.Task_(logsum.getName());
+        }
+        String name = logsum.getName();
+        if (name != null && name.trim().length() > 0) {
+            return logsum.getNodeType() + " '" + name + "' ";
         }
         return logsum.getNodeType();
     }
@@ -155,7 +159,7 @@ public class ProcessInstanceLogItemView extends AbstractView<ProcessInstanceLogP
     @EventHandler("detailsLink")
     public void loadProcessInstanceLogsDetails(final @ForEvent("click") MouseEvent event) {
         if (!detailsInfoDiv.hasChildNodes()
-                && LogUtils.NODE_HUMAN_TASK.equals(logSummary.getModel().getNodeType())) {
+                && LogUtils.NODE_TYPE_HUMAN_TASK.equals(logSummary.getModel().getNodeType())) {
             presenter.loadTaskDetails(logSummary.getModel().getWorkItemId(),
                                       logSummary.getModel().getDate(),
                                       humanTaskView);

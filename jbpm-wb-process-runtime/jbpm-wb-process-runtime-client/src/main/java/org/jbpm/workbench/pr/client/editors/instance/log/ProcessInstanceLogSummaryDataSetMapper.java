@@ -19,6 +19,7 @@ package org.jbpm.workbench.pr.client.editors.instance.log;
 import java.util.function.BiFunction;
 
 import org.dashbuilder.dataset.DataSet;
+import org.jbpm.workbench.pr.client.util.LogUtils;
 import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
 
 import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
@@ -50,7 +51,7 @@ public class ProcessInstanceLogSummaryDataSetMapper implements BiFunction<DataSe
                                          row))
                 .completed(getColumnIntValue(dataSet,
                                              COLUMN_LOG_TYPE,
-                                             row) == 1)
+                                             row).equals(LogUtils.NODE_COMPLETED))
                 .workItemId(getColumnLongValue(dataSet,
                                                COLUMN_LOG_WORK_ITEM_ID,
                                                row))

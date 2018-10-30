@@ -76,6 +76,10 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
         this.filterSettingsManager = filterSettingsManager;
     }
 
+    public DataSetQueryHelper getDataSetQueryHelper() {
+        return dataSetQueryHelper;
+    }
+
     @Override
     protected ListView getListView() {
         return view;
@@ -115,14 +119,25 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
                           });
     }
 
+    public Predicate<String> getFilterEventPredicate() {
+        return dataSetId -> getDataSetQueryHelper() != null &&
+                getDataSetQueryHelper().getCurrentTableSettings() != null &&
+                dataSetId != null &&
+                dataSetId.equals(getDataSetQueryHelper().getCurrentTableSettings().getUUID());
+    }
+
     public void onBasicFilterAddEvent(@Observes final BasicFilterAddEvent event) {
-        addActiveFilter(event.getFilter(),
-                        event.getActiveFilterItem());
+        if (getFilterEventPredicate().test(event.getDataSetId())) {
+            addActiveFilter(event.getFilter(),
+                            event.getActiveFilterItem());
+        }
     }
 
     public void onBasicFilterRemoveEvent(@Observes final BasicFilterRemoveEvent event) {
-        removeActiveFilter(event.getFilter(),
-                           event.getActiveFilterItem());
+        if (getFilterEventPredicate().test(event.getDataSetId())) {
+            removeActiveFilter(event.getFilter(),
+                               event.getActiveFilterItem());
+        }
     }
 
     protected void onSavedFilterSelectedEvent(@Observes final SavedFilterSelectedEvent event) {
@@ -132,7 +147,7 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
 
     protected void setFilterSettings(final FilterSettings filter,
                                      final Consumer<ListTable<T>> readyCallback) {
-        dataSetQueryHelper.setCurrentTableSettings(filter);
+        getDataSetQueryHelper().setCurrentTableSettings(filter);
         view.loadListTable(filter.getKey(),
                            readyCallback);
     }
@@ -159,18 +174,18 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
     @Override
     public void getData(final Range visibleRange) {
         try {
-            final FilterSettings currentTableSettings = dataSetQueryHelper.getCurrentTableSettings();
+            final FilterSettings currentTableSettings = getDataSetQueryHelper().getCurrentTableSettings();
             currentTableSettings.setServerTemplateId(getSelectedServerTemplate());
             currentTableSettings.setTablePageSize(view.getListGrid().getPageSize());
             ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
             if (columnSortList != null && columnSortList.size() > 0) {
-                dataSetQueryHelper.setLastOrderedColumn(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "");
-                dataSetQueryHelper.setLastSortOrder(columnSortList.size() > 0 && columnSortList.get(0).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
+                getDataSetQueryHelper().setLastOrderedColumn(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "");
+                getDataSetQueryHelper().setLastSortOrder(columnSortList.size() > 0 && columnSortList.get(0).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
             }
 
-            dataSetQueryHelper.setCurrentTableSettings(currentTableSettings);
-            dataSetQueryHelper.setDataSetHandler(currentTableSettings);
-            dataSetQueryHelper.lookupDataSet(visibleRange.getStart(),
+            getDataSetQueryHelper().setCurrentTableSettings(currentTableSettings);
+            getDataSetQueryHelper().setDataSetHandler(currentTableSettings);
+            getDataSetQueryHelper().lookupDataSet(visibleRange.getStart(),
                                              getDataSetReadyCallback(visibleRange.getStart(),
                                                                      currentTableSettings));
         } catch (Exception e) {
@@ -200,14 +215,14 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
     protected <T extends Object> void addActiveFilter(final ColumnFilter columnFilter,
                                                       final ActiveFilterItem<T> filter) {
         filter.setCallback(v -> removeActiveFilter(columnFilter));
-        final FilterSettings settings = dataSetQueryHelper.getCurrentTableSettings();
+        final FilterSettings settings = getDataSetQueryHelper().getCurrentTableSettings();
         settings.addColumnFilter(columnFilter);
         view.addActiveFilter(filter);
         refreshGrid();
     }
 
     protected void removeActiveFilter(final ColumnFilter columnFilter) {
-        final FilterSettings settings = dataSetQueryHelper.getCurrentTableSettings();
+        final FilterSettings settings = getDataSetQueryHelper().getCurrentTableSettings();
         settings.removeColumnFilter(columnFilter);
         refreshGrid();
     }
@@ -220,7 +235,7 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
 
     public void saveSearchFilterSettings(final String filterName,
                                          final Consumer<String> callback) {
-        final FilterSettings settings = dataSetQueryHelper.getCurrentTableSettings();
+        final FilterSettings settings = getDataSetQueryHelper().getCurrentTableSettings();
         settings.setTableName(filterName);
         settings.setTableDescription(filterName);
         filterSettingsManager.saveFilterIntoPreferences(settings,

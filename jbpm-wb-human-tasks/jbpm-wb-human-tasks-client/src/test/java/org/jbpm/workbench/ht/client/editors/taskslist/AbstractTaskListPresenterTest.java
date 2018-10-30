@@ -128,6 +128,8 @@ public abstract class AbstractTaskListPresenterTest {
     @Spy
     protected Event<TaskSelectionEvent> taskSelected = new EventSourceMock<TaskSelectionEvent>();
 
+    private String datasetUId = "dataserUId";
+
     protected static void testTaskStatusCondition(Predicate<TaskSummary> predicate,
                                                   String... validStatutes) {
         List<String> allStatus = getStatusByType(TaskType.ALL);
@@ -154,6 +156,7 @@ public abstract class AbstractTaskListPresenterTest {
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
         when(filterSettings.getKey()).thenReturn("key");
+        when(filterSettings.getUUID()).thenReturn(datasetUId);
         when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
 
         //Mock that actually calls the callbacks
@@ -469,8 +472,9 @@ public abstract class AbstractTaskListPresenterTest {
                                                                        null,
                                                                        null);
         final ColumnFilter columnFilter = mock(ColumnFilter.class);
-        getPresenter().onBasicFilterAddEvent(new BasicFilterAddEvent(filter,
-                                                                columnFilter));
+        getPresenter().onBasicFilterAddEvent(new BasicFilterAddEvent(datasetUId,
+                                                                     filter,
+                                                                     columnFilter));
 
         verify(viewMock).addActiveFilter(filter);
         verify(filterSettings).addColumnFilter(columnFilter);
@@ -484,8 +488,9 @@ public abstract class AbstractTaskListPresenterTest {
                                                                        null,
                                                                        null);
         final ColumnFilter columnFilter = mock(ColumnFilter.class);
-        getPresenter().onBasicFilterRemoveEvent(new BasicFilterRemoveEvent(filter,
-                                                                      columnFilter));
+        getPresenter().onBasicFilterRemoveEvent(new BasicFilterRemoveEvent(datasetUId,
+                                                                           filter,
+                                                                           columnFilter));
 
         verify(viewMock).removeActiveFilter(filter);
         verify(filterSettings).removeColumnFilter(columnFilter);

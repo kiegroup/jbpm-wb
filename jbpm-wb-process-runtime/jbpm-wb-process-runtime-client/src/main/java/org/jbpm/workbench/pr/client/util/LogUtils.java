@@ -18,8 +18,18 @@ package org.jbpm.workbench.pr.client.util;
 
 public class LogUtils {
 
-    public static String NODE_HUMAN_TASK = "HumanTaskNode";
-    public static String NODE_START = "StartNode";
-    public static String NODE_END = "EndNode";
+    public static String NODE_TYPE_HUMAN_TASK = "HumanTaskNode";
+    public static String NODE_TYPE_START = "StartNode";
+    public static String NODE_TYPE_END = "EndNode";
+    public static String NODE_TYPE_ACTION = "ActionNode";
+    public static String NODE_TYPE_MILESTONE = "MilestoneNode";
+    public static String NODE_TYPE_SUBPROCESS = "SubprocessNode";
+    public static String NODE_TYPE_RULE_SET = "RuleSetNode";
+    public static String NODE_TYPE_WORK_ITEM = "WorkItemNode";
+    public static String ALL_NODES = "All";
+
+    public static Integer NODE_ENTERED = 0;
+    public static Integer NODE_COMPLETED = 1;
+
 
 }
