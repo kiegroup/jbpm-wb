@@ -20,7 +20,6 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 
 @Dependent

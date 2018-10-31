@@ -17,9 +17,8 @@ package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+
 import javax.inject.Inject;
 
 import com.google.gwt.dom.client.BrowserEvents;
@@ -35,7 +34,6 @@ import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
-import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
@@ -76,9 +74,24 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     public void initColumns(ListTable<TaskSummary> extendedPagedTable) {
         initCellPreview(extendedPagedTable);
 
+        final Column<TaskSummary, String> createdOnColumn = createTextColumn(COLUMN_CREATED_ON,
+                                                                             task -> DateUtils.getDateTimeStr(task.getCreatedOn()));
         ColumnMeta<TaskSummary> actionsColumnMeta = initActionsColumn();
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumnMeta.getColumn());
 
+        List<ColumnMeta<TaskSummary>> columnMetas = getGeneralColumnMetas(extendedPagedTable, createdOnColumn, actionsColumnMeta);
+
+        columnMetas.addAll(renameVariables(extendedPagedTable, columnMetas));
+        extendedPagedTable.addColumns(columnMetas);
+        extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
+                                          ACTIONS_COLUMN_WIDTH,
+                                          Style.Unit.PX);
+        extendedPagedTable.getColumnSortList().push(createdOnColumn);
+    }
+
+    protected List<ColumnMeta<TaskSummary>> getGeneralColumnMetas(ListTable<TaskSummary> extendedPagedTable,
+                                                                  Column<TaskSummary, String> createdOnColumn,
+                                                                  ColumnMeta<TaskSummary> actionsColumnMeta) {
         List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
         columnMetas.add(new ColumnMeta<>(
                 createNumberColumn(COLUMN_TASK_ID,
@@ -115,8 +128,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                  task -> translationService.format(task.getStatus())),
                 constants.Status()
         ));
-        final Column<TaskSummary, String> createdOnColumn = createTextColumn(COLUMN_CREATED_ON,
-                                                                             task -> DateUtils.getDateTimeStr(task.getCreatedOn()));
+
         createdOnColumn.setDefaultSortAscending(false);
         columnMetas.add(new ColumnMeta<>(
                 createdOnColumn,
@@ -154,25 +166,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         addNewColumn(extendedPagedTable,
                      columnMetas);
         columnMetas.add(actionsColumnMeta);
-
-        List<GridColumnPreference> columPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
-        for (GridColumnPreference colPref : columPreferenceList) {
-            if (!isColumnAdded(columnMetas,
-                               colPref.getName())) {
-                Column<TaskSummary, ?> genericColumn = initGenericColumn(colPref.getName());
-                genericColumn.setSortable(false);
-                columnMetas.add(new ColumnMeta<TaskSummary>(genericColumn,
-                                                            colPref.getName(),
-                                                            true,
-                                                            true));
-            }
-        }
-
-        extendedPagedTable.addColumns(columnMetas);
-        extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
-                                          ACTIONS_COLUMN_WIDTH,
-                                          Style.Unit.PX);
-        extendedPagedTable.getColumnSortList().push(createdOnColumn);
+        return columnMetas;
     }
 
     protected void addNewColumn(ListTable<TaskSummary> extendedPagedTable,
@@ -233,51 +227,6 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                                    presenter.getProcessInstanceCondition(),
                                                    true)
         );
-    }
-
-    public void addDomainSpecifColumns(ListTable<TaskSummary> extendedPagedTable,
-                                       Set<String> columns) {
-
-        extendedPagedTable.storeColumnToPreferences();
-
-        HashMap<String, String> modifiedCaptions = new HashMap<String, String>();
-        ArrayList<ColumnMeta<TaskSummary>> existingExtraColumns = new ArrayList<ColumnMeta<TaskSummary>>();
-        for (ColumnMeta<TaskSummary> cm : extendedPagedTable.getColumnMetaList()) {
-            if (cm.isExtraColumn()) {
-                existingExtraColumns.add(cm);
-            } else if (columns.contains(cm.getCaption())) {      //exist a column with the same caption
-                for (String c : columns) {
-                    if (c.equals(cm.getCaption())) {
-                        modifiedCaptions.put(c,
-                                             "Var_" + c);
-                    }
-                }
-            }
-        }
-        for (ColumnMeta<TaskSummary> colMet : existingExtraColumns) {
-            if (!columns.contains(colMet.getCaption())) {
-                extendedPagedTable.removeColumnMeta(colMet);
-            } else {
-                columns.remove(colMet.getCaption());
-            }
-        }
-
-        List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
-        String caption = "";
-        for (String c : columns) {
-            caption = c;
-            if (modifiedCaptions.get(c) != null) {
-                caption = (String) modifiedCaptions.get(c);
-            }
-            Column<TaskSummary, ?> genericColumn = initGenericColumn(c);
-            genericColumn.setSortable(false);
-
-            columnMetas.add(new ColumnMeta<TaskSummary>(genericColumn,
-                                                        caption,
-                                                        true,
-                                                        true));
-        }
-        extendedPagedTable.addColumns(columnMetas);
     }
 
     protected Column<TaskSummary, ?> initGenericColumn(final String key) {
