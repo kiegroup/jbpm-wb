@@ -303,4 +303,29 @@ public interface Constants extends Messages {
 
     String CreatedBy();
 
+    String All();
+
+    String Events();
+
+    String NodeEntered();
+
+    String NodeCompleted();
+
+    String StartNodes();
+
+    String EndNodes();
+
+    String ActionNodes();
+
+    String Milestones();
+
+    String RuleSets();
+
+    String WorkItems();
+
+    String EventNodeType();
+
+    String EventType();
+
+    String Reset();
 }

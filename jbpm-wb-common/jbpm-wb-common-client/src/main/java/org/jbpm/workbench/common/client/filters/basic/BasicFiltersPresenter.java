@@ -75,9 +75,12 @@ public abstract class BasicFiltersPresenter {
 
     public abstract void loadFilters();
 
+    public abstract String getDataSetId();
+
     protected void addSearchFilter(final ActiveFilterItem filter,
                                    final ColumnFilter columnFilter) {
-        basicFilterAddEvent.fire(new BasicFilterAddEvent(filter,
+        basicFilterAddEvent.fire(new BasicFilterAddEvent(getDataSetId(),
+                                                         filter,
                                                          columnFilter));
     }
 
@@ -102,7 +105,8 @@ public abstract class BasicFiltersPresenter {
 
     protected void removeSearchFilter(final ActiveFilterItem filter,
                                       final ColumnFilter columnFilter) {
-        basicFilterRemoveEvent.fire(new BasicFilterRemoveEvent(filter,
+        basicFilterRemoveEvent.fire(new BasicFilterRemoveEvent(getDataSetId(),
+                                                               filter,
                                                                columnFilter));
     }
 

@@ -72,6 +72,7 @@ public class ExecutionErrorListPresenterTest {
 
     private static final String PERSPECTIVE_ID = PerspectiveIds.EXECUTION_ERRORS;
     private org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants;
+    private String datasetUId = EXECUTION_ERROR_LIST_DATASET;
 
     private CallerMock<ExecutorService> callerMockExecutorService;
 
@@ -134,6 +135,7 @@ public class ExecutionErrorListPresenterTest {
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(extendedPagedTable.getColumnSortList()).thenReturn(null);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
+        when(filterSettings.getUUID()).thenReturn(datasetUId);
         when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
         when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
         when(perspectiveActivity.getIdentifier()).thenReturn(PERSPECTIVE_ID);
@@ -547,7 +549,8 @@ public class ExecutionErrorListPresenterTest {
                                                                        null,
                                                                        null);
         final ColumnFilter columnFilter = mock(ColumnFilter.class);
-        presenter.onBasicFilterAddEvent(new BasicFilterAddEvent(filter,
+        presenter.onBasicFilterAddEvent(new BasicFilterAddEvent(datasetUId,
+                                                                filter,
                                                                 columnFilter));
 
         verify(viewMock).addActiveFilter(filter);
@@ -562,7 +565,8 @@ public class ExecutionErrorListPresenterTest {
                                                                        null,
                                                                        null);
         final ColumnFilter columnFilter = mock(ColumnFilter.class);
-        presenter.onBasicFilterRemoveEvent(new BasicFilterRemoveEvent(filter,
+        presenter.onBasicFilterRemoveEvent(new BasicFilterRemoveEvent(datasetUId,
+                                                                      filter,
                                                                       columnFilter));
 
         verify(viewMock).removeActiveFilter(filter);

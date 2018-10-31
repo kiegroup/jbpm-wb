@@ -44,6 +44,11 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
     private Constants constants = Constants.INSTANCE;
 
     @Override
+    public String getDataSetId() {
+        return PROCESS_INSTANCE_DATASET;
+    }
+
+    @Override
     public void loadFilters() {
         view.addNumericFilter(constants.Id(),
                               constants.FilterByProcessInstanceId(),

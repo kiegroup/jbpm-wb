@@ -21,14 +21,22 @@ import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 
 public class BasicFilterAddEvent {
 
+    private String dataSetId;
+
     private ActiveFilterItem activeFilterItem;
 
     private ColumnFilter filter;
 
-    public BasicFilterAddEvent(final ActiveFilterItem activeFilterItem,
+    public BasicFilterAddEvent(final String dataSetId,
+                               final ActiveFilterItem activeFilterItem,
                                final ColumnFilter filter) {
+        this.dataSetId = dataSetId;
         this.activeFilterItem = activeFilterItem;
         this.filter = filter;
+    }
+
+    public String getDataSetId() {
+        return dataSetId;
     }
 
     public ActiveFilterItem getActiveFilterItem() {

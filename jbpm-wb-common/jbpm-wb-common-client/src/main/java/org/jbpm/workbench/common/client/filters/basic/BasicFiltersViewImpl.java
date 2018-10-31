@@ -71,6 +71,10 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
     Div filterList;
 
     @Inject
+    @DataField("refine-section")
+    Div refineSection;
+
+    @Inject
     @DataField("refine")
     @Named("h5")
     Heading refine;
@@ -446,6 +450,12 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
         }
 
         divPanel.appendChild(div);
+    }
+
+    @Override
+    public void hideFilterBySection() {
+        addCSSClass(refineSection,
+                    "hidden");
     }
 
     private void setupSelect(final String label,

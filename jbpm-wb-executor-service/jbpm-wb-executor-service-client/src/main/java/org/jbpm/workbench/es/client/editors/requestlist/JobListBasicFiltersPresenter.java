@@ -40,6 +40,11 @@ public class JobListBasicFiltersPresenter extends BasicFiltersPresenter {
     private Constants constants = Constants.INSTANCE;
 
     @Override
+    public String getDataSetId() {
+        return REQUEST_LIST_DATASET;
+    }
+
+    @Override
     public void loadFilters() {
         final Map<String, String> status = new HashMap<>();
         status.put(RequestStatus.CANCELLED.name(),

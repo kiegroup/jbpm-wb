@@ -88,6 +88,7 @@ import static org.mockito.Mockito.*;
 public class ProcessInstanceListPresenterTest {
 
     private static final String PERSPECTIVE_ID = PerspectiveIds.PROCESS_INSTANCES;
+    private String datasetUId = PROCESS_INSTANCE_DATASET;
 
     private org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants;
 
@@ -205,11 +206,13 @@ public class ProcessInstanceListPresenterTest {
 
         filterSettings.setKey("key");
         filterSettings.setDataSetLookup(dataSetLookup);
+        dataSetLookup.setDataSetUUID(datasetUId);
 
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(filterSettingsJSONMarshaller.fromJsonString(anyString())).thenReturn(filterSettings);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
+        when(filterSettings.getUUID()).thenReturn(datasetUId);
         when(filterSettingsManager.getVariablesFilterSettings(any())).thenReturn(filterSettings);
         when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
         when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
@@ -823,7 +826,16 @@ public class ProcessInstanceListPresenterTest {
                                                                        null,
                                                                        null);
         final ColumnFilter columnFilter = mock(ColumnFilter.class);
-        presenter.onBasicFilterAddEvent(new BasicFilterAddEvent(filter,
+        presenter.onBasicFilterAddEvent(new BasicFilterAddEvent("ProcessInstanceLogDataset",
+                                                                filter,
+                                                                columnFilter));
+        verify(viewMock,
+               never()).addActiveFilter(filter);
+        verify(filterSettings,
+               never()).addColumnFilter(columnFilter);
+
+        presenter.onBasicFilterAddEvent(new BasicFilterAddEvent(datasetUId,
+                                                                filter,
                                                                 columnFilter));
 
         verify(viewMock).addActiveFilter(filter);
@@ -838,7 +850,16 @@ public class ProcessInstanceListPresenterTest {
                                                                        null,
                                                                        null);
         final ColumnFilter columnFilter = mock(ColumnFilter.class);
-        presenter.onBasicFilterRemoveEvent(new BasicFilterRemoveEvent(filter,
+        presenter.onBasicFilterRemoveEvent(new BasicFilterRemoveEvent("ProcessInstanceLogDataset",
+                                                                      filter,
+                                                                      columnFilter));
+        verify(viewMock,
+               never()).removeActiveFilter(filter);
+        verify(filterSettings,
+               never()).removeColumnFilter(columnFilter);
+
+        presenter.onBasicFilterRemoveEvent(new BasicFilterRemoveEvent(datasetUId,
+                                                                      filter,
                                                                       columnFilter));
 
         verify(viewMock).removeActiveFilter(filter);

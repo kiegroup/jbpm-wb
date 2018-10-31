@@ -1,22 +1,25 @@
 <div data-field="content" class="manage" style="height: 100%;">
     <div class="col-md-12 tab-content kie-tab-content--filters" style="height: 100%;">
         <form role="form" style="margin-top: 20px;" data-field="form">
-            <h5 class="kie-dock__heading--section" data-field="refine"></h5>
-            <div class="form-group">
-                <select class="selectpicker form-control" data-width="100%" data-field="refine-options"></select>
-            </div>
-            <div class="form-group">
-                <div class="input-group" data-field="filters-input">
+            <div data-field="refine-section">
+                <h5 class="kie-dock__heading--section" data-field="refine"></h5>
+                <div class="form-group">
+                    <select class="selectpicker form-control" data-width="100%" data-field="refine-options"></select>
+                </div>
+                <div class="form-group">
+                    <div class="input-group" data-field="filters-input">
                     <span class="input-group-btn">
                         <button class="btn btn-link" data-field="filters-input-help" type="button" data-toggle="popover" data-trigger="hover" data-html="true" title="" data-placement="bottom" data-container="body">
                             <i class="fa fa-info-circle"></i>
                         </button>
                     </span>
+                    </div>
                 </div>
+                <button class="btn btn-default" data-field="refine-apply" type="button"></button>
+                <div data-field="filter-list"></div>
+
+                <hr class="kie-dock__divider"/>
             </div>
-            <button class="btn btn-default" data-field="refine-apply" type="button"></button>
-            <div data-field="filter-list"></div>
-            <hr class="kie-dock__divider"/>
         </form>
     </div>
 </div>

@@ -118,8 +118,6 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
                                                                   f.getValue())));
     }
 
-    public abstract String getDataSetId();
-
     @Inject
     public void setTranslationService(TranslationService translationService) {
         this.translationService = translationService;
