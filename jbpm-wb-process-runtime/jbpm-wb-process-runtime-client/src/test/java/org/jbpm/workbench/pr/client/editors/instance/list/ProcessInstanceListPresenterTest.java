@@ -23,7 +23,6 @@ import com.google.gwt.dev.util.collect.HashSet;
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.apache.commons.lang3.StringUtils;
-import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetOp;
@@ -31,8 +30,10 @@ import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.dataset.ErrorHandlerBuilder;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterAddEvent;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterRemoveEvent;
@@ -134,10 +135,10 @@ public class ProcessInstanceListPresenterTest {
     private User identity;
 
     @Mock
-    ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
+    private ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
 
     @Mock
-    UberfireBreadcrumbs breadcrumbs;
+    private UberfireBreadcrumbs breadcrumbs;
 
     @Mock
     private PerspectiveManager perspectiveManager;
@@ -151,7 +152,13 @@ public class ProcessInstanceListPresenterTest {
     private FilterSettingsManager filterSettingsManager;
 
     @Mock
-    EventSourceMock<ProcessInstanceSelectionEvent> processInstanceSelectionEvent = new EventSourceMock<>();
+    private EventSourceMock<ProcessInstanceSelectionEvent> processInstanceSelectionEvent = new EventSourceMock<>();
+
+    @Mock
+    private ManagedInstance<ErrorHandlerBuilder> errorHandlerBuilder;
+
+    @Spy
+    private ErrorHandlerBuilder errorHandler;
 
     @InjectMocks
     private ProcessInstanceListPresenter presenter;
@@ -240,6 +247,8 @@ public class ProcessInstanceListPresenterTest {
         commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
 
         presenter.setProcessService(remoteProcessServiceCaller);
+
+        when(errorHandlerBuilder.get()).thenReturn(errorHandler);
     }
 
     @Test
@@ -737,19 +746,6 @@ public class ProcessInstanceListPresenterTest {
                      captor.getAllValues().get(0).getIdentifier());
         assertEquals(TASKS,
                      captor.getAllValues().get(1).getIdentifier());
-    }
-
-    @Test
-    public void testCreateDataSetProcessInstanceCallbackOnError() {
-        final ProcessInstanceListPresenter spy = spy(presenter);
-        final ClientRuntimeError error = new ClientRuntimeError("");
-        final FilterSettings filterSettings = mock(FilterSettings.class);
-        final DataSetReadyCallback callback = spy.getDataSetReadyCallback(0,
-                                                                          filterSettings);
-        doNothing().when(spy).showErrorPopup(any());
-        assertFalse(callback.onError(error));
-        verify(viewMock).hideBusyIndicator();
-        verify(spy).showErrorPopup(Constants.INSTANCE.ResourceCouldNotBeLoaded(commonConstants.Process_Instances()));
     }
 
     @Test

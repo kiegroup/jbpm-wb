@@ -15,7 +15,8 @@
  */
 package org.jbpm.workbench.common.client.list;
 
-import java.util.Optional;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -24,6 +25,8 @@ import org.jbpm.workbench.common.client.menu.ManageSelector;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.events.ServerTemplateSelected;
+import org.kie.server.controller.api.model.spec.Capability;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartTitleDecoration;
 import org.uberfire.client.mvp.PerspectiveManager;
@@ -36,8 +39,7 @@ import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Commands;
 import org.uberfire.mvp.PlaceRequest;
 
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
+import static java.util.Collections.emptyList;
 
 /**
  * @param <T> data type for the AsyncDataProvider
@@ -117,18 +119,31 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
     }
 
     public void onServerTemplateSelected(@Observes final ServerTemplateSelected serverTemplateSelected) {
-        setSelectedServerTemplate(serverTemplateSelected.getServerTemplateId());
+        setSelectedServerTemplate(serverTemplateSelected.getServerTemplate());
     }
 
     public String getSelectedServerTemplate() {
         return selectedServerTemplate;
     }
 
-    public void setSelectedServerTemplate(final String selectedServerTemplate) {
-        final String newServerTemplate = Optional.ofNullable(selectedServerTemplate).orElse("").trim();
-        if (!this.selectedServerTemplate.equals(newServerTemplate)) {
-            this.selectedServerTemplate = newServerTemplate;
-            refreshGrid();
+    public void setSelectedServerTemplate(final ServerTemplate serverTemplate) {
+        getListView().clearBlockingError();
+        if (serverTemplate == null) {
+            selectedServerTemplate = "";
+            getListView().displayBlockingError(Constants.INSTANCE.ExecutionServerUnavailable(),
+                                               Constants.INSTANCE.NoServerConnected());
+            return;
+        }
+
+        if (serverTemplate.getCapabilities().contains(Capability.PROCESS.name())) {
+            if (this.selectedServerTemplate.equals(serverTemplate.getId()) == false) {
+                this.selectedServerTemplate = serverTemplate.getId();
+                refreshGrid();
+            }
+        } else {
+            this.selectedServerTemplate = "";
+            getListView().displayBlockingError(Constants.INSTANCE.MissingServerCapability(),
+                                               Constants.INSTANCE.MissingProcessCapability());
         }
     }
 
@@ -178,5 +193,12 @@ public abstract class AbstractScreenListPresenter<T> extends AbstractListPresent
 
     public void setPlaceManager(PlaceManager placeManager) {
         this.placeManager = placeManager;
+    }
+
+    public void setEmptyResults(){
+        updateDataOnCallback(emptyList(),
+                             0,
+                             0,
+                             true);
     }
 }

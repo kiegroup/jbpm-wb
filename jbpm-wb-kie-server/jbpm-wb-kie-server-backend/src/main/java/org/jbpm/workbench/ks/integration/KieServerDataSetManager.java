@@ -43,6 +43,9 @@ import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.QueryServicesClient;
 import org.kie.server.common.rest.KieServerHttpRequestException;
 import org.kie.server.controller.api.model.runtime.ServerInstance;
+import org.kie.server.controller.api.model.spec.Capability;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
+import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.concurrent.Managed;
@@ -60,15 +63,19 @@ public class KieServerDataSetManager {
 
     private Event<KieServerDataSetRegistered> event;
 
+    private SpecManagementService specManagementService;
+
     @Inject
     public KieServerDataSetManager(DataSetDefRegistry dataSetDefRegistry,
                                    KieServerIntegration kieServerIntegration,
                                    Event<KieServerDataSetRegistered> event,
-                                   @Managed ExecutorService executorService) {
+                                   @Managed ExecutorService executorService,
+                                   SpecManagementService specManagementService) {
         this.dataSetDefRegistry = dataSetDefRegistry;
         this.kieServerIntegration = kieServerIntegration;
         this.event = event;
         this.executorService = executorService;
+        this.specManagementService = specManagementService;
     }
 
     public void registerInKieServer(@Observes final ServerInstanceRegistered serverInstanceRegistered) {
@@ -77,6 +84,15 @@ public class KieServerDataSetManager {
         final String serverTemplateId = serverInstance.getServerTemplateId();
         LOGGER.info("Server instance '{}' connected, registering data sets",
                     serverInstanceId);
+
+        final ServerTemplate serverTemplate = specManagementService.getServerTemplate(serverTemplateId);
+        if(serverTemplate.getCapabilities().contains(Capability.PROCESS.name()) == false){
+            LOGGER.info("Missing BPM capability for server instance '{}', not possible to register data set queries",
+                        serverInstanceId);
+            event.fire(new KieServerDataSetRegistered(serverInstanceId,
+                                                      serverTemplateId));
+            return;
+        }
 
         final List<DataSetDef> dataSetDefs = dataSetDefRegistry.getDataSetDefs(false);
 

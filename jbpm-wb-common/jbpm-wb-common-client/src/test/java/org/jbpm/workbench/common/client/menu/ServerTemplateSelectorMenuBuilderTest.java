@@ -207,7 +207,7 @@ public class ServerTemplateSelectorMenuBuilderTest {
                never()).addServerTemplate(serverTemplateId);
         verify(view).setVisible(false);
         verify(view).getSelectedServerTemplate();
-
+        verify(view).clearSelectedServerTemplate();
         verifyNoMoreInteractions(view);
     }
 

@@ -16,7 +16,6 @@
 
 package org.jbpm.workbench.common.client.list;
 
-
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
@@ -24,6 +23,8 @@ import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.controller.api.model.spec.Capability;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -35,6 +36,7 @@ import org.uberfire.mvp.Command;
 import org.uberfire.mvp.Commands;
 import org.uberfire.mvp.PlaceRequest;
 
+import static java.util.Collections.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -56,6 +58,9 @@ public class AbstractScreenListPresenterTest {
     PerspectiveActivity perspectiveActivityMock;
 
     @Mock
+    ListView listView;
+
+    @Mock
     ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilderMock;
 
     @Mock
@@ -66,38 +71,75 @@ public class AbstractScreenListPresenterTest {
         when(perspectiveActivityMock.getIdentifier()).thenReturn(PERSPECTIVE_ID);
         when(perspectiveManagerMock.getCurrentPerspective()).thenReturn(perspectiveActivityMock);
         when(serverTemplateSelectorMenuBuilderMock.getView()).thenReturn(serverTemplateSelectorElementViewMock);
+        when(presenter.getListView()).thenReturn(listView);
 
         presenter.setPerspectiveManager(perspectiveManagerMock);
         presenter.setUberfireBreadcrumbs(breadcrumbsMock);
     }
 
     @Test
-    public void testServerTemplate() {
+    public void testServerTemplateRefresh() {
         doNothing().when(presenter).refreshGrid();
 
-        presenter.setSelectedServerTemplate("");
-
-        assertEquals("",
-                     presenter.getSelectedServerTemplate());
-
-        presenter.setSelectedServerTemplate(" ");
-
-        assertEquals("",
-                     presenter.getSelectedServerTemplate());
-
-        presenter.setSelectedServerTemplate("testId");
+        final ServerTemplate serverTemplate = new ServerTemplate("testId",
+                                                                 null,
+                                                                 singletonList(Capability.PROCESS.name()),
+                                                                 emptyMap(),
+                                                                 emptyList());
+        presenter.setSelectedServerTemplate(serverTemplate);
 
         assertEquals("testId",
                      presenter.getSelectedServerTemplate());
         verify(presenter,
                times(1)).refreshGrid();
 
-        presenter.setSelectedServerTemplate("testId");
+        presenter.setSelectedServerTemplate(serverTemplate);
 
         assertEquals("testId",
                      presenter.getSelectedServerTemplate());
         verify(presenter,
                times(1)).refreshGrid();
+
+        verify(listView,
+               times(2)).clearBlockingError();
+        verify(listView,
+               never()).displayBlockingError(any(),
+                                             any());
+    }
+
+    @Test
+    public void testNoServerTemplate() {
+        presenter.setSelectedServerTemplate(null);
+
+        assertEquals("",
+                     presenter.getSelectedServerTemplate());
+
+        verify(presenter,
+               never()).refreshGrid();
+
+        verify(listView).clearBlockingError();
+        verify(listView).displayBlockingError(Constants.INSTANCE.ExecutionServerUnavailable(),
+                                              Constants.INSTANCE.NoServerConnected());
+    }
+
+    @Test
+    public void testServerTemplateWithoutProcessCapability() {
+        final ServerTemplate serverTemplate = new ServerTemplate("testId",
+                                                                 null,
+                                                                 emptyList(),
+                                                                 emptyMap(),
+                                                                 emptyList());
+        presenter.setSelectedServerTemplate(serverTemplate);
+
+        assertEquals("",
+                     presenter.getSelectedServerTemplate());
+
+        verify(presenter,
+               never()).refreshGrid();
+
+        verify(listView).clearBlockingError();
+        verify(listView).displayBlockingError(Constants.INSTANCE.MissingServerCapability(),
+                                              Constants.INSTANCE.MissingProcessCapability());
     }
 
     @Test

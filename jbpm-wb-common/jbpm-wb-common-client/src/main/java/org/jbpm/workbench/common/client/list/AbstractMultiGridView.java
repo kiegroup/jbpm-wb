@@ -51,6 +51,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilters;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
+import org.jbpm.workbench.common.client.util.BlockingError;
 import org.jbpm.workbench.common.client.util.ConditionalAction;
 import org.jbpm.workbench.common.client.util.ConditionalKebabActionCell;
 import org.jbpm.workbench.common.model.GenericSummary;
@@ -100,8 +101,30 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     @DataField("active-filters")
     protected ActiveFilters filters;
 
+    @Inject
+    @DataField("alert")
+    protected BlockingError alert;
+
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
+    }
+
+    @Override
+    public void displayBlockingError(String summary,
+                                     String content) {
+        column.classList.add("hidden");
+        filters.getElement().classList.add("hidden");
+        alert.getElement().classList.remove("hidden");
+        alert.setSummary(summary);
+        alert.setDescription(content);
+    }
+
+    @Override
+    public void clearBlockingError() {
+        alert.getElement().classList.add("hidden");
+        alert.setSummary("");
+        alert.setDescription("");
+        column.classList.remove("hidden");
     }
 
     public void init(final V presenter) {

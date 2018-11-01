@@ -151,4 +151,12 @@ public interface Constants extends Messages {
     String SavedFilterCorrectlyWithName(String filterName);
 
     String Bulk_Actions();
+
+    String ExecutionServerUnavailable();
+
+    String NoServerConnected();
+
+    String MissingServerCapability();
+
+    String MissingProcessCapability();
 }

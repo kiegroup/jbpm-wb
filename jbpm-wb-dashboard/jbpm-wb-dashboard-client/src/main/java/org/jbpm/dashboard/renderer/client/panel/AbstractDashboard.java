@@ -213,7 +213,7 @@ public abstract class AbstractDashboard {
 
     private DataSetLookup getDataSetLookup(final DisplayerSettings settings) {
         return ConsoleDataSetLookup.fromInstance(settings.getDataSetLookup(),
-                                                 serverTemplateSelectorMenuBuilder.getSelectedServerTemplate());
+                                                 serverTemplateSelectorMenuBuilder.getSelectedServerTemplateId());
     }
 
     public TableDisplayer createTableDisplayer(DisplayerSettings settings,

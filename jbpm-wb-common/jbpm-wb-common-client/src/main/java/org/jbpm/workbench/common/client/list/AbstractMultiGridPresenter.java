@@ -30,6 +30,8 @@ import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jbpm.workbench.common.client.dataset.ErrorHandlerBuilder;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterAddEvent;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterRemoveEvent;
@@ -39,9 +41,9 @@ import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsManager;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
+import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -60,7 +62,14 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
     protected FilterSettingsManager filterSettingsManager;
 
     @Inject
-    protected ErrorPopupPresenter errorPopup;
+    protected DefaultWorkbenchErrorCallback errorCallback;
+
+    protected ManagedInstance<ErrorHandlerBuilder> errorHandlerBuilder;
+
+    @Inject
+    public void setErrorHandlerBuilder(final ManagedInstance<ErrorHandlerBuilder> errorHandlerBuilder) {
+        this.errorHandlerBuilder = errorHandlerBuilder;
+    }
 
     @Inject
     public void setAuthorizationManager(final AuthorizationManager authorizationManager) {
@@ -189,8 +198,8 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
                                              getDataSetReadyCallback(visibleRange.getStart(),
                                                                      currentTableSettings));
         } catch (Exception e) {
-            errorPopup.showMessage(Constants.INSTANCE.UnexpectedError(e.getMessage()));
-            view.hideBusyIndicator();
+            errorCallback.error(e);
+            setEmptyResults();
         }
     }
 

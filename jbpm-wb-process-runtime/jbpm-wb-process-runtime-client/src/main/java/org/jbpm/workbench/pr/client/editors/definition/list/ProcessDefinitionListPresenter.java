@@ -26,8 +26,6 @@ import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.Range;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.list.AbstractScreenListPresenter;
 import org.jbpm.workbench.common.client.list.ListView;
@@ -43,11 +41,11 @@ import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
+import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.ResourceRef;
@@ -74,6 +72,9 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
     @Inject
     private Caller<ProcessRuntimeDataService> processRuntimeDataService;
+
+    @Inject
+    private DefaultWorkbenchErrorCallback errorCallback;
 
     protected AuthorizationManager authorizationManager;
 
@@ -159,39 +160,25 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
         currentFilter.setOrderBy(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "");
         currentFilter.setIsAscending(columnSortList.size() == 0 || columnSortList.get(0).isAscending());
 
-        processRuntimeDataService.call(new RemoteCallback<List<ProcessSummary>>() {
-                                           @Override
-                                           public void callback(final List<ProcessSummary> processDefsSums) {
-                                               boolean lastPageExactCount = processDefsSums.size() < visibleRange.getLength();
-                                               updateDataOnCallback(processDefsSums,
-                                                                    visibleRange.getStart(),
-                                                                    visibleRange.getStart() + processDefsSums.size(),
-                                                                    lastPageExactCount);
-                                           }
+        processRuntimeDataService.call((List<ProcessSummary> processDefsSums) -> {
+                                           boolean lastPageExactCount = processDefsSums.size() < visibleRange.getLength();
+                                           updateDataOnCallback(processDefsSums,
+                                                                visibleRange.getStart(),
+                                                                visibleRange.getStart() + processDefsSums.size(),
+                                                                lastPageExactCount);
                                        },
-                                       new ErrorCallback<Message>() {
-                                           @Override
-                                           public boolean error(Message message,
-                                                                Throwable throwable) {
-                                               return onRuntimeDataServiceError();
-                                           }
-                                       }).getProcesses(getSelectedServerTemplate(),
-                                                       visibleRange.getStart() / visibleRange.getLength(),
-                                                       visibleRange.getLength(),
-                                                       currentFilter.getOrderBy(),
-                                                       currentFilter.isAscending());
+                                       (Message message, Throwable throwable) -> onRuntimeDataServiceError(throwable)
+        ).getProcesses(getSelectedServerTemplate(),
+                       visibleRange.getStart() / visibleRange.getLength(),
+                       visibleRange.getLength(),
+                       currentFilter.getOrderBy(),
+                       currentFilter.isAscending());
     }
 
-    boolean onRuntimeDataServiceError() {
-        view.hideBusyIndicator();
-
-        showErrorPopup(constants.ResourceCouldNotBeLoaded(commonConstants.Process_Definitions()));
-
+    boolean onRuntimeDataServiceError(final Throwable throwable) {
+        setEmptyResults();
+        errorCallback.error(throwable);
         return false;
-    }
-
-    void showErrorPopup(final String message) {
-        ErrorPopup.showMessage(message);
     }
 
     @WorkbenchMenu

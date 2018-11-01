@@ -23,7 +23,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
@@ -34,7 +33,6 @@ import org.dashbuilder.dataset.filter.CoreFunctionType;
 import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.MultiGridView;
@@ -54,8 +52,6 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
-import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
@@ -78,9 +74,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     @Inject
     private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
-
-    @Inject
-    private ErrorPopupPresenter errorPopup;
 
     @Inject
     private QuickNewProcessInstancePopup newProcessInstancePopup;
@@ -110,43 +103,40 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     protected DataSetReadyCallback createDataSetDomainSpecificCallback(final int startRange,
                                                                        final FilterSettings tableSettings,
                                                                        boolean lastPage) {
-        return new AbstractDataSetReadyCallback(errorPopup,
-                                                view,
-                                                tableSettings.getUUID()) {
-            @Override
-            public void callback(DataSet dataSet) {
-                Set<String> columns = new HashSet<String>();
-                for (int i = 0; i < dataSet.getRowCount(); i++) {
-                    Long processInstanceId = getColumnLongValue(dataSet,
-                                                                PROCESS_INSTANCE_ID,
-                                                                i);
-                    String variableName = getColumnStringValue(dataSet,
-                                                               VARIABLE_NAME,
-                                                               i);
-                    String variableValue = getColumnStringValue(dataSet,
-                                                                VARIABLE_VALUE,
-                                                                i);
+        return errorHandlerBuilder.get().withUUID(tableSettings.getUUID()).withDataSetCallback(
+                dataSet -> {
+                    Set<String> columns = new HashSet<String>();
+                    for (int i = 0; i < dataSet.getRowCount(); i++) {
+                        Long processInstanceId = getColumnLongValue(dataSet,
+                                                                    PROCESS_INSTANCE_ID,
+                                                                    i);
+                        String variableName = getColumnStringValue(dataSet,
+                                                                   VARIABLE_NAME,
+                                                                   i);
+                        String variableValue = getColumnStringValue(dataSet,
+                                                                    VARIABLE_VALUE,
+                                                                    i);
 
-                    for (ProcessInstanceSummary pis : myProcessInstancesFromDataSet) {
-                        String initiator = pis.getInitiator();
-                        if (pis.getProcessInstanceId().equals(processInstanceId) && !filterInitiator(variableName,
-                                                                                                     variableValue,
-                                                                                                     initiator)) {
-                            pis.addDomainData(variableName,
-                                              variableValue);
-                            columns.add(variableName);
+                        for (ProcessInstanceSummary pis : myProcessInstancesFromDataSet) {
+                            String initiator = pis.getInitiator();
+                            if (pis.getProcessInstanceId().equals(processInstanceId) && !filterInitiator(variableName,
+                                                                                                         variableValue,
+                                                                                                         initiator)) {
+                                pis.addDomainData(variableName,
+                                                  variableValue);
+                                columns.add(variableName);
+                            }
                         }
                     }
-                }
-                view.addDomainSpecifColumns(view.getListGrid(),
-                                            columns);
+                    view.addDomainSpecifColumns(view.getListGrid(),
+                                                columns);
 
-                updateDataOnCallback(myProcessInstancesFromDataSet,
-                                     startRange,
-                                     startRange + myProcessInstancesFromDataSet.size(),
-                                     lastPage);
-            }
-        };
+                    updateDataOnCallback(myProcessInstancesFromDataSet,
+                                         startRange,
+                                         startRange + myProcessInstancesFromDataSet.size(),
+                                         lastPage);
+                })
+                .withEmptyResultsCallback(() -> setEmptyResults());
     }
 
     protected boolean filterInitiator(String variableName,
@@ -158,53 +148,36 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     @Override
     protected DataSetReadyCallback getDataSetReadyCallback(final Integer startRange,
                                                            final FilterSettings tableSettings) {
-        return new AbstractDataSetReadyCallback(errorPopup,
-                                                view,
-                                                tableSettings.getUUID()) {
+        return errorHandlerBuilder.get().withUUID(tableSettings.getUUID()).withDataSetCallback(
+                dataSet -> {
+                    if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(tableSettings.getKey())) {
 
-            @Override
-            public void callback(DataSet dataSet) {
-                if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(tableSettings.getKey())) {
+                        myProcessInstancesFromDataSet.clear();
+                        for (int i = 0; i < dataSet.getRowCount(); i++) {
+                            myProcessInstancesFromDataSet.add(createProcessInstanceSummaryFromDataSet(dataSet,
+                                                                                                      i));
+                        }
 
-                    myProcessInstancesFromDataSet.clear();
-                    for (int i = 0; i < dataSet.getRowCount(); i++) {
-                        myProcessInstancesFromDataSet.add(createProcessInstanceSummaryFromDataSet(dataSet,
-                                                                                                  i));
+                        boolean lastPage = false;
+                        if (dataSet.getRowCount() < view.getListGrid().getPageSize()) {
+                            lastPage = true;
+                        }
+
+                        final String filterValue = isFilteredByProcessId(tableSettings.getDataSetLookup().getOperationList());
+                        if (filterValue != null) {
+                            getDomainSpecifDataForProcessInstances(startRange,
+                                                                   myProcessInstancesFromDataSet,
+                                                                   lastPage);
+                        } else {
+                            updateDataOnCallback(myProcessInstancesFromDataSet,
+                                                 startRange,
+                                                 startRange + myProcessInstancesFromDataSet.size(),
+                                                 lastPage);
+                        }
                     }
-
-                    boolean lastPage = false;
-                    if (dataSet.getRowCount() < view.getListGrid().getPageSize()) {
-                        lastPage = true;
-                    }
-
-                    final String filterValue = isFilteredByProcessId(tableSettings.getDataSetLookup().getOperationList());
-                    if (filterValue != null) {
-                        getDomainSpecifDataForProcessInstances(startRange,
-                                                               myProcessInstancesFromDataSet,
-                                                               lastPage);
-                    } else {
-                        updateDataOnCallback(myProcessInstancesFromDataSet,
-                                             startRange,
-                                             startRange + myProcessInstancesFromDataSet.size(),
-                                             lastPage);
-                    }
-                }
-                view.hideBusyIndicator();
-            }
-
-            @Override
-            public boolean onError(final ClientRuntimeError error) {
-                view.hideBusyIndicator();
-
-                showErrorPopup(constants.ResourceCouldNotBeLoaded(commonConstants.Process_Instances()));
-
-                return false;
-            }
-        };
-    }
-
-    void showErrorPopup(final String message) {
-        ErrorPopup.showMessage(message);
+                    view.hideBusyIndicator();
+                })
+                .withEmptyResultsCallback(() -> setEmptyResults());
     }
 
     protected String isFilteredByProcessId(List<DataSetOp> ops) {

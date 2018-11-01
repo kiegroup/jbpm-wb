@@ -17,6 +17,7 @@
 package org.jbpm.workbench.common.events;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
 
 /**
  * Event fired when a Server Template is selected
@@ -24,21 +25,21 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class ServerTemplateSelected {
 
-    private String serverTemplateId;
+    private ServerTemplate serverTemplate;
 
     public ServerTemplateSelected() {
     }
 
-    public ServerTemplateSelected(String serverTemplateId) {
-        this.serverTemplateId = serverTemplateId;
+    public ServerTemplateSelected(ServerTemplate serverTemplate) {
+        this.serverTemplate = serverTemplate;
     }
 
     public String getServerTemplateId() {
-        return serverTemplateId;
+        return serverTemplate == null ? null : serverTemplate.getId();
     }
 
-    public void setServerTemplateId(String serverTemplateId) {
-        this.serverTemplateId = serverTemplateId;
+    public ServerTemplate getServerTemplate() {
+        return serverTemplate;
     }
 
     @Override
@@ -46,19 +47,31 @@ public class ServerTemplateSelected {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof ServerTemplateSelected)) {
             return false;
         }
 
         ServerTemplateSelected that = (ServerTemplateSelected) o;
 
-        return serverTemplateId.equals(that.serverTemplateId);
+        if (getServerTemplate() == null && that.getServerTemplate() == null) {
+            return true;
+        }
+
+        if (getServerTemplate() != null && that.getServerTemplate() == null) {
+            return false;
+        }
+
+        if (getServerTemplate() == null && that.getServerTemplate() != null) {
+            return false;
+        }
+
+        return getServerTemplate().getId().equals(that.getServerTemplate().getId());
     }
 
     @Override
     @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
-        int result = serverTemplateId.hashCode();
+        int result = serverTemplate == null ? 0 : serverTemplate.getId().hashCode();
         result = ~~result;
         return result;
     }
@@ -66,7 +79,7 @@ public class ServerTemplateSelected {
     @Override
     public String toString() {
         return "ServerTemplateSelected{" +
-                "serverTemplateId='" + serverTemplateId + '\'' +
+                "serverTemplate='" + serverTemplate + '\'' +
                 '}';
     }
 }

@@ -30,7 +30,6 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
@@ -47,7 +46,6 @@ import org.jbpm.workbench.es.util.RequestStatus;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
@@ -73,9 +71,6 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
 
     @Inject
     private Event<RequestChangedEvent> requestChangedEvent;
-
-    @Inject
-    private ErrorPopupPresenter errorPopup;
 
     @Inject
     private Event<JobSelectedEvent> jobSelectedEvent;
@@ -124,29 +119,26 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     @Override
     protected DataSetReadyCallback getDataSetReadyCallback(final Integer startRange,
                                                            final FilterSettings tableSettings) {
-        return new AbstractDataSetReadyCallback(errorPopup,
-                                                view,
-                                                tableSettings.getUUID()) {
-            @Override
-            public void callback(DataSet dataSet) {
-                if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(tableSettings.getKey())) {
-                    List<RequestSummary> myRequestSumaryFromDataSet = new ArrayList<RequestSummary>();
+        return errorHandlerBuilder.get().withUUID(tableSettings.getUUID()).withDataSetCallback(
+                dataSet -> {
+                    if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(tableSettings.getKey())) {
+                        List<RequestSummary> myRequestSumaryFromDataSet = new ArrayList<RequestSummary>();
 
-                    for (int i = 0; i < dataSet.getRowCount(); i++) {
-                        myRequestSumaryFromDataSet.add(getRequestSummary(dataSet,
-                                                                         i));
+                        for (int i = 0; i < dataSet.getRowCount(); i++) {
+                            myRequestSumaryFromDataSet.add(getRequestSummary(dataSet,
+                                                                             i));
+                        }
+                        boolean lastPageExactCount = false;
+                        if (dataSet.getRowCount() < view.getListGrid().getPageSize()) {
+                            lastPageExactCount = true;
+                        }
+                        updateDataOnCallback(myRequestSumaryFromDataSet,
+                                             startRange,
+                                             startRange + myRequestSumaryFromDataSet.size(),
+                                             lastPageExactCount);
                     }
-                    boolean lastPageExactCount = false;
-                    if (dataSet.getRowCount() < view.getListGrid().getPageSize()) {
-                        lastPageExactCount = true;
-                    }
-                    updateDataOnCallback(myRequestSumaryFromDataSet,
-                                         startRange,
-                                         startRange + myRequestSumaryFromDataSet.size(),
-                                         lastPageExactCount);
-                }
-            }
-        };
+                })
+                .withEmptyResultsCallback(() -> setEmptyResults());
     }
 
     protected RequestSummary getRequestSummary(final DataSet dataSet,

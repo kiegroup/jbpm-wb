@@ -22,8 +22,11 @@ import java.util.List;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jbpm.workbench.common.client.dataset.ErrorHandlerBuilder;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.active.ClearAllActiveFiltersEvent;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
@@ -37,22 +40,17 @@ import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.mocks.CallerMock;
 
 import static java.util.Collections.emptyList;
-import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.COLUMN_LOG_DATE;
-import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.COLUMN_LOG_ID;
-import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.COLUMN_LOG_NODE_NAME;
-import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.COLUMN_LOG_NODE_TYPE;
-import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.COLUMN_LOG_TYPE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.*;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -62,41 +60,47 @@ public class ProcessInstanceLogPresenterTest {
     ProcessInstanceLogPresenter.ProcessInstanceLogView view;
 
     @Mock
-    protected ErrorPopupPresenter errorPopup;
+    DataSetQueryHelper logsDataSetQueryHelper;
 
     @Mock
-    protected DataSetQueryHelper logsDataSetQueryHelper;
+    ProcessInstanceLogFilterSettingsManager filterSettingsManager;
 
     @Mock
-    protected ProcessInstanceLogFilterSettingsManager filterSettingsManager;
-
-    @Mock
-    protected ProcessInstanceLogBasicFiltersPresenter processInstanceLogBasicFiltersPresenter;
+    ProcessInstanceLogBasicFiltersPresenter processInstanceLogBasicFiltersPresenter;
 
     @Mock
     FilterSettings currentFilterSettings;
 
     @Mock
-    private DataSet dataSet;
+    DataSet dataSet;
 
     @Mock
     TaskService taskServiceMock;
 
     Caller<TaskService> taskService;
 
+    @Mock
+    ManagedInstance<ErrorHandlerBuilder> errorHandlerBuilder;
+
+    @Mock
+    DefaultWorkbenchErrorCallback errorCallback;
+
+    @Spy
+    ErrorHandlerBuilder errorHandler;
+
     @InjectMocks
     ProcessInstanceLogPresenter presenter;
 
-    private String processName = "processName";
-    private String testTask = "testTask";
-    private String datasetUID = "jbpmProcessInstanceLogs";
+    String processName = "processName";
+    String testTask = "testTask";
+    String datasetUID = "jbpmProcessInstanceLogs";
 
-    private Date logDate = new Date();
+    Date logDate = new Date();
 
-    private Long[] pilIds = new Long[4];
-    private String[] pilNodeType = new String[4];
-    private String[] pilNodeNames = new String[4];
-    private Boolean[] pilCompleted = new Boolean[4];
+    Long[] pilIds = new Long[4];
+    String[] pilNodeType = new String[4];
+    String[] pilNodeNames = new String[4];
+    Boolean[] pilCompleted = new Boolean[4];
 
     @Before
     public void setup() {
@@ -135,12 +139,9 @@ public class ProcessInstanceLogPresenterTest {
         presenter.setDataSetQueryHelper(logsDataSetQueryHelper);
         presenter.setFilterSettingsManager(filterSettingsManager);
         presenter.setProcessInstanceLogBasicFiltersPresenter(processInstanceLogBasicFiltersPresenter);
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+        doAnswer((InvocationOnMock invocation) -> {
                 ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSet);
                 return null;
-            }
         }).when(logsDataSetQueryHelper).lookupDataSet(anyInt(),
                                                       any(DataSetReadyCallback.class));
 
@@ -148,9 +149,13 @@ public class ProcessInstanceLogPresenterTest {
         when(filterSettingsManager.createDefaultFilterSettingsPrototype(anyLong())).thenReturn(currentFilterSettings);
         when(currentFilterSettings.getKey()).thenReturn("key");
         when(currentFilterSettings.getDataSet()).thenReturn(dataSet);
+        when(currentFilterSettings.getDataSetLookup()).thenReturn(mock(DataSetLookup.class));
 
         taskService = new CallerMock<>(taskServiceMock);
         presenter.setTaskService(taskService);
+        when(errorHandlerBuilder.get()).thenReturn(errorHandler);
+        doNothing().when(errorHandler).showErrorMessage(any());
+        errorHandler.setErrorCallback(errorCallback);
     }
 
     private void assertProcessInstanceLogContent(Long id,
@@ -191,33 +196,28 @@ public class ProcessInstanceLogPresenterTest {
 
     @Test
     public void datasetLookupNotFoundTest() {
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+        doAnswer((InvocationOnMock invocation) -> {
                 ((DataSetReadyCallback) invocation.getArguments()[1]).notFound();
-                ;
                 return null;
-            }
         }).when(logsDataSetQueryHelper).lookupDataSet(anyInt(),
                                                       any(DataSetReadyCallback.class));
         presenter.loadProcessInstanceLogs();
-        verify(errorPopup).showMessage(eq(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.DataSetNotFound(datasetUID)));
+
+        verify(errorHandler).notFound();
     }
 
     @Test
     public void datasetLookupErrorTest() {
-        String errorMessage = "error message";
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((DataSetReadyCallback) invocation.getArguments()[1]).onError(new ClientRuntimeError(errorMessage));
+        final ClientRuntimeError error = new ClientRuntimeError("error message");
+        doAnswer((InvocationOnMock invocation) -> {
+            ((DataSetReadyCallback) invocation.getArguments()[1]).onError(error);
                 return null;
-            }
         }).when(logsDataSetQueryHelper).lookupDataSet(anyInt(),
                                                       any(DataSetReadyCallback.class));
         presenter.loadProcessInstanceLogs();
-        verify(errorPopup).showMessage(eq(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.DataSetError(datasetUID,
-                                                                                                                          errorMessage)));
+
+        verify(errorHandler).onError(error);
+        verify(errorCallback).error(error.getThrowable());
     }
 
     @Test
@@ -311,9 +311,14 @@ public class ProcessInstanceLogPresenterTest {
     }
 
     @Test
-    public void processInstaceSelectionDefaultFiltersAdditionTest() {
+    public void processInstanceSelectionDefaultFiltersAdditionTest() {
         String serverTemplateId = "serverTemplateId";
         DataSetQueryHelper dataSetQueryHelperSpy = spy(DataSetQueryHelper.class);
+        doAnswer((InvocationOnMock invocation) -> {
+            ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSet);
+            return null;
+        }).when(dataSetQueryHelperSpy).lookupDataSet(anyInt(),
+                                                     any(DataSetReadyCallback.class));
         presenter.setDataSetQueryHelper(dataSetQueryHelperSpy);
         presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent("deploymentId",
                                                                                     1L,
@@ -326,11 +331,11 @@ public class ProcessInstanceLogPresenterTest {
         verify(view,
                times(2)).addActiveFilter(captor.capture());
 
-        final ActiveFilterItem nodeTypefilterItem = captor.getAllValues().get(0);
-        assertNotNull(nodeTypefilterItem);
+        final ActiveFilterItem nodeTypeFilterItem = captor.getAllValues().get(0);
+        assertNotNull(nodeTypeFilterItem);
         assertEquals(Constants.INSTANCE.EventNodeType(),
-                     nodeTypefilterItem.getKey());
-        List values = (List) nodeTypefilterItem.getValue();
+                     nodeTypeFilterItem.getKey());
+        List values = (List) nodeTypeFilterItem.getValue();
         assertEquals(8,
                      values.size());
         assertEquals(LogUtils.NODE_TYPE_START,
