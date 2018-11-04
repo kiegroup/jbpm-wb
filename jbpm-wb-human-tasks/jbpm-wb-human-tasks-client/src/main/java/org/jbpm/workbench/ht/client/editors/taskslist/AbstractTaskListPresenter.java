@@ -56,6 +56,7 @@ import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
+import org.jbpm.workbench.ht.util.TaskStatus;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
@@ -67,7 +68,6 @@ import org.uberfire.workbench.model.menu.Menus;
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
-import static org.jbpm.workbench.ht.util.TaskStatus.*;
 
 public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresenter.TaskListView> extends AbstractMultiGridPresenter<TaskSummary, V> {
 
@@ -308,8 +308,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     @Override
     public void selectSummaryItem(final TaskSummary summary) {
         boolean logOnly = false;
-        if (TASK_STATUS_COMPLETED.equals(summary.getTaskStatus()) ||
-                TASK_STATUS_EXITED.equals(summary.getTaskStatus())) {
+        if (TaskStatus.TASK_STATUS_COMPLETED.equals(summary.getTaskStatus()) ||
+                TaskStatus.TASK_STATUS_EXITED.equals(summary.getTaskStatus())) {
             logOnly = true;
         }
         setupDetailBreadcrumb(constants.TaskBreadcrumb(summary.getId()));
@@ -402,12 +402,12 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     @Override
     public void setupDefaultActiveSearchFilters() {
-        final List<String> status = Arrays.asList(TASK_STATUS_READY.getIdentifier(),
-                                                  TASK_STATUS_IN_PROGRESS.getIdentifier(),
-                                                  TASK_STATUS_RESERVED.getIdentifier());
-        final List<String> statusLabels = Arrays.asList(translationService.format(TASK_STATUS_READY.getIdentifier()),
-                                                        translationService.format(TASK_STATUS_IN_PROGRESS.getIdentifier()),
-                                                        translationService.format(TASK_STATUS_RESERVED.getIdentifier()));
+        final List<String> status = Arrays.asList(TaskStatus.TASK_STATUS_READY.getIdentifier(),
+                                                  TaskStatus.TASK_STATUS_IN_PROGRESS.getIdentifier(),
+                                                  TaskStatus.TASK_STATUS_RESERVED.getIdentifier());
+        final List<String> statusLabels = Arrays.asList(translationService.format(TaskStatus.TASK_STATUS_READY.getIdentifier()),
+                                                        translationService.format(TaskStatus.TASK_STATUS_IN_PROGRESS.getIdentifier()),
+                                                        translationService.format(TaskStatus.TASK_STATUS_RESERVED.getIdentifier()));
         addActiveFilter(in(COLUMN_STATUS,
                            status),
                         constants.Status(),
@@ -430,15 +430,15 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     protected abstract Predicate<TaskSummary> getResumeActionCondition();
 
     protected Predicate<TaskSummary> getCompleteActionCondition() {
-        return task -> task.getActualOwner() != null && TASK_STATUS_IN_PROGRESS.equals(task.getTaskStatus());
+        return task -> task.getActualOwner() != null && TaskStatus.TASK_STATUS_IN_PROGRESS.equals(task.getTaskStatus());
     }
 
     protected Predicate<TaskSummary> getClaimActionCondition() {
-        return task -> TASK_STATUS_READY.equals(task.getTaskStatus());
+        return task -> TaskStatus.TASK_STATUS_READY.equals(task.getTaskStatus());
     }
 
     protected Predicate<TaskSummary> getReleaseActionCondition() {
-        return task -> TASK_STATUS_RESERVED.equals(task.getTaskStatus()) || TASK_STATUS_IN_PROGRESS.equals(task.getTaskStatus());
+        return task -> TaskStatus.TASK_STATUS_RESERVED.equals(task.getTaskStatus()) || TaskStatus.TASK_STATUS_IN_PROGRESS.equals(task.getTaskStatus());
     }
 
     protected Predicate<TaskSummary> getProcessInstanceCondition() {
