@@ -22,13 +22,12 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.ht.model.TaskSummary;
+import org.jbpm.workbench.ht.util.TaskStatus;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartTitleDecoration;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.workbench.model.menu.Menus;
-
-import static org.jbpm.workbench.ht.util.TaskStatus.*;
 
 @Dependent
 @WorkbenchScreen(identifier = PerspectiveIds.TASK_LIST_SCREEN)
@@ -70,12 +69,12 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
 
     @Override
     protected Predicate<TaskSummary> getSuspendActionCondition() {
-        return task -> TASK_STATUS_RESERVED.equals(task.getTaskStatus()) || TASK_STATUS_IN_PROGRESS.equals(task.getTaskStatus());
+        return task -> TaskStatus.TASK_STATUS_RESERVED.equals(task.getTaskStatus()) || TaskStatus.TASK_STATUS_IN_PROGRESS.equals(task.getTaskStatus());
     }
 
     @Override
     protected Predicate<TaskSummary> getResumeActionCondition() {
-        return task -> TASK_STATUS_SUSPENDED.equals(task.getTaskStatus());
+        return task -> TaskStatus.TASK_STATUS_SUSPENDED.equals(task.getTaskStatus());
     }
 
     @Override
