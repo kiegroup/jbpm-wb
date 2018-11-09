@@ -25,16 +25,17 @@ import java.util.function.Predicate;
 import javax.enterprise.event.Event;
 
 import com.google.gwt.view.client.Range;
-import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.dataset.ErrorHandlerBuilder;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterAddEvent;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterRemoveEvent;
@@ -48,6 +49,8 @@ import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.junit.Before;
 import org.junit.Test;
+import org.kie.server.controller.api.model.spec.Capability;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -62,6 +65,7 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
+import static java.util.Collections.*;
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
 import static org.jbpm.workbench.ht.client.util.TaskUtils.TaskType;
@@ -128,6 +132,12 @@ public abstract class AbstractTaskListPresenterTest {
     @Spy
     protected Event<TaskSelectionEvent> taskSelected = new EventSourceMock<TaskSelectionEvent>();
 
+    @Mock
+    protected ManagedInstance<ErrorHandlerBuilder> errorHandlerBuilder;
+
+    @Spy
+    protected ErrorHandlerBuilder errorHandler;
+
     private String datasetUId = "dataserUId";
 
     protected static void testTaskStatusCondition(Predicate<TaskSummary> predicate,
@@ -182,6 +192,9 @@ public abstract class AbstractTaskListPresenterTest {
                                                                 any(DataSetReadyCallback.class));
 
         when(identity.getIdentifier()).thenReturn("userId");
+
+        when(errorHandlerBuilder.get()).thenReturn(errorHandler);
+        doNothing().when(errorHandler).showErrorMessage(any());
     }
 
     protected abstract AbstractTaskListPresenter getPresenter();
@@ -415,22 +428,6 @@ public abstract class AbstractTaskListPresenterTest {
     }
 
     @Test
-    public void testCreateDataSetTaskCallback() {
-        final AbstractTaskListPresenter presenter = spy(getPresenter());
-        final ClientRuntimeError error = new ClientRuntimeError("");
-        final FilterSettings filterSettings = mock(FilterSettings.class);
-        final DataSetReadyCallback callback = presenter.getDataSetReadyCallback(0,
-                                                                                filterSettings);
-
-        doNothing().when(presenter).showErrorPopup(any());
-
-        assertFalse(callback.onError(error));
-
-        verify(viewMock).hideBusyIndicator();
-        verify(presenter).showErrorPopup(Constants.INSTANCE.TaskListCouldNotBeLoaded());
-    }
-
-    @Test
     public void testExitedTaskSelection() {
         TaskSummary taskSummary = TaskSummary.builder()
                 .id(TASK_ID)
@@ -511,7 +508,11 @@ public abstract class AbstractTaskListPresenterTest {
                 .build();
 
 
-        getPresenter().setSelectedServerTemplate(serverTemplateId);
+        getPresenter().setSelectedServerTemplate(new ServerTemplate(serverTemplateId,
+                                                                    null,
+                                                                    singletonList(Capability.PROCESS.name()),
+                                                                    emptyMap(),
+                                                                    emptyList()));
         getPresenter().selectSummaryItem(taskSummary);
 
         assertTrue(getPresenter().isSameTaskFromEvent().test(new TaskCompletedEvent(serverTemplateId,
@@ -538,7 +539,11 @@ public abstract class AbstractTaskListPresenterTest {
                 .build();
 
         final String serverTemplateId = "serverTemplateId";
-        getPresenter().setSelectedServerTemplate(serverTemplateId);
+        getPresenter().setSelectedServerTemplate(new ServerTemplate(serverTemplateId,
+                                                                    null,
+                                                                    singletonList(Capability.PROCESS.name()),
+                                                                    emptyMap(),
+                                                                    emptyList()));
         getPresenter().selectSummaryItem(taskSummary);
 
         getPresenter().onTaskCompletedEvent(new TaskCompletedEvent(serverTemplateId,

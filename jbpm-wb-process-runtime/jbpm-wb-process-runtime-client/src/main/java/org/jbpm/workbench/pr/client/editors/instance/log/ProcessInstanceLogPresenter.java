@@ -16,7 +16,6 @@
 package org.jbpm.workbench.pr.client.editors.instance.log;
 
 import java.util.ArrayList;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -28,10 +27,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import org.dashbuilder.common.client.error.ClientRuntimeError;
-import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
-
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jbpm.workbench.common.client.filters.active.ClearAllActiveFiltersEvent;
@@ -39,13 +35,12 @@ import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
-
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.client.util.LogUtils;
-import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
+import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.in;
 import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.COLUMN_LOG_NODE_TYPE;
@@ -131,38 +126,30 @@ public class ProcessInstanceLogPresenter extends AbstractMultiGridPresenter<Proc
             logsDataSetQueryHelper.setDataSetHandler(currentTableSettings);
             logsDataSetQueryHelper.lookupDataSet(
                     currentPage * getPageSize(),
-                    new DataSetReadyCallback() {
-                        @Override
-                        public void callback(DataSet dataSet) {
-                            if (dataSet != null && logsDataSetQueryHelper.getCurrentTableSettings().getKey().equals(currentTableSettings.getKey())) {
-                                List<ProcessInstanceLogSummary> logs = new ArrayList<ProcessInstanceLogSummary>();
-                                for (int i = 0; i < dataSet.getRowCount(); i++) {
-                                    logs.add(new ProcessInstanceLogSummaryDataSetMapper().apply(dataSet,
-                                                                                                i));
+                    errorHandlerBuilder.get().withUUID(currentTableSettings.getUUID()).withDataSetCallback(
+                            dataSet -> {
+                                if (dataSet != null && logsDataSetQueryHelper.getCurrentTableSettings().getKey().equals(currentTableSettings.getKey())) {
+                                    List<ProcessInstanceLogSummary> logs = new ArrayList<ProcessInstanceLogSummary>();
+                                    for (int i = 0; i < dataSet.getRowCount(); i++) {
+                                        logs.add(new ProcessInstanceLogSummaryDataSetMapper().apply(dataSet,
+                                                                                                    i));
+                                    }
+                                    if (currentPage == 0) {
+                                        visibleLogs = new ArrayList();
+                                    }
+                                    visibleLogs.addAll(logs);
+                                    view.hideLoadButton(logs.size() < PAGE_SIZE);
+                                    view.setLogsList(visibleLogs.stream().collect(Collectors.toList()));
                                 }
-                                if (currentPage == 0) {
-                                    visibleLogs = new ArrayList();
-                                }
-                                visibleLogs.addAll(logs);
-                                view.hideLoadButton(logs.size() < PAGE_SIZE);
-                                view.setLogsList(visibleLogs.stream().collect(Collectors.toList()));
-                            }
-                        }
-
-                        @Override
-                        public void notFound() {
-                            errorPopup.showMessage(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.DataSetNotFound(currentTableSettings.getDataSet().getUUID()));
-                        }
-
-                        @Override
-                        public boolean onError(ClientRuntimeError error) {
-                            errorPopup.showMessage(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.DataSetError(currentTableSettings.getDataSet().getUUID(),
-                                                                                                                                   error.getMessage()));
-                            return false;
-                        }
-                    });
+                            })
+                            .withEmptyResultsCallback(() -> {
+                                currentPage = 0;
+                                view.hideLoadButton(false);
+                                view.setLogsList(Collections.emptyList());
+                            })
+            );
         } catch (Exception e) {
-            errorPopup.showMessage(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.UnexpectedError(e.getMessage()));
+            errorCallback.error(e);
         }
     }
 

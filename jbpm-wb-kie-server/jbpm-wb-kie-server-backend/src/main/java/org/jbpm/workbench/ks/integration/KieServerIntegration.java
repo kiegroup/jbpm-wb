@@ -179,7 +179,7 @@ public class KieServerIntegration {
         }
     }
 
-    public void onServerTemplateDeleted(@Observes ServerTemplateUpdated serverTemplateUpdated) {
+    public void onServerTemplateUpdated(@Observes ServerTemplateUpdated serverTemplateUpdated) {
         buildClientsForServer(serverTemplateUpdated.getServerTemplate());
     }
 

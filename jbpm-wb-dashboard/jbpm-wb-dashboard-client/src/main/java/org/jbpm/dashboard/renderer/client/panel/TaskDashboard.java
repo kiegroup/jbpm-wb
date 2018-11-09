@@ -392,7 +392,7 @@ public class TaskDashboard extends AbstractDashboard {
         final String deploymentId = ds.getValueAt(rowIndex,
                                                   COLUMN_PROCESS_EXTERNAL_ID).toString();
 
-        final String serverTemplateId = serverTemplateSelectorMenuBuilder.getSelectedServerTemplate();
+        final String serverTemplateId = serverTemplateSelectorMenuBuilder.getSelectedServerTemplateId();
 
         taskDataService.call(
                 (TaskSummary taskSummary) -> {

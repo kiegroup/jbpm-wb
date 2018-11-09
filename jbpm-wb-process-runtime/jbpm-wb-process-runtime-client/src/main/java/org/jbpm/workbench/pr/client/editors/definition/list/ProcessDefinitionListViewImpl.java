@@ -128,6 +128,23 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     }
 
     @Override
+    public void displayBlockingError(final String summary,
+                                     final String content) {
+        column.classList.add("hidden");
+        alert.getElement().classList.remove("hidden");
+        alert.setSummary(summary);
+        alert.setDescription(content);
+    }
+
+    @Override
+    public void clearBlockingError() {
+        alert.getElement().classList.add("hidden");
+        alert.setSummary("");
+        alert.setDescription("");
+        column.classList.remove("hidden");
+    }
+
+    @Override
     public void initColumns(ExtendedPagedTable extendedPagedTable) {
         Column processNameColumn = initProcessNameColumn();
         Column versionColumn = initVersionColumn();

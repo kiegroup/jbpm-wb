@@ -28,6 +28,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jbpm.workbench.common.client.util.BlockingError;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
@@ -66,6 +67,10 @@ public abstract class AbstractListView<T extends GenericSummary, V extends Abstr
     @Inject
     @DataField("column")
     protected HTMLDivElement column;
+
+    @Inject
+    @DataField("alert")
+    protected BlockingError alert;
 
     private Caller<UserPreferencesService> preferencesService;
 

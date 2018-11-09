@@ -16,67 +16,74 @@
 
 package org.jbpm.workbench.common.client.dataset;
 
+import java.util.function.Consumer;
+
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import com.google.gwtmockito.WithClassesToStub;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataSet;
-import org.gwtbootstrap3.client.ui.html.Text;
-import org.jboss.errai.bus.client.api.messaging.Message;
-import org.jbpm.workbench.common.client.list.ListView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
+import org.mockito.Spy;
+import org.uberfire.mvp.Command;
 
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
-@WithClassesToStub({Text.class})
-public class AbstractDataSetReadyCallbackTest {
-
-    @Mock
-    ErrorPopupPresenter errorPopup;
+public class ErrorHandlerBuilderTest {
 
     @Mock
     DefaultWorkbenchErrorCallback errorCallback;
 
-    @Mock
-    ListView view;
-
-    AbstractDataSetReadyCallback dataSetReadyCallback;
+    @InjectMocks
+    @Spy
+    ErrorHandlerBuilder dataSetReadyCallback;
 
     @Before
     public void setup() {
-        dataSetReadyCallback = new AbstractDataSetReadyCallback(errorPopup,
-                                                                view,
-                                                                "",
-                                                                errorCallback) {
-            @Override
-            public void callback(DataSet dataSet) {
-                //Do nothing
-            }
-        };
+        doNothing().when(dataSetReadyCallback).showErrorMessage(any());
     }
 
     @Test
     public void testNotFound() {
+        final Command command = mock(Command.class);
+        dataSetReadyCallback.setEmptyResultsCallback(command);
+
         dataSetReadyCallback.notFound();
 
-        verify(view).hideBusyIndicator();
-        verify(errorPopup).showMessage(anyString());
+        verify(command).execute();
+        verify(dataSetReadyCallback).showErrorMessage(any());
         verify(errorCallback,
-               never()).error(any(Throwable.class));
+               never()).error(any());
     }
 
     @Test
     public void testOnError() {
+        final Command command = mock(Command.class);
+        dataSetReadyCallback.setEmptyResultsCallback(command);
+
         dataSetReadyCallback.onError(mock(ClientRuntimeError.class));
 
-        verify(view).hideBusyIndicator();
-        verify(errorPopup,
-               never()).showMessage(anyString());
-        verify(errorCallback).error(any(Throwable.class));
+        verify(command).execute();
+        verify(errorCallback).error(any());
+        verify(dataSetReadyCallback,
+               never()).showErrorMessage(any());
+    }
+
+    @Test
+    public void testCallback() {
+        final Consumer<DataSet> consumer = mock(Consumer.class);
+        dataSetReadyCallback.setCallback(consumer);
+
+        dataSetReadyCallback.callback(mock(DataSet.class));
+
+        verify(consumer).accept(any());
+        verify(errorCallback,
+               never()).error(any());
+        verify(dataSetReadyCallback,
+               never()).showErrorMessage(any());
     }
 }

@@ -55,6 +55,10 @@
       <artifactId>uberfire-preferences-processors</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.kie.server</groupId>
+      <artifactId>kie-server-controller-api</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

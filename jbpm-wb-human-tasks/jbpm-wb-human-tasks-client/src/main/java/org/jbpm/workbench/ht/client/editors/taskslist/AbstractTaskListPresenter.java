@@ -28,8 +28,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.dashbuilder.common.client.error.ClientRuntimeError;
-import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
@@ -42,7 +40,6 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.list.MultiGridView;
@@ -58,8 +55,6 @@ import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.ht.util.TaskStatus;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
-import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
-import org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorPopup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
@@ -78,9 +73,6 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     private DataSetQueryHelper dataSetQueryHelperDomainSpecific;
 
     protected TranslationService translationService;
-
-    @Inject
-    private ErrorPopupPresenter errorPopup;
 
     @Inject
     private Event<TaskSelectionEvent> taskSelected;
@@ -109,54 +101,37 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     @Override
     protected DataSetReadyCallback getDataSetReadyCallback(final Integer startRange,
                                                            final FilterSettings tableSettings) {
-        return new AbstractDataSetReadyCallback(errorPopup,
-                                                view,
-                                                tableSettings.getUUID()) {
+        return errorHandlerBuilder.get().withUUID(tableSettings.getUUID()).withDataSetCallback(
+                dataSet -> {
+                    if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(tableSettings.getKey())) {
+                        final List<TaskSummary> myTasksFromDataSet = new ArrayList<TaskSummary>();
 
-            @Override
-            public void callback(DataSet dataSet) {
-                if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(tableSettings.getKey())) {
-                    final List<TaskSummary> myTasksFromDataSet = new ArrayList<TaskSummary>();
+                        for (int i = 0; i < dataSet.getRowCount(); i++) {
+                            myTasksFromDataSet.add(new TaskSummaryDataSetMapper().apply(dataSet,
+                                                                                        i));
+                        }
 
-                    for (int i = 0; i < dataSet.getRowCount(); i++) {
-                        myTasksFromDataSet.add(new TaskSummaryDataSetMapper().apply(dataSet,
-                                                                                    i));
+                        boolean lastPageExactCount = false;
+                        if (dataSet.getRowCount() < view.getListGrid().getPageSize()) {
+                            lastPageExactCount = true;
+                        }
+
+                        List<DataSetOp> ops = tableSettings.getDataSetLookup().getOperationList();
+                        String filterValue = isFilteredByTaskName(ops); //Add here the check to add the domain data columns taskName?
+                        if (filterValue != null) {
+                            getDomainSpecifDataForTasks(startRange,
+                                                        myTasksFromDataSet,
+                                                        lastPageExactCount);
+                        } else {
+                            updateDataOnCallback(myTasksFromDataSet,
+                                                 startRange,
+                                                 startRange + myTasksFromDataSet.size(),
+                                                 lastPageExactCount);
+                        }
                     }
-
-                    boolean lastPageExactCount = false;
-                    if (dataSet.getRowCount() < view.getListGrid().getPageSize()) {
-                        lastPageExactCount = true;
-                    }
-
-                    List<DataSetOp> ops = tableSettings.getDataSetLookup().getOperationList();
-                    String filterValue = isFilteredByTaskName(ops); //Add here the check to add the domain data columns taskName?
-                    if (filterValue != null) {
-                        getDomainSpecifDataForTasks(startRange,
-                                                    myTasksFromDataSet,
-                                                    lastPageExactCount);
-                    } else {
-                        updateDataOnCallback(myTasksFromDataSet,
-                                             startRange,
-                                             startRange + myTasksFromDataSet.size(),
-                                             lastPageExactCount);
-                    }
-                }
-                view.hideBusyIndicator();
-            }
-
-            @Override
-            public boolean onError(final ClientRuntimeError error) {
-                view.hideBusyIndicator();
-
-                showErrorPopup(Constants.INSTANCE.TaskListCouldNotBeLoaded());
-
-                return false;
-            }
-        };
-    }
-
-    void showErrorPopup(final String message) {
-        ErrorPopup.showMessage(message);
+                    view.hideBusyIndicator();
+                })
+                .withEmptyResultsCallback(() -> setEmptyResults());
     }
 
     protected String isFilteredByTaskName(List<DataSetOp> ops) {
@@ -208,40 +183,37 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                                                                        final List<TaskSummary> instances,
                                                                        final FilterSettings tableSettings,
                                                                        boolean lastPageExactCount) {
-        return new AbstractDataSetReadyCallback(errorPopup,
-                                                view,
-                                                tableSettings.getUUID()) {
-            @Override
-            public void callback(DataSet dataSet) {
-                if (dataSet.getRowCount() > 0) {
-                    Set<String> columns = new HashSet<String>();
-                    for (int i = 0; i < dataSet.getRowCount(); i++) {
-                        Long taskId = getColumnLongValue(dataSet,
-                                                         COLUMN_TASK_ID,
-                                                         i);
-                        String variableName = getColumnStringValue(dataSet,
-                                                                   COLUMN_TASK_VARIABLE_NAME,
-                                                                   i);
-                        String variableValue = getColumnStringValue(dataSet,
-                                                                    COLUMN_TASK_VARIABLE_VALUE,
-                                                                    i);
-                        for (TaskSummary task : instances) {
-                            if (task.getId().equals(taskId)) {
-                                task.addDomainData(variableName,
-                                                   variableValue);
-                                columns.add(variableName);
+        return errorHandlerBuilder.get().withUUID(tableSettings.getUUID()).withDataSetCallback(
+                dataSet -> {
+                    if (dataSet.getRowCount() > 0) {
+                        Set<String> columns = new HashSet<String>();
+                        for (int i = 0; i < dataSet.getRowCount(); i++) {
+                            Long taskId = getColumnLongValue(dataSet,
+                                                             COLUMN_TASK_ID,
+                                                             i);
+                            String variableName = getColumnStringValue(dataSet,
+                                                                       COLUMN_TASK_VARIABLE_NAME,
+                                                                       i);
+                            String variableValue = getColumnStringValue(dataSet,
+                                                                        COLUMN_TASK_VARIABLE_VALUE,
+                                                                        i);
+                            for (TaskSummary task : instances) {
+                                if (task.getId().equals(taskId)) {
+                                    task.addDomainData(variableName,
+                                                       variableValue);
+                                    columns.add(variableName);
+                                }
                             }
                         }
+                        view.addDomainSpecifColumns((ListTable) view.getListGrid(),
+                                                    columns);
                     }
-                    view.addDomainSpecifColumns((ListTable) view.getListGrid(),
-                                                columns);
-                }
-                updateDataOnCallback(instances,
-                                     startRange,
-                                     startRange + instances.size(),
-                                     lastPageExactCount);
-            }
-        };
+                    updateDataOnCallback(instances,
+                                         startRange,
+                                         startRange + instances.size(),
+                                         lastPageExactCount);
+                })
+                .withEmptyResultsCallback(() -> setEmptyResults());
     }
 
     public void releaseTask(final TaskSummary task) {

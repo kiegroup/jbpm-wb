@@ -25,11 +25,14 @@ public interface ListView<T extends GenericSummary, V> extends IsWidget,
                                                                HasBusyIndicator,
                                                                UberView<V> {
 
-    void showBusyIndicator(String message);
-
-    void hideBusyIndicator();
-
     void displayNotification(String text);
 
     ExtendedPagedTable<T> getListGrid();
+
+    default void displayBlockingError(String summary,
+                                      String content) {
+    }
+
+    default void clearBlockingError() {
+    }
 }

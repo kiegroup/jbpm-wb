@@ -25,8 +25,10 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.dataset.ErrorHandlerBuilder;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterAddEvent;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterRemoveEvent;
@@ -121,6 +123,12 @@ public class ExecutionErrorListPresenterTest {
     @Mock
     private DataSet dataSet;
 
+    @Mock
+    private ManagedInstance<ErrorHandlerBuilder> errorHandlerBuilder;
+
+    @Spy
+    private ErrorHandlerBuilder errorHandler;
+
     @InjectMocks
     private ExecutionErrorListPresenter presenter;
 
@@ -147,6 +155,7 @@ public class ExecutionErrorListPresenterTest {
                                                   any(DataSetReadyCallback.class));
         commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
         presenter.setExecutorService(callerMockExecutorService);
+        when(errorHandlerBuilder.get()).thenReturn(errorHandler);
     }
 
     @Test

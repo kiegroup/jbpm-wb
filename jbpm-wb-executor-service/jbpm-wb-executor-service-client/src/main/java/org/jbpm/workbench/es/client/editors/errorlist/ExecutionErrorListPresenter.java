@@ -27,7 +27,6 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.jbpm.workbench.common.client.dataset.AbstractDataSetReadyCallback;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
@@ -40,7 +39,6 @@ import org.jbpm.workbench.es.service.ExecutorService;
 import org.jbpm.workbench.es.util.ExecutionErrorType;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.workbench.widgets.common.ErrorPopupPresenter;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -55,9 +53,6 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     private final Constants constants = Constants.INSTANCE;
 
     private final org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
-
-    @Inject
-    private ErrorPopupPresenter errorPopup;
 
     @Inject
     private Caller<ExecutorService> executorService;
@@ -80,29 +75,26 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
     @Override
     protected DataSetReadyCallback getDataSetReadyCallback(final Integer startRange,
                                                            final FilterSettings tableSettings) {
-        return new AbstractDataSetReadyCallback(errorPopup,
-                                                view,
-                                                tableSettings.getUUID()) {
-            @Override
-            public void callback(DataSet dataSet) {
-                if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(tableSettings.getKey())) {
-                    List<ExecutionErrorSummary> visibleExecutionErrors = new ArrayList<ExecutionErrorSummary>();
-                    for (int i = 0; i < dataSet.getRowCount(); i++) {
-                        visibleExecutionErrors.add(createExecutionErrorSummaryFromDataSet(dataSet,
-                                                                                          i));
-                    }
+        return errorHandlerBuilder.get().withUUID(tableSettings.getUUID()).withDataSetCallback(
+                dataSet -> {
+                    if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(tableSettings.getKey())) {
+                        List<ExecutionErrorSummary> visibleExecutionErrors = new ArrayList<ExecutionErrorSummary>();
+                        for (int i = 0; i < dataSet.getRowCount(); i++) {
+                            visibleExecutionErrors.add(createExecutionErrorSummaryFromDataSet(dataSet,
+                                                                                              i));
+                        }
 
-                    boolean lastPageExactCount = false;
-                    if (dataSet.getRowCount() < view.getListGrid().getPageSize()) {
-                        lastPageExactCount = true;
+                        boolean lastPageExactCount = false;
+                        if (dataSet.getRowCount() < view.getListGrid().getPageSize()) {
+                            lastPageExactCount = true;
+                        }
+                        updateDataOnCallback(visibleExecutionErrors,
+                                             startRange,
+                                             startRange + visibleExecutionErrors.size(),
+                                             lastPageExactCount);
                     }
-                    updateDataOnCallback(visibleExecutionErrors,
-                                         startRange,
-                                         startRange + visibleExecutionErrors.size(),
-                                         lastPageExactCount);
-                }
-            }
-        };
+                })
+                .withEmptyResultsCallback(() -> setEmptyResults());
     }
 
     protected ExecutionErrorSummary createExecutionErrorSummaryFromDataSet(final DataSet dataSet,

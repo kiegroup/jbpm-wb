@@ -26,7 +26,9 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.dataset.ErrorHandlerBuilder;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterAddEvent;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterRemoveEvent;
@@ -44,6 +46,8 @@ import org.jbpm.workbench.es.util.RequestStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.controller.api.model.spec.Capability;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -58,8 +62,8 @@ import org.uberfire.mvp.Command;
 import org.uberfire.mvp.Commands;
 import org.uberfire.mvp.PlaceRequest;
 
+import static java.util.Collections.*;
 import static org.jbpm.workbench.es.client.editors.util.JobUtils.createRequestSummary;
-import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.EXECUTION_ERROR_LIST_DATASET;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -109,7 +113,7 @@ public class RequestListPresenterTest {
     private PerspectiveActivity perspectiveActivity;
 
     @Mock
-    ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
+    private ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
 
     @Mock
     private NewJobPresenter newJobPresenterMock;
@@ -119,6 +123,9 @@ public class RequestListPresenterTest {
 
     @Spy
     private FilterSettings filterSettings;
+
+    @Mock
+    private ManagedInstance<ErrorHandlerBuilder> errorHandlerBuilder;
 
     private RequestListPresenter presenter;
 
@@ -147,6 +154,8 @@ public class RequestListPresenterTest {
                                                   any(DataSetReadyCallback.class));
         commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
 
+        when(errorHandlerBuilder.get()).thenReturn(new ErrorHandlerBuilder());
+
         presenter = new RequestListPresenter(viewMock,
                                              callerMockExecutorService,
                                              dataSetQueryHelper,
@@ -157,6 +166,7 @@ public class RequestListPresenterTest {
         presenter.setPerspectiveManager(perspectiveManager);
         presenter.setServerTemplateSelectorMenuBuilder(serverTemplateSelectorMenuBuilder);
         presenter.setNewJobPresenter(newJobPresenterMock);
+        presenter.setErrorHandlerBuilder(errorHandlerBuilder);
     }
 
     @Test
@@ -418,15 +428,21 @@ public class RequestListPresenterTest {
     @Test
     public void testOpenNewJobDialog_serverTemplateSet() {
         final String serverTemplateTest = "serverTemplateTest";
-        presenter.setSelectedServerTemplate(serverTemplateTest);
+        presenter.setSelectedServerTemplate(new ServerTemplate(serverTemplateTest,
+                                                               null,
+                                                               singletonList(Capability.PROCESS.name()),
+                                                               emptyMap(),
+                                                               emptyList()));
 
         assertNotNull(presenter.getNewJobCommand());
 
         presenter.getNewJobCommand().execute();
-        assertTrue(serverTemplateTest.equals(presenter.getSelectedServerTemplate()));
+        assertEquals(serverTemplateTest,
+                     presenter.getSelectedServerTemplate());
         verify(newJobPresenterMock).openNewJobDialog(serverTemplateTest);
         verify(viewMock,
                times(3)).getListGrid();
+        verify(viewMock).clearBlockingError();
         verifyNoMoreInteractions(viewMock);
     }
 
@@ -526,7 +542,7 @@ public class RequestListPresenterTest {
     @Test
     public void bulkCancelJobsDependingOnStatusTest() {
         final String serverTemplateTest = "serverTemplateTest";
-        presenter.setSelectedServerTemplate(serverTemplateTest);
+        presenter.setSelectedServerTemplate(new ServerTemplate(serverTemplateTest, null));
         String deploymentId = "deploymentId";
         String key = "key";
         Long jobId_1 = new Random().nextLong();
@@ -567,7 +583,7 @@ public class RequestListPresenterTest {
     @Test
     public void bulkRequeueJobsDependingOnStatusTest() {
         final String serverTemplateTest = "serverTemplateTest";
-        presenter.setSelectedServerTemplate(serverTemplateTest);
+        presenter.setSelectedServerTemplate(new ServerTemplate(serverTemplateTest, null));
         String deploymentId = "deploymentId";
         String key = "key";
         Long jobId_1 = new Random().nextLong();

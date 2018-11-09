@@ -16,7 +16,10 @@
 
 package org.jbpm.workbench.common.client.menu;
 
-import java.util.Set;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -26,10 +29,11 @@ import javax.inject.Inject;
 import com.google.common.collect.FluentIterable;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.workbench.ks.events.KieServerDataSetRegistered;
 import org.jbpm.workbench.common.events.ServerTemplateSelected;
+import org.jbpm.workbench.ks.events.KieServerDataSetRegistered;
 import org.kie.server.controller.api.model.events.ServerTemplateDeleted;
 import org.kie.server.controller.api.model.events.ServerTemplateUpdated;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.kie.server.controller.api.model.spec.ServerTemplateList;
 import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.uberfire.client.mvp.UberElement;
@@ -53,28 +57,32 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
     @Inject
     private Event<ServerTemplateSelected> serverTemplateSelectedEvent;
 
+    private Map<String, ServerTemplate> serverTemplateMap = new HashMap<>();
+
     @PostConstruct
     public void init() {
         widgetView.setServerTemplateChangeHandler(e -> {
             view.updateSelectedValue(e);
-            serverTemplateSelectedEvent.fire(new ServerTemplateSelected(e));
+            serverTemplateSelectedEvent.fire(new ServerTemplateSelected(serverTemplateMap.get(e)));
         });
         view.setServerTemplateChangeHandler(e -> {
             widgetView.updateSelectedValue(e);
-            serverTemplateSelectedEvent.fire(new ServerTemplateSelected(e));
+            serverTemplateSelectedEvent.fire(new ServerTemplateSelected(serverTemplateMap.get(e)));
         });
 
         loadServerTemplates();
     }
 
     protected void loadServerTemplates() {
+        serverTemplateMap.clear();
         widgetView.removeAllServerTemplates();
         view.removeAllServerTemplates();
         specManagementService.call((ServerTemplateList serverTemplates) -> {
-            final Set<String> ids = FluentIterable.from(serverTemplates.getServerTemplates())
+            FluentIterable.from(serverTemplates.getServerTemplates())
                     .filter(s -> s.getServerInstanceKeys() != null && !s.getServerInstanceKeys().isEmpty())
-                    .transform(s -> s.getId())
-                    .toSortedSet(String.CASE_INSENSITIVE_ORDER);
+                    .forEach(s -> serverTemplateMap.put(s.getId(), s));
+
+            final List<String> ids = serverTemplateMap.keySet().stream().sorted(String.CASE_INSENSITIVE_ORDER).collect(Collectors.toList());
 
             for (String id : ids) {
                 widgetView.addServerTemplate(id);
@@ -85,15 +93,13 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
                 widgetView.selectServerTemplate(ids.iterator().next());
                 view.selectServerTemplate(ids.iterator().next());
             } else {
-                final String selectedServerTemplate = getSelectedServerTemplate();
-                if (selectedServerTemplate != null) {
-                    if (ids.contains(selectedServerTemplate)) {
-                        widgetView.selectServerTemplate(selectedServerTemplate);
-                        view.selectServerTemplate(selectedServerTemplate);
-                    } else {
-                        widgetView.clearSelectedServerTemplate();
-                        view.clearSelectedServerTemplate();
-                    }
+                final ServerTemplate selectedServerTemplate = getSelectedServerTemplate();
+                if (selectedServerTemplate != null && ids.contains(selectedServerTemplate.getId())) {
+                    widgetView.selectServerTemplate(selectedServerTemplate.getId());
+                    view.selectServerTemplate(selectedServerTemplate.getId());
+                } else {
+                    widgetView.clearSelectedServerTemplate();
+                    view.clearSelectedServerTemplate();
                 }
             }
 
@@ -148,8 +154,13 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
         this.specManagementService = specManagementService;
     }
 
-    public String getSelectedServerTemplate() {
-        return view.getSelectedServerTemplate();
+    public ServerTemplate getSelectedServerTemplate() {
+        return serverTemplateMap.get(view.getSelectedServerTemplate());
+    }
+
+    public String getSelectedServerTemplateId(){
+        ServerTemplate serverTemplate = getSelectedServerTemplate();
+        return serverTemplate == null ? "" : serverTemplate.getId();
     }
 
     public interface ServerTemplateSelectorView {

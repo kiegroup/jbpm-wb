@@ -26,6 +26,7 @@ import javax.enterprise.event.Event;
 
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.jbpm.workbench.ks.events.KieServerDataSetRegistered;
+import org.jbpm.workbench.ks.integration.event.ServerInstanceRegistered;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,11 +35,17 @@ import org.kie.server.api.model.definition.QueryDefinition;
 import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.QueryServicesClient;
 import org.kie.server.common.rest.KieServerHttpRequestException;
+import org.kie.server.controller.api.model.runtime.ServerInstance;
+import org.kie.server.controller.api.model.spec.Capability;
+import org.kie.server.controller.api.model.spec.ServerTemplate;
+import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.commons.async.DescriptiveThreadFactory;
 import org.uberfire.mocks.EventSourceMock;
 
+import static java.util.Collections.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -61,6 +68,9 @@ public class KieServerDataSetManagerTest {
 
     private KieServerDataSetManager kieServerDataSetManager;
 
+    @Mock
+    private SpecManagementService specManagementService;
+
     @Before
     public void setup() {
         this.dataSetDefRegistry = Mockito.mock(DataSetDefRegistry.class);
@@ -77,14 +87,16 @@ public class KieServerDataSetManagerTest {
         this.queryClient = Mockito.mock(QueryServicesClient.class);
         when(kieClient.getServicesClient(any())).thenReturn(queryClient);
 
-        when(kieServerIntegration.getAdminServerClient(anyString(), anyString())).thenReturn(kieClient);
+        when(kieServerIntegration.getAdminServerClient(anyString(),
+                                                       anyString())).thenReturn(kieClient);
 
         ExecutorService executorService = Executors.newCachedThreadPool(new DescriptiveThreadFactory());
 
         this.kieServerDataSetManager = new KieServerDataSetManager(dataSetDefRegistry,
                                                                    kieServerIntegration,
                                                                    event,
-                                                                   executorService);
+                                                                   executorService,
+                                                                   specManagementService);
     }
 
     @Test
@@ -99,7 +111,8 @@ public class KieServerDataSetManagerTest {
                                                          definitions);
 
         verify(kieServerIntegration,
-               times(1)).getAdminServerClient(anyString(), anyString());
+               times(1)).getAdminServerClient(anyString(),
+                                              anyString());
         verify(queryClient,
                times(1)).replaceQuery(any());
 
@@ -135,7 +148,8 @@ public class KieServerDataSetManagerTest {
                                                          definitions);
 
         verify(kieServerIntegration,
-               times(1)).getAdminServerClient(anyString(), anyString());
+               times(1)).getAdminServerClient(anyString(),
+                                              anyString());
         verify(kieServerIntegration,
                times(1)).getAdminServerClientCheckEndpoints(anyString());
         verify(queryClient,
@@ -145,6 +159,39 @@ public class KieServerDataSetManagerTest {
 
         assertEquals(1,
                      receivedEvents.size());
+    }
+
+    @Test
+    public void testRegisterKieServerWithoutProcessCapability() {
+        final ServerInstance serverInstance = new ServerInstance();
+        serverInstance.setServerInstanceId("instanceId");
+        serverInstance.setServerTemplateId("templateId");
+        when(specManagementService.getServerTemplate(serverInstance.getServerTemplateId())).thenReturn(new ServerTemplate());
+
+        kieServerDataSetManager.registerInKieServer(new ServerInstanceRegistered(serverInstance));
+
+        assertEquals(1,
+                     receivedEvents.size());
+        verify(dataSetDefRegistry,
+               never()).getDataSetDefs(false);
+    }
+
+    @Test
+    public void testRegisterKieServerWithProcessCapability() {
+        final ServerInstance serverInstance = new ServerInstance();
+        serverInstance.setServerInstanceId("instanceId");
+        serverInstance.setServerTemplateId("templateId");
+        when(specManagementService.getServerTemplate(serverInstance.getServerTemplateId())).thenReturn(new ServerTemplate(serverInstance.getServerTemplateId(),
+                                                                                                                          null,
+                                                                                                                          singletonList(Capability.PROCESS.name()),
+                                                                                                                          emptyMap(),
+                                                                                                                          emptyList()));
+
+        kieServerDataSetManager.registerInKieServer(new ServerInstanceRegistered(serverInstance));
+
+        assertEquals(0,
+                     receivedEvents.size());
+        verify(dataSetDefRegistry).getDataSetDefs(false);
     }
 
     @Test
@@ -161,7 +208,8 @@ public class KieServerDataSetManagerTest {
                                                          definitions);
 
         verify(kieServerIntegration,
-               times(1)).getAdminServerClient(anyString(), anyString());
+               times(1)).getAdminServerClient(anyString(),
+                                              anyString());
         verify(queryClient,
                never()).replaceQuery(any());
 

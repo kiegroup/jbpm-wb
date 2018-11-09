@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
@@ -37,9 +36,11 @@ import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.mvp.PerspectiveActivity;
@@ -55,6 +56,7 @@ import org.uberfire.security.ResourceRef;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.workbench.model.ActivityResourceType;
 
+import static java.util.Collections.emptyList;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
 import static org.junit.Assert.*;
 import static org.kie.workbench.common.workbench.client.PerspectiveIds.PROCESS_INSTANCES;
@@ -106,9 +108,10 @@ public class ProcessDefinitionListPresenterTest {
     PopupFormDisplayerView formDisplayPopUp;
 
     @Mock
-    HasData next;
+    DefaultWorkbenchErrorCallback errorCallback;
 
     @InjectMocks
+    @Spy
     ProcessDefinitionListPresenter presenter;
 
     private static List<ProcessSummary> getMockList(int instances) {
@@ -128,10 +131,7 @@ public class ProcessDefinitionListPresenterTest {
         when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
         when(perspectiveActivity.getIdentifier()).thenReturn(PERSPECTIVE_ID);
 
-        when(next.getVisibleRange()).thenReturn(new Range(1,
-                                                          1));
         commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
-        presenter.getDataProvider().addDataDisplay(next);
     }
 
     @Test
@@ -190,7 +190,6 @@ public class ProcessDefinitionListPresenterTest {
 
         Range range = new Range(0,
                                 10);
-        final ProcessDefinitionListPresenter presenter = spy(this.presenter);
         presenter.getData(range);
 
         verify(presenter).updateDataOnCallback(anyList(),
@@ -210,15 +209,15 @@ public class ProcessDefinitionListPresenterTest {
 
     @Test
     public void testOnRuntimeDataServiceError() {
-        final ProcessDefinitionListPresenter presenter = spy(this.presenter);
-        final String errorMessage = Constants.INSTANCE.ResourceCouldNotBeLoaded(commonConstants.Process_Definitions());
+        final Throwable throwable = mock(Throwable.class);
+        assertFalse(presenter.onRuntimeDataServiceError(throwable));
 
-        doNothing().when(presenter).showErrorPopup(any());
-
-        assertFalse(presenter.onRuntimeDataServiceError());
-        verify(presenter).showErrorPopup(errorMessage);
-        verify(view,
-               times(2)).hideBusyIndicator();
+        verify(presenter).updateDataOnCallback(emptyList(),
+                                               0,
+                                               0,
+                                               true);
+        verify(errorCallback).error(throwable);
+        verify(view).hideBusyIndicator();
     }
 
     @Test

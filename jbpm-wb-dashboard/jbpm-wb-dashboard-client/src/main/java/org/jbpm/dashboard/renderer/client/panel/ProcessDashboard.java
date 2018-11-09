@@ -349,7 +349,7 @@ public class ProcessDashboard extends AbstractDashboard {
                 processDefName,
                 processInstanceStatus,
                 true,
-                serverTemplateSelectorMenuBuilder.getSelectedServerTemplate()));
+                serverTemplateSelectorMenuBuilder.getSelectedServerTemplateId()));
     }
 
     public void showDashboard() {
