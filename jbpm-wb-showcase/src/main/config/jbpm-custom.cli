@@ -1,0 +1,7 @@
+embed-server --server-config=standalone.xml
+
+if (outcome != success) of /subsystem=security/security-domain=other/authentication=classic/login-module=org.kie.security.jaas.KieLoginModule:read-resource
+    /subsystem=security/security-domain=other/authentication=classic/login-module=org.kie.security.jaas.KieLoginModule:add(code=org.kie.security.jaas.KieLoginModule, flag=required, module=deployment.jbpm-wb-showcase.war)
+end-if
+
+stop-embedded-server
