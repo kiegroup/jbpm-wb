@@ -350,6 +350,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         final ColumnMeta<T> actionsColMeta = new ColumnMeta<T>(actionsColumn,
                                                                "");
         actionsColMeta.setHeader(header);
+        actionsColMeta.setVisibleIndex(false);
         return actionsColMeta;
     }
 

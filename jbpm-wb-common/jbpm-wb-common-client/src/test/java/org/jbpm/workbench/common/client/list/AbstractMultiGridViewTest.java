@@ -180,6 +180,12 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
     }
 
     @Test
+    public void testInitActionsColumn() {
+        ColumnMeta columnMeta = getView().initActionsColumn();
+        assertEquals(false, columnMeta.isVisibleIndex());
+    }
+
+    @Test
     public void testGlobalPreferences() {
         doAnswer((InvocationOnMock inv) -> {
             ((ParameterizedCommand<ManagePreferences>) inv.getArguments()[0]).execute(new ManagePreferences().defaultValue(new ManagePreferences()));
