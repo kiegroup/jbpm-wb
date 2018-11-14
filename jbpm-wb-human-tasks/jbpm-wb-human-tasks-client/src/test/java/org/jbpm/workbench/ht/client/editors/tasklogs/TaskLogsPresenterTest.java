@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.jbpm.workbench.ht.client.editors.tasklogs;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -30,10 +31,12 @@ import org.jbpm.workbench.ht.model.TaskEventSummary;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.uberfire.mocks.CallerMock;
 
@@ -45,6 +48,8 @@ import static org.mockito.Mockito.*;
 public class TaskLogsPresenterTest extends AbstractTaskPresenterTest {
 
     private static final Long TASK_ID = 1L;
+    private static String serverTemplateId = "serverTemplateId";
+    private static String containerId = "containerId";
 
     @Mock
     private TaskService taskService;
@@ -54,6 +59,7 @@ public class TaskLogsPresenterTest extends AbstractTaskPresenterTest {
     @Mock
     private TaskLogsPresenter.TaskLogsView taskLogsView;
 
+    @InjectMocks
     private TaskLogsPresenter presenter;
 
     @Override
@@ -66,24 +72,29 @@ public class TaskLogsPresenterTest extends AbstractTaskPresenterTest {
         remoteTaskServiceCaller = new CallerMock<TaskService>(taskService);
         presenter = new TaskLogsPresenter(taskLogsView,
                                           remoteTaskServiceCaller);
-        when(taskService.getTaskComments("",
-                                         "",
-                                         1l)).thenReturn(mock(List.class));
+        when(taskService.getTaskEvents(serverTemplateId,
+                                       containerId,
+                                       TASK_ID,
+                                       0,
+                                       10)).thenReturn(createEventSummariesForTask(TASK_ID));
     }
 
     @Test
     public void logsUpdatedWhenTaskSelected() {
-        //When task selected
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent("",
-                                                              "",
+        presenter.onTaskSelectionEvent(new TaskSelectionEvent(serverTemplateId,
+                                                              containerId,
                                                               TASK_ID));
 
-        //Logs retrieved and text area refreshed
-        verify(taskService).getTaskEvents(anyString(),
-                                          anyString(),
-                                          anyLong());
-        verify(taskLogsView,
-               times(2)).setLogTextAreaText(emptyList());
+        verify(taskService).getTaskEvents(serverTemplateId,
+                                          containerId,
+                                          TASK_ID,
+                                          0,
+                                          10);
+        ArgumentCaptor<List> argumentDESC = ArgumentCaptor.forClass(List.class);
+        verify(taskLogsView).setLogs(argumentDESC.capture());
+        assertEquals(3,
+                     argumentDESC.getValue().size());
+
     }
 
     @Test
@@ -102,9 +113,11 @@ public class TaskLogsPresenterTest extends AbstractTaskPresenterTest {
         verify(taskService,
                times(2)).getTaskEvents(anyString(),
                                        anyString(),
-                                       anyLong());
+                                       anyLong(),
+                                       anyInt(),
+                                       anyInt());
         verify(taskLogsView,
-               times(4)).setLogTextAreaText(emptyList());
+               times(2)).setLogs(emptyList());
     }
 
     @Test
@@ -122,40 +135,60 @@ public class TaskLogsPresenterTest extends AbstractTaskPresenterTest {
         //Logs retrieved and text area refreshed
         verify(taskService).getTaskEvents(anyString(),
                                           anyString(),
-                                          anyLong());
-        verify(taskLogsView,
-               times(2)).setLogTextAreaText(emptyList());
+                                          anyLong(),
+                                          anyInt(),
+                                          anyInt());
+        verify(taskLogsView).setLogs(emptyList());
     }
 
     @Test
-    public void logEventsAreFormattedProperly() {
-        List<TaskEventSummary> eventSummaries = createEventSummariesForTaks(TASK_ID);
-        when(taskService.getTaskEvents(anyString(),
-                                       anyString(),
-                                       eq(TASK_ID)))
-                .thenReturn(eventSummaries);
+    public void loadMoreLogs() {
+        List<TaskEventSummary> allLogs = new ArrayList<>();
+        int testAllLogsSize = 12;
+        for (int i = 0; i < testAllLogsSize; i++) {
+            allLogs.add(mock(TaskEventSummary.class));
+        }
+        when(taskService.getTaskEvents(serverTemplateId,
+                                       containerId,
+                                       TASK_ID,
+                                       0,
+                                       10)).thenReturn(allLogs.subList(0,
+                                                                       10));
+        when(taskService.getTaskEvents(serverTemplateId,
+                                       containerId,
+                                       TASK_ID,
+                                       1,
+                                       10)).thenReturn(allLogs.subList(10,
+                                                                       12));
 
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent("",
-                                                              "",
+        presenter.onTaskSelectionEvent(new TaskSelectionEvent(serverTemplateId,
+                                                              containerId,
                                                               TASK_ID));
 
-        final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List> argumentDESC = ArgumentCaptor.forClass(List.class);
+        verify(taskLogsView).setLogs(argumentDESC.capture());
+        assertEquals(presenter.getPageSize(),
+                     argumentDESC.getValue().size());
+        verify(taskService).getTaskEvents(serverTemplateId,
+                                          containerId,
+                                          TASK_ID,
+                                          0,
+                                          10);
+
+        presenter.loadMoreProcessInstanceLogs();
+        verify(taskService).getTaskEvents(serverTemplateId,
+                                          containerId,
+                                          TASK_ID,
+                                          1,
+                                          10);
         verify(taskLogsView,
-               times(2)).setLogTextAreaText(captor.capture());
-        assertTrue(captor.getAllValues().get(0).isEmpty());
-        final List logs = captor.getAllValues().get(1);
-        assertNotNull(logs);
-        assertEquals(3,
-                     logs.size());
-        assertEquals("15/12/2017 00:00: Task ADDED (Jan)",
-                     logs.get(0));
-        assertEquals("01/01/2018 00:00: Task UPDATED (Maria updated this task)",
-                     logs.get(1));
-        assertEquals("20/01/2018 00:00: Task CLAIMED (John)",
-                     logs.get(2));
+               times(2)).setLogs(argumentDESC.capture());
+        assertEquals(testAllLogsSize,
+                     argumentDESC.getValue().size());
+
     }
 
-    private List<TaskEventSummary> createEventSummariesForTaks(Long taskId) {
+    private List<TaskEventSummary> createEventSummariesForTask(Long taskId) {
         TaskEventSummary added = new TaskEventSummary(
                 1L,
                 taskId,

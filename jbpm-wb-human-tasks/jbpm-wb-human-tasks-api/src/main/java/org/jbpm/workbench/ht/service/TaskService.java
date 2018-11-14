@@ -87,7 +87,9 @@ public interface TaskService {
 
     List<TaskEventSummary> getTaskEvents(String serverTemplateId,
                                          String containerId,
-                                         Long taskId);
+                                         Long taskId,
+                                         Integer page,
+                                         Integer pageSize);
 
     void delegate(String serverTemplateId,
                   String containerId,

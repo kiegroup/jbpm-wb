@@ -15,30 +15,40 @@
  */
 package org.jbpm.workbench.ht.client.editors.tasklogs;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jbpm.workbench.common.client.util.DateUtils;
+import org.jboss.errai.common.client.ui.ElementWrapperWidget;
 import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenter;
 import org.jbpm.workbench.ht.model.TaskEventSummary;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
-
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
+import org.uberfire.client.mvp.UberElemental;
 
 @Dependent
 public class TaskLogsPresenter extends AbstractTaskPresenter {
 
+    public static final int PAGE_SIZE = 10;
+    private int currentPage = 0;
+    private List<TaskEventSummary> visibleLogs = new ArrayList<>();
+
     private TaskLogsView view;
 
     private Caller<TaskService> taskService;
+
+    @PostConstruct
+    public void init() {
+        view.init(this);
+    }
 
     @Inject
     public TaskLogsPresenter(final TaskLogsView view,
@@ -47,28 +57,41 @@ public class TaskLogsPresenter extends AbstractTaskPresenter {
         this.taskService = taskService;
     }
 
+    public int getPageSize() {
+        return PAGE_SIZE;
+    }
+
+    public void setCurrentPage(int i) {
+        this.currentPage = i;
+    }
+
     public IsWidget getView() {
-        return view;
+        return ElementWrapperWidget.getWidget(view.getElement());
     }
 
     public void refreshLogs() {
-        view.setLogTextAreaText(emptyList());
-        taskService.call(
-                new RemoteCallback<List<TaskEventSummary>>() {
-                    @Override
-                    public void callback(final List<TaskEventSummary> events) {
-                        view.setLogTextAreaText(events.stream().map(e -> summaryToString(e)).collect(toList()));
-                    }
+        currentPage = 0;
+        loadTaskLogs();
+    }
 
-                    public String summaryToString(TaskEventSummary tes) {
-                        String timeStamp = DateUtils.getDateTimeStr(tes.getLogTime());
-                        String additionalDetail = "UPDATED".equals(tes.getType()) ? tes.getMessage() : tes.getUserId();
-                        return timeStamp + ": Task " + tes.getType() + " (" + additionalDetail + ")";
-                    }
-                }
-        ).getTaskEvents(getServerTemplateId(),
-                        getContainerId(),
-                        getTaskId());
+    public void loadTaskLogs() {
+        taskService.call((final List<TaskEventSummary> events) -> {
+            if (currentPage == 0) {
+                visibleLogs = new ArrayList();
+            }
+            visibleLogs.addAll(events);
+            view.hideLoadButton(events.size() < PAGE_SIZE);
+            view.setLogs(visibleLogs.stream().collect(Collectors.toList()));
+        }).getTaskEvents(getServerTemplateId(),
+                         getContainerId(),
+                         getTaskId(),
+                         currentPage,
+                         getPageSize());
+    }
+
+    public void loadMoreProcessInstanceLogs() {
+        setCurrentPage(currentPage + 1);
+        loadTaskLogs();
     }
 
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
@@ -82,10 +105,11 @@ public class TaskLogsPresenter extends AbstractTaskPresenter {
         }
     }
 
-    public interface TaskLogsView extends IsWidget {
+    public interface TaskLogsView extends UberElemental<TaskLogsPresenter> {
 
-        void displayNotification(String text);
+        void setLogs(List<TaskEventSummary> logs);
 
-        void setLogTextAreaText(List<String> logs);
+        void hideLoadButton(boolean hidden);
+
     }
 }

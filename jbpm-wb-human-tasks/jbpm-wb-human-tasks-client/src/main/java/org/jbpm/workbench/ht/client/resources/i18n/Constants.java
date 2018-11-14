@@ -253,4 +253,10 @@ public interface Constants extends Messages {
 
     String TaskDetailsNotAvailable();
 
+    String No_Task_Logs_Found();
+
+    String ByUser();
+
+    String ByProcess();
+
 }
