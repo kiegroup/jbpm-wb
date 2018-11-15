@@ -1,13 +1,15 @@
-<div class="row" style="padding-top: 20px">
+<div class="row manage" style="padding-top: 20px;" data-field="container">
     <div class="col-md-12">
-        <div class="form-horizontal">
-            <fieldset>
-                <div class="form-group">
-                    <div class="readonly col-md-12">
-                        <ul class="list-unstyled" data-field="logTextArea"></ul>
-                    </div>
-                </div>
-            </fieldset>
+        <div class="list-group kie-timeline kie-timeline--dotted-line" id="accordion-markup"
+             data-field="logs-list"></div>
+        <div data-field="empty-list-item">
+            <div href="" class="card-pf-link-with-icon"><span class="pficon pficon-info"></span>
+                <span data-i18n-key="No_Task_Logs_Found"></span>
+            </div>
+        </div>
+        <div id="load-more" data-field="load-div" style="text-align: left; padding-top: 10px;">
+            <button type="button" class="btn btn-default" data-field="load-more-logs" data-i18n-key="LoadMore"></button>
         </div>
     </div>
+
 </div>

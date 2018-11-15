@@ -16,9 +16,11 @@
 package org.jbpm.workbench.ht.backend.server;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import javax.enterprise.event.Event;
 
@@ -249,5 +251,56 @@ public class RemoteTaskServiceImplTest {
                                                                         workItemId);
         verify(userTaskServicesClient).findTaskByWorkItemId(workItemId);
         assertNull(taskSummary);
+    }
+
+    @Test
+    public void getTaskEventsTest() {
+        final long taskId = 1l;
+        final String containerId = "containerId";
+        final String serverTemplateId = "serverTemplateId";
+        TaskEventInstance eventInstance =
+                TaskEventInstance.builder()
+                        .taskId(taskId)
+                        .type("STARTED")
+                        .user("wbadmin")
+                        .workItemId(2L)
+                        .date(new Date())
+                        .message("")
+                        .build();
+
+        when(userTaskServicesClient.findTaskEvents(containerId,
+                                                   taskId,
+                                                   0,
+                                                   5,
+                                                   "logTime",
+                                                   false)).thenReturn(Arrays.asList(eventInstance));
+        List<TaskEventSummary> taskEventSummaries = remoteTaskService.getTaskEvents(serverTemplateId,
+                                                                                    containerId,
+                                                                                    taskId,
+                                                                                    0,
+                                                                                    5);
+        verify(userTaskServicesClient).findTaskEvents(containerId,
+                                                      taskId,
+                                                      0,
+                                                      5,
+                                                      "logTime",
+                                                      false);
+
+        assertEquals(1,
+                     taskEventSummaries.size());
+        assertEquals(eventInstance.getId(),
+                     taskEventSummaries.get(0).getEventId());
+        assertEquals(eventInstance.getTaskId(),
+                     taskEventSummaries.get(0).getTaskId());
+        assertEquals(eventInstance.getType(),
+                     taskEventSummaries.get(0).getType());
+        assertEquals(eventInstance.getUserId(),
+                     taskEventSummaries.get(0).getUserId());
+        assertEquals(eventInstance.getWorkItemId(),
+                     taskEventSummaries.get(0).getWorkItemId());
+        assertEquals(eventInstance.getLogTime(),
+                     taskEventSummaries.get(0).getLogTime());
+        assertEquals(eventInstance.getMessage(),
+                     taskEventSummaries.get(0).getMessage());
     }
 }

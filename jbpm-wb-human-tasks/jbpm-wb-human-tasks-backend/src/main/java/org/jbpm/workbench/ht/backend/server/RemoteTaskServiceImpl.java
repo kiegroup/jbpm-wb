@@ -284,7 +284,9 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
     @Override
     public List<TaskEventSummary> getTaskEvents(String serverTemplateId,
                                                 String containerId,
-                                                Long taskId) {
+                                                Long taskId,
+                                                Integer page,
+                                                Integer pageSize) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return emptyList();
         }
@@ -294,8 +296,10 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
 
         List<TaskEventInstance> events = client.findTaskEvents(containerId,
                                                                taskId,
-                                                               0,
-                                                               1000);
+                                                               page,
+                                                               pageSize,
+                                                               "logTime",
+                                                               false);
 
         return events.stream().map(e -> build(e)).collect(toList());
     }
