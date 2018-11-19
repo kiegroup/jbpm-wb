@@ -1,0 +1,32 @@
+<div data-field="nodeDetailsContainer">
+    <div data-field="humanTaskContainer" class="hidden">
+        <div class="col-md-12"><strong><span data-i18n-key="Task_Data"></span>:</strong></div>
+        <dl class="dl-horizontal">
+            <dt><span data-i18n-key="UpdatedOn"/></dt>
+            <dd><span data-field="updatedOn"/></dd>
+            <dt><span data-i18n-key="CreatedOn"/></dt>
+            <dd><span data-field="createdOn"/></dd>
+            <dt><span data-field="createdByLabel" data-i18n-key="CreatedBy"/></dt>
+            <dd><span data-field="createdBy"/></dd>
+            <dt><span data-i18n-key="Id"/></dt>
+            <dd><span data-field="taskId"/></dd>
+            <dt><span data-i18n-key="State"/></dt>
+            <dd><span data-field="taskStatus"/></dd>
+            <dt><span data-i18n-key="Owner"/></dt>
+            <dd><span data-field="actualOwner"/></dd>
+            <dt><span data-i18n-key="Description"/></dt>
+            <dd><span data-field="description"/></dd>
+        </dl>
+    </div>
+    <div data-field="workItemDetailsContainer" class="hidden">
+        <div class="col-md-12"><strong><span data-i18n-key="Work_Item_Data"></span>:</strong></div>
+        <div data-field="workItemDetails">
+            <dl class="dl-horizontal" data-field="params"></dl>
+        </div>
+        <div data-field="empty-list-item" class="col-md-12">
+            <div class="card-pf-link-with-icon"><span class="pficon pficon-info"></span>
+                <span data-i18n-key="No_Work_Item_Data_Available"></span>
+            </div>
+        </div>
+    </div>
+</div>

@@ -328,4 +328,10 @@ public interface Constants extends Messages {
     String EventType();
 
     String Reset();
+
+    String No_Work_Item_Data_Available();
+
+    String Work_Item_Data();
+
+    String Task_Data();
 }

@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.pr.client.editors.instance.log;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +38,9 @@ import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.client.util.LogUtils;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
+import org.jbpm.workbench.pr.model.WorkItemParameterSummary;
+import org.jbpm.workbench.pr.model.WorkItemSummary;
+import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,6 +91,11 @@ public class ProcessInstanceLogPresenterTest {
 
     @Spy
     ErrorHandlerBuilder errorHandler;
+
+    @Mock
+    ProcessRuntimeDataService processRuntimeDataServiceMock;
+
+    Caller<ProcessRuntimeDataService> processRuntimeDataService;
 
     @InjectMocks
     ProcessInstanceLogPresenter presenter;
@@ -156,6 +165,8 @@ public class ProcessInstanceLogPresenterTest {
         when(errorHandlerBuilder.get()).thenReturn(errorHandler);
         doNothing().when(errorHandler).showErrorMessage(any());
         errorHandler.setErrorCallback(errorCallback);
+        processRuntimeDataService = new CallerMock<>(processRuntimeDataServiceMock);
+        presenter.setProcessRuntimeDataService(processRuntimeDataService);
     }
 
     private void assertProcessInstanceLogContent(Long id,
@@ -256,7 +267,7 @@ public class ProcessInstanceLogPresenterTest {
         String serverTemplateId = "server-template-id";
 
         TaskSummary task = TaskSummary.builder().id(workItemId).actualOwner("owner").createdOn(new Date()).description("description").build();
-        ProcessInstanceLogHumanTaskView humanTaskView = mock(ProcessInstanceLogHumanTaskView.class);
+        ProcessInstanceLogItemDetailsView humanTaskView = mock(ProcessInstanceLogItemDetailsView.class);
         when(taskServiceMock.getTaskByWorkItemId(serverTemplateId,
                                                  containerId,
                                                  workItemId)).thenReturn(task);
@@ -273,8 +284,48 @@ public class ProcessInstanceLogPresenterTest {
         verify(taskServiceMock).getTaskByWorkItemId(serverTemplateId,
                                                     containerId,
                                                     workItemId);
-        verify(humanTaskView).setDetailsData(task,
-                                             logDate);
+        verify(humanTaskView).setTaskDetailsData(task,
+                                                 logDate);
+    }
+
+    @Test
+    public void testLoadWorkItemDetails() {
+        Long workItemId = 1L;
+        Long processInstanceId = 2L;
+        String containerId = "deploymentId";
+        String serverTemplateId = "server-template-id";
+        WorkItemParameterSummary param1 = new WorkItemParameterSummary("param1",
+                                                                       "value1");
+        WorkItemParameterSummary param2 = new WorkItemParameterSummary("param2",
+                                                                       "value2");
+
+        WorkItemSummary workItemSummary =
+                WorkItemSummary.builder()
+                        .id(workItemId)
+                        .name("Dynamic Task")
+                        .parameters(Arrays.asList(param1,
+                                                  param2)).build();
+
+        ProcessInstanceLogItemDetailsView workItemView = mock(ProcessInstanceLogItemDetailsView.class);
+        when(processRuntimeDataServiceMock.getWorkItemByProcessInstanceId(serverTemplateId,
+                                                                          containerId,
+                                                                          processInstanceId,
+                                                                          workItemId)).thenReturn(workItemSummary);
+
+        ProcessInstanceSelectionEvent selectionEventMock = mock(ProcessInstanceSelectionEvent.class);
+        when(selectionEventMock.getProcessInstanceId()).thenReturn(processInstanceId);
+        when(selectionEventMock.getDeploymentId()).thenReturn(containerId);
+        when(selectionEventMock.getServerTemplateId()).thenReturn(serverTemplateId);
+
+        presenter.onProcessInstanceSelectionEvent(selectionEventMock);
+        presenter.loadWorkItemDetails(workItemId,
+                                      workItemView);
+
+        verify(processRuntimeDataServiceMock).getWorkItemByProcessInstanceId(serverTemplateId,
+                                                                             containerId,
+                                                                             processInstanceId,
+                                                                             workItemId);
+        verify(workItemView).setDetailsData(workItemSummary);
     }
 
     @Test
@@ -406,6 +457,4 @@ public class ProcessInstanceLogPresenterTest {
         assertEquals(emptyList(),
                      typeFilterItem.getValue());
     }
-
-
 }

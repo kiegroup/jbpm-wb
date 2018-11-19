@@ -25,6 +25,7 @@ import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.model.TaskDefSummary;
+import org.jbpm.workbench.pr.model.WorkItemSummary;
 
 @Remote
 public interface ProcessRuntimeDataService {
@@ -55,4 +56,10 @@ public interface ProcessRuntimeDataService {
     List<TaskDefSummary> getProcessUserTasks(String serverTemplateId,
                                              String containerId,
                                              String processId);
+
+    WorkItemSummary getWorkItemByProcessInstanceId(final String serverTemplateId,
+                                                   final String containerId,
+                                                   final Long processInstanceId,
+                                                   final Long workItemId);
+
 }
