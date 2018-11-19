@@ -34,6 +34,9 @@
   <inherits name="org.guvnor.common.services.workingset.GuvnorWorkingsetClient"/>
   <inherits name="org.guvnor.messageconsole.GuvnorMessageConsoleClient"/>
 
+  <!-- Profile API-->
+  <inherits name="org.kie.workbench.common.profile.ProfileAPI"/>
+
   <!--Common Screens -->
   <inherits name="org.kie.workbench.common.screens.explorer.KieWorkbenchProjectExplorerClient"/>
   <inherits name="org.kie.workbench.common.screens.projecteditor.KieWorkbenchCommonProjectEditorClient"/>
