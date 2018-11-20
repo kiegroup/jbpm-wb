@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 
 import com.google.gwt.dom.client.BrowserEvents;
@@ -76,9 +78,41 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     public void initColumns(ListTable<TaskSummary> extendedPagedTable) {
         initCellPreview(extendedPagedTable);
 
+        final Column<TaskSummary, String> createdOnColumn = createTextColumn(COLUMN_CREATED_ON,
+                                                                             task -> DateUtils.getDateTimeStr(task.getCreatedOn()));
         ColumnMeta<TaskSummary> actionsColumnMeta = initActionsColumn();
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumnMeta.getColumn());
 
+        List<ColumnMeta<TaskSummary>> columnMetas = getGeneralColumnMetas(extendedPagedTable, createdOnColumn, actionsColumnMeta);
+
+        columnMetas.addAll(renameProcessVariables(extendedPagedTable,columnMetas));
+        extendedPagedTable.addColumns(columnMetas);
+        extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
+                                          ACTIONS_COLUMN_WIDTH,
+                                          Style.Unit.PX);
+        extendedPagedTable.getColumnSortList().push(createdOnColumn);
+    }
+
+    protected List<ColumnMeta<TaskSummary>> renameProcessVariables(ListTable<TaskSummary> extendedPagedTable, List<ColumnMeta<TaskSummary>> columnMetas) {
+        List<GridColumnPreference> columnPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
+
+        return (List<ColumnMeta<TaskSummary>>) columnPreferenceList.stream().filter(colPref -> !isColumnAdded(columnMetas, colPref.getName())).map(colPref -> {
+            String columnName = colPref.getName();
+            if (existsColumnWithSameName(colPref, columnMetas)) {
+                columnName = "Var_" + columnName;
+            }
+            Column genericColumn = initGenericColumn(colPref.getName());
+            genericColumn.setSortable(false);
+            return new ColumnMeta<TaskSummary>(genericColumn,
+                                               columnName,
+                                               true,
+                                               true);
+        }).collect(Collectors.toList());
+    }
+
+    protected List<ColumnMeta<TaskSummary>> getGeneralColumnMetas(ListTable<TaskSummary> extendedPagedTable,
+                                                                  Column<TaskSummary, String> createdOnColumn,
+                                                                  ColumnMeta<TaskSummary> actionsColumnMeta) {
         List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
         columnMetas.add(new ColumnMeta<>(
                 createNumberColumn(COLUMN_TASK_ID,
@@ -115,8 +149,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                  task -> translationService.format(task.getStatus())),
                 constants.Status()
         ));
-        final Column<TaskSummary, String> createdOnColumn = createTextColumn(COLUMN_CREATED_ON,
-                                                                             task -> DateUtils.getDateTimeStr(task.getCreatedOn()));
+
         createdOnColumn.setDefaultSortAscending(false);
         columnMetas.add(new ColumnMeta<>(
                 createdOnColumn,
@@ -154,25 +187,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         addNewColumn(extendedPagedTable,
                      columnMetas);
         columnMetas.add(actionsColumnMeta);
-
-        List<GridColumnPreference> columPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
-        for (GridColumnPreference colPref : columPreferenceList) {
-            if (!isColumnAdded(columnMetas,
-                               colPref.getName())) {
-                Column<TaskSummary, ?> genericColumn = initGenericColumn(colPref.getName());
-                genericColumn.setSortable(false);
-                columnMetas.add(new ColumnMeta<TaskSummary>(genericColumn,
-                                                            colPref.getName(),
-                                                            true,
-                                                            true));
-            }
-        }
-
-        extendedPagedTable.addColumns(columnMetas);
-        extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
-                                          ACTIONS_COLUMN_WIDTH,
-                                          Style.Unit.PX);
-        extendedPagedTable.getColumnSortList().push(createdOnColumn);
+        return columnMetas;
     }
 
     protected void addNewColumn(ListTable<TaskSummary> extendedPagedTable,
@@ -240,44 +255,43 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
 
         extendedPagedTable.storeColumnToPreferences();
 
-        HashMap<String, String> modifiedCaptions = new HashMap<String, String>();
-        ArrayList<ColumnMeta<TaskSummary>> existingExtraColumns = new ArrayList<ColumnMeta<TaskSummary>>();
-        for (ColumnMeta<TaskSummary> cm : extendedPagedTable.getColumnMetaList()) {
-            if (cm.isExtraColumn()) {
-                existingExtraColumns.add(cm);
-            } else if (columns.contains(cm.getCaption())) {      //exist a column with the same caption
-                for (String c : columns) {
-                    if (c.equals(cm.getCaption())) {
-                        modifiedCaptions.put(c,
-                                             "Var_" + c);
-                    }
-                }
-            }
-        }
-        for (ColumnMeta<TaskSummary> colMet : existingExtraColumns) {
+        List<ColumnMeta<TaskSummary>> columnMetas = extendedPagedTable.getColumnMetaList().stream()
+                .filter(cm -> cm.isExtraColumn())
+                .collect(Collectors.toList());
+
+        columnMetas.forEach(colMet -> {
             if (!columns.contains(colMet.getCaption())) {
                 extendedPagedTable.removeColumnMeta(colMet);
             } else {
                 columns.remove(colMet.getCaption());
             }
-        }
+        });
 
-        List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
-        String caption = "";
-        for (String c : columns) {
-            caption = c;
-            if (modifiedCaptions.get(c) != null) {
-                caption = (String) modifiedCaptions.get(c);
-            }
-            Column<TaskSummary, ?> genericColumn = initGenericColumn(c);
-            genericColumn.setSortable(false);
+        List<ColumnMeta<TaskSummary>> columnMetaList = (List<ColumnMeta<TaskSummary>>)extendedPagedTable.getColumnMetaList().stream()
+                .filter(cm -> !cm.isExtraColumn())
+                .filter( cm -> columns.contains(cm.getCaption()))
+                .map(colMet -> {
+                    Column genericColumn = initGenericColumn(colMet.getCaption());
+                    genericColumn.setSortable(false);
+                    return new ColumnMeta<TaskSummary>(genericColumn,
+                                                       "Var_" + colMet.getCaption(),
+                                                       true,
+                                                       true);
+                }).collect(Collectors.toList());
 
-            columnMetas.add(new ColumnMeta<TaskSummary>(genericColumn,
-                                                        caption,
-                                                        true,
-                                                        true));
-        }
-        extendedPagedTable.addColumns(columnMetas);
+        columns.stream().filter(column -> (columnMetaList.stream().filter(columnMeta -> column.contains(columnMeta.getColumn().getDataStoreName())).collect(Collectors.toList())).size() == 0)
+                .collect(Collectors.toList())
+                .forEach(column -> {
+                    Column genericColumn = initGenericColumn(column);
+                    genericColumn.setSortable(false);
+                    columnMetaList.add(new ColumnMeta<TaskSummary>(genericColumn,
+                                                                   column,
+                                                                   true,
+                                                                   true));
+                });
+
+        extendedPagedTable.addColumns(columnMetaList);
+
     }
 
     protected Column<TaskSummary, ?> initGenericColumn(final String key) {

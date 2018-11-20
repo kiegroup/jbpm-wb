@@ -58,6 +58,7 @@ import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.common.preferences.ManagePreferences;
 import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
@@ -353,7 +354,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     protected abstract List<ConditionalAction<T>> getConditionalActions();
 
-    protected ColumnMeta<T> initActionsColumn() {
+    public ColumnMeta<T> initActionsColumn() {
         final ConditionalKebabActionCell<T> cell = conditionalKebabActionCell.get();
 
         cell.setActions(getConditionalActions());
@@ -374,6 +375,15 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                                                "");
         actionsColMeta.setHeader(header);
         return actionsColMeta;
+    }
+
+    protected boolean existsColumnWithSameName(GridColumnPreference gridColumnPreference, List<ColumnMeta<T>> columns) {
+        for (ColumnMeta<T> columnMeta : columns) {
+            if (columnMeta.getCaption().equals(gridColumnPreference.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
