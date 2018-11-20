@@ -84,7 +84,7 @@ public class ProcessInstanceLogItemView extends AbstractView<ProcessInstanceLogP
     private DataBinder<ProcessInstanceLogSummary> logSummary;
 
     @Inject
-    ProcessInstanceLogHumanTaskView humanTaskView;
+    ProcessInstanceLogItemDetailsView workItemView;
 
     @PostConstruct
     public void init() {
@@ -130,7 +130,7 @@ public class ProcessInstanceLogItemView extends AbstractView<ProcessInstanceLogP
         logIcon.setClassName(iconClass);
         nodeTypeDesc.setTextContent(getLogTitle(model));
 
-        if (!LogUtils.NODE_TYPE_HUMAN_TASK.equals(model.getNodeType())) {
+        if (model.getWorkItemId() == null) {
             detailsPanelDiv.setHidden(true);
         } else {
             setDetailsPanelAttributes(model);
@@ -158,12 +158,16 @@ public class ProcessInstanceLogItemView extends AbstractView<ProcessInstanceLogP
 
     @EventHandler("detailsLink")
     public void loadProcessInstanceLogsDetails(final @ForEvent("click") MouseEvent event) {
-        if (!detailsInfoDiv.hasChildNodes()
-                && LogUtils.NODE_TYPE_HUMAN_TASK.equals(logSummary.getModel().getNodeType())) {
-            presenter.loadTaskDetails(logSummary.getModel().getWorkItemId(),
-                                      logSummary.getModel().getDate(),
-                                      humanTaskView);
-            detailsInfoDiv.appendChild(humanTaskView.getElement());
+        if (!detailsInfoDiv.hasChildNodes() && (logSummary.getModel().getWorkItemId() != null)) {
+            if (LogUtils.NODE_TYPE_HUMAN_TASK.equals(logSummary.getModel().getNodeType())) {
+                presenter.loadTaskDetails(logSummary.getModel().getWorkItemId(),
+                                          logSummary.getModel().getDate(),
+                                          workItemView);
+            } else {
+                presenter.loadWorkItemDetails(logSummary.getModel().getWorkItemId(),
+                                              workItemView);
+            }
+            detailsInfoDiv.appendChild(workItemView.getElement());
         }
     }
 }

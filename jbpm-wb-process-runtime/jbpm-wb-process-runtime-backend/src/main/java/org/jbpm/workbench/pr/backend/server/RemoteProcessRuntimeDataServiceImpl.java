@@ -29,12 +29,15 @@ import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.model.TaskDefSummary;
 import org.jbpm.workbench.pr.model.UserTaskSummary;
+import org.jbpm.workbench.pr.model.WorkItemSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
+import org.kie.server.api.exception.KieServicesHttpException;
 import org.kie.server.api.model.definition.ProcessDefinition;
 import org.kie.server.api.model.definition.UserTaskDefinitionList;
 import org.kie.server.api.model.instance.NodeInstance;
 import org.kie.server.api.model.instance.ProcessInstance;
 import org.kie.server.api.model.instance.TaskSummary;
+import org.kie.server.api.model.instance.WorkItemInstance;
 import org.kie.server.client.ProcessServicesClient;
 import org.kie.server.client.QueryServicesClient;
 
@@ -44,6 +47,8 @@ import static java.util.stream.Collectors.toList;
 @Service
 @ApplicationScoped
 public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerService implements ProcessRuntimeDataService {
+
+    public static int NOT_FOUND_ERROR_CODE = 404;
 
     @Override
     public ProcessInstanceSummary getProcessInstance(String serverTemplateId,
@@ -168,6 +173,33 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
 
         return userTaskDefinitionList.getItems().stream().map(t -> new TaskDefSummary(t.getName())).collect(toList());
     }
+
+    @Override
+    public WorkItemSummary getWorkItemByProcessInstanceId(final String serverTemplateId,
+                                                          final String containerId,
+                                                          final Long processInstanceId,
+                                                          final Long workItemId) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return null;
+        }
+
+        ProcessServicesClient processServicesClient = getClient(serverTemplateId,
+                                                                ProcessServicesClient.class);
+
+        try {
+            final WorkItemInstance workItem = processServicesClient.getWorkItem(containerId,
+                                                                                processInstanceId,
+                                                                                workItemId);
+            return new WorkItemSummaryMapper().apply(workItem);
+        } catch (KieServicesHttpException kieException) {
+            if (kieException.getHttpCode() == NOT_FOUND_ERROR_CODE) {
+                return null;
+            } else {
+                throw kieException;
+            }
+        }
+    }
+
 
     protected ProcessInstanceSummary build(ProcessInstance processInstance) {
         ProcessInstanceSummary summary = new ProcessInstanceSummary(

@@ -41,6 +41,8 @@ import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.client.util.LogUtils;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
+import org.jbpm.workbench.pr.model.WorkItemSummary;
+import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.in;
 import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.COLUMN_LOG_NODE_TYPE;
@@ -57,8 +59,11 @@ public class ProcessInstanceLogPresenter extends AbstractMultiGridPresenter<Proc
 
     private Caller<TaskService> taskService;
 
+    private Caller<ProcessRuntimeDataService> processRuntimeDataService;
+
     private String serverTemplateId;
     private String containerId;
+    private Long processInstanceId;
     int currentPage = 0;
 
     List<ProcessInstanceLogSummary> visibleLogs = new ArrayList<ProcessInstanceLogSummary>();
@@ -160,19 +165,31 @@ public class ProcessInstanceLogPresenter extends AbstractMultiGridPresenter<Proc
 
     public void loadTaskDetails(Long workItemId,
                                 final Date logDate,
-                                ProcessInstanceLogHumanTaskView humanTaskView) {
+                                ProcessInstanceLogItemDetailsView workItemView) {
         taskService.call(
                 (TaskSummary task) -> {
-                    humanTaskView.setDetailsData(task,
-                                                 logDate);
+                    workItemView.setTaskDetailsData(task,
+                                                    logDate);
                 }).getTaskByWorkItemId(serverTemplateId,
                                        containerId,
                                        workItemId);
     }
 
+    public void loadWorkItemDetails(Long workItemId,
+                                    ProcessInstanceLogItemDetailsView workItemView) {
+        processRuntimeDataService.call(
+                (WorkItemSummary workItemSummary) -> {
+                    workItemView.setDetailsData(workItemSummary);
+                }).getWorkItemByProcessInstanceId(serverTemplateId,
+                                                  containerId,
+                                                  processInstanceId,
+                                                  workItemId);
+    }
+
     public void onProcessInstanceSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
         this.serverTemplateId = event.getServerTemplateId();
         this.containerId = event.getDeploymentId();
+        this.processInstanceId = event.getProcessInstanceId();
         if (logsDataSetQueryHelper.getCurrentTableSettings() == null) {
             logsDataSetQueryHelper.setCurrentTableSettings(
                     filterSettingsManager.createDefaultFilterSettingsPrototype(event.getProcessInstanceId()));
@@ -244,6 +261,11 @@ public class ProcessInstanceLogPresenter extends AbstractMultiGridPresenter<Proc
     @Inject
     public void setTaskService(Caller<TaskService> taskService) {
         this.taskService = taskService;
+    }
+
+    @Inject
+    public void setProcessRuntimeDataService(Caller<ProcessRuntimeDataService> processRuntimeDataService) {
+        this.processRuntimeDataService = processRuntimeDataService;
     }
 
     public interface ProcessInstanceLogView extends MultiGridView<ProcessInstanceLogSummary, ProcessInstanceLogPresenter> {

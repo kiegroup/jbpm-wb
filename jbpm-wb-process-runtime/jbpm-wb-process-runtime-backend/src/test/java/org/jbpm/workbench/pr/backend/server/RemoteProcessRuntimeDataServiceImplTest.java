@@ -17,7 +17,6 @@
 package org.jbpm.workbench.pr.backend.server;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -26,7 +25,7 @@ import org.jbpm.workbench.ks.integration.KieServerIntegration;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessSummary;
-import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
+import org.jbpm.workbench.pr.model.WorkItemSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +35,7 @@ import org.kie.server.api.model.instance.NodeInstance;
 import org.kie.server.api.model.instance.ProcessInstance;
 import org.kie.server.api.model.instance.TaskSummary;
 import org.kie.server.api.model.instance.TaskSummaryList;
+import org.kie.server.api.model.instance.WorkItemInstance;
 import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.ProcessServicesClient;
 import org.kie.server.client.QueryServicesClient;
@@ -44,10 +44,12 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static java.lang.String.format;
+import static java.util.Collections.singletonMap;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static java.util.Collections.singletonList;
 import static org.jbpm.workbench.pr.backend.server.ProcessSummaryMapperTest.assertProcessSummary;
+import static org.jbpm.workbench.pr.backend.server.WorkItemSummaryMapperTest.assertWorkItemSummary;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -234,4 +236,28 @@ public class RemoteProcessRuntimeDataServiceImplTest {
                              summary);
     }
 
+    @Test
+    public void testGetWorkItemByProcessInstanceId() {
+        Long workItemId = 1L;
+        Long processInstanceId = 2L;
+
+        WorkItemInstance workItem = WorkItemInstance.builder()
+                .id(workItemId)
+                .parameters(singletonMap("key",
+                                         "value"))
+                .build();
+
+        when(processServicesClient.getWorkItem(containerId,
+                                               processInstanceId,
+                                               workItemId)).thenReturn(workItem);
+
+        final WorkItemSummary summary = service.getWorkItemByProcessInstanceId(serverTemplateId,
+                                                                               containerId,
+                                                                               processInstanceId,
+                                                                               workItemId);
+
+        assertNotNull(summary);
+        assertWorkItemSummary(workItem,
+                              summary);
+    }
 }
