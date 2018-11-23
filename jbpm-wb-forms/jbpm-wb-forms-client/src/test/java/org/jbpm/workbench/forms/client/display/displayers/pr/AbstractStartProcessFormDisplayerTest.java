@@ -42,7 +42,6 @@ public abstract class AbstractStartProcessFormDisplayerTest {
     @Mock
     protected EventSourceMock<NewProcessInstanceEvent> newProcessInstanceEvent = new EventSourceMock<NewProcessInstanceEvent>();
 
-    @Mock
     protected Caller<ProcessService> processServiceCaller;
 
     @Mock
