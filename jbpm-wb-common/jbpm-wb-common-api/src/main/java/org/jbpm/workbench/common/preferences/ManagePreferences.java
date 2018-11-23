@@ -27,7 +27,7 @@ import org.uberfire.preferences.shared.bean.BasePreference;
 @WorkbenchPreference(identifier = "ManagePreferences", bundleKey = "ManagePreferences.Label")
 public class ManagePreferences implements BasePreference<ManagePreferences> {
 
-    public static List<Integer> PAGINATION_OPTIONS = Arrays.asList(5, 10, 15, 20, 50, 100);
+    public static List<Integer> PAGINATION_OPTIONS = Arrays.asList(10, 20, 50, 100);
     public static Integer DEFAULT_PAGINATION_OPTION = 10;
 
     @Property(bundleKey = "ManagePreferences.ItemsPerPage", helpBundleKey = "ManagePreferences.ItemsPerPage.Help",
