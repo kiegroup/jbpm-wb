@@ -17,6 +17,7 @@
 package org.jbpm.workbench.pr.backend.server;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -24,12 +25,14 @@ import java.util.List;
 import org.jbpm.workbench.ks.integration.KieServerIntegration;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
+import org.jbpm.workbench.pr.model.ProcessNodeSummary;
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.model.WorkItemSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.server.api.model.admin.ProcessNode;
 import org.kie.server.api.model.definition.ProcessDefinition;
 import org.kie.server.api.model.instance.NodeInstance;
 import org.kie.server.api.model.instance.ProcessInstance;
@@ -39,17 +42,19 @@ import org.kie.server.api.model.instance.WorkItemInstance;
 import org.kie.server.client.KieServicesClient;
 import org.kie.server.client.ProcessServicesClient;
 import org.kie.server.client.QueryServicesClient;
+import org.kie.server.client.admin.ProcessAdminServicesClient;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static java.lang.String.format;
-import static java.util.Collections.singletonMap;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.jbpm.workbench.pr.backend.server.ProcessSummaryMapperTest.assertProcessSummary;
 import static org.jbpm.workbench.pr.backend.server.WorkItemSummaryMapperTest.assertWorkItemSummary;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -66,6 +71,9 @@ public class RemoteProcessRuntimeDataServiceImplTest {
     private QueryServicesClient queryServicesClient;
 
     @Mock
+    private ProcessAdminServicesClient processAdminServicesClient;
+
+    @Mock
     private ProcessServicesClient processServicesClient;
 
     @InjectMocks
@@ -77,6 +85,7 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         when(kieServerIntegration.getServerClient(anyString())).thenReturn(kieServicesClient);
         when(kieServicesClient.getServicesClient(QueryServicesClient.class)).thenReturn(queryServicesClient);
         when(kieServicesClient.getServicesClient(ProcessServicesClient.class)).thenReturn(processServicesClient);
+        when(kieServicesClient.getServicesClient(ProcessAdminServicesClient.class)).thenReturn(processAdminServicesClient);
     }
 
     @Test
@@ -259,5 +268,45 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         assertNotNull(summary);
         assertWorkItemSummary(workItem,
                               summary);
+    }
+
+    @Test
+    public void testGetProcessInstanceNodes() {
+        String serverTemplateId = "serverTemplateId";
+        String containerId = "containerId";
+        Long processInstanceId = 1L;
+
+        List<ProcessNode> processNodes = Arrays.asList(ProcessNode.builder().nodeId(1).nodeName("name-1").nodeType("HumanTask").build(),
+                                                       ProcessNode.builder().nodeId(2).nodeName(" ").nodeType("Split").build());
+
+        when(processAdminServicesClient.getProcessNodes(containerId, processInstanceId)).thenReturn(processNodes);
+
+        List<ProcessNodeSummary> nodes = service.getProcessInstanceNodes(serverTemplateId,
+                                                                         containerId,
+                                                                         processInstanceId);
+
+        assertThat(nodes).hasSize(2).containsExactly(new ProcessNodeSummary(1l,
+                                                                            "name-1",
+                                                                            "HumanTask"),
+                                                     new ProcessNodeSummary(2l,
+                                                                            " ",
+                                                                            "Split"));
+    }
+
+    @Test
+    public void testTriggerProcessInstanceNode() {
+        String serverTemplateId = "serverTemplateId";
+        String containerId = "containerId";
+        Long processInstanceId = 1L;
+        Long nodeId = 2L;
+
+        service.triggerProcessInstanceNode(serverTemplateId,
+                                           containerId,
+                                           processInstanceId,
+                                           nodeId);
+
+        verify(processAdminServicesClient).triggerNode(containerId,
+                                                       processInstanceId,
+                                                       nodeId);
     }
 }

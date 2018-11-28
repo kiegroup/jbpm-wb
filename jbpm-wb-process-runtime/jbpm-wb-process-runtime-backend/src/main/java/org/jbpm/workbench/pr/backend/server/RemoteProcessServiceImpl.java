@@ -93,22 +93,6 @@ public class RemoteProcessServiceImpl extends AbstractKieServerService implement
     }
 
     @Override
-    public void signalProcessInstance(String serverTemplateId,
-                                      String containerId,
-                                      Long processInstanceId,
-                                      String signal,
-                                      Object event) {
-        ProcessServicesClient client = getClient(serverTemplateId,
-                                                 containerId,
-                                                 ProcessServicesClient.class);
-
-        client.signalProcessInstance(containerId,
-                                     processInstanceId,
-                                     signal,
-                                     event);
-    }
-
-    @Override
     public void signalProcessInstances(String serverTemplateId,
                                        List<String> containers,
                                        List<Long> processInstanceId,

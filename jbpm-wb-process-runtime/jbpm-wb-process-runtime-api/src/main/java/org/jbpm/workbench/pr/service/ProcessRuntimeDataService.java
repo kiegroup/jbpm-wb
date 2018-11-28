@@ -19,13 +19,7 @@ package org.jbpm.workbench.pr.service;
 import java.util.List;
 
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.jbpm.workbench.pr.model.NodeInstanceSummary;
-import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
-import org.jbpm.workbench.pr.model.ProcessInstanceKey;
-import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
-import org.jbpm.workbench.pr.model.ProcessSummary;
-import org.jbpm.workbench.pr.model.TaskDefSummary;
-import org.jbpm.workbench.pr.model.WorkItemSummary;
+import org.jbpm.workbench.pr.model.*;
 
 @Remote
 public interface ProcessRuntimeDataService {
@@ -57,9 +51,18 @@ public interface ProcessRuntimeDataService {
                                              String containerId,
                                              String processId);
 
-    WorkItemSummary getWorkItemByProcessInstanceId(final String serverTemplateId,
-                                                   final String containerId,
-                                                   final Long processInstanceId,
-                                                   final Long workItemId);
+    WorkItemSummary getWorkItemByProcessInstanceId(String serverTemplateId,
+                                                   String containerId,
+                                                   Long processInstanceId,
+                                                   Long workItemId);
+
+    List<ProcessNodeSummary> getProcessInstanceNodes(String serverTemplateId,
+                                                     String containerId,
+                                                     Long processInstanceId);
+
+    void triggerProcessInstanceNode(String serverTemplateId,
+                                    String containerId,
+                                    Long processInstanceId,
+                                    Long nodeId);
 
 }

@@ -41,12 +41,6 @@ public interface ProcessService {
                                      String containerId,
                                      Long processInstanceId);
 
-    void signalProcessInstance(String serverTemplateId,
-                               String containerId,
-                               Long processInstanceId,
-                               String signal,
-                               Object event);
-
     void signalProcessInstances(String serverTemplateId,
                                 List<String> containers,
                                 List<Long> processInstanceId,

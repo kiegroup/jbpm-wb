@@ -334,4 +334,6 @@ public interface Constants extends Messages {
     String Work_Item_Data();
 
     String Task_Data();
+
+    String NodeTriggered(String node);
 }
