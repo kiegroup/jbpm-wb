@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.pr.client.editors.diagram;
+package org.jbpm.workbench.pr.client.editors.instance.diagram;
 
-import com.google.gwt.user.client.ui.IsWidget;
+import java.util.List;
+
+import com.google.gwt.user.client.TakesValue;
+import org.jbpm.workbench.pr.model.ProcessNodeSummary;
+import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.common.client.common.HasBusyIndicator;
 
-public interface ProcessDiagramWidgetView extends HasBusyIndicator,
-                                                  IsWidget {
+public interface ProcessInstanceDiagramView extends HasBusyIndicator,
+                                                    UberView<ProcessInstanceDiagramPresenter>,
+                                                    TakesValue<ProcessNodeSummary> {
 
-    void displayImage(final String svgContent);
+    void displayImage(String svgContent);
 
-    void displayMessage(final String message);
+    void displayMessage(String message);
+
+    void setProcessNodes(List<ProcessNodeSummary> nodes);
 }

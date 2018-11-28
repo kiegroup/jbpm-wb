@@ -22,14 +22,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.workbench.ks.integration.AbstractKieServerService;
-import org.jbpm.workbench.pr.model.NodeInstanceSummary;
-import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
-import org.jbpm.workbench.pr.model.ProcessInstanceKey;
-import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
-import org.jbpm.workbench.pr.model.ProcessSummary;
-import org.jbpm.workbench.pr.model.TaskDefSummary;
-import org.jbpm.workbench.pr.model.UserTaskSummary;
-import org.jbpm.workbench.pr.model.WorkItemSummary;
+import org.jbpm.workbench.pr.model.*;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.kie.server.api.exception.KieServicesHttpException;
 import org.kie.server.api.model.definition.ProcessDefinition;
@@ -40,6 +33,7 @@ import org.kie.server.api.model.instance.TaskSummary;
 import org.kie.server.api.model.instance.WorkItemInstance;
 import org.kie.server.client.ProcessServicesClient;
 import org.kie.server.client.QueryServicesClient;
+import org.kie.server.client.admin.ProcessAdminServicesClient;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -73,7 +67,6 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
             return emptyList();
         }
 
-        List<NodeInstanceSummary> instances = new ArrayList<NodeInstanceSummary>();
         QueryServicesClient queryServicesClient = getClient(serverTemplateId,
                                                             QueryServicesClient.class);
 
@@ -81,20 +74,47 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
                                                                                        0,
                                                                                        Integer.MAX_VALUE);
 
-        for (NodeInstance instance : nodeInstances) {
-            NodeInstanceSummary summary = new NodeInstanceSummary(instance.getId(),
-                                                                  instance.getProcessInstanceId(),
-                                                                  instance.getName(),
-                                                                  instance.getNodeId(),
-                                                                  instance.getNodeType(),
-                                                                  instance.getDate().toString(),
-                                                                  instance.getConnection(),
-                                                                  false);
+        return nodeInstances.stream().map(instance -> new NodeInstanceSummary(instance.getId(),
+                                                                              instance.getProcessInstanceId(),
+                                                                              instance.getName(),
+                                                                              instance.getNodeId(),
+                                                                              instance.getNodeType(),
+                                                                              instance.getDate().toString(),
+                                                                              instance.getConnection(),
+                                                                              false)).collect(toList());
+    }
 
-            instances.add(summary);
+    @Override
+    public void triggerProcessInstanceNode(String serverTemplateId,
+                                           String containerId,
+                                           Long processInstanceId,
+                                           Long nodeId) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return;
         }
 
-        return instances;
+        ProcessAdminServicesClient servicesClient = getClient(serverTemplateId,
+                                                              ProcessAdminServicesClient.class);
+        servicesClient.triggerNode(containerId,
+                                   processInstanceId,
+                                   nodeId);
+    }
+
+    @Override
+    public List<ProcessNodeSummary> getProcessInstanceNodes(String serverTemplateId,
+                                                            String containerId,
+                                                            Long processInstanceId) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return emptyList();
+        }
+
+        ProcessAdminServicesClient servicesClient = getClient(serverTemplateId,
+                                                              ProcessAdminServicesClient.class);
+
+        return servicesClient.getProcessNodes(containerId,
+                                              processInstanceId).stream().map(node -> new ProcessNodeSummary(node.getNodeId(),
+                                                                                                             node.getNodeName(),
+                                                                                                             node.getNodeType())).collect(toList());
     }
 
     @Override

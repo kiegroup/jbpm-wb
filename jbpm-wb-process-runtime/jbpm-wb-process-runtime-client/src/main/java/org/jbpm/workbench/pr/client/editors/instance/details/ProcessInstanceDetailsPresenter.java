@@ -25,8 +25,8 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
-import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramPresenter;
 import org.jbpm.workbench.pr.client.editors.documents.list.ProcessDocumentListPresenter;
+import org.jbpm.workbench.pr.client.editors.instance.diagram.ProcessInstanceDiagramPresenter;
 import org.jbpm.workbench.pr.client.editors.instance.log.ProcessInstanceLogPresenter;
 import org.jbpm.workbench.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
 import org.jbpm.workbench.pr.client.editors.variables.list.ProcessVariableListPresenter;
@@ -85,7 +85,7 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
     private ProcessInstanceDetailsTabPresenter detailsPresenter;
 
     @Inject
-    private ProcessDiagramPresenter processDiagramPresenter;
+    private ProcessInstanceDiagramPresenter processDiagramPresenter;
 
     @Inject
     private ProcessVariableListPresenter variableListPresenter;
