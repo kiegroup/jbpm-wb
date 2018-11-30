@@ -23,11 +23,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.jbpm.workbench.ks.integration.KieServerIntegration;
-import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
-import org.jbpm.workbench.pr.model.ProcessInstanceKey;
-import org.jbpm.workbench.pr.model.ProcessNodeSummary;
-import org.jbpm.workbench.pr.model.ProcessSummary;
-import org.jbpm.workbench.pr.model.WorkItemSummary;
+import org.jbpm.workbench.pr.model.*;
+import org.jbpm.workbench.pr.service.ProcessImageService;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,6 +72,9 @@ public class RemoteProcessRuntimeDataServiceImplTest {
 
     @Mock
     private ProcessServicesClient processServicesClient;
+
+    @Mock
+    private ProcessImageService processImageService;
 
     @InjectMocks
     private RemoteProcessRuntimeDataServiceImpl service;
@@ -279,7 +279,8 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         List<ProcessNode> processNodes = Arrays.asList(ProcessNode.builder().nodeId(1).nodeName("name-1").nodeType("HumanTask").build(),
                                                        ProcessNode.builder().nodeId(2).nodeName(" ").nodeType("Split").build());
 
-        when(processAdminServicesClient.getProcessNodes(containerId, processInstanceId)).thenReturn(processNodes);
+        when(processAdminServicesClient.getProcessNodes(containerId,
+                                                        processInstanceId)).thenReturn(processNodes);
 
         List<ProcessNodeSummary> nodes = service.getProcessInstanceNodes(serverTemplateId,
                                                                          containerId,
@@ -291,6 +292,48 @@ public class RemoteProcessRuntimeDataServiceImplTest {
                                                      new ProcessNodeSummary(2l,
                                                                             " ",
                                                                             "Split"));
+    }
+
+    @Test
+    public void testGetProcessInstanceActiveNodes() {
+        String serverTemplateId = "serverTemplateId";
+        String containerId = "containerId";
+        Long processInstanceId = 1L;
+
+        List<NodeInstance> nodeInstances = Arrays.asList(NodeInstance.builder().id(1l).name("name-1").nodeType("HumanTask").build(),
+                                                         NodeInstance.builder().id(2l).name(" ").nodeType("Split").build());
+
+        when(queryServicesClient.findActiveNodeInstances(processInstanceId,
+                                                         0,
+                                                         Integer.MAX_VALUE)).thenReturn(nodeInstances);
+
+        List<NodeInstanceSummary> nodes = service.getProcessInstanceActiveNodes(serverTemplateId,
+                                                                                containerId,
+                                                                                processInstanceId);
+
+        assertThat(nodes).hasSize(2).containsExactly(NodeInstanceSummary.builder().withId(1l).withName("name-1").withType("HumanTask").build(),
+                                                     NodeInstanceSummary.builder().withId(2l).withName(" ").withType("Split").build());
+    }
+
+    @Test
+    public void testGetProcessInstanceCompletedNodes() {
+        String serverTemplateId = "serverTemplateId";
+        String containerId = "containerId";
+        Long processInstanceId = 1L;
+
+        List<NodeInstance> nodeInstances = Arrays.asList(NodeInstance.builder().id(1l).name("name-1").nodeType("HumanTask").build(),
+                                                         NodeInstance.builder().id(2l).name(" ").nodeType("Split").build());
+
+        when(queryServicesClient.findCompletedNodeInstances(processInstanceId,
+                                                            0,
+                                                            Integer.MAX_VALUE)).thenReturn(nodeInstances);
+
+        List<NodeInstanceSummary> nodes = service.getProcessInstanceCompletedNodes(serverTemplateId,
+                                                                                   containerId,
+                                                                                   processInstanceId);
+
+        assertThat(nodes).hasSize(2).containsExactly(NodeInstanceSummary.builder().withId(1l).withName("name-1").withType("HumanTask").build(),
+                                                     NodeInstanceSummary.builder().withId(2l).withName(" ").withType("Split").build());
     }
 
     @Test
@@ -308,5 +351,92 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         verify(processAdminServicesClient).triggerNode(containerId,
                                                        processInstanceId,
                                                        nodeId);
+    }
+
+    @Test
+    public void testReTriggerProcessInstanceNode() {
+        String serverTemplateId = "serverTemplateId";
+        String containerId = "containerId";
+        Long processInstanceId = 1L;
+        Long nodeId = 2L;
+
+        service.reTriggerProcessInstanceNode(serverTemplateId,
+                                             containerId,
+                                             processInstanceId,
+                                             nodeId);
+
+        verify(processAdminServicesClient).retriggerNodeInstance(containerId,
+                                                                 processInstanceId,
+                                                                 nodeId);
+    }
+
+    @Test
+    public void testCancelProcessInstanceNode() {
+        String serverTemplateId = "serverTemplateId";
+        String containerId = "containerId";
+        Long processInstanceId = 1L;
+        Long nodeId = 2L;
+
+        service.cancelProcessInstanceNode(serverTemplateId,
+                                          containerId,
+                                          processInstanceId,
+                                          nodeId);
+
+        verify(processAdminServicesClient).cancelNodeInstance(containerId,
+                                                              processInstanceId,
+                                                              nodeId);
+    }
+
+    @Test
+    public void testGetProcessInstanceDiagramSummary() {
+        String serverTemplateId = "serverTemplateId";
+        String containerId = "containerId";
+        Long processInstanceId = 1L;
+        String svgContent = "<svg></svg>";
+
+        when(processImageService.getProcessInstanceDiagram(serverTemplateId,
+                                                           containerId,
+                                                           processInstanceId)).thenReturn(svgContent);
+
+        List<ProcessNode> processNodes = Arrays.asList(ProcessNode.builder().nodeId(1).nodeName("name-1").nodeType("HumanTask").build(),
+                                                       ProcessNode.builder().nodeId(2).nodeName(" ").nodeType("Split").build());
+
+        when(processAdminServicesClient.getProcessNodes(containerId,
+                                                        processInstanceId)).thenReturn(processNodes);
+
+        List<NodeInstance> activeNodeInstances = Arrays.asList(NodeInstance.builder().id(1l).name("name-1").nodeType("HumanTask").build(),
+                                                               NodeInstance.builder().id(2l).name(" ").nodeType("Split").build());
+
+        when(queryServicesClient.findActiveNodeInstances(processInstanceId,
+                                                         0,
+                                                         Integer.MAX_VALUE)).thenReturn(activeNodeInstances);
+
+        List<NodeInstance> completedNodeInstances = Arrays.asList(NodeInstance.builder().id(3l).name("name-3").nodeType("HumanTask").completed(true).build(),
+                                                                  NodeInstance.builder().id(4l).name(" ").nodeType("End").completed(true).build());
+
+        when(queryServicesClient.findCompletedNodeInstances(processInstanceId,
+                                                            0,
+                                                            Integer.MAX_VALUE)).thenReturn(completedNodeInstances);
+
+        ProcessInstanceDiagramSummary summary = service.getProcessInstanceDiagramSummary(serverTemplateId,
+                                                                                         containerId,
+                                                                                         processInstanceId);
+
+        assertEquals(processInstanceId,
+                     summary.getId());
+        assertEquals(svgContent,
+                     summary.getSvgContent());
+
+        assertThat(summary.getProcessNodes()).hasSize(2).containsExactly(new ProcessNodeSummary(1l,
+                                                                                                "name-1",
+                                                                                                "HumanTask"),
+                                                                         new ProcessNodeSummary(2l,
+                                                                                                " ",
+                                                                                                "Split"));
+
+        assertThat(summary.getNodeInstances()).hasSize(4).containsExactly(NodeInstanceSummary.builder().withId(1l).withName("name-1").withType("HumanTask").build(),
+                                                                          NodeInstanceSummary.builder().withId(2l).withName(" ").withType("Split").build(),
+                                                                          NodeInstanceSummary.builder().withId(3l).withName("name-3").withType("HumanTask").withCompleted(true).build(),
+                                                                          NodeInstanceSummary.builder().withId(4l).withName(" ").withType("End").withCompleted(true).build());
     }
 }

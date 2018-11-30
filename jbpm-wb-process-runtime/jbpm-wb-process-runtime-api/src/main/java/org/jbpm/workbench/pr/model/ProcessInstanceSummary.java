@@ -62,8 +62,6 @@ public class ProcessInstanceSummary extends GenericErrorSummary<Long> {
                                   Date slaDueDate,
                                   Integer errorCount) {
         super(errorCount, processInstanceId, processName);
-        this.id = processInstanceId;
-        this.name = processName;
         this.processInstanceId = processInstanceId;
         this.processId = processId;
         this.processName = processName;

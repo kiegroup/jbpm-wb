@@ -22,8 +22,9 @@ import java.util.List;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
+import org.jbpm.workbench.pr.model.NodeInstanceSummary;
+import org.jbpm.workbench.pr.model.ProcessInstanceDiagramSummary;
 import org.jbpm.workbench.pr.model.ProcessNodeSummary;
-import org.jbpm.workbench.pr.service.ProcessImageService;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,15 +36,13 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.workbench.events.NotificationEvent;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class ProcessInstanceDiagramPresenterTest {
-
-    @Mock
-    ProcessImageService imageService;
 
     @Mock
     ProcessRuntimeDataService processService;
@@ -59,16 +58,15 @@ public class ProcessInstanceDiagramPresenterTest {
 
     @Before
     public void setup() {
-        presenter.setProcessImageService(new CallerMock<>(imageService));
         presenter.setProcessService(new CallerMock<>(processService));
     }
 
     @Test
     public void testEmptyProcessInstanceDiagram() {
-        when(imageService.getProcessInstanceDiagram(any(),
-                                                    any(),
-                                                    any())).thenReturn("",
-                                                                       null);
+        when(processService.getProcessInstanceDiagramSummary(any(),
+                                                             any(),
+                                                             any())).thenReturn(ProcessInstanceDiagramSummary.builder().withProcessNodes(emptyList()).withNodeInstances(emptyList()).build(),
+                                                                                ProcessInstanceDiagramSummary.builder().withProcessNodes(emptyList()).withNodeInstances(emptyList()).withSvgContent("").build());
 
         presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(null,
                                                                                     1l,
@@ -90,11 +88,10 @@ public class ProcessInstanceDiagramPresenterTest {
     @Test
     public void testProcessInstanceDiagram() {
         final String svgContent = "<svg></svg>";
-        when(imageService.getProcessInstanceDiagram(any(),
-                                                    any(),
-                                                    any())).thenReturn(svgContent,
-                                                                       null);
-
+        when(processService.getProcessInstanceDiagramSummary(any(),
+                                                             any(),
+                                                             any())).thenReturn(ProcessInstanceDiagramSummary.builder().withProcessNodes(emptyList()).withNodeInstances(emptyList()).withSvgContent(svgContent).build(),
+                                                                                ProcessInstanceDiagramSummary.builder().withProcessNodes(emptyList()).withNodeInstances(emptyList()).build());
         presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(null,
                                                                                     1l,
                                                                                     null,
@@ -112,19 +109,33 @@ public class ProcessInstanceDiagramPresenterTest {
         String serverTemplateId = "serverTemplateId";
         String containerId = "containerId";
         Long processInstanceId = 1L;
+        String svgContent = "<svg></svg>";
 
-        final List<ProcessNodeSummary> nodes = Arrays.asList(new ProcessNodeSummary(0l,
-                                                                                    " ",
-                                                                                    "Start"),
-                                                             new ProcessNodeSummary(1l,
-                                                                                    "name-1",
-                                                                                    "HumanTask"),
-                                                             new ProcessNodeSummary(2l,
-                                                                                    " ",
-                                                                                    "Split"));
-        when(processService.getProcessInstanceNodes(serverTemplateId,
-                                                    containerId,
-                                                    processInstanceId)).thenReturn(nodes);
+        List<ProcessNodeSummary> nodes = Arrays.asList(new ProcessNodeSummary(0l,
+                                                                              " ",
+                                                                              "Start"),
+                                                       new ProcessNodeSummary(1l,
+                                                                              "name-1",
+                                                                              "HumanTask"),
+                                                       new ProcessNodeSummary(2l,
+                                                                              " ",
+                                                                              "Split"));
+
+        List<NodeInstanceSummary> nodeInstances = Arrays.asList(
+                NodeInstanceSummary.builder().withId(1l).withName("name-1").withType("HumanTask").build(),
+                NodeInstanceSummary.builder().withId(2l).withName(" ").withType("Split").build(),
+                NodeInstanceSummary.builder().withId(3l).withName("name-3").withType("HumanTask").withCompleted(true).build(),
+                NodeInstanceSummary.builder().withId(4l).withName(" ").withType("End").withCompleted(true).build()
+        );
+
+        ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
+        summary.setSvgContent(svgContent);
+        summary.setProcessNodes(nodes);
+        summary.setNodeInstances(nodeInstances);
+
+        when(processService.getProcessInstanceDiagramSummary(serverTemplateId,
+                                                             containerId,
+                                                             processInstanceId)).thenReturn(summary);
 
         presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(containerId,
                                                                                     processInstanceId,
@@ -135,20 +146,32 @@ public class ProcessInstanceDiagramPresenterTest {
 
         verify(view).showBusyIndicator(any());
 
-        ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List> nodesCaptor = ArgumentCaptor.forClass(List.class);
         verify(view,
-               times(2)).setProcessNodes(captor.capture());
+               times(2)).setProcessNodes(nodesCaptor.capture());
 
-        assertThat(captor.getAllValues().get(0)).isEmpty();
-        assertThat(captor.getAllValues().get(1)).hasSameSizeAs(nodes).containsExactly(new ProcessNodeSummary(1l,
-                                                                                                             "name-1",
-                                                                                                             "HumanTask"),
-                                                                                      new ProcessNodeSummary(2l,
-                                                                                                             " ",
-                                                                                                             "Split"),
-                                                                                      new ProcessNodeSummary(0l,
-                                                                                                             " ",
-                                                                                                             "Start"));
+        assertThat(nodesCaptor.getAllValues().get(0)).isEmpty();
+        assertThat(nodesCaptor.getAllValues().get(1)).hasSameSizeAs(nodes).containsExactly(new ProcessNodeSummary(1l,
+                                                                                                                  "name-1",
+                                                                                                                  "HumanTask"),
+                                                                                           new ProcessNodeSummary(2l,
+                                                                                                                  " ",
+                                                                                                                  "Split"),
+                                                                                           new ProcessNodeSummary(0l,
+                                                                                                                  " ",
+                                                                                                                  "Start"));
+
+        ArgumentCaptor<List> nodeInstancesCaptor = ArgumentCaptor.forClass(List.class);
+        verify(view,
+               times(2)).setNodeInstances(nodeInstancesCaptor.capture());
+
+        assertThat(nodeInstancesCaptor.getAllValues().get(0)).isEmpty();
+        assertThat(nodeInstancesCaptor.getAllValues().get(1)).hasSameSizeAs(nodeInstances).containsExactly(
+                NodeInstanceSummary.builder().withId(4l).withName(" ").withType("End").withCompleted(true).build(),
+                NodeInstanceSummary.builder().withId(1l).withName("name-1").withType("HumanTask").build(),
+                NodeInstanceSummary.builder().withId(3l).withName("name-3").withType("HumanTask").withCompleted(true).build(),
+                NodeInstanceSummary.builder().withId(2l).withName(" ").withType("Split").build()
+        );
     }
 
     @Test
@@ -174,9 +197,14 @@ public class ProcessInstanceDiagramPresenterTest {
                                                              new ProcessNodeSummary(2l,
                                                                                     " ",
                                                                                     "Split"));
-        when(processService.getProcessInstanceNodes(serverTemplateId,
-                                                    containerId,
-                                                    processInstanceId)).thenReturn(nodes);
+
+        ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
+        summary.setProcessNodes(nodes);
+        summary.setNodeInstances(emptyList());
+
+        when(processService.getProcessInstanceDiagramSummary(serverTemplateId,
+                                                             containerId,
+                                                             processInstanceId)).thenReturn(summary);
 
         presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(containerId,
                                                                                     processInstanceId,
@@ -185,7 +213,7 @@ public class ProcessInstanceDiagramPresenterTest {
                                                                                     null,
                                                                                     serverTemplateId));
 
-        presenter.onProcessNodeSelected("1");
+        presenter.onProcessNodeSelected(1l);
 
         verify(view).setValue(humanTask);
     }
@@ -206,9 +234,14 @@ public class ProcessInstanceDiagramPresenterTest {
                                                              new ProcessNodeSummary(2l,
                                                                                     " ",
                                                                                     "Split"));
-        when(processService.getProcessInstanceNodes(serverTemplateId,
-                                                    containerId,
-                                                    processInstanceId)).thenReturn(nodes);
+
+        ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
+        summary.setProcessNodes(nodes);
+        summary.setNodeInstances(emptyList());
+
+        when(processService.getProcessInstanceDiagramSummary(serverTemplateId,
+                                                             containerId,
+                                                             processInstanceId)).thenReturn(summary);
 
         presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(containerId,
                                                                                     processInstanceId,
@@ -217,7 +250,7 @@ public class ProcessInstanceDiagramPresenterTest {
                                                                                     null,
                                                                                     serverTemplateId));
 
-        presenter.onProcessNodeTrigger("1");
+        presenter.onProcessNodeTrigger(1l);
 
         verify(processService).triggerProcessInstanceNode(serverTemplateId,
                                                           containerId,
@@ -225,5 +258,83 @@ public class ProcessInstanceDiagramPresenterTest {
                                                           humanTask.getId());
         verify(notificationEvent).fire(any());
         verify(view).setValue(new ProcessNodeSummary());
+    }
+
+    @Test
+    public void testOnNodeInstanceCancelled() {
+        String serverTemplateId = "serverTemplateId";
+        String containerId = "containerId";
+        Long processInstanceId = 1L;
+
+        NodeInstanceSummary humanTask = NodeInstanceSummary.builder().withId(1l).withName("name-1").withType("HumanTask").build();
+
+        List<NodeInstanceSummary> nodeInstances = Arrays.asList(
+                humanTask,
+                NodeInstanceSummary.builder().withId(2l).withName(" ").withType("Split").build(),
+                NodeInstanceSummary.builder().withId(3l).withName("name-3").withType("HumanTask").withCompleted(true).build(),
+                NodeInstanceSummary.builder().withId(4l).withName(" ").withType("End").withCompleted(true).build()
+        );
+
+        ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
+        summary.setProcessNodes(emptyList());
+        summary.setNodeInstances(nodeInstances);
+
+        when(processService.getProcessInstanceDiagramSummary(serverTemplateId,
+                                                             containerId,
+                                                             processInstanceId)).thenReturn(summary);
+
+        presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(containerId,
+                                                                                    processInstanceId,
+                                                                                    null,
+                                                                                    null,
+                                                                                    null,
+                                                                                    serverTemplateId));
+
+        presenter.onNodeInstanceCancel(1l);
+
+        verify(processService).cancelProcessInstanceNode(serverTemplateId,
+                                                         containerId,
+                                                         processInstanceId,
+                                                         humanTask.getId());
+        verify(notificationEvent).fire(any());
+    }
+
+    @Test
+    public void testOnNodeInstanceReTriggered() {
+        String serverTemplateId = "serverTemplateId";
+        String containerId = "containerId";
+        Long processInstanceId = 1L;
+
+        NodeInstanceSummary humanTask = NodeInstanceSummary.builder().withId(1l).withName("name-1").withType("HumanTask").build();
+
+        List<NodeInstanceSummary> nodeInstances = Arrays.asList(
+                humanTask,
+                NodeInstanceSummary.builder().withId(2l).withName(" ").withType("Split").build(),
+                NodeInstanceSummary.builder().withId(3l).withName("name-3").withType("HumanTask").withCompleted(true).build(),
+                NodeInstanceSummary.builder().withId(4l).withName(" ").withType("End").withCompleted(true).build()
+        );
+
+        ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
+        summary.setProcessNodes(emptyList());
+        summary.setNodeInstances(nodeInstances);
+
+        when(processService.getProcessInstanceDiagramSummary(serverTemplateId,
+                                                             containerId,
+                                                             processInstanceId)).thenReturn(summary);
+
+        presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(containerId,
+                                                                                    processInstanceId,
+                                                                                    null,
+                                                                                    null,
+                                                                                    null,
+                                                                                    serverTemplateId));
+
+        presenter.onNodeInstanceReTrigger(1l);
+
+        verify(processService).reTriggerProcessInstanceNode(serverTemplateId,
+                                                            containerId,
+                                                            processInstanceId,
+                                                            humanTask.getId());
+        verify(notificationEvent).fire(any());
     }
 }

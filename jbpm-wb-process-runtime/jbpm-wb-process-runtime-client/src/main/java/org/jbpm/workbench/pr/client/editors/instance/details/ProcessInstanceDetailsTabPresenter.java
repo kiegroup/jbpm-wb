@@ -138,7 +138,7 @@ public class ProcessInstanceDetailsTabPresenter {
                     final SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
                     for (NodeInstanceSummary nis : details) {
                         safeHtmlBuilder.appendEscapedLines(nis.getTimestamp() + ": "
-                                                                   + nis.getId() + " - " + nis.getNodeName() + " (" + nis.getType() + ") \n");
+                                                                   + nis.getId() + " - " + nis.getName() + " (" + nis.getType() + ") \n");
                     }
                     view.setCurrentActivitiesListBox(safeHtmlBuilder.toSafeHtml().asString());
                 }

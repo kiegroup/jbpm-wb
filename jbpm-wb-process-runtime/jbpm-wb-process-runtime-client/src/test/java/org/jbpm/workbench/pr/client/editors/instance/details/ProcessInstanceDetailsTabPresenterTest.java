@@ -15,6 +15,8 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.details;
 
+import java.util.Date;
+
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
@@ -102,17 +104,17 @@ public class ProcessInstanceDetailsTabPresenterTest {
         assertEquals("", argumentCaptor.getAllValues().get(0));
         assertThat(argumentCaptor.getAllValues().get(1))
                 .as("Current Activities")
-                .contains(nodeInstanceSummary.getTimestamp(),
+                .contains(nodeInstanceSummary.getTimestamp().toString(),
                           String.valueOf(nodeInstanceSummary.getId()),
-                          nodeInstanceSummary.getNodeName(),
+                          nodeInstanceSummary.getName(),
                           nodeInstanceSummary.getType());
     }
 
     private NodeInstanceSummary getNodeInstanceSummary() {
         NodeInstanceSummary nodeInstanceSummary = new NodeInstanceSummary();
-        nodeInstanceSummary.setTimestamp("Fri Oct 27 17:47:07 CEST 2017");
+        nodeInstanceSummary.setTimestamp(new Date());
         nodeInstanceSummary.setId(1L);
-        nodeInstanceSummary.setNodeName("Self Evaluation");
+        nodeInstanceSummary.setName("Self Evaluation");
         nodeInstanceSummary.setType("HumanTaskNode");
         return nodeInstanceSummary;
     }
