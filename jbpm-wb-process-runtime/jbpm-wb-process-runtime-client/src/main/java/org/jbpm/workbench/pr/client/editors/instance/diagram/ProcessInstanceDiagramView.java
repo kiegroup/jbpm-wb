@@ -19,12 +19,14 @@ package org.jbpm.workbench.pr.client.editors.instance.diagram;
 import java.util.List;
 
 import com.google.gwt.user.client.TakesValue;
+import com.google.gwt.user.client.ui.IsWidget;
+import org.jbpm.workbench.pr.model.NodeInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessNodeSummary;
-import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.callbacks.Callback;
 import org.uberfire.ext.widgets.common.client.common.HasBusyIndicator;
 
 public interface ProcessInstanceDiagramView extends HasBusyIndicator,
-                                                    UberView<ProcessInstanceDiagramPresenter>,
+                                                    IsWidget,
                                                     TakesValue<ProcessNodeSummary> {
 
     void displayImage(String svgContent);
@@ -32,4 +34,14 @@ public interface ProcessInstanceDiagramView extends HasBusyIndicator,
     void displayMessage(String message);
 
     void setProcessNodes(List<ProcessNodeSummary> nodes);
+
+    void setNodeInstances(List<NodeInstanceSummary> nodes);
+
+    void setOnProcessNodeSelectedCallback(Callback<Long> onProcessNodeSelectedCallback);
+
+    void setOnProcessNodeTriggeredCallback(Callback<Long> onProcessNodeTriggeredCallback);
+
+    void setOnNodeInstanceCancelCallback(Callback<Long> onNodeInstanceCancelCallback);
+
+    void setOnNodeInstanceReTriggerCallback(Callback<Long> onNodeInstanceReTriggerCallback);
 }

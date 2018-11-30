@@ -17,15 +17,16 @@
 package org.jbpm.workbench.pr.client.editors.instance.diagram;
 
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Composite;
-import elemental2.dom.HTMLButtonElement;
-import elemental2.dom.HTMLDivElement;
-import elemental2.dom.HTMLParagraphElement;
 import org.jboss.errai.common.client.dom.Event;
+import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.databinding.client.components.ListComponent;
+import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -33,11 +34,13 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramWidgetViewImpl;
+import org.jbpm.workbench.pr.model.NodeInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessNodeSummary;
+import org.uberfire.client.callbacks.Callback;
 import org.uberfire.client.views.pfly.widgets.Select;
 
 @Dependent
-@Templated
+@Templated(stylesheet = "ProcessInstanceDiagramViewImpl.css")
 public class ProcessInstanceDiagramViewImpl extends Composite implements ProcessInstanceDiagramView {
 
     @Inject
@@ -45,45 +48,60 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
     private ProcessDiagramWidgetViewImpl diagram;
 
     @Inject
-    @DataField("node-details-panel")
-    private HTMLDivElement nodeDetails;
-
-    @Inject
     @DataField("available-nodes")
     private Select processNodes;
 
     @Inject
-    @DataField("node-name")
-    @Bound
-    @SuppressWarnings("unused")
-    private HTMLParagraphElement name;
+    @DataField("node-instances-counter")
+    private Span nodeInstancesCounter;
 
     @Inject
-    @DataField("node-type")
-    @Bound
-    @SuppressWarnings("unused")
-    private HTMLParagraphElement type;
+    @DataField("node-details-panel")
+    private ProcessNodeItemView processNodeSummaryView;
 
     @Inject
-    @DataField("node-id")
     @Bound
+    @DataField("node-instances")
+    @ListContainer("ul")
     @SuppressWarnings("unused")
-    private HTMLParagraphElement id;
-
-    @Inject
-    @DataField("trigger")
-    @SuppressWarnings("unused")
-    private HTMLButtonElement trigger;
+    private ListComponent<NodeInstanceSummary, NodeInstanceItemView> nodes;
 
     @Inject
     @AutoBound
-    private DataBinder<ProcessNodeSummary> processNodeSummary;
+    private DataBinder<List<NodeInstanceSummary>> nodeList;
 
-    private ProcessInstanceDiagramPresenter presenter;
+    private Callback<Long> onProcessNodeSelectedCallback;
+
+    private Callback<Long> onNodeInstanceCancelCallback;
+
+    private Callback<Long> onNodeInstanceReTriggerCallback;
+
+    @PostConstruct
+    protected void init(){
+        nodes.addComponentCreationHandler(view -> {
+           view.setOnNodeInstanceCancelCallback(onNodeInstanceCancelCallback);
+           view.setOnNodeInstanceReTriggerCallback(onNodeInstanceReTriggerCallback);
+        });
+    }
 
     @Override
-    public void init(final ProcessInstanceDiagramPresenter presenter) {
-        this.presenter = presenter;
+    public void setOnNodeInstanceCancelCallback(Callback<Long> onNodeInstanceCancelCallback) {
+        this.onNodeInstanceCancelCallback = onNodeInstanceCancelCallback;
+    }
+
+    @Override
+    public void setOnNodeInstanceReTriggerCallback(Callback<Long> onNodeInstanceReTriggerCallback) {
+        this.onNodeInstanceReTriggerCallback = onNodeInstanceReTriggerCallback;
+    }
+
+    @Override
+    public void setOnProcessNodeSelectedCallback(Callback<Long> onProcessNodeSelectedCallback) {
+        this.onProcessNodeSelectedCallback = onProcessNodeSelectedCallback;
+    }
+
+    @Override
+    public void setOnProcessNodeTriggeredCallback(Callback<Long> onProcessNodeTriggeredCallback) {
+        processNodeSummaryView.setOnProcessNodeTriggeredCallback(onProcessNodeTriggeredCallback);
     }
 
     @Override
@@ -96,28 +114,32 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
 
     @Override
     public ProcessNodeSummary getValue() {
-        return processNodeSummary.getModel();
+        return processNodeSummaryView.getValue();
     }
 
     @Override
     public void setValue(final ProcessNodeSummary node) {
-        processNodeSummary.setModel(node);
-        if(node.getId() == null){
-            nodeDetails.classList.add("hidden");
+        processNodeSummaryView.setValue(node);
+        if (node.getId() == null) {
+            processNodeSummaryView.getElement().classList.add("hidden");
         } else {
-            nodeDetails.classList.remove("hidden");
+            processNodeSummaryView.getElement().classList.remove("hidden");
         }
+    }
+
+    @Override
+    public void setNodeInstances(final List<NodeInstanceSummary> nodes) {
+        nodeList.setModel(nodes);
+        nodeInstancesCounter.setTextContent(String.valueOf(nodes.size()));
     }
 
     @EventHandler("available-nodes")
     public void onProcessNodeChange(@ForEvent("change") Event e) {
         processNodes.toggle();
-        presenter.onProcessNodeSelected(processNodes.getValue());
-    }
-
-    @EventHandler("trigger")
-    public void onProcessNodeTrigger(@ForEvent("click") Event e) {
-        presenter.onProcessNodeTrigger(processNodes.getValue());
+        if (onProcessNodeSelectedCallback != null) {
+            final String node = processNodes.getValue();
+            onProcessNodeSelectedCallback.callback(node == null || node.trim().isEmpty() ? null : Long.valueOf(node));
+        }
     }
 
     @Override

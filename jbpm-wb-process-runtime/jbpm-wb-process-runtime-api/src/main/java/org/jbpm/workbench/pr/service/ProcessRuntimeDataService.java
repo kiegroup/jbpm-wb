@@ -31,6 +31,14 @@ public interface ProcessRuntimeDataService {
                                                             String deploymentId,
                                                             Long processInstanceId);
 
+    List<NodeInstanceSummary> getProcessInstanceCompletedNodes(String serverTemplateId,
+                                                               String deploymentId,
+                                                               Long processInstanceId);
+
+    ProcessInstanceDiagramSummary getProcessInstanceDiagramSummary(String serverTemplateId,
+                                                                   String deploymentId,
+                                                                   Long processInstanceId);
+
     List<ProcessSummary> getProcesses(String serverTemplateId,
                                       Integer page,
                                       Integer pageSize,
@@ -64,5 +72,15 @@ public interface ProcessRuntimeDataService {
                                     String containerId,
                                     Long processInstanceId,
                                     Long nodeId);
+
+    void cancelProcessInstanceNode(String serverTemplateId,
+                                   String containerId,
+                                   Long processInstanceId,
+                                   Long nodeInstanceId);
+
+    void reTriggerProcessInstanceNode(String serverTemplateId,
+                                      String containerId,
+                                      Long processInstanceId,
+                                      Long nodeInstanceId);
 
 }

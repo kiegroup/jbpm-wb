@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<div class="row" style="overflow:auto; padding-top: 20px;">
+<div class="row kie-process-instance-nodes" style="overflow:auto; padding-top: 20px;">
     <div class="col-md-2">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -7,38 +7,22 @@
             </div>
             <div class="panel-body">
                 <select class="selectpicker form-control" data-field="available-nodes" data-live-search="true" multiple data-max-options="1"></select>
+                <div data-field="node-details-panel" class="hidden"></div>
                 <hr>
-                <div data-field="node-details-panel" class="hidden">
-                    <form class="form-horizontal">
-                        <fieldset>
-                            <div class="form-group" data-field="action-name-group">
-                                <label class="control-label col-md-5" data-i18n-key="NodeName"></label>
-                                <div class="col-md-7">
-                                    <p class="form-control-static" data-field="node-name"></p>
-                                </div>
+                <div class="panel-group kie-dock__panel-group">
+                    <div class="panel-heading kie-dock__panel-heading kie-node-instances-heading">
+                        <div class="panel-title kie-dock__heading--section">
+                            <a data-toggle="collapse" data-target="#node-instances" data-i18n-key="NodeInstances"></a>
+                            <span data-field="node-instances-counter" class="badge"></span>
+                        </div>
+                    </div>
+                    <div class="panel-collapse collapse in" id="node-instances">
+                        <div class="panel-body kie-dock__panel-body kie-node-instances-list">
+                            <div>
+                                <ul class="list-group" data-field="node-instances"></ul>
                             </div>
-                            <div class="form-group" data-field="action-desc-group">
-                                <label class="control-label col-md-5" data-i18n-key="Type"></label>
-                                <div class="col-md-7">
-                                    <p class="form-control-static" data-field="node-type"></p>
-                                </div>
-                            </div>
-
-                            <div class="form-group" data-field="action-users-group">
-                                <label class="control-label col-md-5" data-i18n-key="NodeId"></label>
-                                <div class="col-md-7">
-                                    <p class="form-control-static" data-field="node-id"></p>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="col-md-7 col-md-offset-5">
-                                    <button type="button" data-field="trigger" class="btn btn-default" data-i18n-key="Trigger"></button>
-                                </div>
-                            </div>
-
-                        </fieldset>
-                    </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

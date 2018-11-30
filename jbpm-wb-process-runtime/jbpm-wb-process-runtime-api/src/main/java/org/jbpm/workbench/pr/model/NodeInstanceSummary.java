@@ -16,66 +16,60 @@
 
 package org.jbpm.workbench.pr.model;
 
-import java.io.Serializable;
+import java.util.Date;
 
+import org.jboss.errai.common.client.api.annotations.NonPortable;
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jboss.errai.databinding.client.api.Bindable;
+import org.jbpm.workbench.common.model.GenericSummary;
 
 @Portable
-public class NodeInstanceSummary implements Serializable {
+@Bindable
+public class NodeInstanceSummary extends GenericSummary<Long> {
 
-    private long id;
-    private long processId;
-    private String nodeName;
+    private Long processId;
     private String nodeUniqueName;
     private String type;
-    private String timestamp;
+    private Date timestamp;
     private String connection;
-    private boolean completed;
+    private Boolean completed;
+    private Long referenceId;
+    private Integer slaCompliance;
+    private Date slaDueDate;
 
-    public NodeInstanceSummary(long id,
-                               long processId,
+    public NodeInstanceSummary(Long id,
+                               Long processId,
                                String nodeName,
                                String nodeUniqueName,
                                String type,
-                               String timestamp,
+                               Date timestamp,
                                String connection,
-                               boolean completed) {
-        super();
-        this.id = id;
+                               Boolean completed,
+                               Long referenceId,
+                               Integer slaCompliance,
+                               Date slaDueDate) {
+        super(id,
+              nodeName);
         this.processId = processId;
-        this.nodeName = nodeName;
         this.nodeUniqueName = nodeUniqueName;
         this.type = type;
         this.timestamp = timestamp;
         this.connection = connection;
         this.completed = completed;
+        this.referenceId = referenceId;
+        this.slaCompliance = slaCompliance;
+        this.slaDueDate = slaDueDate;
     }
 
     public NodeInstanceSummary() {
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public long getProcessId() {
+    public Long getProcessId() {
         return processId;
     }
 
-    public void setProcessId(long processId) {
+    public void setProcessId(Long processId) {
         this.processId = processId;
-    }
-
-    public String getNodeName() {
-        return nodeName;
-    }
-
-    public void setNodeName(String nodeName) {
-        this.nodeName = nodeName;
     }
 
     public String getType() {
@@ -86,16 +80,20 @@ public class NodeInstanceSummary implements Serializable {
         this.type = type;
     }
 
-    public String getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 
     public String getNodeUniqueName() {
         return nodeUniqueName;
+    }
+
+    public void setNodeUniqueName(String nodeUniqueName) {
+        this.nodeUniqueName = nodeUniqueName;
     }
 
     public String getConnection() {
@@ -106,11 +104,129 @@ public class NodeInstanceSummary implements Serializable {
         this.connection = incomingConnection;
     }
 
-    public boolean isCompleted() {
+    public Boolean isCompleted() {
         return completed;
     }
 
-    public void setCompleted(boolean completed) {
+    public void setCompleted(Boolean completed) {
         this.completed = completed;
+    }
+
+    public String getLabel() {
+        return getName() == null || getName().trim().isEmpty() ? getType() + "-" + getId() : getName();
+    }
+
+    public Long getReferenceId() {
+        return referenceId;
+    }
+
+    public void setReferenceId(Long referenceId) {
+        this.referenceId = referenceId;
+    }
+
+    public Integer getSlaCompliance() {
+        return slaCompliance;
+    }
+
+    public void setSlaCompliance(Integer slaCompliance) {
+        this.slaCompliance = slaCompliance;
+    }
+
+    public Date getSlaDueDate() {
+        return slaDueDate;
+    }
+
+    public void setSlaDueDate(Date slaDueDate) {
+        this.slaDueDate = slaDueDate;
+    }
+
+    @Override
+    public String toString() {
+        return "NodeInstanceSummary{" +
+                "processId=" + processId +
+                ", nodeUniqueName='" + nodeUniqueName + '\'' +
+                ", type='" + type + '\'' +
+                ", timestamp='" + timestamp + '\'' +
+                ", connection='" + connection + '\'' +
+                ", completed=" + completed +
+                ", referenceId=" + referenceId +
+                ", slaCompliance=" + slaCompliance +
+                ", slaDueDate=" + slaDueDate +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    @NonPortable
+    public static final class Builder {
+
+        private NodeInstanceSummary nodeInstanceSummary;
+
+        private Builder() {
+            nodeInstanceSummary = new NodeInstanceSummary();
+        }
+
+        public Builder withId(Long id) {
+            nodeInstanceSummary.setId(id);
+            return this;
+        }
+
+        public Builder withName(String name) {
+            nodeInstanceSummary.setName(name);
+            return this;
+        }
+
+        public Builder withProcessId(Long processId) {
+            nodeInstanceSummary.setProcessId(processId);
+            return this;
+        }
+
+        public Builder withNodeUniqueName(String nodeUniqueName) {
+            nodeInstanceSummary.setNodeUniqueName(nodeUniqueName);
+            return this;
+        }
+
+        public Builder withType(String type) {
+            nodeInstanceSummary.setType(type);
+            return this;
+        }
+
+        public Builder withTimestamp(Date timestamp) {
+            nodeInstanceSummary.setTimestamp(timestamp);
+            return this;
+        }
+
+        public Builder withConnection(String connection) {
+            nodeInstanceSummary.setConnection(connection);
+            return this;
+        }
+
+        public Builder withCompleted(Boolean completed) {
+            nodeInstanceSummary.setCompleted(completed);
+            return this;
+        }
+
+        public Builder withReferenceId(Long referenceId) {
+            nodeInstanceSummary.setReferenceId(referenceId);
+            return this;
+        }
+
+        public Builder withSlaCompliance(Integer slaCompliance) {
+            nodeInstanceSummary.setSlaCompliance(slaCompliance);
+            return this;
+        }
+
+        public Builder withSlaDueDate(Date slaDueDate) {
+            nodeInstanceSummary.setSlaDueDate(slaDueDate);
+            return this;
+        }
+
+        public NodeInstanceSummary build() {
+            return nodeInstanceSummary;
+        }
     }
 }
