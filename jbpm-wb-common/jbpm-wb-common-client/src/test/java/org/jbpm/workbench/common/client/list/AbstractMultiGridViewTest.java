@@ -16,11 +16,16 @@
 package org.jbpm.workbench.common.client.list;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Spliterators;
 import java.util.function.Consumer;
 
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.view.client.AsyncDataProvider;
+
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.common.client.util.ConditionalKebabActionCell;
 import org.jbpm.workbench.common.model.GenericSummary;
@@ -59,6 +64,15 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
     @Mock
     protected UserPreferencesService userPreferencesServiceMock;
 
+    @Mock
+    protected ListTable extendedPagedTable;
+
+    @Mock
+    protected HasWidgets rightActionsToolbar;
+
+    @Mock
+    protected Button mockButton;
+
     @Spy
     protected MultiGridPreferencesStore multiGridPreferencesStore;
 
@@ -90,6 +104,11 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
                                                             eq(UserPreferencesType.GRIDPREFERENCES))).thenReturn(new GridPreferencesStore(new GridGlobalPreferences()));
         when(conditionalKebabActionCell.get()).thenReturn(mock(ConditionalKebabActionCell.class));
         doNothing().when(getView()).addNewTableToColumn(any());
+        when(extendedPagedTable.getRightActionsToolbar()).thenReturn(rightActionsToolbar);
+        List<Button> a = Collections.singletonList(mockButton);
+        when(rightActionsToolbar.spliterator())
+                .thenReturn(Spliterators.spliteratorUnknownSize(a.iterator(),
+                                                                0));
     }
 
     @Test
@@ -198,5 +217,19 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
 
         getView().loadListTable("key",
                                 consumer);
+    }
+
+    @Test
+    public void testControlBulkOperationsEnabled() {
+        when(extendedPagedTable.hasSelectedItems()).thenReturn(true);
+        getView().controlBulkOperations(extendedPagedTable);
+        verify(mockButton).setEnabled(true);
+    }
+
+    @Test
+    public void testControlBulkOperationsDisabled() {
+        when(extendedPagedTable.hasSelectedItems()).thenReturn(false);
+        getView().controlBulkOperations(extendedPagedTable);
+        verify(mockButton).setEnabled(false);
     }
 }

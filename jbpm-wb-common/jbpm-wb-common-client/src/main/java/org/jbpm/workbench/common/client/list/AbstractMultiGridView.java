@@ -20,10 +20,10 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.StreamSupport;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.common.collect.Iterables;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
@@ -132,8 +132,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     protected void controlBulkOperations(final ListTable<T> extendedPagedTable) {
-        enableWidgets(Iterables.getFirst(extendedPagedTable.getRightActionsToolbar(),
-                                         null),
+        enableWidgets(StreamSupport.stream(extendedPagedTable.getRightActionsToolbar().spliterator(),
+                                           false).findFirst().orElse(null),
                       extendedPagedTable.hasSelectedItems());
     }
 
