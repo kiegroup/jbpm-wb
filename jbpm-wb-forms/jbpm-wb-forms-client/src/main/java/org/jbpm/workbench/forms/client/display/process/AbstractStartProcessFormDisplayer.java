@@ -44,9 +44,7 @@ import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
-import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.forms.client.display.api.StartProcessFormDisplayer;
 import org.jbpm.workbench.forms.client.i18n.Constants;
@@ -104,13 +102,9 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
     public void init(FormDisplayerConfig<ProcessDefinitionKey, S> config,
                      Command onClose,
                      Command onRefreshCommand) {
-        this.config = config;
-        this.serverTemplateId = config.getKey().getServerTemplateId();
-        this.deploymentId = config.getKey().getDeploymentId();
-        this.processDefId = config.getKey().getProcessId();
-        this.renderingSettings = config.getRenderingSettings();
-        this.onClose = onClose;
-        this.onRefresh = onRefreshCommand;
+        initConfigs(config,
+                    onClose,
+                    onRefreshCommand);
 
         container.clear();
         formContainer.clear();
@@ -194,19 +188,19 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
         formContainer.add(accordion);
     }
 
-    protected abstract void initDisplayer();
-
-    protected ErrorCallback<Message> getUnexpectedErrorCallback() {
-        return new ErrorCallback<Message>() {
-            @Override
-            public boolean error(Message message,
-                                 Throwable throwable) {
-                String notification = Constants.INSTANCE.UnexpectedError(throwable.getMessage());
-                errorPopup.showMessage(notification);
-                return true;
-            }
-        };
+    public void initConfigs(FormDisplayerConfig<ProcessDefinitionKey, S> config,
+                            Command onClose,
+                            Command onRefreshCommand){
+        this.config = config;
+        this.serverTemplateId = config.getKey().getServerTemplateId();
+        this.deploymentId = config.getKey().getDeploymentId();
+        this.processDefId = config.getKey().getProcessId();
+        this.renderingSettings = config.getRenderingSettings();
+        this.onClose = onClose;
+        this.onRefresh = onRefreshCommand;
     }
+
+    protected abstract void initDisplayer();
 
     @Override
     public Panel getContainer() {
@@ -220,9 +214,7 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
 
     @Override
     public void startProcess(Map<String, Object> params) {
-
-        processService.call(getStartProcessRemoteCallback(),
-                            getUnexpectedErrorCallback())
+        processService.call(getStartProcessRemoteCallback())
                 .startProcess(serverTemplateId,
                               deploymentId,
                               processDefId,

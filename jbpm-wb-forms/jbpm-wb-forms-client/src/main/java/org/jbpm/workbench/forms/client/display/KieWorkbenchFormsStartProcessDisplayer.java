@@ -58,8 +58,7 @@ public class KieWorkbenchFormsStartProcessDisplayer extends AbstractStartProcess
     @Override
     public void startProcessFromDisplayer() {
         if (formRenderer.isValid()) {
-            service.call(getStartProcessRemoteCallback(),
-                         getUnexpectedErrorCallback()).startProcessFromRenderContext(
+            service.call(getStartProcessRemoteCallback()).startProcessFromRenderContext(
                     renderingSettings.getTimestamp(),
                     renderingSettings.getRenderingContext().getModel(),
                     serverTemplateId,
