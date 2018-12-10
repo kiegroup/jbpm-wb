@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <div class="row kie-process-instance-nodes" style="overflow:auto; padding-top: 20px;">
-    <div class="col-md-2">
+    <div class="col-md-2" data-field="node-actions-panel">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title" data-i18n-key="NodeActions"></h3>
@@ -9,25 +9,13 @@
                 <select class="selectpicker form-control" data-field="available-nodes" data-live-search="true" multiple data-max-options="1"></select>
                 <div data-field="node-details-panel" class="hidden"></div>
                 <hr>
-                <div class="panel-group kie-dock__panel-group">
-                    <div class="panel-heading kie-dock__panel-heading kie-node-instances-heading">
-                        <div class="panel-title kie-dock__heading--section">
-                            <a data-toggle="collapse" data-target="#node-instances" data-i18n-key="NodeInstances"></a>
-                            <span data-field="node-instances-counter" class="badge"></span>
-                        </div>
-                    </div>
-                    <div class="panel-collapse collapse in" id="node-instances">
-                        <div class="panel-body kie-dock__panel-body kie-node-instances-list">
-                            <div>
-                                <ul class="list-group" data-field="node-instances"></ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div data-field="node-instances"></div>
+                <hr>
+                <div data-field="timer-instances"></div>
             </div>
         </div>
     </div>
-    <div class="col-md-10">
+    <div class="col-md-10" data-field="process-diagram-panel">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title" data-i18n-key="ProcessDiagram"></h3>

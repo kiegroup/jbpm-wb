@@ -44,7 +44,7 @@ public class ProcessInstanceDetailsTabPresenterTest {
     private static final int SLA_MET = 2;
     private static final String PROCESS_VERSION = "1.0";
     private static final String PROCESS_ID = "evaluation";
-    private static final String PROCESS_INSTANCE_ID = "3";
+    private static final Long PROCESS_INSTANCE_ID = 3l;
     private static final String SERVER_TEMPLATE_ID = "testTemplate";
     private static final String DEPLOYMENT_ID = "evaluation_1.0.0-SNAPSHOT";
 
@@ -65,18 +65,18 @@ public class ProcessInstanceDetailsTabPresenterTest {
     public void setUp() {
         presenter.setProcessRuntimeDataService(new CallerMock<>(processRuntimeDataServiceMock));
         nodeInstanceSummary = getNodeInstanceSummary();
-        when(processRuntimeDataServiceMock.getProcessInstanceActiveNodes(SERVER_TEMPLATE_ID,
-                                                                         DEPLOYMENT_ID,
-                                                                         Long.parseLong(PROCESS_INSTANCE_ID))).thenReturn(singletonList(nodeInstanceSummary));
+        final ProcessInstanceKey processInstanceKey = new ProcessInstanceKey(SERVER_TEMPLATE_ID,
+                                                                             DEPLOYMENT_ID,
+                                                                             PROCESS_INSTANCE_ID);
+        when(processRuntimeDataServiceMock.getProcessInstanceActiveNodes(processInstanceKey)).thenReturn(singletonList(nodeInstanceSummary));
         processInstanceSummary = getProcessInstanceSummary();
-        when(processRuntimeDataServiceMock.getProcessInstance(eq(SERVER_TEMPLATE_ID),
-                                                              any(ProcessInstanceKey.class))).thenReturn(processInstanceSummary);
+        when(processRuntimeDataServiceMock.getProcessInstance(processInstanceKey)).thenReturn(processInstanceSummary);
     }
 
     @Test
     public void setProcessInstanceDetailsTest() {
         presenter.refreshProcessInstanceDataRemote(DEPLOYMENT_ID,
-                                                   PROCESS_INSTANCE_ID,
+                                                   PROCESS_INSTANCE_ID.toString(),
                                                    SERVER_TEMPLATE_ID);
 
         verify(view).setProcessDefinitionIdText(processInstanceSummary.getProcessId());
@@ -125,7 +125,7 @@ public class ProcessInstanceDetailsTabPresenterTest {
         processInstanceSummary.setState(ACTIVE_STATE);
         processInstanceSummary.setDeploymentId(DEPLOYMENT_ID);
         processInstanceSummary.setProcessVersion(PROCESS_VERSION);
-        processInstanceSummary.setCorrelationKey(PROCESS_INSTANCE_ID);
+        processInstanceSummary.setCorrelationKey(PROCESS_INSTANCE_ID.toString());
         processInstanceSummary.setParentId(0L);
         processInstanceSummary.setActiveTasks(singletonList(getUserTaskSummary()));
         processInstanceSummary.setSlaCompliance(SLA_MET);

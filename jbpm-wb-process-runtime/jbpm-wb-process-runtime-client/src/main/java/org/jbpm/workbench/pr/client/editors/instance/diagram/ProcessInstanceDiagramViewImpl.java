@@ -17,18 +17,12 @@
 package org.jbpm.workbench.pr.client.editors.instance.diagram;
 
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Composite;
+import elemental2.dom.HTMLDivElement;
 import org.jboss.errai.common.client.dom.Event;
-import org.jboss.errai.common.client.dom.Span;
-import org.jboss.errai.databinding.client.api.DataBinder;
-import org.jboss.errai.databinding.client.components.ListComponent;
-import org.jboss.errai.databinding.client.components.ListContainer;
-import org.jboss.errai.ui.shared.api.annotations.AutoBound;
-import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
@@ -36,11 +30,12 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramWidgetViewImpl;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessNodeSummary;
+import org.jbpm.workbench.pr.model.TimerInstanceSummary;
 import org.uberfire.client.callbacks.Callback;
 import org.uberfire.client.views.pfly.widgets.Select;
 
 @Dependent
-@Templated(stylesheet = "ProcessInstanceDiagramViewImpl.css")
+@Templated(stylesheet = "ProcessInstanceDiagram.css")
 public class ProcessInstanceDiagramViewImpl extends Composite implements ProcessInstanceDiagramView {
 
     @Inject
@@ -52,56 +47,30 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
     private Select processNodes;
 
     @Inject
-    @DataField("node-instances-counter")
-    private Span nodeInstancesCounter;
-
-    @Inject
     @DataField("node-details-panel")
     private ProcessNodeItemView processNodeSummaryView;
 
     @Inject
-    @Bound
     @DataField("node-instances")
-    @ListContainer("ul")
-    @SuppressWarnings("unused")
-    private ListComponent<NodeInstanceSummary, NodeInstanceItemView> nodes;
+    private NodeInstancesView nodeInstancesView;
 
     @Inject
-    @AutoBound
-    private DataBinder<List<NodeInstanceSummary>> nodeList;
+    @DataField("timer-instances")
+    private TimerInstancesView timerInstancesView;
+
+    @Inject
+    @DataField("node-actions-panel")
+    private HTMLDivElement nodeActionsPanel;
+
+    @Inject
+    @DataField("process-diagram-panel")
+    private HTMLDivElement processDiagramPanel;
 
     private Callback<Long> onProcessNodeSelectedCallback;
-
-    private Callback<Long> onNodeInstanceCancelCallback;
-
-    private Callback<Long> onNodeInstanceReTriggerCallback;
-
-    @PostConstruct
-    protected void init(){
-        nodes.addComponentCreationHandler(view -> {
-           view.setOnNodeInstanceCancelCallback(onNodeInstanceCancelCallback);
-           view.setOnNodeInstanceReTriggerCallback(onNodeInstanceReTriggerCallback);
-        });
-    }
-
-    @Override
-    public void setOnNodeInstanceCancelCallback(Callback<Long> onNodeInstanceCancelCallback) {
-        this.onNodeInstanceCancelCallback = onNodeInstanceCancelCallback;
-    }
-
-    @Override
-    public void setOnNodeInstanceReTriggerCallback(Callback<Long> onNodeInstanceReTriggerCallback) {
-        this.onNodeInstanceReTriggerCallback = onNodeInstanceReTriggerCallback;
-    }
 
     @Override
     public void setOnProcessNodeSelectedCallback(Callback<Long> onProcessNodeSelectedCallback) {
         this.onProcessNodeSelectedCallback = onProcessNodeSelectedCallback;
-    }
-
-    @Override
-    public void setOnProcessNodeTriggeredCallback(Callback<Long> onProcessNodeTriggeredCallback) {
-        processNodeSummaryView.setOnProcessNodeTriggeredCallback(onProcessNodeTriggeredCallback);
     }
 
     @Override
@@ -129,8 +98,12 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
 
     @Override
     public void setNodeInstances(final List<NodeInstanceSummary> nodes) {
-        nodeList.setModel(nodes);
-        nodeInstancesCounter.setTextContent(String.valueOf(nodes.size()));
+        nodeInstancesView.setValue(nodes);
+    }
+
+    @Override
+    public void setTimerInstances(final List<TimerInstanceSummary> timers) {
+        timerInstancesView.setValue(timers);
     }
 
     @EventHandler("available-nodes")
@@ -140,6 +113,14 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
             final String node = processNodes.getValue();
             onProcessNodeSelectedCallback.callback(node == null || node.trim().isEmpty() ? null : Long.valueOf(node));
         }
+    }
+
+    @Override
+    public void hideNodeActions() {
+        nodeActionsPanel.classList.remove("col-md-2");
+        nodeActionsPanel.classList.add("hidden");
+        processDiagramPanel.classList.remove("col-md-10");
+        processDiagramPanel.classList.add("col-md-12");
     }
 
     @Override

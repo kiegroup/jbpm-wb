@@ -1,0 +1,53 @@
+<div class="modal fade" data-field="modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-field="close" data-dismiss="modal" aria-hidden="true">
+                    <span class="pficon pficon-close"></span>
+                </button>
+                <h4 class="modal-title"><span data-i18n-key="New_Job"></span></h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="control-label col-md-3" data-i18n-key="Delay"></label>
+                            <div class="col-md-9">
+                                <input type="number" data-field="timer-delay-input" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-3 col-md-9">
+                                <label class="radio-inline">
+                                    <input type="radio" name="run" value="true" data-field="timer-relative">
+                                    <span data-i18n-key="FromNow"></span>
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="run" value="false" data-field="timer-relative">
+                                    <span data-i18n-key="FromActivationTime"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3" data-i18n-key="Period"></label>
+                            <div class="col-md-9">
+                                <input type="number" data-field="timer-period-input" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3" data-i18n-key="RepeatLimit"></label>
+                            <div class="col-md-9">
+                                <input type="number" data-field="timer-repeat-input" class="form-control"/>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-field="cancel" data-i18n-key="Cancel" data-dismiss="modal"></button>
+                <button type="button" class="btn btn-primary" data-field="reschedule" data-i18n-key="Reschedule"></button>
+            </div>
+        </div>
+    </div>
+</div>
+

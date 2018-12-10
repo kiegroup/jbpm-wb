@@ -24,20 +24,15 @@ import org.jbpm.workbench.pr.model.*;
 @Remote
 public interface ProcessRuntimeDataService {
 
-    ProcessInstanceSummary getProcessInstance(String serverTemplateId,
-                                              ProcessInstanceKey processInstanceKey);
+    ProcessInstanceSummary getProcessInstance(ProcessInstanceKey processInstanceKey);
 
-    List<NodeInstanceSummary> getProcessInstanceActiveNodes(String serverTemplateId,
-                                                            String deploymentId,
-                                                            Long processInstanceId);
+    List<NodeInstanceSummary> getProcessInstanceActiveNodes(ProcessInstanceKey processInstanceKey);
 
-    List<NodeInstanceSummary> getProcessInstanceCompletedNodes(String serverTemplateId,
-                                                               String deploymentId,
-                                                               Long processInstanceId);
+    List<NodeInstanceSummary> getProcessInstanceCompletedNodes(ProcessInstanceKey processInstanceKey);
 
-    ProcessInstanceDiagramSummary getProcessInstanceDiagramSummary(String serverTemplateId,
-                                                                   String deploymentId,
-                                                                   Long processInstanceId);
+    List<TimerInstanceSummary> getProcessInstanceTimerInstances(ProcessInstanceKey processInstanceKey);
+
+    ProcessInstanceDiagramSummary getProcessInstanceDiagramSummary(ProcessInstanceKey processInstanceKey);
 
     List<ProcessSummary> getProcesses(String serverTemplateId,
                                       Integer page,
@@ -68,19 +63,15 @@ public interface ProcessRuntimeDataService {
                                                      String containerId,
                                                      Long processInstanceId);
 
-    void triggerProcessInstanceNode(String serverTemplateId,
-                                    String containerId,
-                                    Long processInstanceId,
+    void triggerProcessInstanceNode(ProcessInstanceKey processInstanceKey,
                                     Long nodeId);
 
-    void cancelProcessInstanceNode(String serverTemplateId,
-                                   String containerId,
-                                   Long processInstanceId,
+    void cancelProcessInstanceNode(ProcessInstanceKey processInstanceKey,
                                    Long nodeInstanceId);
 
-    void reTriggerProcessInstanceNode(String serverTemplateId,
-                                      String containerId,
-                                      Long processInstanceId,
+    void reTriggerProcessInstanceNode(ProcessInstanceKey processInstanceKey,
                                       Long nodeInstanceId);
 
+    void rescheduleTimerInstance(ProcessInstanceKey processInstanceKey,
+                                 TimerInstanceSummary summary);
 }

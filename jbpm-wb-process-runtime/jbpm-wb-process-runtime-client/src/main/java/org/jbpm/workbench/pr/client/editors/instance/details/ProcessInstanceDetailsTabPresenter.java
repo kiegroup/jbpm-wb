@@ -23,12 +23,12 @@ import javax.inject.Inject;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
+import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.UserTaskSummary;
-import org.jbpm.workbench.pr.client.resources.i18n.Constants;
-import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.kie.api.runtime.process.ProcessInstance;
 
@@ -128,8 +128,7 @@ public class ProcessInstanceDetailsTabPresenter {
                         }
                         view.setActiveTasksListBox(safeHtmlBuilder.toSafeHtml().asString());
                     }
-                }).getProcessInstance(serverTemplateId,
-                                      new ProcessInstanceKey(serverTemplateId,
+                }).getProcessInstance(new ProcessInstanceKey(serverTemplateId,
                                                              deploymentId,
                                                              Long.parseLong(processId)));
 
@@ -142,9 +141,9 @@ public class ProcessInstanceDetailsTabPresenter {
                     }
                     view.setCurrentActivitiesListBox(safeHtmlBuilder.toSafeHtml().asString());
                 }
-        ).getProcessInstanceActiveNodes(serverTemplateId,
-                                        deploymentId,
-                                        Long.parseLong(processId));
+        ).getProcessInstanceActiveNodes(new ProcessInstanceKey(serverTemplateId,
+                                                               deploymentId,
+                                                               Long.parseLong(processId)));
     }
 
     protected String mapSlaCompliance(ProcessInstanceSummary process) {

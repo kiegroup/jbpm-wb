@@ -27,22 +27,15 @@ public class ProcessInstanceDiagramSummary extends GenericSummary<Long> {
 
     private String svgContent;
 
+    private Integer processInstanceState;
+
     private List<NodeInstanceSummary> nodeInstances;
 
     private List<ProcessNodeSummary> processNodes;
 
-    public ProcessInstanceDiagramSummary() {
-    }
+    private List<TimerInstanceSummary> timerInstances;
 
-    public ProcessInstanceDiagramSummary(final Long id,
-                                         final String svgContent,
-                                         final List<NodeInstanceSummary> nodeInstances,
-                                         final List<ProcessNodeSummary> processNodes) {
-        super(id,
-              null);
-        this.svgContent = svgContent;
-        this.nodeInstances = nodeInstances;
-        this.processNodes = processNodes;
+    public ProcessInstanceDiagramSummary() {
     }
 
     public String getSvgContent() {
@@ -51,6 +44,14 @@ public class ProcessInstanceDiagramSummary extends GenericSummary<Long> {
 
     public void setSvgContent(String svgContent) {
         this.svgContent = svgContent;
+    }
+
+    public void setProcessInstanceState(Integer processInstanceState) {
+        this.processInstanceState = processInstanceState;
+    }
+
+    public Integer getProcessInstanceState() {
+        return processInstanceState;
     }
 
     public List<NodeInstanceSummary> getNodeInstances() {
@@ -69,16 +70,23 @@ public class ProcessInstanceDiagramSummary extends GenericSummary<Long> {
         this.processNodes = processNodes;
     }
 
+    public void setTimerInstances(List<TimerInstanceSummary> timerInstances) {
+        this.timerInstances = timerInstances;
+    }
+
+    public List<TimerInstanceSummary> getTimerInstances() {
+        return timerInstances;
+    }
+
     @Override
     public String toString() {
         return "ProcessInstanceDiagramSummary{" +
                 "svgContent='" + svgContent + '\'' +
                 ", nodeInstances=" + nodeInstances +
                 ", processNodes=" + processNodes +
-                ", id=" + id +
+                ", timerInstances=" + timerInstances +
                 '}';
     }
-
 
     public static Builder builder() {
         return new Builder();
@@ -87,39 +95,49 @@ public class ProcessInstanceDiagramSummary extends GenericSummary<Long> {
     @NonPortable
     public static final class Builder {
 
-        private ProcessInstanceDiagramSummary processInstanceDiagramSummary;
+        private ProcessInstanceDiagramSummary summary;
 
         private Builder() {
-            processInstanceDiagramSummary = new ProcessInstanceDiagramSummary();
+            summary = new ProcessInstanceDiagramSummary();
         }
 
         public Builder withSvgContent(String svgContent) {
-            processInstanceDiagramSummary.setSvgContent(svgContent);
+            summary.setSvgContent(svgContent);
             return this;
         }
 
         public Builder withId(Long id) {
-            processInstanceDiagramSummary.setId(id);
+            summary.setId(id);
             return this;
         }
 
         public Builder withName(String name) {
-            processInstanceDiagramSummary.setName(name);
+            summary.setName(name);
             return this;
         }
 
         public Builder withNodeInstances(List<NodeInstanceSummary> nodeInstances) {
-            processInstanceDiagramSummary.setNodeInstances(nodeInstances);
+            summary.setNodeInstances(nodeInstances);
             return this;
         }
 
         public Builder withProcessNodes(List<ProcessNodeSummary> processNodes) {
-            processInstanceDiagramSummary.setProcessNodes(processNodes);
+            summary.setProcessNodes(processNodes);
+            return this;
+        }
+
+        public Builder withTimerInstances(List<TimerInstanceSummary> timerInstances) {
+            summary.setTimerInstances(timerInstances);
+            return this;
+        }
+
+        public Builder withProcessInstanceState(Integer state) {
+            summary.setProcessInstanceState(state);
             return this;
         }
 
         public ProcessInstanceDiagramSummary build() {
-            return processInstanceDiagramSummary;
+            return summary;
         }
     }
 }

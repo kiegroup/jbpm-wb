@@ -46,7 +46,7 @@ public class ProcessNodeSummary extends GenericSummary<Long> {
     }
 
     public String getLabel(){
-        return getName() == null || getName().trim().isEmpty() ? getType() + "-" + getId() : getName();
+        return getId() + "-" + (getName() == null || getName().trim().isEmpty() ? getType() : getName());
     }
 
     @Override

@@ -73,7 +73,12 @@ public class ProcessDefinitionKey implements ItemKey {
 
     @Override
     public String toString() {
-        return "ProcessDefinitionKey{" + "deploymentId=" + deploymentId + ", processId=" + processId + '}';
+        return "ProcessDefinitionKey{" +
+                "serverTemplateId='" + serverTemplateId + '\'' +
+                ", deploymentId='" + deploymentId + '\'' +
+                ", processId='" + processId + '\'' +
+                ", processDefName='" + processDefName + '\'' +
+                '}';
     }
 
     @Override

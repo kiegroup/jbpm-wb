@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +19,26 @@ package org.jbpm.workbench.common.client.util;
 import java.util.Date;
 
 import org.jboss.errai.databinding.client.api.Converter;
+import org.jbpm.workbench.common.client.resources.i18n.Constants;
 
-public class DateTimeConverter implements Converter<Date, String> {
+public class DateTimeNAConverter implements Converter<Date, String> {
+
+    private Constants constants = Constants.INSTANCE;
 
     @Override
-    public Date toModelValue(final String widgetValue) {
-        if (widgetValue == null || widgetValue.equals("")) {
+    public Date toModelValue(final String value) {
+        if (value == null || value.equals("")) {
             return null;
         }
 
-        return DateUtils.createDate(widgetValue,
+        return DateUtils.createDate(value,
                                     DateUtils.getDateTimeFormatMask());
     }
 
     @Override
     public String toWidgetValue(final Date date) {
-        return DateUtils.getDateTimeStr(date);
+        final String dateTimeStr = DateUtils.getDateTimeStr(date);
+        return dateTimeStr.trim().isEmpty() ? constants.NA() : dateTimeStr;
     }
 
     @Override

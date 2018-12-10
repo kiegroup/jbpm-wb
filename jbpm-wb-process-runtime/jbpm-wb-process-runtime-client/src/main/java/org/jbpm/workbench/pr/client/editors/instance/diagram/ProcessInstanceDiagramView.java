@@ -22,6 +22,7 @@ import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessNodeSummary;
+import org.jbpm.workbench.pr.model.TimerInstanceSummary;
 import org.uberfire.client.callbacks.Callback;
 import org.uberfire.ext.widgets.common.client.common.HasBusyIndicator;
 
@@ -37,11 +38,10 @@ public interface ProcessInstanceDiagramView extends HasBusyIndicator,
 
     void setNodeInstances(List<NodeInstanceSummary> nodes);
 
+    void setTimerInstances(List<TimerInstanceSummary> timers);
+
     void setOnProcessNodeSelectedCallback(Callback<Long> onProcessNodeSelectedCallback);
 
-    void setOnProcessNodeTriggeredCallback(Callback<Long> onProcessNodeTriggeredCallback);
+    void hideNodeActions();
 
-    void setOnNodeInstanceCancelCallback(Callback<Long> onNodeInstanceCancelCallback);
-
-    void setOnNodeInstanceReTriggerCallback(Callback<Long> onNodeInstanceReTriggerCallback);
 }

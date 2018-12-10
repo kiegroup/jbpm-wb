@@ -343,4 +343,15 @@ public interface Constants extends Messages {
 
     String ReTrigger();
 
+    String NextExecution();
+
+    String NA();
+
+    String Seconds();
+
+    String Reschedule();
+
+    String TimerInstanceRescheduled(String timerId);
+
+    String Trigger();
 }

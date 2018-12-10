@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.server.api.model.admin.ProcessNode;
+import org.kie.server.api.model.admin.TimerInstance;
 import org.kie.server.api.model.definition.ProcessDefinition;
 import org.kie.server.api.model.instance.NodeInstance;
 import org.kie.server.api.model.instance.ProcessInstance;
@@ -57,6 +58,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class RemoteProcessRuntimeDataServiceImplTest {
 
+    private final Long processInstanceId = 1l;
     private final String processId = "processId";
     private final String containerId = "containerId";
     private final String serverTemplateId = "serverTemplateId";
@@ -97,8 +99,7 @@ public class RemoteProcessRuntimeDataServiceImplTest {
                                                                .activeUserTasks(taskSummaryListSpy)
                                                                .build());
         when(queryServicesClient.findProcessInstanceById(processInstanceId)).thenReturn(processInstanceSpy);
-        service.getProcessInstance(serverTemplateId,
-                                   new ProcessInstanceKey(serverTemplateId,
+        service.getProcessInstance(new ProcessInstanceKey(serverTemplateId,
                                                           containerId,
                                                           processInstanceId));
         verify(processInstanceSpy).getProcessId();
@@ -129,9 +130,10 @@ public class RemoteProcessRuntimeDataServiceImplTest {
                                                          0,
                                                          Integer.MAX_VALUE)).thenReturn(nodeInstanceList);
         when(nodeInstanceMock.getDate()).thenReturn(new Date());
-        service.getProcessInstanceActiveNodes(serverTemplateId,
-                                              containerId,
-                                              processInstanceId);
+        ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId,
+                                                                containerId,
+                                                                processInstanceId);
+        service.getProcessInstanceActiveNodes(instanceKey);
         verify(queryServicesClient).findActiveNodeInstances(processInstanceId,
                                                             0,
                                                             Integer.MAX_VALUE);
@@ -146,6 +148,7 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         final Method[] methods = ProcessRuntimeDataService.class.getMethods();
         for (Method method : methods) {
             final Class<?> returnType = method.getReturnType();
+            final Class<?>[] parameterType = method.getParameterTypes();
             final Object[] args = new Object[method.getParameterCount()];
             Object result = method.invoke(service,
                                           args);
@@ -154,7 +157,14 @@ public class RemoteProcessRuntimeDataServiceImplTest {
                                returnType,
                                result);
 
-            args[0] = "";
+            if (parameterType[0].isAssignableFrom(String.class)) {
+                args[0] = "";
+            } else if (parameterType[0].isAssignableFrom(ProcessInstanceKey.class)) {
+                args[0] = new ProcessInstanceKey("",
+                                                 "",
+                                                 null);
+            }
+
             result = method.invoke(service,
                                    args);
             assertMethodResult(method,
@@ -296,20 +306,17 @@ public class RemoteProcessRuntimeDataServiceImplTest {
 
     @Test
     public void testGetProcessInstanceActiveNodes() {
-        String serverTemplateId = "serverTemplateId";
-        String containerId = "containerId";
-        Long processInstanceId = 1L;
-
+        ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId,
+                                                                containerId,
+                                                                processInstanceId);
         List<NodeInstance> nodeInstances = Arrays.asList(NodeInstance.builder().id(1l).name("name-1").nodeType("HumanTask").build(),
                                                          NodeInstance.builder().id(2l).name(" ").nodeType("Split").build());
 
-        when(queryServicesClient.findActiveNodeInstances(processInstanceId,
+        when(queryServicesClient.findActiveNodeInstances(instanceKey.getProcessInstanceId(),
                                                          0,
                                                          Integer.MAX_VALUE)).thenReturn(nodeInstances);
 
-        List<NodeInstanceSummary> nodes = service.getProcessInstanceActiveNodes(serverTemplateId,
-                                                                                containerId,
-                                                                                processInstanceId);
+        List<NodeInstanceSummary> nodes = service.getProcessInstanceActiveNodes(instanceKey);
 
         assertThat(nodes).hasSize(2).containsExactly(NodeInstanceSummary.builder().withId(1l).withName("name-1").withType("HumanTask").build(),
                                                      NodeInstanceSummary.builder().withId(2l).withName(" ").withType("Split").build());
@@ -317,35 +324,49 @@ public class RemoteProcessRuntimeDataServiceImplTest {
 
     @Test
     public void testGetProcessInstanceCompletedNodes() {
-        String serverTemplateId = "serverTemplateId";
-        String containerId = "containerId";
-        Long processInstanceId = 1L;
+        ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId,
+                                                                containerId,
+                                                                processInstanceId);
 
         List<NodeInstance> nodeInstances = Arrays.asList(NodeInstance.builder().id(1l).name("name-1").nodeType("HumanTask").build(),
                                                          NodeInstance.builder().id(2l).name(" ").nodeType("Split").build());
 
-        when(queryServicesClient.findCompletedNodeInstances(processInstanceId,
+        when(queryServicesClient.findCompletedNodeInstances(instanceKey.getProcessInstanceId(),
                                                             0,
                                                             Integer.MAX_VALUE)).thenReturn(nodeInstances);
 
-        List<NodeInstanceSummary> nodes = service.getProcessInstanceCompletedNodes(serverTemplateId,
-                                                                                   containerId,
-                                                                                   processInstanceId);
+        List<NodeInstanceSummary> nodes = service.getProcessInstanceCompletedNodes(instanceKey);
 
         assertThat(nodes).hasSize(2).containsExactly(NodeInstanceSummary.builder().withId(1l).withName("name-1").withType("HumanTask").build(),
                                                      NodeInstanceSummary.builder().withId(2l).withName(" ").withType("Split").build());
     }
 
     @Test
+    public void testGetProcessInstanceTimerInstances() {
+        ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId,
+                                                                containerId,
+                                                                processInstanceId);
+
+        List<TimerInstance> timerInstances = Arrays.asList(TimerInstance.builder().timerId(1l).timerName("timer1").period(2l).delay(1).build(),
+                                                           TimerInstance.builder().timerId(2l).timerName("time2").period(1l).delay(2).build());
+
+        when(processAdminServicesClient.getTimerInstances(containerId,
+                                                          processInstanceId)).thenReturn(timerInstances);
+
+        List<TimerInstanceSummary> timers = service.getProcessInstanceTimerInstances(instanceKey);
+
+        assertThat(timers).hasSize(2).containsExactly(TimerInstanceSummary.builder().withId(1l).withName("timer1").withPeriod(2l).withDelay(1l).build(),
+                                                      TimerInstanceSummary.builder().withId(2l).withName("time2").withPeriod(1l).withDelay(2l).build());
+    }
+
+    @Test
     public void testTriggerProcessInstanceNode() {
-        String serverTemplateId = "serverTemplateId";
-        String containerId = "containerId";
-        Long processInstanceId = 1L;
+        ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId,
+                                                                containerId,
+                                                                processInstanceId);
         Long nodeId = 2L;
 
-        service.triggerProcessInstanceNode(serverTemplateId,
-                                           containerId,
-                                           processInstanceId,
+        service.triggerProcessInstanceNode(instanceKey,
                                            nodeId);
 
         verify(processAdminServicesClient).triggerNode(containerId,
@@ -355,14 +376,12 @@ public class RemoteProcessRuntimeDataServiceImplTest {
 
     @Test
     public void testReTriggerProcessInstanceNode() {
-        String serverTemplateId = "serverTemplateId";
-        String containerId = "containerId";
-        Long processInstanceId = 1L;
+        ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId,
+                                                                containerId,
+                                                                processInstanceId);
         Long nodeId = 2L;
 
-        service.reTriggerProcessInstanceNode(serverTemplateId,
-                                             containerId,
-                                             processInstanceId,
+        service.reTriggerProcessInstanceNode(instanceKey,
                                              nodeId);
 
         verify(processAdminServicesClient).retriggerNodeInstance(containerId,
@@ -372,14 +391,12 @@ public class RemoteProcessRuntimeDataServiceImplTest {
 
     @Test
     public void testCancelProcessInstanceNode() {
-        String serverTemplateId = "serverTemplateId";
-        String containerId = "containerId";
-        Long processInstanceId = 1L;
+        ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId,
+                                                                containerId,
+                                                                processInstanceId);
         Long nodeId = 2L;
 
-        service.cancelProcessInstanceNode(serverTemplateId,
-                                          containerId,
-                                          processInstanceId,
+        service.cancelProcessInstanceNode(instanceKey,
                                           nodeId);
 
         verify(processAdminServicesClient).cancelNodeInstance(containerId,
@@ -389,10 +406,14 @@ public class RemoteProcessRuntimeDataServiceImplTest {
 
     @Test
     public void testGetProcessInstanceDiagramSummary() {
-        String serverTemplateId = "serverTemplateId";
-        String containerId = "containerId";
-        Long processInstanceId = 1L;
+        ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId,
+                                                                containerId,
+                                                                processInstanceId);
         String svgContent = "<svg></svg>";
+        Integer state = org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE;
+        String processName = "process";
+
+        when(queryServicesClient.findProcessInstanceById(processInstanceId)).thenReturn(ProcessInstance.builder().id(processInstanceId).containerId(containerId).state(state).processName(processName).build());
 
         when(processImageService.getProcessInstanceDiagram(serverTemplateId,
                                                            containerId,
@@ -418,12 +439,20 @@ public class RemoteProcessRuntimeDataServiceImplTest {
                                                             0,
                                                             Integer.MAX_VALUE)).thenReturn(completedNodeInstances);
 
-        ProcessInstanceDiagramSummary summary = service.getProcessInstanceDiagramSummary(serverTemplateId,
-                                                                                         containerId,
-                                                                                         processInstanceId);
+        List<TimerInstance> timerInstances = Arrays.asList(TimerInstance.builder().timerId(1l).timerName("timer1").period(2l).delay(1).build(),
+                                                           TimerInstance.builder().timerId(2l).timerName("time2").period(1l).delay(2).build());
+
+        when(processAdminServicesClient.getTimerInstances(containerId,
+                                                          processInstanceId)).thenReturn(timerInstances);
+
+        ProcessInstanceDiagramSummary summary = service.getProcessInstanceDiagramSummary(instanceKey);
 
         assertEquals(processInstanceId,
                      summary.getId());
+        assertEquals(processName,
+                     summary.getName());
+        assertEquals(state,
+                     summary.getProcessInstanceState());
         assertEquals(svgContent,
                      summary.getSvgContent());
 
@@ -438,5 +467,89 @@ public class RemoteProcessRuntimeDataServiceImplTest {
                                                                           NodeInstanceSummary.builder().withId(2l).withName(" ").withType("Split").build(),
                                                                           NodeInstanceSummary.builder().withId(3l).withName("name-3").withType("HumanTask").withCompleted(true).build(),
                                                                           NodeInstanceSummary.builder().withId(4l).withName(" ").withType("End").withCompleted(true).build());
+
+        assertThat(summary.getTimerInstances()).hasSize(2).containsExactly(TimerInstanceSummary.builder().withId(1l).withName("timer1").withPeriod(2l).withDelay(1l).build(),
+                                                                           TimerInstanceSummary.builder().withId(2l).withName("time2").withPeriod(1l).withDelay(2l).build());
+    }
+
+    @Test
+    public void testGetProcessInstanceDiagramSummaryCompletedStatus() {
+        ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId,
+                                                                containerId,
+                                                                processInstanceId);
+        String svgContent = "<svg></svg>";
+        Integer state = org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
+        String processName = "process";
+
+        when(queryServicesClient.findProcessInstanceById(processInstanceId)).thenReturn(ProcessInstance.builder().id(processInstanceId).containerId(containerId).state(state).processName(processName).build());
+
+        when(processImageService.getProcessInstanceDiagram(serverTemplateId,
+                                                           containerId,
+                                                           processInstanceId)).thenReturn(svgContent);
+
+        ProcessInstanceDiagramSummary summary = service.getProcessInstanceDiagramSummary(instanceKey);
+
+        assertEquals(processInstanceId,
+                     summary.getId());
+        assertEquals(processName,
+                     summary.getName());
+        assertEquals(state,
+                     summary.getProcessInstanceState());
+        assertEquals(svgContent,
+                     summary.getSvgContent());
+        assertThat(summary.getProcessNodes()).isEmpty();
+        assertThat(summary.getNodeInstances()).isEmpty();
+        assertThat(summary.getTimerInstances()).isEmpty();
+
+        verify(processAdminServicesClient,
+               never()).getProcessNodes(any(),
+                                        any());
+
+        verify(queryServicesClient,
+               never()).findActiveNodeInstances(any(),
+                                                any(),
+                                                any());
+
+        verify(queryServicesClient,
+               never()).findCompletedNodeInstances(any(),
+                                                   any(),
+                                                   any());
+
+        verify(processAdminServicesClient,
+               never()).getTimerInstances(any(),
+                                          any());
+    }
+
+    @Test
+    public void testRescheduleTimerInstance() {
+        ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId,
+                                                                containerId,
+                                                                processInstanceId);
+
+        TimerInstanceSummary summary = TimerInstanceSummary.builder().withId(2l).withRelative(false).withDelay(3l).withProcessInstanceId(1l).withPeriod(4l).withRepeatLimit(1).build();
+
+        service.rescheduleTimerInstance(instanceKey,
+                                        summary);
+
+        verify(processAdminServicesClient).updateTimer(containerId,
+                                                       processInstanceId,
+                                                       summary.getId(),
+                                                       summary.getDelay(),
+                                                       summary.getPeriod(),
+                                                       summary.getRepeatLimit());
+
+        summary.setRelative(true);
+
+        service.rescheduleTimerInstance(instanceKey,
+                                        summary);
+
+        verify(processAdminServicesClient).updateTimerRelative(containerId,
+                                                               processInstanceId,
+                                                               summary.getId(),
+                                                               summary.getDelay(),
+                                                               summary.getPeriod(),
+                                                               summary.getRepeatLimit());
+
+        verifyNoMoreInteractions(processAdminServicesClient);
     }
 }

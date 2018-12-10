@@ -36,6 +36,7 @@ public class NodeInstanceSummary extends GenericSummary<Long> {
     private Long referenceId;
     private Integer slaCompliance;
     private Date slaDueDate;
+    private String description;
 
     public NodeInstanceSummary(Long id,
                                Long processId,
@@ -62,6 +63,10 @@ public class NodeInstanceSummary extends GenericSummary<Long> {
     }
 
     public NodeInstanceSummary() {
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     public Long getProcessId() {
@@ -113,7 +118,7 @@ public class NodeInstanceSummary extends GenericSummary<Long> {
     }
 
     public String getLabel() {
-        return getName() == null || getName().trim().isEmpty() ? getType() + "-" + getId() : getName();
+        return getId() + "-" + (getName() == null || getName().trim().isEmpty() ? getType() : getName());
     }
 
     public Long getReferenceId() {
@@ -140,6 +145,14 @@ public class NodeInstanceSummary extends GenericSummary<Long> {
         this.slaDueDate = slaDueDate;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public String toString() {
         return "NodeInstanceSummary{" +
@@ -155,10 +168,6 @@ public class NodeInstanceSummary extends GenericSummary<Long> {
                 ", id=" + id +
                 ", name='" + name + '\'' +
                 '}';
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     @NonPortable

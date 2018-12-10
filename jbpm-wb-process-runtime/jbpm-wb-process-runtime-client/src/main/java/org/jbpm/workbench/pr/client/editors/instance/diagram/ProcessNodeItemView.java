@@ -34,10 +34,9 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.pr.model.ProcessNodeSummary;
-import org.uberfire.client.callbacks.Callback;
 
 @Dependent
-@Templated(stylesheet = "ProcessNodeItemView.css")
+@Templated(stylesheet = "ProcessInstanceDiagram.css")
 public class ProcessNodeItemView implements TakesValue<ProcessNodeSummary>,
                                             IsElement {
 
@@ -65,18 +64,11 @@ public class ProcessNodeItemView implements TakesValue<ProcessNodeSummary>,
 
     @Inject
     @DataField("trigger")
-    @SuppressWarnings("unused")
     private HTMLButtonElement trigger;
 
     @Inject
     @AutoBound
     private DataBinder<ProcessNodeSummary> processNodeSummary;
-
-    private Callback<Long> onProcessNodeTriggeredCallback;
-
-    public void setOnProcessNodeTriggeredCallback(Callback<Long> onProcessNodeTriggeredCallback) {
-        this.onProcessNodeTriggeredCallback = onProcessNodeTriggeredCallback;
-    }
 
     @Override
     public ProcessNodeSummary getValue() {
@@ -86,6 +78,12 @@ public class ProcessNodeItemView implements TakesValue<ProcessNodeSummary>,
     @Override
     public void setValue(final ProcessNodeSummary node) {
         processNodeSummary.setModel(node);
+        if(node.hasCallbacks() && node.getCallbacks().size() == 1){
+            trigger.textContent = node.getCallbacks().get(0).getLabel();
+            trigger.classList.remove("hidden");
+        } else {
+            trigger.classList.add("hidden");
+        }
     }
 
     @Override
@@ -95,8 +93,6 @@ public class ProcessNodeItemView implements TakesValue<ProcessNodeSummary>,
 
     @EventHandler("trigger")
     public void onProcessNodeTrigger(@ForEvent("click") Event e) {
-        if (onProcessNodeTriggeredCallback != null) {
-            onProcessNodeTriggeredCallback.callback(processNodeSummary.getModel().getId());
-        }
+        processNodeSummary.getModel().getCallbacks().get(0).getCommand().execute();
     }
 }

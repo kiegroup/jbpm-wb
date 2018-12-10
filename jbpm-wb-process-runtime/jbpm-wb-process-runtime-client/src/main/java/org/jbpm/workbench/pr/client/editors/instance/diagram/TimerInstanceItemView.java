@@ -38,23 +38,21 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.util.DateTimeConverter;
 import org.jbpm.workbench.common.client.util.DateTimeNAConverter;
 import org.jbpm.workbench.common.model.GenericSummary;
-import org.jbpm.workbench.pr.client.util.SlaStatusConverter;
-import org.jbpm.workbench.pr.model.NodeInstanceSummary;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
+import org.jbpm.workbench.pr.model.TimerInstanceSummary;
 
 import static org.jboss.errai.common.client.dom.Window.getDocument;
 
 @Dependent
 @Templated(stylesheet = "ProcessInstanceDiagram.css")
-public class NodeInstanceItemView implements TakesValue<NodeInstanceSummary>,
-                                             IsElement {
+public class TimerInstanceItemView implements TakesValue<TimerInstanceSummary>,
+                                              IsElement {
+
+    private Constants constants = Constants.INSTANCE;
 
     @Inject
     @DataField("list-item")
     private ListItem listItem;
-
-    @Inject
-    @DataField("actions-dropdown")
-    private HTMLDivElement actionsDropdown;
 
     @Inject
     @Bound
@@ -73,48 +71,54 @@ public class NodeInstanceItemView implements TakesValue<NodeInstanceSummary>,
     private UnorderedList actionsItems;
 
     @Inject
-    @DataField("node-type")
-    @Bound
-    @SuppressWarnings("unused")
-    private Span type;
-
-    @Inject
     @DataField("details")
     private HTMLDivElement details;
 
     @Inject
-    @DataField("node-id")
+    @DataField("timer-id")
     @Bound
     @SuppressWarnings("unused")
     private Span id;
 
     @Inject
-    @DataField("node-unique-id")
+    @DataField("timer-delay")
+    @Bound(converter = TimerInstanceDelayConverter.class)
+    @SuppressWarnings("unused")
+    private Span delay;
+
+    @Inject
+    @DataField("timer-period")
     @Bound
     @SuppressWarnings("unused")
-    private Span nodeUniqueName;
+    private Span period;
 
     @Inject
-    @DataField("node-time")
+    @DataField("timer-repeat-limit")
+    @Bound
+    @SuppressWarnings("unused")
+    private Span repeatLimit;
+
+    @Inject
+    @DataField("timer-last-fire-time")
+    @Bound(converter = DateTimeNAConverter.class)
+    @SuppressWarnings("unused")
+    private Span lastFireTime;
+
+    @Inject
+    @DataField("timer-next-fire-time")
     @Bound(converter = DateTimeConverter.class)
     @SuppressWarnings("unused")
-    private Span timestamp;
+    private Span nextFireTime;
 
     @Inject
-    @Bound(converter = DateTimeNAConverter.class)
-    @DataField("node-sla-due-date")
+    @DataField("timer-activation-time")
+    @Bound(converter = DateTimeConverter.class)
     @SuppressWarnings("unused")
-    private Span slaDueDate;
-
-    @Inject
-    @DataField("node-sla-compliance")
-    @Bound(converter = SlaStatusConverter.class)
-    @SuppressWarnings("unused")
-    private Span slaCompliance;
+    private Span activationTime;
 
     @Inject
     @AutoBound
-    private DataBinder<NodeInstanceSummary> nodeInstance;
+    private DataBinder<TimerInstanceSummary> timerInstance;
 
     @Override
     public HTMLElement getElement() {
@@ -122,27 +126,27 @@ public class NodeInstanceItemView implements TakesValue<NodeInstanceSummary>,
     }
 
     @Override
-    public NodeInstanceSummary getValue() {
-        return nodeInstance.getModel();
+    public TimerInstanceSummary getValue() {
+        return timerInstance.getModel();
     }
 
     @Override
-    public void setValue(final NodeInstanceSummary model) {
-        this.nodeInstance.setModel(model);
+    public void setValue(final TimerInstanceSummary timer) {
+        this.timerInstance.setModel(timer);
 
-        if(model.hasCallbacks()){
-            for (GenericSummary.LabeledCommand callback : model.getCallbacks()) {
+        if (timer.hasCallbacks()) {
+            for (GenericSummary.LabeledCommand callback : timer.getCallbacks()) {
                 addAction(e -> callback.getCommand().execute(),
-                          callback.getLabel());
+                          constants.Reschedule());
             }
         } else {
-            actionsDropdown.classList.add("hidden");
+            actionsItems.getClassList().add("hidden");
         }
 
         String id = Document.get().createUniqueId();
         label.setAttribute("href",
-                           "#node-instance-" + id);
-        details.id = "node-instance-" + id;
+                           "#timer-instance-" + id);
+        details.id = "timer-instance-" + id;
     }
 
     public void addAction(final EventListener<MouseEvent> onclick,

@@ -26,12 +26,17 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
+import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceDiagramSummary;
+import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessNodeSummary;
+import org.jbpm.workbench.pr.model.TimerInstanceSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
+import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -42,35 +47,44 @@ import static java.util.stream.Collectors.toList;
 @Dependent
 public class ProcessInstanceDiagramPresenter {
 
-    private Event<NotificationEvent> notification;
-    private Caller<ProcessRuntimeDataService> processService;
     private Constants constants = Constants.INSTANCE;
+
+    private Caller<ProcessRuntimeDataService> processService;
     private List<ProcessNodeSummary> processNodes;
-    private List<NodeInstanceSummary> nodeInstances;
-    private String containerId;
-    private Long processInstanceId;
-    private String serverTemplateId;
+    private ProcessInstanceKey processInstance;
+    private ProcessDefinitionKey processDefinition;
+    private boolean forLog;
+    private Integer processInstanceState;
+
+    @Inject
+    private TimerInstanceRescheduleView rescheduleView;
 
     @Inject
     private ProcessInstanceDiagramView view;
 
+    @Inject
+    private Event<ProcessInstanceSelectionEvent> processInstanceEvent;
+
+    @Inject
+    private Event<NotificationEvent> notification;
+
     @PostConstruct
     public void init() {
         view.setOnProcessNodeSelectedCallback(id -> onProcessNodeSelected(id));
-        view.setOnProcessNodeTriggeredCallback(id -> onProcessNodeTrigger(id));
-        view.setOnNodeInstanceCancelCallback(id -> onNodeInstanceCancel(id));
-        view.setOnNodeInstanceReTriggerCallback(id -> onNodeInstanceReTrigger(id));
     }
 
     public void onProcessInstanceSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
         view.showBusyIndicator(constants.Loading());
+
+        processInstance = event.getProcessInstanceKey();
+        processDefinition = event.getProcessDefinitionKey();
+        forLog = event.isForLog();
+        processInstanceState = event.getProcessInstanceStatus();
+
         processNodes = emptyList();
         view.setProcessNodes(processNodes);
-        nodeInstances = emptyList();
-        view.setNodeInstances(nodeInstances);
-        containerId = event.getDeploymentId();
-        processInstanceId = event.getProcessInstanceId();
-        serverTemplateId = event.getServerTemplateId();
+        view.setNodeInstances(emptyList());
+        view.setTimerInstances(emptyList());
 
         loadProcessInstanceDetails();
     }
@@ -78,18 +92,48 @@ public class ProcessInstanceDiagramPresenter {
     protected void loadProcessInstanceDetails() {
         processService.call((ProcessInstanceDiagramSummary summary) -> {
             displayImage(summary.getSvgContent(),
-                         containerId);
-            processNodes = summary.getProcessNodes().stream().sorted(Comparator.comparing(ProcessNodeSummary::getLabel,
-                                                                                          String.CASE_INSENSITIVE_ORDER)).collect(toList());
+                         processInstance.getDeploymentId());
+            processNodes = summary.getProcessNodes().stream().sorted(Comparator.comparing(ProcessNodeSummary::getId)).collect(toList());
+
+            processNodes.stream().filter(this::isProcessNodeTypeTriggerAllowed).forEach(pn -> pn.addCallback(constants.Trigger(),
+                                                                                                             () -> onProcessNodeTrigger(pn)));
+
             view.setProcessNodes(processNodes);
 
-            nodeInstances = summary.getNodeInstances().stream().sorted(Comparator.comparing(NodeInstanceSummary::getLabel,
-                                                                                            String.CASE_INSENSITIVE_ORDER)).collect(toList());
-            view.setNodeInstances(nodeInstances);
-        }).getProcessInstanceDiagramSummary(serverTemplateId,
-                                            containerId,
-                                            processInstanceId);
+            List<NodeInstanceSummary> nodeInstances = summary.getNodeInstances().stream().sorted(Comparator.comparing(NodeInstanceSummary::getId)).collect(toList());
 
+            nodeInstances.forEach(ni -> {
+                ni.setDescription((ni.isCompleted() ? constants.Completed() : constants.Started()) + " " + DateUtils.getPrettyTime(ni.getTimestamp()));
+                if (ni.isCompleted() == false) {
+                    ni.addCallback(constants.Cancel(),
+                                   () -> onNodeInstanceCancel(ni));
+                    ni.addCallback(constants.ReTrigger(),
+                                   () -> onNodeInstanceReTrigger(ni));
+                }
+            });
+
+            view.setNodeInstances(nodeInstances);
+
+            List<TimerInstanceSummary> timerInstances = summary.getTimerInstances().stream().sorted(Comparator.comparing(TimerInstanceSummary::getId)).collect(toList());
+
+            timerInstances.forEach(ti -> {
+                ti.setDescription(constants.NextExecution() + " " + DateUtils.getPrettyTime(ti.getNextFireTime()));
+                ti.addCallback(constants.Reschedule(),
+                               () -> {
+                                   rescheduleView.setOnReschedule(timer -> onTimerInstanceReschedule(timer));
+                                   rescheduleView.setValue(ti);
+                                   rescheduleView.show();
+                               });
+            });
+
+            view.setTimerInstances(timerInstances);
+
+            if (summary.getProcessInstanceState() != ProcessInstance.STATE_ACTIVE) {
+                view.hideNodeActions();
+            }
+
+            processInstanceState = summary.getProcessInstanceState();
+        }).getProcessInstanceDiagramSummary(processInstance);
     }
 
     public void displayImage(final String svgContent,
@@ -103,52 +147,68 @@ public class ProcessInstanceDiagramPresenter {
     }
 
     public void onProcessNodeSelected(final Long nodeId) {
-        view.setValue(nodeId == null ? new ProcessNodeSummary() : getProcessNodeSummary(nodeId));
+        ProcessNodeSummary nodeSummary = nodeId == null ? new ProcessNodeSummary() : getProcessNodeSummary(nodeId);
+        view.setValue(nodeSummary);
+    }
+
+    protected Boolean isProcessNodeTypeTriggerAllowed(final ProcessNodeSummary nodeSummary) {
+        if (nodeSummary == null || nodeSummary.getType() == null) {
+            return false;
+        }
+
+        if ("StartNode".equals(nodeSummary.getType()) || "Join".equals(nodeSummary.getType())) {
+            return false;
+        }
+
+        return true;
     }
 
     protected ProcessNodeSummary getProcessNodeSummary(final Long nodeId) {
         return processNodes.stream().filter(node -> node.getId().equals(nodeId)).findFirst().get();
     }
 
-    protected NodeInstanceSummary getNodeInstanceSummary(final Long nodeId) {
-        return nodeInstances.stream().filter(node -> node.getId().equals(nodeId)).findFirst().get();
-    }
-
-    public void onProcessNodeTrigger(final Long nodeId) {
-        final ProcessNodeSummary node = getProcessNodeSummary(nodeId);
+    public void onProcessNodeTrigger(final ProcessNodeSummary node) {
         processService.call((Void) -> {
             notification.fire(new NotificationEvent(constants.NodeTriggered(node.getLabel()),
                                                     NotificationEvent.NotificationType.SUCCESS));
             view.setValue(new ProcessNodeSummary());
-            loadProcessInstanceDetails();
-        }).triggerProcessInstanceNode(serverTemplateId,
-                                      containerId,
-                                      processInstanceId,
+            refreshDetails();
+        }).triggerProcessInstanceNode(processInstance,
                                       node.getId());
     }
 
-    public void onNodeInstanceReTrigger(final Long nodeId) {
-        final NodeInstanceSummary node = getNodeInstanceSummary(nodeId);
+    protected void refreshDetails() {
+        processInstanceEvent.fire(new ProcessInstanceSelectionEvent(processInstance,
+                                                                    processDefinition,
+                                                                    processInstanceState,
+                                                                    forLog));
+    }
+
+    public void onNodeInstanceReTrigger(final NodeInstanceSummary node) {
         processService.call((Void) -> {
             notification.fire(new NotificationEvent(constants.NodeInstanceReTriggered(node.getLabel()),
                                                     NotificationEvent.NotificationType.SUCCESS));
-            loadProcessInstanceDetails();
-        }).reTriggerProcessInstanceNode(serverTemplateId,
-                                        containerId,
-                                        processInstanceId,
+            refreshDetails();
+        }).reTriggerProcessInstanceNode(processInstance,
                                         node.getId());
     }
 
-    public void onNodeInstanceCancel(final Long nodeId) {
-        final NodeInstanceSummary node = getNodeInstanceSummary(nodeId);
+    public void onNodeInstanceCancel(final NodeInstanceSummary node) {
         processService.call((Void) -> {
             notification.fire(new NotificationEvent(constants.NodeInstanceCancelled(node.getLabel()),
                                                     NotificationEvent.NotificationType.SUCCESS));
-            loadProcessInstanceDetails();
-        }).cancelProcessInstanceNode(serverTemplateId,
-                                     containerId,
-                                     processInstanceId,
+            refreshDetails();
+        }).cancelProcessInstanceNode(processInstance,
                                      node.getId());
+    }
+
+    public void onTimerInstanceReschedule(final TimerInstanceSummary summary) {
+        processService.call((Void) -> {
+            notification.fire(new NotificationEvent(constants.TimerInstanceRescheduled(summary.getLabel()),
+                                                    NotificationEvent.NotificationType.SUCCESS));
+            refreshDetails();
+        }).rescheduleTimerInstance(processInstance,
+                                   summary);
     }
 
     @WorkbenchPartTitle
@@ -164,10 +224,5 @@ public class ProcessInstanceDiagramPresenter {
     @Inject
     public void setProcessService(final Caller<ProcessRuntimeDataService> processService) {
         this.processService = processService;
-    }
-
-    @Inject
-    public void setNotification(final Event<NotificationEvent> notification) {
-        this.notification = notification;
     }
 }
