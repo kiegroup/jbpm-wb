@@ -15,8 +15,6 @@
  */
 package org.jbpm.workbench.ht.client.editors.tasklogs;
 
-import java.util.Date;
-
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -27,7 +25,6 @@ import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.util.AbstractLogItemView;
-import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskEventSummary;
 import org.jbpm.workbench.ht.util.TaskEventType;
@@ -57,18 +54,17 @@ public class TaskLogItemView extends AbstractLogItemView<TaskLogsPresenter> impl
 
         final TaskEventType type = TaskEventType.valueOf(model.getType());
         final String logString = constants.Task() + " " + translationService.format(type.getTypeTranslationId()).toLowerCase();
-        final Date modelLogTime = model.getLogTime();
 
-        tooltip(logTime);
-        logTime.setAttribute("data-original-title", DateUtils.getDateTimeStr(modelLogTime));
-        logTime.setTextContent(DateUtils.getPrettyTime(modelLogTime));
+        setLogTime(model.getLogTime());
+        setLogIcon(type, logString);
+        setLogInfo(type, model);
+        setLogType(logString);
+    }
 
+    private void setLogIcon(final TaskEventType type, final String logString) {
         tooltip(logIcon);
         logIcon.setAttribute("data-original-title", logString);
         logIcon.setClassName(getIconClass(type));
-
-        logInfo.setTextContent(getLogInfoContent(type, model));
-        logTypeDesc.setTextContent(logString);
     }
 
     private String getIconClass(final TaskEventType type) {
@@ -102,7 +98,7 @@ public class TaskLogItemView extends AbstractLogItemView<TaskLogsPresenter> impl
         return iconClass;
     }
 
-    private String getLogInfoContent(final TaskEventType type, final TaskEventSummary model) {
+    private void setLogInfo(final TaskEventType type, final TaskEventSummary model) {
         String logInfoContent = constants.ByUser() + " " + model.getUserId() + " ";
         switch (type) {
             case ADDED: {
@@ -118,6 +114,10 @@ public class TaskLogItemView extends AbstractLogItemView<TaskLogsPresenter> impl
                 break;
             }
         }
-        return logInfoContent;
+        logInfo.setTextContent(logInfoContent);
+    }
+
+    private void setLogType(String logString) {
+        logTypeDesc.setTextContent(logString);
     }
 }

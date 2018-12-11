@@ -31,7 +31,6 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.util.AbstractLogItemView;
-import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.client.util.LogUtils;
 import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
@@ -65,38 +64,60 @@ public class ProcessInstanceLogItemView extends AbstractLogItemView<ProcessInsta
 
     @Override
     public ProcessInstanceLogSummary getValue() {
-        return this.logSummary.getModel();
+        return logSummary.getModel();
     }
 
     @Override
     public void setValue(final ProcessInstanceLogSummary model) {
+        logSummary.setModel(model);
+
+        setLogTime(model.getDate());
+        setLogIcon(model);
+        setLogInfo(model);
+        setLogType(model);
+        setDetails(model);
+    }
+
+    private void setLogIcon(ProcessInstanceLogSummary model) {
+        tooltip(logIcon);
         String iconClass = "list-view-pf-icon-sm kie-timeline-list-view-pf-icon-sm";
-        this.logSummary.setModel(model);
-        logTime.setTextContent(DateUtils.getPrettyTime(model.getDate()));
-
-        String agent = constants.System();
-
-        if (LogUtils.NODE_TYPE_HUMAN_TASK.equals(model.getNodeType()) ||
-                (LogUtils.NODE_TYPE_START.equals(model.getNodeType()) && !model.isCompleted())) {
+        final String nodeType = model.getNodeType();
+        if (LogUtils.NODE_TYPE_HUMAN_TASK.equals(nodeType) ||
+                (LogUtils.NODE_TYPE_START.equals(nodeType) && !model.isCompleted())) {
             iconClass += " fa fa-user";
-            agent = constants.Human();
-            tooltip(logIcon);
-            logIcon.setAttribute("data-original-title",
-                                 constants.Human_Task());
+            logIcon.setAttribute("data-original-title", constants.Human_Task());
         } else {
             iconClass += " fa fa-cogs";
-            logIcon.setAttribute("data-original-title",
-                                 constants.System_Task());
+            logIcon.setAttribute("data-original-title", constants.System_Task());
         }
         if (model.isCompleted()) {
             iconClass += " kie-timeline-icon--completed";
+        }
+        logIcon.setClassName(iconClass);
+    }
+
+    private void setLogInfo(ProcessInstanceLogSummary model) {
+        String agent = getAgent(model);
+        if (model.isCompleted()) {
             logInfo.setTextContent(constants.NodeWasLeft(agent));
         } else {
             logInfo.setTextContent(constants.NodeWasEntered(agent));
         }
-        logIcon.setClassName(iconClass);
-        logTypeDesc.setTextContent(getLogTitle(model));
+    }
 
+    private void setLogType(ProcessInstanceLogSummary model) {
+        String logTitle = model.getNodeType();
+        if (LogUtils.NODE_TYPE_HUMAN_TASK.equals(model.getNodeType())) {
+            logTitle = constants.Task_(model.getName());
+        }
+        String name = model.getName();
+        if (name != null && name.trim().length() > 0) {
+            logTitle = model.getNodeType() + " '" + name + "' ";
+        }
+        logTypeDesc.setTextContent(logTitle);
+    }
+
+    private void setDetails(ProcessInstanceLogSummary model) {
         if (model.getWorkItemId() == null) {
             detailsPanelDiv.setHidden(true);
         } else {
@@ -108,15 +129,13 @@ public class ProcessInstanceLogItemView extends AbstractLogItemView<ProcessInsta
         }
     }
 
-    private String getLogTitle(ProcessInstanceLogSummary logsum) {
-        if (LogUtils.NODE_TYPE_HUMAN_TASK.equals(logsum.getNodeType())) {
-            return constants.Task_(logsum.getName());
+    private String getAgent(final ProcessInstanceLogSummary model) {
+        if (LogUtils.NODE_TYPE_HUMAN_TASK.equals(model.getNodeType()) ||
+                (LogUtils.NODE_TYPE_START.equals(model.getNodeType()) && !model.isCompleted())) {
+            return constants.Human();
+        } else {
+            return constants.System();
         }
-        String name = logsum.getName();
-        if (name != null && name.trim().length() > 0) {
-            return logsum.getNodeType() + " '" + name + "' ";
-        }
-        return logsum.getNodeType();
     }
 
     @EventHandler("detailsLink")
