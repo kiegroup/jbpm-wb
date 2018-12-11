@@ -28,7 +28,7 @@ import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.workbench.cm.client.util.CaseStatusConverter;
+import org.jbpm.workbench.cm.client.util.CaseStatusLabelConverter;
 import org.jbpm.workbench.cm.client.util.DateConverter;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 
@@ -47,7 +47,7 @@ public class CaseDetailsViewImpl implements CaseDetailsPresenter.CaseDetailsView
     private Paragraph description;
 
     @Inject
-    @Bound(converter = CaseStatusConverter.class)
+    @Bound(converter = CaseStatusLabelConverter.class)
     @DataField("case-status")
     @SuppressWarnings("unused")
     private Span status;

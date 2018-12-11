@@ -68,8 +68,13 @@ public class CaseInstanceListViewImpl extends AbstractView<CaseInstanceListPrese
     }
 
     @Override
-    public CaseInstanceSearchRequest getCaseInstanceSearchRequest() {
-        return actions.getCaseInstanceSearchRequest();
+    public void setValue(CaseInstanceSearchRequest value) {
+        actions.setValue(value);
+    }
+
+    @Override
+    public CaseInstanceSearchRequest getValue() {
+        return actions.getValue();
     }
 
     @Override
