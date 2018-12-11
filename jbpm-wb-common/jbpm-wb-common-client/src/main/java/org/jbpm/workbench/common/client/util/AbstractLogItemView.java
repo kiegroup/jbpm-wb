@@ -32,12 +32,12 @@ public abstract class AbstractLogItemView<T> extends AbstractView<T> {
     private Div listGroupItem;
 
     @Inject
-    @DataField("logIcon")
-    protected Span logIcon;
-
-    @Inject
     @DataField("logTime")
     protected Span logTime;
+
+    @Inject
+    @DataField("logIcon")
+    protected Span logIcon;
 
     @Inject
     @DataField("logTypeDesc")
