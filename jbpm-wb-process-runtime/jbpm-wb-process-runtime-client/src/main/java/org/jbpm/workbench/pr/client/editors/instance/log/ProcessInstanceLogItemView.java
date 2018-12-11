@@ -61,12 +61,12 @@ public class ProcessInstanceLogItemView extends AbstractView<ProcessInstanceLogP
     Span logTime;
 
     @Inject
-    @DataField("nodeTypeDesc")
-    Span nodeTypeDesc;
+    @DataField("logTypeDesc")
+    Span logTypeDesc;
 
     @Inject
-    @DataField("logCompleted")
-    Span logCompleted;
+    @DataField("logInfo")
+    Span logInfo;
 
     @Inject
     @DataField("detailsPanelDiv")
@@ -124,12 +124,12 @@ public class ProcessInstanceLogItemView extends AbstractView<ProcessInstanceLogP
         }
         if (model.isCompleted()) {
             iconClass += " kie-timeline-icon--completed";
-            logCompleted.setTextContent(constants.NodeWasLeft(agent));
+            logInfo.setTextContent(constants.NodeWasLeft(agent));
         } else {
-            logCompleted.setTextContent(constants.NodeWasEntered(agent));
+            logInfo.setTextContent(constants.NodeWasEntered(agent));
         }
         logIcon.setClassName(iconClass);
-        nodeTypeDesc.setTextContent(getLogTitle(model));
+        logTypeDesc.setTextContent(getLogTitle(model));
 
         if (model.getWorkItemId() == null) {
             detailsPanelDiv.setHidden(true);
