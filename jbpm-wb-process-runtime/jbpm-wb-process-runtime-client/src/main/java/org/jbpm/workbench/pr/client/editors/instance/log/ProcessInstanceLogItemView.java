@@ -15,7 +15,6 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.log;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -24,17 +23,14 @@ import com.google.gwt.user.client.TakesValue;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.Anchor;
 import org.jboss.errai.common.client.dom.Div;
-import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.MouseEvent;
-import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-
-import org.jbpm.workbench.common.client.util.AbstractView;
+import org.jbpm.workbench.common.client.util.AbstractLogItemView;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.client.util.LogUtils;
@@ -42,60 +38,30 @@ import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
 
 @Dependent
 @Templated
-public class ProcessInstanceLogItemView extends AbstractView<ProcessInstanceLogPresenter>
+public class ProcessInstanceLogItemView extends AbstractLogItemView<ProcessInstanceLogPresenter>
         implements TakesValue<ProcessInstanceLogSummary>,
                    IsElement {
 
     private Constants constants = Constants.INSTANCE;
 
     @Inject
-    @DataField("list-group-item")
-    Div listGroupItem;
-
-    @Inject
-    @DataField("logIcon")
-    Span logIcon;
-
-    @Inject
-    @DataField("logTime")
-    Span logTime;
-
-    @Inject
-    @DataField("logTypeDesc")
-    Span logTypeDesc;
-
-    @Inject
-    @DataField("logInfo")
-    Span logInfo;
-
-    @Inject
     @DataField("detailsPanelDiv")
-    Div detailsPanelDiv;
+    private Div detailsPanelDiv;
 
     @Inject
     @DataField("detailsLink")
-    Anchor detailsLink;
+    private Anchor detailsLink;
 
     @Inject
     @DataField("detailsInfoDiv")
-    Div detailsInfoDiv;
+    private Div detailsInfoDiv;
 
     @Inject
     @AutoBound
     private DataBinder<ProcessInstanceLogSummary> logSummary;
 
     @Inject
-    ProcessInstanceLogItemDetailsView workItemView;
-
-    @PostConstruct
-    public void init() {
-        tooltip(logIcon);
-    }
-
-    @Override
-    public HTMLElement getElement() {
-        return listGroupItem;
-    }
+    private ProcessInstanceLogItemDetailsView workItemView;
 
     @Override
     public ProcessInstanceLogSummary getValue() {

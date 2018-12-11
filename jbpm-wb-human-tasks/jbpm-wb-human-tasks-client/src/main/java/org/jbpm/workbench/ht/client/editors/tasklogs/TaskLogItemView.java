@@ -15,105 +15,65 @@
  */
 package org.jbpm.workbench.ht.client.editors.tasklogs;
 
-import com.google.gwt.user.client.TakesValue;
+import java.util.Date;
 
-import org.jboss.errai.common.client.dom.Div;
-import org.jboss.errai.common.client.dom.HTMLElement;
-import org.jboss.errai.common.client.dom.Span;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
+import com.google.gwt.user.client.TakesValue;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.client.local.api.IsElement;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.workbench.common.client.util.AbstractView;
+import org.jbpm.workbench.common.client.util.AbstractLogItemView;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskEventSummary;
 import org.jbpm.workbench.ht.util.TaskEventType;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-
 @Dependent
 @Templated
-public class TaskLogItemView extends AbstractView<TaskLogsPresenter> implements TakesValue<TaskEventSummary>,
-                                                                                IsElement {
+public class TaskLogItemView extends AbstractLogItemView<TaskLogsPresenter> implements TakesValue<TaskEventSummary>,
+                                                                                       IsElement {
 
-    Constants constants = Constants.INSTANCE;
+    private Constants constants = Constants.INSTANCE;
 
     @Inject
     private TranslationService translationService;
 
     @Inject
-    @DataField("list-group-item")
-    Div listGroupItem;
-
-    @Inject
-    @DataField("logIcon")
-    Span logIcon;
-
-    @Inject
-    @DataField("logTime")
-    Span logTime;
-
-    @Inject
-    @DataField("logTypeDesc")
-    Span logTypeDesc;
-
-    @Inject
-    @DataField("logInfo")
-    Span logInfo;
-
-    @Inject
     @AutoBound
     private DataBinder<TaskEventSummary> logSummary;
 
-    @PostConstruct
-    public void init() {
-        tooltip(logIcon);
-    }
-
-    @Override
-    public HTMLElement getElement() {
-        return listGroupItem;
-    }
-
     @Override
     public TaskEventSummary getValue() {
-        return this.logSummary.getModel();
+        return logSummary.getModel();
     }
 
     @Override
     public void setValue(final TaskEventSummary model) {
-        String iconClass = "list-view-pf-icon-sm kie-timeline-list-view-pf-icon-sm";
-        this.logSummary.setModel(model);
+        logSummary.setModel(model);
+
+        final TaskEventType type = TaskEventType.valueOf(model.getType());
+        final String logString = constants.Task() + " " + translationService.format(type.getTypeTranslationId()).toLowerCase();
+        final Date modelLogTime = model.getLogTime();
+
         tooltip(logTime);
-        logTime.setTextContent(DateUtils.getPrettyTime(model.getLogTime()));
-        logTime.setAttribute("data-original-title",
-                             DateUtils.getDateTimeStr(model.getLogTime()));
-        String logInfoContent = constants.ByUser() + " " + model.getUserId() + " ";
-        TaskEventType type = TaskEventType.valueOf(model.getType());
+        logTime.setAttribute("data-original-title", DateUtils.getDateTimeStr(modelLogTime));
+        logTime.setTextContent(DateUtils.getPrettyTime(modelLogTime));
+
+        tooltip(logIcon);
+        logIcon.setAttribute("data-original-title", logString);
+        logIcon.setClassName(getIconClass(type));
+
+        logInfo.setTextContent(getLogInfoContent(type, model));
+        logTypeDesc.setTextContent(logString);
+    }
+
+    private String getIconClass(final TaskEventType type) {
+        String iconClass = "list-view-pf-icon-sm kie-timeline-list-view-pf-icon-sm";
         switch (type) {
-            case ADDED: {
-                if (model.getUserId() != null && !model.getUserId().isEmpty()) {
-                    logInfoContent = constants.ByProcess() + " '" + model.getUserId() + "' ";
-                } else {
-                    logInfoContent = "";
-                }
-                iconClass += " fa fa-cogs";
-                break;
-            }
-            case ACTIVATED:
-            case CREATED:
-            case FORWARDED:
-            case RESUMED:
-            case DELEGATED:
-            case NOMINATED: {
-                iconClass += " fa fa-cogs";
-                break;
-            }
             case STOPPED:
             case EXITED:
             case FAILED:
@@ -123,11 +83,7 @@ public class TaskLogItemView extends AbstractView<TaskLogsPresenter> implements 
                 iconClass += " kie-timeline-icon--completed";
                 break;
             }
-            case UPDATED: {
-                iconClass += " fa fa-user";
-                logInfoContent += " (" + model.getMessage() + " ) ";
-                break;
-            }
+            case UPDATED:
             case CLAIMED:
             case STARTED: {
                 iconClass += " fa fa-user";
@@ -143,13 +99,25 @@ public class TaskLogItemView extends AbstractView<TaskLogsPresenter> implements 
                 iconClass += " fa fa-cogs";
             }
         }
-        tooltip(logIcon);
-        String logString = constants.Task() + " " + translationService.format(type.getTypeTranslationId()).toLowerCase();
-        logIcon.setAttribute("data-original-title",
-                             logString);
-        logIcon.setClassName(iconClass);
-        logTypeDesc.setTextContent(logString);
+        return iconClass;
+    }
 
-        logInfo.setTextContent(logInfoContent);
+    private String getLogInfoContent(final TaskEventType type, final TaskEventSummary model) {
+        String logInfoContent = constants.ByUser() + " " + model.getUserId() + " ";
+        switch (type) {
+            case ADDED: {
+                if (model.getUserId() != null && !model.getUserId().isEmpty()) {
+                    logInfoContent = constants.ByProcess() + " '" + model.getUserId() + "' ";
+                } else {
+                    logInfoContent = "";
+                }
+                break;
+            }
+            case UPDATED: {
+                logInfoContent += " (" + model.getMessage() + " ) ";
+                break;
+            }
+        }
+        return logInfoContent;
     }
 }
