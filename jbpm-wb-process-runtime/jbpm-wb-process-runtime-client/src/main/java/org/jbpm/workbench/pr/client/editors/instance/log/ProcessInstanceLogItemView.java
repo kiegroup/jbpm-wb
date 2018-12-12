@@ -81,9 +81,7 @@ public class ProcessInstanceLogItemView extends AbstractLogItemView<ProcessInsta
     private void setLogIcon(ProcessInstanceLogSummary model) {
         tooltip(logIcon);
         String iconClass = "list-view-pf-icon-sm kie-timeline-list-view-pf-icon-sm";
-        final String nodeType = model.getNodeType();
-        if (LogUtils.NODE_TYPE_HUMAN_TASK.equals(nodeType) ||
-                (LogUtils.NODE_TYPE_START.equals(nodeType) && !model.isCompleted())) {
+        if (isHumanTask(model) || (isStartNode(model) && !model.isCompleted())) {
             iconClass += " fa fa-user";
             logIcon.setAttribute("data-original-title", constants.Human_Task());
         } else {
@@ -107,11 +105,10 @@ public class ProcessInstanceLogItemView extends AbstractLogItemView<ProcessInsta
 
     private void setLogType(ProcessInstanceLogSummary model) {
         String logTitle = model.getNodeType();
-        if (LogUtils.NODE_TYPE_HUMAN_TASK.equals(model.getNodeType())) {
-            logTitle = constants.Task_(model.getName());
-        }
         String name = model.getName();
-        if (name != null && name.trim().length() > 0) {
+        if (isHumanTask(model)) {
+            logTitle = constants.Task_(model.getName());
+        } else if (name != null && name.trim().length() > 0) {
             logTitle = model.getNodeType() + " '" + name + "' ";
         }
         logTypeDesc.setTextContent(logTitle);
@@ -130,8 +127,7 @@ public class ProcessInstanceLogItemView extends AbstractLogItemView<ProcessInsta
     }
 
     private String getAgent(final ProcessInstanceLogSummary model) {
-        if (LogUtils.NODE_TYPE_HUMAN_TASK.equals(model.getNodeType()) ||
-                (LogUtils.NODE_TYPE_START.equals(model.getNodeType()) && !model.isCompleted())) {
+        if (isHumanTask(model) || (isStartNode(model) && !model.isCompleted())) {
             return constants.Human();
         } else {
             return constants.System();
@@ -141,7 +137,7 @@ public class ProcessInstanceLogItemView extends AbstractLogItemView<ProcessInsta
     @EventHandler("detailsLink")
     public void loadProcessInstanceLogsDetails(final @ForEvent("click") MouseEvent event) {
         if (!detailsInfoDiv.hasChildNodes() && (logSummary.getModel().getWorkItemId() != null)) {
-            if (LogUtils.NODE_TYPE_HUMAN_TASK.equals(logSummary.getModel().getNodeType())) {
+            if (isHumanTask(logSummary.getModel())) {
                 presenter.loadTaskDetails(logSummary.getModel().getWorkItemId(),
                                           logSummary.getModel().getDate(),
                                           workItemView);
@@ -151,5 +147,13 @@ public class ProcessInstanceLogItemView extends AbstractLogItemView<ProcessInsta
             }
             detailsInfoDiv.appendChild(workItemView.getElement());
         }
+    }
+
+    private boolean isHumanTask(ProcessInstanceLogSummary model) {
+        return LogUtils.NODE_TYPE_HUMAN_TASK.equals(model.getNodeType());
+    }
+
+    private boolean isStartNode(ProcessInstanceLogSummary model) {
+        return LogUtils.NODE_TYPE_START.equals(model.getNodeType());
     }
 }

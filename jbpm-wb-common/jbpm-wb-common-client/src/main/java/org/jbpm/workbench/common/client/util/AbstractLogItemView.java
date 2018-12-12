@@ -33,7 +33,7 @@ public abstract class AbstractLogItemView<T> extends AbstractView<T> {
 
     @Inject
     @DataField("logTime")
-    protected Span logTime;
+    private Span logTime;
 
     @Inject
     @DataField("logIcon")

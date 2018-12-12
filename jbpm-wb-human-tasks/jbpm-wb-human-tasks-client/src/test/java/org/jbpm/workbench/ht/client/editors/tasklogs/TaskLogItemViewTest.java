@@ -52,6 +52,7 @@ public class TaskLogItemViewTest {
         when(constants.Task()).thenReturn("Task");
         when(constants.ByUser()).thenReturn("by user");
         when(constants.ByProcess()).thenReturn("by process");
+
         when(translationService.format(any())).then(i -> i.getArgumentAt(0, String.class));
     }
 
