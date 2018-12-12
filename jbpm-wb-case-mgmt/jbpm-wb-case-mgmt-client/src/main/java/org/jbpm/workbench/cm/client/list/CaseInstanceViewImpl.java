@@ -37,7 +37,7 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.cm.client.util.AbstractView;
-import org.jbpm.workbench.cm.client.util.CaseStatusConverter;
+import org.jbpm.workbench.cm.client.util.CaseStatusLabelConverter;
 import org.jbpm.workbench.cm.util.CaseStatus;
 import org.jbpm.workbench.cm.client.util.DateConverter;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
@@ -74,7 +74,7 @@ public class CaseInstanceViewImpl extends AbstractView<CaseInstanceListPresenter
 
     @Inject
     @DataField("status")
-    @Bound(converter = CaseStatusConverter.class)
+    @Bound(converter = CaseStatusLabelConverter.class)
     private Span status;
 
     @Inject

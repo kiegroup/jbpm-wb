@@ -64,4 +64,36 @@ public class CaseInstanceSearchRequest {
                 ", sortByAsc=" + sortByAsc +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof CaseInstanceSearchRequest)) {
+            return false;
+        }
+
+        CaseInstanceSearchRequest that = (CaseInstanceSearchRequest) o;
+
+        if (getStatus() != that.getStatus()) {
+            return false;
+        }
+        if (getSortBy() != that.getSortBy()) {
+            return false;
+        }
+        return getSortByAsc() != null ? getSortByAsc().equals(that.getSortByAsc()) : that.getSortByAsc() == null;
+    }
+
+    @Override
+    @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
+    public int hashCode() {
+        int result = getStatus() != null ? getStatus().hashCode() : 0;
+        result = ~~result;
+        result = 31 * result + (getSortBy() != null ? getSortBy().hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (getSortByAsc() != null ? getSortByAsc().hashCode() : 0);
+        result = ~~result;
+        return result;
+    }
 }

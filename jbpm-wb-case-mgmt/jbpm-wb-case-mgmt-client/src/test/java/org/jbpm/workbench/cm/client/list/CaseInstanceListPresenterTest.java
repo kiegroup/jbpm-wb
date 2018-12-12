@@ -72,7 +72,7 @@ public class CaseInstanceListPresenterTest {
         caseService = new CallerMock<>(caseManagementService);
         when(caseManagementService.getCaseInstances(any(CaseInstanceSearchRequest.class))).thenReturn(caseInstanceSummaryList);
         presenter.setCaseService(caseService);
-        when(view.getCaseInstanceSearchRequest()).thenReturn(new CaseInstanceSearchRequest());
+        when(view.getValue()).thenReturn(new CaseInstanceSearchRequest());
     }
 
     @Test
@@ -111,11 +111,20 @@ public class CaseInstanceListPresenterTest {
     public void testRefreshData() {
         presenter.refreshData();
 
-        verify(caseManagementService).getCaseInstances(view.getCaseInstanceSearchRequest());
+        verify(caseManagementService).getCaseInstances(view.getValue());
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
         verify(view).setCaseInstanceList(captor.capture());
         assertEquals(caseInstanceSummaryList.size(),
                      captor.getValue().size());
+    }
+
+    @Test
+    public void testInit() {
+        presenter.init();
+
+        verify(view).init(presenter);
+        verify(view).setValue(new CaseInstanceSearchRequest());
+        verify(caseManagementService).getCaseInstances(view.getValue());
     }
 
     @Test

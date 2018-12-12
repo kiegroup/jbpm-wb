@@ -19,11 +19,11 @@ package org.jbpm.workbench.cm.client.list;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.TakesValue;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.cm.client.events.CaseCreatedEvent;
@@ -64,10 +64,10 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
         return translationService.format(CASE_LIST);
     }
 
-    @PostConstruct
     @Override
     public void init() {
         super.init();
+        view.setValue(new CaseInstanceSearchRequest());
         refreshData();
     }
 
@@ -76,9 +76,7 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
     }
 
     protected void refreshData() {
-        caseService.call((List<CaseInstanceSummary> cases) -> {
-            view.setCaseInstanceList(cases);
-        }).getCaseInstances(view.getCaseInstanceSearchRequest());
+        caseService.call((List<CaseInstanceSummary> cases) -> view.setCaseInstanceList(cases)).getCaseInstances(view.getValue());
     }
 
     protected void selectCaseInstance(final CaseInstanceSummary cis) {
@@ -123,10 +121,10 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
         this.caseService = caseService;
     }
 
-    public interface CaseInstanceListView extends UberElement<CaseInstanceListPresenter> {
+    public interface CaseInstanceListView extends UberElement<CaseInstanceListPresenter>,
+                                                  TakesValue<CaseInstanceSearchRequest> {
 
         void setCaseInstanceList(List<CaseInstanceSummary> caseInstanceList);
 
-        CaseInstanceSearchRequest getCaseInstanceSearchRequest();
     }
 }

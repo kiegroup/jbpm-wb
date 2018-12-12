@@ -16,16 +16,18 @@
 
 package org.jbpm.workbench.cm.client.list;
 
+import java.util.Comparator;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.TakesValue;
 import org.jboss.errai.common.client.dom.Button;
 import org.jboss.errai.common.client.dom.Form;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.MouseEvent;
 import org.jboss.errai.databinding.client.api.DataBinder;
-import org.jboss.errai.databinding.client.api.StateSync;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
@@ -35,9 +37,9 @@ import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.cm.client.util.AbstractView;
 import org.jbpm.workbench.cm.client.util.CaseStatusConverter;
-import org.jbpm.workbench.cm.util.CaseStatus;
 import org.jbpm.workbench.cm.util.CaseInstanceSearchRequest;
 import org.jbpm.workbench.cm.util.CaseInstanceSortBy;
+import org.jbpm.workbench.cm.util.CaseStatus;
 import org.uberfire.client.views.pfly.widgets.Select;
 
 import static java.util.Arrays.stream;
@@ -47,7 +49,7 @@ import static org.jboss.errai.common.client.dom.DOMUtil.removeCSSClass;
 
 @Dependent
 @Templated("CaseInstanceListViewImpl.html#search-actions")
-public class CaseInstanceListSearchViewImpl extends AbstractView<CaseInstanceListPresenter> {
+public class CaseInstanceListSearchViewImpl extends AbstractView<CaseInstanceListPresenter> implements TakesValue<CaseInstanceSearchRequest> {
 
     @Inject
     @DataField("search-actions")
@@ -94,18 +96,18 @@ public class CaseInstanceListSearchViewImpl extends AbstractView<CaseInstanceLis
     @PostConstruct
     public void init() {
         stream(CaseStatus.values()).forEach(s -> status.addOption(translationService.format(s.getLabel()),
-                                                                  s.getName()));
-        status.refresh();
+                                                                  s.name()));
+        status.init();
 
         stream(CaseInstanceSortBy.values())
                 .collect(toMap(s -> s.name(),
                                s -> translationService.format(s.name())))
                 .entrySet().stream()
-                .sorted((e1, e2) -> e1.getValue().compareTo(e2.getValue()))
+                .sorted(Comparator.comparing(Map.Entry::getValue))
                 .forEach(s -> sortBy.addOption(s.getValue(),
                                                s.getKey()));
 
-        sortBy.refresh();
+        sortBy.init();
 
         searchRequest.addPropertyChangeHandler("sortBy",
                                                e -> {
@@ -124,12 +126,16 @@ public class CaseInstanceListSearchViewImpl extends AbstractView<CaseInstanceLis
                                                    }
                                                });
 
-        searchRequest.setModel(new CaseInstanceSearchRequest(),
-                               StateSync.FROM_MODEL);
         searchRequest.addPropertyChangeHandler(e -> presenter.searchCaseInstances());
     }
 
-    public CaseInstanceSearchRequest getCaseInstanceSearchRequest() {
+    @Override
+    public void setValue(CaseInstanceSearchRequest value) {
+        searchRequest.setModel(value);
+    }
+
+    @Override
+    public CaseInstanceSearchRequest getValue() {
         return searchRequest.getModel();
     }
 
