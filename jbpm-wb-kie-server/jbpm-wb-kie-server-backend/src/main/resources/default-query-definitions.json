@@ -38,7 +38,7 @@
   {
     "query-name": "jbpmHumanTasks",
     "query-source": "${org.kie.server.persistence.ds}",
-    "query-expression": "select t.activationTime, t.actualOwner, t.createdBy, t.createdOn, t.deploymentId, t.description, t.dueDate, t.name, t.parentId, t.priority, t.processId, t.processInstanceId, t.processSessionId, t.status, t.taskId, t.workItemId, t.lastModificationDate, pil.correlationKey, pil.processInstanceDescription from AuditTaskImpl t left join ProcessInstanceLog pil on pil.id=t.processInstanceId",
+    "query-expression": "select t.activationTime, t.actualOwner, t.createdBy, t.createdOn, t.deploymentId, t.description, t.dueDate, t.name, t.parentId, t.priority, t.processId, t.processInstanceId, t.processSessionId, t.status, t.taskId, t.workItemId, t.lastModificationDate, pil.correlationKey, pil.processInstanceDescription from AuditTaskImpl t left join ProcessInstanceLog pil on pil.processInstanceId=t.processInstanceId",
     "query-target": "CUSTOM"
   },
   {
@@ -50,7 +50,7 @@
   {
     "query-name": "jbpmHumanTasksWithAdmin",
     "query-source": "${org.kie.server.persistence.ds}",
-    "query-expression": "select t.activationTime, t.actualOwner, t.createdBy, t.createdOn, t.deploymentId, t.description, t.dueDate, t.name, t.parentId, t.priority, t.processId, t.processInstanceId, t.processSessionId, t.status, t.taskId, t.workItemId, t.lastModificationDate, pil.correlationKey, pil.processInstanceDescription ,oe.id,  (select COUNT(errInfo.id) from ExecutionErrorInfo errInfo where errInfo.activity_id = t.taskId and errInfo.process_inst_id = pil.processInstanceId and errInfo.error_ack = 0 and errInfo.error_type = 'Task') as errorCount from AuditTaskImpl t  left join ProcessInstanceLog pil on pil.id = t.processInstanceId left join PeopleAssignments_BAs ba on t.taskId = ba.task_id left join OrganizationalEntity oe on ba.entity_id = oe.id",
+    "query-expression": "select t.activationTime, t.actualOwner, t.createdBy, t.createdOn, t.deploymentId, t.description, t.dueDate, t.name, t.parentId, t.priority, t.processId, t.processInstanceId, t.processSessionId, t.status, t.taskId, t.workItemId, t.lastModificationDate, pil.correlationKey, pil.processInstanceDescription ,oe.id,  (select COUNT(errInfo.id) from ExecutionErrorInfo errInfo where errInfo.activity_id = t.taskId and errInfo.process_inst_id = pil.processInstanceId and errInfo.error_ack = 0 and errInfo.error_type = 'Task') as errorCount from AuditTaskImpl t  left join ProcessInstanceLog pil on pil.processInstanceId = t.processInstanceId left join PeopleAssignments_BAs ba on t.taskId = ba.task_id left join OrganizationalEntity oe on ba.entity_id = oe.id",
     "query-target": "FILTERED_BA_TASK"
   },
   {
