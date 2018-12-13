@@ -85,7 +85,7 @@ public class ProcessInstanceLogItemViewTest {
     @InjectMocks
     private ProcessInstanceLogItemView view;
 
-    private static final Date date = Date.from(LocalDateTime.of(2018, 12, 12, 11, 55, 57).atZone(ZoneId.systemDefault()).toInstant());
+    private static final Date date = Date.from(LocalDateTime.of(2018, 12, 12, 11, 55, 57).atZone(ZoneId.of("GMT+1")).toInstant());
 
     @Before
     public void setupMocks() {
