@@ -238,7 +238,7 @@ public class CaseProjectServiceImplTest {
                      mappedStrategies.get(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
 
         verify(ioService,
-               times(2)).write(any(),
+               times(1)).write(any(),
                                any(byte[].class));
     }
 

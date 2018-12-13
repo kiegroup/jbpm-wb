@@ -19,8 +19,6 @@ package org.jbpm.workbench.wi.backend.server.casemgmt.service;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -41,7 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.io.IOService;
-import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 
 @Service
@@ -61,8 +58,6 @@ public class CaseProjectServiceImpl implements CaseProjectService {
     private IOService ioService;
 
     private DDEditorService ddEditorService;
-
-    private List<String> noWIDDirectories = Arrays.asList("META-INF");
 
     public CaseProjectServiceImpl() {
     }
@@ -145,16 +140,16 @@ public class CaseProjectServiceImpl implements CaseProjectService {
                              "Updated with case project configuration");
         logger.debug("Updated deployment model saved");
 
-        // add WorkDefinition.wid to project and its packages
+        addWorkDefinitionsFileToProjectResources(kieModule, project, separator);
+    }
+
+    public void addWorkDefinitionsFileToProjectResources(KieModule kieModule, WorkspaceProject project, String separator) {
         String resourcesPathStr = Paths.convert(kieModule.getKModuleXMLPath()).getParent().getParent().toUri().toString();
         Path widFilePath = ioService.get(URI.create(resourcesPathStr + separator + WORK_DEFINITION_FILE));
         logger.debug("Adding WorkDefinition.wid file to resources folder {} of the project {}",
                      widFilePath,
                      project);
         addWorkDefinitions(widFilePath);
-        logger.debug("Adding WorkDefinition.wid to all packages...");
-        addWorkDefinitionsRecursively(widFilePath.getParent(),
-                                      separator);
     }
 
     public void configurePackage(@Observes NewPackageEvent pkg) {
@@ -165,22 +160,6 @@ public class CaseProjectServiceImpl implements CaseProjectService {
 
             Path resourcesPath = ioService.get(URI.create(resourcesPathStr + separator + WORK_DEFINITION_FILE));
             addWorkDefinitions(resourcesPath);
-        }
-    }
-
-    protected void addWorkDefinitionsRecursively(Path startAt,
-                                                 String separator) {
-        org.uberfire.java.nio.file.DirectoryStream<Path> directoryStream = ioService.newDirectoryStream(startAt,
-                                                                                                        path -> Files.isDirectory(path) && !noWIDDirectories.contains(path.getFileName().toString()));
-
-        Iterator<Path> pathIterator = directoryStream.iterator();
-        while (pathIterator.hasNext()) {
-            Path current = pathIterator.next();
-            Path widFilePath = ioService.get(URI.create(current.toUri() + separator + WORK_DEFINITION_FILE));
-            addWorkDefinitions(widFilePath);
-
-            addWorkDefinitionsRecursively(current,
-                                          separator);
         }
     }
 
