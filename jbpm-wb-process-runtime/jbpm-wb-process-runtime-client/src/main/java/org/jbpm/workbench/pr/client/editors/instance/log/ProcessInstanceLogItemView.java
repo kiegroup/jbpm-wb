@@ -19,6 +19,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.TakesValue;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.Anchor;
@@ -133,7 +134,10 @@ public class ProcessInstanceLogItemView extends AbstractView<ProcessInstanceLogP
         if (model.getWorkItemId() == null) {
             detailsPanelDiv.setHidden(true);
         } else {
-            setDetailsPanelAttributes(model);
+            String panelId = Document.get().createUniqueId();
+            detailsLink.setAttribute("href",
+                                     "#" + panelId);
+            detailsInfoDiv.setId(panelId);
             detailsPanelDiv.setHidden(false);
         }
     }
@@ -147,13 +151,6 @@ public class ProcessInstanceLogItemView extends AbstractView<ProcessInstanceLogP
             return logsum.getNodeType() + " '" + name + "' ";
         }
         return logsum.getNodeType();
-    }
-
-    private void setDetailsPanelAttributes(ProcessInstanceLogSummary model) {
-        String panelId = model.getId().toString() + model.getDate().getTime();
-        detailsLink.setAttribute("href",
-                                 "#" + panelId);
-        detailsInfoDiv.setId(panelId);
     }
 
     @EventHandler("detailsLink")
