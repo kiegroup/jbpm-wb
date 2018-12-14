@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.dom.Anchor;
 import org.jboss.errai.common.client.dom.Div;
@@ -98,6 +99,8 @@ public class ProcessInstanceLogItemViewTest {
         when(constants.System()).thenReturn("System");
 
         when(translationService.format(any())).then(i -> i.getArgumentAt(0, String.class));
+
+        when(Document.get().createUniqueId()).thenReturn("123");
     }
 
     @Test
@@ -211,8 +214,8 @@ public class ProcessInstanceLogItemViewTest {
     }
 
     private void verifyHumanTaskDetails(ProcessInstanceLogSummary model) {
-        verify(detailsLink).setAttribute("href", "#11544612157000");
-        verify(detailsInfoDiv).setId("11544612157000");
+        verify(detailsLink).setAttribute("href", "#123");
+        verify(detailsInfoDiv).setId("123");
 
         when(logSummary.getModel()).thenReturn(model);
         when(detailsInfoDiv.hasChildNodes()).thenReturn(false);
@@ -221,8 +224,8 @@ public class ProcessInstanceLogItemViewTest {
     }
 
     private void verifySystemTaskDetails(ProcessInstanceLogSummary model) {
-        verify(detailsLink).setAttribute("href", "#11544612157000");
-        verify(detailsInfoDiv).setId("11544612157000");
+        verify(detailsLink).setAttribute("href", "#123");
+        verify(detailsInfoDiv).setId("123");
 
         when(logSummary.getModel()).thenReturn(model);
         when(detailsInfoDiv.hasChildNodes()).thenReturn(false);
