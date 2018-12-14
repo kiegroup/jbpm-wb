@@ -21,7 +21,6 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.TakesValue;
 import elemental2.dom.HTMLButtonElement;
-import elemental2.dom.HTMLInputElement;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.MouseEvent;
@@ -36,6 +35,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.pr.model.TimerInstanceSummary;
 import org.uberfire.client.callbacks.Callback;
 import org.uberfire.client.views.pfly.widgets.Modal;
+import org.uberfire.client.views.pfly.widgets.SanitizedNumberInput;
 
 @Dependent
 @Templated
@@ -60,19 +60,19 @@ public class TimerInstanceRescheduleView implements TakesValue<TimerInstanceSumm
     @DataField("timer-delay-input")
     @Bound
     @SuppressWarnings("unused")
-    private HTMLInputElement delay;
+    private SanitizedNumberInput delay;
 
     @Inject
     @DataField("timer-period-input")
     @Bound
     @SuppressWarnings("unused")
-    private HTMLInputElement period;
+    private SanitizedNumberInput period;
 
     @Inject
     @DataField("timer-repeat-input")
     @Bound
     @SuppressWarnings("unused")
-    private HTMLInputElement repeatLimit;
+    private SanitizedNumberInput repeatLimit;
 
     @Inject
     @DataField("timer-relative")

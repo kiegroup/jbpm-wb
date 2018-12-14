@@ -58,7 +58,7 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
 
         ProcessInstance processInstance = queryServicesClient.findProcessInstanceById(processInstanceKey.getProcessInstanceId());
 
-        return new ProcessInstanceSummaryMapper().apply(processInstance);
+        return new ProcessInstanceSummaryMapper(processInstanceKey.getServerTemplateId()).apply(processInstance);
     }
 
     @Override
@@ -104,7 +104,6 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
         ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
         summary.setId(processInstance.getId());
         summary.setName(processInstance.getName());
-        summary.setProcessInstanceState(processInstance.getState());
 
         summary.setSvgContent(processImageService.getProcessInstanceDiagram(processInstanceKey.getServerTemplateId(),
                                                                             processInstanceKey.getDeploymentId(),

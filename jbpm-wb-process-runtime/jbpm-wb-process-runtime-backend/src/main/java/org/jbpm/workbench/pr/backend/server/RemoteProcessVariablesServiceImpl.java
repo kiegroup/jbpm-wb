@@ -23,10 +23,11 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.jbpm.workbench.pr.backend.server.model.VariableHelper;
-import org.jbpm.workbench.ks.integration.AbstractKieServerService;
-import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.jbpm.workbench.common.model.QueryFilter;
+import org.jbpm.workbench.ks.integration.AbstractKieServerService;
+import org.jbpm.workbench.pr.backend.server.model.VariableHelper;
+import org.jbpm.workbench.pr.model.ProcessInstanceKey;
+import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.jbpm.workbench.pr.service.ProcessVariablesService;
 import org.kie.server.api.exception.KieServicesHttpException;
 import org.kie.server.api.model.definition.VariablesDefinition;
@@ -112,21 +113,19 @@ public class RemoteProcessVariablesServiceImpl extends AbstractKieServerService 
     }
 
     @Override
-    public List<ProcessVariableSummary> getVariableHistory(String serverTemplateId,
-                                                           String deploymentId,
-                                                           Long processInstanceId,
+    public List<ProcessVariableSummary> getVariableHistory(ProcessInstanceKey processInstance,
                                                            String variableName) {
-        QueryServicesClient processClient = getClient(serverTemplateId,
-                                                        QueryServicesClient.class);
-        List<VariableInstance> variables = processClient.findVariableHistory(processInstanceId,
+        QueryServicesClient processClient = getClient(processInstance.getServerTemplateId(),
+                                                      QueryServicesClient.class);
+        List<VariableInstance> variables = processClient.findVariableHistory(processInstance.getProcessInstanceId(),
                                                                              variableName,
                                                                              0,
                                                                              100);
 
         return VariableHelper.adaptCollection(variables,
                                               new HashMap<String, String>(),
-                                              processInstanceId,
-                                              deploymentId,
-                                              serverTemplateId);
+                                              processInstance.getProcessInstanceId(),
+                                              processInstance.getDeploymentId(),
+                                              processInstance.getServerTemplateId());
     }
 }

@@ -20,13 +20,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 
 @Remote
 public interface ProcessService {
 
-    void abortProcessInstance(String serverTemplateId,
-                              String containerId,
-                              Long processInstanceId);
+    void abortProcessInstance(ProcessInstanceKey processInstance);
 
     void abortProcessInstances(String serverTemplateId,
                                Map<String, List<Long>> containerInstances);

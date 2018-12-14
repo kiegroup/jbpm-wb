@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.cellview.client.ColumnSortList;
@@ -32,8 +31,9 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.common.client.list.AbstractListPresenter;
 import org.jbpm.workbench.common.client.list.ListView;
 import org.jbpm.workbench.common.model.PortableQueryFilter;
+import org.jbpm.workbench.pr.client.editors.instance.ProcessInstanceSummaryAware;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
-import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
+import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.jbpm.workbench.pr.service.ProcessVariablesService;
 import org.uberfire.ext.widgets.common.client.callbacks.HasBusyIndicatorDefaultErrorCallback;
@@ -41,7 +41,7 @@ import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.paging.PageResponse;
 
 @Dependent
-public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessVariableSummary> {
+public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessVariableSummary> implements ProcessInstanceSummaryAware {
 
     private Constants constants = Constants.INSTANCE;
 
@@ -49,15 +49,7 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
 
     private Caller<ProcessVariablesService> variablesServices;
 
-    private Long processInstanceId;
-
-    private String processDefId;
-
-    private String deploymentId;
-
-    private int processInstanceStatus;
-
-    private String serverTemplateId;
+    private ProcessInstanceSummary processInstance;
 
     @Inject
     public ProcessVariableListPresenter(final ProcessVariableListView view,
@@ -75,17 +67,14 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
         return view;
     }
 
-    public void onProcessInstanceSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
-        this.processInstanceId = event.getProcessInstanceId();
-        this.processDefId = event.getProcessDefId();
-        this.deploymentId = event.getDeploymentId();
-        this.processInstanceStatus = event.getProcessInstanceStatus();
-        this.serverTemplateId = event.getServerTemplateId();
+    @Override
+    public void setProcessInstance(ProcessInstanceSummary processInstance) {
+        this.processInstance = processInstance;
         refreshGrid();
     }
 
     public int getProcessInstanceStatus() {
-        return processInstanceStatus;
+        return processInstance.getState();
     }
 
     public void loadVariableHistory(final ParameterizedCommand<List<ProcessVariableSummary>> callback,
@@ -96,9 +85,7 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
                                        callback.execute(processVariableSummaries);
                                    }
                                },
-                               new HasBusyIndicatorDefaultErrorCallback(view)).getVariableHistory(serverTemplateId,
-                                                                                                  deploymentId,
-                                                                                                  processInstanceId,
+                               new HasBusyIndicatorDefaultErrorCallback(view)).getVariableHistory(processInstance.getProcessInstanceKey(),
                                                                                                   variableName);
     }
 
@@ -110,7 +97,7 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
     @Override
     public void getData(Range visibleRange) {
         /*-----------------------------------------------------------*/
-        if (processInstanceId != null) {
+        if (processInstance != null) {
             ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
             if (currentFilter == null) {
                 currentFilter = new PortableQueryFilter(visibleRange.getStart(),
@@ -139,15 +126,15 @@ public class ProcessVariableListPresenter extends AbstractListPresenter<ProcessV
                 currentFilter.setParams(new HashMap<String, Object>());
             }
             currentFilter.getParams().put("processInstanceId",
-                                          String.valueOf(processInstanceId));
+                                          processInstance.getProcessInstanceId().toString());
             currentFilter.getParams().put("processDefId",
-                                          processDefId);
+                                          processInstance.getProcessId());
             currentFilter.getParams().put("deploymentId",
-                                          deploymentId);
+                                          processInstance.getDeploymentId());
             currentFilter.getParams().put("processInstanceStatus",
-                                          processInstanceStatus);
+                                          processInstance.getState());
             currentFilter.getParams().put("serverTemplateId",
-                                          serverTemplateId);
+                                          processInstance.getServerTemplateId());
 
             currentFilter.setOrderBy(columnSortList.size() > 0 ? columnSortList.get(0)
                     .getColumn().getDataStoreName() : "");

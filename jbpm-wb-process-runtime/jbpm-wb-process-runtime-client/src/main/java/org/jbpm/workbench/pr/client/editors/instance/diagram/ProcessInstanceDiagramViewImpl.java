@@ -98,11 +98,21 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
 
     @Override
     public void setNodeInstances(final List<NodeInstanceSummary> nodes) {
+        if(nodes.isEmpty()){
+            nodeInstancesView.getElement().classList.add("hidden");
+        } else {
+            nodeInstancesView.getElement().classList.remove("hidden");
+        }
         nodeInstancesView.setValue(nodes);
     }
 
     @Override
     public void setTimerInstances(final List<TimerInstanceSummary> timers) {
+        if(timers.isEmpty()){
+            timerInstancesView.getElement().classList.add("hidden");
+        } else {
+            timerInstancesView.getElement().classList.remove("hidden");
+        }
         timerInstancesView.setValue(timers);
     }
 

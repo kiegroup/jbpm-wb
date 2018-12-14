@@ -27,8 +27,6 @@ public class ProcessInstanceDiagramSummary extends GenericSummary<Long> {
 
     private String svgContent;
 
-    private Integer processInstanceState;
-
     private List<NodeInstanceSummary> nodeInstances;
 
     private List<ProcessNodeSummary> processNodes;
@@ -44,14 +42,6 @@ public class ProcessInstanceDiagramSummary extends GenericSummary<Long> {
 
     public void setSvgContent(String svgContent) {
         this.svgContent = svgContent;
-    }
-
-    public void setProcessInstanceState(Integer processInstanceState) {
-        this.processInstanceState = processInstanceState;
-    }
-
-    public Integer getProcessInstanceState() {
-        return processInstanceState;
     }
 
     public List<NodeInstanceSummary> getNodeInstances() {
@@ -128,11 +118,6 @@ public class ProcessInstanceDiagramSummary extends GenericSummary<Long> {
 
         public Builder withTimerInstances(List<TimerInstanceSummary> timerInstances) {
             summary.setTimerInstances(timerInstances);
-            return this;
-        }
-
-        public Builder withProcessInstanceState(Integer state) {
-            summary.setProcessInstanceState(state);
             return this;
         }
 

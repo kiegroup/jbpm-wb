@@ -16,63 +16,31 @@
 package org.jbpm.workbench.pr.events;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 
 @Portable
 public class ProcessInstanceSelectionEvent {
 
     private ProcessInstanceKey processInstanceKey;
-    private ProcessDefinitionKey processDefinitionKey;
-    private Integer processInstanceStatus;
     private boolean forLog;
 
     public ProcessInstanceSelectionEvent() {
     }
 
     public ProcessInstanceSelectionEvent(ProcessInstanceKey processInstanceKey,
-                                         ProcessDefinitionKey processDefinitionKey,
-                                         Integer processInstanceStatus,
                                          boolean forLog) {
         this.processInstanceKey = processInstanceKey;
-        this.processDefinitionKey = processDefinitionKey;
-        this.processInstanceStatus = processInstanceStatus;
         this.forLog = forLog;
     }
 
-    public ProcessInstanceSelectionEvent(String deploymentId,
+    public ProcessInstanceSelectionEvent(String serverTemplateId,
+                                         String deploymentId,
                                          Long processInstanceId,
-                                         String processDefId,
-                                         String processDefName,
-                                         Integer processInstanceStatus,
-                                         String serverTemplateId) {
-        this(new ProcessInstanceKey(serverTemplateId,
-                                    deploymentId,
-                                    processInstanceId),
-             new ProcessDefinitionKey(serverTemplateId,
-                                      deploymentId,
-                                      processDefId,
-                                      processDefName),
-             processInstanceStatus,
-             false);
-    }
-
-    public ProcessInstanceSelectionEvent(String deploymentId,
-                                         Long processInstanceId,
-                                         String processDefId,
-                                         String processDefName,
-                                         Integer processInstanceStatus,
-                                         boolean forLog,
-                                         String serverTemplateId) {
+                                         boolean forLog) {
 
         this(new ProcessInstanceKey(serverTemplateId,
                                     deploymentId,
                                     processInstanceId),
-             new ProcessDefinitionKey(serverTemplateId,
-                                      deploymentId,
-                                      processDefId,
-                                      processDefName),
-             processInstanceStatus,
              forLog);
     }
 
@@ -80,20 +48,8 @@ public class ProcessInstanceSelectionEvent {
         return processInstanceKey.getProcessInstanceId();
     }
 
-    public String getProcessDefId() {
-        return processDefinitionKey.getProcessId();
-    }
-
     public String getDeploymentId() {
         return processInstanceKey.getDeploymentId();
-    }
-
-    public Integer getProcessInstanceStatus() {
-        return processInstanceStatus;
-    }
-
-    public String getProcessDefName() {
-        return processDefinitionKey.getProcessDefName();
     }
 
     public String getServerTemplateId() {
@@ -104,10 +60,6 @@ public class ProcessInstanceSelectionEvent {
         return processInstanceKey;
     }
 
-    public ProcessDefinitionKey getProcessDefinitionKey() {
-        return processDefinitionKey;
-    }
-
     public boolean isForLog() {
         return forLog;
     }
@@ -116,8 +68,6 @@ public class ProcessInstanceSelectionEvent {
     public String toString() {
         return "ProcessInstanceSelectionEvent{" +
                 "processInstanceKey=" + processInstanceKey +
-                ", processDefinitionKey=" + processDefinitionKey +
-                ", processInstanceStatus=" + processInstanceStatus +
                 ", forLog=" + forLog +
                 '}';
     }
@@ -127,10 +77,6 @@ public class ProcessInstanceSelectionEvent {
     public int hashCode() {
         int hash = 7;
         hash = 37 * hash + (this.processInstanceKey != null ? this.processInstanceKey.hashCode() : 0);
-        hash = ~~hash;
-        hash = 37 * hash + (this.processDefinitionKey != null ? this.processDefinitionKey.hashCode() : 0);
-        hash = ~~hash;
-        hash = 37 * hash + (this.processInstanceStatus != null ? this.processInstanceStatus.hashCode() : 0);
         hash = ~~hash;
         return hash;
     }

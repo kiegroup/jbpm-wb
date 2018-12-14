@@ -209,12 +209,10 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                               constants.ProcessInstanceBreadcrumb(newProcessInstance.getNewProcessInstanceId()),
                               PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
         placeManager.goTo(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
-        processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getDeploymentId(),
+        processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getServerTemplateId(),
+                                                                       newProcessInstance.getDeploymentId(),
                                                                        newProcessInstance.getNewProcessInstanceId(),
-                                                                       newProcessInstance.getNewProcessDefId(),
-                                                                       newProcessInstance.getProcessDefName(),
-                                                                       newProcessInstance.getNewProcessInstanceStatus(),
-                                                                       newProcessInstance.getServerTemplateId()));
+                                                                       false));
     }
 
     public Predicate<ProcessSummary> getViewProcessInstanceActionCondition() {

@@ -27,6 +27,12 @@ import org.kie.server.api.model.instance.TaskSummary;
 
 public class ProcessInstanceSummaryMapper implements Function<ProcessInstance, ProcessInstanceSummary> {
 
+    private String serverTemplateId;
+
+    public ProcessInstanceSummaryMapper(String serverTemplateId) {
+        this.serverTemplateId = serverTemplateId;
+    }
+
     @Override
     public ProcessInstanceSummary apply(ProcessInstance processInstance) {
         if (processInstance == null) {
@@ -34,6 +40,7 @@ public class ProcessInstanceSummaryMapper implements Function<ProcessInstance, P
         }
 
         ProcessInstanceSummary summary = new ProcessInstanceSummary(
+                serverTemplateId,
                 processInstance.getId(),
                 processInstance.getProcessId(),
                 processInstance.getContainerId(),

@@ -24,7 +24,7 @@ import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessInstanceDiagramSummary;
-import org.jbpm.workbench.pr.model.ProcessInstanceKey;
+import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessNodeSummary;
 import org.jbpm.workbench.pr.model.TimerInstanceSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
@@ -70,21 +70,11 @@ public class ProcessInstanceDiagramPresenterTest {
 
     @Test
     public void testEmptyProcessInstanceDiagram() {
-        when(processService.getProcessInstanceDiagramSummary(any())).thenReturn(ProcessInstanceDiagramSummary.builder().withProcessNodes(emptyList()).withNodeInstances(emptyList()).withTimerInstances(emptyList()).withProcessInstanceState(1).build(),
-                                                                                ProcessInstanceDiagramSummary.builder().withProcessNodes(emptyList()).withNodeInstances(emptyList()).withTimerInstances(emptyList()).withProcessInstanceState(1).withSvgContent("").build());
+        when(processService.getProcessInstanceDiagramSummary(any())).thenReturn(ProcessInstanceDiagramSummary.builder().withProcessNodes(emptyList()).withNodeInstances(emptyList()).withTimerInstances(emptyList()).build(),
+                                                                                ProcessInstanceDiagramSummary.builder().withProcessNodes(emptyList()).withNodeInstances(emptyList()).withTimerInstances(emptyList()).withSvgContent("").build());
 
-        presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(null,
-                                                                                    1l,
-                                                                                    null,
-                                                                                    null,
-                                                                                    null,
-                                                                                    null));
-        presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(null,
-                                                                                    1l,
-                                                                                    null,
-                                                                                    null,
-                                                                                    null,
-                                                                                    null));
+        presenter.setProcessInstance(ProcessInstanceSummary.builder().withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build());
+        presenter.setProcessInstance(ProcessInstanceSummary.builder().withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build());
 
         verify(view,
                times(2)).displayMessage(Constants.INSTANCE.Process_Diagram_Not_FoundContainerShouldBeAvailable(anyString()));
@@ -93,14 +83,10 @@ public class ProcessInstanceDiagramPresenterTest {
     @Test
     public void testProcessInstanceDiagram() {
         final String svgContent = "<svg></svg>";
-        when(processService.getProcessInstanceDiagramSummary(any())).thenReturn(ProcessInstanceDiagramSummary.builder().withProcessNodes(emptyList()).withNodeInstances(emptyList()).withTimerInstances(emptyList()).withProcessInstanceState(1).withSvgContent(svgContent).build(),
-                                                                                ProcessInstanceDiagramSummary.builder().withProcessNodes(emptyList()).withNodeInstances(emptyList()).withTimerInstances(emptyList()).withProcessInstanceState(1).build());
-        presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(new ProcessInstanceKey(null,
-                                                                                                           null,
-                                                                                                           1l),
-                                                                                    null,
-                                                                                    null,
-                                                                                    false));
+        when(processService.getProcessInstanceDiagramSummary(any())).thenReturn(ProcessInstanceDiagramSummary.builder().withProcessNodes(emptyList()).withNodeInstances(emptyList()).withTimerInstances(emptyList()).withSvgContent(svgContent).build(),
+                                                                                ProcessInstanceDiagramSummary.builder().withProcessNodes(emptyList()).withNodeInstances(emptyList()).withTimerInstances(emptyList()).build());
+
+        presenter.setProcessInstance(ProcessInstanceSummary.builder().withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build());
 
         verify(view,
                never()).displayMessage(Constants.INSTANCE.Process_Diagram_Not_FoundContainerShouldBeAvailable(anyString()));
@@ -109,9 +95,8 @@ public class ProcessInstanceDiagramPresenterTest {
 
     @Test
     public void testOnProcessInstanceSelectionEvent() {
-        ProcessInstanceKey instanceKey = new ProcessInstanceKey("serverTemplateId",
-                                                                "containerId",
-                                                                1L);
+        ProcessInstanceSummary processInstance = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build();
+
         String svgContent = "<svg></svg>";
 
         List<ProcessNodeSummary> nodes = Arrays.asList(new ProcessNodeSummary(1l,
@@ -136,18 +121,14 @@ public class ProcessInstanceDiagramPresenterTest {
                 TimerInstanceSummary.builder().withId(1l).withName("t1").build());
 
         ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
-        summary.setProcessInstanceState(ProcessInstance.STATE_ACTIVE);
         summary.setSvgContent(svgContent);
         summary.setProcessNodes(nodes);
         summary.setNodeInstances(nodeInstances);
         summary.setTimerInstances(timerInstances);
 
-        when(processService.getProcessInstanceDiagramSummary(instanceKey)).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey())).thenReturn(summary);
 
-        presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(instanceKey,
-                                                                                    null,
-                                                                                    null,
-                                                                                    false));
+        presenter.setProcessInstance(processInstance);
 
         verify(view).showBusyIndicator(any());
 
@@ -233,9 +214,7 @@ public class ProcessInstanceDiagramPresenterTest {
 
     @Test
     public void testOnProcessNodeSelected() {
-        ProcessInstanceKey instanceKey = new ProcessInstanceKey("serverTemplateId",
-                                                                "containerId",
-                                                                1L);
+        ProcessInstanceSummary processInstance = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build();
 
         final ProcessNodeSummary humanTask = new ProcessNodeSummary(1l,
                                                                     "name-1",
@@ -249,17 +228,13 @@ public class ProcessInstanceDiagramPresenterTest {
                                                                                     "Split"));
 
         ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
-        summary.setProcessInstanceState(ProcessInstance.STATE_ACTIVE);
         summary.setProcessNodes(nodes);
         summary.setNodeInstances(emptyList());
         summary.setTimerInstances(emptyList());
 
-        when(processService.getProcessInstanceDiagramSummary(instanceKey)).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey())).thenReturn(summary);
 
-        presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(instanceKey,
-                                                                                    null,
-                                                                                    null,
-                                                                                    false));
+        presenter.setProcessInstance(processInstance);
 
         presenter.onProcessNodeSelected(1l);
 
@@ -268,9 +243,7 @@ public class ProcessInstanceDiagramPresenterTest {
 
     @Test
     public void testOnNodeTriggered() {
-        ProcessInstanceKey instanceKey = new ProcessInstanceKey("serverTemplateId",
-                                                                "containerId",
-                                                                1L);
+        ProcessInstanceSummary processInstance = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build();
 
         final ProcessNodeSummary humanTask = new ProcessNodeSummary(1l,
                                                                     "name-1",
@@ -284,21 +257,17 @@ public class ProcessInstanceDiagramPresenterTest {
                                                                                     "Split"));
 
         ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
-        summary.setProcessInstanceState(ProcessInstance.STATE_ACTIVE);
         summary.setProcessNodes(nodes);
         summary.setNodeInstances(emptyList());
         summary.setTimerInstances(emptyList());
 
-        when(processService.getProcessInstanceDiagramSummary(instanceKey)).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey())).thenReturn(summary);
 
-        presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(instanceKey,
-                                                                                    null,
-                                                                                    null,
-                                                                                    false));
+        presenter.setProcessInstance(processInstance);
 
         presenter.onProcessNodeTrigger(humanTask);
 
-        verify(processService).triggerProcessInstanceNode(instanceKey,
+        verify(processService).triggerProcessInstanceNode(processInstance.getProcessInstanceKey(),
                                                           humanTask.getId());
         verify(notificationEvent).fire(any());
         verify(view).setValue(new ProcessNodeSummary());
@@ -306,9 +275,7 @@ public class ProcessInstanceDiagramPresenterTest {
 
     @Test
     public void testOnNodeInstanceCancelled() {
-        ProcessInstanceKey instanceKey = new ProcessInstanceKey("serverTemplateId",
-                                                                "containerId",
-                                                                1L);
+        ProcessInstanceSummary processInstance = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build();
 
         NodeInstanceSummary humanTask = NodeInstanceSummary.builder().withId(1l).withName("name-1").withType("HumanTask").withCompleted(false).build();
 
@@ -320,30 +287,24 @@ public class ProcessInstanceDiagramPresenterTest {
         );
 
         ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
-        summary.setProcessInstanceState(ProcessInstance.STATE_ACTIVE);
         summary.setProcessNodes(emptyList());
         summary.setNodeInstances(nodeInstances);
         summary.setTimerInstances(emptyList());
 
-        when(processService.getProcessInstanceDiagramSummary(instanceKey)).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey())).thenReturn(summary);
 
-        presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(instanceKey,
-                                                                                    null,
-                                                                                    null,
-                                                                                    false));
+        presenter.setProcessInstance(processInstance);
 
         presenter.onNodeInstanceCancel(humanTask);
 
-        verify(processService).cancelProcessInstanceNode(instanceKey,
+        verify(processService).cancelProcessInstanceNode(processInstance.getProcessInstanceKey(),
                                                          humanTask.getId());
         verify(notificationEvent).fire(any());
     }
 
     @Test
     public void testOnNodeInstanceReTriggered() {
-        ProcessInstanceKey instanceKey = new ProcessInstanceKey("serverTemplateId",
-                                                                "containerId",
-                                                                1L);
+        ProcessInstanceSummary processInstance = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build();
 
         NodeInstanceSummary humanTask = NodeInstanceSummary.builder().withId(1l).withName("name-1").withType("HumanTask").withCompleted(false).build();
 
@@ -355,30 +316,24 @@ public class ProcessInstanceDiagramPresenterTest {
         );
 
         ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
-        summary.setProcessInstanceState(ProcessInstance.STATE_ACTIVE);
         summary.setProcessNodes(emptyList());
         summary.setNodeInstances(nodeInstances);
         summary.setTimerInstances(emptyList());
 
-        when(processService.getProcessInstanceDiagramSummary(instanceKey)).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey())).thenReturn(summary);
 
-        presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(instanceKey,
-                                                                                    null,
-                                                                                    null,
-                                                                                    false));
+        presenter.setProcessInstance(processInstance);
 
         presenter.onNodeInstanceReTrigger(humanTask);
 
-        verify(processService).reTriggerProcessInstanceNode(instanceKey,
+        verify(processService).reTriggerProcessInstanceNode(processInstance.getProcessInstanceKey(),
                                                             humanTask.getId());
         verify(notificationEvent).fire(any());
     }
 
     @Test
     public void testOnTimerInstanceReschedule() {
-        ProcessInstanceKey instanceKey = new ProcessInstanceKey("serverTemplateId",
-                                                                "containerId",
-                                                                1L);
+        ProcessInstanceSummary processInstance = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build();
 
         final TimerInstanceSummary timer = TimerInstanceSummary.builder().withId(1l).withName("t1").build();
 
@@ -387,21 +342,17 @@ public class ProcessInstanceDiagramPresenterTest {
                 TimerInstanceSummary.builder().withId(2l).withName("t2").build());
 
         ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
-        summary.setProcessInstanceState(ProcessInstance.STATE_ACTIVE);
         summary.setProcessNodes(emptyList());
         summary.setNodeInstances(emptyList());
         summary.setTimerInstances(timerInstance);
 
-        when(processService.getProcessInstanceDiagramSummary(instanceKey)).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey())).thenReturn(summary);
 
-        presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(instanceKey,
-                                                                                    null,
-                                                                                    null,
-                                                                                    false));
+        presenter.setProcessInstance(processInstance);
 
         presenter.onTimerInstanceReschedule(timer);
 
-        verify(processService).rescheduleTimerInstance(instanceKey,
+        verify(processService).rescheduleTimerInstance(processInstance.getProcessInstanceKey(),
                                                        timer);
         verify(notificationEvent).fire(any());
     }

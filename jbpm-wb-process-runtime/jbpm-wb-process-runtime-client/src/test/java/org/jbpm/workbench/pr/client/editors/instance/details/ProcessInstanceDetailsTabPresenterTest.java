@@ -20,7 +20,6 @@ import java.util.Date;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
-import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.UserTaskSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
@@ -33,8 +32,8 @@ import org.mockito.Mock;
 import org.uberfire.mocks.CallerMock;
 
 import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -65,19 +64,13 @@ public class ProcessInstanceDetailsTabPresenterTest {
     public void setUp() {
         presenter.setProcessRuntimeDataService(new CallerMock<>(processRuntimeDataServiceMock));
         nodeInstanceSummary = getNodeInstanceSummary();
-        final ProcessInstanceKey processInstanceKey = new ProcessInstanceKey(SERVER_TEMPLATE_ID,
-                                                                             DEPLOYMENT_ID,
-                                                                             PROCESS_INSTANCE_ID);
-        when(processRuntimeDataServiceMock.getProcessInstanceActiveNodes(processInstanceKey)).thenReturn(singletonList(nodeInstanceSummary));
         processInstanceSummary = getProcessInstanceSummary();
-        when(processRuntimeDataServiceMock.getProcessInstance(processInstanceKey)).thenReturn(processInstanceSummary);
+        when(processRuntimeDataServiceMock.getProcessInstanceActiveNodes(processInstanceSummary.getProcessInstanceKey())).thenReturn(singletonList(nodeInstanceSummary));
     }
 
     @Test
     public void setProcessInstanceDetailsTest() {
-        presenter.refreshProcessInstanceDataRemote(DEPLOYMENT_ID,
-                                                   PROCESS_INSTANCE_ID.toString(),
-                                                   SERVER_TEMPLATE_ID);
+        presenter.setProcessInstance(processInstanceSummary);
 
         verify(view).setProcessDefinitionIdText(processInstanceSummary.getProcessId());
         verify(view).setStateText(Constants.INSTANCE.Active());
@@ -121,6 +114,7 @@ public class ProcessInstanceDetailsTabPresenterTest {
 
     private ProcessInstanceSummary getProcessInstanceSummary() {
         ProcessInstanceSummary processInstanceSummary = new ProcessInstanceSummary();
+        processInstanceSummary.setServerTemplateId(SERVER_TEMPLATE_ID);
         processInstanceSummary.setProcessId(PROCESS_ID);
         processInstanceSummary.setState(ACTIVE_STATE);
         processInstanceSummary.setDeploymentId(DEPLOYMENT_ID);

@@ -20,14 +20,13 @@ import java.util.List;
 
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.workbench.common.service.GenericServiceEntryPoint;
+import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessVariableKey;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 
 @Remote
 public interface ProcessVariablesService extends GenericServiceEntryPoint<ProcessVariableKey, ProcessVariableSummary> {
 
-    List<ProcessVariableSummary> getVariableHistory(String serverTemplateId,
-                                                    String deploymentId,
-                                                    Long processInstanceId,
+    List<ProcessVariableSummary> getVariableHistory(ProcessInstanceKey processInstance,
                                                     String variableName);
 }

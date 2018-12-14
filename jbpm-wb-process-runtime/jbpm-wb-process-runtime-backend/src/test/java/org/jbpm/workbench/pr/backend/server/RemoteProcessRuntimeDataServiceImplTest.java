@@ -451,8 +451,6 @@ public class RemoteProcessRuntimeDataServiceImplTest {
                      summary.getId());
         assertEquals(processName,
                      summary.getName());
-        assertEquals(state,
-                     summary.getProcessInstanceState());
         assertEquals(svgContent,
                      summary.getSvgContent());
 
@@ -493,8 +491,6 @@ public class RemoteProcessRuntimeDataServiceImplTest {
                      summary.getId());
         assertEquals(processName,
                      summary.getName());
-        assertEquals(state,
-                     summary.getProcessInstanceState());
         assertEquals(svgContent,
                      summary.getSvgContent());
         assertThat(summary.getProcessNodes()).isEmpty();

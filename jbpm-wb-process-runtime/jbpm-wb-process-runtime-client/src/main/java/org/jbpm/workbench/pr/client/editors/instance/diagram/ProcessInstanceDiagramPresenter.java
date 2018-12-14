@@ -27,12 +27,12 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.util.DateUtils;
+import org.jbpm.workbench.pr.client.editors.instance.ProcessInstanceSummaryAware;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
-import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceDiagramSummary;
-import org.jbpm.workbench.pr.model.ProcessInstanceKey;
+import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessNodeSummary;
 import org.jbpm.workbench.pr.model.TimerInstanceSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
@@ -45,16 +45,14 @@ import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 @Dependent
-public class ProcessInstanceDiagramPresenter {
+public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAware {
 
     private Constants constants = Constants.INSTANCE;
 
     private Caller<ProcessRuntimeDataService> processService;
     private List<ProcessNodeSummary> processNodes;
-    private ProcessInstanceKey processInstance;
-    private ProcessDefinitionKey processDefinition;
+    private ProcessInstanceSummary processInstance;
     private boolean forLog;
-    private Integer processInstanceState;
 
     @Inject
     private TimerInstanceRescheduleView rescheduleView;
@@ -73,13 +71,11 @@ public class ProcessInstanceDiagramPresenter {
         view.setOnProcessNodeSelectedCallback(id -> onProcessNodeSelected(id));
     }
 
-    public void onProcessInstanceSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
+    @Override
+    public void setProcessInstance(ProcessInstanceSummary processInstance) {
         view.showBusyIndicator(constants.Loading());
 
-        processInstance = event.getProcessInstanceKey();
-        processDefinition = event.getProcessDefinitionKey();
-        forLog = event.isForLog();
-        processInstanceState = event.getProcessInstanceStatus();
+        this.processInstance = processInstance;
 
         processNodes = emptyList();
         view.setProcessNodes(processNodes);
@@ -87,6 +83,10 @@ public class ProcessInstanceDiagramPresenter {
         view.setTimerInstances(emptyList());
 
         loadProcessInstanceDetails();
+    }
+
+    public void onProcessInstanceSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
+        forLog = event.isForLog();
     }
 
     protected void loadProcessInstanceDetails() {
@@ -128,12 +128,11 @@ public class ProcessInstanceDiagramPresenter {
 
             view.setTimerInstances(timerInstances);
 
-            if (summary.getProcessInstanceState() != ProcessInstance.STATE_ACTIVE) {
+            if (forLog || processInstance.getState() != ProcessInstance.STATE_ACTIVE) {
                 view.hideNodeActions();
             }
 
-            processInstanceState = summary.getProcessInstanceState();
-        }).getProcessInstanceDiagramSummary(processInstance);
+        }).getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey());
     }
 
     public void displayImage(final String svgContent,
@@ -173,14 +172,12 @@ public class ProcessInstanceDiagramPresenter {
                                                     NotificationEvent.NotificationType.SUCCESS));
             view.setValue(new ProcessNodeSummary());
             refreshDetails();
-        }).triggerProcessInstanceNode(processInstance,
+        }).triggerProcessInstanceNode(processInstance.getProcessInstanceKey(),
                                       node.getId());
     }
 
     protected void refreshDetails() {
-        processInstanceEvent.fire(new ProcessInstanceSelectionEvent(processInstance,
-                                                                    processDefinition,
-                                                                    processInstanceState,
+        processInstanceEvent.fire(new ProcessInstanceSelectionEvent(processInstance.getProcessInstanceKey(),
                                                                     forLog));
     }
 
@@ -189,7 +186,7 @@ public class ProcessInstanceDiagramPresenter {
             notification.fire(new NotificationEvent(constants.NodeInstanceReTriggered(node.getLabel()),
                                                     NotificationEvent.NotificationType.SUCCESS));
             refreshDetails();
-        }).reTriggerProcessInstanceNode(processInstance,
+        }).reTriggerProcessInstanceNode(processInstance.getProcessInstanceKey(),
                                         node.getId());
     }
 
@@ -198,7 +195,7 @@ public class ProcessInstanceDiagramPresenter {
             notification.fire(new NotificationEvent(constants.NodeInstanceCancelled(node.getLabel()),
                                                     NotificationEvent.NotificationType.SUCCESS));
             refreshDetails();
-        }).cancelProcessInstanceNode(processInstance,
+        }).cancelProcessInstanceNode(processInstance.getProcessInstanceKey(),
                                      node.getId());
     }
 
@@ -207,7 +204,7 @@ public class ProcessInstanceDiagramPresenter {
             notification.fire(new NotificationEvent(constants.TimerInstanceRescheduled(summary.getLabel()),
                                                     NotificationEvent.NotificationType.SUCCESS));
             refreshDetails();
-        }).rescheduleTimerInstance(processInstance,
+        }).rescheduleTimerInstance(processInstance.getProcessInstanceKey(),
                                    summary);
     }
 

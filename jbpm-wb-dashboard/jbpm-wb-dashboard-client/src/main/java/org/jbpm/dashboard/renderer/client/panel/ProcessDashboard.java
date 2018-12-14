@@ -37,12 +37,12 @@ import org.dashbuilder.displayer.client.DisplayerListener;
 import org.dashbuilder.displayer.client.DisplayerLocator;
 import org.dashbuilder.renderer.client.metric.MetricDisplayer;
 import org.dashbuilder.renderer.client.table.TableDisplayer;
+import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
+import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.common.events.ServerTemplateSelected;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
-import org.jbpm.dashboard.renderer.client.panel.formatter.DurationFormatter;
-import org.jbpm.dashboard.renderer.client.panel.widgets.ProcessBreadCrumb;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -330,26 +330,15 @@ public class ProcessDashboard extends AbstractDashboard {
                                             COLUMN_PROCESS_EXTERNAL_ID).toString();
         Long processInstanceId = Double.valueOf(ds.getValueAt(rowIndex,
                                                               COLUMN_PROCESS_INSTANCE_ID).toString()).longValue();
-        String processDefId = ds.getValueAt(rowIndex,
-                                            COLUMN_PROCESS_ID).toString();
-        String processDefName = ds.getValueAt(rowIndex,
-                                              COLUMN_PROCESS_NAME).toString();
-        Integer processInstanceStatus = Double.valueOf(ds.getValueAt(rowIndex,
-                                                                     COLUMN_PROCESS_STATUS).toString()).intValue();
-
         openProcessDetailsScreen();
         setupDetailBreadcrumb(i18n.processDashboardName(),
                               i18n.ProcessInstanceBreadcrumb(processInstanceId),
                               PROCESS_INSTANCE_DETAILS_SCREEN);
 
-        instanceSelectionEvent.fire(new ProcessInstanceSelectionEvent(
-                deploymentId,
-                processInstanceId,
-                processDefId,
-                processDefName,
-                processInstanceStatus,
-                true,
-                serverTemplateSelectorMenuBuilder.getSelectedServerTemplateId()));
+        instanceSelectionEvent.fire(new ProcessInstanceSelectionEvent(serverTemplateSelectorMenuBuilder.getSelectedServerTemplateId(),
+                                                                      deploymentId,
+                                                                      processInstanceId,
+                                                                      true));
     }
 
     public void showDashboard() {

@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
@@ -37,10 +36,11 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.service.TaskService;
+import org.jbpm.workbench.pr.client.editors.instance.ProcessInstanceSummaryAware;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.client.util.LogUtils;
-import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
+import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.WorkItemSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 
@@ -49,7 +49,7 @@ import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.COL
 import static org.jbpm.workbench.pr.model.ProcessInstanceLogDataSetConstants.COLUMN_LOG_TYPE;
 
 @Dependent
-public class ProcessInstanceLogPresenter extends AbstractMultiGridPresenter<ProcessInstanceLogSummary, ProcessInstanceLogPresenter.ProcessInstanceLogView> {
+public class ProcessInstanceLogPresenter extends AbstractMultiGridPresenter<ProcessInstanceLogSummary, ProcessInstanceLogPresenter.ProcessInstanceLogView> implements ProcessInstanceSummaryAware {
 
     public static final int PAGE_SIZE = 10;
     private Constants constants = Constants.INSTANCE;
@@ -61,10 +61,9 @@ public class ProcessInstanceLogPresenter extends AbstractMultiGridPresenter<Proc
 
     private Caller<ProcessRuntimeDataService> processRuntimeDataService;
 
-    private String serverTemplateId;
-    private String containerId;
-    private Long processInstanceId;
-    int currentPage = 0;
+    private ProcessInstanceSummary processInstance;
+
+    private Integer currentPage = 0;
 
     List<ProcessInstanceLogSummary> visibleLogs = new ArrayList<ProcessInstanceLogSummary>();
 
@@ -114,10 +113,6 @@ public class ProcessInstanceLogPresenter extends AbstractMultiGridPresenter<Proc
         return processInstanceLogBasicFiltersPresenter.getView().getElement();
     }
 
-    public void setServerTemplateId(String serverTemplateId) {
-        this.serverTemplateId = serverTemplateId;
-    }
-
     public DataSetQueryHelper getDataSetQueryHelper() {
         return logsDataSetQueryHelper;
     }
@@ -125,7 +120,7 @@ public class ProcessInstanceLogPresenter extends AbstractMultiGridPresenter<Proc
     public void loadProcessInstanceLogs() {
         try {
             final FilterSettings currentTableSettings = logsDataSetQueryHelper.getCurrentTableSettings();
-            currentTableSettings.setServerTemplateId(this.serverTemplateId);
+            currentTableSettings.setServerTemplateId(this.processInstance.getServerTemplateId());
             currentTableSettings.setTablePageSize(getPageSize());
             logsDataSetQueryHelper.setCurrentTableSettings(currentTableSettings);
             logsDataSetQueryHelper.setDataSetHandler(currentTableSettings);
@@ -170,8 +165,8 @@ public class ProcessInstanceLogPresenter extends AbstractMultiGridPresenter<Proc
                 (TaskSummary task) -> {
                     workItemView.setTaskDetailsData(task,
                                                     logDate);
-                }).getTaskByWorkItemId(serverTemplateId,
-                                       containerId,
+                }).getTaskByWorkItemId(processInstance.getServerTemplateId(),
+                                       processInstance.getDeploymentId(),
                                        workItemId);
     }
 
@@ -180,19 +175,18 @@ public class ProcessInstanceLogPresenter extends AbstractMultiGridPresenter<Proc
         processRuntimeDataService.call(
                 (WorkItemSummary workItemSummary) -> {
                     workItemView.setDetailsData(workItemSummary);
-                }).getWorkItemByProcessInstanceId(serverTemplateId,
-                                                  containerId,
-                                                  processInstanceId,
+                }).getWorkItemByProcessInstanceId(processInstance.getServerTemplateId(),
+                                                  processInstance.getDeploymentId(),
+                                                  processInstance.getProcessInstanceId(),
                                                   workItemId);
     }
 
-    public void onProcessInstanceSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
-        this.serverTemplateId = event.getServerTemplateId();
-        this.containerId = event.getDeploymentId();
-        this.processInstanceId = event.getProcessInstanceId();
+    @Override
+    public void setProcessInstance(ProcessInstanceSummary processInstance) {
+        this.processInstance = processInstance;
         if (logsDataSetQueryHelper.getCurrentTableSettings() == null) {
             logsDataSetQueryHelper.setCurrentTableSettings(
-                    filterSettingsManager.createDefaultFilterSettingsPrototype(event.getProcessInstanceId()));
+                    filterSettingsManager.createDefaultFilterSettingsPrototype(processInstance.getProcessInstanceId()));
             setupDefaultActiveSearchFilters();
         } else {
             refreshGrid();
