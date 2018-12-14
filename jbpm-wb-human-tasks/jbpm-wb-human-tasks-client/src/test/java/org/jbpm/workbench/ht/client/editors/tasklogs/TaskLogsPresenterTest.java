@@ -232,7 +232,9 @@ public class TaskLogsPresenterTest extends AbstractTaskPresenterTest {
         return summaryList;
     }
 
-    private Date createDate(int year, Month month, int day) {
+    private Date createDate(int year,
+                            Month month,
+                            int day) {
         LocalDate localDate = LocalDate.of(year, month, day);
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }

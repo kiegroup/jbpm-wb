@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workbench.common.client.util;
+package org.jbpm.workbench.common.client.logs;
 
 import java.util.Date;
 
@@ -24,6 +24,8 @@ import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jbpm.workbench.common.client.util.AbstractView;
+import org.jbpm.workbench.common.client.util.DateUtils;
 
 public abstract class AbstractLogItemView<T> extends AbstractView<T> {
 
