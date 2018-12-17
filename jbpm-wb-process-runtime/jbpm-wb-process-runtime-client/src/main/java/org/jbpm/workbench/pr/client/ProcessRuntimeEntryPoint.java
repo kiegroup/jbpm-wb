@@ -29,5 +29,6 @@ public class ProcessRuntimeEntryPoint {
     @PostConstruct
     public void init() {
         PatternFlyBootstrapper.ensurePatternFlyIsAvailable();
+        PatternFlyBootstrapper.ensureD3IsAvailable();
     }
 }
