@@ -68,7 +68,8 @@ public class KieWorkbenchFormsStartProcessDisplayerTest extends AbstractStartPro
         ProcessDefinitionKey processDefinitionKey = new ProcessDefinitionKey( "test-serverTemplateId",
                                                                               "test-deploymentId",
                                                                               "test-processId",
-                                                                              "test-processDefName");
+                                                                              "test-processDefName",
+                                                                              false);
         ProcessDisplayerConfig processDisplayerConfig = new ProcessDisplayerConfig(processDefinitionKey,
                                                             "test");
         processDisplayerConfig.setRenderingSettings(formRenderingSettings);

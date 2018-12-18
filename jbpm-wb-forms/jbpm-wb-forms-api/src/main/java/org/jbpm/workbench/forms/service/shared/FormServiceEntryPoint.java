@@ -28,5 +28,6 @@ public interface FormServiceEntryPoint {
 
     FormRenderingSettings getFormDisplayProcess(String serverTemplateId,
                                                 String domainId,
-                                                String processId);
+                                                String processId,
+                                                boolean isDynamic);
 }

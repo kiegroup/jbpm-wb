@@ -15,15 +15,17 @@
  */
 package org.jbpm.workbench.pr.client.editors.definition.list;
 
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.PROCESS_INSTANCES;
+
 import java.util.List;
 import java.util.function.Predicate;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.view.client.Range;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.PerspectiveIds;
@@ -35,10 +37,12 @@ import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplay
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
+import org.jbpm.workbench.pr.events.NewCaseInstanceEvent;
 import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
+import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
@@ -54,8 +58,8 @@ import org.uberfire.workbench.model.ActivityResourceType;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.PROCESS_INSTANCES;
+import com.google.gwt.user.cellview.client.ColumnSortList;
+import com.google.gwt.view.client.Range;
 
 @Dependent
 @WorkbenchScreen(identifier = PerspectiveIds.PROCESS_DEFINITION_LIST_SCREEN)
@@ -117,12 +121,14 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
     public void openGenericForm(final String processDefId,
                                 final String deploymentId,
-                                final String processDefName) {
+                                final String processDefName,
+                                final boolean isDynamic) {
 
         ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(getSelectedServerTemplate(),
                                                                                             deploymentId,
                                                                                             processDefId,
-                                                                                            processDefName),
+                                                                                            processDefName,
+                                                                                            isDynamic),
                                                                    processDefName);
 
         formDisplayPopUp.setTitle(processDefName);
@@ -214,13 +220,32 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                                                                        newProcessInstance.getNewProcessInstanceId(),
                                                                        false));
     }
+    
+    public void refreshNewCaseInstance(@Observes NewCaseInstanceEvent newCaseInstance) {
+                
+        processRuntimeDataService.call((ProcessInstanceSummary newProcessInstance) -> {
+            setupDetailBreadcrumb(placeManager,
+                                  commonConstants.Manage_Process_Definitions(),
+                                  constants.ProcessInstanceBreadcrumb(newProcessInstance.getId()),
+                                  PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
+            placeManager.goTo(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
+            processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getServerTemplateId(),
+                                                                           newProcessInstance.getDeploymentId(),
+                                                                           newProcessInstance.getId(),
+                                                                           false));
+            },
+            (Message message, Throwable throwable) -> onRuntimeDataServiceError(throwable)
+        ).getProcessInstanceByCorrelationKey(newCaseInstance.getServerTemplateId(), newCaseInstance.getNewCaseId());
+        
+        
+    }
 
     public Predicate<ProcessSummary> getViewProcessInstanceActionCondition() {
         return pis -> isUserAuthorizedForPerspective(PROCESS_INSTANCES);
     }
 
     public Predicate<ProcessSummary> getStartCondition() {
-        return processSummary -> !processSummary.isDynamic();
+        return processSummary -> !processSummary.isDynamic() || (processSummary.isDynamic() && processSummary.isDynamicFormsEnabled());
     }
 
     public void viewProcessInstances(String processDefId) {

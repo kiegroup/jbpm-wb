@@ -108,4 +108,9 @@ public class KieWorkbenchFormsHumanTaskDisplayer extends AbstractHumanTaskFormDi
     public Class<KieWorkbenchFormRenderingSettings> getSupportedRenderingSettings() {
         return KieWorkbenchFormRenderingSettings.class;
     }
+
+    @Override
+    public boolean appendFooter() {
+        return true;
+    }
 }

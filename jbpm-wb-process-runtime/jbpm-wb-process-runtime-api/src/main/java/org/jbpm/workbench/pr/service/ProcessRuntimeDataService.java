@@ -74,4 +74,7 @@ public interface ProcessRuntimeDataService {
 
     void rescheduleTimerInstance(ProcessInstanceKey processInstanceKey,
                                  TimerInstanceSummary summary);
+
+    ProcessInstanceSummary getProcessInstanceByCorrelationKey(String serverTemplateId,
+                                                              String correlationKey);                                 
 }

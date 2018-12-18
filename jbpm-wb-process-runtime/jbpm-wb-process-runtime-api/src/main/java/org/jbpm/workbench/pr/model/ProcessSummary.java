@@ -34,6 +34,8 @@ public class ProcessSummary extends GenericSummary<String> {
     private Map<String, String> serviceTasks;
     private Map<String, String> processVariables;
     private Collection<String> reusableSubProcesses;
+    
+    private boolean dynamicFormsEnabled;
 
     public ProcessSummary() {
     }
@@ -124,6 +126,14 @@ public class ProcessSummary extends GenericSummary<String> {
         this.dynamic = dynamic;
     }
 
+    public boolean isDynamicFormsEnabled() {
+        return dynamicFormsEnabled;
+    }
+
+    public void setDynamicFormsEnabled(boolean dynamicFormsEnabled) {
+        this.dynamicFormsEnabled = dynamicFormsEnabled;
+    }
+
     @Override
     public String toString() {
         return "ProcessSummary{" +
@@ -138,4 +148,5 @@ public class ProcessSummary extends GenericSummary<String> {
                 ", reusableSubProcesses=" + reusableSubProcesses +
                 '}';
     }
+
 }

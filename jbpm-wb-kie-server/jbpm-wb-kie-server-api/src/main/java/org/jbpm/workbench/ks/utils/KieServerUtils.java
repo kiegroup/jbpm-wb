@@ -38,6 +38,8 @@ import static org.kie.server.common.KeyStoreHelperUtil.loadServerPassword;
 public class KieServerUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KieServerUtils.class);
+    
+    private static boolean KIE_SERVER_FORM_RENDERER = Boolean.parseBoolean(System.getProperty("org.jbpm.wb.forms.renderer.ext", "false"));
 
     public static KieServicesClient createKieServicesClient(final String... capabilities) {
         final String kieServerEndpoint = System.getProperty(KieServerConstants.KIE_SERVER_LOCATION);
@@ -95,7 +97,7 @@ public class KieServerUtils {
         if (capabilities != null) {
             configuration.setCapabilities(Arrays.asList(capabilities));
         }
-        configuration.setMarshallingFormat(MarshallingFormat.XSTREAM);
+        configuration.setMarshallingFormat(isKieServerRendererEnabled() ? MarshallingFormat.JSON : MarshallingFormat.XSTREAM);
         configuration.setLoadBalancer(LoadBalancer.getDefault(endpoint));
 
         KieServicesClient kieServicesClient;
@@ -131,5 +133,9 @@ public class KieServerUtils {
                                                                      "kieserver"),
                                                   loadServerPassword());
         }
+    }
+    
+    public static boolean isKieServerRendererEnabled() {
+        return KIE_SERVER_FORM_RENDERER;
     }
 }

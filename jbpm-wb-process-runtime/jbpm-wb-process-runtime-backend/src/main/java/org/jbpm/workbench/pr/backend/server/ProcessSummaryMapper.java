@@ -18,6 +18,7 @@ package org.jbpm.workbench.pr.backend.server;
 
 import java.util.function.Function;
 
+import org.jbpm.workbench.ks.utils.KieServerUtils;
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.kie.server.api.model.definition.ProcessDefinition;
 
@@ -39,6 +40,8 @@ public class ProcessSummaryMapper implements Function<ProcessDefinition, Process
         summary.setProcessVariables(definition.getProcessVariables());
         summary.setReusableSubProcesses(definition.getReusableSubProcesses());
         summary.setServiceTasks(definition.getServiceTasks());
+        
+        summary.setDynamicFormsEnabled(KieServerUtils.isKieServerRendererEnabled());
 
         return summary;
     }

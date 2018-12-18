@@ -14,22 +14,31 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.forms.client.display.api;
+package org.jbpm.workbench.forms.display.api;
 
-import java.util.Map;
-
-import com.google.gwt.user.client.ui.IsWidget;
+import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.workbench.forms.display.FormRenderingSettings;
-import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
-import org.jbpm.workbench.forms.client.display.GenericFormDisplayer;
 
-public interface StartProcessFormDisplayer<S extends FormRenderingSettings> extends GenericFormDisplayer<ProcessDefinitionKey, S> {
+@Portable
+public class KieServerFormRenderingSettings implements FormRenderingSettings {
 
-    IsWidget getFormWidget();
+    protected String url;
 
-    void startProcessFromDisplayer();
+    public KieServerFormRenderingSettings() {
 
-    void startProcess(Map<String, Object> params);
-    
+    }
+
+    public KieServerFormRenderingSettings(String url) {
+        super();
+        this.url = url;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
 }

@@ -202,7 +202,8 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
 
         ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(serverTemplateId,
                                                                                             deploymentId,
-                                                                                            processId),
+                                                                                            processId,
+                                                                                            false),
                                                                    processId);
         startProcessDisplayProvider.setup(config,
                                           this);
@@ -255,11 +256,13 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
                 .setParentProcessInstanceId(this.parentProcessInstanceId);
 
         removeFooter(this);
-        footer = new GenericModalFooter();
-
-        footer.add(displayer.getFooter());
-
-        add(footer);
+        if (displayer.appendFooter()) {
+            footer = new GenericModalFooter();
+    
+            footer.add(displayer.getFooter());
+    
+            add(footer);
+        }
 
         initialized = true;
     }

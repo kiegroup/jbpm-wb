@@ -123,8 +123,7 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
                                         });
         startButton.setType(ButtonType.PRIMARY);
         footerButtons.add(startButton);
-
-        processName = config.getKey().getProcessDefName();
+        
         FocusPanel wrapperFlowPanel = new FocusPanel();
         wrapperFlowPanel.setStyleName("wrapper form-actions");
 
@@ -195,6 +194,7 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
         this.serverTemplateId = config.getKey().getServerTemplateId();
         this.deploymentId = config.getKey().getDeploymentId();
         this.processDefId = config.getKey().getProcessId();
+        this.processName = config.getKey().getProcessDefName();
         this.renderingSettings = config.getRenderingSettings();
         this.onClose = onClose;
         this.onRefresh = onRefreshCommand;
