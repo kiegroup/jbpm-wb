@@ -139,19 +139,20 @@ public class ProcessInstanceDiagramPresenterTest {
         assertThat(nodesCaptor.getAllValues().get(0)).isEmpty();
         final List<ProcessNodeSummary> viewNodes = nodesCaptor.getAllValues().get(1);
         assertThat(viewNodes).hasSameSizeAs(nodes);
-        assertThat(viewNodes.get(0).getLabel()).isEqualTo("1-StartNode");
-        assertThat(viewNodes.get(0).getName()).isEqualTo(" ");
-        assertThat(viewNodes.get(0).getType()).isEqualTo("StartNode");
-        assertThat(viewNodes.get(0).getCallbacks()).isNullOrEmpty();
 
-        assertThat(viewNodes.get(1).getLabel()).isEqualTo("2-task-name");
-        assertThat(viewNodes.get(1).getName()).isEqualTo("task-name");
-        assertThat(viewNodes.get(1).getType()).isEqualTo("HumanTask");
-        assertThat(viewNodes.get(1).getCallbacks()).hasSize(1);
+        assertThat(viewNodes.get(0).getLabel()).isEqualTo("Split-3");
+        assertThat(viewNodes.get(0).getName()).isEqualTo("Split");
+        assertThat(viewNodes.get(0).getType()).isEqualTo("Split");
+        assertThat(viewNodes.get(0).getCallbacks()).hasSize(1);
 
-        assertThat(viewNodes.get(2).getLabel()).isEqualTo("3-Split");
-        assertThat(viewNodes.get(2).getName()).isEqualTo(" ");
-        assertThat(viewNodes.get(2).getType()).isEqualTo("Split");
+        assertThat(viewNodes.get(1).getLabel()).isEqualTo("StartNode-1");
+        assertThat(viewNodes.get(1).getName()).isEqualTo("StartNode");
+        assertThat(viewNodes.get(1).getType()).isEqualTo("StartNode");
+        assertThat(viewNodes.get(1).getCallbacks()).isNullOrEmpty();
+
+        assertThat(viewNodes.get(2).getLabel()).isEqualTo("task-name-2");
+        assertThat(viewNodes.get(2).getName()).isEqualTo("task-name");
+        assertThat(viewNodes.get(2).getType()).isEqualTo("HumanTask");
         assertThat(viewNodes.get(2).getCallbacks()).hasSize(1);
 
         ArgumentCaptor<List> nodeInstancesCaptor = ArgumentCaptor.forClass(List.class);
@@ -162,29 +163,29 @@ public class ProcessInstanceDiagramPresenterTest {
         final List<NodeInstanceSummary> viewNodeInstances = nodeInstancesCaptor.getAllValues().get(1);
         assertThat(viewNodeInstances).hasSameSizeAs(nodeInstances);
 
-        assertThat(viewNodeInstances.get(0).getLabel()).isEqualTo("1-name-1");
-        assertThat(viewNodeInstances.get(0).getName()).isEqualTo("name-1");
-        assertThat(viewNodeInstances.get(0).getType()).isEqualTo("HumanTask");
-        assertThat(viewNodeInstances.get(0).getDescription()).startsWith("Started");
-        assertThat(viewNodeInstances.get(0).getCallbacks()).hasSize(2);
+        assertThat(viewNodeInstances.get(0).getLabel()).isEqualTo("End-4");
+        assertThat(viewNodeInstances.get(0).getName()).isEqualTo("End");
+        assertThat(viewNodeInstances.get(0).getType()).isEqualTo("End");
+        assertThat(viewNodeInstances.get(0).getDescription()).startsWith("Completed");
+        assertThat(viewNodeInstances.get(0).getCallbacks()).isNullOrEmpty();
 
-        assertThat(viewNodeInstances.get(1).getLabel()).isEqualTo("2-Split");
-        assertThat(viewNodeInstances.get(1).getName()).isEqualTo(" ");
-        assertThat(viewNodeInstances.get(1).getType()).isEqualTo("Split");
+        assertThat(viewNodeInstances.get(1).getLabel()).isEqualTo("name-1-1");
+        assertThat(viewNodeInstances.get(1).getName()).isEqualTo("name-1");
+        assertThat(viewNodeInstances.get(1).getType()).isEqualTo("HumanTask");
         assertThat(viewNodeInstances.get(1).getDescription()).startsWith("Started");
         assertThat(viewNodeInstances.get(1).getCallbacks()).hasSize(2);
 
-        assertThat(viewNodeInstances.get(2).getLabel()).isEqualTo("3-name-3");
+        assertThat(viewNodeInstances.get(2).getLabel()).isEqualTo("name-3-3");
         assertThat(viewNodeInstances.get(2).getName()).isEqualTo("name-3");
         assertThat(viewNodeInstances.get(2).getType()).isEqualTo("HumanTask");
         assertThat(viewNodeInstances.get(2).getDescription()).startsWith("Completed");
         assertThat(viewNodeInstances.get(2).getCallbacks()).isNullOrEmpty();
 
-        assertThat(viewNodeInstances.get(3).getLabel()).isEqualTo("4-End");
-        assertThat(viewNodeInstances.get(3).getName()).isEqualTo(" ");
-        assertThat(viewNodeInstances.get(3).getType()).isEqualTo("End");
-        assertThat(viewNodeInstances.get(3).getDescription()).startsWith("Completed");
-        assertThat(viewNodeInstances.get(3).getCallbacks()).isNullOrEmpty();
+        assertThat(viewNodeInstances.get(3).getLabel()).isEqualTo("Split-2");
+        assertThat(viewNodeInstances.get(3).getName()).isEqualTo("Split");
+        assertThat(viewNodeInstances.get(3).getType()).isEqualTo("Split");
+        assertThat(viewNodeInstances.get(3).getDescription()).startsWith("Started");
+        assertThat(viewNodeInstances.get(3).getCallbacks()).hasSize(2);
 
         ArgumentCaptor<List> timerInstancesCaptor = ArgumentCaptor.forClass(List.class);
         verify(view,
@@ -194,12 +195,12 @@ public class ProcessInstanceDiagramPresenterTest {
         final List<TimerInstanceSummary> viewTimerInstances = timerInstancesCaptor.getAllValues().get(1);
         assertThat(viewTimerInstances).hasSameSizeAs(timerInstances);
 
-        assertThat(viewTimerInstances.get(0).getLabel()).isEqualTo("1-t1");
+        assertThat(viewTimerInstances.get(0).getLabel()).isEqualTo("t1-1");
         assertThat(viewTimerInstances.get(0).getName()).isEqualTo("t1");
         assertThat(viewTimerInstances.get(0).getDescription()).startsWith("NextExecution");
         assertThat(viewTimerInstances.get(0).getCallbacks()).hasSize(1);
 
-        assertThat(viewTimerInstances.get(1).getLabel()).isEqualTo("2-t2");
+        assertThat(viewTimerInstances.get(1).getLabel()).isEqualTo("t2-2");
         assertThat(viewTimerInstances.get(1).getName()).isEqualTo("t2");
         assertThat(viewTimerInstances.get(1).getDescription()).startsWith("NextExecution");
         assertThat(viewTimerInstances.get(1).getCallbacks()).hasSize(1);

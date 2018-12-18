@@ -117,8 +117,13 @@ public class NodeInstanceSummary extends GenericSummary<Long> {
         this.completed = completed;
     }
 
+    @Override
+    public String getName() {
+        return (super.getName() == null || super.getName().trim().isEmpty() ? getType() : super.getName());
+    }
+
     public String getLabel() {
-        return getId() + "-" + (getName() == null || getName().trim().isEmpty() ? getType() : getName());
+        return getName() + "-" + getId();
     }
 
     public Long getReferenceId() {

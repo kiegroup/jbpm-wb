@@ -45,8 +45,13 @@ public class ProcessNodeSummary extends GenericSummary<Long> {
         this.type = type;
     }
 
-    public String getLabel(){
-        return getId() + "-" + (getName() == null || getName().trim().isEmpty() ? getType() : getName());
+    @Override
+    public String getName() {
+        return (super.getName() == null || super.getName().trim().isEmpty() ? getType() : super.getName());
+    }
+
+    public String getLabel() {
+        return getName() + "-" + getId();
     }
 
     @Override
