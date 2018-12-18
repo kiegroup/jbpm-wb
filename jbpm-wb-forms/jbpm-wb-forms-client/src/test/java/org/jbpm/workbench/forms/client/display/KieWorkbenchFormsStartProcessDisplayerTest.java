@@ -18,6 +18,7 @@ package org.jbpm.workbench.forms.client.display;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.forms.client.display.displayer.KieWorkbenchFormDisplayer;
 import org.jbpm.workbench.forms.client.display.displayers.pr.AbstractStartProcessFormDisplayerTest;
 import org.jbpm.workbench.forms.client.display.process.AbstractStartProcessFormDisplayer;
 import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
@@ -39,9 +40,8 @@ import static org.mockito.Mockito.when;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class KieWorkbenchFormsStartProcessDisplayerTest extends AbstractStartProcessFormDisplayerTest {
-
     @Mock
-    protected DynamicFormRenderer formRenderer;
+    protected KieWorkbenchFormDisplayer displayer;
 
     //Specific setting for Issue: JBPM-5333
     @Mock
@@ -58,7 +58,7 @@ public class KieWorkbenchFormsStartProcessDisplayerTest extends AbstractStartPro
 
     @Test
     public void testStartProcessFromDisplayer() {
-        when(formRenderer.isValid()).thenReturn(true);
+        when(displayer.isValid()).thenReturn(true);
         when(formRenderingSettings.getTimestamp()).thenReturn(100000l);
 
         MapModelRenderingContext mapModelRenderingContext = mock(MapModelRenderingContext.class);

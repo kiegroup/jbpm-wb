@@ -19,10 +19,12 @@ package org.jbpm.workbench.forms.client;
 import javax.annotation.PostConstruct;
 
 import org.jboss.errai.ioc.client.api.EntryPoint;
+import org.jboss.errai.ui.shared.api.annotations.Bundle;
 import org.jbpm.workbench.forms.client.resources.AppResources;
 import org.uberfire.client.views.pfly.sys.PatternFlyBootstrapper;
 
 @EntryPoint
+@Bundle("i18n/FormsConstants.properties")
 public class GenericFormsClientEntryPoint {
 
     @PostConstruct

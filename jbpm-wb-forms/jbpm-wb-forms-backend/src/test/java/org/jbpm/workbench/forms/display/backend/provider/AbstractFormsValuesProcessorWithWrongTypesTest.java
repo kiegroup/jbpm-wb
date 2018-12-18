@@ -61,15 +61,11 @@ import org.kie.workbench.common.forms.services.backend.serialization.impl.FormMo
 import org.mockito.Mock;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public abstract class AbstractFormsValuesProcessorWithWrongTypesTest<PROCESSOR extends KieWorkbenchFormsValuesProcessor<SETTINGS>, SETTINGS extends RenderingSettings> {
-
-    private static final String HTML_PARAM = "HTML_CODE";
-    private static final String HEADER = "<div class=\"alert alert-warning\" role=\"alert\"><span class=\"pficon pficon-warning-triangle-o\">";
 
     protected static final String SERVER_TEMPLATE_ID = "serverTemplateId";
 
@@ -154,6 +150,8 @@ public abstract class AbstractFormsValuesProcessorWithWrongTypesTest<PROCESSOR e
     protected void checkGeneratedContext() {
         assertNotNull(kieWorkbenchFormRenderingSettings);
 
+        assertTrue(kieWorkbenchFormRenderingSettings.isDefaultForms());
+
         MapModelRenderingContext formRenderingContext = kieWorkbenchFormRenderingSettings.getRenderingContext();
 
         assertNotNull(formRenderingContext);
@@ -190,18 +188,6 @@ public abstract class AbstractFormsValuesProcessorWithWrongTypesTest<PROCESSOR e
 
         Assertions.assertThat(formDefinition.getFieldByBinding(WRONG_TYPE))
                 .isNull();
-
-        LayoutComponent formHeader = formDefinition.getLayoutTemplate().getRows().get(0).getLayoutColumns().get(0).getLayoutComponents().get(0);
-
-        Assertions.assertThat(formHeader)
-                .isNotNull()
-                .hasFieldOrPropertyWithValue("dragTypeName", "org.uberfire.ext.plugin.client.perspective.editor.layout.editor.HTMLLayoutDragComponent");
-
-        String headerContent = formHeader.getProperties().get(HTML_PARAM);
-
-        Assertions.assertThat(headerContent)
-                .isNotNull()
-                .contains(HEADER);
     }
 
     abstract SETTINGS getRenderingSettingsWithoutForms();
