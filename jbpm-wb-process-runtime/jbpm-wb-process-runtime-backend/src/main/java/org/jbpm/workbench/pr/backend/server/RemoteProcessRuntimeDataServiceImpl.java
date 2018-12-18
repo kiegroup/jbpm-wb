@@ -16,30 +16,24 @@
 
 package org.jbpm.workbench.pr.backend.server;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.workbench.ks.integration.AbstractKieServerService;
-import org.jbpm.workbench.pr.model.NodeInstanceSummary;
-import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
-import org.jbpm.workbench.pr.model.ProcessInstanceKey;
-import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
-import org.jbpm.workbench.pr.model.ProcessSummary;
-import org.jbpm.workbench.pr.model.TaskDefSummary;
-import org.jbpm.workbench.pr.model.UserTaskSummary;
-import org.jbpm.workbench.pr.model.WorkItemSummary;
+import org.jbpm.workbench.pr.model.*;
+import org.jbpm.workbench.pr.service.ProcessImageService;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.kie.server.api.exception.KieServicesHttpException;
 import org.kie.server.api.model.definition.ProcessDefinition;
 import org.kie.server.api.model.definition.UserTaskDefinitionList;
 import org.kie.server.api.model.instance.NodeInstance;
 import org.kie.server.api.model.instance.ProcessInstance;
-import org.kie.server.api.model.instance.TaskSummary;
 import org.kie.server.api.model.instance.WorkItemInstance;
 import org.kie.server.client.ProcessServicesClient;
 import org.kie.server.client.QueryServicesClient;
+import org.kie.server.client.admin.ProcessAdminServicesClient;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -50,51 +44,183 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
 
     public static int NOT_FOUND_ERROR_CODE = 404;
 
+    @Inject
+    private ProcessImageService processImageService;
+
     @Override
-    public ProcessInstanceSummary getProcessInstance(String serverTemplateId,
-                                                     ProcessInstanceKey processInstanceKey) {
-        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+    public ProcessInstanceSummary getProcessInstance(ProcessInstanceKey processInstanceKey) {
+        if (processInstanceKey == null || processInstanceKey.isValid() == false) {
             return null;
         }
 
-        QueryServicesClient queryServicesClient = getClient(serverTemplateId,
+        QueryServicesClient queryServicesClient = getClient(processInstanceKey.getServerTemplateId(),
                                                             QueryServicesClient.class);
 
         ProcessInstance processInstance = queryServicesClient.findProcessInstanceById(processInstanceKey.getProcessInstanceId());
 
-        return build(processInstance);
+        return new ProcessInstanceSummaryMapper(processInstanceKey.getServerTemplateId()).apply(processInstance);
     }
 
     @Override
-    public List<NodeInstanceSummary> getProcessInstanceActiveNodes(String serverTemplateId,
-                                                                   String deploymentId,
-                                                                   Long processInstanceId) {
+    public List<NodeInstanceSummary> getProcessInstanceActiveNodes(ProcessInstanceKey processInstanceKey) {
+        if (processInstanceKey == null || processInstanceKey.isValid() == false) {
+            return emptyList();
+        }
+
+        QueryServicesClient queryServicesClient = getClient(processInstanceKey.getServerTemplateId(),
+                                                            QueryServicesClient.class);
+
+        List<NodeInstance> nodeInstances = queryServicesClient.findActiveNodeInstances(processInstanceKey.getProcessInstanceId(),
+                                                                                       0,
+                                                                                       Integer.MAX_VALUE);
+
+        return nodeInstances.stream().map(new NodeInstanceSummaryMapper()).collect(toList());
+    }
+
+    @Override
+    public List<NodeInstanceSummary> getProcessInstanceCompletedNodes(ProcessInstanceKey processInstanceKey) {
+        if (processInstanceKey == null || processInstanceKey.isValid() == false) {
+            return emptyList();
+        }
+
+        QueryServicesClient queryServicesClient = getClient(processInstanceKey.getServerTemplateId(),
+                                                            QueryServicesClient.class);
+
+        List<NodeInstance> nodeInstances = queryServicesClient.findCompletedNodeInstances(processInstanceKey.getProcessInstanceId(),
+                                                                                          0,
+                                                                                          Integer.MAX_VALUE);
+
+        return nodeInstances.stream().map(new NodeInstanceSummaryMapper()).collect(toList());
+    }
+
+    @Override
+    public ProcessInstanceDiagramSummary getProcessInstanceDiagramSummary(ProcessInstanceKey processInstanceKey) {
+        if (processInstanceKey == null || processInstanceKey.isValid() == false) {
+            return null;
+        }
+
+        final ProcessInstanceSummary processInstance = getProcessInstance(processInstanceKey);
+
+        ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
+        summary.setId(processInstance.getId());
+        summary.setName(processInstance.getName());
+
+        summary.setSvgContent(processImageService.getProcessInstanceDiagram(processInstanceKey.getServerTemplateId(),
+                                                                            processInstanceKey.getDeploymentId(),
+                                                                            processInstanceKey.getProcessInstanceId()));
+
+        if (processInstance.getState() == org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE) {
+            summary.setProcessNodes(getProcessInstanceNodes(processInstanceKey.getServerTemplateId(),
+                                                            processInstanceKey.getDeploymentId(),
+                                                            processInstanceKey.getProcessInstanceId()));
+            List<NodeInstanceSummary> nodeInstances = getProcessInstanceActiveNodes(processInstanceKey);
+            nodeInstances.addAll(getProcessInstanceCompletedNodes(processInstanceKey));
+            summary.setNodeInstances(nodeInstances);
+
+            summary.setTimerInstances(getProcessInstanceTimerInstances(processInstanceKey));
+        } else {
+            summary.setProcessNodes(emptyList());
+            summary.setNodeInstances(emptyList());
+            summary.setTimerInstances(emptyList());
+        }
+        return summary;
+    }
+
+    @Override
+    public List<TimerInstanceSummary> getProcessInstanceTimerInstances(ProcessInstanceKey processInstanceKey) {
+        if (processInstanceKey == null || processInstanceKey.isValid() == false) {
+            return emptyList();
+        }
+
+        ProcessAdminServicesClient servicesClient = getClient(processInstanceKey.getServerTemplateId(),
+                                                              ProcessAdminServicesClient.class);
+        return servicesClient.getTimerInstances(processInstanceKey.getDeploymentId(),
+                                                processInstanceKey.getProcessInstanceId()).stream().map(new TimerInstanceSummaryMapper()).collect(toList());
+    }
+
+    @Override
+    public void triggerProcessInstanceNode(ProcessInstanceKey processInstanceKey,
+                                           Long nodeId) {
+        if (processInstanceKey == null || processInstanceKey.isValid() == false) {
+            return;
+        }
+
+        ProcessAdminServicesClient servicesClient = getClient(processInstanceKey.getServerTemplateId(),
+                                                              ProcessAdminServicesClient.class);
+        servicesClient.triggerNode(processInstanceKey.getDeploymentId(),
+                                   processInstanceKey.getProcessInstanceId(),
+                                   nodeId);
+    }
+
+    @Override
+    public void cancelProcessInstanceNode(ProcessInstanceKey processInstanceKey,
+                                          Long nodeInstanceId) {
+        if (processInstanceKey == null || processInstanceKey.isValid() == false) {
+            return;
+        }
+
+        ProcessAdminServicesClient servicesClient = getClient(processInstanceKey.getServerTemplateId(),
+                                                              ProcessAdminServicesClient.class);
+        servicesClient.cancelNodeInstance(processInstanceKey.getDeploymentId(),
+                                          processInstanceKey.getProcessInstanceId(),
+                                          nodeInstanceId);
+    }
+
+    @Override
+    public void reTriggerProcessInstanceNode(ProcessInstanceKey processInstanceKey,
+                                             Long nodeInstanceId) {
+        if (processInstanceKey == null || processInstanceKey.isValid() == false) {
+            return;
+        }
+
+        ProcessAdminServicesClient servicesClient = getClient(processInstanceKey.getServerTemplateId(),
+                                                              ProcessAdminServicesClient.class);
+        servicesClient.retriggerNodeInstance(processInstanceKey.getDeploymentId(),
+                                             processInstanceKey.getProcessInstanceId(),
+                                             nodeInstanceId);
+    }
+
+    @Override
+    public void rescheduleTimerInstance(ProcessInstanceKey processInstanceKey,
+                                        TimerInstanceSummary summary) {
+        if (processInstanceKey == null || processInstanceKey.isValid() == false) {
+            return;
+        }
+
+        ProcessAdminServicesClient servicesClient = getClient(processInstanceKey.getServerTemplateId(),
+                                                              ProcessAdminServicesClient.class);
+        if (summary.isRelative()) {
+            servicesClient.updateTimerRelative(processInstanceKey.getDeploymentId(),
+                                               processInstanceKey.getProcessInstanceId(),
+                                               summary.getId(),
+                                               summary.getDelay(),
+                                               summary.getPeriod(),
+                                               summary.getRepeatLimit());
+        } else {
+            servicesClient.updateTimer(processInstanceKey.getDeploymentId(),
+                                       processInstanceKey.getProcessInstanceId(),
+                                       summary.getId(),
+                                       summary.getDelay(),
+                                       summary.getPeriod(),
+                                       summary.getRepeatLimit());
+        }
+    }
+
+    @Override
+    public List<ProcessNodeSummary> getProcessInstanceNodes(String serverTemplateId,
+                                                            String containerId,
+                                                            Long processInstanceId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return emptyList();
         }
 
-        List<NodeInstanceSummary> instances = new ArrayList<NodeInstanceSummary>();
-        QueryServicesClient queryServicesClient = getClient(serverTemplateId,
-                                                            QueryServicesClient.class);
+        ProcessAdminServicesClient servicesClient = getClient(serverTemplateId,
+                                                              ProcessAdminServicesClient.class);
 
-        List<NodeInstance> nodeInstances = queryServicesClient.findActiveNodeInstances(processInstanceId,
-                                                                                       0,
-                                                                                       Integer.MAX_VALUE);
-
-        for (NodeInstance instance : nodeInstances) {
-            NodeInstanceSummary summary = new NodeInstanceSummary(instance.getId(),
-                                                                  instance.getProcessInstanceId(),
-                                                                  instance.getName(),
-                                                                  instance.getNodeId(),
-                                                                  instance.getNodeType(),
-                                                                  instance.getDate().toString(),
-                                                                  instance.getConnection(),
-                                                                  false);
-
-            instances.add(summary);
-        }
-
-        return instances;
+        return servicesClient.getProcessNodes(containerId,
+                                              processInstanceId).stream().map(node -> new ProcessNodeSummary(node.getNodeId(),
+                                                                                                             node.getNodeName(),
+                                                                                                             node.getNodeType())).collect(toList());
     }
 
     @Override
@@ -200,42 +326,4 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
         }
     }
 
-
-    protected ProcessInstanceSummary build(ProcessInstance processInstance) {
-        ProcessInstanceSummary summary = new ProcessInstanceSummary(
-                processInstance.getId(),
-                processInstance.getProcessId(),
-                processInstance.getContainerId(),
-                processInstance.getProcessName(),
-                processInstance.getProcessVersion(),
-                processInstance.getState(),
-                processInstance.getDate(),
-                null,
-                processInstance.getInitiator(),
-                processInstance.getProcessInstanceDescription(),
-                processInstance.getCorrelationKey(),
-                processInstance.getParentId(),
-                null,
-                processInstance.getSlaCompliance(),
-                processInstance.getSlaDueDate(),                
-                0
-        );
-
-        if (processInstance.getActiveUserTasks() != null && processInstance.getActiveUserTasks().getTasks() != null) {
-            List<TaskSummary> tasks = processInstance.getActiveUserTasks().getItems();
-
-            List<UserTaskSummary> userTaskSummaries = new ArrayList<UserTaskSummary>();
-            for (TaskSummary taskSummary : tasks) {
-                UserTaskSummary userTaskSummary = new UserTaskSummary(taskSummary.getId(),
-                                                                      taskSummary.getName(),
-                                                                      taskSummary.getActualOwner(),
-                                                                      taskSummary.getStatus());
-
-                userTaskSummaries.add(userTaskSummary);
-            }
-            summary.setActiveTasks(userTaskSummaries);
-        }
-
-        return summary;
-    }
 }

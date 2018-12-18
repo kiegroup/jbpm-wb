@@ -25,14 +25,17 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
-import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramPresenter;
 import org.jbpm.workbench.pr.client.editors.documents.list.ProcessDocumentListPresenter;
+import org.jbpm.workbench.pr.client.editors.instance.diagram.ProcessInstanceDiagramPresenter;
 import org.jbpm.workbench.pr.client.editors.instance.log.ProcessInstanceLogPresenter;
 import org.jbpm.workbench.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
 import org.jbpm.workbench.pr.client.editors.variables.list.ProcessVariableListPresenter;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
+import org.jbpm.workbench.pr.model.ProcessInstanceKey;
+import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
+import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.WorkbenchMenu;
@@ -69,6 +72,8 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
 
     private Caller<ProcessService> processService;
 
+    private Caller<ProcessRuntimeDataService> processRuntimeDataService;
+
     @Inject
     private Event<ProcessInstanceSelectionEvent> processInstanceSelected;
 
@@ -85,7 +90,7 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
     private ProcessInstanceDetailsTabPresenter detailsPresenter;
 
     @Inject
-    private ProcessDiagramPresenter processDiagramPresenter;
+    private ProcessInstanceDiagramPresenter processDiagramPresenter;
 
     @Inject
     private ProcessVariableListPresenter variableListPresenter;
@@ -96,23 +101,11 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
     @Inject
     private ProcessInstanceLogPresenter processInstanceLogPresenter;
 
-    private String selectedDeploymentId = "";
-
-    private int selectedProcessInstanceStatus = 0;
-
-    private String selectedProcessDefName = "";
-
-    private PlaceRequest place;
-
-    private String deploymentId = "";
-
-    private String processId = "";
-
-    private Long processInstanceId;
-
-    private String serverTemplateId = "";
+    private ProcessInstanceKey processInstance;
 
     private boolean forLog = false;
+
+    private PlaceRequest place;
 
     PrimaryActionMenuBuilder signalProcessInstanceAction;
 
@@ -121,6 +114,11 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
     @Inject
     public void setProcessService(final Caller<ProcessService> processService) {
         this.processService = processService;
+    }
+
+    @Inject
+    public void setProcessRuntimeDataService(Caller<ProcessRuntimeDataService> processRuntimeDataService) {
+        this.processRuntimeDataService = processRuntimeDataService;
     }
 
     @WorkbenchPartView
@@ -164,55 +162,54 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
     }
 
     public void onProcessSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
-        boolean refreshDetails = (event != null && event.getProcessInstanceId() != null && event.getProcessInstanceId().equals(processInstanceId));
+        boolean refreshDetails = (event != null && event.getProcessInstanceId() != null && event.getProcessInstanceKey().equals(processInstance));
 
-        deploymentId = event.getDeploymentId();
-        processId = event.getProcessDefId();
-        processInstanceId = event.getProcessInstanceId();
-        serverTemplateId = event.getServerTemplateId();
-        selectedDeploymentId = event.getDeploymentId();
-        selectedProcessInstanceStatus = event.getProcessInstanceStatus();
-        selectedProcessDefName = event.getProcessDefName();
+        processInstance = event.getProcessInstanceKey();
         setIsForLog(event.isForLog());
+        setSignalAbortActionsVisible(false);
 
-        changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place,
-                                                               String.valueOf(processInstanceId) + " - " + selectedProcessDefName));
-
-        boolean signalAbortVisible = false;
         if (isForLog()) {
             view.displayOnlyLogTab();
         } else {
-            if (selectedProcessInstanceStatus == ProcessInstance.STATE_ACTIVE) {
-                signalAbortVisible = true;
-            }
             view.displayAllTabs();
         }
-        setSignalAbortActionsVisible(signalAbortVisible);
         if (!refreshDetails) {
             view.resetTabs(event.isForLog());
         }
+        refreshProcessInstance();
+    }
+
+    protected void refreshProcessInstance(){
+        processRuntimeDataService.call((ProcessInstanceSummary pi) -> {
+
+            changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place,
+                                                                   String.valueOf(processInstance.getProcessInstanceId()) + " - " + pi.getProcessName()));
+
+            setSignalAbortActionsVisible(isForLog() == false && pi.getState() == ProcessInstance.STATE_ACTIVE);
+
+            variableListPresenter.setProcessInstance(pi);
+            processDiagramPresenter.setProcessInstance(pi);
+            detailsPresenter.setProcessInstance(pi);
+            documentListPresenter.setProcessInstance(pi);
+            processInstanceLogPresenter.setProcessInstance(pi);
+        }).getProcessInstance(processInstance);
     }
 
     @Override
     public void onRefresh() {
-        processInstanceSelected.fire(new ProcessInstanceSelectionEvent(selectedDeploymentId,
-                                                                       processInstanceId,
-                                                                       processId,
-                                                                       selectedProcessDefName,
-                                                                       selectedProcessInstanceStatus,
-                                                                       isForLog(),
-                                                                       serverTemplateId));
+        processInstanceSelected.fire(new ProcessInstanceSelectionEvent(processInstance,
+                                                                       isForLog()));
     }
 
     public void signalProcessInstance() {
         PlaceRequest placeRequestImpl = new DefaultPlaceRequest(ProcessInstanceSignalPresenter.SIGNAL_PROCESS_POPUP);
 
         placeRequestImpl.addParameter("processInstanceId",
-                                      String.valueOf(processInstanceId));
+                                      String.valueOf(processInstance.getProcessInstanceId()));
         placeRequestImpl.addParameter("deploymentId",
-                                      deploymentId);
+                                      processInstance.getDeploymentId());
         placeRequestImpl.addParameter("serverTemplateId",
-                                      serverTemplateId);
+                                      processInstance.getServerTemplateId());
         placeManager.goTo(placeRequestImpl);
     }
 
@@ -225,16 +222,13 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
 
     protected void abortProcessInstance() {
         processService.call(
-                (Void processInstance) -> {
-                    displayNotification(constants.Aborting_Process_Instance(processInstanceId));
-                    selectedProcessInstanceStatus = ProcessInstance.STATE_ABORTED;
+                (Void v) -> {
+                    displayNotification(constants.Aborting_Process_Instance(processInstance.getProcessInstanceId()));
                     setSignalAbortActionsVisible(false);
                     processInstancesUpdatedEvent
                             .fire(new ProcessInstancesUpdateEvent(0L));
                 })
-                .abortProcessInstance(serverTemplateId,
-                                      deploymentId,
-                                      processInstanceId);
+                .abortProcessInstance(processInstance);
     }
 
     public void displayNotification(String text) {

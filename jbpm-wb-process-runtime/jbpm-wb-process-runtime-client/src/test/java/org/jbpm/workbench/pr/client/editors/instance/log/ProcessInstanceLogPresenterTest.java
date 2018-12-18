@@ -36,8 +36,8 @@ import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.client.util.LogUtils;
-import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.ProcessInstanceLogSummary;
+import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.WorkItemParameterSummary;
 import org.jbpm.workbench.pr.model.WorkItemSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
@@ -206,26 +206,28 @@ public class ProcessInstanceLogPresenterTest {
     }
 
     @Test
-    public void datasetLookupNotFoundTest() {
+    public void dataSetLookupNotFoundTest() {
         doAnswer((InvocationOnMock invocation) -> {
                 ((DataSetReadyCallback) invocation.getArguments()[1]).notFound();
                 return null;
         }).when(logsDataSetQueryHelper).lookupDataSet(anyInt(),
                                                       any(DataSetReadyCallback.class));
-        presenter.loadProcessInstanceLogs();
+
+        presenter.setProcessInstance(new ProcessInstanceSummary());
 
         verify(errorHandler).notFound();
     }
 
     @Test
-    public void datasetLookupErrorTest() {
+    public void dataSetLookupErrorTest() {
         final ClientRuntimeError error = new ClientRuntimeError("error message");
         doAnswer((InvocationOnMock invocation) -> {
             ((DataSetReadyCallback) invocation.getArguments()[1]).onError(error);
                 return null;
         }).when(logsDataSetQueryHelper).lookupDataSet(anyInt(),
                                                       any(DataSetReadyCallback.class));
-        presenter.loadProcessInstanceLogs();
+
+        presenter.setProcessInstance(new ProcessInstanceSummary());
 
         verify(errorHandler).onError(error);
         verify(errorCallback).error(error.getThrowable());
@@ -234,7 +236,7 @@ public class ProcessInstanceLogPresenterTest {
     @Test
     public void testLoadMoreProcessInstanceLogs() {
         presenter.setCurrentPage(0);
-        presenter.loadProcessInstanceLogs();
+        presenter.setProcessInstance(new ProcessInstanceSummary());
         assertEquals(0,
                      presenter.getCurrentPage());
         verify(logsDataSetQueryHelper).lookupDataSet(eq(presenter.getPageSize() * presenter.getCurrentPage()),
@@ -272,11 +274,7 @@ public class ProcessInstanceLogPresenterTest {
                                                  containerId,
                                                  workItemId)).thenReturn(task);
 
-        ProcessInstanceSelectionEvent selectionEventMock = mock(ProcessInstanceSelectionEvent.class);
-        when(selectionEventMock.getDeploymentId()).thenReturn(containerId);
-        when(selectionEventMock.getServerTemplateId()).thenReturn(serverTemplateId);
-
-        presenter.onProcessInstanceSelectionEvent(selectionEventMock);
+        presenter.setProcessInstance(ProcessInstanceSummary.builder().withServerTemplateId(serverTemplateId).withDeploymentId(containerId).withProcessInstanceId(1l).build());
         presenter.loadTaskDetails(workItemId,
                                   logDate,
                                   humanTaskView);
@@ -312,12 +310,7 @@ public class ProcessInstanceLogPresenterTest {
                                                                           processInstanceId,
                                                                           workItemId)).thenReturn(workItemSummary);
 
-        ProcessInstanceSelectionEvent selectionEventMock = mock(ProcessInstanceSelectionEvent.class);
-        when(selectionEventMock.getProcessInstanceId()).thenReturn(processInstanceId);
-        when(selectionEventMock.getDeploymentId()).thenReturn(containerId);
-        when(selectionEventMock.getServerTemplateId()).thenReturn(serverTemplateId);
-
-        presenter.onProcessInstanceSelectionEvent(selectionEventMock);
+        presenter.setProcessInstance(ProcessInstanceSummary.builder().withServerTemplateId(serverTemplateId).withDeploymentId(containerId).withProcessInstanceId(processInstanceId).build());
         presenter.loadWorkItemDetails(workItemId,
                                       workItemView);
 
@@ -329,19 +322,24 @@ public class ProcessInstanceLogPresenterTest {
     }
 
     @Test
-    public void onProcessInstaceSelectionTest() {
+    public void onProcessInstanceSelectionTest() {
         Long processInstanceId = 1L;
         String processDefId = "processDefId";
         String deploymentId = "deploymentId";
         Integer processInstanceStatus = 0;
         String serverTemplateId = "serverTemplateId";
         when(logsDataSetQueryHelper.getCurrentTableSettings()).thenReturn(currentFilterSettings);
-        presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(deploymentId,
-                                                                                    processInstanceId,
-                                                                                    processDefId,
-                                                                                    processName,
-                                                                                    processInstanceStatus,
-                                                                                    serverTemplateId));
+
+        presenter.setProcessInstance(ProcessInstanceSummary
+                                             .builder()
+                                             .withServerTemplateId(serverTemplateId)
+                                             .withDeploymentId(deploymentId)
+                                             .withProcessInstanceId(processInstanceId)
+                                             .withProcessId(processDefId)
+                                             .withProcessName(processName)
+                                             .withState(processInstanceStatus)
+                                             .build());
+
         verify(view,
                never()).addActiveFilter(any(ActiveFilterItem.class));
         verify(currentFilterSettings).setServerTemplateId(serverTemplateId);
@@ -371,12 +369,7 @@ public class ProcessInstanceLogPresenterTest {
         }).when(dataSetQueryHelperSpy).lookupDataSet(anyInt(),
                                                      any(DataSetReadyCallback.class));
         presenter.setDataSetQueryHelper(dataSetQueryHelperSpy);
-        presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent("deploymentId",
-                                                                                    1L,
-                                                                                    "processDefId",
-                                                                                    "processName",
-                                                                                    0,
-                                                                                    serverTemplateId));
+        presenter.setProcessInstance(ProcessInstanceSummary.builder().withServerTemplateId(serverTemplateId).withDeploymentId("deploymentId").withProcessInstanceId(1L).build());
         verify(processInstanceLogBasicFiltersPresenter).onClearAllActiveFiltersEvent(any(ClearAllActiveFiltersEvent.class));
         ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
         verify(view,

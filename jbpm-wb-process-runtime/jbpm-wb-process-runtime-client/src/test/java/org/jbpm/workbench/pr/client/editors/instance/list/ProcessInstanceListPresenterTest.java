@@ -47,6 +47,7 @@ import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
+import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.junit.Before;
@@ -170,7 +171,8 @@ public class ProcessInstanceListPresenterTest {
 
     public static ProcessInstanceSummary createProcessInstanceSummary(Long key,
                                                                       Integer status) {
-        return new ProcessInstanceSummary(key,
+        return new ProcessInstanceSummary("serverTemplateId",
+                                          key,
                                           "procTest",
                                           "test.0.1",
                                           "Test Proc",
@@ -296,9 +298,9 @@ public class ProcessInstanceListPresenterTest {
         presenter.abortProcessInstance(containerId,
                                        processInstanceId);
 
-        verify(processService).abortProcessInstance(anyString(),
-                                                    eq(containerId),
-                                                    eq(processInstanceId));
+        verify(processService).abortProcessInstance(new ProcessInstanceKey("",
+                                                                           containerId,
+                                                                           processInstanceId));
         verify(viewMock).displayNotification(Constants.INSTANCE.Aborting_Process_Instance(processInstanceId));
     }
 

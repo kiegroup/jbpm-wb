@@ -16,126 +16,82 @@
 package org.jbpm.workbench.pr.events;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 
 @Portable
 public class ProcessInstanceSelectionEvent {
 
-    private Long processInstanceId;
-    private String processDefId;
-    private String deploymentId;
-    private Integer processInstanceStatus;
-    private String processDefName;
+    private ProcessInstanceKey processInstanceKey;
     private boolean forLog;
-    private String serverTemplateId;
 
     public ProcessInstanceSelectionEvent() {
     }
 
-    public ProcessInstanceSelectionEvent(String deploymentId,
-                                         Long processInstanceId,
-                                         String processDefId,
-                                         String processDefName,
-                                         Integer processInstanceStatus,
-                                         String serverTemplateId) {
-        this.processInstanceId = processInstanceId;
-        this.processDefId = processDefId;
-        this.deploymentId = deploymentId;
-        this.processInstanceStatus = processInstanceStatus;
-        this.processDefName = processDefName;
-        this.serverTemplateId = serverTemplateId;
-        this.forLog = false;
-    }
-
-    public ProcessInstanceSelectionEvent(String deploymentId,
-                                         Long processInstanceId,
-                                         String processDefId,
-                                         String processDefName,
-                                         Integer processInstanceStatus,
-                                         boolean forLog,
-                                         String serverTemplateId) {
-        this(deploymentId,
-             processInstanceId,
-             processDefId,
-             processDefName,
-             processInstanceStatus,
-             serverTemplateId);
+    public ProcessInstanceSelectionEvent(ProcessInstanceKey processInstanceKey,
+                                         boolean forLog) {
+        this.processInstanceKey = processInstanceKey;
         this.forLog = forLog;
     }
 
-    public Long getProcessInstanceId() {
-        return processInstanceId;
+    public ProcessInstanceSelectionEvent(String serverTemplateId,
+                                         String deploymentId,
+                                         Long processInstanceId,
+                                         boolean forLog) {
+
+        this(new ProcessInstanceKey(serverTemplateId,
+                                    deploymentId,
+                                    processInstanceId),
+             forLog);
     }
 
-    public String getProcessDefId() {
-        return processDefId;
+    public Long getProcessInstanceId() {
+        return processInstanceKey.getProcessInstanceId();
     }
 
     public String getDeploymentId() {
-        return deploymentId;
-    }
-
-    public Integer getProcessInstanceStatus() {
-        return processInstanceStatus;
-    }
-
-    public String getProcessDefName() {
-        return processDefName;
+        return processInstanceKey.getDeploymentId();
     }
 
     public String getServerTemplateId() {
-        return serverTemplateId;
+        return processInstanceKey.getServerTemplateId();
+    }
+
+    public ProcessInstanceKey getProcessInstanceKey() {
+        return processInstanceKey;
+    }
+
+    public boolean isForLog() {
+        return forLog;
     }
 
     @Override
     public String toString() {
-        return "ProcessInstanceSelectionEvent{" + "processInstanceId=" + processInstanceId + ", processDefId=" + processDefId + ", deploymentId=" + deploymentId + ", processInstanceStatus=" + processInstanceStatus + ", processDefName=" + processDefName + '}';
+        return "ProcessInstanceSelectionEvent{" +
+                "processInstanceKey=" + processInstanceKey +
+                ", forLog=" + forLog +
+                '}';
     }
 
     @Override
     @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
         int hash = 7;
-        hash = 37 * hash + (this.processInstanceId != null ? this.processInstanceId.hashCode() : 0);
-        hash = ~~hash;
-        hash = 37 * hash + (this.processDefId != null ? this.processDefId.hashCode() : 0);
-        hash = ~~hash;
-        hash = 37 * hash + (this.deploymentId != null ? this.deploymentId.hashCode() : 0);
-        hash = ~~hash;
-        hash = 37 * hash + (this.processInstanceStatus != null ? this.processInstanceStatus.hashCode() : 0);
-        hash = ~~hash;
-        hash = 37 * hash + (this.processDefName != null ? this.processDefName.hashCode() : 0);
+        hash = 37 * hash + (this.processInstanceKey != null ? this.processInstanceKey.hashCode() : 0);
         hash = ~~hash;
         return hash;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ProcessInstanceSelectionEvent)) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final ProcessInstanceSelectionEvent other = (ProcessInstanceSelectionEvent) obj;
-        if (this.processInstanceId != other.processInstanceId && (this.processInstanceId == null || !this.processInstanceId.equals(other.processInstanceId))) {
-            return false;
-        }
-        if (this.processDefId == null ? other.processDefId != null : !this.processDefId.equals(other.processDefId)) {
-            return false;
-        }
-        if (this.deploymentId == null ? other.deploymentId != null : !this.deploymentId.equals(other.deploymentId)) {
-            return false;
-        }
-        if (this.processInstanceStatus != other.processInstanceStatus && (this.processInstanceStatus == null || !this.processInstanceStatus.equals(other.processInstanceStatus))) {
-            return false;
-        }
-        if (this.processDefName == null ? other.processDefName != null : !this.processDefName.equals(other.processDefName)) {
-            return false;
-        }
-        return true;
-    }
 
-    public boolean isForLog() {
-        return forLog;
+        ProcessInstanceSelectionEvent that = (ProcessInstanceSelectionEvent) o;
+
+        return getProcessInstanceKey().equals(that.getProcessInstanceKey());
     }
 }

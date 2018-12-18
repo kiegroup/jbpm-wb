@@ -22,10 +22,6 @@ import org.jboss.errai.databinding.client.api.Converter;
 
 public class DateTimeConverter implements Converter<Date, String> {
 
-    public static String getDateStr(final Date date) {
-        return DateUtils.getDateTimeStr(date);
-    }
-
     @Override
     public Date toModelValue(final String widgetValue) {
         if (widgetValue == null || widgetValue.equals("")) {
@@ -37,8 +33,8 @@ public class DateTimeConverter implements Converter<Date, String> {
     }
 
     @Override
-    public String toWidgetValue(final Date modelValue) {
-        return getDateStr(modelValue);
+    public String toWidgetValue(final Date date) {
+        return DateUtils.getDateTimeStr(date);
     }
 
     @Override

@@ -19,23 +19,20 @@ package org.jbpm.workbench.pr.service;
 import java.util.List;
 
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.jbpm.workbench.pr.model.NodeInstanceSummary;
-import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
-import org.jbpm.workbench.pr.model.ProcessInstanceKey;
-import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
-import org.jbpm.workbench.pr.model.ProcessSummary;
-import org.jbpm.workbench.pr.model.TaskDefSummary;
-import org.jbpm.workbench.pr.model.WorkItemSummary;
+import org.jbpm.workbench.pr.model.*;
 
 @Remote
 public interface ProcessRuntimeDataService {
 
-    ProcessInstanceSummary getProcessInstance(String serverTemplateId,
-                                              ProcessInstanceKey processInstanceKey);
+    ProcessInstanceSummary getProcessInstance(ProcessInstanceKey processInstanceKey);
 
-    List<NodeInstanceSummary> getProcessInstanceActiveNodes(String serverTemplateId,
-                                                            String deploymentId,
-                                                            Long processInstanceId);
+    List<NodeInstanceSummary> getProcessInstanceActiveNodes(ProcessInstanceKey processInstanceKey);
+
+    List<NodeInstanceSummary> getProcessInstanceCompletedNodes(ProcessInstanceKey processInstanceKey);
+
+    List<TimerInstanceSummary> getProcessInstanceTimerInstances(ProcessInstanceKey processInstanceKey);
+
+    ProcessInstanceDiagramSummary getProcessInstanceDiagramSummary(ProcessInstanceKey processInstanceKey);
 
     List<ProcessSummary> getProcesses(String serverTemplateId,
                                       Integer page,
@@ -57,9 +54,24 @@ public interface ProcessRuntimeDataService {
                                              String containerId,
                                              String processId);
 
-    WorkItemSummary getWorkItemByProcessInstanceId(final String serverTemplateId,
-                                                   final String containerId,
-                                                   final Long processInstanceId,
-                                                   final Long workItemId);
+    WorkItemSummary getWorkItemByProcessInstanceId(String serverTemplateId,
+                                                   String containerId,
+                                                   Long processInstanceId,
+                                                   Long workItemId);
 
+    List<ProcessNodeSummary> getProcessInstanceNodes(String serverTemplateId,
+                                                     String containerId,
+                                                     Long processInstanceId);
+
+    void triggerProcessInstanceNode(ProcessInstanceKey processInstanceKey,
+                                    Long nodeId);
+
+    void cancelProcessInstanceNode(ProcessInstanceKey processInstanceKey,
+                                   Long nodeInstanceId);
+
+    void reTriggerProcessInstanceNode(ProcessInstanceKey processInstanceKey,
+                                      Long nodeInstanceId);
+
+    void rescheduleTimerInstance(ProcessInstanceKey processInstanceKey,
+                                 TimerInstanceSummary summary);
 }

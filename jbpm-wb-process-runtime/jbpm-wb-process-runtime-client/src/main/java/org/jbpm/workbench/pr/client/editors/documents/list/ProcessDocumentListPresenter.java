@@ -18,7 +18,6 @@ package org.jbpm.workbench.pr.client.editors.documents.list;
 import java.util.HashMap;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
@@ -32,14 +31,15 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jbpm.workbench.common.client.list.ListView;
 import org.jbpm.workbench.common.model.PortableQueryFilter;
 import org.jbpm.workbench.common.client.list.AbstractListPresenter;
+import org.jbpm.workbench.pr.client.editors.instance.ProcessInstanceSummaryAware;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.DocumentSummary;
-import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
+import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.service.ProcessDocumentsService;
 import org.uberfire.paging.PageResponse;
 
 @Dependent
-public class ProcessDocumentListPresenter extends AbstractListPresenter<DocumentSummary> {
+public class ProcessDocumentListPresenter extends AbstractListPresenter<DocumentSummary> implements ProcessInstanceSummaryAware {
 
     private Constants constants = Constants.INSTANCE;
 
@@ -49,13 +49,7 @@ public class ProcessDocumentListPresenter extends AbstractListPresenter<Document
     @Inject
     private Caller<ProcessDocumentsService> documentsServices;
 
-    private String processInstanceId;
-
-    private String processDefId;
-
-    private String deploymentId;
-
-    private String serverTemplateId;
+    private ProcessInstanceSummary processInstance;
 
     @PostConstruct
     public void init() {
@@ -66,11 +60,9 @@ public class ProcessDocumentListPresenter extends AbstractListPresenter<Document
         return view;
     }
 
-    public void onProcessInstanceSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
-        this.processInstanceId = String.valueOf(event.getProcessInstanceId());
-        this.processDefId = event.getProcessDefId();
-        this.deploymentId = event.getDeploymentId();
-        this.serverTemplateId = event.getServerTemplateId();
+    @Override
+    public void setProcessInstance(ProcessInstanceSummary processInstance) {
+        this.processInstance = processInstance;
         refreshGrid();
     }
 
@@ -81,7 +73,7 @@ public class ProcessDocumentListPresenter extends AbstractListPresenter<Document
 
     @Override
     public void getData(Range visibleRange) {
-        if (processInstanceId != null) {
+        if (processInstance != null) {
             ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
             if (currentFilter == null) {
                 currentFilter = new PortableQueryFilter(visibleRange.getStart(),
@@ -106,13 +98,13 @@ public class ProcessDocumentListPresenter extends AbstractListPresenter<Document
                 currentFilter.setParams(new HashMap<String, Object>());
             }
             currentFilter.getParams().put("processInstanceId",
-                                          processInstanceId);
+                                          processInstance.getProcessInstanceId().toString());
             currentFilter.getParams().put("processDefId",
-                                          processDefId);
+                                          processInstance.getProcessId());
             currentFilter.getParams().put("deploymentId",
-                                          deploymentId);
+                                          processInstance.getDeploymentId());
             currentFilter.getParams().put("serverTemplateId",
-                                          serverTemplateId);
+                                          processInstance.getServerTemplateId());
 
             currentFilter.setOrderBy(columnSortList.size() > 0 ? columnSortList.get(0)
                     .getColumn().getDataStoreName() : "");

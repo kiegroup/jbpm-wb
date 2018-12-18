@@ -261,11 +261,9 @@ public interface Constants extends Messages {
 
     String System();
 
-    String WasStarted();
+    String Started();
 
     String NodeWasEntered(String name);
-
-    String WasCompleted();
 
     String NodeWasLeft(String nodeName);
 
@@ -334,4 +332,26 @@ public interface Constants extends Messages {
     String Work_Item_Data();
 
     String Task_Data();
+
+    String NodeTriggered(String node);
+
+    String NodeInstanceReTriggered(String node);
+
+    String NodeInstanceCancelled(String node);
+
+    String Cancel();
+
+    String ReTrigger();
+
+    String NextExecution();
+
+    String NA();
+
+    String Seconds();
+
+    String Reschedule();
+
+    String TimerInstanceRescheduled(String timerId);
+
+    String Trigger();
 }

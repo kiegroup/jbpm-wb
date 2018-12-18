@@ -21,9 +21,9 @@ import java.util.List;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
-import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
-import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
+import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
+import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.jbpm.workbench.pr.service.ProcessVariablesService;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,6 +63,11 @@ public class ProcessVariableListPresenterTest {
         final String variableName = "variable";
         final String deploymentId = "deploymentId";
         final long processInstanceId = 1l;
+        final ProcessInstanceSummary processInstance = ProcessInstanceSummary.builder()
+                .withServerTemplateId("serverTemplateIdTest")
+                .withDeploymentId(deploymentId)
+                .withProcessInstanceId(processInstanceId)
+                .build();
         final ProcessVariableSummary summary = new ProcessVariableSummary(variableName,
                                                                           "variableInstanceId",
                                                                           processInstanceId,
@@ -71,20 +76,11 @@ public class ProcessVariableListPresenterTest {
                                                                           System.currentTimeMillis(),
                                                                           "type");
         final List<ProcessVariableSummary> summaries = Arrays.asList(summary);
-        when(processVariablesService.getVariableHistory(anyString(),
-                                                        eq(deploymentId),
-                                                        eq(processInstanceId),
+        when(processVariablesService.getVariableHistory(eq(processInstance.getProcessInstanceKey()),
                                                         eq(variableName))).thenReturn(summaries);
         when(view.getListGrid()).thenReturn(extendedPagedTable);
 
-        final ProcessInstanceSelectionEvent event = new ProcessInstanceSelectionEvent(deploymentId,
-                                                                                      processInstanceId,
-                                                                                      "processDefId",
-                                                                                      "processDefName",
-                                                                                      1,
-                                                                                      "serverTemplateIdTest");
-
-        presenter.onProcessInstanceSelectionEvent(event);
+        presenter.setProcessInstance(processInstance);
         presenter.loadVariableHistory(callback,
                                       variableName);
 

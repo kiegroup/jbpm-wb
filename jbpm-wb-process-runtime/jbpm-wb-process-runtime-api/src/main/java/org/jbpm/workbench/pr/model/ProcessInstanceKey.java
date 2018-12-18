@@ -49,6 +49,22 @@ public class ProcessInstanceKey implements ItemKey {
         return deploymentId;
     }
 
+    public Boolean isValid() {
+        if (serverTemplateId == null || serverTemplateId.trim().isEmpty()) {
+            return false;
+        }
+
+        if (deploymentId == null || deploymentId.trim().isEmpty()) {
+            return false;
+        }
+
+        if (processInstanceId == null) {
+            return false;
+        }
+
+        return true;
+    }
+
     @Override
     @SuppressWarnings("PMD.AvoidMultipleUnaryOperators")
     public int hashCode() {
@@ -85,6 +101,10 @@ public class ProcessInstanceKey implements ItemKey {
 
     @Override
     public String toString() {
-        return "ProcessInstanceKey{" + "processInstanceId=" + processInstanceId + '}';
+        return "ProcessInstanceKey{" +
+                "serverTemplateId='" + serverTemplateId + '\'' +
+                ", deploymentId='" + deploymentId + '\'' +
+                ", processInstanceId=" + processInstanceId +
+                '}';
     }
 }

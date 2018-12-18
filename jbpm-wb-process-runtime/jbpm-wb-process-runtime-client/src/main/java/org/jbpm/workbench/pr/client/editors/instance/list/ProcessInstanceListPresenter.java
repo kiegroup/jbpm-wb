@@ -46,6 +46,7 @@ import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
+import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.kie.api.runtime.process.ProcessInstance;
@@ -226,6 +227,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     protected ProcessInstanceSummary createProcessInstanceSummaryFromDataSet(DataSet dataSet,
                                                                              int i) {
         return new ProcessInstanceSummary(
+                getSelectedServerTemplate(),
                 getColumnLongValue(dataSet,
                                    COLUMN_PROCESS_INSTANCE_ID,
                                    i),
@@ -288,9 +290,9 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     public void abortProcessInstance(String containerId,
                                      long processInstanceId) {
         view.displayNotification(constants.Aborting_Process_Instance(processInstanceId));
-        processService.call((Void v) -> refreshGrid()).abortProcessInstance(getSelectedServerTemplate(),
-                                                                            containerId,
-                                                                            processInstanceId);
+        processService.call((Void v) -> refreshGrid()).abortProcessInstance(new ProcessInstanceKey(getSelectedServerTemplate(),
+                                                                                                   containerId,
+                                                                                                   processInstanceId));
     }
 
     public void abortProcessInstances(Map<String, List<Long>> containerInstances) {
@@ -385,12 +387,8 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     public void selectSummaryItem(final ProcessInstanceSummary summary) {
         setupDetailBreadcrumb(constants.ProcessInstanceBreadcrumb(summary.getProcessInstanceId()));
         placeManager.goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
-        processInstanceSelectionEvent.fire(new ProcessInstanceSelectionEvent(summary.getDeploymentId(),
-                                                                             summary.getProcessInstanceId(),
-                                                                             summary.getProcessId(),
-                                                                             summary.getProcessName(),
-                                                                             summary.getState(),
-                                                                             getSelectedServerTemplate()));
+        processInstanceSelectionEvent.fire(new ProcessInstanceSelectionEvent(summary.getProcessInstanceKey(),
+                                                                             false));
     }
 
     public void formClosed(@Observes BeforeClosePlaceEvent closed) {

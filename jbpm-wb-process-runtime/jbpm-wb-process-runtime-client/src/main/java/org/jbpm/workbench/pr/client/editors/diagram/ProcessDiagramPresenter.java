@@ -24,11 +24,9 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
-import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.service.ProcessImageService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
-import org.uberfire.ext.widgets.common.client.common.HasBusyIndicator;
 
 @Dependent
 public class ProcessDiagramPresenter {
@@ -45,18 +43,8 @@ public class ProcessDiagramPresenter {
         this.processImageService = processImageService;
     }
 
-    public void onProcessInstanceSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
-        String containerId = event.getDeploymentId();
-        Long processInstanceId = event.getProcessInstanceId();
-        String serverTemplateId = event.getServerTemplateId();
-
-        processImageService.call((String svgContent) -> displayImage(svgContent,
-                                                                     containerId)).getProcessInstanceDiagram(serverTemplateId,
-                                                                                                             containerId,
-                                                                                                             processInstanceId);
-    }
-
     public void onProcessSelectionEvent(@Observes final ProcessDefSelectionEvent event) {
+        view.showBusyIndicator(constants.Loading());
         String containerId = event.getDeploymentId();
         String serverTemplateId = event.getServerTemplateId();
         String processId = event.getProcessId();
@@ -66,13 +54,14 @@ public class ProcessDiagramPresenter {
                                                                                                      processId);
     }
 
-    protected void displayImage(final String svgContent,
-                                String containerId) {
+    public void displayImage(final String svgContent,
+                             final String containerId) {
         if (svgContent == null || svgContent.isEmpty()) {
             view.displayMessage(constants.Process_Diagram_Not_FoundContainerShouldBeAvailable(containerId));
         } else {
             view.displayImage(svgContent);
         }
+        view.hideBusyIndicator();
     }
 
     @WorkbenchPartTitle
@@ -85,10 +74,4 @@ public class ProcessDiagramPresenter {
         return view;
     }
 
-    public interface View
-            extends
-            HasBusyIndicator,
-            IsWidget {
-
-    }
 }

@@ -17,7 +17,11 @@
 package org.jbpm.workbench.common.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.jboss.errai.common.client.api.annotations.NonPortable;
+import org.uberfire.mvp.Command;
 import org.uberfire.paging.AbstractPageRow;
 
 public abstract class GenericSummary<T> extends AbstractPageRow implements Serializable {
@@ -26,6 +30,7 @@ public abstract class GenericSummary<T> extends AbstractPageRow implements Seria
 
     protected T id;
     protected String name;
+    private transient List<LabeledCommand> callbacks;
 
     public GenericSummary() {
     }
@@ -50,6 +55,25 @@ public abstract class GenericSummary<T> extends AbstractPageRow implements Seria
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<LabeledCommand> getCallbacks() {
+        return callbacks;
+    }
+
+    public void setCallbacks(List<LabeledCommand> callbacks) {
+        this.callbacks = callbacks;
+    }
+
+    public boolean hasCallbacks() {
+        return callbacks != null && callbacks.size() > 0;
+    }
+
+    public void addCallback(String label, Command command) {
+        if (callbacks == null) {
+            callbacks = new ArrayList<>();
+        }
+        callbacks.add(new LabeledCommand(label, command));
     }
 
     @Override
@@ -99,5 +123,30 @@ public abstract class GenericSummary<T> extends AbstractPageRow implements Seria
                 "id=" + id +
                 ", name='" + name + '\'' +
                 "} " + super.toString();
+    }
+
+    @NonPortable
+    public class LabeledCommand {
+
+        private String label;
+
+        private Command command;
+
+        public LabeledCommand() {
+        }
+
+        public LabeledCommand(String label,
+                              Command command) {
+            this.label = label;
+            this.command = command;
+        }
+
+        public Command getCommand() {
+            return command;
+        }
+
+        public String getLabel() {
+            return label;
+        }
     }
 }

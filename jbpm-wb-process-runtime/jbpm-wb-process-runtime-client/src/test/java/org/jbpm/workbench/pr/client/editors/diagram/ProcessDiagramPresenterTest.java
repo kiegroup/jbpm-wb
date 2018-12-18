@@ -19,7 +19,6 @@ package org.jbpm.workbench.pr.client.editors.diagram;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
-import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.service.ProcessImageService;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +37,7 @@ public class ProcessDiagramPresenterTest {
     ProcessImageService imageService;
 
     @Mock
-    ProcessDiagramWidgetView view;
+    ProcessDiagramWidgetViewImpl view;
 
     @InjectMocks
     ProcessDiagramPresenter presenter;
@@ -76,47 +75,4 @@ public class ProcessDiagramPresenterTest {
         verify(view).displayImage(svgContent);
     }
 
-    @Test
-    public void testEmptyProcessInstanceDiagram() {
-        when(imageService.getProcessInstanceDiagram(any(),
-                                                    any(),
-                                                    any())).thenReturn("",
-                                                                       null);
-
-        presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(null,
-                                                                                    1l,
-                                                                                    null,
-                                                                                    null,
-                                                                                    null,
-                                                                                    null));
-        presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(null,
-                                                                                    1l,
-                                                                                    null,
-                                                                                    null,
-                                                                                    null,
-                                                                                    null));
-
-        verify(view,
-               times(2)).displayMessage(Constants.INSTANCE.Process_Diagram_Not_FoundContainerShouldBeAvailable(anyString()));
-    }
-
-    @Test
-    public void testProcessInstanceDiagram() {
-        final String svgContent = "<svg></svg>";
-        when(imageService.getProcessInstanceDiagram(any(),
-                                                    any(),
-                                                    any())).thenReturn(svgContent,
-                                                                       null);
-
-        presenter.onProcessInstanceSelectionEvent(new ProcessInstanceSelectionEvent(null,
-                                                                                    1l,
-                                                                                    null,
-                                                                                    null,
-                                                                                    null,
-                                                                                    null));
-
-        verify(view,
-               never()).displayMessage(Constants.INSTANCE.Process_Diagram_Not_FoundContainerShouldBeAvailable(anyString()));
-        verify(view).displayImage(svgContent);
-    }
 }

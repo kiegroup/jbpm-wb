@@ -159,4 +159,6 @@ public interface Constants extends Messages {
     String MissingServerCapability();
 
     String MissingProcessCapability();
+
+    String NA();
 }

@@ -24,6 +24,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.jbpm.workbench.pr.backend.server.model.RemoteCorrelationKey;
+import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.service.ProcessService;
 import org.kie.internal.process.CorrelationKey;
 import org.kie.server.client.ProcessServicesClient;
@@ -33,15 +34,13 @@ import org.kie.server.client.ProcessServicesClient;
 public class RemoteProcessServiceImpl extends AbstractKieServerService implements ProcessService {
 
     @Override
-    public void abortProcessInstance(String serverTemplateId,
-                                     String containerId,
-                                     Long processInstanceId) {
-        ProcessServicesClient client = getClient(serverTemplateId,
-                                                 containerId,
+    public void abortProcessInstance(ProcessInstanceKey processInstance) {
+        ProcessServicesClient client = getClient(processInstance.getServerTemplateId(),
+                                                 processInstance.getDeploymentId(),
                                                  ProcessServicesClient.class);
 
-        client.abortProcessInstance(containerId,
-                                    processInstanceId);
+        client.abortProcessInstance(processInstance.getDeploymentId(),
+                                    processInstance.getProcessInstanceId());
     }
 
     @Override
@@ -90,22 +89,6 @@ public class RemoteProcessServiceImpl extends AbstractKieServerService implement
 
         return client.getAvailableSignals(containerId,
                                           processInstanceId);
-    }
-
-    @Override
-    public void signalProcessInstance(String serverTemplateId,
-                                      String containerId,
-                                      Long processInstanceId,
-                                      String signal,
-                                      Object event) {
-        ProcessServicesClient client = getClient(serverTemplateId,
-                                                 containerId,
-                                                 ProcessServicesClient.class);
-
-        client.signalProcessInstance(containerId,
-                                     processInstanceId,
-                                     signal,
-                                     event);
     }
 
     @Override
