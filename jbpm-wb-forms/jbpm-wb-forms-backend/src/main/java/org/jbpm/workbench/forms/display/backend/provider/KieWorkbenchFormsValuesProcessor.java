@@ -59,12 +59,10 @@ public abstract class KieWorkbenchFormsValuesProcessor<T extends RenderingSettin
     }
 
     public KieWorkbenchFormRenderingSettings generateRenderingContext(T settings) {
-        return generateRenderingContext(settings,
-                                        false);
+        return generateRenderingContext(settings,false);
     }
 
-    public KieWorkbenchFormRenderingSettings generateRenderingContext(T settings,
-                                                                      boolean generateDefaultForms) {
+    public KieWorkbenchFormRenderingSettings generateRenderingContext(T settings, boolean generateDefaultForms) {
         if (generateDefaultForms || !StringUtils.isEmpty(settings.getFormContent())) {
 
             try {
@@ -94,8 +92,7 @@ public abstract class KieWorkbenchFormsValuesProcessor<T extends RenderingSettin
                 context.getAttributes().put(SETTINGS_ATRA_NAME,
                                             settings);
 
-                return new KieWorkbenchFormRenderingSettings(context.getTimestamp(),
-                                                             context.getRenderingContext());
+                return new KieWorkbenchFormRenderingSettings(context.getTimestamp(), context.getRenderingContext(), generateDefaultForms);
             } catch (Exception ex) {
                 getLogger().debug("Unable to generate render form: ",
                                   ex);

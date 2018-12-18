@@ -21,22 +21,23 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.ui.ElementWrapperWidget;
+import org.jbpm.workbench.forms.client.display.displayer.KieWorkbenchFormDisplayer;
 import org.jbpm.workbench.forms.client.display.process.AbstractStartProcessFormDisplayer;
 import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
 import org.jbpm.workbench.forms.display.service.KieWorkbenchFormsEntryPoint;
-import org.kie.workbench.common.forms.dynamic.client.DynamicFormRenderer;
 
 @Dependent
 public class KieWorkbenchFormsStartProcessDisplayer extends AbstractStartProcessFormDisplayer<KieWorkbenchFormRenderingSettings> {
 
-    private DynamicFormRenderer formRenderer;
+    private KieWorkbenchFormDisplayer formDisplayer;
 
     private Caller<KieWorkbenchFormsEntryPoint> service;
 
     @Inject
-    public KieWorkbenchFormsStartProcessDisplayer(DynamicFormRenderer formRenderer,
+    public KieWorkbenchFormsStartProcessDisplayer(KieWorkbenchFormDisplayer formDisplayer,
                                                   Caller<KieWorkbenchFormsEntryPoint> service) {
-        this.formRenderer = formRenderer;
+        this.formDisplayer = formDisplayer;
         this.service = service;
     }
 
@@ -47,17 +48,17 @@ public class KieWorkbenchFormsStartProcessDisplayer extends AbstractStartProcess
 
     @Override
     protected void initDisplayer() {
-        formRenderer.render(renderingSettings.getRenderingContext());
+        formDisplayer.show(renderingSettings.getRenderingContext(), renderingSettings.isDefaultForms());
     }
 
     @Override
     public IsWidget getFormWidget() {
-        return formRenderer;
+        return ElementWrapperWidget.getWidget(formDisplayer.getElement());
     }
 
     @Override
     public void startProcessFromDisplayer() {
-        if (formRenderer.isValid()) {
+        if (formDisplayer.isValid()) {
             service.call(getStartProcessRemoteCallback(),
                          getUnexpectedErrorCallback()).startProcessFromRenderContext(
                     renderingSettings.getTimestamp(),
