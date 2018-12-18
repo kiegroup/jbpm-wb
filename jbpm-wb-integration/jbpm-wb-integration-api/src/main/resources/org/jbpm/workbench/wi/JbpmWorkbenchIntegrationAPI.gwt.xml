@@ -28,5 +28,6 @@
 
   <source path="dd"/>
   <source path="casemgmt"/>
+  <source path="workitems"/>
 
 </module>

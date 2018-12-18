@@ -1616,7 +1616,6 @@
       <type>war</type>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -1629,7 +1628,7 @@
         <artifactId>gwt-maven-plugin</artifactId>
         <configuration>
           <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
-          <extraJvmArgs>-Xms1g -Xmx5g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${jboss.home} -Derrai.dynamic_validation.enabled=true -Dorg.kie.demo=false -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true -Dorg.uberfire.async.executor.safemode=true -Derrai.dev.context=jbpm-wb-showcase</extraJvmArgs>
+          <extraJvmArgs>-Xms1g -Xmx5g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${jboss.home} -Derrai.dynamic_validation.enabled=true -Dorg.kie.demo=false -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true -Dorg.uberfire.async.executor.safemode=true -Derrai.dev.context=jbpm-wb-showcase -Dorg.jbpm.wb.forms.renderer.ext=true</extraJvmArgs>
           <module>org.jbpm.workbench.FastCompilejBPMShowcase</module>
           <logLevel>INFO</logLevel>
           <noServer>false</noServer>
@@ -1908,6 +1907,15 @@
                   <type>zip</type>
                   <overWrite>false</overWrite>
                   <outputDirectory>${project.build.directory}</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.jbpm.contrib</groupId>
+                  <artifactId>repository</artifactId> 
+                  <version>${project.version}</version>                 
+                  <type>zip</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>src/main/webapp/service-tasks</outputDirectory>
+                  <includes>**/*.jar,**/*.png,**/*.wid</includes>
                 </artifactItem>
               </artifactItems>
             </configuration>
