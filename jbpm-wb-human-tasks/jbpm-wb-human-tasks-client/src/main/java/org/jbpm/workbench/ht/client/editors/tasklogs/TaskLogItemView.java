@@ -99,18 +99,18 @@ public class TaskLogItemView extends AbstractLogItemView<TaskLogsPresenter> impl
     }
 
     private void setLogInfo(final TaskEventType type, final TaskEventSummary model) {
-        String logInfoContent = constants.ByUser() + " " + model.getUserId() + " ";
+        String logInfoContent = constants.ByUser() + " " + model.getUserId();
         switch (type) {
             case ADDED: {
                 if (model.getUserId() != null && !model.getUserId().isEmpty()) {
-                    logInfoContent = constants.ByProcess() + " '" + model.getUserId() + "' ";
+                    logInfoContent = constants.ByProcess() + " '" + model.getUserId() + "'";
                 } else {
                     logInfoContent = "";
                 }
                 break;
             }
             case UPDATED: {
-                logInfoContent += " (" + model.getMessage() + " ) ";
+                logInfoContent += " (" + model.getMessage() + ")";
                 break;
             }
         }

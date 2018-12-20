@@ -89,7 +89,7 @@ public class TaskLogItemViewTest {
         verify(logTime).setAttribute("data-original-title", "05/12/2018 17:15");
         verify(logIcon).setAttribute("data-original-title", "Task stopped");
         verify(logIcon).setClassName("list-view-pf-icon-sm kie-timeline-list-view-pf-icon-sm fa fa-cogs kie-timeline-icon--completed");
-        verify(logInfo).setTextContent("by user Maria ");
+        verify(logInfo).setTextContent("by user Maria");
         verify(logTypeDesc).setTextContent("Task stopped");
     }
 
@@ -111,7 +111,7 @@ public class TaskLogItemViewTest {
         verify(logTime).setAttribute("data-original-title", "05/02/2016 15:02");
         verify(logIcon).setAttribute("data-original-title", "Task updated");
         verify(logIcon).setClassName("list-view-pf-icon-sm kie-timeline-list-view-pf-icon-sm fa fa-user");
-        verify(logInfo).setTextContent("by user Maria  (Maria updated this task ) ");
+        verify(logInfo).setTextContent("by user Maria (Maria updated this task)");
         verify(logTypeDesc).setTextContent("Task updated");
     }
 
@@ -133,7 +133,7 @@ public class TaskLogItemViewTest {
         verify(logTime).setAttribute("data-original-title", "20/01/2018 05:30");
         verify(logIcon).setAttribute("data-original-title", "Task claimed");
         verify(logIcon).setClassName("list-view-pf-icon-sm kie-timeline-list-view-pf-icon-sm fa fa-user");
-        verify(logInfo).setTextContent("by user John ");
+        verify(logInfo).setTextContent("by user John");
         verify(logTypeDesc).setTextContent("Task claimed");
     }
 
@@ -155,7 +155,7 @@ public class TaskLogItemViewTest {
         verify(logTime).setAttribute("data-original-title", "15/12/2017 15:00");
         verify(logIcon).setAttribute("data-original-title", "Task delegated");
         verify(logIcon).setClassName("list-view-pf-icon-sm kie-timeline-list-view-pf-icon-sm fa fa-cogs");
-        verify(logInfo).setTextContent("by user Jan ");
+        verify(logInfo).setTextContent("by user Jan");
         verify(logTypeDesc).setTextContent("Task delegated");
     }
 
@@ -177,7 +177,7 @@ public class TaskLogItemViewTest {
         verify(logTime).setAttribute("data-original-title", "15/12/2017 04:59");
         verify(logIcon).setAttribute("data-original-title", "Task added");
         verify(logIcon).setClassName("list-view-pf-icon-sm kie-timeline-list-view-pf-icon-sm fa fa-cogs");
-        verify(logInfo).setTextContent("by process 'exampleProcess' ");
+        verify(logInfo).setTextContent("by process 'exampleProcess'");
         verify(logTypeDesc).setTextContent("Task added");
     }
 
@@ -199,7 +199,7 @@ public class TaskLogItemViewTest {
         verify(logTime).setAttribute("data-original-title", "11/12/2018 00:15");
         verify(logIcon).setAttribute("data-original-title", "Task completed");
         verify(logIcon).setClassName("list-view-pf-icon-sm kie-timeline-list-view-pf-icon-sm fa fa-user kie-timeline-icon--completed");
-        verify(logInfo).setTextContent("by user Andrew ");
+        verify(logInfo).setTextContent("by user Andrew");
         verify(logTypeDesc).setTextContent("Task completed");
     }
 
