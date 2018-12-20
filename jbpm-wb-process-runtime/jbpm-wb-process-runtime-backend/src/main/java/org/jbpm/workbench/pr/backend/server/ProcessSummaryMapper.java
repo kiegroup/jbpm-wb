@@ -19,8 +19,13 @@ package org.jbpm.workbench.pr.backend.server;
 import java.util.function.Function;
 
 import org.jbpm.workbench.ks.utils.KieServerUtils;
+import org.jbpm.workbench.pr.model.ProcessNodeSummary;
 import org.jbpm.workbench.pr.model.ProcessSummary;
+import org.jbpm.workbench.pr.model.TimerSummary;
 import org.kie.server.api.model.definition.ProcessDefinition;
+
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 
 public class ProcessSummaryMapper implements Function<ProcessDefinition, ProcessSummary> {
 
@@ -40,9 +45,16 @@ public class ProcessSummaryMapper implements Function<ProcessDefinition, Process
         summary.setProcessVariables(definition.getProcessVariables());
         summary.setReusableSubProcesses(definition.getReusableSubProcesses());
         summary.setServiceTasks(definition.getServiceTasks());
-        
         summary.setDynamicFormsEnabled(KieServerUtils.isKieServerRendererEnabled());
+        summary.setNodes(definition.getNodes() == null ? emptyList() : definition.getNodes().stream().map(node -> new ProcessNodeSummary(node.getId(),
+                                                                                                                                         node.getName(),
+                                                                                                                                         node.getType(),
+                                                                                                                                         node.getUniqueId())).collect(toList()));
 
+        summary.setTimers(definition.getTimers() == null ? emptyList() : definition.getTimers().stream().map(timer -> new TimerSummary(timer.getId(),
+                                                                                                                                       timer.getNodeId(),
+                                                                                                                                       timer.getNodeName(),
+                                                                                                                                       timer.getUniqueId())).collect(toList()));
         return summary;
     }
 }

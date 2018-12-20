@@ -25,11 +25,14 @@ public class ProcessDisplayerConfig<S extends FormRenderingSettings> implements 
     private ProcessDefinitionKey key;
     private String processName;
     private S renderingSettings;
+    private boolean isDynamic;
 
     public ProcessDisplayerConfig(ProcessDefinitionKey key,
-                                  String processName) {
+                                  String processName,
+                                  boolean isDynamic) {
         this.key = key;
         this.processName = processName;
+        this.isDynamic = isDynamic;
     }
 
     @Override
@@ -39,6 +42,10 @@ public class ProcessDisplayerConfig<S extends FormRenderingSettings> implements 
 
     public String getProcessName() {
         return processName;
+    }
+
+    public boolean isDynamic() {
+        return isDynamic;
     }
 
     @Override

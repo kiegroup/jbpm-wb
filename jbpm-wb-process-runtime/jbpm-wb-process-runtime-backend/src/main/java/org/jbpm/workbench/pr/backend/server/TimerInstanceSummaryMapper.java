@@ -31,7 +31,8 @@ public class TimerInstanceSummaryMapper implements Function<TimerInstance, Timer
 
         TimerInstanceSummary summary = new TimerInstanceSummary();
 
-        summary.setId(timerInstance.getTimerId());
+        summary.setId(timerInstance.getId());
+        summary.setTimerId(timerInstance.getTimerId());
         summary.setName(timerInstance.getTimerName());
         summary.setProcessInstanceId(timerInstance.getProcessInstanceId());
         summary.setActivationTime(timerInstance.getActivationTime());

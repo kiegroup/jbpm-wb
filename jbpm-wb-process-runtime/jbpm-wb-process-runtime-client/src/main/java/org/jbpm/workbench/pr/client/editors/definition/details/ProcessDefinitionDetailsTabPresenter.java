@@ -59,8 +59,7 @@ public class ProcessDefinitionDetailsTabPresenter {
                     currentDeploymentId);
         refreshProcessDef(currentServerTemplateId,
                           currentDeploymentId,
-                          currentProcessDefId,
-                          event.isDynamic());
+                          currentProcessDefId);
     }
 
     public IsWidget getWidget() {
@@ -180,8 +179,7 @@ public class ProcessDefinitionDetailsTabPresenter {
 
     protected void refreshProcessDef(final String serverTemplateId,
                                      final String deploymentId,
-                                     final String processId,
-                                     final boolean isDynamic) {
+                                     final String processId) {
 
         processRuntimeDataService.call(new RemoteCallback<ProcessSummary>() {
 
@@ -204,11 +202,9 @@ public class ProcessDefinitionDetailsTabPresenter {
                     refreshServiceTasks(process.getServiceTasks());
                 }
             }
-        }).getProcess(serverTemplateId,
-                      new ProcessDefinitionKey(serverTemplateId,
+        }).getProcess(new ProcessDefinitionKey(serverTemplateId,
                                                deploymentId,
-                                               processId,
-                                               isDynamic));
+                                               processId));
     }
 
     public interface AdvancedProcessDefDetailsView extends IsWidget {

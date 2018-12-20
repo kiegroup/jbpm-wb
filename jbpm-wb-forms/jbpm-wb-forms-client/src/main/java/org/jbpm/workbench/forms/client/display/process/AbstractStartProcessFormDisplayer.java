@@ -230,8 +230,7 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
                                                                          deploymentId,
                                                                          processInstanceId,
                                                                          processDefId,
-                                                                         processName,
-                                                                         1));
+                                                                         processName));
                 final String message = Constants.INSTANCE.ProcessStarted(processInstanceId);
                 notificationEvent.fire(new NotificationEvent(message,
                                                              NotificationEvent.NotificationType.SUCCESS));

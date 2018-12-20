@@ -23,15 +23,24 @@ import java.util.Date;
 import java.util.List;
 
 import org.jbpm.workbench.ks.integration.KieServerIntegration;
-import org.jbpm.workbench.pr.model.*;
+import org.jbpm.workbench.pr.model.NodeInstanceSummary;
+import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
+import org.jbpm.workbench.pr.model.ProcessInstanceDiagramSummary;
+import org.jbpm.workbench.pr.model.ProcessInstanceKey;
+import org.jbpm.workbench.pr.model.ProcessNodeSummary;
+import org.jbpm.workbench.pr.model.ProcessSummary;
+import org.jbpm.workbench.pr.model.TimerInstanceSummary;
+import org.jbpm.workbench.pr.model.TimerSummary;
+import org.jbpm.workbench.pr.model.WorkItemSummary;
 import org.jbpm.workbench.pr.service.ProcessImageService;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.server.api.model.admin.ProcessNode;
 import org.kie.server.api.model.admin.TimerInstance;
+import org.kie.server.api.model.definition.NodeDefinition;
 import org.kie.server.api.model.definition.ProcessDefinition;
+import org.kie.server.api.model.definition.TimerDefinition;
 import org.kie.server.api.model.instance.NodeInstance;
 import org.kie.server.api.model.instance.ProcessInstance;
 import org.kie.server.api.model.instance.TaskSummary;
@@ -46,14 +55,24 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static java.lang.String.format;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jbpm.workbench.pr.backend.server.ProcessSummaryMapperTest.assertProcessSummary;
 import static org.jbpm.workbench.pr.backend.server.WorkItemSummaryMapperTest.assertWorkItemSummary;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RemoteProcessRuntimeDataServiceImplTest {
@@ -192,7 +211,7 @@ public class RemoteProcessRuntimeDataServiceImplTest {
 
     @Test
     public void testGetProcesses() {
-        final ProcessDefinition def = ProcessDefinition.builder().id(processId).build();
+        final ProcessDefinition def = ProcessDefinition.builder().id(processId).nodes(emptyList()).timers(emptyList()).build();
 
         when(queryServicesClient.findProcesses(0,
                                                10,
@@ -206,15 +225,13 @@ public class RemoteProcessRuntimeDataServiceImplTest {
                                                                     true);
 
         assertNotNull(summaries);
-        assertEquals(1,
-                     summaries.size());
-        assertProcessSummary(def,
-                             summaries.get(0));
+        assertEquals(1, summaries.size());
+        assertProcessSummary(def, summaries.get(0));
     }
 
     @Test
     public void testGetProcessesByFilter() {
-        final ProcessDefinition def = ProcessDefinition.builder().id(processId).build();
+        final ProcessDefinition def = ProcessDefinition.builder().id(processId).timers(emptyList()).nodes(emptyList()).build();
 
         when(queryServicesClient.findProcesses("filter",
                                                0,
@@ -230,30 +247,24 @@ public class RemoteProcessRuntimeDataServiceImplTest {
                                                                             true);
 
         assertNotNull(summaries);
-        assertEquals(1,
-                     summaries.size());
-        assertProcessSummary(def,
-                             summaries.get(0));
+        assertEquals(1, summaries.size());
+        assertProcessSummary(def, summaries.get(0));
     }
 
     @Test
     public void testGetProcess() {
-        final ProcessDefinition def = ProcessDefinition.builder().id(processId).build();
+        final ProcessDefinition def = ProcessDefinition.builder().id(processId).nodes(emptyList()).timers(emptyList()).build();
 
-        when(processServicesClient.getProcessDefinition(containerId,
-                                                        processId)).thenReturn(def);
+        when(processServicesClient.getProcessDefinition(containerId, processId)).thenReturn(def);
 
         final ProcessDefinitionKey pdk = new ProcessDefinitionKey(serverTemplateId,
                                                                   containerId,
-                                                                  processId,
-                                                                  false);
+                                                                  processId);
 
-        final ProcessSummary summary = service.getProcess(serverTemplateId,
-                                                          pdk);
+        final ProcessSummary summary = service.getProcess(pdk);
 
         assertNotNull(summary);
-        assertProcessSummary(def,
-                             summary);
+        assertProcessSummary(def, summary);
     }
 
     @Test
@@ -279,30 +290,6 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         assertNotNull(summary);
         assertWorkItemSummary(workItem,
                               summary);
-    }
-
-    @Test
-    public void testGetProcessInstanceNodes() {
-        String serverTemplateId = "serverTemplateId";
-        String containerId = "containerId";
-        Long processInstanceId = 1L;
-
-        List<ProcessNode> processNodes = Arrays.asList(ProcessNode.builder().nodeId(1).nodeName("name-1").nodeType("HumanTask").build(),
-                                                       ProcessNode.builder().nodeId(2).nodeName(" ").nodeType("Split").build());
-
-        when(processAdminServicesClient.getProcessNodes(containerId,
-                                                        processInstanceId)).thenReturn(processNodes);
-
-        List<ProcessNodeSummary> nodes = service.getProcessInstanceNodes(serverTemplateId,
-                                                                         containerId,
-                                                                         processInstanceId);
-
-        assertThat(nodes).hasSize(2).containsExactly(new ProcessNodeSummary(1l,
-                                                                            "name-1",
-                                                                            "HumanTask"),
-                                                     new ProcessNodeSummary(2l,
-                                                                            " ",
-                                                                            "Split"));
     }
 
     @Test
@@ -344,20 +331,17 @@ public class RemoteProcessRuntimeDataServiceImplTest {
 
     @Test
     public void testGetProcessInstanceTimerInstances() {
-        ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId,
-                                                                containerId,
-                                                                processInstanceId);
+        ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId, containerId, processInstanceId);
 
-        List<TimerInstance> timerInstances = Arrays.asList(TimerInstance.builder().timerId(1l).timerName("timer1").period(2l).delay(1).build(),
-                                                           TimerInstance.builder().timerId(2l).timerName("time2").period(1l).delay(2).build());
+        List<TimerInstance> timerInstances = Arrays.asList(TimerInstance.builder().id(1l).timerId(0l).timerName("timer1").period(2l).delay(1).build(),
+                                                           TimerInstance.builder().id(2l).timerId(1l).timerName("time2").period(1l).delay(2).build());
 
-        when(processAdminServicesClient.getTimerInstances(containerId,
-                                                          processInstanceId)).thenReturn(timerInstances);
+        when(processAdminServicesClient.getTimerInstances(containerId, processInstanceId)).thenReturn(timerInstances);
 
         List<TimerInstanceSummary> timers = service.getProcessInstanceTimerInstances(instanceKey);
 
-        assertThat(timers).hasSize(2).containsExactly(TimerInstanceSummary.builder().withId(1l).withName("timer1").withPeriod(2l).withDelay(1l).build(),
-                                                      TimerInstanceSummary.builder().withId(2l).withName("time2").withPeriod(1l).withDelay(2l).build());
+        assertThat(timers).hasSize(2).containsExactly(TimerInstanceSummary.builder().withId(1l).withTimerId(0l).withName("timer1").withPeriod(2l).withDelay(1l).build(),
+                                                      TimerInstanceSummary.builder().withId(2l).withTimerId(1l).withName("time2").withPeriod(1l).withDelay(2l).build());
     }
 
     @Test
@@ -407,114 +391,101 @@ public class RemoteProcessRuntimeDataServiceImplTest {
 
     @Test
     public void testGetProcessInstanceDiagramSummary() {
-        ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId,
-                                                                containerId,
-                                                                processInstanceId);
+        ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId, containerId, processInstanceId);
         String svgContent = "<svg></svg>";
         Integer state = org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE;
         String processName = "process";
 
-        when(queryServicesClient.findProcessInstanceById(processInstanceId)).thenReturn(ProcessInstance.builder().id(processInstanceId).containerId(containerId).state(state).processName(processName).build());
+        when(queryServicesClient.findProcessInstanceById(processInstanceId)).thenReturn(ProcessInstance.builder().id(processInstanceId).containerId(containerId).processId(processId).state(state).processName(processName).build());
 
-        when(processImageService.getProcessInstanceDiagram(serverTemplateId,
-                                                           containerId,
-                                                           processInstanceId)).thenReturn(svgContent);
+        when(processImageService.getProcessInstanceDiagram(serverTemplateId, containerId, processInstanceId)).thenReturn(svgContent);
 
-        List<ProcessNode> processNodes = Arrays.asList(ProcessNode.builder().nodeId(1).nodeName("name-1").nodeType("HumanTask").build(),
-                                                       ProcessNode.builder().nodeId(2).nodeName(" ").nodeType("Split").build());
+        List<NodeDefinition> processNodes = Arrays.asList(NodeDefinition.builder().id(1l).name("name-1").type("HumanTask").uniqueId("_1").build(),
+                                                          NodeDefinition.builder().id(2l).name(" ").type("Split").uniqueId("_2").build());
 
-        when(processAdminServicesClient.getProcessNodes(containerId,
-                                                        processInstanceId)).thenReturn(processNodes);
+        List<TimerDefinition> timers = Arrays.asList(TimerDefinition.builder().id(1l).nodeId(2l).nodeName("name-1").uniqueId("_1").build(),
+                                                     TimerDefinition.builder().id(2l).nodeId(0l).nodeName(" ").uniqueId("_2").build());
+
+        when(processServicesClient.getProcessDefinition(containerId, processId)).thenReturn(ProcessDefinition.builder().id(processId).nodes(processNodes).timers(timers).build());
 
         List<NodeInstance> activeNodeInstances = Arrays.asList(NodeInstance.builder().id(1l).name("name-1").nodeType("HumanTask").build(),
                                                                NodeInstance.builder().id(2l).name(" ").nodeType("Split").build());
 
-        when(queryServicesClient.findActiveNodeInstances(processInstanceId,
-                                                         0,
-                                                         Integer.MAX_VALUE)).thenReturn(activeNodeInstances);
+        when(queryServicesClient.findActiveNodeInstances(processInstanceId, 0, Integer.MAX_VALUE)).thenReturn(activeNodeInstances);
 
         List<NodeInstance> completedNodeInstances = Arrays.asList(NodeInstance.builder().id(3l).name("name-3").nodeType("HumanTask").completed(true).build(),
                                                                   NodeInstance.builder().id(4l).name(" ").nodeType("End").completed(true).build());
 
-        when(queryServicesClient.findCompletedNodeInstances(processInstanceId,
-                                                            0,
-                                                            Integer.MAX_VALUE)).thenReturn(completedNodeInstances);
+        when(queryServicesClient.findCompletedNodeInstances(processInstanceId, 0, Integer.MAX_VALUE)).thenReturn(completedNodeInstances);
 
-        List<TimerInstance> timerInstances = Arrays.asList(TimerInstance.builder().timerId(1l).timerName("timer1").period(2l).delay(1).build(),
-                                                           TimerInstance.builder().timerId(2l).timerName("time2").period(1l).delay(2).build());
+        List<TimerInstance> timerInstances = Arrays.asList(TimerInstance.builder().id(1l).timerId(1l).timerName("timer1").processInstanceId(processInstanceId).repeatLimit(1).period(2l).delay(1).build(),
+                                                           TimerInstance.builder().id(2l).timerId(2l).timerName("time2").processInstanceId(processInstanceId).repeatLimit(1).period(1l).delay(2).build());
 
-        when(processAdminServicesClient.getTimerInstances(containerId,
-                                                          processInstanceId)).thenReturn(timerInstances);
+        when(processAdminServicesClient.getTimerInstances(containerId, processInstanceId)).thenReturn(timerInstances);
 
         ProcessInstanceDiagramSummary summary = service.getProcessInstanceDiagramSummary(instanceKey);
 
-        assertEquals(processInstanceId,
-                     summary.getId());
-        assertEquals(processName,
-                     summary.getName());
-        assertEquals(svgContent,
-                     summary.getSvgContent());
+        assertEquals(processInstanceId, summary.getId());
+        assertEquals(processName, summary.getName());
+        assertEquals(svgContent, summary.getSvgContent());
+        assertNotNull(summary.getProcessDefinition());
 
-        assertThat(summary.getProcessNodes()).hasSize(2).containsExactly(new ProcessNodeSummary(1l,
-                                                                                                "name-1",
-                                                                                                "HumanTask"),
-                                                                         new ProcessNodeSummary(2l,
-                                                                                                " ",
-                                                                                                "Split"));
+        assertThat(summary.getProcessDefinition().getNodes()).hasSize(2).containsExactly(new ProcessNodeSummary(1l,
+                                                                                                                "name-1",
+                                                                                                                "HumanTask",
+                                                                                                                "_1"),
+                                                                                         new ProcessNodeSummary(2l,
+                                                                                                                " ",
+                                                                                                                "Split",
+                                                                                                                "_2"));
+
+        assertThat(summary.getProcessDefinition().getTimers()).hasSize(2).containsExactly(new TimerSummary(1l,
+                                                                                                           2l,
+                                                                                                           "name-1",
+                                                                                                           "_1"),
+                                                                                          new TimerSummary(2l,
+                                                                                                           0l,
+                                                                                                           " ",
+                                                                                                           "_2"));
 
         assertThat(summary.getNodeInstances()).hasSize(4).containsExactly(NodeInstanceSummary.builder().withId(1l).withName("name-1").withType("HumanTask").build(),
                                                                           NodeInstanceSummary.builder().withId(2l).withName(" ").withType("Split").build(),
                                                                           NodeInstanceSummary.builder().withId(3l).withName("name-3").withType("HumanTask").withCompleted(true).build(),
                                                                           NodeInstanceSummary.builder().withId(4l).withName(" ").withType("End").withCompleted(true).build());
 
-        assertThat(summary.getTimerInstances()).hasSize(2).containsExactly(TimerInstanceSummary.builder().withId(1l).withName("timer1").withPeriod(2l).withDelay(1l).build(),
-                                                                           TimerInstanceSummary.builder().withId(2l).withName("time2").withPeriod(1l).withDelay(2l).build());
+        assertThat(summary.getTimerInstances()).hasSize(2).containsExactly(TimerInstanceSummary.builder().withId(1l).withTimerId(1l).withName("timer1").withProcessInstanceId(processInstanceId).withRepeatLimit(1).withPeriod(2l).withDelay(1l).build(),
+                                                                           TimerInstanceSummary.builder().withId(2l).withTimerId(2l).withName("time2").withProcessInstanceId(processInstanceId).withRepeatLimit(1).withPeriod(1l).withDelay(2l).build());
     }
 
     @Test
     public void testGetProcessInstanceDiagramSummaryCompletedStatus() {
-        ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId,
-                                                                containerId,
-                                                                processInstanceId);
+        ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId, containerId, processInstanceId);
         String svgContent = "<svg></svg>";
         Integer state = org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
         String processName = "process";
 
-        when(queryServicesClient.findProcessInstanceById(processInstanceId)).thenReturn(ProcessInstance.builder().id(processInstanceId).containerId(containerId).state(state).processName(processName).build());
+        when(queryServicesClient.findProcessInstanceById(processInstanceId)).thenReturn(ProcessInstance.builder().id(processInstanceId).processId(processId).containerId(containerId).state(state).processName(processName).build());
 
-        when(processImageService.getProcessInstanceDiagram(serverTemplateId,
-                                                           containerId,
-                                                           processInstanceId)).thenReturn(svgContent);
+        when(processImageService.getProcessInstanceDiagram(serverTemplateId, containerId, processInstanceId)).thenReturn(svgContent);
+
+        when(processServicesClient.getProcessDefinition(containerId, processId)).thenReturn(new ProcessDefinition());
 
         ProcessInstanceDiagramSummary summary = service.getProcessInstanceDiagramSummary(instanceKey);
 
-        assertEquals(processInstanceId,
-                     summary.getId());
-        assertEquals(processName,
-                     summary.getName());
-        assertEquals(svgContent,
-                     summary.getSvgContent());
-        assertThat(summary.getProcessNodes()).isEmpty();
+        assertEquals(processInstanceId, summary.getId());
+        assertEquals(processName, summary.getName());
+        assertEquals(svgContent, summary.getSvgContent());
+        assertNotNull(summary.getProcessDefinition());
+        assertThat(summary.getProcessDefinition().getNodes()).isEmpty();
+        assertThat(summary.getProcessDefinition().getTimers()).isEmpty();
         assertThat(summary.getNodeInstances()).isEmpty();
         assertThat(summary.getTimerInstances()).isEmpty();
 
-        verify(processAdminServicesClient,
-               never()).getProcessNodes(any(),
-                                        any());
+        verify(queryServicesClient, never()).findActiveNodeInstances(any(), any(), any());
 
-        verify(queryServicesClient,
-               never()).findActiveNodeInstances(any(),
-                                                any(),
-                                                any());
+        verify(queryServicesClient, never()).findCompletedNodeInstances(any(), any(), any());
 
-        verify(queryServicesClient,
-               never()).findCompletedNodeInstances(any(),
-                                                   any(),
-                                                   any());
-
-        verify(processAdminServicesClient,
-               never()).getTimerInstances(any(),
-                                          any());
+        verify(processAdminServicesClient, never()).getTimerInstances(any(), any());
     }
 
     @Test

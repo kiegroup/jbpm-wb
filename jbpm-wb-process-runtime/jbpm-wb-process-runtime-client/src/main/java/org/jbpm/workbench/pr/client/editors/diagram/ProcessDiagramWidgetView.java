@@ -17,12 +17,16 @@
 package org.jbpm.workbench.pr.client.editors.diagram;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import org.uberfire.client.callbacks.Callback;
 import org.uberfire.ext.widgets.common.client.common.HasBusyIndicator;
 
 public interface ProcessDiagramWidgetView extends HasBusyIndicator,
                                                   IsWidget {
 
-    void displayImage(final String svgContent);
+    void displayImage(String svgContent);
 
-    void displayMessage(final String message);
+    void displayMessage(String message);
+
+    void setOnDiagramNodeSelectionCallback(Callback<String> callback);
+
 }

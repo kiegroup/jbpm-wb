@@ -26,7 +26,6 @@ public class NewProcessInstanceEvent implements Serializable {
     private String serverTemplateId;
     private String newProcessDefId;
     private String deploymentId;
-    private Integer newProcessInstanceStatus;
     private String processDefName;
 
     public NewProcessInstanceEvent() {
@@ -36,13 +35,11 @@ public class NewProcessInstanceEvent implements Serializable {
                                    String deploymentId,
                                    Long newProcessInstanceId,
                                    String newProcessDefId,
-                                   String processDefName,
-                                   Integer newProcessInstanceStatus) {
+                                   String processDefName) {
         this.serverTemplateId = serverTemplateId;
         this.newProcessInstanceId = newProcessInstanceId;
         this.newProcessDefId = newProcessDefId;
         this.deploymentId = deploymentId;
-        this.newProcessInstanceStatus = newProcessInstanceStatus;
         this.processDefName = processDefName;
     }
 
@@ -56,10 +53,6 @@ public class NewProcessInstanceEvent implements Serializable {
 
     public String getDeploymentId() {
         return deploymentId;
-    }
-
-    public Integer getNewProcessInstanceStatus() {
-        return newProcessInstanceStatus;
     }
 
     public String getProcessDefName() {
@@ -81,8 +74,6 @@ public class NewProcessInstanceEvent implements Serializable {
         hash = 31 * hash + (this.newProcessDefId != null ? this.newProcessDefId.hashCode() : 0);
         hash = ~~hash;
         hash = 31 * hash + (this.deploymentId != null ? this.deploymentId.hashCode() : 0);
-        hash = ~~hash;
-        hash = 31 * hash + (this.newProcessInstanceStatus != null ? this.newProcessInstanceStatus.hashCode() : 0);
         hash = ~~hash;
         hash = 31 * hash + (this.processDefName != null ? this.processDefName.hashCode() : 0);
         hash = ~~hash;
@@ -107,9 +98,6 @@ public class NewProcessInstanceEvent implements Serializable {
         if (this.deploymentId == null ? other.deploymentId != null : !this.deploymentId.equals(other.deploymentId)) {
             return false;
         }
-        if (this.newProcessInstanceStatus != other.newProcessInstanceStatus && (this.newProcessInstanceStatus == null || !this.newProcessInstanceStatus.equals(other.newProcessInstanceStatus))) {
-            return false;
-        }
         if (this.processDefName == null ? other.processDefName != null : !this.processDefName.equals(other.processDefName)) {
             return false;
         }
@@ -121,6 +109,12 @@ public class NewProcessInstanceEvent implements Serializable {
 
     @Override
     public String toString() {
-        return "NewProcessInstanceEvent{serverTemplateId=" + serverTemplateId + ", " + "newProcessInstanceId=" + newProcessInstanceId + ", newProcessDefId=" + newProcessDefId + ", deploymentId=" + deploymentId + ", newProcessInstanceStatus=" + newProcessInstanceStatus + ", processDefName=" + processDefName + '}';
+        return "NewProcessInstanceEvent{" +
+                "newProcessInstanceId=" + newProcessInstanceId +
+                ", serverTemplateId='" + serverTemplateId + '\'' +
+                ", newProcessDefId='" + newProcessDefId + '\'' +
+                ", deploymentId='" + deploymentId + '\'' +
+                ", processDefName='" + processDefName + '\'' +
+                '}';
     }
 }

@@ -17,12 +17,21 @@
 package org.jbpm.workbench.pr.backend.server;
 
 import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.workbench.ks.integration.AbstractKieServerService;
-import org.jbpm.workbench.pr.model.*;
+import org.jbpm.workbench.pr.model.NodeInstanceSummary;
+import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
+import org.jbpm.workbench.pr.model.ProcessInstanceDiagramSummary;
+import org.jbpm.workbench.pr.model.ProcessInstanceKey;
+import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
+import org.jbpm.workbench.pr.model.ProcessSummary;
+import org.jbpm.workbench.pr.model.TaskDefSummary;
+import org.jbpm.workbench.pr.model.TimerInstanceSummary;
+import org.jbpm.workbench.pr.model.WorkItemSummary;
 import org.jbpm.workbench.pr.service.ProcessImageService;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.kie.internal.process.CorrelationKey;
@@ -111,17 +120,16 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
                                                                             processInstanceKey.getDeploymentId(),
                                                                             processInstanceKey.getProcessInstanceId()));
 
+        summary.setProcessDefinition(getProcess(new ProcessDefinitionKey(processInstance.getServerTemplateId(),
+                                                                         processInstance.getDeploymentId(),
+                                                                         processInstance.getProcessId())));
+
         if (processInstance.getState() == org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE) {
-            summary.setProcessNodes(getProcessInstanceNodes(processInstanceKey.getServerTemplateId(),
-                                                            processInstanceKey.getDeploymentId(),
-                                                            processInstanceKey.getProcessInstanceId()));
             List<NodeInstanceSummary> nodeInstances = getProcessInstanceActiveNodes(processInstanceKey);
             nodeInstances.addAll(getProcessInstanceCompletedNodes(processInstanceKey));
             summary.setNodeInstances(nodeInstances);
-
             summary.setTimerInstances(getProcessInstanceTimerInstances(processInstanceKey));
         } else {
-            summary.setProcessNodes(emptyList());
             summary.setNodeInstances(emptyList());
             summary.setTimerInstances(emptyList());
         }
@@ -209,23 +217,6 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
     }
 
     @Override
-    public List<ProcessNodeSummary> getProcessInstanceNodes(String serverTemplateId,
-                                                            String containerId,
-                                                            Long processInstanceId) {
-        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
-            return emptyList();
-        }
-
-        ProcessAdminServicesClient servicesClient = getClient(serverTemplateId,
-                                                              ProcessAdminServicesClient.class);
-
-        return servicesClient.getProcessNodes(containerId,
-                                              processInstanceId).stream().map(node -> new ProcessNodeSummary(node.getNodeId(),
-                                                                                                             node.getNodeName(),
-                                                                                                             node.getNodeType())).collect(toList());
-    }
-
-    @Override
     public List<ProcessSummary> getProcesses(String serverTemplateId,
                                              Integer page,
                                              Integer pageSize,
@@ -247,13 +238,12 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
     }
 
     @Override
-    public ProcessSummary getProcess(final String serverTemplateId,
-                                     final ProcessDefinitionKey processDefinitionKey) {
-        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+    public ProcessSummary getProcess(final ProcessDefinitionKey processDefinitionKey) {
+        if (processDefinitionKey == null || processDefinitionKey.isValid() == false) {
             return null;
         }
 
-        ProcessServicesClient queryServicesClient = getClient(serverTemplateId,
+        ProcessServicesClient queryServicesClient = getClient(processDefinitionKey.getServerTemplateId(),
                                                               ProcessServicesClient.class);
 
         ProcessDefinition definition = queryServicesClient.getProcessDefinition(processDefinitionKey.getDeploymentId(),

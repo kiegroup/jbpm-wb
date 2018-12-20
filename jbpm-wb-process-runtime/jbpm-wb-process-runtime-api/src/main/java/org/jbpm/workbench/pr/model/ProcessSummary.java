@@ -17,8 +17,10 @@
 package org.jbpm.workbench.pr.model;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
+import org.jboss.errai.common.client.api.annotations.NonPortable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.workbench.common.model.GenericSummary;
 
@@ -34,8 +36,9 @@ public class ProcessSummary extends GenericSummary<String> {
     private Map<String, String> serviceTasks;
     private Map<String, String> processVariables;
     private Collection<String> reusableSubProcesses;
-    
     private boolean dynamicFormsEnabled;
+    private Collection<ProcessNodeSummary> nodes;
+    private Collection<TimerSummary> timers;
 
     public ProcessSummary() {
     }
@@ -134,6 +137,22 @@ public class ProcessSummary extends GenericSummary<String> {
         this.dynamicFormsEnabled = dynamicFormsEnabled;
     }
 
+    public Collection<ProcessNodeSummary> getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(Collection<ProcessNodeSummary> nodes) {
+        this.nodes = nodes;
+    }
+
+    public void setTimers(Collection<TimerSummary> timers) {
+        this.timers = timers;
+    }
+
+    public Collection<TimerSummary> getTimers() {
+        return timers;
+    }
+
     @Override
     public String toString() {
         return "ProcessSummary{" +
@@ -146,7 +165,99 @@ public class ProcessSummary extends GenericSummary<String> {
                 ", serviceTasks=" + serviceTasks +
                 ", processVariables=" + processVariables +
                 ", reusableSubProcesses=" + reusableSubProcesses +
+                ", dynamicFormsEnabled=" + dynamicFormsEnabled +
+                ", nodes=" + nodes +
+                ", timers=" + timers +
+                ", id=" + id +
+                ", name='" + name + '\'' +
                 '}';
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    @NonPortable
+    public static final class Builder {
+
+        private ProcessSummary processSummary;
+
+        private Builder() {
+            processSummary = new ProcessSummary();
+        }
+
+        public Builder processDefId(String processDefId) {
+            processSummary.setProcessDefId(processDefId);
+            return this;
+        }
+
+        public Builder processDefName(String processDefName) {
+            processSummary.setProcessDefName(processDefName);
+            return this;
+        }
+
+        public Builder version(String version) {
+            processSummary.setVersion(version);
+            return this;
+        }
+
+        public Builder deploymentId(String deploymentId) {
+            processSummary.setDeploymentId(deploymentId);
+            return this;
+        }
+
+        public Builder dynamic(boolean dynamic) {
+            processSummary.setDynamic(dynamic);
+            return this;
+        }
+
+        public Builder id(String id) {
+            processSummary.setId(id);
+            return this;
+        }
+
+        public Builder name(String name) {
+            processSummary.setName(name);
+            return this;
+        }
+
+        public Builder associatedEntities(Map<String, String[]> associatedEntities) {
+            processSummary.setAssociatedEntities(associatedEntities);
+            return this;
+        }
+
+        public Builder callbacks(List<LabeledCommand> callbacks) {
+            processSummary.setCallbacks(callbacks);
+            return this;
+        }
+
+        public Builder serviceTasks(Map<String, String> serviceTasks) {
+            processSummary.setServiceTasks(serviceTasks);
+            return this;
+        }
+
+        public Builder processVariables(Map<String, String> processVariables) {
+            processSummary.setProcessVariables(processVariables);
+            return this;
+        }
+
+        public Builder reusableSubProcesses(Collection<String> reusableSubProcesses) {
+            processSummary.setReusableSubProcesses(reusableSubProcesses);
+            return this;
+        }
+
+        public Builder nodes(Collection<ProcessNodeSummary> nodes) {
+            processSummary.setNodes(nodes);
+            return this;
+        }
+
+        public Builder timers(Collection<TimerSummary> timers) {
+            processSummary.setTimers(timers);
+            return this;
+        }
+
+        public ProcessSummary build() {
+            return processSummary;
+        }
+    }
 }

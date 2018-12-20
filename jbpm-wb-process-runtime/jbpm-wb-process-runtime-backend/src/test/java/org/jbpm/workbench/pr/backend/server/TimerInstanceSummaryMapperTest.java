@@ -30,8 +30,10 @@ public class TimerInstanceSummaryMapperTest {
                                                   final TimerInstanceSummary ts) {
         assertNotNull(ts);
 
-        assertEquals(ti.getTimerId(),
+        assertEquals(ti.getId(),
                      ts.getId().longValue());
+        assertEquals(ti.getTimerId(),
+                     ts.getTimerId().longValue());
         assertEquals(ti.getTimerName(),
                      ts.getName());
         assertEquals(ti.getActivationTime(),
@@ -53,7 +55,8 @@ public class TimerInstanceSummaryMapperTest {
     @Test
     public void testTimerInstanceSummary() {
         TimerInstance ti = TimerInstance.builder()
-                .timerId(1l)
+                .id(1l)
+                .timerId(0l)
                 .timerName("timer")
                 .activationTime(new Date())
                 .delay(2l)

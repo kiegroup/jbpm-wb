@@ -40,7 +40,9 @@ public interface ProcessInstanceDiagramView extends HasBusyIndicator,
 
     void setTimerInstances(List<TimerInstanceSummary> timers);
 
-    void setOnProcessNodeSelectedCallback(Callback<Long> onProcessNodeSelectedCallback);
+    void setOnProcessNodeSelectedCallback(Callback<String> callback);
+
+    void setOnDiagramNodeSelectionCallback(Callback<String> callback);
 
     void hideNodeActions();
 
