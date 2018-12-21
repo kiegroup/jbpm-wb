@@ -82,6 +82,8 @@ public interface Constants extends Messages {
     String Process_Definition();
 
     String ProcessStarted(Long processInstanceId);
+    
+    String CaseStarted(String caseId);
 
     String UnableToFindFormForProcess(String processName);
 

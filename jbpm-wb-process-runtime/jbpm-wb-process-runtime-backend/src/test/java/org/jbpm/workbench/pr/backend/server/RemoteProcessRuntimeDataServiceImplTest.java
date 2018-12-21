@@ -245,7 +245,8 @@ public class RemoteProcessRuntimeDataServiceImplTest {
 
         final ProcessDefinitionKey pdk = new ProcessDefinitionKey(serverTemplateId,
                                                                   containerId,
-                                                                  processId);
+                                                                  processId,
+                                                                  false);
 
         final ProcessSummary summary = service.getProcess(serverTemplateId,
                                                           pdk);

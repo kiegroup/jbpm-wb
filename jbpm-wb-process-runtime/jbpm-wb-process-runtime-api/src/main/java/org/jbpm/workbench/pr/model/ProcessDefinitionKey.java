@@ -26,23 +26,28 @@ public class ProcessDefinitionKey implements ItemKey {
     private String deploymentId;
     private String processId;
     private String processDefName;
+    private boolean isDynamic;
 
     public ProcessDefinitionKey(String serverTemplateId,
                                 String deploymentId,
-                                String processId) {
+                                String processId,
+                                boolean isDynamic) {
         this.serverTemplateId = serverTemplateId;
         this.deploymentId = deploymentId;
         this.processId = processId;
+        this.isDynamic = isDynamic;
     }
 
     public ProcessDefinitionKey(String serverTemplateId,
                                 String deploymentId,
                                 String processId,
-                                String processDefName) {
+                                String processDefName,
+                                boolean isDynamic) {
         this.serverTemplateId = serverTemplateId;
         this.deploymentId = deploymentId;
         this.processId = processId;
         this.processDefName = processDefName;
+        this.isDynamic = isDynamic;
     }
 
     public ProcessDefinitionKey() {
@@ -69,6 +74,10 @@ public class ProcessDefinitionKey implements ItemKey {
 
     public String getServerTemplateId() {
         return serverTemplateId;
+    }
+    
+    public boolean isDynamic() {
+        return isDynamic;
     }
 
     @Override

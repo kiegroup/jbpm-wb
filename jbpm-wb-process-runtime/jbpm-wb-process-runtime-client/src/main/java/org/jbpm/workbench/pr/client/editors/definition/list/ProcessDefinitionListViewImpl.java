@@ -237,7 +237,8 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
                         processSummary ->
                                 presenter.openGenericForm(processSummary.getProcessDefId(),
                                                           processSummary.getDeploymentId(),
-                                                          processSummary.getProcessDefName()),
+                                                          processSummary.getProcessDefName(),
+                                                          processSummary.isDynamic()),
                         presenter.getStartCondition(),
                         false
                 ),

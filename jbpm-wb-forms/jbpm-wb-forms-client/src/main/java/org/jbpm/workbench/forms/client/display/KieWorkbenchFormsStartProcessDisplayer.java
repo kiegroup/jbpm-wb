@@ -67,4 +67,9 @@ public class KieWorkbenchFormsStartProcessDisplayer extends AbstractStartProcess
                     getCorrelationKey());
         }
     }
+    
+    @Override
+    public boolean appendFooter() {
+        return true;
+    }
 }

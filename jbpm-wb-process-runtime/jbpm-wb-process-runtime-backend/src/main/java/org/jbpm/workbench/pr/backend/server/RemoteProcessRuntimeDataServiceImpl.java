@@ -25,6 +25,8 @@ import org.jbpm.workbench.ks.integration.AbstractKieServerService;
 import org.jbpm.workbench.pr.model.*;
 import org.jbpm.workbench.pr.service.ProcessImageService;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
+import org.kie.internal.process.CorrelationKey;
+import org.kie.internal.process.CorrelationProperty;
 import org.kie.server.api.exception.KieServicesHttpException;
 import org.kie.server.api.model.definition.ProcessDefinition;
 import org.kie.server.api.model.definition.UserTaskDefinitionList;
@@ -42,7 +44,7 @@ import static java.util.stream.Collectors.toList;
 @ApplicationScoped
 public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerService implements ProcessRuntimeDataService {
 
-    public static int NOT_FOUND_ERROR_CODE = 404;
+    public static int NOT_FOUND_ERROR_CODE = 404;    
 
     @Inject
     private ProcessImageService processImageService;
@@ -324,6 +326,36 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
                 throw kieException;
             }
         }
+    }
+    
+    @Override
+    public ProcessInstanceSummary getProcessInstanceByCorrelationKey(String serverTemplateId, String correlationKey) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return null;
+        }
+
+        QueryServicesClient queryServicesClient = getClient(serverTemplateId,
+                                                            QueryServicesClient.class);
+
+        ProcessInstance processInstance = queryServicesClient.findProcessInstanceByCorrelationKey(new CorrelationKey() {
+            
+            @Override
+            public String toExternalForm() {
+                return correlationKey;
+            }
+            
+            @Override
+            public List<CorrelationProperty<?>> getProperties() {
+                return null;
+            }
+            
+            @Override
+            public String getName() {
+                return correlationKey;
+            }
+        });
+
+        return new ProcessInstanceSummaryMapper(serverTemplateId).apply(processInstance);
     }
 
 }

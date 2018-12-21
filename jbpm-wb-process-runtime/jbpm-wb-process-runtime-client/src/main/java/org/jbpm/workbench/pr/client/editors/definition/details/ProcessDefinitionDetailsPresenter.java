@@ -146,7 +146,8 @@ public class ProcessDefinitionDetailsPresenter implements RefreshMenuBuilder.Sup
         final ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(serverTemplateId,
                                                                                                   deploymentId,
                                                                                                   processId,
-                                                                                                  processDefName),
+                                                                                                  processDefName,
+                                                                                                  dynamic),
                                                                          processDefName);
 
         formDisplayPopUp.setTitle(processDefName);

@@ -18,6 +18,7 @@ package org.jbpm.workbench.ks.integration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 import javax.enterprise.context.ApplicationScoped;
@@ -296,7 +297,11 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
             int columnIndex = 0;
             for (Object value : row) {
                 DataColumn intervalBuilder = dataSet.getColumnByIndex(columnIndex);
-                intervalBuilder.getValues().add(value);
+                if (intervalBuilder.getColumnType().equals(ColumnType.DATE) && value instanceof Long) {
+                    intervalBuilder.getValues().add(new Date((Long)value));
+                } else {
+                    intervalBuilder.getValues().add(value);
+                }
 
                 columnIndex++;
             }

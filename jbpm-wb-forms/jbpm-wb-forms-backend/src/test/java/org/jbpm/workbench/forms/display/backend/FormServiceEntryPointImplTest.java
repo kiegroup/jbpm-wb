@@ -26,6 +26,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
 import org.jbpm.workbench.forms.display.FormRenderingSettings;
+import org.jbpm.workbench.forms.display.api.KieServerFormRenderingSettings;
 import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
 import org.jbpm.workbench.forms.display.api.TaskFormPermissionDeniedException;
 import org.jbpm.workbench.forms.display.backend.provider.DefaultKieWorkbenchFormsProvider;
@@ -244,7 +245,8 @@ public class FormServiceEntryPointImplTest {
 
         FormRenderingSettings settings = serviceEntryPoint.getFormDisplayProcess("template",
                                                                                  "domain",
-                                                                                 "invoices");
+                                                                                 "invoices",
+                                                                                 false);
 
         verify(processServicesClient).getProcessDefinition(anyString(),
                                                            anyString());
@@ -262,7 +264,8 @@ public class FormServiceEntryPointImplTest {
 
         FormRenderingSettings settings = serviceEntryPoint.getFormDisplayProcess("template",
                                                                                  "domain",
-                                                                                 "invoices");
+                                                                                 "invoices",
+                                                                                 false);
 
         verify(processServicesClient).getProcessDefinition(anyString(),
                                                            anyString());
@@ -286,7 +289,8 @@ public class FormServiceEntryPointImplTest {
 
         FormRenderingSettings settings = serviceEntryPoint.getFormDisplayProcess("template",
                                                                                  "domain",
-                                                                                 "invoices");
+                                                                                 "invoices",
+                                                                                 false);
 
         verify(processServicesClient).getProcessDefinition(anyString(),
                                                            anyString());
@@ -308,7 +312,8 @@ public class FormServiceEntryPointImplTest {
 
         FormRenderingSettings settings = serviceEntryPoint.getFormDisplayProcess("template",
                                                                                  "domain",
-                                                                                 "invoices");
+                                                                                 "invoices",
+                                                                                 false);
 
         verify(processServicesClient).getProcessDefinition(anyString(),
                                                            anyString());
@@ -462,6 +467,47 @@ public class FormServiceEntryPointImplTest {
 
         checkRenderingSettings(settings);
     }
+    
+    @Test
+    public void testKieServerRenderProcessForm() {
+
+        serviceEntryPoint.setKieServerFormRenderer(true); 
+        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayProcess("template",
+                                                                                 "domain",
+                                                                                 "invoices",
+                                                                                 false);
+
+        verify(processServicesClient, never()).getProcessDefinition(anyString(),
+                                                           anyString());
+        verify(kieServicesClient, never()).getClassLoader();
+        verify(uiServicesClient, never()).getProcessRawForm(anyString(),
+                                                   anyString());
+
+        verify(defaultProvider, never()).render(any(ProcessRenderingSettings.class));
+
+        checkKieServerRenderingSettings(settings);
+    }
+    
+    @Test
+    public void testKieServerRenderTaskForm() {
+        serviceEntryPoint.setKieServerFormRenderer(true); 
+        FormRenderingSettings settings = serviceEntryPoint.getFormDisplayTask("template",
+                                                                              "domain",
+                                                                              12);
+
+        verify(userTaskServicesClient, never()).getTaskInstance(anyString(),
+                                                       anyLong(),
+                                                       anyBoolean(),
+                                                       anyBoolean(),
+                                                       anyBoolean());
+        verify(kieServicesClient, never()).getClassLoader();
+        verify(uiServicesClient, never()).getTaskRawForm(anyString(),
+                                                anyLong());
+
+        verify(defaultProvider, never()).render(any(TaskRenderingSettings.class));
+
+        checkKieServerRenderingSettings(settings);
+    }
 
     protected void checkRenderingSettings(FormRenderingSettings settings) {
         assertNotNull("Settings cannot be null",
@@ -476,6 +522,18 @@ public class FormServiceEntryPointImplTest {
 
         assertNotNull("There should be a default FormDefinition",
                       wbSettings.getRenderingContext().getRootForm());
+    }
+    
+    protected void checkKieServerRenderingSettings(FormRenderingSettings settings) {
+        assertNotNull("Settings cannot be null",
+                      settings);
+        assertTrue("Settings must be KieServer Forms",
+                   settings instanceof KieServerFormRenderingSettings);
+
+        KieServerFormRenderingSettings ksSettings = (KieServerFormRenderingSettings) settings;
+
+        assertNotNull("URL shouldn't be empty",
+                      ksSettings.getUrl());
     }
 
     protected String getFormContent() {

@@ -169,7 +169,8 @@ public class ProcessDefinitionListPresenterTest {
 
         presenter.openGenericForm("processDefId",
                                   "deploymentId",
-                                  processDefName);
+                                  processDefName,
+                                  false);
 
         ArgumentCaptor<ProcessDisplayerConfig> argument = ArgumentCaptor.forClass(ProcessDisplayerConfig.class);
         verify(startProcessDisplayProvider).setup(argument.capture(),
