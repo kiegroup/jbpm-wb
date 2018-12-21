@@ -121,6 +121,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
 
     @Override
     public void clearBlockingError() {
+        filters.getElement().classList.remove("hidden");
         alert.getElement().classList.add("hidden");
         alert.setSummary("");
         alert.setDescription("");
