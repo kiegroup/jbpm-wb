@@ -16,17 +16,21 @@
 
 package org.jbpm.workbench.wi.client.handlers;
 
+import java.util.Optional;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
 import org.guvnor.common.services.project.model.WorkspaceProject;
+import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.wi.casemgmt.service.CaseProjectService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.screens.library.client.screens.project.AddProjectPopUpPresenter;
+import org.kie.workbench.common.screens.library.client.util.LibraryPermissions;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -37,6 +41,7 @@ import org.uberfire.mocks.MockInstanceImpl;
 import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.workbench.events.NotificationEvent;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -53,6 +58,12 @@ public class NewCaseProjectHandlerTest {
 
     @Mock
     AddProjectPopUpPresenter addProjectPopUpPresenter;
+
+    @Mock
+    LibraryPermissions libraryPermissions;
+
+    @Mock
+    WorkspaceProjectContext context;
 
     Instance<AddProjectPopUpPresenter> addProjectPopUpPresenterProvider;
 
@@ -97,5 +108,23 @@ public class NewCaseProjectHandlerTest {
         verify(notification).fire(any());
 
         verify(addProjectPopUpPresenterProvider).destroy(addProjectPopUpPresenter);
+    }
+
+    @Test
+    public void testCanCreateCaseProjectWhenUserHasPermissionOnCurrentOU() {
+        final OrganizationalUnit currentOU = mock(OrganizationalUnit.class);
+        doReturn(Optional.of(currentOU)).when(context).getActiveOrganizationalUnit();
+        doReturn(true).when(libraryPermissions).userCanCreateProject(same(currentOU));
+
+        assertTrue(newCaseProjectHandler.canCreate());
+    }
+
+    @Test
+    public void testCanNotCreateCaseProjectWhenUserHasNoPermissionOnCurrentOU() {
+        final OrganizationalUnit currentOU = mock(OrganizationalUnit.class);
+        doReturn(Optional.of(currentOU)).when(context).getActiveOrganizationalUnit();
+        doReturn(false).when(libraryPermissions).userCanCreateProject(same(currentOU));
+
+        assertFalse(newCaseProjectHandler.canCreate());
     }
 }
