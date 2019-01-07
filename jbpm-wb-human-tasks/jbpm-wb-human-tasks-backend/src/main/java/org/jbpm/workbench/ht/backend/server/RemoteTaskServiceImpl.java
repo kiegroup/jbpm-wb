@@ -298,7 +298,7 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
                                                                taskId,
                                                                page,
                                                                pageSize,
-                                                               "logTime",
+                                                               "id",
                                                                false);
 
         return events.stream().map(e -> build(e)).collect(toList());
