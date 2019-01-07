@@ -20,25 +20,26 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.ui.ElementWrapperWidget;
+import org.jbpm.workbench.forms.client.display.displayer.KieWorkbenchFormDisplayer;
 import org.jbpm.workbench.forms.display.FormDisplayerConfig;
 import org.jbpm.workbench.forms.client.display.task.AbstractHumanTaskFormDisplayer;
 import org.jbpm.workbench.ht.model.TaskKey;
 import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
 import org.jbpm.workbench.forms.display.service.KieWorkbenchFormsEntryPoint;
-import org.kie.workbench.common.forms.dynamic.client.DynamicFormRenderer;
 import org.uberfire.mvp.Command;
 
 @Dependent
 public class KieWorkbenchFormsHumanTaskDisplayer extends AbstractHumanTaskFormDisplayer<KieWorkbenchFormRenderingSettings> {
 
-    private DynamicFormRenderer formRenderer;
+    private KieWorkbenchFormDisplayer formDisplayer;
 
     private Caller<KieWorkbenchFormsEntryPoint> service;
 
     @Inject
-    public KieWorkbenchFormsHumanTaskDisplayer(DynamicFormRenderer formRenderer,
+    public KieWorkbenchFormsHumanTaskDisplayer(KieWorkbenchFormDisplayer formDisplayer,
                                                Caller<KieWorkbenchFormsEntryPoint> service) {
-        this.formRenderer = formRenderer;
+        this.formDisplayer = formDisplayer;
         this.service = service;
     }
 
@@ -53,13 +54,13 @@ public class KieWorkbenchFormsHumanTaskDisplayer extends AbstractHumanTaskFormDi
 
     @Override
     protected void initDisplayer() {
-        formRenderer.render(renderingSettings.getRenderingContext());
-        formContainer.add(formRenderer);
+        formDisplayer.show(renderingSettings.getRenderingContext(), renderingSettings.isDefaultForms());
+        formContainer.add(ElementWrapperWidget.getWidget(formDisplayer.getElement()));
     }
 
     @Override
     protected void completeFromDisplayer() {
-        if (formRenderer.isValid()) {
+        if (formDisplayer.isValid()) {
             service.call(getCompleteTaskRemoteCallback(),
                          getUnexpectedErrorCallback()).completeTaskFromContext(
                     renderingSettings.getTimestamp(),
@@ -72,7 +73,7 @@ public class KieWorkbenchFormsHumanTaskDisplayer extends AbstractHumanTaskFormDi
 
     @Override
     protected void saveStateFromDisplayer() {
-        if (formRenderer.isValid()) {
+        if (formDisplayer.isValid()) {
             service.call(getSaveTaskStateCallback(),
                          getUnexpectedErrorCallback()).saveTaskStateFromRenderContext(
                     renderingSettings.getTimestamp(),
