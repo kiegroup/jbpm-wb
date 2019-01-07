@@ -88,8 +88,13 @@ public class TimerInstanceSummary extends GenericSummary<Long> {
         this.repeatLimit = repeatLimit;
     }
 
-    public String getLabel(){
-        return getId() + "-" + (getName() == null || getName().trim().isEmpty() ? "TimerInstance" : getName());
+    @Override
+    public String getName() {
+        return (super.getName() == null || super.getName().trim().isEmpty() ? "TimerInstance" : super.getName());
+    }
+
+    public String getLabel() {
+        return getName() + "-" + getId();
     }
 
     public Boolean isRelative() {

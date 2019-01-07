@@ -16,8 +16,8 @@
 
 package org.jbpm.workbench.pr.client.editors.instance.diagram;
 
-import java.util.Comparator;
 import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -42,6 +42,7 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import static java.util.Collections.emptyList;
+import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 
 @Dependent
@@ -93,14 +94,14 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
         processService.call((ProcessInstanceDiagramSummary summary) -> {
             displayImage(summary.getSvgContent(),
                          processInstance.getDeploymentId());
-            processNodes = summary.getProcessNodes().stream().sorted(Comparator.comparing(ProcessNodeSummary::getId)).collect(toList());
+            processNodes = summary.getProcessNodes().stream().sorted(comparing(ProcessNodeSummary::getName, String.CASE_INSENSITIVE_ORDER).thenComparingLong(ProcessNodeSummary::getId)).collect(toList());
 
             processNodes.stream().filter(this::isProcessNodeTypeTriggerAllowed).forEach(pn -> pn.addCallback(constants.Trigger(),
                                                                                                              () -> onProcessNodeTrigger(pn)));
 
             view.setProcessNodes(processNodes);
 
-            List<NodeInstanceSummary> nodeInstances = summary.getNodeInstances().stream().sorted(Comparator.comparing(NodeInstanceSummary::getId)).collect(toList());
+            List<NodeInstanceSummary> nodeInstances = summary.getNodeInstances().stream().sorted(comparing(NodeInstanceSummary::getName, String.CASE_INSENSITIVE_ORDER).thenComparingLong(NodeInstanceSummary::getId)).collect(toList());
 
             nodeInstances.forEach(ni -> {
                 ni.setDescription((ni.isCompleted() ? constants.Completed() : constants.Started()) + " " + DateUtils.getPrettyTime(ni.getTimestamp()));
@@ -114,7 +115,7 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
 
             view.setNodeInstances(nodeInstances);
 
-            List<TimerInstanceSummary> timerInstances = summary.getTimerInstances().stream().sorted(Comparator.comparing(TimerInstanceSummary::getId)).collect(toList());
+            List<TimerInstanceSummary> timerInstances = summary.getTimerInstances().stream().sorted(comparing(TimerInstanceSummary::getName, String.CASE_INSENSITIVE_ORDER).thenComparingLong(TimerInstanceSummary::getId)).collect(toList());
 
             timerInstances.forEach(ti -> {
                 ti.setDescription(constants.NextExecution() + " " + DateUtils.getPrettyTime(ti.getNextFireTime()));
@@ -131,12 +132,10 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
             if (forLog || processInstance.getState() != ProcessInstance.STATE_ACTIVE) {
                 view.hideNodeActions();
             }
-
         }).getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey());
     }
 
-    public void displayImage(final String svgContent,
-                             final String containerId) {
+    public void displayImage(final String svgContent, final String containerId) {
         if (svgContent == null || svgContent.isEmpty()) {
             view.displayMessage(constants.Process_Diagram_Not_FoundContainerShouldBeAvailable(containerId));
         } else {
