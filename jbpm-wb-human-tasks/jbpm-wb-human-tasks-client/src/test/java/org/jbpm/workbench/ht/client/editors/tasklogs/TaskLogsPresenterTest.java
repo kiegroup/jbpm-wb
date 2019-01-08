@@ -31,7 +31,6 @@ import org.jbpm.workbench.ht.model.TaskEventSummary;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,8 +40,14 @@ import org.mockito.Mock;
 import org.uberfire.mocks.CallerMock;
 
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskLogsPresenterTest extends AbstractTaskPresenterTest {
@@ -94,7 +99,6 @@ public class TaskLogsPresenterTest extends AbstractTaskPresenterTest {
         verify(taskLogsView).setLogs(argumentDESC.capture());
         assertEquals(3,
                      argumentDESC.getValue().size());
-
     }
 
     @Test
@@ -185,7 +189,6 @@ public class TaskLogsPresenterTest extends AbstractTaskPresenterTest {
                times(2)).setLogs(argumentDESC.capture());
         assertEquals(testAllLogsSize,
                      argumentDESC.getValue().size());
-
     }
 
     private List<TaskEventSummary> createEventSummariesForTask(Long taskId) {
@@ -232,9 +235,7 @@ public class TaskLogsPresenterTest extends AbstractTaskPresenterTest {
     private Date createDate(int year,
                             Month month,
                             int day) {
-        LocalDate localDate = LocalDate.of(year,
-                                           month,
-                                           day);
+        LocalDate localDate = LocalDate.of(year, month, day);
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 }
