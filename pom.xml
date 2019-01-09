@@ -53,6 +53,7 @@
     <findbugs.failOnViolation>true</findbugs.failOnViolation>
     <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
     <checkstyle.logViolationsToConsole>true</checkstyle.logViolationsToConsole>
+    <needs-errai-1101-workaround>true</needs-errai-1101-workaround>
   </properties>
 
   <modules>
