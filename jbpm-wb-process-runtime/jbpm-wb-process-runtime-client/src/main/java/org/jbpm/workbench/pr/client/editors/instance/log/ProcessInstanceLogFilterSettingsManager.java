@@ -64,7 +64,7 @@ public class ProcessInstanceLogFilterSettingsManager extends FilterSettingsManag
         multipleSortBy.put(COLUMN_LOG_DATE,
                            SortOrder.DESCENDING);
         multipleSortBy.put(COLUMN_LOG_ID,
-                           SortOrder.ASCENDING);
+                           SortOrder.DESCENDING);
         multipleSortBy.put(COLUMN_LOG_TYPE,
                            SortOrder.DESCENDING);
         return multipleSortBy;
