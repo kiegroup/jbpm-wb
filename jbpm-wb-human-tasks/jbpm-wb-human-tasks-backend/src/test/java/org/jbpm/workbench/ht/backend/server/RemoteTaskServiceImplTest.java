@@ -272,7 +272,7 @@ public class RemoteTaskServiceImplTest {
                                                    taskId,
                                                    0,
                                                    5,
-                                                   "logTime",
+                                                   "id",
                                                    false)).thenReturn(Arrays.asList(eventInstance));
         List<TaskEventSummary> taskEventSummaries = remoteTaskService.getTaskEvents(serverTemplateId,
                                                                                     containerId,
@@ -283,7 +283,7 @@ public class RemoteTaskServiceImplTest {
                                                       taskId,
                                                       0,
                                                       5,
-                                                      "logTime",
+                                                      "id",
                                                       false);
 
         assertEquals(1,

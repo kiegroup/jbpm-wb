@@ -20,7 +20,7 @@ public final class ProcessInstanceLogDataSetConstants {
 
     public static final String PROCESS_INSTANCE_LOGS_DATASET = "jbpmProcessInstanceLogs";
 
-    public static final String COLUMN_LOG_ID = "nodeInstanceId";
+    public static final String COLUMN_LOG_ID = "id";
     public static final String COLUMN_LOG_NODE_ID = "nodeId";
     public static final String COLUMN_LOG_NODE_NAME = "nodeName";
     public static final String COLUMN_LOG_NODE_TYPE = "nodeType";

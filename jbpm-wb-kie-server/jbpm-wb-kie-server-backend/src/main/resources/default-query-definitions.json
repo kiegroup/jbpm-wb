@@ -62,7 +62,7 @@
   {
     "query-name": "jbpmProcessInstanceLogs",
     "query-source": "${org.kie.server.persistence.ds}",
-    "query-expression": "select log.nodeInstanceId, log.nodeId, log.nodeName, log.nodeType, log.externalId, log.processInstanceId, log.log_date, log.connection, log.type, log.workItemId, log.referenceId, log.nodeContainerId, log.sla_due_date, log.slaCompliance from NodeInstanceLog log ",
+    "query-expression": "select log.id, log.nodeId, log.nodeName, log.nodeType, log.externalId, log.processInstanceId, log.log_date, log.connection, log.type, log.workItemId, log.referenceId, log.nodeContainerId, log.sla_due_date, log.slaCompliance from NodeInstanceLog log ",
     "query-target": "CUSTOM"
   }
 ]
