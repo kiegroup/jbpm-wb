@@ -156,4 +156,20 @@ public interface Constants extends Messages {
     String CMMNFileTypeDescription();
 
     String CMMNFileTypeShortName();
+    
+    String ServiceTaskList();
+    
+    String NoServiceTasksFound();
+    
+    String BaseSettings();
+    
+    String MavenInstallHelp();
+    
+    String InstallPomDepsHelp();
+    
+    String UseVersionRangeHelp();
+    
+    String InstallServiceTask();
+    
+    String UninstallServiceTask();
 }

@@ -69,6 +69,10 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-structure-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-m2repo-editor-backend</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.kie</groupId>
@@ -141,6 +145,16 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
+    
+    <!-- jbpm work items repository -->
+    <dependency>
+      <groupId>org.jbpm.contrib</groupId>
+      <artifactId>repository</artifactId>      
+    </dependency>
+    <dependency>
+      <groupId>com.thoughtworks.xstream</groupId>
+      <artifactId>xstream</artifactId>
+    </dependency>
 
     <!-- GUVNOR ALA Dependencies -->
     <dependency>
@@ -173,6 +187,11 @@
       <groupId>org.kie.soup</groupId>
       <artifactId>kie-soup-commons</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.kie.soup</groupId>
+      <artifactId>kie-soup-maven-support</artifactId>
+    </dependency>
+    
 
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>

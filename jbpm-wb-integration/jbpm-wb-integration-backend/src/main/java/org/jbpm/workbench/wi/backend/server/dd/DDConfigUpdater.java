@@ -19,6 +19,7 @@ package org.jbpm.workbench.wi.backend.server.dd;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -27,12 +28,14 @@ import org.jbpm.designer.notification.DesignerWorkitemInstalledEvent;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
+import org.jbpm.workbench.wi.workitems.model.ServiceTaskResourceEvent;
 import org.kie.workbench.common.services.shared.project.KieModule;
 import org.kie.workbench.common.services.shared.project.KieModuleService;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.java.nio.base.options.CommentedOption;
 import org.uberfire.workbench.events.ResourceAddedEvent;
+import org.uberfire.workbench.events.ResourceChangeType;
 import org.uberfire.workbench.events.ResourceUpdatedEvent;
 
 @ApplicationScoped
@@ -76,11 +79,28 @@ public class DDConfigUpdater {
 
     public void processWorkitemInstall(@Observes final DesignerWorkitemInstalledEvent workitemInstalledEvent) {
         addWorkItemToConfig(moduleService.resolveModule(workitemInstalledEvent.getPath()),
-                            workitemInstalledEvent);
+                            workitemInstalledEvent.getName(),
+                            workitemInstalledEvent.getValue(),
+                            workitemInstalledEvent.getResolver());
+    }
+    
+    public void processServiceTaskEvent(@Observes final ServiceTaskResourceEvent serviceResourceEvent) {
+        
+        if (serviceResourceEvent.getType().equals(ResourceChangeType.ADD)) {
+            addWorkItemToConfig(moduleService.resolveModule(serviceResourceEvent.getPath()),
+                            serviceResourceEvent.getName(),
+                            serviceResourceEvent.getValue(),
+                            serviceResourceEvent.getResolver());
+        } else if (serviceResourceEvent.getType().equals(ResourceChangeType.DELETE)) {
+            removeWorkItemFromConfig(moduleService.resolveModule(serviceResourceEvent.getPath()),
+                            serviceResourceEvent.getName());
+        }
     }
 
     private void addWorkItemToConfig(final KieModule kieModule,
-                                     final DesignerWorkitemInstalledEvent workitemInstalledEvent) {
+                                     final String name, 
+                                     final String value, 
+                                     final String resolver) {
         Path deploymentDescriptorPath = getDeploymentDescriptorPath(kieModule);
         ddEditorService.createIfNotExists(deploymentDescriptorPath);
         DeploymentDescriptorModel descriptorModel = ddEditorService.load(deploymentDescriptorPath);
@@ -90,12 +110,12 @@ public class DDConfigUpdater {
                 descriptorModel.setWorkItemHandlers(new ArrayList<>());
             }
 
-            if (isValidWorkitem(workitemInstalledEvent) && !workItemAlreadyInstalled(descriptorModel.getWorkItemHandlers(),
-                                                                                     workitemInstalledEvent.getName())) {
-                ItemObjectModel itemModel = new ItemObjectModel(workitemInstalledEvent.getName(),
-                                                                parseWorkitemValue(workitemInstalledEvent.getValue()),
-                                                                getWorkitemResolver(workitemInstalledEvent.getValue(),
-                                                                                    workitemInstalledEvent.getResolver()),
+            if (isValidWorkitem(name, value) && !workItemAlreadyInstalled(descriptorModel.getWorkItemHandlers(),
+                                                                                     name)) {
+                ItemObjectModel itemModel = new ItemObjectModel(name,
+                                                                parseWorkitemValue(value),
+                                                                getWorkitemResolver(value,
+                                                                                    resolver),
                                                                 null);
                 descriptorModel.getWorkItemHandlers().add(itemModel);
 
@@ -108,6 +128,38 @@ public class DDConfigUpdater {
                                                              descriptorModel.getOverview().getMetadata(),
                                                              commentedOption);
             }
+        }
+    }
+    
+    private void removeWorkItemFromConfig(final KieModule kieModule,
+                                     final String name) {
+        Path deploymentDescriptorPath = getDeploymentDescriptorPath(kieModule);
+        ddEditorService.createIfNotExists(deploymentDescriptorPath);
+        DeploymentDescriptorModel descriptorModel = ddEditorService.load(deploymentDescriptorPath);
+
+        if (descriptorModel != null && descriptorModel.getWorkItemHandlers() != null) {
+                
+            ItemObjectModel found = null;
+            
+            for (ItemObjectModel itemObject : descriptorModel.getWorkItemHandlers()) {
+                if (itemObject != null && itemObject.getName().equals(name)) {
+                    found = itemObject;
+                    break;
+                }
+            }
+
+            if (found != null) {
+                descriptorModel.getWorkItemHandlers().remove(found);
+                CommentedOption commentedOption = new CommentedOption("system",
+                                                                      null,
+                                                                      "Workitem config added by system.",
+                                                                      new Date());
+                ((DDEditorServiceImpl) ddEditorService).save(deploymentDescriptorPath,
+                                                             descriptorModel,
+                                                             descriptorModel.getOverview().getMetadata(),
+                                                             commentedOption);
+            }
+            
         }
     }
 
@@ -138,12 +190,8 @@ public class DDConfigUpdater {
         }
     }
 
-    public boolean isValidWorkitem(DesignerWorkitemInstalledEvent workitemInstalledEvent) {
-        return workitemInstalledEvent != null &&
-                workitemInstalledEvent.getName() != null &&
-                workitemInstalledEvent.getName().trim().length() > 0 &&
-                workitemInstalledEvent.getValue() != null &&
-                workitemInstalledEvent.getValue().trim().length() > 0;
+    public boolean isValidWorkitem(String name, String value) {
+        return name != null && name.trim().length() > 0 && value != null && value.trim().length() > 0;
     }
 
     private boolean workItemAlreadyInstalled(List<ItemObjectModel> workitemHandlers,

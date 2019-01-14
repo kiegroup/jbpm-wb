@@ -22,14 +22,15 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import org.jbpm.workbench.wi.client.workitem.project.ProjectServiceTasksPresenter;
 import org.kie.workbench.common.screens.library.client.settings.sections.SettingsSections;
 import org.kie.workbench.common.screens.library.client.settings.sections.dependencies.DependenciesPresenter;
 import org.kie.workbench.common.screens.library.client.settings.sections.externaldataobjects.ExternalDataObjectsPresenter;
 import org.kie.workbench.common.screens.library.client.settings.sections.generalsettings.GeneralSettingsPresenter;
 import org.kie.workbench.common.screens.library.client.settings.sections.knowledgebases.KnowledgeBasesPresenter;
 import org.kie.workbench.common.screens.library.client.settings.sections.persistence.PersistencePresenter;
-import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.sections.validation.ValidationPresenter;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.projecteditor.model.ProjectScreenModel;
 
 @Dependent
@@ -42,6 +43,7 @@ public class CustomizedSettingsSections implements SettingsSections {
     private final ValidationPresenter validationSettingsSection;
     private final DeploymentsSectionPresenter deploymentsSettingsSection;
     private final PersistencePresenter persistenceSettingsSection;
+    private final ProjectServiceTasksPresenter serviceTasksSection;
 
     @Inject
     public CustomizedSettingsSections(final GeneralSettingsPresenter generalSettingsSection,
@@ -50,7 +52,8 @@ public class CustomizedSettingsSections implements SettingsSections {
                                       final ExternalDataObjectsPresenter externalDataObjectsSettingsSection,
                                       final ValidationPresenter validationSettingsSection,
                                       final DeploymentsSectionPresenter deploymentsSettingsSection,
-                                      final PersistencePresenter persistenceSettingsSection) {
+                                      final PersistencePresenter persistenceSettingsSection,
+                                      final ProjectServiceTasksPresenter serviceTasksSection) {
 
         this.generalSettingsSection = generalSettingsSection;
         this.dependenciesSettingsSection = dependenciesSettingsSection;
@@ -59,6 +62,7 @@ public class CustomizedSettingsSections implements SettingsSections {
         this.validationSettingsSection = validationSettingsSection;
         this.deploymentsSettingsSection = deploymentsSettingsSection;
         this.persistenceSettingsSection = persistenceSettingsSection;
+        this.serviceTasksSection = serviceTasksSection;
     }
 
     @Override
@@ -69,6 +73,7 @@ public class CustomizedSettingsSections implements SettingsSections {
                 knowledgeBasesSettingsSection,
                 externalDataObjectsSettingsSection,
                 validationSettingsSection,
+                serviceTasksSection,
                 deploymentsSettingsSection,
                 persistenceSettingsSection
         );

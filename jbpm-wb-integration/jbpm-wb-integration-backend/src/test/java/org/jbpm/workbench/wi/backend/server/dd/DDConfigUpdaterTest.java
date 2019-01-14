@@ -216,54 +216,20 @@ public class DDConfigUpdaterTest {
 
     @Test
     public void testIsValidWorkitem() {
-        assertFalse(ddConfigUpdater.isValidWorkitem(null));
+        assertFalse(ddConfigUpdater.isValidWorkitem(null, null));
 
-        assertFalse(ddConfigUpdater.isValidWorkitem(
-                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
-                                                   "",
-                                                   "",
-                                                   "",
-                                                   "")
-        ));
+        assertFalse(ddConfigUpdater.isValidWorkitem("", ""));
 
-        assertFalse(ddConfigUpdater.isValidWorkitem(
-                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
-                                                   "mvel",
-                                                   "",
-                                                   "",
+        assertFalse(ddConfigUpdater.isValidWorkitem("new com.myhandlers.MyHandler()",
                                                    "")
-        ));
+        );
 
-        assertFalse(ddConfigUpdater.isValidWorkitem(
-                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
-                                                   "mvel",
-                                                   "new com.myhandlers.MyHandler()",
-                                                   "",
-                                                   "")
-        ));
+        assertFalse(ddConfigUpdater.isValidWorkitem("",
+                                                   "MyHandler")
+        );
 
-        assertFalse(ddConfigUpdater.isValidWorkitem(
-                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
-                                                   "mvel",
-                                                   "",
-                                                   "MyHandler",
-                                                   "")
-        ));
-
-        assertTrue(ddConfigUpdater.isValidWorkitem(
-                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
-                                                   "mvel",
-                                                   "new com.myhandlers.MyHandler()",
-                                                   "MyHandler",
-                                                   "")
-        ));
-
-        assertTrue(ddConfigUpdater.isValidWorkitem(
-                new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
-                                                   "",
-                                                   "mvel: new com.myhandlers.MyHandler()",
-                                                   "MyHandler",
-                                                   "")
+        assertTrue(ddConfigUpdater.isValidWorkitem("MyHandler",
+                                                   "new com.myhandlers.MyHandler()"
         ));
     }
 
