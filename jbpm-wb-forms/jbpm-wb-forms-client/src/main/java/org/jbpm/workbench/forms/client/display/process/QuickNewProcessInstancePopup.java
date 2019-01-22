@@ -42,7 +42,6 @@ import org.gwtbootstrap3.extras.select.client.ui.OptGroup;
 import org.gwtbootstrap3.extras.select.client.ui.Option;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.forms.client.display.GenericFormDisplayer;
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.workbench.forms.client.display.views.FormDisplayerView;
@@ -92,10 +91,7 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
     @Inject
     protected StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
 
-    @Inject
-    User identity;
-
-    GenericModalFooter footer = GWT.create(GenericModalFooter.class);
+    private GenericModalFooter footer = GWT.create(GenericModalFooter.class);
 
     @Inject
     private Event<NotificationEvent> notification;
@@ -202,9 +198,9 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
 
         ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(serverTemplateId,
                                                                                             deploymentId,
-                                                                                            processId,
-                                                                                            false),
-                                                                   processId);
+                                                                                            processId),
+                                                                   processId,
+                                                                   false);
         startProcessDisplayProvider.setup(config,
                                           this);
     }
@@ -229,12 +225,7 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
 
         add(footer);
 
-        onCloseCommand = new Command() {
-            @Override
-            public void execute() {
-                closePopup();
-            }
-        };
+        onCloseCommand = () -> closePopup();
 
         this.addHiddenHandler(new ModalHiddenHandler() {
             @Override

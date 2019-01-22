@@ -66,18 +66,22 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
     @DataField("process-diagram-panel")
     private HTMLDivElement processDiagramPanel;
 
-    private Callback<Long> onProcessNodeSelectedCallback;
+    private Callback<String> onProcessNodeSelectedCallback;
 
     @Override
-    public void setOnProcessNodeSelectedCallback(Callback<Long> onProcessNodeSelectedCallback) {
-        this.onProcessNodeSelectedCallback = onProcessNodeSelectedCallback;
+    public void setOnProcessNodeSelectedCallback(Callback<String> callback) {
+        this.onProcessNodeSelectedCallback = callback;
+    }
+
+    @Override
+    public void setOnDiagramNodeSelectionCallback(Callback<String> callback) {
+        diagram.setOnDiagramNodeSelectionCallback(callback);
     }
 
     @Override
     public void setProcessNodes(final List<ProcessNodeSummary> nodes) {
         processNodes.removeAllOptions();
-        nodes.forEach(node -> processNodes.addOption(node.getLabel(),
-                                                     String.valueOf(node.getId())));
+        nodes.forEach(node -> processNodes.addOption(node.getLabel(), node.getUniqueId()));
         processNodes.refresh();
     }
 
@@ -91,8 +95,10 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
         processNodeSummaryView.setValue(node);
         if (node.getId() == null) {
             processNodeSummaryView.getElement().classList.add("hidden");
+            processNodes.setValue("");
         } else {
             processNodeSummaryView.getElement().classList.remove("hidden");
+            processNodes.setValue(node.getUniqueId());
         }
     }
 
@@ -121,7 +127,7 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
         processNodes.toggle();
         if (onProcessNodeSelectedCallback != null) {
             final String node = processNodes.getValue();
-            onProcessNodeSelectedCallback.callback(node == null || node.trim().isEmpty() ? null : Long.valueOf(node));
+            onProcessNodeSelectedCallback.callback(node == null || node.trim().isEmpty() ? null : node);
         }
     }
 

@@ -26,6 +26,7 @@ import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.uberfire.client.callbacks.Callback;
 import org.uberfire.client.views.pfly.widgets.D3;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 
@@ -50,6 +51,14 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
     @Inject
     private ZoomControlView zoomControlView;
 
+    private Callback<String> nodeSelectionCallback;
+
+    @Override
+    public void setOnDiagramNodeSelectionCallback(final Callback<String> callback) {
+        this.nodeSelectionCallback = callback;
+    }
+
+    @Override
     public void displayImage(final String svgContent) {
 
         processDiagramDiv.innerHTML = svgContent;
@@ -98,8 +107,32 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
         });
 
         processDiagramDiv.appendChild(zoomControlView.getElement());
+
+        if (nodeSelectionCallback == null) {
+            return;
+        }
+
+        final D3 selectAll = svg.selectAll("g [bpmn2nodeid]");
+        selectAll.on("mouseenter", () -> {
+            Object target = D3.Builder.get().getEvent().getCurrentTarget();
+            D3 node = d3.select(target);
+            node.style("cursor", "pointer");
+            node.attr("opacity", 0.7);
+        });
+        selectAll.on("mouseleave", () -> {
+            Object target = D3.Builder.get().getEvent().getCurrentTarget();
+            D3 node = d3.select(target);
+            node.style("cursor", "default");
+            node.attr("opacity", 1);
+        });
+        selectAll.on("click", () -> {
+            Object target = D3.Builder.get().getEvent().getCurrentTarget();
+            D3 node = d3.select(target);
+            nodeSelectionCallback.callback((String) node.attr("bpmn2nodeid"));
+        });
     }
 
+    @Override
     public void displayMessage(final String message) {
         alert.classList.remove("hidden");
         heading.textContent = message;

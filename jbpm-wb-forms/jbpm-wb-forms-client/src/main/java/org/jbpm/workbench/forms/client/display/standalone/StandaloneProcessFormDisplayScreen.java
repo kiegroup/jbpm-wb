@@ -78,9 +78,9 @@ public class StandaloneProcessFormDisplayScreen {
         displayer.setOnCloseCommand(() -> placeManager.closePlace(place));
 
         if (null != currentProcessId) {
-            ProcessDefinitionKey key = new ProcessDefinitionKey(serverTemplate, domainId, currentProcessId, false);
+            ProcessDefinitionKey key = new ProcessDefinitionKey(serverTemplate, domainId, currentProcessId);
 
-            ProcessDisplayerConfig config = new ProcessDisplayerConfig(key, "");
+            ProcessDisplayerConfig config = new ProcessDisplayerConfig(key, "", false);
 
             processFormDisplayProvider.setup(config, displayer);
         }

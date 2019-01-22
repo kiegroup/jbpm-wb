@@ -25,16 +25,19 @@ import org.jbpm.workbench.common.model.GenericSummary;
 public class ProcessNodeSummary extends GenericSummary<Long> {
 
     private String type;
+    private String uniqueId;
 
     public ProcessNodeSummary() {
     }
 
     public ProcessNodeSummary(final Long id,
                               final String name,
-                              final String type) {
+                              final String type,
+                              final String uniqueId) {
         super(id,
               name);
         this.type = type;
+        this.uniqueId = uniqueId;
     }
 
     public String getType() {
@@ -54,10 +57,19 @@ public class ProcessNodeSummary extends GenericSummary<Long> {
         return getName() + "-" + getId();
     }
 
+    public String getUniqueId() {
+        return uniqueId;
+    }
+
+    public void setUniqueId(String uniqueId) {
+        this.uniqueId = uniqueId;
+    }
+
     @Override
     public String toString() {
         return "ProcessNodeSummary{" +
                 "type='" + type + '\'' +
+                ", uniqueId='" + uniqueId + '\'' +
                 ", id=" + id +
                 ", name='" + name + '\'' +
                 '}';

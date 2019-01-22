@@ -127,9 +127,9 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
         ProcessDisplayerConfig config = new ProcessDisplayerConfig(new ProcessDefinitionKey(getSelectedServerTemplate(),
                                                                                             deploymentId,
                                                                                             processDefId,
-                                                                                            processDefName,
-                                                                                            isDynamic),
-                                                                   processDefName);
+                                                                                            processDefName),
+                                                                   processDefName,
+                                                                   isDynamic);
 
         formDisplayPopUp.setTitle(processDefName);
 

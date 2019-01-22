@@ -25,7 +25,6 @@ import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
 import org.jbpm.workbench.forms.display.service.KieWorkbenchFormsEntryPoint;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.forms.dynamic.client.DynamicFormRenderer;
@@ -68,10 +67,10 @@ public class KieWorkbenchFormsStartProcessDisplayerTest extends AbstractStartPro
         ProcessDefinitionKey processDefinitionKey = new ProcessDefinitionKey( "test-serverTemplateId",
                                                                               "test-deploymentId",
                                                                               "test-processId",
-                                                                              "test-processDefName",
-                                                                              false);
+                                                                              "test-processDefName");
         ProcessDisplayerConfig processDisplayerConfig = new ProcessDisplayerConfig(processDefinitionKey,
-                                                            "test");
+                                                                                   "test",
+                                                                                   false);
         processDisplayerConfig.setRenderingSettings(formRenderingSettings);
         kieWorkbenchFormsStartProcessDisplayer.initConfigs(processDisplayerConfig, null, null);
         kieWorkbenchFormsStartProcessDisplayer.startProcessFromDisplayer();

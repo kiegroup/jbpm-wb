@@ -27,6 +27,7 @@ import org.jbpm.workbench.common.model.GenericSummary;
 @Bindable
 public class TimerInstanceSummary extends GenericSummary<Long> {
 
+    private Long timerId;
     private Date activationTime;
     private Date lastFireTime;
     private Date nextFireTime;
@@ -121,10 +122,19 @@ public class TimerInstanceSummary extends GenericSummary<Long> {
         this.description = description;
     }
 
+    public void setTimerId(Long timerId) {
+        this.timerId = timerId;
+    }
+
+    public Long getTimerId() {
+        return timerId;
+    }
+
     @Override
     public String toString() {
         return "TimerInstanceSummary{" +
-                "activationTime=" + activationTime +
+                "timerId=" + timerId +
+                ", activationTime=" + activationTime +
                 ", lastFireTime=" + lastFireTime +
                 ", nextFireTime=" + nextFireTime +
                 ", delay=" + delay +
@@ -133,6 +143,8 @@ public class TimerInstanceSummary extends GenericSummary<Long> {
                 ", relative=" + relative +
                 ", processInstanceId=" + processInstanceId +
                 ", description='" + description + '\'' +
+                ", id=" + id +
+                ", name='" + name + '\'' +
                 '}';
     }
 
@@ -151,6 +163,11 @@ public class TimerInstanceSummary extends GenericSummary<Long> {
 
         public Builder withId(Long id) {
             summary.setId(id);
+            return this;
+        }
+
+        public Builder withTimerId(Long timerId) {
+            summary.setTimerId(timerId);
             return this;
         }
 

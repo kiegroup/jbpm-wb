@@ -40,8 +40,7 @@ public interface ProcessRuntimeDataService {
                                       String sort,
                                       Boolean sortOrder);
 
-    ProcessSummary getProcess(String serverTemplateId,
-                              ProcessDefinitionKey processDefinitionKey);
+    ProcessSummary getProcess(ProcessDefinitionKey processDefinitionKey);
 
     List<ProcessSummary> getProcessesByFilter(String serverTemplateId,
                                               String textSearch,
@@ -58,10 +57,6 @@ public interface ProcessRuntimeDataService {
                                                    String containerId,
                                                    Long processInstanceId,
                                                    Long workItemId);
-
-    List<ProcessNodeSummary> getProcessInstanceNodes(String serverTemplateId,
-                                                     String containerId,
-                                                     Long processInstanceId);
 
     void triggerProcessInstanceNode(ProcessInstanceKey processInstanceKey,
                                     Long nodeId);

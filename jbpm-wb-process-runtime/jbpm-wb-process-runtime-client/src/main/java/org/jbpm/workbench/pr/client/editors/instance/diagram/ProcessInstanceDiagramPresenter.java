@@ -17,6 +17,7 @@
 package org.jbpm.workbench.pr.client.editors.instance.diagram;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -35,6 +36,7 @@ import org.jbpm.workbench.pr.model.ProcessInstanceDiagramSummary;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessNodeSummary;
 import org.jbpm.workbench.pr.model.TimerInstanceSummary;
+import org.jbpm.workbench.pr.model.TimerSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -52,6 +54,9 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
 
     private Caller<ProcessRuntimeDataService> processService;
     private List<ProcessNodeSummary> processNodes;
+    private List<NodeInstanceSummary> nodeInstances;
+    private List<TimerInstanceSummary> timerInstances;
+    private List<TimerSummary> timers;
     private ProcessInstanceSummary processInstance;
     private boolean forLog;
 
@@ -69,7 +74,8 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
 
     @PostConstruct
     public void init() {
-        view.setOnProcessNodeSelectedCallback(id -> onProcessNodeSelected(id));
+        view.setOnProcessNodeSelectedCallback(id -> onDiagramNodeSelected(id));
+        view.setOnDiagramNodeSelectionCallback(id -> onDiagramNodeSelected(id));
     }
 
     @Override
@@ -80,8 +86,12 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
 
         processNodes = emptyList();
         view.setProcessNodes(processNodes);
-        view.setNodeInstances(emptyList());
-        view.setTimerInstances(emptyList());
+        nodeInstances = emptyList();
+        view.setNodeInstances(nodeInstances);
+        timerInstances = emptyList();
+        view.setTimerInstances(timerInstances);
+        timers = emptyList();
+        view.setValue(new ProcessNodeSummary());
 
         loadProcessInstanceDetails();
     }
@@ -94,14 +104,15 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
         processService.call((ProcessInstanceDiagramSummary summary) -> {
             displayImage(summary.getSvgContent(),
                          processInstance.getDeploymentId());
-            processNodes = summary.getProcessNodes().stream().sorted(comparing(ProcessNodeSummary::getName, String.CASE_INSENSITIVE_ORDER).thenComparingLong(ProcessNodeSummary::getId)).collect(toList());
+
+            processNodes = summary.getProcessDefinition().getNodes().stream().sorted(comparing(ProcessNodeSummary::getName, String.CASE_INSENSITIVE_ORDER).thenComparingLong(ProcessNodeSummary::getId)).collect(toList());
 
             processNodes.stream().filter(this::isProcessNodeTypeTriggerAllowed).forEach(pn -> pn.addCallback(constants.Trigger(),
                                                                                                              () -> onProcessNodeTrigger(pn)));
 
             view.setProcessNodes(processNodes);
 
-            List<NodeInstanceSummary> nodeInstances = summary.getNodeInstances().stream().sorted(comparing(NodeInstanceSummary::getName, String.CASE_INSENSITIVE_ORDER).thenComparingLong(NodeInstanceSummary::getId)).collect(toList());
+            nodeInstances = summary.getNodeInstances().stream().sorted(comparing(NodeInstanceSummary::getName, String.CASE_INSENSITIVE_ORDER).thenComparingLong(NodeInstanceSummary::getId)).collect(toList());
 
             nodeInstances.forEach(ni -> {
                 ni.setDescription((ni.isCompleted() ? constants.Completed() : constants.Started()) + " " + DateUtils.getPrettyTime(ni.getTimestamp()));
@@ -115,7 +126,7 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
 
             view.setNodeInstances(nodeInstances);
 
-            List<TimerInstanceSummary> timerInstances = summary.getTimerInstances().stream().sorted(comparing(TimerInstanceSummary::getName, String.CASE_INSENSITIVE_ORDER).thenComparingLong(TimerInstanceSummary::getId)).collect(toList());
+            timerInstances = summary.getTimerInstances().stream().sorted(comparing(TimerInstanceSummary::getName, String.CASE_INSENSITIVE_ORDER).thenComparingLong(TimerInstanceSummary::getId)).collect(toList());
 
             timerInstances.forEach(ti -> {
                 ti.setDescription(constants.NextExecution() + " " + DateUtils.getPrettyTime(ti.getNextFireTime()));
@@ -128,6 +139,8 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
             });
 
             view.setTimerInstances(timerInstances);
+
+            timers = summary.getProcessDefinition().getTimers().stream().collect(toList());
 
             if (forLog || processInstance.getState() != ProcessInstance.STATE_ACTIVE) {
                 view.hideNodeActions();
@@ -144,9 +157,25 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
         view.hideBusyIndicator();
     }
 
-    public void onProcessNodeSelected(final Long nodeId) {
-        ProcessNodeSummary nodeSummary = nodeId == null ? new ProcessNodeSummary() : getProcessNodeSummary(nodeId);
-        view.setValue(nodeSummary);
+    public void onDiagramNodeSelected(final String nodeId) {
+        if (nodeId == null) {
+            view.setValue(new ProcessNodeSummary());
+            view.setNodeInstances(nodeInstances);
+            view.setTimerInstances(timerInstances);
+        } else {
+            view.setValue(processNodes.stream().filter(node -> node.getUniqueId().equals(nodeId)).findFirst().orElseGet(() -> new ProcessNodeSummary()));
+            view.setNodeInstances(nodeInstances.stream().filter(node -> node.getNodeUniqueName().equals(nodeId)).collect(toList()));
+            view.setTimerInstances(getTimerInstanceForNode(nodeId));
+        }
+    }
+
+    protected List<TimerInstanceSummary> getTimerInstanceForNode(final String nodeId) {
+        final Optional<TimerSummary> summary = timers.stream().filter(timer -> timer.getUniqueId().equals(nodeId)).findFirst();
+        if (summary.isPresent()) {
+            return timerInstances.stream().filter(instance -> instance.getTimerId().equals(summary.get().getId())).collect(toList());
+        } else {
+            return emptyList();
+        }
     }
 
     protected Boolean isProcessNodeTypeTriggerAllowed(final ProcessNodeSummary nodeSummary) {

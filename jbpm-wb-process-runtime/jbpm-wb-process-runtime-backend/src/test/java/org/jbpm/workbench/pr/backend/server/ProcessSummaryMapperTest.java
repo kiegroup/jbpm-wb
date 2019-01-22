@@ -18,10 +18,13 @@ package org.jbpm.workbench.pr.backend.server;
 
 import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.junit.Test;
+import org.kie.server.api.model.definition.NodeDefinition;
 import org.kie.server.api.model.definition.ProcessDefinition;
+import org.kie.server.api.model.definition.TimerDefinition;
 
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 
 public class ProcessSummaryMapperTest {
@@ -52,6 +55,8 @@ public class ProcessSummaryMapperTest {
                      ps.getReusableSubProcesses());
         assertEquals(pd.getServiceTasks(),
                      ps.getServiceTasks());
+        assertThat(ps.getNodes()).hasSameSizeAs(pd.getNodes());
+        assertThat(ps.getTimers()).hasSameSizeAs(pd.getTimers());
     }
 
     @Test
@@ -69,9 +74,10 @@ public class ProcessSummaryMapperTest {
         pd.setReusableSubProcesses(singletonList("processOne"));
         pd.setServiceTasks(singletonMap("email",
                                         "org.jbpm"));
+        pd.setNodes(singletonList(NodeDefinition.builder().id(1l).build()));
+        pd.setTimers(singletonList(TimerDefinition.builder().id(1l).build()));
 
-        assertProcessSummary(pd,
-                             new ProcessSummaryMapper().apply(pd));
+        assertProcessSummary(pd, new ProcessSummaryMapper().apply(pd));
     }
 
     @Test

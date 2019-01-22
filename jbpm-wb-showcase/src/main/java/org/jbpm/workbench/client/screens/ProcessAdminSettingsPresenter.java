@@ -141,11 +141,9 @@ public class ProcessAdminSettingsPresenter {
                                                                                                                                                    null)).collect(Collectors.toList());
                 view.addProcessVariables(variables);
             }
-        }).getProcess(serverTemplateId,
-                      new ProcessDefinitionKey(serverTemplateId,
+        }).getProcess(new ProcessDefinitionKey(serverTemplateId,
                                                process.getDeploymentId(),
-                                               process.getProcessDefId(),
-                                               process.isDynamic()));
+                                               process.getProcessDefId()));
     }
 
     public interface ProcessAdminSettingsView extends UberView<ProcessAdminSettingsPresenter> {

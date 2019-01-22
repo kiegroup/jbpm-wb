@@ -20,6 +20,14 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Overflow;
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Frame;
+import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.workbench.forms.client.display.process.AbstractStartProcessFormDisplayer;
 import org.jbpm.workbench.forms.client.i18n.Constants;
 import org.jbpm.workbench.forms.display.FormDisplayerConfig;
@@ -29,15 +37,6 @@ import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
 import org.jbpm.workbench.pr.model.ProcessDefinitionKey;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.events.NotificationEvent;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Overflow;
-import com.google.gwt.dom.client.Style.Position;
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Frame;
-import com.google.gwt.user.client.ui.IsWidget;
 
 @Dependent
 public class KieServerFormsStartProcessDisplayer extends AbstractStartProcessFormDisplayer<KieServerFormRenderingSettings> {
@@ -111,33 +110,30 @@ public class KieServerFormsStartProcessDisplayer extends AbstractStartProcessFor
     }
     
     public void notifyAboutStartProcess(String id) {
-        
         Long processInstanceId = Long.parseLong(id);
         newProcessInstanceEvent.fire(new NewProcessInstanceEvent(serverTemplateId,
                                                                  deploymentId,
                                                                  processInstanceId,
                                                                  processDefId,
-                                                                 processName,
-                                                                 null));
+                                                                 processName));
         final String message = Constants.INSTANCE.ProcessStarted(processInstanceId.longValue());
         notificationEvent.fire(new NotificationEvent(message,
-                                                     NotificationEvent.NotificationType.SUCCESS));      
+                                                     NotificationEvent.NotificationType.SUCCESS));
         close();
     }
     
    public void notifyAboutStartCase(String id) {
-        
        newCaseInstanceEvent.fire(new NewCaseInstanceEvent(serverTemplateId,
-                                                                deploymentId,
-                                                                id,
-                                                                processDefId,
-                                                                processName));
-        final String message = Constants.INSTANCE.CaseStarted(id);
-        notificationEvent.fire(new NotificationEvent(message,
-                                                     NotificationEvent.NotificationType.SUCCESS));
+                                                          deploymentId,
+                                                          id,
+                                                          processDefId,
+                                                          processName));
+       final String message = Constants.INSTANCE.CaseStarted(id);
+       notificationEvent.fire(new NotificationEvent(message,
+                                                    NotificationEvent.NotificationType.SUCCESS));
 
-        close();
-    }
+       close();
+   }
     
     public static native void startProcessCallback(KieServerFormsStartProcessDisplayer dp)/*-{
         $wnd.afterProcessStarted = function (processInstanceId) {

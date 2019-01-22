@@ -54,8 +54,7 @@ public class ProcessDiagramPresenter {
                                                                                                      processId);
     }
 
-    public void displayImage(final String svgContent,
-                             final String containerId) {
+    public void displayImage(final String svgContent, final String containerId) {
         if (svgContent == null || svgContent.isEmpty()) {
             view.displayMessage(constants.Process_Diagram_Not_FoundContainerShouldBeAvailable(containerId));
         } else {
@@ -73,5 +72,4 @@ public class ProcessDiagramPresenter {
     public IsWidget getView() {
         return view;
     }
-
 }

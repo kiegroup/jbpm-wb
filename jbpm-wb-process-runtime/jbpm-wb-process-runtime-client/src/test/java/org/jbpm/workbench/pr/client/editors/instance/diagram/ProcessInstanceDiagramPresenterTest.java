@@ -26,7 +26,9 @@ import org.jbpm.workbench.pr.model.NodeInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessInstanceDiagramSummary;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessNodeSummary;
+import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.model.TimerInstanceSummary;
+import org.jbpm.workbench.pr.model.TimerSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,10 +42,16 @@ import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class ProcessInstanceDiagramPresenterTest {
@@ -70,26 +78,28 @@ public class ProcessInstanceDiagramPresenterTest {
 
     @Test
     public void testEmptyProcessInstanceDiagram() {
-        when(processService.getProcessInstanceDiagramSummary(any())).thenReturn(ProcessInstanceDiagramSummary.builder().withProcessNodes(emptyList()).withNodeInstances(emptyList()).withTimerInstances(emptyList()).build(),
-                                                                                ProcessInstanceDiagramSummary.builder().withProcessNodes(emptyList()).withNodeInstances(emptyList()).withTimerInstances(emptyList()).withSvgContent("").build());
+        when(processService.getProcessInstanceDiagramSummary(any())).thenReturn(
+                ProcessInstanceDiagramSummary.builder().withProcessDefinition(ProcessSummary.builder().nodes(emptyList()).timers(emptyList()).build()).withNodeInstances(emptyList()).withTimerInstances(emptyList()).build(),
+                ProcessInstanceDiagramSummary.builder().withProcessDefinition(ProcessSummary.builder().nodes(emptyList()).timers(emptyList()).build()).withNodeInstances(emptyList()).withTimerInstances(emptyList()).withSvgContent("").build()
+        );
 
         presenter.setProcessInstance(ProcessInstanceSummary.builder().withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build());
         presenter.setProcessInstance(ProcessInstanceSummary.builder().withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build());
 
-        verify(view,
-               times(2)).displayMessage(Constants.INSTANCE.Process_Diagram_Not_FoundContainerShouldBeAvailable(anyString()));
+        verify(view, times(2)).displayMessage(Constants.INSTANCE.Process_Diagram_Not_FoundContainerShouldBeAvailable(anyString()));
     }
 
     @Test
     public void testProcessInstanceDiagram() {
         final String svgContent = "<svg></svg>";
-        when(processService.getProcessInstanceDiagramSummary(any())).thenReturn(ProcessInstanceDiagramSummary.builder().withProcessNodes(emptyList()).withNodeInstances(emptyList()).withTimerInstances(emptyList()).withSvgContent(svgContent).build(),
-                                                                                ProcessInstanceDiagramSummary.builder().withProcessNodes(emptyList()).withNodeInstances(emptyList()).withTimerInstances(emptyList()).build());
+        when(processService.getProcessInstanceDiagramSummary(any())).thenReturn(
+                ProcessInstanceDiagramSummary.builder().withProcessDefinition(ProcessSummary.builder().nodes(emptyList()).timers(emptyList()).build()).withNodeInstances(emptyList()).withTimerInstances(emptyList()).withSvgContent(svgContent).build(),
+                ProcessInstanceDiagramSummary.builder().withProcessDefinition(ProcessSummary.builder().nodes(emptyList()).timers(emptyList()).build()).withNodeInstances(emptyList()).withTimerInstances(emptyList()).build()
+        );
 
         presenter.setProcessInstance(ProcessInstanceSummary.builder().withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build());
 
-        verify(view,
-               never()).displayMessage(Constants.INSTANCE.Process_Diagram_Not_FoundContainerShouldBeAvailable(anyString()));
+        verify(view, never()).displayMessage(Constants.INSTANCE.Process_Diagram_Not_FoundContainerShouldBeAvailable(anyString()));
         verify(view).displayImage(svgContent);
     }
 
@@ -101,13 +111,16 @@ public class ProcessInstanceDiagramPresenterTest {
 
         List<ProcessNodeSummary> nodes = Arrays.asList(new ProcessNodeSummary(1l,
                                                                               " ",
-                                                                              "StartNode"),
+                                                                              "StartNode",
+                                                                              "_1"),
                                                        new ProcessNodeSummary(2l,
                                                                               "task-name",
-                                                                              "HumanTask"),
+                                                                              "HumanTask",
+                                                                              "_2"),
                                                        new ProcessNodeSummary(3l,
                                                                               " ",
-                                                                              "Split"));
+                                                                              "Split",
+                                                                              "_3"));
 
         List<NodeInstanceSummary> nodeInstances = Arrays.asList(
                 NodeInstanceSummary.builder().withId(1l).withName("name-1").withType("HumanTask").withCompleted(false).build(),
@@ -122,7 +135,7 @@ public class ProcessInstanceDiagramPresenterTest {
 
         ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
         summary.setSvgContent(svgContent);
-        summary.setProcessNodes(nodes);
+        summary.setProcessDefinition(ProcessSummary.builder().nodes(nodes).timers(emptyList()).build());
         summary.setNodeInstances(nodeInstances);
         summary.setTimerInstances(timerInstances);
 
@@ -133,8 +146,7 @@ public class ProcessInstanceDiagramPresenterTest {
         verify(view).showBusyIndicator(any());
 
         ArgumentCaptor<List> nodesCaptor = ArgumentCaptor.forClass(List.class);
-        verify(view,
-               times(2)).setProcessNodes(nodesCaptor.capture());
+        verify(view, times(2)).setProcessNodes(nodesCaptor.capture());
 
         assertThat(nodesCaptor.getAllValues().get(0)).isEmpty();
         final List<ProcessNodeSummary> viewNodes = nodesCaptor.getAllValues().get(1);
@@ -143,21 +155,23 @@ public class ProcessInstanceDiagramPresenterTest {
         assertThat(viewNodes.get(0).getLabel()).isEqualTo("Split-3");
         assertThat(viewNodes.get(0).getName()).isEqualTo("Split");
         assertThat(viewNodes.get(0).getType()).isEqualTo("Split");
+        assertThat(viewNodes.get(0).getUniqueId()).isEqualTo("_3");
         assertThat(viewNodes.get(0).getCallbacks()).hasSize(1);
 
         assertThat(viewNodes.get(1).getLabel()).isEqualTo("StartNode-1");
         assertThat(viewNodes.get(1).getName()).isEqualTo("StartNode");
         assertThat(viewNodes.get(1).getType()).isEqualTo("StartNode");
+        assertThat(viewNodes.get(1).getUniqueId()).isEqualTo("_1");
         assertThat(viewNodes.get(1).getCallbacks()).isNullOrEmpty();
 
         assertThat(viewNodes.get(2).getLabel()).isEqualTo("task-name-2");
         assertThat(viewNodes.get(2).getName()).isEqualTo("task-name");
         assertThat(viewNodes.get(2).getType()).isEqualTo("HumanTask");
+        assertThat(viewNodes.get(2).getUniqueId()).isEqualTo("_2");
         assertThat(viewNodes.get(2).getCallbacks()).hasSize(1);
 
         ArgumentCaptor<List> nodeInstancesCaptor = ArgumentCaptor.forClass(List.class);
-        verify(view,
-               times(2)).setNodeInstances(nodeInstancesCaptor.capture());
+        verify(view, times(2)).setNodeInstances(nodeInstancesCaptor.capture());
 
         assertThat(nodeInstancesCaptor.getAllValues().get(0)).isEmpty();
         final List<NodeInstanceSummary> viewNodeInstances = nodeInstancesCaptor.getAllValues().get(1);
@@ -188,8 +202,7 @@ public class ProcessInstanceDiagramPresenterTest {
         assertThat(viewNodeInstances.get(3).getCallbacks()).hasSize(2);
 
         ArgumentCaptor<List> timerInstancesCaptor = ArgumentCaptor.forClass(List.class);
-        verify(view,
-               times(2)).setTimerInstances(timerInstancesCaptor.capture());
+        verify(view, times(2)).setTimerInstances(timerInstancesCaptor.capture());
 
         assertThat(timerInstancesCaptor.getAllValues().get(0)).isEmpty();
         final List<TimerInstanceSummary> viewTimerInstances = timerInstancesCaptor.getAllValues().get(1);
@@ -207,39 +220,59 @@ public class ProcessInstanceDiagramPresenterTest {
     }
 
     @Test
-    public void testOnProcessNodeNullSelected() {
-        presenter.onProcessNodeSelected(null);
+    public void testOnDiagramNodeNullSelected() {
+        presenter.onDiagramNodeSelected(null);
 
         verify(view).setValue(new ProcessNodeSummary());
+        verify(view).setNodeInstances(null);
+        verify(view).setTimerInstances(null);
     }
 
     @Test
-    public void testOnProcessNodeSelected() {
+    public void testOnDiagramNodeSelected() {
         ProcessInstanceSummary processInstance = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build();
 
-        final ProcessNodeSummary humanTask = new ProcessNodeSummary(1l,
-                                                                    "name-1",
-                                                                    "HumanTask");
-        final List<ProcessNodeSummary> nodes = Arrays.asList(new ProcessNodeSummary(0l,
-                                                                                    " ",
-                                                                                    "Start"),
-                                                             humanTask,
-                                                             new ProcessNodeSummary(2l,
-                                                                                    " ",
-                                                                                    "Split"));
+        ProcessNodeSummary timerNode = new ProcessNodeSummary(1l, "name-1", "Timer", "_1");
+        List<ProcessNodeSummary> nodes = Arrays.asList(new ProcessNodeSummary(0l,
+                                                                              " ",
+                                                                              "Start",
+                                                                              "_0"),
+                                                       timerNode,
+                                                       new ProcessNodeSummary(2l,
+                                                                              " ",
+                                                                              "Split",
+                                                                              "_2"));
+
+        NodeInstanceSummary timerNodeInstance = NodeInstanceSummary.builder().withId(1l).withName("name-1").withNodeUniqueName("_1").withType("Timer").withCompleted(false).build();
+
+        List<NodeInstanceSummary> nodeInstances = Arrays.asList(
+                timerNodeInstance,
+                NodeInstanceSummary.builder().withId(2l).withName(" ").withNodeUniqueName("_2").withType("Split").withCompleted(false).build(),
+                NodeInstanceSummary.builder().withId(3l).withName("name-3").withNodeUniqueName("_3").withType("HumanTask").withCompleted(true).build(),
+                NodeInstanceSummary.builder().withId(4l).withName(" ").withNodeUniqueName("_4").withType("End").withCompleted(true).build()
+        );
+
+        TimerInstanceSummary timerInstance = TimerInstanceSummary.builder().withId(1l).withTimerId(0l).withName("t1").build();
+
+        List<TimerInstanceSummary> timerInstances = Arrays.asList(
+                timerInstance,
+                TimerInstanceSummary.builder().withId(2l).withTimerId(1l).withName("t2").build()
+        );
 
         ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
-        summary.setProcessNodes(nodes);
-        summary.setNodeInstances(emptyList());
-        summary.setTimerInstances(emptyList());
+        summary.setProcessDefinition(ProcessSummary.builder().nodes(nodes).timers(singletonList(TimerSummary.builder().id(0l).uniqueId("_1").build())).build());
+        summary.setNodeInstances(nodeInstances);
+        summary.setTimerInstances(timerInstances);
 
         when(processService.getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey())).thenReturn(summary);
 
         presenter.setProcessInstance(processInstance);
 
-        presenter.onProcessNodeSelected(1l);
+        presenter.onDiagramNodeSelected("_1");
 
-        verify(view).setValue(humanTask);
+        verify(view).setValue(timerNode);
+        verify(view).setNodeInstances(singletonList(timerNodeInstance));
+        verify(view).setTimerInstances(singletonList(timerInstance));
     }
 
     @Test
@@ -248,17 +281,20 @@ public class ProcessInstanceDiagramPresenterTest {
 
         final ProcessNodeSummary humanTask = new ProcessNodeSummary(1l,
                                                                     "name-1",
-                                                                    "HumanTask");
+                                                                    "HumanTask",
+                                                                    "_1");
         final List<ProcessNodeSummary> nodes = Arrays.asList(new ProcessNodeSummary(0l,
                                                                                     " ",
-                                                                                    "Start"),
+                                                                                    "Start",
+                                                                                    "_0"),
                                                              humanTask,
                                                              new ProcessNodeSummary(2l,
                                                                                     " ",
-                                                                                    "Split"));
+                                                                                    "Split",
+                                                                                    "_2"));
 
         ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
-        summary.setProcessNodes(nodes);
+        summary.setProcessDefinition(ProcessSummary.builder().nodes(nodes).timers(emptyList()).build());
         summary.setNodeInstances(emptyList());
         summary.setTimerInstances(emptyList());
 
@@ -271,7 +307,7 @@ public class ProcessInstanceDiagramPresenterTest {
         verify(processService).triggerProcessInstanceNode(processInstance.getProcessInstanceKey(),
                                                           humanTask.getId());
         verify(notificationEvent).fire(any());
-        verify(view).setValue(new ProcessNodeSummary());
+        verify(view, times(2)).setValue(new ProcessNodeSummary());
     }
 
     @Test
@@ -288,7 +324,7 @@ public class ProcessInstanceDiagramPresenterTest {
         );
 
         ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
-        summary.setProcessNodes(emptyList());
+        summary.setProcessDefinition(ProcessSummary.builder().nodes(emptyList()).timers(emptyList()).build());
         summary.setNodeInstances(nodeInstances);
         summary.setTimerInstances(emptyList());
 
@@ -317,7 +353,7 @@ public class ProcessInstanceDiagramPresenterTest {
         );
 
         ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
-        summary.setProcessNodes(emptyList());
+        summary.setProcessDefinition(ProcessSummary.builder().nodes(emptyList()).timers(emptyList()).build());
         summary.setNodeInstances(nodeInstances);
         summary.setTimerInstances(emptyList());
 
@@ -343,7 +379,7 @@ public class ProcessInstanceDiagramPresenterTest {
                 TimerInstanceSummary.builder().withId(2l).withName("t2").build());
 
         ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
-        summary.setProcessNodes(emptyList());
+        summary.setProcessDefinition(ProcessSummary.builder().nodes(emptyList()).timers(emptyList()).build());
         summary.setNodeInstances(emptyList());
         summary.setTimerInstances(timerInstance);
 
@@ -359,23 +395,55 @@ public class ProcessInstanceDiagramPresenterTest {
     }
 
     @Test
+    public void testTimerInstanceForNode() {
+        ProcessInstanceSummary processInstance = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build();
+
+        List<TimerSummary> timers = Arrays.asList(
+                TimerSummary.builder().id(0l).nodeId(1l).uniqueId("_1").build(),
+                TimerSummary.builder().id(1l).nodeId(2l).uniqueId("_2").build()
+        );
+
+        TimerInstanceSummary t1 = TimerInstanceSummary.builder().withId(1l).withTimerId(0l).withName("t1").build();
+        TimerInstanceSummary t2 = TimerInstanceSummary.builder().withId(2l).withTimerId(1l).withName("t2").build();
+
+        ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
+        summary.setProcessDefinition(ProcessSummary.builder().nodes(emptyList()).timers(timers).build());
+        summary.setNodeInstances(emptyList());
+        summary.setTimerInstances(Arrays.asList(t1, t2));
+
+        when(processService.getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey())).thenReturn(summary);
+
+        presenter.setProcessInstance(processInstance);
+
+        assertThat(presenter.getTimerInstanceForNode("_1")).containsExactly(t1);
+        assertThat(presenter.getTimerInstanceForNode("_2")).containsExactly(t2);
+        assertThat(presenter.getTimerInstanceForNode("_3")).isEmpty();
+        assertThat(presenter.getTimerInstanceForNode(null)).isEmpty();
+    }
+
+    @Test
     public void testIsProcessNodeTypeTriggerAllowed() {
         assertFalse(presenter.isProcessNodeTypeTriggerAllowed(null));
         assertFalse(presenter.isProcessNodeTypeTriggerAllowed(new ProcessNodeSummary()));
         assertFalse(presenter.isProcessNodeTypeTriggerAllowed(new ProcessNodeSummary(1l,
                                                                                      "",
-                                                                                     "StartNode")));
+                                                                                     "StartNode",
+                                                                                     "_1")));
         assertFalse(presenter.isProcessNodeTypeTriggerAllowed(new ProcessNodeSummary(1l,
                                                                                      "",
-                                                                                     "Join")));
+                                                                                     "Join",
+                                                                                     "_1")));
         assertTrue(presenter.isProcessNodeTypeTriggerAllowed(new ProcessNodeSummary(1l,
                                                                                     "",
-                                                                                    "Split")));
+                                                                                    "Split",
+                                                                                    "_1")));
         assertTrue(presenter.isProcessNodeTypeTriggerAllowed(new ProcessNodeSummary(1l,
                                                                                     "",
-                                                                                    "HumanTaskNode")));
+                                                                                    "HumanTaskNode",
+                                                                                    "_1")));
         assertTrue(presenter.isProcessNodeTypeTriggerAllowed(new ProcessNodeSummary(1l,
                                                                                     "",
-                                                                                    "TimerNode")));
+                                                                                    "TimerNode",
+                                                                                    "_1")));
     }
 }
